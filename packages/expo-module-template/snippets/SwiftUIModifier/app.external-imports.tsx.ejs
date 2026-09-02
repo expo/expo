@@ -1,0 +1,6 @@
+<% if (project.features.includes('SwiftUIView')) { -%>
+import { VStack } from '@expo/ui/swift-ui';
+<% } else { -%>
+import { Host as SwiftUIHost, VStack, Text as SwiftUIText } from '@expo/ui/swift-ui';
+import { padding } from '@expo/ui/swift-ui/modifiers';
+<% } -%>

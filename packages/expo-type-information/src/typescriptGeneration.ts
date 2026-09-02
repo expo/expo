@@ -31,6 +31,7 @@ const exportModifier = () => ts.factory.createModifier(ts.SyntaxKind.ExportKeywo
 const declareModifier = () => ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword);
 const asyncModifier = () => ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword);
 const readonlyModifier = () => ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword);
+const staticModifier = () => ts.factory.createModifier(ts.SyntaxKind.StaticKeyword);
 const constModifier = () => ts.factory.createModifier(ts.SyntaxKind.ConstKeyword);
 const defaultModifier = () => ts.factory.createModifier(ts.SyntaxKind.DefaultKeyword);
 
@@ -40,8 +41,17 @@ const voidKeywordType = () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.Voi
 
 const newlineIdentifier = () => ts.factory.createIdentifier('\n\n');
 
+/**
+ * A helper type which contains the generated file content and name.
+ */
 export type OutputFile = {
+  /**
+   * @field Generated file content.
+   */
   content: string;
+  /**
+   * @field Generated file base name (e.g. `ExpoSettings.types.ts`).
+   */
   name: string;
 };
 
@@ -99,12 +109,14 @@ function constructModifiersArray(modifiers: {
   declare?: boolean;
   async?: boolean;
   readonly?: boolean;
+  isStatic?: boolean;
 }): ts.Modifier[] {
   const modifiersArray: ts.Modifier[] = [];
   if (modifiers.exported) modifiersArray.push(exportModifier());
   if (modifiers.declare) modifiersArray.push(declareModifier());
   if (modifiers.async) modifiersArray.push(asyncModifier());
   if (modifiers.readonly) modifiersArray.push(readonlyModifier());
+  if (modifiers.isStatic) modifiersArray.push(staticModifier());
   return modifiersArray;
 }
 
@@ -165,7 +177,7 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
       ]);
     }
     // Technically this one should only be the top one and it should be handled somewhere else
-    // for example when creating arguemnt adding the '?' token.
+    // for example when creating argument adding the '?' token.
     //
     // However we can just make it (type | undefined) in here.
     // TODO(@HubertBer): Maybe also need null?
@@ -471,6 +483,10 @@ function buildClassProperty(declaration: PropertyDeclaration): ts.PropertyDeclar
   });
 }
 
+function getModuleClassEventsTypeName(moduleClassDeclaration: ModuleClassDeclaration): string {
+  return `${moduleClassDeclaration.name}Events`;
+}
+
 function buildNativeModuleClassDeclaration({
   moduleClassDeclaration,
   exportedModuleName,
@@ -510,7 +526,11 @@ function buildNativeModuleClassDeclaration({
         ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
           ts.factory.createExpressionWithTypeArguments(
             ts.factory.createIdentifier('NativeModule'),
-            undefined
+            [
+              ts.factory.createTypeReferenceNode(
+                getModuleClassEventsTypeName(moduleClassDeclaration)
+              ),
+            ]
           ),
         ]),
       ],
@@ -562,7 +582,11 @@ export function buildFunction({
   overrideArgumentDeclarations,
   omitReturnType,
 }: buildFunctionOptions): ts.FunctionDeclaration | ts.MethodDeclaration {
-  const functionModifiers = constructModifiersArray({ exported, async: async && !declaration });
+  const functionModifiers = constructModifiersArray({
+    exported,
+    async: async && !declaration,
+    isStatic: functionDeclaration.isStatic,
+  });
   const customReturn = !!returnStatement;
   const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
 
@@ -717,7 +741,12 @@ export function buildEnumTypeDeclaration(
   return ts.factory.createEnumDeclaration(
     constructModifiersArray({ exported, declare: declared }),
     enumType.name,
-    enumType.cases.map((enumcase) => ts.factory.createEnumMember(enumcase))
+    enumType.cases.map((enumcase) =>
+      ts.factory.createEnumMember(
+        enumcase,
+        enumType.stringBacked ? ts.factory.createStringLiteral(enumcase) : undefined
+      )
+    )
   );
 }
 
@@ -775,6 +804,48 @@ function buildDefaultViewComponent({
   ];
 }
 
+function buildModuleEventsTypeDeclaration(
+  moduleClassDeclaration: ModuleClassDeclaration,
+  { exported }: { exported?: boolean }
+): ts.Node[] {
+  const createEventType = () =>
+    ts.factory.createFunctionTypeNode(
+      undefined,
+      [
+        ts.factory.createParameterDeclaration(
+          undefined,
+          ts.factory.createToken(ts.SyntaxKind.DotDotDotToken),
+          ts.factory.createIdentifier('args'),
+          undefined,
+          ts.factory.createArrayTypeNode(
+            ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+          ),
+          undefined
+        ),
+      ],
+      voidKeywordType()
+    );
+
+  return [
+    ts.addSyntheticLeadingComment(
+      createTypeAlias({
+        exported,
+        alias: getModuleClassEventsTypeName(moduleClassDeclaration),
+        type: ts.factory.createTypeLiteralNode(
+          moduleClassDeclaration.events.map((event) => {
+            return createPropertySignature({
+              name: event,
+              typeNode: createEventType(),
+            });
+          })
+        ),
+      }),
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      ` These events may have arguments that weren't resolved!`
+    ),
+  ];
+}
+
 export function buildExposedTypesDeclarations(
   ctx: GenerationContext,
   options: { exported?: boolean; declare?: boolean }
@@ -792,6 +863,7 @@ export function buildExposedTypesDeclarations(
     ctx.fileInfo.records.flatMap(recordDeclarationMap),
     ctx.fileInfo.enums.flatMap(enumDeclarationMap),
     ctx.module.classes.map(classDeclarationMap),
+    buildModuleEventsTypeDeclaration(ctx.module, options),
   ]);
 }
 
@@ -947,9 +1019,11 @@ function buildStableNativeModuleInterface(ctx: GenerationContext): ts.Node[] {
     createImportDeclaration({
       namedImportsNames: [
         ...ctx.fileInfo.usedTypeIdentifiers.difference(getBasicTypesIdentifiers()),
-        ...[generatedModuleTypeAlias, ctx.view ? getViewPropsTypeName(ctx.view) : null].filter(
-          (v) => v !== null
-        ),
+        ...[
+          getModuleClassEventsTypeName(ctx.module),
+          generatedModuleTypeAlias,
+          ctx.view ? getViewPropsTypeName(ctx.view) : null,
+        ].filter((v) => v !== null),
       ],
       importFromName: generatedFilePath,
     }),
@@ -999,6 +1073,14 @@ async function tsNodesToString(elements: ts.Node[]): Promise<string> {
   return await prettifyCode(printedTs, 'typescript');
 }
 
+/**
+ * Helper function that takes a file content string and formats it using `prettier` formatter.
+ * @param text Content of a JavaScript/TypeScript file to format.
+ * @param parser An option of which parser to use to format the file.
+ * @default "babel"
+ * @returns A promise which resolves to the `text` string after formatting using `prettier` with the given `parser`.
+ * @header TypescriptGeneration
+ */
 export async function prettifyCode(text: string, parser: 'babel' | 'typescript' = 'babel') {
   return await prettier.format(text, {
     parser,
@@ -1009,6 +1091,12 @@ export async function prettifyCode(text: string, parser: 'babel' | 'typescript' 
   });
 }
 
+/**
+ * Generates the TypeScript string content for a native View's type declaration file.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to a string containing the TypeScript declaration file content or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 export async function generateViewTypesFileContent(
   fileTypeInformation: FileTypeInformation
 ): Promise<string | null> {
@@ -1019,6 +1107,12 @@ export async function generateViewTypesFileContent(
   return tsNodesToString(buildViewDeclarationNodes(ctx));
 }
 
+/**
+ * Generates the TypeScript string content for a native View's type declaration file which mounts the View props on the global `JSXIntrinsics`.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to a string containing the TypeScript declaration file content or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 export async function generateJSXIntrinsicsFileContent(
   fileTypeInformation: FileTypeInformation
 ): Promise<string | null> {
@@ -1029,6 +1123,12 @@ export async function generateJSXIntrinsicsFileContent(
   return tsNodesToString(buildJSXIntrinsicsViewNodes(ctx));
 }
 
+/**
+ * Generates the TypeScript string content for a native module type declaration file.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to a string containing the TypeScript module declaration file content or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 export async function generateModuleTypesFileContent(
   fileTypeInformation: FileTypeInformation
 ): Promise<string | null> {
@@ -1039,6 +1139,13 @@ export async function generateModuleTypesFileContent(
   return tsNodesToString(buildModuleDeclarationNodes(ctx));
 }
 
+/**
+ * Generates a short TypeScript interface for an Expo module. This creates the content for two files: a volatile generated file containing raw type definitions,
+ * and a stable user-facing file that wraps and exports the native module methods in new functions.
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to an object containing the string contents for both the volatile generated file and the stable TypeScript interface file.
+ * @header TypescriptGeneration
+ */
 export async function generateConciseTsInterface(
   fileTypeInformation: FileTypeInformation
 ): Promise<{
@@ -1062,6 +1169,14 @@ export async function generateConciseTsInterface(
   };
 }
 
+/**
+ * Generates a full, multi-file TypeScript interface for an Expo module.
+ * The generated interface is separated into a file with type definitions, a file which wraps the native module, a file for each view defined in a module and an index file which reexports all definitions from the other files.
+ *
+ * @param fileTypeInformation The abstracted type information of an Expo module.
+ * @returns A promise that resolves to an object containing the string contents for all of the generated files or `null` if the generation has failed.
+ * @header TypescriptGeneration
+ */
 export async function generateFullTsInterface(fileTypeInformation: FileTypeInformation): Promise<{
   moduleTypesFile: OutputFile;
   moduleViewsFiles: OutputFile[];
@@ -1113,7 +1228,10 @@ export async function generateFullTsInterface(fileTypeInformation: FileTypeInfor
       importFromName: 'expo',
     }),
     createImportDeclaration({
-      namedImportsNames: [...getAllNonBasicTypes(ctx.fileInfo)],
+      namedImportsNames: [
+        ...getAllNonBasicTypes(ctx.fileInfo),
+        getModuleClassEventsTypeName(ctx.module),
+      ],
       importFromName: `./${moduleTypesFileImportName}`,
     }),
     buildNativeModuleClassDeclaration({

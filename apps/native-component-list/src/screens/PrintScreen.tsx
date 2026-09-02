@@ -1,8 +1,9 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as Print from 'expo-print';
 import React from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import ListButton from '../components/ListButton';
 
 interface State {
@@ -59,9 +60,9 @@ export default class PrintScreen extends React.Component<object, State> {
           style={styles.button}
           title="Select Printer (iOS only)"
         />
-        <Text style={styles.text}>
+        <BodyText style={styles.text}>
           Selected printer: {selectedPrinter ? selectedPrinter.name : 'None'}
-        </Text>
+        </BodyText>
       </View>
     );
   }

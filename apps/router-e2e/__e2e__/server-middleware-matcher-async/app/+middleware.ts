@@ -2,8 +2,12 @@ import { MiddlewareFunction } from 'expo-router/server';
 
 export const unstable_settings = {
   matcher: {
-    methods: process.env.E2E_MIDDLEWARE_MATCHER_METHODS ? JSON.parse(process.env.E2E_MIDDLEWARE_MATCHER_METHODS) : undefined,
-    patterns: process.env.E2E_MIDDLEWARE_MATCHER_PATTERNS ? JSON.parse(process.env.E2E_MIDDLEWARE_MATCHER_PATTERNS) : undefined,
+    methods: process.env.E2E_MIDDLEWARE_MATCHER_METHODS
+      ? JSON.parse(process.env.E2E_MIDDLEWARE_MATCHER_METHODS)
+      : undefined,
+    patterns: process.env.E2E_MIDDLEWARE_MATCHER_PATTERNS
+      ? JSON.parse(process.env.E2E_MIDDLEWARE_MATCHER_PATTERNS)
+      : undefined,
   },
 };
 

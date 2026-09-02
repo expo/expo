@@ -36,6 +36,8 @@ object WebsiteLabelMapper {
       is WebsiteLabel.Other -> "other"
       is WebsiteLabel.Profile -> "profile"
       is WebsiteLabel.Custom -> label.label
+      is WebsiteLabel.MalformedType -> label.label
+      is WebsiteLabel.MalformedCustom -> null
     }
   }
 }

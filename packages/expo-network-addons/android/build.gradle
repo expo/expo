@@ -4,18 +4,19 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.3'
+version = '56.0.5'
 
 android {
   namespace "expo.modules.networkaddons"
   defaultConfig {
     versionCode 1
-    versionName "56.0.3"
+    versionName "56.0.5"
     consumerProguardFiles("proguard-rules.pro")
   }
 }
 
 dependencies {
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
-  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
+  implementation("com.squareup.zstd:zstd-kmp-okio:0.4.0")
+  implementation("org.brotli:dec:0.1.2")
 }

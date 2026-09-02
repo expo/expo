@@ -3,8 +3,8 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { joinWithCommasAnd } from '../utils/strings';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 /**
  * Dependency traversal chains for critical transitive dependencies that should
@@ -29,6 +29,10 @@ const dependencyChains: [...string[], string, string][] = [
 
   // @expo/metro-runtime is a peer, and often resolved to mute peer warnings, instead of being upgraded
   ['expo-router', '@expo/metro-runtime'],
+
+  // @expo/dom-webview is an optional peer of expo with a wildcard range, so package managers may
+  // keep a previous SDK's version installed after an upgrade, which breaks the Android build
+  ['expo', '@expo/dom-webview'],
 
   // metro packages are commonly resolved, and this will cause issues
   ['expo', '@expo/metro', 'metro'],

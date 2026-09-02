@@ -2,6 +2,7 @@ import { Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 import { Page } from '../../components/Page';
@@ -45,7 +46,7 @@ type StreamExampleItemProps = {
 function StreamExampleItem({ example, result, onEvaluate }: StreamExampleItemProps) {
   return (
     <View>
-      <Text>{example.title}</Text>
+      <BodyText>{example.title}</BodyText>
       <View>
         <MonoText>{example.code}</MonoText>
         {!result && <Button title="Evaluate" onPress={() => onEvaluate(example)} />}

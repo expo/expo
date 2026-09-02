@@ -238,7 +238,7 @@
     if (appEvents.count == 0) {
       [self->_events removeObjectForKey:appId];
       
-      // Invalidate app record but after 1 seconds delay so we can still take batched events.
+      // Invalidate app record but after 1 second delay so we can still take batched events.
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (!self->_events[appId]) {
           [self _invalidateAppWithId:appId];

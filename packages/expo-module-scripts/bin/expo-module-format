@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+import { getArgs, packageManagerExecAsync } from '../utils/commandUtils.js';
+
+const args = getArgs();
+
+/**
+ * In a CI context, this command will only check formatting. Local invocations of
+ * `expo-module format` will always fix formatting, unless `--check` is explicitly provided.
+ */
+
+const isCI = ['true', '1'].includes(process.env.CI);
+const hasCheckFlag = isCI || args.includes('--check');
+
+const passthroughArgs = args.filter((arg) => arg !== '--check');
+const hasTargetArg = passthroughArgs.some((arg) => !arg.startsWith('--'));
+
+const oxfmtArgs = [
+  ...(hasCheckFlag ? ['--check'] : []),
+  ...passthroughArgs,
+  // `oxfmt` needs an explicit target; default to the package directory when none is provided.
+  ...(hasTargetArg ? [] : ['.']),
+];
+
+await packageManagerExecAsync(['oxfmt', ...oxfmtArgs]);

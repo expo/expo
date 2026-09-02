@@ -1,6 +1,5 @@
 import 'react-native';
 import { render } from '@testing-library/react-native';
-import * as React from 'react';
 
 import { Table, THead, TBody, TFoot, TR, TH, TD, Caption } from '../Table';
 

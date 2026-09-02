@@ -1,5 +1,6 @@
 export const QuickStartIcon = () => (
   <svg
+    aria-hidden="true"
     className="float-left mt-1.5 mr-3"
     width="18"
     height="23"

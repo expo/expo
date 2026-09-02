@@ -27,6 +27,8 @@ interface AssetDelegate {
   suspend fun getAlbums(): List<Album>
   suspend fun getLocation(): Location?
   suspend fun getExif(): Bundle
+  suspend fun getFavorite(): Boolean
+  suspend fun setFavorite(isFavorite: Boolean)
   suspend fun delete()
   suspend fun move(relativePath: RelativePath)
   suspend fun copy(relativePath: RelativePath): Asset

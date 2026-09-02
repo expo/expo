@@ -15,9 +15,11 @@ import semver from 'semver';
 
 import packageJson from '~/package.json';
 
+import remarkApiSectionData from './mdx-plugins/remark-api-section-data.js';
 import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
+import remarkImageSize from './mdx-plugins/remark-image-size.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
 import remarkSDKCompatibility from './mdx-plugins/remark-sdk-compatibility.js';
 import navigation from './public/static/constants/navigation.json';
@@ -105,7 +107,9 @@ const nextConfig: NextConfig = {
               remarkCodeTitle,
               remarkExportHeadings,
               remarkLinkRewrite,
+              remarkImageSize,
               remarkSDKCompatibility,
+              remarkApiSectionData,
               [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],
             ],
             rehypePlugins: [rehypeSlug],
@@ -187,6 +191,7 @@ const nextConfig: NextConfig = {
       pathMap,
       domain: `https://docs.expo.dev`,
       output: join(outDir, `sitemap.xml`),
+      pagesDirectory: pagesDir,
       // Some of the search engines only track the first N items from the sitemap,
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [

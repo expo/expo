@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { type ExpoModifier, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type SearchBarProps = {
+export interface SearchBarProps {
   /**
    * Callback function that is called when the search text is submitted.
    */
@@ -18,7 +18,7 @@ export type SearchBarProps = {
    * The children of the component.
    */
   children?: React.ReactNode;
-};
+}
 
 type PlaceholderProps = {
   /**

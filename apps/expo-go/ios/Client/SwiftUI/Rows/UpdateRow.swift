@@ -5,6 +5,7 @@ import SwiftUI
 struct UpdateRow: View {
   let update: AppUpdate
   let isCompatible: Bool
+  var isLoading: Bool = false
   let onOpen: () -> Void
 
   var body: some View {
@@ -40,7 +41,9 @@ struct UpdateRow: View {
 
         Spacer()
 
-        if isCompatible {
+        if isLoading {
+          ProgressView()
+        } else if isCompatible {
           Image(systemName: "chevron.right")
             .font(.caption)
             .foregroundColor(.secondary)
@@ -55,19 +58,13 @@ struct UpdateRow: View {
   }
 
   private func formattedDate(_ value: String) -> String {
-    let formatters = [
-      isoFormatter(withFractionalSeconds: true),
-      isoFormatter(withFractionalSeconds: false)
-    ]
-    for formatter in formatters {
-      if let date = formatter.date(from: value) {
-        let display = DateFormatter()
-        display.locale = Locale(identifier: "en_US_POSIX")
-        display.dateFormat = "MMM d, yyyy h:mm a"
-        return display.string(from: date)
-      }
+    guard let date = parseISO8601Date(value) else {
+      return value
     }
-    return value
+    let display = DateFormatter()
+    display.locale = Locale(identifier: "en_US_POSIX")
+    display.dateFormat = "MMM d, yyyy h:mm a"
+    return display.string(from: date)
   }
 
   private func updateTitle(_ update: AppUpdate) -> String {
@@ -75,18 +72,5 @@ struct UpdateRow: View {
       return "\"\(message)\""
     }
     return update.id
-  }
-
-  private func isoFormatter(withFractionalSeconds: Bool) -> ISO8601DateFormatter {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [
-      .withInternetDateTime,
-      .withDashSeparatorInDate,
-      .withColonSeparatorInTime
-    ]
-    if withFractionalSeconds {
-      formatter.formatOptions.insert(.withFractionalSeconds)
-    }
-    return formatter
   }
 }

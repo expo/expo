@@ -11,6 +11,8 @@ export {
   SharedObject,
   SharedRef,
   NativeModule,
+  UnavailabilityError,
+  CodedError,
 
   // Methods
   requireNativeModule,
@@ -21,6 +23,21 @@ export {
 
   // Worklets
   installOnUIRuntime,
+
+  // Utils
+  Platform,
+  uuid,
+  createSnapshotFriendlyRef,
+  useReleasingSharedObject,
+  useReleasingSharedObjectWithLifecycle,
+} from 'expo-modules-core';
+
+export type {
+  EventSubscription,
+  TypedArray,
+  IntBasedTypedArray,
+  UintBasedTypedArray,
+  FloatBasedTypedArray,
 } from 'expo-modules-core';
 
 export type {

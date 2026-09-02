@@ -40,7 +40,7 @@ The app config configures many things such as app name, icon, splash screen, dee
 
 ## Reading configuration values in your app
 
-Most configuration in the app config is accessible at runtime from your JavaScript code, using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties). You **should not** include any sensitive information in the app config (with a few exceptions for fields that are filtered out, as outlined below).
+Most configuration in the app config is accessible at runtime from your JavaScript code, using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants). You **should not** include any sensitive information in the app config (with a few exceptions for fields that are filtered out, as outlined below).
 
 You can verify which configuration will be embedded in your builds/updates and available at runtime by running `npx expo config --type public`.
 
@@ -48,7 +48,6 @@ You can verify which configuration will be embedded in your builds/updates and a
 
 The following fields are filtered out of the public app config (and not accessible through the `Constants.expoConfig` object):
 
-- [`hooks`](/versions/latest/config/app/#hooks)
 - [`ios.config`](/versions/latest/config/app/#config)
 - [`android.config`](/versions/latest/config/app/#config-1)
 - [`updates.codeSigningCertificate`](/versions/latest/config/app/#codesigningcertificate)
@@ -56,7 +55,7 @@ The following fields are filtered out of the public app config (and not accessib
 
 </Collapsible>
 
-> **warning** You should also avoid importing **app.json** or **app.config.js** directly in your JavaScript code, because this will import the entire file rather than a processed version of it. Instead, use [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties) to access the configuration.
+> **warning** You should also avoid importing **app.json** or **app.config.js** directly in your JavaScript code, because this will import the entire file rather than a processed version of it. Instead, use [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants) to access the configuration.
 
 ## Extending configuration
 
@@ -69,11 +68,13 @@ Library authors can extend the app config by using [Expo Config plugins](/config
 For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of-appconfigjs) (**app.config.ts**). These configs have the following properties:
 
 - Comments, variables, and single quotes.
-- ESM import syntax (the `import` keyword) is not supported, except when using [TypeScript with `tsx`](/guides/typescript/#appconfigjs). JS files that are compatible with your current version of Node.js can be imported with `require()`.
-- TypeScript support with nullish coalescing and optional chaining.
+- ESM `import` syntax in both **app.config.js** and **app.config.ts**, including importing other JavaScript files.
+- TypeScript support (**app.config.ts**) with nullish coalescing and optional chaining. Importing other TypeScript files or customizing language features requires [`tsx`](/guides/typescript/#appconfigjs).
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
 - Does not support Promises.
+
+> **info** **Note**: **app.config.mts**, **app.config.cts**, **app.config.mjs**, and **app.config.cjs** files are also discovered. By default, the config is transpiled to CommonJS and both `.js` and `.ts` files can mix ESM and CommonJS syntax. When that mix causes import or require issues, use one of the explicit extensions to lock the config to a single module format.
 
 For example, you can export an object to define your custom config:
 
@@ -143,7 +144,14 @@ To use this configuration with Expo CLI commands, set the environment variable e
 
 This is not anything unique to Expo CLI. On Windows you can approximate the above command with:
 
-<Terminal cmd={['$ npx cross-env MY_ENVIRONMENT=production eas update']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx cross-env MY_ENVIRONMENT=production eas update'],
+    yarn: ['$ yarn dlx cross-env MY_ENVIRONMENT=production eas update'],
+    pnpm: ['$ pnpm dlx cross-env MY_ENVIRONMENT=production eas update'],
+    bun: ['$ bunx cross-env MY_ENVIRONMENT=production eas update'],
+  }}
+/>
 
 Or you can use any other mechanism that you are comfortable with for environment variables.
 

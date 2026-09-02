@@ -1,9 +1,9 @@
 import { isValidElement, type ReactElement } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 
-import { convertComponentSrcToImageSource } from './icon';
 import type { SrcIcon } from '../common/elements';
-import type { NativeTabOptions } from '../types';
+import type { IconRenderingMode, NativeTabOptions } from '../types';
+import { convertComponentSrcToImageSource } from './icon';
 
 export function applyIconSrcOptions(options: NativeTabOptions, props: SrcIcon) {
   const icon = convertIconSrcToIconOption(props);
@@ -43,7 +43,7 @@ function convertIconSrcToIconOption(
 function convertSrcOrComponentToSrc(
   src: ImageSourcePropType | ReactElement | undefined,
   options: {
-    renderingMode: 'template' | 'original' | undefined;
+    renderingMode: IconRenderingMode | undefined;
   }
 ) {
   if (src) {

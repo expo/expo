@@ -48,7 +48,7 @@ class TaskManagerModule : Module() {
 
       // For compatibility reasons, we don't want to edit TaskManagerInterface, as it's in the expo-modules-core package.
       // There is only one usage of the TaskManagerInterface and it's the TaskManagerInternalModule, so we can safely cast
-      // to it and set it's emitEventWrapper.
+      // to it and set its emitEventWrapper.
       (appContext.legacyModule<TaskManagerInterface>() as? TaskManagerInternalModule)?.setEmitEventWrapper(emitEvent)
     }
 

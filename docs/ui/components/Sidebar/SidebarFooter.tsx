@@ -17,7 +17,7 @@ export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
   const router = useRouter();
   const isArchive = router?.pathname ? getPageSection(router.pathname) === 'archive' : false;
   return (
-    <div className="border-t-default bg-default flex flex-col gap-0.5 border-t p-4">
+    <div className="flex flex-col gap-0.5 border-t border-t-default bg-default p-4">
       <SidebarSingleEntry
         secondary
         href="/archive"
@@ -35,7 +35,7 @@ export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
       <SidebarSingleEntry
         secondary
         href="https://chat.expo.dev"
-        title="Discord and Forums"
+        title="Discord and forums"
         Icon={DiscordIcon}
         isExternal
         shouldLeakReferrer

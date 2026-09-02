@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View, useColorScheme } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
+
 export default function AppearanceScreen() {
   const colorScheme = useColorScheme();
 
@@ -7,11 +9,11 @@ export default function AppearanceScreen() {
 
   return (
     <View style={[styles.screen, isDark ? styles.darkScreen : styles.lightScreen]}>
-      <Text style={isDark ? styles.darkText : styles.lightText}>
+      <BodyText>
         {`Current color scheme: `}
 
         <Text style={styles.boldText}>{colorScheme}</Text>
-      </Text>
+      </BodyText>
     </View>
   );
 }
@@ -31,12 +33,6 @@ const styles = StyleSheet.create({
   },
   darkScreen: {
     backgroundColor: '#000',
-  },
-  lightText: {
-    color: '#242c39',
-  },
-  darkText: {
-    color: '#fff',
   },
   boldText: {
     fontWeight: 'bold',

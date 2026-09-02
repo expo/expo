@@ -177,13 +177,13 @@ open class ExpoPresentationDelegate(
         // Let's catch all the exceptions -- there's nothing we can do here
         // and we'd rather return an array with a single, naively reconstructed notification
         // than throw an exception and return none.
-        val message = "Could not have unmarshalled NotificationRequest from (${statusBarNotification.tag}, ${statusBarNotification.id})."
+        val message = "Could not unmarshall NotificationRequest from (${statusBarNotification.tag}, ${statusBarNotification.id})."
         Log.e("expo-notifications", message)
       }
     }
 
     // We weren't able to reconstruct the notification from our data, which means
-    // it's either not our notification or we couldn't have unmarshaled it from
+    // it's either not our notification or we couldn't unmarshal it from
     // the byte array. Let's do what we can.
     val content = NotificationContent.Builder()
       .setTitle(NotificationCompat.getContentTitle(notification)?.toString())

@@ -5,6 +5,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import io.mockk.mockk
 import junit.framework.TestCase
 import org.junit.Assert
+import java.io.File
 
 class UpdatesUtilsTest : TestCase() {
   fun testCreateFilenameForAsset() {
@@ -32,6 +33,47 @@ class UpdatesUtilsTest : TestCase() {
     )
     val asset1Name = UpdatesUtils.createFilenameForAsset(asset1)
     Assert.assertEquals(asset1Name.substring(asset1Name.length - 7), ".bundle")
+  }
+
+  fun testIsSafeFilename() {
+    val unsafe = listOf(
+      "",
+      ".",
+      "..",
+      "../pwned.png",
+      "../../shared_prefs/pwned.xml",
+      "nested/asset.png",
+      "nested\\asset.png",
+      "/etc/passwd",
+      "asset\u0000.png",
+      // A separator followed by a combining mark. Kotlin compares UTF-16 code units so this is
+      // caught here, unlike Swift, where the two form one Character that does not equal "/".
+      "..\u002F\u0338pwned.png"
+    )
+    unsafe.forEach {
+      Assert.assertFalse("expected \"$it\" to be rejected", UpdatesUtils.isSafeFilename(it))
+    }
+
+    val safe = listOf(
+      "696a70cf7035664c20ea86f67dae822b.bundle",
+      "asset-1699999999-12345.png",
+      "..hidden.png",
+      "a..b.png"
+    )
+    safe.forEach {
+      Assert.assertTrue("expected \"$it\" to be accepted", UpdatesUtils.isSafeFilename(it))
+    }
+  }
+
+  fun testIsSafeFilename_rejectedNameEscapesItsDirectory() {
+    val updatesDirectory = File("/data/data/com.example/files/.expo-internal")
+    val filename = UpdatesUtils.createFilenameForAsset(AssetEntity("../../shared_prefs/pwned", "xml"))
+
+    Assert.assertFalse(UpdatesUtils.isSafeFilename(filename))
+    Assert.assertFalse(
+      File(updatesDirectory, filename).canonicalPath
+        .startsWith(updatesDirectory.canonicalPath + File.separator)
+    )
   }
 
   fun testGetRuntimeVersion() {

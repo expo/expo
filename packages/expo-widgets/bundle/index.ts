@@ -1,12 +1,10 @@
 /* eslint-disable no-var */
 
-import * as swiftUI from '@expo/ui/swift-ui';
-import * as modifiers from '@expo/ui/swift-ui/modifiers';
-
 import { decorateInteractiveTargets } from './decorator';
 import * as jsxRuntime from './jsx-runtime-stub';
 import * as ReactNative from './react-native-stub';
 import * as React from './react-stub';
+import * as uiGlobals from './ui-globals';
 
 type Dictionary = Record<string, unknown>;
 
@@ -17,14 +15,17 @@ declare global {
     props: Dictionary,
     environment: Dictionary & { target?: string }
   ) => Dictionary | undefined;
+  var __expoWidgetEnvironment: Dictionary | undefined;
 }
 
 const __expoWidgetRender = function (props: Dictionary, environment: Dictionary) {
-  const { timestamp, ...rest } = environment;
+  // `materialColors` backs the native expo-ui module stub and stays out of the layout environment.
+  const { timestamp, materialColors, ...rest } = environment;
   const decoratedEnvironment: Dictionary = { ...rest };
   if (timestamp) {
     decoratedEnvironment.date = new Date(timestamp as number);
   }
+  globalThis.__expoWidgetEnvironment = { ...decoratedEnvironment, materialColors };
 
   return decorateInteractiveTargets(globalThis.__expoWidgetLayout(props, decoratedEnvironment));
 };
@@ -38,11 +39,14 @@ const __expoWidgetHandlePress = function (
   function findAndCallOnPress(node?: Dictionary): Dictionary | undefined {
     const props = node?.props as {
       onButtonPress?: () => Dictionary;
+      onButtonPressed?: () => Dictionary;
       target?: string;
       children?: unknown;
     };
-    if (props?.onButtonPress && props?.target === target) {
-      return props.onButtonPress();
+    // TODO(@jakex7): on iOS it's named `onButtonPress` while on Android it's named `onButtonPressed`. We should unify this in the future.
+    const onPress = props?.onButtonPress ?? props?.onButtonPressed;
+    if (onPress && props?.target === target) {
+      return onPress();
     }
 
     for (const child of React.Children.toArray(props?.children)) {
@@ -58,8 +62,7 @@ const __expoWidgetHandlePress = function (
 };
 
 Object.assign(globalThis, {
-  ...swiftUI,
-  ...modifiers,
+  ...uiGlobals,
   ...jsxRuntime,
   ...React,
   ...ReactNative,

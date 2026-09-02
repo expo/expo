@@ -6,11 +6,11 @@ import AVFoundation
 
 class ShareIntoViewController: SLComposeServiceViewController {
   // Only the following two properties cause a hard-crash of the share extension, because the failure originates from
-  // plugin misconfiguration. Other errors should be handled in the view controller and preferrably print a message, because it
+  // plugin misconfiguration. Other errors should be handled in the view controller and preferably print a message, because it
   // is not possible for our users to handle them at runtime.
   private var hostAppScheme: String {
     guard let _hostAppScheme = Bundle.main.object(forInfoDictionaryKey: "MainTargetUrlScheme") as? String else {
-      fatalError("Expo-sharing has failed to to load the app scheme from `Info.plist`. Make sure the `expo-sharing` config plugin is configured correctly.")
+      fatalError("Expo-sharing has failed to load the app scheme from `Info.plist`. Make sure the `expo-sharing` config plugin is configured correctly.")
     }
     return _hostAppScheme
   }

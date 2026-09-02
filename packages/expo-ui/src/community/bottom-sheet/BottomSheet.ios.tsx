@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { useWindowDimensions, View } from 'react-native';
+import { useWindowDimensions, View, StyleSheet } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 
-import { BottomSheetContext, BottomSheetInternalContext } from './context';
-import type { BottomSheetMethods, BottomSheetProps } from './types';
-import { parseSnapPoint } from './types';
 import { BottomSheet as NativeBottomSheet } from '../../swift-ui/BottomSheet';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
@@ -11,13 +9,26 @@ import { RNHostView } from '../../swift-ui/RNHostView';
 import {
   type PresentationDetent,
   interactiveDismissDisabled,
+  presentationBackground,
   presentationDetents,
   presentationDragIndicator,
+  presentationSizing,
 } from '../../swift-ui/modifiers/presentationModifiers';
+import { BottomSheetContext, BottomSheetInternalContext } from './context';
+import { SheetScrollContextReset } from './scrollContextReset';
+import type { BottomSheetMethods, BottomSheetProps } from './types';
+import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
 
 // #region Helpers
+
+function extractBackgroundColor(style: StyleProp<ViewStyle>): string | undefined {
+  if (!style) return undefined;
+  const flat = StyleSheet.flatten(style) as ViewStyle | undefined;
+  const color = flat?.backgroundColor;
+  return typeof color === 'string' ? color : undefined;
+}
 
 function snapPointToDetent(point: string | number): PresentationDetent {
   const parsed = parseSnapPoint(point);
@@ -80,16 +91,11 @@ export function BottomSheet(props: BottomSheetProps) {
     enablePanDownToClose = false,
     enableDynamicSizing = true,
     handleComponent,
+    backgroundStyle,
     children,
   } = props;
   const { width } = useWindowDimensions();
 
-  // Two-state pattern for animated close:
-  // - isMounted: whether the native sheet tree exists in the React tree
-  // - isPresented: passed to native isPresented prop (controls SwiftUI animation)
-  // On close: isPresented→false (native animates out) → onIsPresentedChange fires → isMounted→false (unmount)
-  // On open: isMounted→true + isPresented→true (mount + native animates in)
-  const [isMounted, setIsMounted] = useState(indexProp >= 0);
   const [isPresented, setIsPresented] = useState(indexProp >= 0);
   const [currentIndex, setCurrentIndex] = useState(Math.max(indexProp, 0));
   // Ref mirrors currentIndex for use in handleDetentChange without adding it as a useCallback dep
@@ -126,27 +132,20 @@ export function BottomSheet(props: BottomSheetProps) {
   useEffect(() => {
     if (indexProp === -1) {
       setIsPresented(false);
-      fireCloseCallbacks();
     } else if (indexProp >= 0) {
       closedRef.current = false;
-      setIsMounted(true);
       setIsPresented(true);
       const clampedIndex = Math.min(indexProp, detents.length - 1);
       setCurrentIndex(clampedIndex);
       currentIndexRef.current = clampedIndex;
     }
-  }, [indexProp, detents.length, fireCloseCallbacks]);
+  }, [indexProp, detents.length]);
 
-  const handlePresentedChange = useCallback(
-    (presented: boolean) => {
-      if (!presented) {
-        setIsPresented(false);
-        setIsMounted(false);
-        fireCloseCallbacks();
-      }
-    },
-    [fireCloseCallbacks]
-  );
+  const handlePresentedChange = useCallback((presented: boolean) => {
+    if (!presented) {
+      setIsPresented(false);
+    }
+  }, []);
 
   const handleDetentChange = useCallback(
     (detent: PresentationDetent) => {
@@ -164,26 +163,21 @@ export function BottomSheet(props: BottomSheetProps) {
     const snapToIndex = (index: number) => {
       if (index === -1) {
         setIsPresented(false);
-        fireCloseCallbacks();
         return;
       }
       const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
       closedRef.current = false;
-      setIsMounted(true);
       setIsPresented(true);
       currentIndexRef.current = clampedIndex;
       setCurrentIndex(clampedIndex);
       onChangeRef.current?.(clampedIndex);
     };
 
-    // Fire close callbacks immediately: the native `onIsPresentedChange` event is
-    // suppressed when JS drives the state change (the Swift layer guards against
-    // the feedback loop), so we can't rely on handlePresentedChange here. The
-    // closedRef guard inside fireCloseCallbacks prevents double-firing if a
-    // native user-dismiss event also arrives during the animation.
+    // Close callbacks fire from the native `onDismiss` event, which SwiftUI sends after
+    // the dismissal transition finishes, so they can present another modal without UIKit
+    // rejecting it. Android awaits `hide()` for the same reason.
     const close = () => {
       setIsPresented(false);
-      fireCloseCallbacks();
     };
 
     return {
@@ -197,14 +191,16 @@ export function BottomSheet(props: BottomSheetProps) {
       present: () => snapToIndex(0),
       dismiss: close,
     };
-  }, [detents, fireCloseCallbacks]);
+  }, [detents]);
 
   useImperativeHandle(ref, () => methods, [methods]);
 
-  const modifiers = useMemo(
-    () => [
+  const modifiers = useMemo(() => {
+    const bg = extractBackgroundColor(backgroundStyle);
+    return [
       ...(fitToContents
-        ? []
+        ? // Makes the iPad sheet size to that content instead of opening near full height.
+          [presentationSizing('fitted')]
         : [
             presentationDetents(detents, {
               selection: selectedDetent,
@@ -213,45 +209,40 @@ export function BottomSheet(props: BottomSheetProps) {
           ]),
       presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
       interactiveDismissDisabled(!enablePanDownToClose),
-    ],
-    [
-      fitToContents,
-      detents,
-      selectedDetent,
-      handleDetentChange,
-      handleComponent,
-      enablePanDownToClose,
-    ]
-  );
-
-  if (!isMounted) {
-    return (
-      <BottomSheetInternalContext.Provider value={internalContextValue}>
-        <BottomSheetContext.Provider value={methods}>{null}</BottomSheetContext.Provider>
-      </BottomSheetInternalContext.Provider>
-    );
-  }
+      ...(bg ? [presentationBackground(bg)] : []),
+    ];
+  }, [
+    fitToContents,
+    detents,
+    selectedDetent,
+    handleDetentChange,
+    handleComponent,
+    enablePanDownToClose,
+    backgroundStyle,
+  ]);
 
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }}>
+        <Host style={{ position: 'absolute', width }} pointerEvents="none">
           <NativeBottomSheet
             isPresented={isPresented}
             onIsPresentedChange={handlePresentedChange}
+            onDismiss={fireCloseCallbacks}
             fitToContents={fitToContents}>
             <Group modifiers={modifiers}>
               <RNHostView matchContents={fitToContents}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
-                    compared to gorhom's handle. flex:1 fills snap point height; omitted for fitToContents
+                    compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
+                    height without inheriting the scrollable child's intrinsic content height. Omitted for fitToContents
                     so RNHostView can measure natural content height. */}
                 <View
                   style={
                     fitToContents
                       ? { paddingTop: handleComponent !== null ? 16 : 0 }
-                      : { flex: 1, paddingTop: handleComponent !== null ? 16 : 0 }
+                      : { flexGrow: 1, height: 0, paddingTop: handleComponent !== null ? 16 : 0 }
                   }>
-                  {children}
+                  <SheetScrollContextReset>{children}</SheetScrollContextReset>
                 </View>
               </RNHostView>
             </Group>

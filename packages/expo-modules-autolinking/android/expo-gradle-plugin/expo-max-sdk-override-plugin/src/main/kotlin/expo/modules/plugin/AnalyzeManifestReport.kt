@@ -58,7 +58,7 @@ internal fun analyzeManifestReport(reportContent: String): Map<String, Permissio
   }
 
   // Permissions which may have maxSdkConflicts, happen when there is more than one
-  // source fora a permission and the permission is annotated with maxSdkVersion
+  // source for a permission and the permission is annotated with maxSdkVersion
   val problematicPermissions = allPermissionInfo.filter { (permission, info) ->
     val multipleDefinitions = info.manifestPaths.size > 1
     val maxSdkDefined = info.maxSdkSources.isNotEmpty()

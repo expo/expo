@@ -61,7 +61,9 @@ const TEMPLATE_PATH = 'templates/expo-template-bare-minimum';
 
 async function getTemplatePathspecs(): Promise<string[]> {
   const packlist = await npmPacklist({ path: path.join(EXPO_DIR, TEMPLATE_PATH) });
-  return packlist.map((f) => `${TEMPLATE_PATH}/${f}`);
+  return packlist
+    .filter((f) => f.startsWith('android/') || f.startsWith('ios/') || f === 'package.json')
+    .map((f) => `${TEMPLATE_PATH}/${f}`);
 }
 
 async function executeDiffCommand(

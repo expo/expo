@@ -6,6 +6,8 @@ import path from 'node:path';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
+import { rewriteDocsLinksToMarkdown } from './markdown-link-utils.ts';
+
 /**
  * Find the MDX source file corresponding to an output HTML path.
  * Returns the absolute path to the .mdx file, or null if not found.
@@ -91,6 +93,30 @@ function createTurndownService(): TurndownService {
   turndown.addRule('images', {
     filter: 'img',
     replacement: () => '',
+  });
+
+  // The @expo/ui component index renders as a card grid on the web. Its thumbnails are
+  // dropped by the images rule above, which would leave a bare list of links, so rebuild
+  // the equivalent markdown table and keep the descriptions in .md and the llms bundles.
+  turndown.addRule('uiComponentGrid', {
+    filter: (node: HTMLElement) =>
+      node.nodeName === 'DIV' && node.getAttribute('data-md') === 'ui-component-grid',
+    replacement: (_content: string, node: HTMLElement) => {
+      const rows = Array.from(node.querySelectorAll('a'))
+        .map(card => {
+          const title = (card.textContent ?? '').trim();
+          const href = card.getAttribute('href') ?? '';
+          const description = card.getAttribute('data-md-description') ?? '';
+          return title ? `| [\`${title}\`](${href}) | ${description} |` : '';
+        })
+        .filter(Boolean);
+
+      if (rows.length === 0) {
+        return '';
+      }
+
+      return `\n\n${['| Component | Description |', '| --- | --- |', ...rows].join('\n')}\n\n`;
+    },
   });
 
   return turndown;
@@ -303,22 +329,62 @@ export function convertMdxInstructionToMarkdown(
  * normalize terminal blocks, and strip decorative artifacts.
  */
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
-  // Remove interactive/decorative elements
-  main.find('button').remove();
-  main.find('style').remove();
-
-  // Keep only the first tab panel in each tab group (typically the npm variant).
-  // @reach/tabs renders all panels in SSR HTML; we want only the first (default) one
-  // to avoid duplicating install commands for npm/yarn/bun.
-  main.find('[data-reach-tab-panels]').each((_, el) => {
-    $(el)
-      .find('[data-reach-tab-panel]')
+  // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
+  // Must run before the button removal below, since labels live in the buttons.
+  main.find('[data-md="tabs"]').each((_, tabsEl) => {
+    const $tabs = $(tabsEl);
+    const ownLabels = $tabs
+      .children('[role="tablist"]')
+      .find('[role="tab"]')
+      .map((_, btn) => $(btn).text().replace(/\s+/g, ' ').trim())
+      .get();
+    $tabs
+      .find('[role="tabpanel"]')
+      .filter((_, panel) => $(panel).closest('[data-md="tabs"]').is($tabs))
       .each((i, panel) => {
-        if (i > 0) {
-          $(panel).remove();
+        const label = ownLabels[i];
+        if (label) {
+          $(panel).prepend(`<h4>${label}</h4>`);
         }
       });
   });
+
+  main.find('[data-md="collapsible"]').each((_, el) => {
+    const $details = $(el);
+    const $summary = $details.children('summary').first();
+    const $label = $summary.find('[data-text="true"]').first();
+    const summaryText = ($label.length ? $label : $summary).text().replace(/\s+/g, ' ').trim();
+    if (summaryText) {
+      $summary.replaceWith(`<h4>${summaryText}</h4>`);
+    } else {
+      $summary.remove();
+    }
+    $details.replaceWith($details.contents());
+  });
+
+  main.find('[data-md="prerequisites"]').each((_, el) => {
+    const $details = $(el);
+    const $summary = $details.children('summary').first();
+    $summary.find('[data-md="skip"]').remove();
+    const headingText = $summary.text().replace(/\s+/g, ' ').trim();
+    if (headingText) {
+      $summary.replaceWith(`<h4>${headingText}</h4>`);
+    } else {
+      $summary.remove();
+    }
+    $details.find('[data-md="requirement-title"]').each((_, title) => {
+      const $title = $(title);
+      const titleText = $title.text().replace(/\s+/g, ' ').trim();
+      if (titleText) {
+        $title.replaceWith(`<h5>${titleText}</h5>`);
+      }
+    });
+    $details.replaceWith($details.contents());
+  });
+
+  // Remove interactive/decorative elements
+  main.find('button').remove();
+  main.find('style').remove();
 
   // Preserve semantic SVG icons as text before blanket SVG removal.
   // YesIcon (text-icon-success) → ✓, NoIcon (text-icon-danger) → ✗
@@ -471,6 +537,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // elements (span, p, li, blockquote, code, pre). It's core infrastructure, not fragile.
   main.find('[data-md="card-link"], a:has(div)').each((_, el) => {
     const $a = $(el);
+    // @expo/ui component cards match `a:has(div)` too, but the grid has a dedicated rule
+    // that rebuilds it as a table and needs each card's data attributes intact.
+    if ($a.closest('[data-md="ui-component-grid"]').length > 0) {
+      return;
+    }
     const href = $a.attr('href');
     if (!href) {
       return;
@@ -579,6 +650,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  // Escape before re-injecting as HTML: cheerio would otherwise parse a generic
+  // like Promise<PermissionResponse> as a tag and lowercase the type name.
+  const escapeHtml = (value: string) =>
+    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   // Convert API returns sections to inline "Returns: type" text.
   main.find('[data-md="api-returns"]').each((_, el) => {
     const $el = $(el);
@@ -586,14 +662,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const typeText =
       codeEl.length > 0 ? codeEl.text().trim() : $el.text().replace('Returns:', '').trim();
     if (typeText) {
-      $el.replaceWith('<p>Returns: <code>' + typeText + '</code></p>');
+      $el.replaceWith('<p>Returns: <code>' + escapeHtml(typeText) + '</code></p>');
     }
   });
 
   // Convert API parameter name spans to <code> for backtick formatting.
   main.find('[data-md="api-param-name"]').each((_, el) => {
     const $el = $(el);
-    $el.replaceWith('<code>' + $el.text() + '</code>');
+    $el.replaceWith('<code>' + escapeHtml($el.text()) + '</code>');
   });
 
   // Preserve angle brackets around unknown HTML elements in type signatures.
@@ -740,14 +816,22 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       });
     }
     // Clean up artifacts from block flattening:
-    // - Collapse ". ." / ".." from nested unwrapping
+    // - Collapse ". ." / ".." from nested unwrapping. Skip <code>/<pre> so "..." is untouched.
+    // - Repeat until stable: a single pass leaves ". ." from triple nesting.
     // - Trim leading ". " at cell start
     // - Remove orphan "-" after periods (upstream renders a bare dash for empty descriptions)
-    const cellHtml = $cell
-      .html()!
-      .replace(/\.\s*\.\s*/g, '. ')
+    const blocks: string[] = [];
+    let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
+      blocks.push(match);
+      return `%%MD_CODE_${blocks.length - 1}%%`;
+    });
+    while (/\.\s*\./.test(cellHtml)) {
+      cellHtml = cellHtml.replace(/\.\s*\./g, '. ');
+    }
+    cellHtml = cellHtml
       .replace(/^\s*\.\s*/, '')
-      .replace(/\.\s*-\s*$/, '.');
+      .replace(/\.\s*-\s*$/, '.')
+      .replace(/%%MD_CODE_(\d+)%%/g, (_, i) => blocks[Number(i)]);
     $cell.html(cellHtml);
   });
 
@@ -804,6 +888,29 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       $el.replaceWith(`<pre><code class="language-sh">${codeTexts.join('\n')}</code></pre>`);
     }
   });
+}
+
+export function insertAgentInstructionsAfterH1(
+  markdown: string,
+  block: string,
+  description?: string | null
+): string {
+  const h1 = markdown.match(/^# .*$/m);
+  if (h1?.index === undefined) {
+    return `${block}\n${markdown}`;
+  }
+
+  let insertAt = h1.index + h1[0].length;
+
+  if (description) {
+    const normalize = (text: string) => text.replace(/\\/g, '').replace(/\s+/g, ' ').trim();
+    const paragraph = markdown.slice(insertAt).match(/^\n+([^\n]+)/);
+    if (paragraph && normalize(paragraph[1]).startsWith(normalize(description).slice(0, 40))) {
+      insertAt += paragraph[0].length;
+    }
+  }
+
+  return `${markdown.slice(0, insertAt)}\n\n${block.trimEnd()}${markdown.slice(insertAt)}`;
 }
 
 /**
@@ -956,6 +1063,10 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
     errors.push('Contains CSS class names in text');
   }
 
+  if (markdown.includes('. .')) {
+    errors.push('Contains ". ." (corrupted ellipsis or doubled period)');
+  }
+
   return errors.filter(error => !exemptions.some(ex => error.startsWith(ex)));
 }
 
@@ -976,7 +1087,11 @@ export function convertHtmlToMarkdown(html: string): string {
     const match = refreshMeta.match(/url=(\S+)/i);
     if (match) {
       const target = match[1];
-      return `This page redirects to [${target}](https://docs.expo.dev${target}).\n`;
+      return (
+        rewriteDocsLinksToMarkdown(
+          `This page redirects to [${target}](https://docs.expo.dev${target}).`
+        ) + '\n'
+      );
     }
   }
 
@@ -994,6 +1109,95 @@ export function convertHtmlToMarkdown(html: string): string {
 
   let markdown = turndown.turndown(mainHtml);
   markdown = cleanMarkdown(markdown);
+  markdown = rewriteDocsLinksToMarkdown(markdown);
 
   return markdown ? markdown + '\n' : NO_CONTENT_FALLBACK;
+}
+
+const SCENE_MODE_HEADING = '## How would you like to develop?';
+const NEXT_STEP_HEADING = '## Next step';
+
+/**
+ * Locate where the rendered default scene variant begins in the page markdown,
+ * by the default variant's first heading, or by the first H2 after the
+ * get-started mode selector heading as a fallback.
+ */
+export function findSceneSectionStart(
+  markdown: string,
+  defaultHeading: string | null,
+  endHeadingIdx: number
+): number {
+  if (defaultHeading) {
+    const withLeadingNewline = `\n${defaultHeading}`;
+    let byHeading = markdown.indexOf(withLeadingNewline);
+    if (byHeading === -1 && markdown.startsWith(defaultHeading)) {
+      byHeading = 0;
+    }
+    if (byHeading !== -1 && (endHeadingIdx === -1 || byHeading < endHeadingIdx)) {
+      return byHeading;
+    }
+  }
+
+  const modeHeadingIdx = markdown.indexOf(SCENE_MODE_HEADING);
+  if (modeHeadingIdx === -1) {
+    return -1;
+  }
+
+  const headingRegex = /\n##\s+.+/g;
+  headingRegex.lastIndex = modeHeadingIdx + SCENE_MODE_HEADING.length;
+  const sceneHeadingMatch = headingRegex.exec(markdown);
+  if (!sceneHeadingMatch) {
+    return -1;
+  }
+  if (endHeadingIdx !== -1 && sceneHeadingMatch.index >= endHeadingIdx) {
+    return -1;
+  }
+  return sceneHeadingMatch.index;
+}
+
+/**
+ * Replace the rendered default scene section with all variant sections.
+ * The replaced range ends at `endHeading` when the scene page configures one,
+ * falling back to the get-started "## Next step" boundary. When a configured
+ * end heading is missing from the page, everything after the scene section
+ * start is dropped, so a warning is returned for the generation report.
+ */
+export function injectSceneVariants(
+  baseMarkdown: string,
+  sceneSections: string[],
+  defaultHeading: string | null,
+  endHeading: string | null = null
+): { markdown: string; warning: string | null } {
+  if (sceneSections.length === 0) {
+    return { markdown: baseMarkdown, warning: null };
+  }
+
+  const boundaryHeading = endHeading ?? NEXT_STEP_HEADING;
+  const boundaryNeedle = `\n${boundaryHeading}`;
+  const boundaryIdx = baseMarkdown.indexOf(boundaryNeedle);
+  const warning =
+    endHeading !== null && boundaryIdx === -1
+      ? `scene end heading "${endHeading}" not found; content after the scene section was dropped from the markdown output`
+      : null;
+  const sceneStartIdx = findSceneSectionStart(baseMarkdown, defaultHeading, boundaryIdx);
+  const sceneBlock = sceneSections.join('\n\n---\n\n');
+
+  if (sceneStartIdx !== -1 && boundaryIdx !== -1 && sceneStartIdx < boundaryIdx) {
+    const before = baseMarkdown.slice(0, sceneStartIdx).trimEnd();
+    const after = baseMarkdown.slice(boundaryIdx).trimStart();
+    return { markdown: `${before}\n\n${sceneBlock}\n\n${after}`, warning };
+  }
+
+  if (sceneStartIdx !== -1 && boundaryIdx === -1) {
+    const before = baseMarkdown.slice(0, sceneStartIdx).trimEnd();
+    return { markdown: `${before}\n\n${sceneBlock}\n`, warning };
+  }
+
+  if (boundaryIdx !== -1) {
+    const before = baseMarkdown.slice(0, boundaryIdx).trimEnd();
+    const after = baseMarkdown.slice(boundaryIdx).trimStart();
+    return { markdown: `${before}\n\n${sceneBlock}\n\n${after}`, warning };
+  }
+
+  return { markdown: `${baseMarkdown.trimEnd()}\n\n${sceneBlock}\n`, warning };
 }

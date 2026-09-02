@@ -8,7 +8,7 @@
     - [It’s easier to write and test the fix on the release branch instead of main.](#it-s-easier-to-write-and-test-the-fix-on-the-release-branch-instead-of-main)
 - [Versioning Android and iOS Code](#versioning-android-and-ios-code)
 - [Incrementing Version Numbers](#incrementing-version-numbers)
-  - [Prelease Versions](#prelease-versions)
+  - [Prerelease Versions](#prerelease-versions)
   - [Shortcomings](#shortcomings)
 
 The release process begins when we decide that Expo Go and the libraries on the main branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on main so that we can release at any time but we don’t release from main. Instead, we create a release branch.
@@ -65,10 +65,10 @@ When the new version of a library is compatible with a version of Expo Go we hav
 
 Otherwise, when the new version is not compatible with an already released version of Expo Go, we sometimes want to increment the version on main and other times on the next, future release branch. Commit major-version changes to main so the versions on main stay up to date over time; create the next release branch after incrementing the major versions. For minor-version changes, we can commit them either to main or, if we haven't released a version of Expo Go yet, to the release branch since the native-to-JS API for the next SDK version has not yet been frozen. The branch to choose depends on the code we want to publish; if we want to publish the code on the release branch, we should increment the version on the release branch, and if we want to publish the code on main, we should increment the version on main.
 
-## Prelease Versions
+## Prerelease Versions
 
 Prerelease versions are treated similarly. Increment the version to the prerelease version on the branch whose code you are publishing. Compared to non-prerelease versions, we will likely publish more prerelease versions from main (especially major and minor prereleases), so prerelease commits will likely be more common on main.
 
 ## Shortcomings
 
-Versioning dozens of packages that have different types of breaking changes is complicated. The versioning guidelines above are not water-tight and issues could slip through. For example, if we increment a patch version on an older release branch and don't eventually update past it on main, the version on the next release branch will be heind the latest version we've actually published. Overall, we need to be thoughtful and aware of the state of our release branches and published versions when we increment versions and make good decisions as we go. If we maintain the invariant of keeping versions on each new release branch up to date, we'll keep our versioning process mostly working well.
+Versioning dozens of packages that have different types of breaking changes is complicated. The versioning guidelines above are not water-tight and issues could slip through. For example, if we increment a patch version on an older release branch and don't eventually update past it on main, the version on the next release branch will be behind the latest version we've actually published. Overall, we need to be thoughtful and aware of the state of our release branches and published versions when we increment versions and make good decisions as we go. If we maintain the invariant of keeping versions on each new release branch up to date, we'll keep our versioning process mostly working well.

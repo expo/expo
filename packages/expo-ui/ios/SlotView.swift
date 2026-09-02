@@ -5,6 +5,7 @@ import ExpoModulesCore
 
 internal final class SlotViewProps: ExpoSwiftUI.ViewProps {
   @Field var name: String = ""
+  @Field var extraProps: [String: Any]?
 }
 
 internal struct SlotView: ExpoSwiftUI.View {
@@ -16,6 +17,10 @@ internal struct SlotView: ExpoSwiftUI.View {
 
   var body: some View {
     Children()
+  }
+
+  func extra<T>(_ key: String, as type: T.Type = T.self) -> T? {
+    return props.extraProps?[key] as? T
   }
 }
 

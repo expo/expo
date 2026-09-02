@@ -8,14 +8,18 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For a cross-platform picker, see [`Picker`](../universal/picker) — built on top of `ExposedDropdownMenuBox` on Android.
 
 Expo UI `ExposedDropdownMenuBox` matches the official Jetpack Compose [`ExposedDropdownMenuBox`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-exposed-dropdown-menu-box.html). Use the `menuAnchor()` modifier on the anchor content (typically a read-only `TextField`) and `ExposedDropdownMenu` to wrap `DropdownMenuItem` children.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/exposeddropdownmenubox/android-light.webp"
-  darkSource="/static/images/expo-ui/exposeddropdownmenubox/android-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/exposeddropdownmenubox/android-light.webp"
+  darkSrc="/static/images/expo-ui/exposeddropdownmenubox/android-dark.webp"
   alt="Exposed dropdown menu showing four language options anchored to a text field"
 />
 
@@ -27,9 +31,15 @@ Expo UI `ExposedDropdownMenuBox` matches the official Jetpack Compose [`ExposedD
 
 ### Basic
 
-> When using an uncontrolled `TextField` as the anchor, pass `key={selected}` to force a remount when the selected value changes — `defaultValue` is only read on mount.
+> The anchor is a read-only `TextField` bound to a [`useNativeState`](usenativestate) observable. Update that observable in each item's `onClick` to reflect the selected value.
 
-```tsx BasicExposedDropdownMenuBoxExample.tsx
+<ComponentExample
+  title="BasicExposedDropdownMenuBoxExample.tsx"
+  src="/static/images/expo-ui/examples/exposeddropdownmenubox-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/exposeddropdownmenubox-basic-android-dark.webp"
+  alt="A read-only text field showing Java with an open menu below it listing Java, JavaScript, and TypeScript">
+
+```tsx
 import {
   DropdownMenuItem,
   ExposedDropdownMenuBox,
@@ -37,6 +47,7 @@ import {
   Host,
   Text,
   TextField,
+  useNativeState,
 } from '@expo/ui/jetpack-compose';
 import { menuAnchor } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
@@ -48,26 +59,27 @@ const LANGUAGES = [
 ];
 
 export default function BasicExposedDropdownMenuBoxExample() {
-  const [selected, setSelected] = useState('java');
+  const selectedLabel = useNativeState('Java');
   const [expanded, setExpanded] = useState(false);
-
-  const selectedLabel = LANGUAGES.find(l => l.value === selected)?.label ?? '';
 
   return (
     <Host matchContents>
-      <ExposedDropdownMenuBox expanded={expanded} onExpandedChange={setExpanded}>
+      <ExposedDropdownMenuBox
+        expanded={expanded}
+        onExpandedChange={setExpanded}>
         <TextField
-          defaultValue={selectedLabel}
-          key={selected}
+          value={selectedLabel}
           readOnly
           modifiers={[menuAnchor()]}
         />
-        <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
+        <ExposedDropdownMenu
+          expanded={expanded}
+          onDismissRequest={() => setExpanded(false)}>
           {LANGUAGES.map(lang => (
             <DropdownMenuItem
               key={lang.value}
               onClick={() => {
-                setSelected(lang.value);
+                selectedLabel.value = lang.label;
                 setExpanded(false);
               }}>
               <DropdownMenuItem.Text>
@@ -81,6 +93,8 @@ export default function BasicExposedDropdownMenuBoxExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

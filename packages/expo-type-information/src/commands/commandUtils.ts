@@ -18,6 +18,7 @@ export type TypeInformationCommandCommonAllArguments = {
   modulePath?: string;
   outputPath?: string;
   typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
+  skipUnicodeCharacterMapping?: boolean;
   watcher?: boolean;
   appJson?: string;
 };
@@ -40,6 +41,7 @@ export interface ParsedArguments {
   realInputPaths: string[];
   realOutputPath?: string;
   typeInference: TypeInferenceOption;
+  mapUnicodeCharacters: boolean;
   watcher: boolean;
   appJsonPath?: string;
 }
@@ -50,16 +52,19 @@ export function addCommonOptions(command: commander.Command): commander.Command 
       '-i, --input-paths <filePaths...>',
       'Paths to Swift files for some module, glob patterns are allowed.'
     )
-    .option('-m --module-path <modulePath>', 'Path to expo module root directory.')
+    .option('-m --module-path <modulePath>', 'Path to Expo module root directory.')
     .option(
       '-o, --output-path <filePath>',
       'Path to save the generated output. If this option is not provided the generated output is printed to console.'
     )
     .option(
       '-t, --type-inference <typeInference>',
-      // TODO(@HubertBer) Fix the PREPROCESS_AND_INFERENCE option.
-      'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE. Note that the last option rarely fails for some modules, use the 2nd or 1st in that case.',
-      'SIMPLE_INFERENCE'
+      'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.',
+      'PREPROCESS_AND_INFERENCE'
+    )
+    .option(
+      '-s, --skip-unicode-character-mapping',
+      'skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.'
     )
     .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
@@ -133,6 +138,10 @@ export function sanitizeAndValidateOutputPath(
     if (isFilePath && fs.existsSync(path.dirname(resolvedPath))) {
       return resolvedPath;
     }
+
+    if (!isFilePath) {
+      return resolvedPath;
+    }
   } catch {}
 
   return null;
@@ -189,6 +198,17 @@ export function uniqueStrings(strings: string[]): string[] {
   return [...new Set(strings)];
 }
 
+export async function maybePrepareOutputDirectory(dirName?: string) {
+  if (!dirName) {
+    return;
+  }
+  try {
+    await fs.promises.mkdir(dirName, { recursive: true });
+  } catch {
+    console.error(`Error creating the output directory: ${dirName}`);
+  }
+}
+
 export function parseCommandArguments(
   options: TypeInformationCommandCommonAllArguments,
   isOutputFile: boolean = true
@@ -216,7 +236,7 @@ export function parseCommandArguments(
     const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath, isOutputFile);
     if (!validatedOutPath) {
       console.error(
-        `Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a path to an existing directory.'}`
+        `Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a valid path to a directory.'}`
       );
       return null;
     }
@@ -233,20 +253,31 @@ export function parseCommandArguments(
     return null;
   }
 
+  const mapUnicodeCharacters = !options.skipUnicodeCharacterMapping;
   const watcher = options.watcher ?? false;
-  return { realInputPaths, realOutputPath, typeInference, watcher, appJsonPath };
+  return {
+    realInputPaths,
+    realOutputPath,
+    typeInference,
+    mapUnicodeCharacters,
+    watcher,
+    appJsonPath,
+  };
 }
 
 export async function getFileTypeInformationFromArgs({
   realInputPaths,
   typeInference,
+  mapUnicodeCharacters,
 }: {
   realInputPaths: string[];
   typeInference: TypeInferenceOption;
+  mapUnicodeCharacters: boolean;
 }): Promise<FileTypeInformation | null> {
   const typeInfo = await getFileTypeInformation({
     input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
     typeInference,
+    mapUnicodeCharacters,
   });
 
   if (!typeInfo) {
@@ -328,7 +359,13 @@ export async function generateConciseTsFiles(parsedArgs: ParsedArguments) {
   const { volatileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
     await generateConciseTsInterface(typeInfo);
 
-  const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
+  const mainModule = typeInfo.moduleClasses[0];
+  if (mainModule === undefined) {
+    console.error(`The module at ${JSON.stringify(realInputPaths)} doesn't exist.`);
+    return;
+  }
+
+  const moduleName = mainModule.name;
   const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
 
   try {

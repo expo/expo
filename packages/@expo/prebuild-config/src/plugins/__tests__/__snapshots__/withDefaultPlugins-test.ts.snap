@@ -151,6 +151,18 @@ exports[`built-in plugins compiles mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "RCTMetroPort": "$(RCT_METRO_PORT)",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -433,7 +445,15 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable GIF support in React Native images (~200 B increase)",
+            "value": "Enable GIF support in React Native's <Image> component.",
+          },
+          {
+            "type": "comment",
+            "value": "Disable to reduce app size if you only render GIFs via expo-image.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://docs.expo.dev/distribution/app-size/",
           },
           {
             "key": "expo.gif.enabled",
@@ -442,7 +462,15 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable webp support in React Native images (~85 KB increase)",
+            "value": "Enable WebP support in React Native's <Image> component.",
+          },
+          {
+            "type": "comment",
+            "value": "Disable to reduce app size if you only render WebP via expo-image.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://docs.expo.dev/distribution/app-size/",
           },
           {
             "key": "expo.webp.enabled",
@@ -451,11 +479,11 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable animated webp support (~3.4 MB increase)",
+            "value": "Enable animated WebP support in React Native's <Image> component.",
           },
           {
             "type": "comment",
-            "value": "Disabled by default because iOS doesn't support animated webp",
+            "value": "Disabled by default because iOS doesn't support animated WebP.",
           },
           {
             "key": "expo.webp.animated",
@@ -490,6 +518,27 @@ exports[`built-in plugins introspects mods 1`] = `
             "type": "empty",
           },
           {
+            "type": "comment",
+            "value": "Opt out of built-in kotlin and new DSL behavior that ships with AGP 9.",
+          },
+          {
+            "type": "comment",
+            "value": "Starting from AGP 10.x these opt outs will be removed.",
+          },
+          {
+            "key": "android.builtInKotlin",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "key": "android.newDsl",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
+          {
             "key": "expo.inlineModules.watchedDirectories",
             "type": "property",
             "value": "[]",
@@ -516,7 +565,7 @@ exports[`built-in plugins introspects mods 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths",
                       "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
@@ -622,6 +671,12 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
                     },
                   },
                   {
@@ -826,6 +881,7 @@ exports[`built-in plugins introspects mods 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",
@@ -864,6 +920,18 @@ exports[`built-in plugins introspects mods 1`] = `
             "NSAllowsLocalNetworking": true,
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+          "RCTMetroPort": "$(RCT_METRO_PORT)",
+          "UIApplicationSceneManifest": {
+            "UIApplicationSupportsMultipleScenes": false,
+            "UISceneConfigurations": {
+              "UIWindowSceneSessionRoleApplication": [
+                {
+                  "UISceneConfigurationName": "Default Configuration",
+                  "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+                },
+              ],
+            },
+          },
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "arm64",
@@ -887,6 +955,7 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
           "expo.jsEngine": "hermes",
           "ios.deploymentTarget": "15.1",
         },
@@ -1040,6 +1109,18 @@ exports[`built-in plugins introspects mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "RCTMetroPort": "$(RCT_METRO_PORT)",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -1263,6 +1344,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
                     },
@@ -1443,6 +1530,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "expoPlist": {
           "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
           "EXUpdatesRuntimeVersion": "1.0",
@@ -1485,6 +1573,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+          "RCTMetroPort": "$(RCT_METRO_PORT)",
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "armv7",
@@ -1507,6 +1596,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
           "ios.deploymentTarget": "15.1",
         },
       },
@@ -1663,6 +1753,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "RCTMetroPort": "$(RCT_METRO_PORT)",
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",

@@ -13,7 +13,7 @@ interface Props {
 export default memo(({ title, onChange, value, active, style }: Props) => {
   return (
     <View style={[styles.container, active && styles.containerActive, style]}>
-      <Text style={(styles.label, active && styles.labelActive)}>{title}</Text>
+      <Text style={[styles.label, active && styles.labelActive]}>{title}</Text>
       <View style={styles.wrapper}>
         <Text style={styles.sliderBoundText}>1</Text>
         <Slider

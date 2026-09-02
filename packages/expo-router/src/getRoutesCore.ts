@@ -1,4 +1,9 @@
-import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
+import {
+  getValidInitialRoute,
+  type DynamicConvention,
+  type MiddlewareNode,
+  type RouteNode,
+} from './Route';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -31,9 +36,14 @@ export type Options = {
   platformRoutes?: boolean;
   sitemap?: boolean;
   platform?: string;
+  /** Redirect rules declared in config plugin options */
   redirects?: RedirectConfig[];
+  /** Rewrite rules declared in config plugin options */
   rewrites?: RewriteConfig[];
+  /** Global headers declared in config plugin options */
   headers?: Record<string, string | string[]>;
+  /** Per-path header rules declared in config plugin options */
+  pageHeaders?: PageHeadersConfig[];
   /* Keep redirects as valid routes within the RouteConfig tree */
   preserveRedirectAndRewrites?: boolean;
 
@@ -69,6 +79,11 @@ export type RewriteConfig = {
   methods?: string[];
 };
 
+export type PageHeadersConfig = {
+  source: string;
+  headers: Record<string, string | string[]>;
+};
+
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 
 /**
@@ -93,6 +108,15 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
   }
 
   const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
+
+  const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
+  if (
+    process.env.NODE_ENV === 'development' &&
+    importMode === 'sync' &&
+    !options.ignoreRequireErrors
+  ) {
+    validateRouteTreeExports(rootNode);
+  }
 
   if (middleware) {
     rootNode.middleware = middleware;
@@ -359,12 +383,22 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           routeModule = contextModule(filePath);
         }
 
+        // See: expo/src/async-require/asyncRequireModule.ts
+        // The "lazy" async require function returns  a thenable that may carry
+        // a raw `_result` value that's either a promise or the synchronously resolved module
+        if (importMode === 'lazy' || importMode === 'lazy-once') {
+          routeModule =
+            '_result' in routeModule && routeModule._result != null
+              ? routeModule._result
+              : routeModule;
+        }
+
         if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
           // In development mode, when async routes are disabled, add some extra error handling to improve the developer experience.
           // This can be useful when you accidentally use an async function in a route file for the default export.
           if (routeModule instanceof Promise) {
             throw new Error(
-              `Route "${filePath}" cannot be a promise when async routes is disabled.`
+              `Route "${filePath}" cannot be a promise when async routes are disabled.`
             );
           }
 
@@ -451,28 +485,6 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       }
       node.type = 'rewrite';
       processedRedirectsRewrites.add(meta.route);
-    }
-
-    if (process.env.NODE_ENV === 'development') {
-      // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
-      // filter the missing routes.
-      if (node.type !== 'api' && importMode === 'sync') {
-        const routeItem = node.loadRoute();
-        // Have a warning for nullish ex
-        const route = routeItem?.default;
-        if (route == null) {
-          // Do not throw an error since a user may just be creating a new route.
-          console.warn(
-            `Route "${filePath}" is missing the required default export. Ensure a React component is exported as default.`
-          );
-          continue;
-        }
-        if (['boolean', 'number', 'string'].includes(typeof route)) {
-          throw new Error(
-            `The default export from route "${filePath}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
-          );
-        }
-      }
     }
 
     /**
@@ -680,6 +692,34 @@ function flattenDirectoryTreeToRoutes(
   }
 
   return layout;
+}
+
+function validateRouteTreeExports(node: RouteNode) {
+  if (process.env.NODE_ENV !== 'development' || node.type === 'api') {
+    return;
+  }
+
+  function runtimeValidateRouteNode(node: RouteNode) {
+    const routeItem = node.loadRoute();
+    // Have a warning for nullish ex
+    const route = routeItem?.default;
+    if (route == null) {
+      // Do not throw an error since a user may just be creating a new route.
+      console.warn(
+        `Route "${node.contextKey}" is missing the required default export. Ensure a React component is exported as default.`
+      );
+    }
+    if (['boolean', 'number', 'string'].includes(typeof route)) {
+      throw new Error(
+        `The default export from route "${node.contextKey}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
+      );
+    }
+  }
+
+  runtimeValidateRouteNode(node);
+  for (const child of node.children) {
+    validateRouteTreeExports(child);
+  }
 }
 
 function getFileMeta(
@@ -898,6 +938,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
       return child.route.replace(/\/index$/, '') === groupName;
     });
     let anchor = childMatchingGroup?.route;
+    let anchorGroupName: string | undefined;
     // We may strip loadRoute during testing
     if (!options.internal_stripLoadRoute) {
       const loaded = node.loadRoute();
@@ -921,31 +962,15 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
             loaded.unstable_settings?.[groupName]?.initialRouteName;
 
           anchor = groupSpecificInitialRouteName ?? anchor;
+          anchorGroupName = groupSpecificInitialRouteName ? groupName : undefined;
         }
       }
     }
 
     if (anchor) {
-      const anchorRoute = node.children.find((child) => child.route === anchor);
-      if (!anchorRoute) {
-        const validAnchorRoutes = node.children
-          .filter((child) => !child.generated)
-          .map((child) => `'${child.route}'`)
-          .join(', ');
-
-        if (groupName) {
-          throw new Error(
-            `Layout ${node.contextKey} has invalid anchor '${anchor}' for group '(${groupName})'. Valid options are: ${validAnchorRoutes}`
-          );
-        } else {
-          throw new Error(
-            `Layout ${node.contextKey} has invalid anchor '${anchor}'. Valid options are: ${validAnchorRoutes}`
-          );
-        }
-      }
-
-      // Navigators can add initialsRoutes into the history, so they need to be to be included in the entryPoints
-      node.initialRouteName = anchor;
+      // Navigators can add initialRoutes into the history, so they need to be included in the entryPoints
+      const anchorRoute = getValidInitialRoute(node, anchor, anchorGroupName)!;
+      node.initialRouteName = anchorRoute.route;
       entryPoints.push(anchorRoute.contextKey);
     }
 

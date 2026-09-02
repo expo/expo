@@ -198,6 +198,10 @@ public class Manifest: NSObject {
     return expoClientConfigRootObject()?.optionalValue(forKey: "experiments")
   }
 
+  public func expoGoUsername() -> String? {
+    return expoGoConfigRootObject()?.optionalValue(forKey: "username")
+  }
+
   public func developer() -> [String: Any]? {
     return expoGoConfigRootObject()?.optionalValue(forKey: "developer")
   }
@@ -271,23 +275,13 @@ public class Manifest: NSObject {
   }
 
   public func supportsRTL() -> Bool {
-    guard let expoClientConfigRootObject = expoClientConfigRootObject(),
-      let extra: [String: Any]? = expoClientConfigRootObject.optionalValue(forKey: "extra"),
-      let supportsRTL: Bool = extra?.optionalValue(forKey: "supportsRTL") else {
-      return false
-    }
-
-    return supportsRTL
+    let extra: [String: Any]? = expoClientConfigRootObject()?.optionalValue(forKey: "extra")
+    return extra?.optionalValue(forKey: "supportsRTL") as Bool? ?? true
   }
 
   public func forcesRTL() -> Bool {
-    guard let expoClientConfigRootObject = expoClientConfigRootObject(),
-      let extra: [String: Any]? = expoClientConfigRootObject.optionalValue(forKey: "extra"),
-      let forcesRTL: Bool = extra?.optionalValue(forKey: "forcesRTL") else {
-      return false
-    }
-
-    return forcesRTL
+    let extra: [String: Any]? = expoClientConfigRootObject()?.optionalValue(forKey: "extra")
+    return extra?.optionalValue(forKey: "forcesRTL") as Bool? ?? false
   }
 
   /**

@@ -1,5 +1,6 @@
 import commander from 'commander';
 
+import { serializeTypeInformation } from '../typeInformation';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -8,11 +9,11 @@ import {
   TypeInformationCommandCommonAllArguments,
   writeStringToFileOrPrintToConsole,
 } from './commandUtils';
-import { serializeTypeInformation } from '../typeInformation';
 
 export function typeInformationCommand(cli: commander.Command) {
-  return addCommonOptions(cli.command('type-information')).action(
-    async (options: TypeInformationCommandCommonAllArguments) => {
+  return addCommonOptions(cli.command('type-information'))
+    .description('parse Swift module type information and outputs a `FileTypeInformation` JSON')
+    .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) {
         return;
@@ -30,6 +31,5 @@ export function typeInformationCommand(cli: commander.Command) {
       };
 
       runCommandOnWatch(parsedArgs, command);
-    }
-  );
+    });
 }

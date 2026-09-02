@@ -2,25 +2,44 @@
 
 // swiftlint:disable function_parameter_count
 
+import ExpoModulesCore
 import Foundation
 import os.log
 
-import ExpoModulesCore
-
-/**
- Class that implements logging for expo-updates in its own os.log category
- */
+/// Class that implements logging for expo-updates in its own os.log category
 @objc(EXUpdatesLogger)
 @objcMembers
 public final class UpdatesLogger: NSObject {
   static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  public override init() {}
+  /// The os.log category and `PersistentFileLog` file suffix this logger writes to. Exposed so
+  /// callers reading back logs (and tests) can construct a matching `UpdatesLogReader` /
+  /// `PersistentFileLog` instance against the same file.
+  internal let category: String
 
-  private let logger = Logger(logHandlers: [
-    createOSLogHandler(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY),
-    createPersistentFileLogHandler(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-  ])
+  private let logger: ExpoModulesCore.Logger
+
+  public override init() {
+    self.category = UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY
+    self.logger = Logger(logHandlers: [
+      createOSLogHandler(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY),
+      createPersistentFileLogHandler(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY),
+    ])
+    super.init()
+  }
+
+  /// Internal initializer that lets tests redirect the log file by passing a unique category.
+  /// Two `PersistentFileLog` instances with the same category share an on-disk file at
+  /// `<AppSupport>/dev.expo.modules.core.logging.<category>.txt`; using a per-test category
+  /// keeps test runs from colliding with each other or with production callers.
+  internal init(category: String) {
+    self.category = category
+    self.logger = Logger(logHandlers: [
+      createOSLogHandler(category: category),
+      createPersistentFileLogHandler(category: category),
+    ])
+    super.init()
+  }
 
   // MARK: - Public logging functions
 
@@ -30,7 +49,10 @@ public final class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .trace, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(
+      message: message, code: code, level: .trace,
+      duration: nil, updateId: updateId, assetId: assetId
+    )
     logger.trace(entry)
   }
 
@@ -51,7 +73,10 @@ public final class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .debug, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(
+      message: message, code: code, level: .debug,
+      duration: nil, updateId: updateId, assetId: assetId
+    )
     logger.debug(entry)
   }
 
@@ -72,7 +97,10 @@ public final class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .info, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(
+      message: message, code: code, level: .info,
+      duration: nil, updateId: updateId, assetId: assetId
+    )
     logger.info(entry)
   }
 
@@ -93,7 +121,10 @@ public final class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: message, code: code, level: .warn, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(
+      message: message, code: code, level: .warn,
+      duration: nil, updateId: updateId, assetId: assetId
+    )
     logger.warn(entry)
   }
 
@@ -114,7 +145,10 @@ public final class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: cause.localizedDescription, code: code, level: .error, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(
+      message: cause.localizedDescription, code: code, level: .error,
+      duration: nil, updateId: updateId, assetId: assetId
+    )
     logger.error(entry)
   }
 
@@ -131,7 +165,10 @@ public final class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    let entry = logEntryString(message: cause.localizedDescription, code: code, level: .fatal, duration: nil, updateId: updateId, assetId: assetId)
+    let entry = logEntryString(
+      message: cause.localizedDescription, code: code, level: .fatal,
+      duration: nil, updateId: updateId, assetId: assetId
+    )
     logger.fatal(entry)
   }
 

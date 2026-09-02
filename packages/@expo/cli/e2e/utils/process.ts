@@ -113,7 +113,7 @@ export async function waitForProcessOutput<T>(
 
 /**
  * Wait for the child process to become "ready", defined through the resolver's promise.
- * This listens for possible spawn errors or unexepcted exits of the child process.
+ * This listens for possible spawn errors or unexpected exits of the child process.
  */
 export async function waitForProcessReady<T>(
   child: ChildProcess,

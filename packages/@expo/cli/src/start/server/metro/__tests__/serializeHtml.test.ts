@@ -2,9 +2,90 @@ import type { SerialAsset } from '@expo/metro-config/src/serializer/serializerAs
 
 import {
   serializeHtmlWithAssets,
+  serialAssetsToStaticContentAssets,
   assetsRequiresSort,
   sortMatchedAssetsByEntryPoints,
 } from '../serializeHtml';
+
+describe(serialAssetsToStaticContentAssets, () => {
+  const js = (filename: string, metadata: any): SerialAsset =>
+    ({ filename, originFilename: filename, type: 'js', metadata, source: '' }) as any;
+
+  it('builds linked CSS and dependency-ordered, route-scoped JS when exporting', () => {
+    const resources: SerialAsset[] = [
+      {
+        type: 'css-external',
+        filename: 'https://x/y.css',
+        originFilename: 'y',
+        source: '<link rel="stylesheet" href="https://x/y.css">',
+        metadata: {},
+      } as any,
+      {
+        type: 'css',
+        filename: 'dist/styles.css',
+        originFilename: 'styles',
+        source: '',
+        metadata: {},
+      } as any,
+      js('dist/runtime.js', { isAsync: false, requires: [], modulePaths: [] }),
+      js('dist/entry.js', { isAsync: false, requires: ['dist/runtime.js'], modulePaths: [] }),
+      js('dist/chunk-page.js', { isAsync: true, requires: [], modulePaths: ['/app/[slug].tsx'] }),
+      js('dist/chunk-layout.js', {
+        isAsync: true,
+        requires: [],
+        modulePaths: ['/app/_layout.tsx'],
+      }),
+      js('dist/chunk-unrelated.js', {
+        isAsync: true,
+        requires: [],
+        modulePaths: ['/app/other.tsx'],
+      }),
+    ];
+    const route = {
+      contextKey: './[slug].tsx',
+      entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
+    } as any;
+
+    const assets = serialAssetsToStaticContentAssets(resources, {
+      isExporting: true,
+      baseUrl: '',
+      route,
+    });
+
+    expect(assets.js).toEqual([
+      '/dist/runtime.js',
+      '/dist/chunk-layout.js',
+      '/dist/chunk-page.js',
+      '/dist/entry.js',
+    ]);
+    expect(assets.css).toEqual([
+      { type: 'external', source: '<link rel="stylesheet" href="https://x/y.css">' },
+      { type: 'css', href: '/dist/styles.css' },
+    ]);
+  });
+
+  it('builds inline CSS and a single dev bundle in development', () => {
+    const resources: SerialAsset[] = [
+      {
+        type: 'css',
+        filename: 'dist/a.css',
+        originFilename: 'a',
+        source: '.a{}',
+        metadata: { hmrId: 'a' },
+      } as any,
+      js('dist/ignored.js', { isAsync: false, requires: [], modulePaths: [] }),
+    ];
+
+    const assets = serialAssetsToStaticContentAssets(resources, {
+      isExporting: false,
+      baseUrl: '',
+      bundleUrl: '/index.bundle?platform=web',
+    });
+
+    expect(assets.css).toEqual([{ type: 'inline', source: '.a{}', hmrId: 'a' }]);
+    expect(assets.js).toEqual(['/index.bundle?platform=web']);
+  });
+});
 
 it('serializes development static html', () => {
   const res = serializeHtmlWithAssets({
@@ -151,6 +232,55 @@ it('serializes HTML with async chunks in correct order for dynamic routes', () =
 
   expect(res).toContain(
     '<script src="/dist/chunk-layout.js" defer></script><script src="/dist/chunk-page.js" defer></script>'
+  );
+});
+
+it('places sync entry scripts after async chunks so preloaded chunks resolve synchronously', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: 'dist/runtime.js',
+        originFilename: 'runtime.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+      {
+        filename: 'dist/entry.js',
+        originFilename: 'entry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: ['dist/runtime.js'], modulePaths: [] },
+        source: '',
+      },
+      {
+        filename: 'dist/chunk-layout.js',
+        originFilename: 'chunk-layout.js',
+        type: 'js',
+        metadata: { isAsync: true, requires: [], modulePaths: ['/app/_layout.tsx'] },
+        source: '',
+      },
+      {
+        filename: 'dist/chunk-page.js',
+        originFilename: 'chunk-page.js',
+        type: 'js',
+        metadata: { isAsync: true, requires: [], modulePaths: ['/app/[slug].tsx'] },
+        source: '',
+      },
+    ],
+    baseUrl: '',
+    isExporting: true,
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    route: {
+      contextKey: './[slug].tsx',
+      entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
+    } as any,
+  });
+
+  expect(res).toContain(
+    '<script src="/dist/runtime.js" defer></script>' +
+      '<script src="/dist/chunk-layout.js" defer></script>' +
+      '<script src="/dist/chunk-page.js" defer></script>' +
+      '<script src="/dist/entry.js" defer></script>'
   );
 });
 

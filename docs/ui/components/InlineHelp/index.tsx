@@ -52,10 +52,12 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
   return (
     <blockquote
       className={mergeClasses(
-        'border-default bg-subtle mb-4 flex gap-2.5 rounded-md border py-3 pr-4 pl-3.5 shadow-xs',
+        'mb-4 flex gap-2.5 rounded-3xl border border-default bg-subtle py-3 pr-4 pl-3.5 shadow-xs',
         size === 'sm' && 'gap-2 px-3 py-2.5',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
+        '[&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4]',
+        'dark:[&_a]:text-link dark:[&_a:visited]:text-link',
         getCalloutColor(finalType),
         // TODO(simek): remove after migration to new components is completed
         '[&_p]:mb-0!',
@@ -64,15 +66,16 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
       data-testid="callout-container"
       data-md="callout">
       <Icon
+        aria-hidden="true"
         className={mergeClasses(
           'mt-1 select-none',
-          size === 'sm' ? 'icon-xs mt-[3px]' : 'icon-sm',
+          size === 'sm' ? 'mt-0.75 icon-xs' : 'icon-sm',
           getCalloutIconColor(finalType)
         )}
       />
       <div
         className={mergeClasses(
-          'text-default w-full leading-normal',
+          'w-full leading-normal text-default',
           'last:mb-0',
           size === 'sm' && 'text-sm [&_code]:text-[90%] [&_p]:text-sm'
         )}>

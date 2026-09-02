@@ -69,22 +69,6 @@ export const GLScreens = [
     route: 'gl/threesprite',
   },
   {
-    name: 'ProcessingInAndOut',
-    getComponent() {
-      return optionalRequire(() => require('./ProcessingInAndOutScreen'));
-    },
-    options: { title: "'In and out' from openprocessing.org" },
-    route: 'gl/processinginandout',
-  },
-  {
-    name: 'ProcessingNoClear',
-    getComponent() {
-      return optionalRequire(() => require('./ProcessingNoClearScreen'));
-    },
-    options: { title: 'Draw without clearing screen with processing.js' },
-    route: 'gl/processingnoclear',
-  },
-  {
     name: 'PIXIBasic',
     getComponent() {
       return optionalRequire(() => require('./PIXIBasicScreen'));

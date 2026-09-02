@@ -34,7 +34,7 @@ The following example shows a basic configuration that enables your app to appea
       "intentFilters": [
         {
           "action": "VIEW",
-          /* @info Add the <CODE>autoVerify</CODE> property to the intent filter in app config to enable app links.*/
+          /* @info Add the `autoVerify` property to the intent filter in app config to enable app links.*/
           "autoVerify": true,
           /* @end */
           "data": [
@@ -104,12 +104,12 @@ Add `package_name` and `sha256_cert_fingerprints` to the **assetlinks.json** fil
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      /* @info Replace <CODE>com.example</CODE> with your app's package name. */
+      /* @info Replace `com.example` with your app's package name. */
       "package_name": "com.example",
       /* @end */
       "sha256_cert_fingerprints": [
         // Supports multiple fingerprints for different apps and keys
-        /* @info Replace <CODE>14:6D:E9:83...</CODE> with your app's SHA256 certificate fingerprint. */
+        /* @info Replace `14:6D:E9:83...` with your app's SHA256 certificate fingerprint. */
         "14:6D:E9:83:51:7F:66:01:84:93:4F:2F:5E:E0:8F:3A:D6:F4:CA:41:1A:CF:45:BF:8D:10:76:76:CD"
         /* @end */
       ]
@@ -152,7 +152,14 @@ Add `intentFilters` to your app config as [described above](#add-intentfilters-t
 
 Start your dev server with the `--tunnel` flag:
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --tunnel'],
+    yarn: ['$ yarn expo start --tunnel'],
+    pnpm: ['$ pnpm expo start --tunnel'],
+    bun: ['$ bun expo start --tunnel'],
+  }}
+/>
 
 </Step>
 
@@ -160,7 +167,14 @@ Start your dev server with the `--tunnel` flag:
 
 Compile the development build on your device:
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 </Step>
 

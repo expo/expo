@@ -4,11 +4,93 @@
 
 ### 🛠 Breaking changes
 
+- Paused time is now excluded from the `AudioRecorder` duration limit. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
+- [Android] Aligned the default audio focus request on Android 7.0–7.1 with newer versions by using transient exclusive focus when no interruption mode has been configured. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
+
+- [Android] Added support for `keepAudioSessionActive`. ([#49108](https://github.com/expo/expo/pull/49108) by [@behenate](https://github.com/behenate))
+- Added the `doNotMixPersistent` interruption mode. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
+- Added `fileName` option to `RecordingOptions` to allow specifying the recording file basename on Android and iOS. ([#47265](https://github.com/expo/expo/pull/47265) by [@silwalprabin](https://github.com/silwalprabin))
+- Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
+- Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))
+- Added `startFileRecordingAsync` and `stopFileRecordingAsync` methods to `AudioStream` for continuous WAV and PCM file recording alongside buffer streaming. ([#46771](https://github.com/expo/expo/pull/46771) by [@behenate](https://github.com/behenate))
+- [iOS] Added `allowsExternalPlayback` option to `AudioPlayerOptions`. Set to `false` to keep the local player in control during AirPlay, fixing `player.loop` not firing. ([#48366](https://github.com/expo/expo/pull/48366) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
+- Preserve recorder duration limits across pauses, consistently exclude paused time on Android, iOS, and Web. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
+- [Android] Pause audio players and playlists when headphones or Bluetooth audio devices disconnect. ([#48151](https://github.com/expo/expo/pull/48151) by [@vivekjm](https://github.com/vivekjm))
+- [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))
+- [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
+- [Android] Don't start playback when the system denies audio focus, and log a warning explaining that background playback needs an active media playback foreground service. ([#46957](https://github.com/expo/expo/pull/46957) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Create a fresh recording file each time `prepareToRecordAsync` is called, matching Android — repeated takes no longer overwrite the previous recording at the same URL. ([#48002](https://github.com/expo/expo/pull/48002) by [@idoyana](https://github.com/idoyana))
+- Fix `player.replace(null)` throwing due to a mismatch between native and TypeScript types. ([#48219](https://github.com/expo/expo/pull/48219) by [@zoontek](https://github.com/zoontek))
+- [iOS] Activate the audio session once and keep it active instead of toggling. ([#48588](https://github.com/expo/expo/pull/48588) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
+- [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
+- [iOS] Resolve permission requests with `denied` and reject recording calls instead of letting the OS terminate the app when `NSMicrophoneUsageDescription` is missing. ([#49162](https://github.com/expo/expo/pull/49162) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
+- [iOS] Fix the microphone permissions test not compiling. ([#49027](https://github.com/expo/expo/pull/49027) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 57.0.3 - 2026-07-22
+
+### 🐛 Bug fixes
+
+- [Android] Fix recording crash in apps wrapped with Microsoft Intune. ([#47005](https://github.com/expo/expo/pull/47005) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fix playlist `currentIndex` freezing after the first auto-advance. ([#47257](https://github.com/expo/expo/pull/47257) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- [iOS] Deactivate the audio session off the main thread to avoid app hangs. ([#47066](https://github.com/expo/expo/pull/47066) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.12 - 2026-06-10
+
+### 🎉 New features
+
+- Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
+
+## 56.0.11 — 2026-05-26
+
+### 💡 Others
+
+- [web] Added a warning when setting volume in browsers on iOS, where Apple does not allow programmatic volume control. ([#44474](https://github.com/expo/expo/pull/44474) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.10 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.9 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.8 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-15
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.6 — 2026-05-13
 
@@ -300,7 +382,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- [iOS] Support setting seek tolerences when calling `seekTo` on the player. ([#37669](https://github.com/expo/expo/pull/37669) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Support setting seek tolerances when calling `seekTo` on the player. ([#37669](https://github.com/expo/expo/pull/37669) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Support lock screen controls. ([#37126](https://github.com/expo/expo/pull/37126) by [@alanjhughes](https://github.com/alanjhughes)
 
 ### 🐛 Bug fixes
@@ -426,11 +508,11 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Add support for replacing the auido source without recreating the player. ([#32981](https://github.com/expo/expo/pull/32981) by [@alanjhughes](https://github.com/alanjhughes))
+- Add support for replacing the audio source without recreating the player. ([#32981](https://github.com/expo/expo/pull/32981) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
-- [Android] Imporve handling of `Visulaizer`. ([#33018](https://github.com/expo/expo/pull/33018) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Improve handling of `Visulaizer`. ([#33018](https://github.com/expo/expo/pull/33018) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.2.3 — 2024-10-28
 

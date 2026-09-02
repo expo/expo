@@ -166,6 +166,34 @@ describe('ReactNativeDirectoryCheck', () => {
     `);
   });
 
+  it('treats new-arch-only packages as supported', async () => {
+    jest.mocked(checkLibraries).mockResolvedValueOnce({
+      newArchOnly: { newArchitecture: 'new-arch-only' },
+      working: { newArchitecture: 'supported' },
+    });
+
+    const check = new ReactNativeDirectoryCheck();
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            newArchOnly: '*',
+            working: '*',
+          },
+        },
+        ...additionalProjectProps,
+      },
+      {
+        resolutions: Promise.reject(new Error()),
+      }
+    );
+
+    expect(result.isSuccessful).toBeTruthy();
+    expect(result.issues).toEqual([]);
+  });
+
   it('success and no errors if only unknown libraries are in the result', async () => {
     jest.mocked(checkLibraries).mockResolvedValueOnce({
       working: { unmaintained: false, newArchitecture: 'supported' },

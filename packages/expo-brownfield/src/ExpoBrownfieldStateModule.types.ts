@@ -4,6 +4,10 @@ export type KeyRecreatedEvent = {
   key: string;
 };
 
+export type SharedStateChangeEvent<T> = {
+  value: T | undefined;
+};
+
 export type Events = {
   onKeyRecreated: (event: KeyRecreatedEvent) => void;
 };

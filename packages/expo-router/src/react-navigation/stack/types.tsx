@@ -11,6 +11,7 @@ import type {
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   LocaleDirection,
   NavigationHelpers,
   NavigationProp,
@@ -76,7 +77,8 @@ export type StackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = StackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<StackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -207,8 +209,8 @@ export type StackHeaderOptions = Omit<
   headerBackTitleStyle?: StyleProp<TextStyle>;
   /**
    * Function which returns a React Element to display custom image in header's back button.
-   * It receives the `tintColor` in in the options object as an argument. object.
-   * Defaults to Image component with a the default back icon image for the platform (a chevron on iOS and an arrow on Android).
+   * It receives the `tintColor` in the options object as an argument.
+   * Defaults to Image component with the default back icon image for the platform (a chevron on iOS and an arrow on Android).
    */
   headerBackImage?: React.ComponentProps<typeof HeaderBackButton>['backImage'];
 };
@@ -317,7 +319,7 @@ export type StackNavigationOptions = StackHeaderOptions &
      */
     cardOverlayEnabled?: boolean;
     /**
-     * Function that returns a React Element to display as a overlay for the card.
+     * Function that returns a React Element to display as an overlay for the card.
      */
     cardOverlay?: (props: {
       style: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
@@ -401,12 +403,9 @@ export type StackNavigationOptions = StackHeaderOptions &
      * Defaults to `true`.
      */
     keyboardHandlingEnabled?: boolean;
+    // TODO(@ubax): Remove this prop
     /**
-     * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-     * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-     * Requires `react-native-screens` version >=3.16.0.
-     *
-     * Only supported on iOS and Android.
+     * @deprecated This option has no effect in Expo Router.
      */
     freezeOnBlur?: boolean;
     /**

@@ -4,11 +4,42 @@
 
 ### 🛠 Breaking changes
 
+- Align `jest-expo` Babel options for all platforms with `resolveBabelOptions` output
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Support React Native 0.87's `react-native/asset-registry`. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Keep the upstream React Native `moduleNameMapper` entries in the iOS and Android presets, so React Native 0.87's `react-native/setup-env` mock resolves. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+## 57.0.3 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-20
+
+### 🎉 New features
+
+- Align `jest-expo`'s Babel config loading with `@expo/metro-config` changes ([#45968](https://github.com/expo/expo/pull/45968) by [@kitten](https://github.com/kitten))
+
+## 56.0.3 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.2 — 2026-05-13
 

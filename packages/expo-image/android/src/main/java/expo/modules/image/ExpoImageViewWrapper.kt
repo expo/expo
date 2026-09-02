@@ -20,6 +20,7 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.github.penfeizhou.animation.gif.GifDrawable
 import expo.modules.image.enums.ContentFit
+import expo.modules.image.enums.ImageCacheType
 import expo.modules.image.enums.Priority
 import expo.modules.image.events.GlideRequestListener
 import expo.modules.image.events.OkHttpProgressListener
@@ -38,7 +39,6 @@ import expo.modules.kotlin.tracing.beginAsyncTraceBlock
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
-import jp.wasabeef.glide.transformations.BlurTransformation
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 import kotlin.math.min
@@ -275,8 +275,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     // The intention is simply to wait for the Glide code to finish before the content of the underlying views is changed during the same rendering tick.
     mainHandler.postAtFrontOfQueue {
       trace(Trace.tag, "onResourceReady") {
-        val transitionDuration = (transition?.duration ?: 0).toLong()
-
         // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
         if (!isPlaceholder || !target.hasSource) {
           val (newView, previousView) = if (firstView.drawable == null) {
@@ -284,6 +282,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           } else {
             secondView to firstView
           }
+
+          val isInitialDisplay = previousView.drawable == null || previousView.isPlaceholder
+          val transitionDuration = transition
+            ?.takeIf { it.shouldPlay(target.cacheType, isInitialDisplay) }
+            ?.duration
+            ?.toLong()
+            ?: 0L
 
           val clearPreviousView = {
             previousView
@@ -312,11 +317,17 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             newView.bringToFront()
             previousView.alpha = 1f
             newView.alpha = 0f
+            // A newer source can reuse this view as its `newView` before the fade-out ends. That
+            // cancels this animation, and the end action runs on cancel too, so without this guard
+            // it would recycle the view now holding the new image. See issue #46703.
+            val previousTarget = previousView.currentTarget
             previousView.animate().apply {
               duration = transitionDuration
               alpha(0f)
               withEndAction {
-                clearPreviousView()
+                if (previousView.currentTarget === previousTarget) {
+                  clearPreviousView()
+                }
               }
             }
             newView.animate().apply {
@@ -341,6 +352,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             }
 
           configureView(firstView, target, resource, isPlaceholder)
+          val transitionDuration = (transition?.duration ?: 0).toLong()
           if (transitionDuration > 0) {
             firstView.bringToFront()
             firstView.alpha = 0f
@@ -438,7 +450,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         diskCacheStrategy(DiskCacheStrategy.NONE)
       }
       .customize(blurRadius) {
-        transform(BlurTransformation(min(it, 25), 4))
+        transform(SoftwareBlurTransformation(min(it, 25), 4))
       }
   }
 
@@ -557,6 +569,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         secondTarget
       }
       newTarget.hasSource = sourceToLoad != null
+      newTarget.cacheType = ImageCacheType.NONE
 
       val downsampleStrategy = createDownsampleStrategy(newTarget)
 

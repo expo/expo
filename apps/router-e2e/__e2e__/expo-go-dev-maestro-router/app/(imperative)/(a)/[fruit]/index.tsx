@@ -1,5 +1,5 @@
-import { Pressable, Text } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { Pressable, Text } from 'react-native';
 
 export default function Index() {
   return (

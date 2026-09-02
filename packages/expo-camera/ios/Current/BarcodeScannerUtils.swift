@@ -4,7 +4,7 @@ import Vision
 
 class BarcodeScannerUtils {
   static func getDefaultSettings() -> [String: [AVMetadataObject.ObjectType]] {
-    var validTypes = [
+    let validTypes = [
       "upc_e": AVMetadataObject.ObjectType.upce,
       "upc_a": AVMetadataObject.ObjectType.ean13,
       "code39": AVMetadataObject.ObjectType.code39,
@@ -25,37 +25,29 @@ class BarcodeScannerUtils {
     return [BARCODE_TYPES_KEY: Array(validTypes.values)]
   }
 
+  // AVFoundation reports Interleaved 2 of 5 codes as either .itf14 or .interleaved2of5. Registering
+  // both when itf14 is requested mirrors Android ML Kit's single FORMAT_ITF and avoids dropping scans.
+  static func augmentedBarcodeTypes(_ types: [AVMetadataObject.ObjectType]) -> [AVMetadataObject.ObjectType] {
+    var augmented = types
+    if augmented.contains(.itf14) && !augmented.contains(.interleaved2of5) {
+      augmented.append(.interleaved2of5)
+    }
+    return augmented
+  }
+
   static func avMetadataCodeObjectToDictionary(_ barcodeScannerResult: AVMetadataMachineReadableCodeObject) -> [String: Any] {
     var result = [String: Any]()
     result["type"] = BarcodeType.toBarcodeType(type: barcodeScannerResult.type).rawValue
-    result["data"] = barcodeScannerResult.stringValue
-
-    // iOS converts upc_a to ean13 and appends a leading 0
-    if barcodeScannerResult.type == AVMetadataObject.ObjectType.ean13 {
-      let value = barcodeScannerResult.stringValue ?? ""
-      if !value.isEmpty && value.hasPrefix("0") {
-        result["data"] = value.dropFirst()
-      }
-    }
+    result["data"] = normalizeBarcodeValue(
+      barcodeScannerResult.stringValue,
+      isEAN13: barcodeScannerResult.type == .ean13
+    )
 
     if !barcodeScannerResult.corners.isEmpty {
-      var cornerPointsResult = [[String: Any]]()
-      for point in barcodeScannerResult.corners {
-        cornerPointsResult.append(["x": point.x, "y": point.y])
-      }
-      result["cornerPoints"] = cornerPointsResult
-      result["bounds"] = [
-        "origin": [
-          "x": barcodeScannerResult.bounds.origin.x,
-          "y": barcodeScannerResult.bounds.origin.y
-        ],
-        "size": [
-          "width": barcodeScannerResult.bounds.size.width,
-          "height": barcodeScannerResult.bounds.size.height
-        ]
-      ]
+      result["cornerPoints"] = BarcodeUtils.cornerPoints(from: barcodeScannerResult.corners)
+      result["bounds"] = BarcodeUtils.bounds(from: barcodeScannerResult.bounds)
     } else {
-      addEmptyCornerPoints(to: &result)
+      BarcodeUtils.addEmptyCornerPoints(to: &result)
     }
     return result
   }
@@ -64,37 +56,27 @@ class BarcodeScannerUtils {
   static func visionDataScannerObjectToDictionary(item: RecognizedItem.Barcode) -> [String: Any] {
     var result = [String: Any]()
     result["type"] = item.observation.symbology.rawValue
-    result["data"] = item.payloadStringValue
-
-    // iOS converts upc_a to ean13 and appends a leading 0
-    if item.observation.symbology == VNBarcodeSymbology.ean13 {
-      let value = item.payloadStringValue ?? ""
-      if !value.isEmpty && value.hasPrefix("0") {
-        result["data"] = value.dropFirst()
-      }
-    }
+    result["data"] = normalizeBarcodeValue(
+      item.payloadStringValue,
+      isEAN13: item.observation.symbology == .ean13
+    )
 
     let bounds = item.bounds
-    let cornerPoints: [[String: Any]] = [bounds.bottomLeft, bounds.bottomRight, bounds.topLeft, bounds.topRight].map { point in
-      ["x": point.x, "y": point.y]
-    }
-    result["cornerPoints"] = cornerPoints
+    result["cornerPoints"] = BarcodeUtils.cornerPoints(
+      from: [bounds.bottomLeft, bounds.bottomRight, bounds.topLeft, bounds.topRight]
+    )
 
     return result
   }
 
-  static func addEmptyCornerPoints(to result: inout [String: Any]) {
-    result["cornerPoints"] = []
-    result["bounds"] = [
-      "origin": [
-        "x": 0,
-        "y": 0
-      ],
-      "size": [
-        "width": 0,
-        "height": 0
-      ]
-    ]
+  // iOS reports upc_a as ean13 with an extra leading zero; strip it so the value matches the code.
+  static func normalizeBarcodeValue(_ value: String?, isEAN13: Bool) -> String? {
+    guard let value else {
+      return nil
+    }
+    if isEAN13 && !value.isEmpty && value.hasPrefix("0") {
+      return String(value.dropFirst())
+    }
+    return value
   }
-
 }

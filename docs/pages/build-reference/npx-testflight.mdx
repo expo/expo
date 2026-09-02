@@ -38,7 +38,7 @@ The command workflow is interactive and walks you through the following prompts 
 - **Generate credentials.** If EAS does not already manage credentials for the bundle identifier, the CLI creates or updates the distribution certificate and provisioning profile for you.
 - **Create a production build**. It starts an iOS build using the default EAS [`production` profile](/build/eas-json/#production-builds) to create an iOS archive (**.ipa**) file.
 - **Verify App Store Connect access.** The submit step checks for an [App Store Connect API key](https://expo.fyi/creating-asc-api-key) and creates one if needed.
-- **Submits the app to TestFlight.** Uploads the resulting **.ipa** file to App Store Connect and enables TestFlight distribution for your team's internal testing group.
+- **Submits the app to TestFlight.** Uploads the resulting **.ipa** file to App Store Connect and enables TestFlight distribution for your team's [internal testing group](/submit/testflight/#set-up-internal-testing).
 
 You will receive build and submission status updates throughout the process inside the terminal window. Within the App Store Connect dashboard, you can manage testers and distribution.
 

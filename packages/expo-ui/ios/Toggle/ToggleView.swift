@@ -12,38 +12,36 @@ internal final class ToggleProps: UIBaseViewProps {
 
 internal struct ToggleView: ExpoSwiftUI.View {
   @ObservedObject var props: ToggleProps
-  @State var checked: Bool = false
+  // Only used when `isOn` isn't passed. While the prop is set it is the sole source of
+  // truth, so JS stays in control of what the toggle shows and can refuse a change.
+  @State private var uncontrolled = false
 
   init(props: ToggleProps) {
     self.props = props
   }
 
   var body: some View {
-    makeToggle()
-      .onChange(of: checked) { newValue in
-        if props.isOn == newValue {
-          return
+    makeToggle(isOn: Binding(
+      get: { props.isOn ?? uncontrolled },
+      set: { newValue in
+        uncontrolled = newValue
+        if props.isOn != newValue {
+          props.onIsOnChange([
+            "isOn": newValue
+          ])
         }
-        props.onIsOnChange([
-          "isOn": newValue
-        ])
       }
-      .onChange(of: props.isOn) { newValue in
-        checked = newValue ?? false
-      }
-      .onAppear {
-        checked = props.isOn ?? false
-      }
+    ))
   }
 
   @ViewBuilder
-  private func makeToggle() -> some View {
+  private func makeToggle(isOn: Binding<Bool>) -> some View {
     if let systemImage = props.systemImage, let label = props.label {
-      Toggle(label, systemImage: systemImage, isOn: $checked)
+      Toggle(label, systemImage: systemImage, isOn: isOn)
     } else if let label = props.label {
-      Toggle(label, isOn: $checked)
+      Toggle(label, isOn: isOn)
     } else {
-      Toggle(isOn: $checked) { Children() }
+      Toggle(isOn: isOn) { Children() }
     }
   }
 }

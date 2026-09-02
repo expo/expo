@@ -1,9 +1,10 @@
-import type { ImageRef } from 'expo-image';
+import { SharedRef } from 'expo';
 import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { LinkMenuActionProps } from '../../../../link/elements';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import type { StackHeaderItemSharedProps } from '../shared';
 
 export interface StackToolbarMenuProps {
@@ -57,7 +58,7 @@ export interface StackToolbarMenuProps {
    *
    * @platform ios
    */
-  image?: ImageRef;
+  image?: InstanceType<SharedRef<'image'>> | null;
   /**
    * Whether to hide the shared background.
    *
@@ -165,6 +166,13 @@ export interface StackToolbarMenuProps {
    */
   title?: string;
   /**
+   * Corner radius in dp for the dropdown menu container. Defaults to the Material3
+   * `MenuDefaults.shape` corner radius.
+   *
+   * @platform android
+   */
+  cornerRadius?: number;
+  /**
    * @default 'plain'
    *
    * @platform ios
@@ -194,11 +202,13 @@ export interface NativeToolbarMenuProps {
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
   xcassetName?: string;
+  /** @platform android */
+  cornerRadius?: number;
   // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display for the menu item.
    */
-  image?: ImageRef;
+  image?: InstanceType<SharedRef<'image'>> | null;
   imageRenderingMode?: 'template' | 'original';
   inline?: boolean;
   label?: string;
@@ -211,6 +221,9 @@ export interface NativeToolbarMenuProps {
   elementSize?: 'auto' | 'small' | 'medium' | 'large';
   /** @platform android */
   source?: ImageSourcePropType;
+  /** Badge overlay on the menu icon. Only rendered at the root (left/right placements).
+   * @platform android */
+  badge?: NativeStackHeaderItemButton['badge'];
 }
 
 export interface StackToolbarMenuActionProps {
@@ -241,7 +254,7 @@ export interface StackToolbarMenuActionProps {
    *
    * @platform ios
    */
-  image?: ImageRef;
+  image?: InstanceType<SharedRef<'image'>> | null;
   /**
    * Controls how image-based icons are rendered on iOS.
    *

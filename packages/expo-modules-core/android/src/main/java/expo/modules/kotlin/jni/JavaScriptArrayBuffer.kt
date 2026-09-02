@@ -10,19 +10,24 @@ import java.nio.ByteBuffer
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptArrayBuffer @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible, ArrayBuffer {
+class JavaScriptArrayBuffer @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
   fun isValid() = mHybridData.isValid
 
-  external override fun size(): Int
+  external fun size(): Int
 
-  external override fun readByte(position: Int): Byte
-  external override fun read2Byte(position: Int): Short
-  external override fun read4Byte(position: Int): Int
-  external override fun read8Byte(position: Int): Long
-  external override fun readFloat(position: Int): Float
-  external override fun readDouble(position: Int): Double
+  external fun readByte(position: Int): Byte
+  external fun read2Byte(position: Int): Short
+  external fun read4Byte(position: Int): Int
+  external fun read8Byte(position: Int): Long
+  external fun readFloat(position: Int): Float
+  external fun readDouble(position: Int): Double
 
-  external override fun toDirectBuffer(): ByteBuffer
+  external fun toDirectBuffer(): ByteBuffer
+
+  /**
+   * Creates a native-owned copy of this ArrayBuffer.
+   */
+  fun copy(): ArrayBuffer = ArrayBuffer.copyOf(toDirectBuffer())
 
   @Throws(Throwable::class)
   protected fun finalize() {

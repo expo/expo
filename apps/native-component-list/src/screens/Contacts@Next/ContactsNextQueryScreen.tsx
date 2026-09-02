@@ -4,10 +4,11 @@ import {
   ContactsSortOrder,
   PartialContactDetails,
   requestPermissionsAsync,
-} from 'expo-contacts/next';
+} from 'expo-contacts';
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 
 export default function ContactsManager() {
@@ -100,7 +101,9 @@ export default function ContactsManager() {
             {item.fullName}
           </Text>
         )}
-        ListEmptyComponent={<Text style={{ padding: 20, textAlign: 'center' }}>No contacts</Text>}
+        ListEmptyComponent={
+          <BodyText style={{ padding: 20, textAlign: 'center' }}>No contacts</BodyText>
+        }
       />
     </View>
   );

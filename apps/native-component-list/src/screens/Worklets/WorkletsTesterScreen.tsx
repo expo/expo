@@ -1,11 +1,12 @@
 import { installOnUIRuntime } from 'expo';
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { runOnJS } from 'react-native-worklets';
-import 'react-native-reanimated';
+import { getUIRuntimeHolder, runOnJS } from 'react-native-worklets';
 import { WorkletsTester } from 'worklets-tester';
 
-installOnUIRuntime();
+import { BodyText } from '../../components/BodyText';
+
+installOnUIRuntime(getUIRuntimeHolder());
 
 type TestResult = {
   name: string;
@@ -125,9 +126,11 @@ export default function WorkletsTesterScreen() {
       </View>
 
       <View style={styles.resultsSection}>
-        <Text style={styles.resultsTitle}>Results:</Text>
+        <BodyText style={styles.resultsTitle}>Results:</BodyText>
         {results.length === 0 ? (
-          <Text style={styles.noResults}>No tests run yet</Text>
+          <BodyText color="secondary" style={styles.noResults}>
+            No tests run yet
+          </BodyText>
         ) : (
           results.map((result, index) => (
             <View
@@ -146,7 +149,6 @@ export default function WorkletsTesterScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 20,
@@ -183,12 +185,10 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 12,
   },
   noResults: {
     fontSize: 14,
-    color: '#999',
     fontStyle: 'italic',
   },
   resultRow: {

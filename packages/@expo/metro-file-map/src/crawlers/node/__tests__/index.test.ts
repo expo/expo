@@ -12,6 +12,10 @@ import TreeFS from '../../../lib/TreeFS';
 import type { CrawlerOptions, FileData, FileMetadata, PerfLogger } from '../../../types';
 import nodeCrawl from '../index';
 
+// memfs is POSIX-only; pin to POSIX path semantics
+// TODO(@kitten): Fork the test for posix v windows
+jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
+
 const rootDir = '/project';
 const processFile = async () => null;
 
@@ -361,7 +365,7 @@ describe('node crawler', () => {
 
   describe('VCS directories', () => {
     test('skips .git and .hg directories without consulting ignore', async () => {
-      const ignore = jest.fn(() => false);
+      const ignore = jest.fn((_p: string) => false);
 
       vol.fromJSON({
         '/project/fruits/apple.js': 'a',
@@ -375,7 +379,7 @@ describe('node crawler', () => {
       expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
       // The early-skip happens before any `ignore()` call for the .git/.hg
       // directory entries, so the matcher is never asked about those paths.
-      const seenPaths = ignore.mock.calls.map((args) => args[0] as string);
+      const seenPaths = ignore.mock.calls.map((args) => args[0]);
       expect(seenPaths.some((p) => p.includes('.git'))).toBe(false);
       expect(seenPaths.some((p) => p.includes('.hg'))).toBe(false);
     });

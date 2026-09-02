@@ -2,11 +2,11 @@
 
 /// <reference types="./wa-sqlite/types" />
 
+import { type Changeset } from '../src/NativeSession';
+import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
 import { createSQLAction } from './SQLAction';
 import { SQLiteOptions } from './SQLiteOptions';
 import { sendWorkerResult } from './WorkerChannel';
-import { type Changeset } from '../src/NativeSession';
-import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
 import { AccessHandlePoolVFS } from './wa-sqlite/AccessHandlePoolVFS';
 import { MemoryVFS } from './wa-sqlite/MemoryVFS';
 import * as SQLite from './wa-sqlite/sqlite-api';
@@ -577,7 +577,7 @@ async function sessionCreateChangeset(
   const session = sessionIdMap.get(nativeSessionId);
   if (!session) throw new Error(`Session not found - nativeSessionId[${nativeSessionId}]`);
 
-  return sqlite3.session_changeset(session.pointer);
+  return new Uint8Array(sqlite3.session_changeset(session.pointer));
 }
 
 async function sessionCreateInvertedChangeset(
@@ -590,7 +590,7 @@ async function sessionCreateInvertedChangeset(
   const session = sessionIdMap.get(nativeSessionId);
   if (!session) throw new Error(`Session not found - nativeSessionId[${nativeSessionId}]`);
 
-  return sqlite3.session_changeset_inverted(session.pointer);
+  return new Uint8Array(sqlite3.session_changeset_inverted(session.pointer));
 }
 
 async function sessionApplyChangeset(
@@ -611,7 +611,7 @@ async function sessionInvertChangeset(
   changeset: Changeset
 ): Promise<Changeset> {
   const { sqlite3 } = await maybeInitAsync();
-  return sqlite3.changeset_invert(changeset);
+  return new Uint8Array(sqlite3.changeset_invert(changeset));
 }
 
 //#endregion Request handlers

@@ -70,7 +70,7 @@ Also, set `CFBundleAllowMixedLocalizations` to `true` in your **ios/[app]/Info.p
 
 ## Usage
 
-<SnackInline label="Apple Authentication Usage" dependencies={['expo-apple-authentication']} platforms={['ios']}>
+<SnackInline label="Apple Authentication usage" dependencies={['expo-apple-authentication']} platforms={['ios']}>
 
 ```jsx
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -130,7 +130,7 @@ When you sign into Expo Go, the identifiers and values you receive will likely b
 You can do limited testing of this library on the iOS Simulator. However, not all methods will behave the same as on a device,
 so we highly recommend testing on a real device when possible while developing.
 
-## Verifying the Response from Apple
+## Verifying the response from Apple
 
 Apple's response includes a signed JWT with information about the user. To ensure that the response came from Apple,
 you can cryptographically verify the signature with Apple's public key, which is published at https://appleid.apple.com/auth/keys.

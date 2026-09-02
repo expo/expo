@@ -67,6 +67,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Image component',
+    route: 'ui/image',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageScreen'));
+    },
+  },
+  {
     name: 'Radio Button component',
     route: 'ui/radio-button',
     options: {},
@@ -152,6 +160,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CommunityMenuScreen'));
+    },
+  },
+  {
+    name: 'Community PagerView replacement',
+    route: 'ui/community-pager-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPagerViewScreen'));
     },
   },
   {
@@ -243,6 +259,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BasicTextField component',
+    route: 'ui/basicTextField',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BasicTextFieldScreen'));
+    },
+  },
+  {
     name: 'Progress component',
     route: 'ui/progress',
     options: {},
@@ -256,6 +280,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'NavigationBar component',
+    route: 'ui/navigation-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationBarScreen'));
     },
   },
   {
@@ -371,6 +403,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Snackbar component',
+    route: 'ui/snackbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SnackbarScreen'));
+    },
+  },
+  {
     name: 'Tooltip component',
     route: 'ui/tooltip',
     options: {},
@@ -384,6 +424,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'Loading Indicator component',
+    route: 'ui/loading-indicator',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LoadingIndicatorScreen'));
     },
   },
 ];

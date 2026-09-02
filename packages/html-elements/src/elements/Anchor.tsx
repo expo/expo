@@ -1,7 +1,7 @@
 import { Linking, Platform } from 'react-native';
 
-import type { LinkProps } from './Text.types';
 import Text from '../primitives/Text';
+import type { LinkProps } from './Text.types';
 
 export function A({ href, target, download, rel, ...props }: LinkProps) {
   const nativeProps = Platform.select<LinkProps>({

@@ -3,7 +3,13 @@ import FontObserver from 'fontfaceobserver';
 
 import type { ExpoFontLoaderModule } from './ExpoFontLoader';
 import type { UnloadFontOptions } from './Font';
-import { FontDisplay, type FontResource, type ServerFontResourceDescriptor } from './Font.types';
+import { FontDisplay, type FontResource } from './Font.types';
+import {
+  addServerFont,
+  getLoadedServerFonts,
+  getServerResourceDescriptors as readServerResourceDescriptors,
+  isServerFontLoaded,
+} from './serverContext';
 
 function getFontFaceStyleSheet(): CSSStyleSheet | null {
   if (typeof window === 'undefined') {
@@ -34,6 +40,21 @@ function getFontFaceRules(): RuleItem[] {
   return [];
 }
 
+// `_createWebFontTemplate` writes the family name quoted, but engines disagree about whether
+// the CSSOM keeps the quotes (Firefox always does), so normalize them away before comparing.
+function normalizeFontFamilyName(fontFamily: string): string {
+  // jsdom leaves `style.fontFamily` undefined on the `@font-face` rules it parses.
+  const trimmed = fontFamily?.trim();
+  if (!trimmed) {
+    return '';
+  }
+  const quote = trimmed[0];
+  if (trimmed.length >= 2 && (quote === '"' || quote === "'") && trimmed.endsWith(quote)) {
+    return trimmed.slice(1, -1).replace(/\\(.)/g, '$1');
+  }
+  return trimmed;
+}
+
 function getFontFaceRulesMatchingResource(
   fontFamilyName: string,
   options?: UnloadFontOptions
@@ -41,36 +62,10 @@ function getFontFaceRulesMatchingResource(
   const rules = getFontFaceRules();
   return rules.filter(({ rule }) => {
     return (
-      rule.style.fontFamily === fontFamilyName &&
+      normalizeFontFamilyName(rule.style.fontFamily) === fontFamilyName &&
       (options && options.display ? options.display === (rule.style as any).fontDisplay : true)
     );
   });
-}
-
-const serverContext: Set<{ name: string; css: string; resourceId: string }> = new Set();
-
-function getServerResourceDescriptors(): ServerFontResourceDescriptor[] {
-  const entries = [...serverContext.entries()];
-  if (!entries.length) {
-    return [];
-  }
-  const css = entries.map(([{ css }]) => css).join('\n');
-  const links = entries.map(([{ resourceId }]) => resourceId);
-  // TODO: Maybe return nothing if no fonts were loaded.
-  return [
-    {
-      css,
-      id: ID,
-      type: 'style' as const,
-    },
-    ...links.map((resourceId) => ({
-      as: 'font' as const,
-      crossOrigin: '' as const,
-      href: resourceId,
-      rel: 'preload' as const,
-      type: 'link' as const,
-    })),
-  ];
 }
 
 const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
@@ -87,13 +82,13 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
     const sheet = getFontFaceStyleSheet();
     if (!sheet) return;
     const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
-    for (const item of items) {
+    for (const item of items.reverse()) {
       sheet.deleteRule(item.index);
     }
   },
 
   getServerResources(): string[] {
-    const elements = getServerResourceDescriptors();
+    const elements = readServerResourceDescriptors();
 
     return elements
       .map((element) => {
@@ -110,26 +105,20 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
   },
 
   getServerResourceDescriptors() {
-    return getServerResourceDescriptors();
-  },
-
-  resetServerContext() {
-    serverContext.clear();
+    return readServerResourceDescriptors();
   },
 
   getLoadedFonts(): string[] {
     if (typeof window === 'undefined') {
-      return [...serverContext.values()].map(({ name }) => name);
+      return getLoadedServerFonts();
     }
     const rules = getFontFaceRules();
-    return rules.map(({ rule }) => rule.style.fontFamily);
+    return rules.map(({ rule }) => normalizeFontFamilyName(rule.style.fontFamily));
   },
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
     if (typeof window === 'undefined') {
-      return !![...serverContext.values()].find((asset) => {
-        return asset.name === fontFamilyName;
-      });
+      return isServerFontLoaded(fontFamilyName);
     }
     return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
   },
@@ -145,7 +134,7 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
       );
     }
     if (typeof window === 'undefined') {
-      serverContext.add({
+      addServerFont({
         name: fontFamilyName,
         css: _createWebFontTemplate(fontFamilyName, resource),
         // @ts-expect-error: typeof string
@@ -208,10 +197,16 @@ function getStyleElement(): HTMLStyleElement {
   return styleElement;
 }
 
+const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
+
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  return `@font-face{font-family:"${fontFamily}";src:url("${resource.uri}");font-display:${
-    resource.display || FontDisplay.AUTO
-  }}`;
+  const display =
+    typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)
+      ? resource.display
+      : FontDisplay.AUTO;
+  return `@font-face{font-family:${JSON.stringify(fontFamily)};src:url(${JSON.stringify(
+    resource.uri
+  )});font-display:${display}}`;
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {

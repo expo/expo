@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 struct JavaScriptActorTests {
@@ -53,6 +53,17 @@ struct JavaScriptActorTests {
 
     #expect(throws: CustomError.self) {
       try JavaScriptActor.assumeIsolated {
+        throw CustomError()
+      }
+    }
+  }
+
+  @Test
+  func `assumeIsolated preserves typed error`() {
+    struct CustomError: Error {}
+
+    #expect(throws: CustomError.self) {
+      try JavaScriptActor.assumeIsolated { () throws(CustomError) -> Int in
         throw CustomError()
       }
     }

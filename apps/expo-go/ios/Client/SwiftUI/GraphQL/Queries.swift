@@ -5,18 +5,14 @@ import Foundation
 struct Queries {
   static func getCurrentUser() -> String {
     return """
-    query Home_CurrentUserActor {
-      meUserActor {
+    query Home_CurrentActor {
+      meActor {
         __typename
         id
-        username
-        firstName
-        lastName
-        profilePhoto
-        bestContactEmail
         accounts {
           id
           name
+          profileImageUrl
           ownerUserActor {
             id
             username
@@ -25,6 +21,16 @@ struct Queries {
             fullName
             lastName
           }
+        }
+        ... on UserActor {
+          username
+          firstName
+          lastName
+          profilePhoto
+          bestContactEmail
+        }
+        ... on PartnerActor {
+          username
         }
       }
     }
@@ -141,6 +147,7 @@ struct Queries {
             accounts {
               id
               name
+              profileImageUrl
               ownerUserActor {
                 id
                 username

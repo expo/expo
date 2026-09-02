@@ -1,5 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { spawn, execSync, spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -40,7 +41,7 @@ export const FrameworkVerifier = {
     );
 
     // Check required tools once
-    const toolsCheck = checkRequiredTools();
+    const toolsCheck = await checkRequiredTools();
     if (!toolsCheck.success) {
       throw new Error(toolsCheck.message);
     }
@@ -390,9 +391,9 @@ const execCommand = (
 /**
  * Checks if a command exists
  */
-const commandExists = (command: string): boolean => {
+const commandExists = async (command: string): Promise<boolean> => {
   try {
-    execSync(`command -v ${command}`, { stdio: 'ignore' });
+    await spawnAsync('which', [command], { stdio: 'ignore' });
     return true;
   } catch {
     return false;
@@ -402,10 +403,10 @@ const commandExists = (command: string): boolean => {
 /**
  * Gets the path to swift-frontend
  */
-const getSwiftFrontendPath = (): string | null => {
+const getSwiftFrontendPath = async (): Promise<string | null> => {
   try {
-    const result = execSync('xcrun --find swift-frontend', { encoding: 'utf-8' });
-    return result.trim();
+    const result = await spawnAsync('xcrun', ['--find', 'swift-frontend'], { stdio: 'pipe' });
+    return result.stdout.trim() || null;
   } catch {
     return null;
   }
@@ -414,10 +415,12 @@ const getSwiftFrontendPath = (): string | null => {
 /**
  * Gets the SDK path for a given SDK name
  */
-const getSdkPath = (sdkName: string): string | null => {
+const getSdkPath = async (sdkName: string): Promise<string | null> => {
   try {
-    const result = execSync(`xcrun --sdk ${sdkName} --show-sdk-path`, { encoding: 'utf-8' });
-    return result.trim();
+    const result = await spawnAsync('xcrun', ['--sdk', sdkName, '--show-sdk-path'], {
+      stdio: 'pipe',
+    });
+    return result.stdout.trim() || null;
   } catch {
     return null;
   }
@@ -426,17 +429,17 @@ const getSdkPath = (sdkName: string): string | null => {
 /**
  * Verifies required tools are available
  */
-const checkRequiredTools = (): XCFrameworkVerificationResult => {
+const checkRequiredTools = async (): Promise<XCFrameworkVerificationResult> => {
   const requiredTools = ['plutil', 'codesign', 'lipo', 'file', 'otool', 'xcrun', 'clang'];
   const missingTools: string[] = [];
 
   for (const tool of requiredTools) {
-    if (!commandExists(tool)) {
+    if (!(await commandExists(tool))) {
       missingTools.push(tool);
     }
   }
 
-  const swiftFrontend = getSwiftFrontendPath();
+  const swiftFrontend = await getSwiftFrontendPath();
   if (!swiftFrontend) {
     missingTools.push('swift-frontend');
   }
@@ -718,7 +721,7 @@ const verifyModularHeaders = async (
     };
   }
 
-  const sdkPath = getSdkPath(slice.sdkName);
+  const sdkPath = await getSdkPath(slice.sdkName);
   if (!sdkPath) {
     return {
       success: false,
@@ -853,7 +856,7 @@ const verifyClangModuleImport = async (
     };
   }
 
-  const sdkPath = getSdkPath(slice.sdkName);
+  const sdkPath = await getSdkPath(slice.sdkName);
   if (!sdkPath) {
     return {
       success: false,

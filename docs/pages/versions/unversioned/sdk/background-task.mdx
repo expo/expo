@@ -166,10 +166,10 @@ export default function BackgroundTaskScreen() {
       </View>
       <Button
         disabled={status === BackgroundTask.BackgroundTaskStatus.Restricted}
-        title={isRegistered ? 'Cancel Background Task' : 'Schedule Background Task'}
+        title={isRegistered ? 'Cancel background task' : 'Schedule background task'}
         onPress={toggle}
       />
-      <Button title="Check Background Task Status" onPress={updateAsync} />
+      <Button title="Check background task status" onPress={updateAsync} />
     </View>
   );
 }
@@ -210,13 +210,13 @@ function App() {
     await BackgroundTask.triggerTaskWorkerForTestingAsync();
   };
 
-  return <Button title="Trigger Background Task" onPress={triggerTask} />;
+  return <Button title="Trigger background task" onPress={triggerTask} />;
 }
 ```
 
 ## Inspecting background tasks&ensp;<PlatformTags platforms={['android']} />
 
-To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks:
+To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks and replace `<package-name>` with your app's [Android package name](/versions/latest/config/app/#package) in app config:
 
 <Terminal
   cmd={['$ adb shell dumpsys jobscheduler | grep -A 40 -m 1 -E "JOB #.* <package-name>"']}

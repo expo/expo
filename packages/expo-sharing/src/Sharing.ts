@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import type { ResolvedSharePayload, SharePayload, SharingOptions } from './Sharing.types';
 import SharingNativeModule from './SharingNativeModule';

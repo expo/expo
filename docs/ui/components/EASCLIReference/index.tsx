@@ -81,9 +81,9 @@ const CommandSection = ({ command }: { command: CommandData }) => {
   const flagsList = sections.flags ? parseListEntries(sections.flags) : [];
 
   return (
-    <section className="border-secondary border-b pb-8 last:border-0 last:pb-0">
-      <H3 id={slug} className="translate-y-[2px] self-center">
-        <CODE className="font-mono text-[inherit]">{command.command}</CODE>
+    <section className="border-b border-secondary pb-8 last:border-0 last:pb-0">
+      <H3 id={slug} className="translate-y-0.5 self-center">
+        <CODE className="font-mono text-inherit">{command.command}</CODE>
       </H3>
       <P className="mt-2 mb-5">{renderInlineContent(description)}</P>
 

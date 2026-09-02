@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../ExpoHeader.pch"
 #include "ExpoViewState.h"
 

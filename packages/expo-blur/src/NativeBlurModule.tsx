@@ -1,6 +1,6 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeView } from 'expo';
 import { View } from 'react-native';
 
-export const NativeBlurView = requireNativeViewManager('ExpoBlur', 'ExpoBlurView');
+export const NativeBlurView = requireNativeView('ExpoBlur', 'ExpoBlurView');
 
 export const NativeBlurTargetView = View;

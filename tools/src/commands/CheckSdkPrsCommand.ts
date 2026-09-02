@@ -21,7 +21,46 @@ type GhPr = {
 type ActionOptions = {
   all: boolean;
   links: boolean;
+  who: boolean;
 };
+
+type TimelineEvent = {
+  event: string;
+  actor?: { login: string } | null;
+  label?: { name: string } | null;
+  created_at?: string;
+};
+
+/**
+ * Given a PR's timeline events, returns the login of whoever most recently
+ * applied the given label, or null if it was never applied. A label can be
+ * added, removed, and re-added, so we take the latest matching `labeled` event.
+ */
+export function getLabelAuthor(events: TimelineEvent[], labelName: string): string | null {
+  const labeledEvents = events
+    .filter((event) => event.event === 'labeled' && event.label?.name === labelName)
+    .sort((a, b) => (a.created_at ?? '').localeCompare(b.created_at ?? ''));
+  return labeledEvents[labeledEvents.length - 1]?.actor?.login ?? null;
+}
+
+/**
+ * Fetches a PR's timeline and returns whoever most recently applied the label.
+ * The label isn't attributed on the PR object itself, so this is one extra API
+ * request per PR. Returns null if the timeline can't be read.
+ */
+async function fetchLabelAuthor(prNumber: number, labelName: string): Promise<string | null> {
+  try {
+    const pages = await spawnJSONCommandAsync<TimelineEvent[][]>('gh', [
+      'api',
+      `/repos/expo/expo/issues/${prNumber}/timeline`,
+      '--paginate',
+      '--slurp',
+    ]);
+    return getLabelAuthor(pages.flat(), labelName);
+  } catch {
+    return null;
+  }
+}
 
 let linksEnabled = true;
 
@@ -150,9 +189,34 @@ function formatPublishInfo(info: PublishInfo): string {
 
 const ANSI_RE = /\x1b\[[0-9;]*m|\x1b\]8;;[^\x07]*\x07/g;
 
+function visibleWidth(str: string): number {
+  return str.replace(ANSI_RE, '').length;
+}
+
 function pad(str: string, width: number): string {
-  const visible = str.replace(ANSI_RE, '').length;
-  return str + ' '.repeat(Math.max(0, width - visible));
+  return str + ' '.repeat(Math.max(0, width - visibleWidth(str)));
+}
+
+const COLUMN_GAP = '  ';
+
+/**
+ * Renders a grid of cells into aligned, indented lines. Each column is sized to
+ * its widest cell, columns that are empty in every row are dropped (so unused
+ * fields don't leave a gap), and the last kept column is left unpadded.
+ */
+export function renderRows(rows: string[][]): string[] {
+  const columnCount = rows.reduce((max, row) => Math.max(max, row.length), 0);
+  const widths = Array.from({ length: columnCount }, (_, c) =>
+    rows.reduce((max, row) => Math.max(max, visibleWidth(row[c] ?? '')), 0)
+  );
+  const keptColumns = widths.map((_, c) => c).filter((c) => widths[c] > 0);
+  return rows.map((row) => {
+    const cells = keptColumns.map((c, i) => {
+      const cell = row[c] ?? '';
+      return i === keptColumns.length - 1 ? cell : pad(cell, widths[c]);
+    });
+    return COLUMN_GAP + cells.join(COLUMN_GAP);
+  });
 }
 
 function formatReviewDecision(decision: GhPr['reviewDecision']): string {
@@ -168,7 +232,9 @@ function formatReviewDecision(decision: GhPr['reviewDecision']): string {
   }
 }
 
-function formatPrLine(pr: GhPr, publishInfo?: PublishInfo): string {
+// Builds the ordered cells for one PR row. Empty cells are collapsed by
+// `renderRows`, so a column is only shown when at least one row populates it.
+function prCells(pr: GhPr, publishInfo?: PublishInfo, labelAuthor?: string | null): string[] {
   const num = link(chalk.yellow(`#${pr.number}`), pr.url);
   const sha = pr.mergeCommit
     ? link(
@@ -189,7 +255,14 @@ function formatPrLine(pr: GhPr, publishInfo?: PublishInfo): string {
   // For merged PRs show merge age, for open PRs show time since last activity
   const timestamp = pr.mergedAt ?? pr.updatedAt;
   const age = timestamp ? chalk.dim(formatAge(timestamp)) : '';
-  return `  ${pad(num, 8)}  ${pad(sha, 10)}  ${pad(status, 17)}  ${pad(title, 60)}  ${pad(author, 20)}  ${age}`;
+  // `labelAuthor === undefined` means the column is off; `null` means unknown.
+  const labeledBy =
+    labelAuthor === undefined
+      ? ''
+      : labelAuthor
+        ? link(chalk.dim(`labeled by @${labelAuthor}`), `https://github.com/${labelAuthor}`)
+        : chalk.dim('labeled by ?');
+  return [num, sha, status, title, author, labeledBy, age];
 }
 
 async function action(sdk: string | undefined, options: ActionOptions) {
@@ -307,38 +380,54 @@ async function action(sdk: string | undefined, options: ActionOptions) {
     (a, b) => new Date(b.mergedAt!).getTime() - new Date(a.mergedAt!).getTime()
   );
 
+  const labelAuthors = new Map<number, string | null>();
+  if (options.who) {
+    const displayed = options.all
+      ? [...needsCherryPick, ...alreadyCherryPicked, ...openPrs, ...closedPrs]
+      : needsCherryPick;
+    logger.info(
+      `Fetching label authors for ${displayed.length} PR${displayed.length === 1 ? '' : 's'}...`
+    );
+    await Promise.all(
+      displayed.map(async (pr) => {
+        labelAuthors.set(pr.number, await fetchLabelAuthor(pr.number, label));
+      })
+    );
+  }
+  const labelAuthorFor = (pr: GhPr): string | null | undefined =>
+    options.who ? (labelAuthors.get(pr.number) ?? null) : undefined;
+
+  const logPrTable = (prs: GhPr[]) => {
+    const rows = prs.map((pr) => prCells(pr, publishInfos.get(pr.number), labelAuthorFor(pr)));
+    for (const line of renderRows(rows)) {
+      logger.log(line);
+    }
+  };
+
   // Display results
   if (options.all) {
     if (needsCherryPick.length > 0) {
       logger.log('');
       logger.log(chalk.red.bold(`Needs Cherry-Pick (${needsCherryPick.length}):`));
-      for (const pr of needsCherryPick) {
-        logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
-      }
+      logPrTable(needsCherryPick);
     }
 
     if (alreadyCherryPicked.length > 0) {
       logger.log('');
       logger.log(chalk.green.bold(`Already Cherry-Picked (${alreadyCherryPicked.length}):`));
-      for (const pr of alreadyCherryPicked) {
-        logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
-      }
+      logPrTable(alreadyCherryPicked);
     }
 
     if (openPrs.length > 0) {
       logger.log('');
       logger.log(chalk.blue.bold(`Open (${openPrs.length}):`));
-      for (const pr of openPrs) {
-        logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
-      }
+      logPrTable(openPrs);
     }
 
     if (closedPrs.length > 0) {
       logger.log('');
       logger.log(chalk.gray.bold(`Closed without Merge (${closedPrs.length}):`));
-      for (const pr of closedPrs) {
-        logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
-      }
+      logPrTable(closedPrs);
     }
   } else {
     if (needsCherryPick.length === 0) {
@@ -351,9 +440,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
     logger.log('');
     logger.log(chalk.bold(`PRs that need cherry-picking to ${branch}:`));
     logger.log('');
-    for (const pr of needsCherryPick) {
-      logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
-    }
+    logPrTable(needsCherryPick);
   }
 
   // Summary
@@ -383,6 +470,11 @@ export default (program: Command) => {
   A PR is "published" if all packages it modified have appeared in a publish commit.`
     )
     .option('-a, --all', 'Show all PRs grouped by status', false)
+    .option(
+      '--who',
+      'Show who applied the SDK label to each PR (one extra API request per PR)',
+      false
+    )
     .option('--no-links', 'Disable clickable terminal hyperlinks')
     .asyncAction(action);
 };

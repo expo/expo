@@ -29,7 +29,7 @@ internal class StatusBarVisibilityController {
 
   /**
    Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
-   that should be suppressable with -Wdeprecated-declarations, but is not.
+   that should be suppressible with -Wdeprecated-declarations, but is not.
    The warning suggests to use -[UIViewController prefersStatusBarHidden].
    Unfortunately until we stop presenting view controllers on detached VCs
    the setting doesn't have any effect and we need to set status bar like that.

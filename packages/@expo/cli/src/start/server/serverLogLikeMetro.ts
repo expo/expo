@@ -9,14 +9,12 @@ import chalk from 'chalk';
 import path from 'path';
 import * as stackTraceParser from 'stacktrace-parser';
 
+import { env } from '../../utils/env';
+import { memoize } from '../../utils/fn';
 import { LogBoxLog } from './metro/log-box/LogBoxLog';
 import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
 import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
 import { getStackAsFormattedLog } from './metro/metroErrorInterface';
-import { env } from '../../utils/env';
-import { memoize } from '../../utils/fn';
-
-const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 const CONSOLE_METHODS = [
   'trace',
@@ -155,9 +153,8 @@ export function parseErrorStringToObject(errorString: string) {
       message,
       stack: parsedStack,
     };
-  } catch (e) {
+  } catch {
     // If parsing fails, return the original error string
-    debug('Failed to parse error stack:', e);
     return null;
   }
 }

@@ -107,9 +107,8 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/versions/latest/sdk/constants/#manifest) (or
- * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
- * object for the update that's currently running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) object for the update
+ * that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -320,7 +319,7 @@ export async function clearLogEntriesAsync(): Promise<void> {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
- > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ > **Note:** [`reloadAsync()`](#updatesreloadasyncoptions) can be called after promise resolution to
  * reload the app using the most recently downloaded version. Otherwise, the update will be applied
  * on the next app cold start.
  *
@@ -352,7 +351,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
 }
 
 /**
- * Overrides updates URL and reuqest headers in runtime from build time.
+ * Overrides updates URL and request headers in runtime from build time.
  * This method allows you to load specific updates from a URL that you provide.
  * Use this method at your own risk, as it may cause unexpected behavior.
  * Because of the risk, this method requires `disableAntiBrickingMeasures` to be set to `true` in the **app.json** file.

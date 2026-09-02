@@ -16,7 +16,7 @@ import { executeAsync } from '../utils/process';
 
 export { getTemporaryPath } from '../utils/path';
 
-export const bin = require.resolve('../../build/bin/cli');
+export const bin = require.resolve('../../bin/cli');
 
 // Set this to true to enable caching and prevent rerunning pnpm installs
 const testingLocally = !process.env.CI;
@@ -164,8 +164,13 @@ export async function createFromFixtureAsync(
       await JsonFile.writeAsync(staticConfigPath, modifiedConfig as any);
     }
 
-    // Install the packages for e2e experience.
-    await executePnpmAsync(projectRoot, ['install']);
+    // Reuse virtual store installs and prefer offline artifacts to speed up repeated installs
+    await executePnpmAsync(projectRoot, ['install', '--prefer-offline'], {
+      env: {
+        NODE_ENV: 'development',
+        npm_config_enable_global_virtual_store: 'true',
+      },
+    });
   } catch (error) {
     log.error(error);
     throw error;

@@ -1,18 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Updates from 'expo-updates';
 import * as React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import { Page, Section } from '../components/Page';
 
 const key = 'random_value';
 
 function PersistExample() {
   const [storedNumber, setStoredNumber] = React.useState('0');
-
-  React.useEffect(() => {
-    getItem();
-  }, []);
 
   const getItem = React.useCallback(async () => {
     const value = await AsyncStorage.getItem(key);
@@ -22,6 +19,10 @@ function PersistExample() {
       setStoredNumber('0');
     }
   }, [setStoredNumber]);
+
+  React.useEffect(() => {
+    getItem();
+  }, []);
 
   const increment = React.useCallback(async () => {
     const newNumber = +storedNumber > 0 ? +storedNumber + 10 : 10;
@@ -38,7 +39,7 @@ function PersistExample() {
 
   return (
     <View>
-      <Text style={styles.text}>Current: {storedNumber}</Text>
+      <BodyText style={styles.text}>Current: {storedNumber}</BodyText>
       <Button title="Increment by 10" onPress={increment} />
       <Button title="Reset" onPress={clearItem} />
 
@@ -63,7 +64,6 @@ AsyncStorageScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   text: {
-    color: '#000000',
     fontSize: 20,
     textAlign: 'center',
     margin: 10,

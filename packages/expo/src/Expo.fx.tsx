@@ -2,9 +2,7 @@
 import './winter';
 import './async-require';
 import 'expo-asset';
-
 import 'expo/virtual/rsc';
-
 import { AppRegistry, NativeModules, LogBox } from 'react-native';
 
 import { isRunningInExpoGo } from './environment/ExpoGo';

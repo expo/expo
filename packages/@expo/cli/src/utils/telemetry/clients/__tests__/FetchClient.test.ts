@@ -39,7 +39,7 @@ describe(FetchClient, () => {
     // Ensure the event is sent through fetch
     expect(fetch).toHaveBeenCalled();
     // Ensure the body contains the record
-    expect(JSON.parse((jest.mocked(fetch).mock.calls![0][1] as any).body)).toMatchObject({
+    expect(JSON.parse(jest.mocked(fetch).mock.calls[0]![1]!.body as string)).toMatchObject({
       sentAt: expect.any(String),
       batch: [{ ...record, sentAt: expect.any(String) }],
     });
@@ -53,7 +53,7 @@ describe(FetchClient, () => {
     await client.record([createRecord(commandEvent('start'))]);
 
     // Ensure the controller is attached to the request
-    expect((jest.mocked(fetch).mock.calls[0][1] as any).signal).toBeDefined();
+    expect(jest.mocked(fetch).mock.calls[0]![1]!.signal).toBeDefined();
   });
 
   it('does not send empty records', async () => {

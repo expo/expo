@@ -103,7 +103,7 @@ class ModuleHolder<T : Module>(
     val method = definition.syncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    return method.callUserImplementation(args)
+    return method.callUserImplementation(args, module.appContext)
   }
 
   fun post(eventName: EventName) {

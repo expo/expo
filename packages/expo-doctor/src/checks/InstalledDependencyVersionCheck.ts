@@ -1,10 +1,10 @@
 import type { SpawnResult } from '@expo/spawn-async';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { parseInstallCheckOutput } from '../utils/parseInstallCheckOutput';
 import { spawnExpoCLI } from '../utils/spawnExpoCLI';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 function isSpawnResult(result: any): result is SpawnResult {
   return 'stderr' in result && 'stdout' in result && 'status' in result;
@@ -41,7 +41,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       try {
         commandResult = await spawnExpoCLI(projectRoot, ['install', '--check', '--json'], {
           stdio: 'pipe',
-          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
+          env: { CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error) && error.status === 1) {
@@ -61,7 +61,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       try {
         await spawnExpoCLI(projectRoot, ['install', '--check'], {
           stdio: 'pipe',
-          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
+          env: { CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error)) {

@@ -1,4 +1,4 @@
-import { UnavailabilityError, Platform } from 'expo-modules-core';
+import { UnavailabilityError, Platform } from 'expo';
 
 import ExpoSMS from './ExpoSMS';
 import type { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';

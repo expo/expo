@@ -3,7 +3,7 @@ import type arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
-import type { Command } from '../../../bin/cli';
+import type { Command } from '../../index';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
 export const expoExportEmbed: Command = async (argv) => {
@@ -85,14 +85,7 @@ export const expoExportEmbed: Command = async (argv) => {
     );
   }
 
-  const [
-    { exportEmbedAsync },
-    { resolveOptions },
-    { logCmdError },
-    { resolveCustomBooleanArgsAsync },
-  ] = await Promise.all([
-    import('./exportEmbedAsync.js'),
-    import('./resolveOptions.js'),
+  const [{ logCmdError }, { resolveCustomBooleanArgsAsync }] = await Promise.all([
     import('../../utils/errors.js'),
     import('../../utils/resolveArgs.js'),
   ]);
@@ -109,6 +102,16 @@ export const expoExportEmbed: Command = async (argv) => {
     });
 
     const projectRoot = path.resolve(parsed.projectRoot);
-    return exportEmbedAsync(projectRoot, resolveOptions(projectRoot, args, parsed));
+
+    const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
+    loadEnvFiles(projectRoot, {
+      mode: (parsed.args['--dev'] ?? true) ? 'development' : 'production',
+    });
+
+    const { resolveOptions } = await import('./resolveOptions.js');
+    const options = resolveOptions(projectRoot, args, parsed);
+
+    const { exportEmbedAsync } = await import('./exportEmbedAsync.js');
+    return exportEmbedAsync(projectRoot, options);
   })().catch(logCmdError);
 };

@@ -1,0 +1,39 @@
+apply plugin: 'com.android.test'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+android {
+    namespace 'dev.expo.payments.macrobenchmark'
+    compileSdk rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunnerArguments['androidx.benchmark.suppressErrors'] = 'EMULATOR'
+    }
+
+    buildTypes {
+        benchmark {
+            debuggable true
+            signingConfig debug.signingConfig
+            matchingFallbacks = ['release']
+        }
+    }
+
+    targetProjectPath ':app'
+    experimentalProperties['android.experimental.self-instrumenting'] = true
+}
+
+dependencies {
+    implementation 'androidx.benchmark:benchmark-macro-junit4:1.4.1'
+    implementation expoLibs.androidx.junit
+    implementation expoLibs.androidx.espresso.core
+    implementation expoLibs.androidx.uiautomator
+}
+
+androidComponents {
+    beforeVariants(selector().all()) { variant ->
+        variant.enable = variant.buildType == 'benchmark'
+    }
+}

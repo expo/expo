@@ -163,7 +163,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 export default function Route() {
   const { everything } = useLocalSearchParams<{
-    /* @info <b>everything</b> will be an array of path segments, even if there's only one */
+    /* @info **everything** will be an array of path segments, even if there's only one */
     everything: string[];
     /* @end */
   }>();
@@ -185,11 +185,11 @@ import { useLocalSearchParams } from 'expo-router';
 
 export default function Route() {
   const { everything } = useLocalSearchParams<{
-    /* @info <b>everything</b> will be an array of path segments, even if there's only one */
+    /* @info **everything** will be an array of path segments, even if there's only one */
     everything: string[];
-    /* @info <b>query</b> is an optional search parameter */
+    /* @info **query** is an optional search parameter */
     query?: string;
-    /* @info <b>query2</b> is an optional search parameter */
+    /* @info **query2** is an optional search parameter */
     query2?: string;
     /* @end */
   }>();
@@ -222,7 +222,7 @@ export default function Page() {
       value={search}
       onChangeText={search => {
         setSearch(search);
-        /* @info Set the search parameter <b>query</b> to the text input <b>search</b> */
+        /* @info Set the search parameter **query** to the text input **search** */
         router.setParams({ query: search });
         /* @end */
       }}

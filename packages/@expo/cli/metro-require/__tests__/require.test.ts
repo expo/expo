@@ -1,3 +1,4 @@
+// @ts-nocheck — vendored verbatim from Metro (see header URL); kept loosely typed to ease upstream syncs
 /**
  * Copyright © 2024 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.

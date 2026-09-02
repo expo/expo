@@ -35,23 +35,27 @@ struct DevMenuDeveloperTools: View {
         }
         .buttonStyle(.plain)
 
-        Divider()
+        if viewModel.showPerformanceMonitor {
+          Divider()
 
-        DevMenuActionButton(
-          title: "Toggle performance monitor",
-          icon: "speedometer",
-          action: viewModel.togglePerformanceMonitor,
-          disabled: !(viewModel.devSettings?.isPerfMonitorAvailable ?? true)
-        )
+          DevMenuActionButton(
+            title: "Toggle performance monitor",
+            icon: "speedometer",
+            action: viewModel.togglePerformanceMonitor,
+            disabled: !(viewModel.devSettings?.isPerfMonitorAvailable ?? true)
+          )
+        }
 
-        Divider()
+        if viewModel.showElementInspector {
+          Divider()
 
-        DevMenuActionButton(
-          title: "Toggle element inspector",
-          icon: "viewfinder",
-          action: viewModel.toggleElementInspector,
-          disabled: !(viewModel.devSettings?.isElementInspectorAvailable ?? true)
-        )
+          DevMenuActionButton(
+            title: "Toggle element inspector",
+            icon: "viewfinder",
+            action: viewModel.toggleElementInspector,
+            disabled: !(viewModel.devSettings?.isElementInspectorAvailable ?? true)
+          )
+        }
 
         if viewModel.devSettings?.isJSInspectorAvailable == true {
           Divider()
@@ -87,10 +91,6 @@ struct DevMenuDeveloperTools: View {
       .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))
     }
   }
-}
-
-#Preview {
-  DevMenuDeveloperTools()
 }
 
 // swiftlint:enable closure_body_length

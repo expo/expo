@@ -361,7 +361,7 @@ async function selectParcelsToPublish(
     if (
       !(parcel.state.releaseVersion === null || parcel.state.releaseVersion === undefined) ||
       skipped.has(packageName) ||
-      !isParcelUnpublished(parcel)
+      (!options.force && !isParcelUnpublished(parcel))
     ) {
       // Skip prompting if a release version is already set (chosen version or explicitly null)
       // or if the user previously chose to skip this package.

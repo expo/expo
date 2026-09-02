@@ -1,5 +1,10 @@
+import { constants as bufferConstants } from 'node:buffer';
+
 import type { DevToolsPluginOutput } from './DevToolsPlugin.schema';
 import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
+
+// Cap accumulated output at V8's max single-string length to bound heap growth.
+const MAX_OUTPUT_LENGTH = bufferConstants.MAX_STRING_LENGTH;
 
 /**
  * Class that collects and manages output from executed plugin commands
@@ -15,11 +20,30 @@ export class DevToolsPluginCliExtensionResults {
   constructor(private onOutput?: (output: DevToolsPluginOutput) => void) {}
 
   private _output: DevToolsPluginOutput = [];
+  private _totalLength = 0;
+  private _truncated = false;
 
   public append(output: string, level: 'info' | 'warning' | 'error' = 'info') {
+    if (this._truncated) return;
+    if (this._totalLength + output.length > MAX_OUTPUT_LENGTH) {
+      this._truncated = true;
+      const message = {
+        type: 'text' as const,
+        text: `Output truncated: plugin exceeded V8's max string length (${MAX_OUTPUT_LENGTH} chars). Reduce output, paginate, or write to a file.`,
+        level: 'error' as const,
+      };
+      this._output.push(message);
+      this.onOutput?.([message]);
+      return;
+    }
+    this._totalLength += output.length;
     const results = this.parseOutputText(output, level);
     this._output.push(...results);
     this.onOutput?.(results);
+  }
+
+  public isTruncated(): boolean {
+    return this._truncated;
   }
 
   public exit(code: number) {

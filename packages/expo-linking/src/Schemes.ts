@@ -1,7 +1,7 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 
-const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
+const LINKING_GUIDE_URL = `https://docs.expo.dev/linking/into-your-app/`;
 
 // @docsMissing
 export function hasCustomScheme(): boolean {
@@ -86,7 +86,7 @@ function getNativeAppIdScheme(): string | null {
 
 // @needsAudit
 /**
- * Ensure the user has linked the expo-constants manifest in bare workflow.
+ * Ensure the user has linked the expo-constants manifest in an existing React Native project.
  */
 export function hasConstantsManifest(): boolean {
   return !!Object.keys(Constants.expoConfig ?? {}).length;
@@ -99,7 +99,7 @@ export function resolveScheme(options: { scheme?: string; isSilent?: boolean }):
     !hasConstantsManifest()
   ) {
     throw new Error(
-      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`
+      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Set up the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`
     );
   }
 
@@ -156,7 +156,7 @@ export function resolveScheme(options: { scheme?: string; isSilent?: boolean }):
   // If no scheme is provided, we'll guess what the scheme is based on the manifest.
   // This is to attempt to keep managed apps working across expo build and EAS build.
   // EAS build ejects the app before building it so we can assume that the user will
-  // be using one of defined schemes.
+  // be using one of the defined schemes.
 
   // If the native app id is the only scheme,
   if (!!nativeAppId && !manifestSchemes.length && !options.isSilent) {

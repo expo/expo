@@ -95,7 +95,7 @@ describe(updatePackageJSONAsync, () => {
       scriptsChanged: true,
     });
 
-    expect(JSON.parse(vol.toJSON()['/package.json'])).toEqual({
+    expect(JSON.parse(vol.toJSON()['/package.json']!)).toEqual({
       dependencies: { expo: '1.0.0', 'react-native': '0.1.0' },
       scripts: { android: 'expo run:android', ios: 'expo run:ios' },
     });
@@ -137,7 +137,7 @@ describe(updatePackageJSONAsync, () => {
       scriptsChanged: false,
     });
 
-    expect(JSON.parse(vol.toJSON()['/package.json'])).toEqual({
+    expect(JSON.parse(vol.toJSON()['/package.json']!)).toEqual({
       dependencies: { unexpected: '1.0.0', expo: '1.0.0', 'react-native': '0.1.0' },
       scripts: { android: 'expo run:android', ios: 'expo run:ios' },
     });

@@ -1,0 +1,161 @@
+---
+title: Argent and Expo
+sidebar_title: Argent
+description: Use Argent to let your AI agent control, debug, and profile your Expo project on Android Emulators and iOS Simulators.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+[Argent](https://argent.swmansion.com) is an agentic toolkit from Software Mansion. Where an AI agent like Claude Code or Codex reads your code and documentation, Argent gives that same agent direct access to your running app: it can **control, debug, and profile** your Expo app on an Android Emulator or iOS Simulator. You set it up once and connect it to your editor through the [Model Context Protocol (MCP)](/mcp/).
+
+> **info** Argent is built and maintained by [Software Mansion](https://swmansion.com) and is free to use. For the complete list of its capabilities, see the [Argent website](https://argent.swmansion.com).
+
+<Prerequisites>
+  <Requirement title="Node.js 18 or later">
+    Argent's CLI requires Node.js version 18 or newer.
+  </Requirement>
+  <Requirement title="A running Android Emulator or iOS Simulator">
+    For Android, install the [Android SDK Platform Tools
+    (`adb`)](/workflow/android-studio-emulator/#set-up-android-studio), make sure `adb` is on your
+    `PATH`, and have an emulator available. For iOS, use macOS with [Xcode
+    installed](/workflow/ios-simulator/#setup-xcode-and-watchman).
+  </Requirement>
+</Prerequisites>
+
+## Quick start
+
+<Step label="1">
+
+### Set up Argent
+
+From your Expo project's root directory, run the init command. The wizard detects your editor, registers the Argent MCP server, and copies its skills and agent definitions into your workspace.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx @swmansion/argent init'],
+    yarn: ['$ yarn dlx @swmansion/argent init'],
+    pnpm: ['$ pnpm dlx @swmansion/argent init'],
+    bun: ['$ bunx @swmansion/argent init'],
+  }}
+/>
+
+Your editor launches the Argent MCP server with the `argent` command, so install Argent globally and make sure that command is on your `PATH`. Then restart your editor so it picks up the new configuration.
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install -g @swmansion/argent'],
+    yarn: ['$ yarn global add @swmansion/argent'],
+    pnpm: ['$ pnpm add -g @swmansion/argent'],
+    bun: ['$ bun add -g @swmansion/argent'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+### Run your app on an emulator or simulator
+
+Argent acts on a running app, so start your Expo app on an Android Emulator or iOS Simulator. Use a [development build](/develop/development-builds/introduction/) or test in Expo Go, with the development server running.
+
+<Terminal
+  cmd={[
+    '# Run a development build on an emulator or simulator',
+    '$ npx expo run:android',
+    '$ npx expo run:ios',
+    '',
+    '# Or start the development server and test in Expo Go',
+    '$ npx expo start',
+  ]}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Prompt your agent
+
+Open your project in your editor, then open its agent panel and describe what you want to do with the running app. For example, ask it to launch the app, tap a button, and read the logs.
+
+</Step>
+
+<Step label="4">
+
+### Verify setup
+
+In your agent panel, enter the following prompt to confirm Argent can reach the running app:
+
+```text Example prompt
+Take a screenshot of the running app and describe what's on screen.
+```
+
+If the agent returns a screenshot and describes your app's current screen, Argent is connected correctly.
+
+</Step>
+
+## What Argent lets your agent do
+
+Once connected, your agent can work against the live app on the emulator or simulator:
+
+- **Control**: launch the app, tap, swipe, type into fields, open deep links, and navigate through accessibility trees to run multi-step flows.
+- **Debug**: read console logs, explore the view hierarchy, inspect the React component tree, and examine network requests and their payloads at both the JavaScript and native layers.
+- **Profile**: record React and native profiles together, trace slow React commits to the native stack frames behind them, and surface UI hangs, render cascades, and memory leaks.
+
+## Example prompts
+
+After setup, describe tasks in plain language. For example:
+
+| Task                 | Example prompt                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| Smoke-test a flow    | Launch the app, tap through onboarding, and tell me where it breaks from the logs. |
+| Verify the UI        | Take a screenshot of the home screen and confirm the product list rendered.        |
+| Debug a network call | Open the cart screen and show me the failing request and its response payload.     |
+| Inspect React state  | Open the settings screen and show me the React component tree for the toggle row.  |
+| Profile a slowdown   | Profile scrolling the products list and point me to the slowest commit.            |
+| Test a deep link     | Open the app through its deep link and confirm the right screen loads.             |
+
+## Use Argent with the rest of the Expo AI tooling
+
+Argent connects through MCP, so it works alongside Expo's own agent tooling. Pair it with Expo Skills and the Expo MCP Server so your agent knows Expo conventions while Argent drives the app.
+
+<BoxLink
+  title="Expo MCP Server"
+  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and EAS."
+  href="/mcp/#installation-and-setup"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Expo Skills"
+  description="Install the plugin that teaches agents known-good Expo patterns."
+  href="/skills/#install-expo-skills"
+  Icon={BookOpen02Icon}
+/>
+
+## Manage Argent
+
+<Terminal
+  cmd={[
+    '# Refresh to the latest version and configuration',
+    '$ argent update',
+    '',
+    '# List feature flags and their state',
+    '$ argent flags',
+    '',
+    '# Unregister the MCP server and remove Argent',
+    '$ argent remove',
+  ]}
+/>
+
+## Limitations and tips
+
+- Argent supports Android Emulators and iOS Simulators.
+- Let Argent launch or relaunch the app on the device when it can. If you boot the device yourself, Argent may not be able to see system dialogs or native modals.
+- In Expo Go, Argent can control the app, read the React component tree, and run the React profiler. Native profiling needs a development build, because in Expo Go it profiles the Expo Go host app instead of your code.
+- The React component tree and the React profiler rely on the JavaScript debugging connection, so keep your development server running.
+- For the complete and current list of capabilities, see the [Argent documentation](https://argent.swmansion.com).

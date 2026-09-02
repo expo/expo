@@ -148,6 +148,7 @@ class ViewManagerWrapperDelegate(
 
   fun onDestroy(view: View) {
     try {
+      (view as? ComposeHostingView)?.disposeHostedComposition()
       definition.onViewDestroys?.invoke(view)
     } catch (exception: Throwable) {
       // The view wasn't constructed correctly, so errors are expected.
@@ -176,4 +177,12 @@ class ViewManagerWrapperDelegate(
         )
       }
   }
+}
+
+/**
+ * Implemented by Compose-based views to dispose their composition when the
+ * view is destroyed.
+ */
+interface ComposeHostingView {
+  fun disposeHostedComposition()
 }

@@ -3,15 +3,16 @@ import { useVideoPlayer, VideoTrack, VideoView, SubtitleTrack } from 'expo-video
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 
-import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import ConsoleBox from '../../components/ConsoleBox';
 import { E2EKeyValueBox } from '../../components/E2EKeyValueBox';
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
+import { localVideoSource, starVideoSource } from './videoSources';
+import { styles } from './videoStyles';
 
-const originalSource = bigBuckBunnySource;
-const replacementSource = elephantsDreamSource;
+// Bundled videos keep the e2e playback test independent from the network.
+const originalSource = starVideoSource;
+const replacementSource = localVideoSource;
 
 export default function VideoEventsScreen() {
   const ref = useRef<VideoView>(null);
@@ -88,9 +89,9 @@ export default function VideoEventsScreen() {
           />
           <Button
             style={styles.button}
-            title="Seek to 30s"
+            title="Seek to 20s"
             onPress={() => {
-              player.currentTime = 30;
+              player.currentTime = 20;
             }}
           />
         </View>

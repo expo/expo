@@ -1,1 +1,0 @@
-{"version":3,"file":"fetch.d.ts","sourceRoot":"","sources":["../../../src/winter/fetch/fetch.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,aAAa,EAAyC,MAAM,iBAAiB,CAAC;AAQvF,OAAO,KAAK,EAAE,gBAAgB,EAAE,gBAAgB,EAAE,MAAM,eAAe,CAAC;AAOxE,wBAAsB,KAAK,CACzB,KAAK,EAAE,MAAM,GAAG,GAAG,GAAG,gBAAgB,EACtC,IAAI,CAAC,EAAE,gBAAgB,GACtB,OAAO,CAAC,aAAa,CAAC,CAiDxB"}

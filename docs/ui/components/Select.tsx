@@ -58,19 +58,20 @@ export function Select({
           aria-label={ariaLabel}
           rightSlot={
             <ChevronDownIcon
+              aria-hidden="true"
               className={mergeClasses('icon-sm text-icon-secondary', size === 'lg' && 'icon-md')}
             />
           }
           className={mergeClasses(
-            'min-h-[36px] transform-none justify-between truncate px-3',
+            'min-h-9 justify-between truncate px-3 active:scale-100',
             !value && 'text-quaternary',
-            size === 'lg' && 'min-h-[52px]',
+            size === 'lg' && 'min-h-13',
             className
           )}
           {...{ 'data-testid': testID }}>
           <SelectPrimitive.Value
             placeholder={
-              <div className="text-quaternary text-left text-sm leading-tight whitespace-pre-wrap">
+              <div className="text-left text-sm leading-tight whitespace-pre-wrap text-quaternary">
                 {placeholder}
               </div>
             }
@@ -80,19 +81,20 @@ export function Select({
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
-          // z-[605] to be above the dialogs (601)
+          position="popper"
+          sideOffset={4}
           className={mergeClasses(
-            'border-default bg-overlay relative z-[605] max-w-[87.5vw] overflow-hidden rounded-md border shadow-md',
-            'max-md-gutters:max-w-[unset]'
-          )}
-          data-orientation="horizontal">
-          <SelectPrimitive.ScrollUpButton className="bg-element flex h-7 items-center justify-center rounded-t-md">
-            <ChevronUpIcon className="icon-sm text-icon-secondary" />
+            'relative z-605 overflow-hidden rounded-xl border border-default bg-overlay shadow-md',
+            'max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width)',
+            'max-w-[87.5vw] max-md:max-w-[unset]'
+          )}>
+          <SelectPrimitive.ScrollUpButton className="flex h-7 items-center justify-center bg-element">
+            <ChevronUpIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport>
             <SelectPrimitive.Group>
               {optionsLabel && (
-                <SelectPrimitive.Label className="text-tertiary cursor-default px-3 pt-2 pb-1 text-xs">
+                <SelectPrimitive.Label className="cursor-default px-3 pt-2 pb-1 text-xs text-tertiary">
                   {optionsLabel}
                 </SelectPrimitive.Label>
               )}
@@ -103,18 +105,21 @@ export function Select({
                   className={mergeClasses(
                     'flex h-9 cursor-pointer items-center justify-between rounded-none! px-3 py-2',
                     'hocus:bg-hover hocus:outline-0',
-                    size === 'lg' && 'h-[56px]'
+                    size === 'lg' && 'h-14'
                   )}>
                   <SelectPrimitive.ItemText>
                     <div
                       className={mergeClasses(
-                        'text-default flex items-center gap-2 text-left text-sm leading-tight font-normal whitespace-pre-wrap',
+                        'flex items-center gap-2 text-left text-sm leading-tight font-normal whitespace-pre-wrap text-default',
                         size === 'lg' && 'text-lg'
                       )}>
                       {leftSlot}
                       {Icon && (
                         <SelectPrimitive.Icon>
-                          <Icon className={mergeClasses('icon-sm', size === 'lg' && 'icon-md')} />
+                          <Icon
+                            aria-hidden="true"
+                            className={mergeClasses('icon-sm', size === 'lg' && 'icon-md')}
+                          />
                         </SelectPrimitive.Icon>
                       )}
                       {imageUrl && (
@@ -126,8 +131,9 @@ export function Select({
                   </SelectPrimitive.ItemText>
                   <SelectPrimitive.ItemIndicator>
                     <CheckIcon
+                      aria-hidden="true"
                       className={mergeClasses(
-                        'icon-sm text-icon-secondary shrink-0',
+                        'icon-sm shrink-0 text-icon-secondary',
                         size === 'lg' && 'icon-md'
                       )}
                     />
@@ -136,8 +142,8 @@ export function Select({
               ))}
             </SelectPrimitive.Group>
           </SelectPrimitive.Viewport>
-          <SelectPrimitive.ScrollDownButton className="bg-element flex h-7 items-center justify-center rounded-b-md">
-            <ChevronDownIcon className="icon-sm text-icon-secondary" />
+          <SelectPrimitive.ScrollDownButton className="flex h-7 items-center justify-center bg-element">
+            <ChevronDownIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollDownButton>
         </SelectPrimitive.Content>
       </SelectPrimitive.Portal>
@@ -148,7 +154,7 @@ export function Select({
     return (
       <div className="flex flex-col gap-1">
         {typeof caption === 'string' ? (
-          <p className="text-tertiary text-sm font-medium">{caption}</p>
+          <p className="text-sm font-medium text-tertiary">{caption}</p>
         ) : (
           caption
         )}

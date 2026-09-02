@@ -15,6 +15,7 @@ class HomeViewModel: ObservableObject {
   @Published var showingFeedbackForm = false
   @Published var errorToShow: ErrorInfo?
   @Published var isNetworkAvailable = true
+  @Published var deviceLoginRequest: DeviceLoginRequest?
 
   @Published var user: UserActor?
   @Published var selectedAccountId: String?
@@ -24,7 +25,10 @@ class HomeViewModel: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
+  @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
+  @Published var isLoadingApp = false
+  @Published var pendingLessonId: Int?
   @Published var dataError: APIError?
 
   private var cancellables = Set<AnyCancellable>()
@@ -106,6 +110,17 @@ class HomeViewModel: ObservableObject {
     }
   }
 
+  func ssoLogin() async {
+    do {
+      try await authService.ssoLogin()
+      if let account = selectedAccount {
+        dataService.startPolling(accountName: account.name)
+      }
+    } catch {
+      showError("Failed to sign in with SSO")
+    }
+  }
+
   func signOut() {
     authService.signOut()
     clearRecentlyOpenedApps()
@@ -133,9 +148,14 @@ class HomeViewModel: ObservableObject {
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
     let normalizedUrl = normalizeUrl(url)
 
-    if let existingIndex = recentlyOpenedApps.firstIndex(where: {
+    // Update permalinks are unique per published update, so entries for the same app are
+    // matched by name instead of URL to avoid one row per update.
+    let isDuplicate: (RecentlyOpenedApp) -> Bool = {
       normalizeUrl($0.url) == normalizedUrl
-    }) {
+        || (isUpdatePermalink($0.url) && isUpdatePermalink(url) && $0.name == name)
+    }
+
+    if let existingIndex = recentlyOpenedApps.firstIndex(where: isDuplicate) {
       let existingApp = recentlyOpenedApps[existingIndex]
 
       if existingApp.name == name && iconUrl != nil && existingApp.iconUrl == nil {
@@ -146,7 +166,7 @@ class HomeViewModel: ObservableObject {
         return
       }
 
-      recentlyOpenedApps.remove(at: existingIndex)
+      recentlyOpenedApps.removeAll(where: isDuplicate)
     }
 
     let newApp = RecentlyOpenedApp(
@@ -180,6 +200,10 @@ class HomeViewModel: ObservableObject {
     openAppViaBridge(url: url)
   }
 
+  func openApp(url: String, snackParams: NSDictionary) {
+    openAppViaBridge(url: url, snackParams: snackParams)
+  }
+
   func updateShakeGesture(_ enabled: Bool) {
     settingsManager.updateShakeGesture(enabled)
   }
@@ -198,6 +222,19 @@ class HomeViewModel: ObservableObject {
 
   func showError(_ message: String, apiError: APIError? = nil) {
     errorToShow = ErrorInfo(message: message, apiError: apiError)
+  }
+
+  /// Presents the device login sheet and resolves once the user signs in or backs out.
+  func presentDeviceLogin(verificationURI: URL?) async -> Bool {
+    await withCheckedContinuation { continuation in
+      deviceLoginRequest?.completion.resolve(false)
+      deviceLoginRequest = DeviceLoginRequest(
+        verificationURI: verificationURI,
+        completion: DeviceLoginCompletion { signedIn in
+          continuation.resume(returning: signedIn)
+        }
+      )
+    }
   }
 
   private func setupSubscriptions() {
@@ -226,6 +263,10 @@ class HomeViewModel: ObservableObject {
 
     dataService.$snacks
       .sink { [weak self] in self?.snacks = $0 }
+      .store(in: &cancellables)
+
+    dataService.$totalProjectCount
+      .sink { [weak self] in self?.totalProjectCount = $0 }
       .store(in: &cancellables)
 
     dataService.$isLoadingData
@@ -302,4 +343,26 @@ enum ExpoGoError: Error {
   case noSessionSecret
   case notImplemented(String)
   case missingURLScheme
+}
+
+struct DeviceLoginRequest: Identifiable {
+  let id = UUID()
+  let verificationURI: URL?
+  let completion: DeviceLoginCompletion
+}
+
+/// Wraps a device login result so success, cancel, and dismiss paths can each call it without a double resume.
+@MainActor
+final class DeviceLoginCompletion {
+  private var handler: ((Bool) -> Void)?
+
+  init(_ handler: @escaping (Bool) -> Void) {
+    self.handler = handler
+  }
+
+  func resolve(_ signedIn: Bool) {
+    guard let handler else { return }
+    self.handler = nil
+    handler(signedIn)
+  }
 }

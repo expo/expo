@@ -4,11 +4,151 @@
 
 ### 🛠 Breaking changes
 
+- Handle undefined props instead fallback to empty object. ([#46492](https://github.com/expo/expo/pull/46492) by [@jakex7](https://github.com/jakex7))
+
 ### 🎉 New features
+
+- [iOS] Expose stable ActivityKit identifiers on Live Activity instances. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
+- [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
+- [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))
+- Add an initial layout registry for widgets. ([#46501](https://github.com/expo/expo/pull/46501) by [@jakex7](https://github.com/jakex7))
+- Add `initialProps` to widgets layout registry. ([#46527](https://github.com/expo/expo/pull/46527) by [@jakex7](https://github.com/jakex7))
+- [Android] Add Hermes runtime. ([#46684](https://github.com/expo/expo/pull/46684) by [@jakex7](https://github.com/jakex7))
+- [Android] Basic Android components. ([#46951](https://github.com/expo/expo/pull/46951) by [@jakex7](https://github.com/jakex7))
+- [Android] Implement widgets. ([#46961](https://github.com/expo/expo/pull/46961) by [@jakex7](https://github.com/jakex7))
+- [Android] Support interactions. ([#47035](https://github.com/expo/expo/pull/47035) by [@jakex7](https://github.com/jakex7))
+- [iOS][plugin] Fix extension `CFBundleVersion` sync. ([#47061](https://github.com/expo/expo/pull/47061) by [@jakex7](https://github.com/jakex7))
+- [iOS] Changing widget configuration at runtime. ([#47533](https://github.com/expo/expo/pull/47533) by [@jakex7](https://github.com/jakex7))
+- [Android] Refactor to Peek emittables. ([#47411](https://github.com/expo/expo/pull/47411) by [@jakex7](https://github.com/jakex7))
+- [Android] Support Material Colors inside widgets. ([#48454](https://github.com/expo/expo/pull/48454) by [@jakex7](https://github.com/jakex7))
+- [iOS] Expose ActivityKit's `isStale` on `LiveActivityEnvironment`. ([#48303](https://github.com/expo/expo/pull/48303) by [@dirkpostma](https://github.com/dirkpostma))
 
 ### 🐛 Bug fixes
 
+- [iOS] Localize widget gallery names and descriptions using the app's `Localizable.strings` files. ([#49606](https://github.com/expo/expo/pull/49606) by [@jakex7](https://github.com/jakex7))
+- [iOS] Fix widget and Live Activity `Text` modifiers being applied twice. ([#49535](https://github.com/expo/expo/pull/49535) by [@gee1k](https://github.com/gee1k))
+- Resolve deep `react-native/*` imports as empty modules when bundling widget layouts, fixing every widget failing with "Could not create context for layout evaluation" after `@expo/ui` 57.0.14 introduced such an import. ([#49491](https://github.com/expo/expo/pull/49491) by [@usmsam](https://github.com/usmsam))
+- [iOS] Fix XCFramework precompilation failing on the unguarded `ActivityViewContext` parameter of `getLiveActivityEnvironment`, which requires iOS 16.1. ([#49076](https://github.com/expo/expo/pull/49076) by [@brentvatne](https://github.com/brentvatne))
+- [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Fix `LiveActivityFactory.getInstances()` returning live activities that belong to other factories or that have already ended. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
+- [iOS] Deliver the Live Activity `start()` URL to the Lock Screen banner, and scope it to the activity that set it instead of storing it globally per factory name. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
+- [Android] Add 16KB page size support. ([#47135](https://github.com/expo/expo/pull/47135) by [@jakex7](https://github.com/jakex7))
+- Make deprecated root-level widget config fields optional. ([#47933](https://github.com/expo/expo/pull/47933) by [@eliotgevers](https://github.com/eliotgevers))
+- [iOS][plugin] Only add the `aps-environment` entitlement when `enablePushNotifications` is enabled, and keep a pre-existing value. ([#47645](https://github.com/expo/expo/pull/47645) by [@kadikraman](https://github.com/kadikraman))
+- [Android] Fix modifiers type cast. ([#47616](https://github.com/expo/expo/pull/47721) by [@jakex7](https://github.com/jakex7))
+- Fix blank widget when JSX children mix a `.map()` array with sibling elements. ([#47888](https://github.com/expo/expo/pull/47888) by [@jakex7](https://github.com/jakex7))
+- [iOS] Restore push token observation when retrieving existing Live Activities. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
+- [iOS] Resolve autolinking relative to expo. ([#49453](https://github.com/expo/expo/pull/49453) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
+
+- [iOS] Remove availability check for iOS 16. ([#48651](https://github.com/expo/expo/pull/48651) by [@jakex7](https://github.com/jakex7))
+
+## 57.0.7 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.19 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.17 - 2026-06-05
+
+### 🎉 New features
+
+- Expose shared directory for images. ([#46339](https://github.com/expo/expo/pull/46339) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- [Android] Fix widget strings file location. ([#46538](https://github.com/expo/expo/pull/46538) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- Temporarily make the Android config plugin opt-in with `enableAndroid`. ([#46463](https://github.com/expo/expo/pull/46463) by [@jakex7](https://github.com/jakex7))
+- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
+
+## 56.0.16 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.15 — 2026-05-26
+
+### 🎉 New features
+
+- [Android] Create base android package. ([#46090](https://github.com/expo/expo/pull/46090) by [@jakex7](https://github.com/jakex7))
+- [plugin] Create config plugin for android. ([#46091](https://github.com/expo/expo/pull/46091) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- Allow string widget family values in the typed config plugin. ([#46133](https://github.com/expo/expo/issues/46133) by [@eliotgevers](https://github.com/eliotgevers))
+- [plugin] Inherit `ios.deploymentTarget` from app config for generated widget extension targets. ([#46193](https://github.com/expo/expo/pull/46193) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.11 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-19
+
+### 💡 Others
+
+- Validate/sanitize config-plugin inputs more comprehensively ([#45884](https://github.com/expo/expo/pull/45884) by [@kitten](https://github.com/kitten))
+
+## 56.0.9 — 2026-05-15
+
+### 🎉 New features
+
+- Use shared JS runtime. ([#45781](https://github.com/expo/expo/pull/45781) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- Fix Live Activity multiple evaluations. ([#45675](https://github.com/expo/expo/pull/45675) by [@nkopylov](https://github.com/nkopylov))
+- Fix module precompile. ([#45715](https://github.com/expo/expo/pull/45715) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.8 — 2026-05-13
 

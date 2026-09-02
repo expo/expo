@@ -1,3 +1,4 @@
+import { getOriginalEnvValue } from '@expo/env';
 import { boolish, int, string } from 'getenv';
 import process from 'node:process';
 
@@ -53,7 +54,9 @@ class Env {
 
   /** local directory to the universe repo for testing locally */
   get EXPO_UNIVERSE_DIR() {
-    return string('EXPO_UNIVERSE_DIR', '');
+    // Read from the pre-dotenv env — this is a filesystem path used by internal
+    // tooling; a project `.env` overriding it could redirect file access.
+    return getOriginalEnvValue('EXPO_UNIVERSE_DIR') || '';
   }
 
   /** @deprecated Default Webpack host string */
@@ -85,6 +88,10 @@ class Env {
   get EXPO_NO_QR_CODE(): boolean {
     return boolish('EXPO_NO_QR_CODE', false);
   }
+  /** Resolve application IDs from Expo app config before native files in `expo start`. */
+  get EXPO_RUN_PREFER_APP_CONFIG_ID(): boolean {
+    return boolish('EXPO_RUN_PREFER_APP_CONFIG_ID', false);
+  }
   /** The React Metro port that's baked into react-native scripts and tools. */
   get RCT_METRO_PORT() {
     return int('RCT_METRO_PORT', 0);
@@ -99,9 +106,14 @@ class Env {
     return string('EXPO_PUBLIC_FOLDER', 'public');
   }
 
-  /** Higher priority `$EDIOTR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
+  /** Higher priority `$EDITOR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
   get EXPO_EDITOR(): string {
     return string('EXPO_EDITOR', '');
+  }
+
+  /** Overwrite the hostname used in dev server URLs, disregarding the `--host`, `--lan` and `--localhost` arguments. */
+  get REACT_NATIVE_PACKAGER_HOSTNAME(): string | null {
+    return string('REACT_NATIVE_PACKAGER_HOSTNAME', '')?.trim() || null;
   }
 
   /**
@@ -109,7 +121,12 @@ class Env {
    * This is useful for browser editors that require custom proxy URLs.
    */
   get EXPO_PACKAGER_PROXY_URL(): string {
-    return string('EXPO_PACKAGER_PROXY_URL', '');
+    // Read from the pre-dotenv env — overrides dev server URL served to clients.
+    return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL') || '';
+  }
+
+  get EXPO_UNSTABLE_TUNNEL_V2(): boolean {
+    return boolish('EXPO_UNSTABLE_TUNNEL_V2', false);
   }
 
   /**
@@ -154,7 +171,9 @@ class Env {
    * @internal
    */
   get EXPO_OVERRIDE_METRO_CONFIG(): string | undefined {
-    return process.env.EXPO_OVERRIDE_METRO_CONFIG?.trim() || undefined;
+    // Read from the pre-dotenv env — this path is `require()`d as Metro config,
+    // so a project `.env` overriding it would execute attacker code in-process.
+    return getOriginalEnvValue('EXPO_OVERRIDE_METRO_CONFIG')?.trim() || undefined;
   }
 
   /**
@@ -223,7 +242,7 @@ class Env {
 
   /** Internal key used to pass eager bundle data from the CLI to the native run scripts during `npx expo run` commands. */
   get __EXPO_EAGER_BUNDLE_OPTIONS() {
-    return string('__EXPO_EAGER_BUNDLE_OPTIONS', '');
+    return getOriginalEnvValue('__EXPO_EAGER_BUNDLE_OPTIONS') || '';
   }
 
   /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
@@ -266,14 +285,18 @@ class Env {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
 
-  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
-  get EXPO_UNSTABLE_WEB_MODAL(): boolean {
-    return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
-  }
-
   /** Disable @react-navigation checks for expo-router projects */
   get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
     return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
+  }
+
+  /**
+   * Disable Material Symbols (`md`) icon support in expo-router's NativeTabs on Android.
+   * When enabled, the Metro resolver swaps the Android-specific md icon converter for a no-op
+   * stub, so the `expo-symbols` dependency is tree-shaken out of the Android bundle.
+   */
+  get EXPO_ROUTER_DISABLE_NATIVE_TABS_MD(): boolean {
+    return boolish('EXPO_ROUTER_DISABLE_NATIVE_TABS_MD', false);
   }
 
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
@@ -289,7 +312,8 @@ class Env {
     if (value === '1' || value.toLowerCase() === 'true') {
       return this.EXPO_STAGING ? 'staging-mcp.expo.dev' : 'mcp.expo.dev';
     }
-    return value;
+    // Re-read from the pre-dotenv env — overrides dev server URL served to clients.
+    return getOriginalEnvValue('EXPO_UNSTABLE_MCP_SERVER') || '';
   }
 
   /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */

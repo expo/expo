@@ -8,7 +8,29 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `toolbarColor` being applied as the secondary toolbar color, and being discarded entirely when `secondaryToolbarColor` was also set. ([#48900](https://github.com/expo/expo/issues/48900) by [@MUSE-CODE-SPACE](https://github.com/MUSE-CODE-SPACE))
+
 ### 💡 Others
+
+## 57.0.2 - 2026-07-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `openAuthSessionAsync` hanging forever when the authentication session fails to start. ([#47653](https://github.com/expo/expo/issues/47653)) ([#47896](https://github.com/expo/expo/pull/47896) by [@HubertBer](https://github.com/HubertBer))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.4 — 2026-05-06
 
@@ -130,7 +152,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Fix multiple runs of prebuild repeateadly adding generated code. ([#39702](https://github.com/expo/expo/pull/39702) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix multiple runs of prebuild repeatedly adding generated code. ([#39702](https://github.com/expo/expo/pull/39702) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.7 — 2025-09-11
 
@@ -466,7 +488,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Removed unncecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
+- Removed unnecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
 - Fixed `openAuthSessionAsync` crashing when cancelled on iOS. ([#9722](https://github.com/expo/expo/pull/9722) by [@barthap](https://github.com/barthap))
 
 ## 8.4.0 — 2020-07-29

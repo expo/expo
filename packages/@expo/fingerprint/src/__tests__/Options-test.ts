@@ -22,9 +22,10 @@ describe(normalizeOptionsAsync, () => {
     expect(options.ignoreDirMatchObjects.length).toBeGreaterThan(0);
 
     // Because the default ignored paths change over time, we don't want to snapshot them.
-    delete options.ignorePathMatchObjects;
-    delete options.ignoreDirMatchObjects;
-    expect(options).toMatchSnapshot();
+    const snapshotOptions: Partial<typeof options> = { ...options };
+    delete snapshotOptions.ignorePathMatchObjects;
+    delete snapshotOptions.ignoreDirMatchObjects;
+    expect(snapshotOptions).toMatchSnapshot();
   });
 
   it('should respect ignorePaths from both config and options', async () => {
@@ -105,7 +106,8 @@ module.exports = config;
       });
 
       const { concurrentIoLimit, debug, hashAlgorithm } = await normalizeOptionsAsync('/app', {
-        concurrentIoLimit: null,
+        // Explicitly pass `null` to verify it does not overwrite the config value.
+        concurrentIoLimit: null as unknown as number,
         debug: undefined,
         hashAlgorithm: 'md5',
       });
@@ -128,7 +130,7 @@ describe(`normalizeOptionsAsync - enableReactImportsPatcher`, () => {
     >;
     mockSatisfyExpoVersion.mockReturnValueOnce(true);
     const options = await normalizeOptionsAsync('/app');
-    expect(mockSatisfyExpoVersion.mock.calls[0][1]).toBe('<52.0.0');
+    expect(mockSatisfyExpoVersion.mock.calls[0]![1]).toBe('<52.0.0');
     expect(options.enableReactImportsPatcher).toBe(true);
   });
 

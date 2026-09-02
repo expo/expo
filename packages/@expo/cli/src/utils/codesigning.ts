@@ -17,8 +17,6 @@ import path from 'path';
 import type { Dictionary } from 'structured-headers';
 import { parseDictionary } from 'structured-headers';
 
-import { env } from './env';
-import { CommandError } from './errors';
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
@@ -27,9 +25,9 @@ import { getExpoHomeDirectory } from '../api/user/UserSettings';
 import { tryGetUserAsync } from '../api/user/actions';
 import type { Actor } from '../api/user/user';
 import * as Log from '../log';
-import { learnMore } from '../utils/link';
-
-const debug = require('debug')('expo:codesigning') as typeof console.log;
+import { debugEvent } from '../run/events';
+import { env } from './env';
+import { CommandError } from './errors';
 
 export type CodeSigningInfo = {
   keyId: string;
@@ -63,8 +61,15 @@ export function getDevelopmentCodeSigningDirectory(): string {
   return path.join(getExpoHomeDirectory(), 'codesigning');
 }
 
+function assertBasenameValue(input: string): void {
+  if (!input || input === '.' || input === '..' || input !== path.basename(input)) {
+    throw new CommandError('Invalid EAS project ID for development code signing cache');
+  }
+}
+
 function getProjectDevelopmentCodeSigningInfoFile<T extends JSONObject>(defaults: T) {
   function getFile(easProjectId: string): JsonFile<T> {
+    assertBasenameValue(easProjectId);
     const filePath = path.join(
       getDevelopmentCodeSigningDirectory(),
       easProjectId,
@@ -186,11 +191,7 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
   // can't check for scope key validity since scope key is derived on the server from projectId and we may be offline.
   // we rely upon the client certificate check to validate the scope key
   if (!easProjectId) {
-    debug(
-      `WARN: Expo Application Services (EAS) is not configured for your project. Configuring EAS enables a more secure development experience amongst many other benefits. ${learnMore(
-        'https://docs.expo.dev/eas/'
-      )}`
-    );
+    debugEvent('codesigning:eas_not_configured', {});
     return null;
   }
 
@@ -253,6 +254,11 @@ async function getProjectCodeSigningCertificateAsync(
 ): Promise<CodeSigningInfo | null> {
   const codeSigningCertificatePath = exp.updates?.codeSigningCertificate;
   if (!codeSigningCertificatePath) {
+    if (privateKeyPath) {
+      throw new CommandError(
+        '--private-key-path was specified, but updates.codeSigningCertificate is not set in the resolved app config. Code signing requires both the certificate in app config and the private key. Ensure codeSigningCertificate (and codeSigningMetadata) are present, or omit --private-key-path if you do not intend to sign.\nLearn more: https://docs.expo.dev/eas-update/code-signing/'
+      );
+    }
     return null;
   }
 

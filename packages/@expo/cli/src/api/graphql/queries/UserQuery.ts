@@ -5,7 +5,7 @@ export type Permission = 'ADMIN' | 'OWN' | 'PUBLISH' | 'VIEW';
 type CurrentUserDataUser = {
   permissions: Permission[];
   actor: {
-    __typename: 'Robot' | 'SSOUser' | 'User';
+    __typename: 'PartnerActor' | 'Robot' | 'SSOUser' | 'User';
     id: string;
   };
 };
@@ -31,6 +31,12 @@ export type Actor =
         id: string;
       };
       accounts: CurrentUserDataAccount[];
+    }
+  | {
+      __typename: 'PartnerActor';
+      id: string;
+      username: string;
+      accounts: CurrentUserDataAccount[];
     };
 
 type CurrentUserData = {
@@ -50,6 +56,9 @@ const CurrentUserDocument = graphql<CurrentUserData>(`
       }
       ... on Robot {
         firstName
+      }
+      ... on PartnerActor {
+        username
       }
       accounts {
         id

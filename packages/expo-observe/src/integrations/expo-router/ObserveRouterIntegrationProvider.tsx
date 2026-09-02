@@ -18,7 +18,7 @@ export function ObserveRouterIntegrationProvider({ children }: PropsWithChildren
   const prevInitialized = useRef(isInitialized());
   if (prevInitialized.current !== isInitialized()) {
     throw new Error(
-      `[expo-observe] Router integration was ${isInitialized() ? 'enabled' : 'disabled'} after application mounted. Call ExpoObserve.configure() before mounting AppMetricsRoot.`
+      `[expo-observe] Router integration was ${isInitialized() ? 'enabled' : 'disabled'} after application mounted. Call Observe.configure() before mounting AppMetricsRoot.`
     );
   }
 

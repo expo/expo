@@ -1,4 +1,4 @@
-import { LogBoxLog } from '@expo/log-box/src/Data/LogBoxLog';
+import { LogBoxLog } from '@expo/log-box/Data/LogBoxLog';
 
 export const react_each_child_in_a_list_should_have_a_unique_key_prop = [
   new LogBoxLog({

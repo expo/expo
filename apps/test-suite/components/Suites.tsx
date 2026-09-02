@@ -10,12 +10,12 @@ import {
   View,
 } from 'react-native';
 
+import { useTheme } from '../../common/ThemeProvider';
 import Statuses from '../constants/Statuses';
 import { type Suite } from '../types';
 import StatusIndicator from './StatusIndicator';
 import SuiteResult from './SuiteResult';
 import TestStatusHeader from './TestStatusHeader';
-import { useTheme } from '../../common/ThemeProvider';
 
 const supportsGlass = isLiquidGlassAvailable();
 
@@ -299,8 +299,8 @@ export default function Suites({
         renderItem={({ item }) => (
           <SuiteResult suite={item} depth={0} failuresOnly={failuresOnly} />
         )}
-        ListHeaderComponent={header}
-        ListFooterComponent={footer}
+        ListHeaderComponent={header ?? undefined}
+        ListFooterComponent={footer ?? undefined}
         stickyHeaderIndices={[0]}
         onContentSizeChange={onContentSizeChange}
         onLayout={onLayout}

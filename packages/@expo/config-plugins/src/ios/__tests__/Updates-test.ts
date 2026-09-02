@@ -6,17 +6,12 @@ import * as Updates from '../Updates';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 jest.mock('fs');
-jest.mock('resolve-from');
-
-const { silent } = require('resolve-from');
 
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 const sampleCodeSigningCertificatePath = path.resolve(fixturesPath, 'codeSigningCertificate.pem');
 
 describe('iOS Updates config', () => {
   beforeEach(() => {
-    const resolveFrom = require('resolve-from');
-    resolveFrom.silent = silent;
     vol.reset();
   });
 
@@ -68,5 +63,31 @@ describe('iOS Updates config', () => {
       EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
       EXUpdatesEnableBsdiffPatchSupport: true,
     });
+  });
+
+  it('writes EXUpdatesExcludeFromBackup only when updates.excludeFromBackup is true', async () => {
+    const enabled = await Updates.setUpdatesConfigAsync(
+      '/app',
+      {
+        runtimeVersion: '1.0.0',
+        slug: 'my-app',
+        updates: { url: 'https://u.expo.dev/x', excludeFromBackup: true },
+      },
+      {} as any,
+      '0.11.0'
+    );
+    expect(enabled).toMatchObject({ EXUpdatesExcludeFromBackup: true });
+
+    const omitted = await Updates.setUpdatesConfigAsync(
+      '/app',
+      {
+        runtimeVersion: '1.0.0',
+        slug: 'my-app',
+        updates: { url: 'https://u.expo.dev/x' },
+      },
+      {} as any,
+      '0.11.0'
+    );
+    expect(omitted).not.toHaveProperty('EXUpdatesExcludeFromBackup');
   });
 });

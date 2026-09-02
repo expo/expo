@@ -33,7 +33,7 @@ internal enum UpdatesStateEvent {
   case checkCompleteWithRollback(rollbackCommitTime: Date)
   case checkError(errorMessage: String)
   case download
-  case downloadComplete
+  case downloadCompleteUnavailable
   case downloadCompleteWithUpdate(manifest: [String: Any])
   case downloadCompleteWithRollback
   case downloadError(errorMessage: String)
@@ -49,7 +49,9 @@ internal enum UpdatesStateEvent {
     case checkError
     case download
     case downloadProgress
-    case downloadComplete
+    case downloadCompleteUnavailable
+    case downloadCompleteWithUpdate
+    case downloadCompleteWithRollback
     case downloadError
     case restart
   }
@@ -74,12 +76,12 @@ internal enum UpdatesStateEvent {
       return .download
     case .downloadProgress:
       return .downloadProgress
-    case .downloadComplete:
-      return .downloadComplete
+    case .downloadCompleteUnavailable:
+      return .downloadCompleteUnavailable
     case .downloadCompleteWithUpdate:
-      return .downloadComplete
+      return .downloadCompleteWithUpdate
     case .downloadCompleteWithRollback:
-      return .downloadComplete
+      return .downloadCompleteWithRollback
     case .downloadError:
       return .downloadError
     case .restart:
@@ -107,7 +109,7 @@ internal enum UpdatesStateEvent {
       fallthrough
     case .download:
       fallthrough
-    case .downloadComplete:
+    case .downloadCompleteUnavailable:
       fallthrough
     case .downloadCompleteWithRollback:
       fallthrough
@@ -397,10 +399,8 @@ internal class UpdatesStateMachine {
       }
       // Notify the controller state change listener
       if let controller = UpdatesControllerRegistry.sharedInstance.controller as? EnabledAppController {
-        controller.stateChangeListeners.keys.forEach {subscriptionId in
-          if let listener = controller.stateChangeListeners[subscriptionId] {
-            listener.updatesStateDidChange(event.toMap)
-          }
+        controller.stateChangeListenersSnapshot().forEach { listener in
+          listener.updatesStateDidChange(event.toMap)
         }
       }
       sendContextToJS()
@@ -493,11 +493,11 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.downloadProgress = progress
       }
-    case .downloadComplete:
+    case .downloadCompleteUnavailable:
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
-        $0.isUpdatePending = true
+        $0.isUpdatePending = false
         $0.downloadProgress = 1.0
         $0.downloadStartTime = nil
         $0.downloadFinishTime = nil
@@ -553,7 +553,7 @@ internal class UpdatesStateMachine {
   private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
     .idle: [.startStartup, .endStartup, .check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
-    .downloading: [.downloadComplete, .downloadError, .downloadProgress],
+    .downloading: [.downloadCompleteUnavailable, .downloadCompleteWithUpdate, .downloadCompleteWithRollback, .downloadError, .downloadProgress],
     .restarting: []
   ]
 
@@ -570,7 +570,9 @@ internal class UpdatesStateMachine {
     .checkError: .idle,
     .download: .downloading,
     .downloadProgress: .downloading,
-    .downloadComplete: .idle,
+    .downloadCompleteUnavailable: .idle,
+    .downloadCompleteWithUpdate: .idle,
+    .downloadCompleteWithRollback: .idle,
     .downloadError: .idle,
     .restart: .restarting
   ]

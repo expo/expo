@@ -3,6 +3,8 @@ import { useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
 
+import { DotGrid } from '~/ui/components/Diagram/DotGrid';
+
 import { LightboxImage } from './LightboxImage';
 
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
@@ -10,9 +12,20 @@ const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 const PLAYER_WIDTH = '100%';
 const PLAYER_HEIGHT = '100%';
 
+const ASPECT_CLASS = {
+  landscape: 'aspect-[3/2] w-[540px]',
+  portrait: 'aspect-[9/16] w-[220px]',
+} as const;
+
+type ContentSpotlightVariant = 'screenshot' | 'component';
+type ContentSpotlightAspect = keyof typeof ASPECT_CLASS;
+
 type ContentSpotlightProps = {
   alt?: string;
   src?: string;
+  darkSrc?: string;
+  width?: number;
+  height?: number;
   file?: string;
   videoId?: string;
   caption?: string;
@@ -23,11 +36,16 @@ type ContentSpotlightProps = {
   playerWidth?: string | number;
   playerHeight?: string | number;
   autoplayYT?: boolean;
+  variant?: ContentSpotlightVariant;
+  aspect?: ContentSpotlightAspect;
 };
 
 export function ContentSpotlight({
   alt,
   src,
+  darkSrc,
+  width,
+  height,
   file,
   videoId,
   caption,
@@ -38,8 +56,11 @@ export function ContentSpotlight({
   playerWidth,
   playerHeight,
   autoplayYT = true,
+  variant = 'screenshot',
+  aspect,
 }: ContentSpotlightProps) {
   const [forceShowControls, setForceShowControls] = useState<boolean>();
+
   const resolvedPlayerWidth = playerWidth ?? PLAYER_WIDTH;
   const resolvedPlayerHeight = playerHeight ?? PLAYER_HEIGHT;
   const hasCustomPlayerSize =
@@ -54,31 +75,51 @@ export function ContentSpotlight({
   const isVideo = !!videoUrl;
   const shouldAutoplay = isInView && isVideo && (!videoId || autoplayYT);
 
+  const isComponentVariant = variant === 'component' && !isVideo;
+
   return (
     <figure
       className={mergeClasses(
-        'my-5 cursor-pointer rounded-lg py-2.5 text-center',
+        'my-5 cursor-pointer overflow-hidden rounded-3xl py-2.5 text-center',
         containerClassName,
-        !isVideo && 'bg-subtle'
+        !isVideo && !isComponentVariant && 'bg-subtle',
+        isComponentVariant &&
+          'relative mx-auto my-6 max-w-full cursor-auto overflow-hidden rounded-md border border-default bg-default py-0',
+        isComponentVariant && aspect && ASPECT_CLASS[aspect]
       )}
       onClick={() => {
         if (typeof controls === 'undefined' && !forceShowControls) {
           setForceShowControls(true);
         }
       }}>
-      {src ? (
+      {src && isComponentVariant ? (
+        <>
+          <DotGrid />
+          <picture className={mergeClasses('relative block size-full', darkSrc && 'dark:hidden')}>
+            <img src={src} alt={alt} className="size-full object-cover" />
+          </picture>
+          {darkSrc && (
+            <picture className="relative block size-full light:hidden">
+              <img src={darkSrc} alt={alt} className="size-full object-cover" />
+            </picture>
+          )}
+        </>
+      ) : src ? (
         <LightboxImage
           src={src}
+          darkSrc={darkSrc}
           alt={alt}
+          width={width}
+          height={height}
           className={mergeClasses(
-            'duration-default inline rounded-md transition-opacity ease-in-out hover:opacity-80',
+            'inline rounded-md transition-opacity duration-default ease-in-out hover:opacity-80',
             className
           )}
         />
       ) : isVideo ? (
         <div
           className={mergeClasses(
-            'bg-palette-black relative overflow-hidden rounded-lg',
+            'relative overflow-hidden rounded-3xl bg-palette-black',
             hasCustomPlayerSize ? 'mx-auto' : 'aspect-video'
           )}
           ref={playerRef}
@@ -103,7 +144,7 @@ export function ContentSpotlight({
           />
           <div
             className={mergeClasses(
-              'max-md-gutters:hidden pointer-events-none absolute inset-0 transition-opacity duration-500',
+              'pointer-events-none absolute inset-0 transition-opacity duration-500 max-md:hidden',
               isInView ? 'opacity-0' : 'opacity-70'
             )}
           />
@@ -112,7 +153,7 @@ export function ContentSpotlight({
       {caption && (
         <figcaption
           className={mergeClasses(
-            'text-secondary mt-3.5 cursor-text px-8 py-2 text-center text-sm',
+            'mt-3.5 cursor-text px-8 py-2 text-center text-sm text-secondary',
             isVideo && 'bg-transparent'
           )}>
           {caption}

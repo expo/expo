@@ -1,0 +1,47 @@
+{
+  "name": "@expo/log-box-utils",
+  "version": "56.0.0",
+  "description": "Pure error parsing utilities for Expo LogBox.",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box-utils",
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/log-box-utils"
+  },
+  "files": [
+    "build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "rimraf build",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "run-s clean build",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*",
+    "npm-run-all2": "^8.0.4",
+    "rimraf": "^6.1.2"
+  }
+}

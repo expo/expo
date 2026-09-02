@@ -4,16 +4,18 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.3'
+version = '56.0.4'
 
 android {
   namespace "expo.modules.securestore"
   defaultConfig {
     versionCode 17
-    versionName '56.0.3'
+    versionName '56.0.4'
   }
 }
 
 dependencies {
   implementation "androidx.biometric:biometric:1.1.0"
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation "org.robolectric:robolectric:4.16"
 }

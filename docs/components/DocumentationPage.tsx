@@ -1,10 +1,17 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
+import dynamic from 'next/dynamic';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
+import { getLocaleFromPath } from '~/common/i18n';
 import * as RoutesUtils from '~/common/routes';
-import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
+import {
+  appendSectionToRoute,
+  getBreadcrumbTrail,
+  isRouteActive,
+  localizeRoutes,
+} from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
@@ -15,7 +22,7 @@ import { buildBreadcrumbListSchema, buildTechArticleSchema } from '~/constants/s
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
-import { AskPageAIOverlay } from '~/ui/components/AskPageAI';
+import { AskPageAILoading } from '~/ui/components/AskPageAI/AskPageAILoading';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { InlineHelp } from '~/ui/components/InlineHelp';
@@ -30,6 +37,11 @@ import {
 import { A } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
+
+const AskPageAILazyMount = dynamic(() => import('~/ui/components/AskPageAI/AskPageAILazyMount'), {
+  ssr: false,
+  loading: () => <AskPageAILoading />,
+});
 
 export type DocPageProps = PropsWithChildren<PageMetadata>;
 
@@ -50,6 +62,7 @@ export default function DocumentationPage({
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const [isAskAIVisible, setAskAIVisible] = useState(false);
+  const [hasActivatedAskAI, setHasActivatedAskAI] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isAskAIExpanded, setAskAIExpanded] = useState(false);
   const [didChatForceSidebarCollapse, setDidChatForceSidebarCollapse] = useState(false);
@@ -61,13 +74,18 @@ export default function DocumentationPage({
   const tableOfContentsRef = useRef<TableOfContentsHandles>(null);
 
   const pathname = router?.pathname ?? '/';
-  const routes = RoutesUtils.getRoutes(pathname, version);
+  const locale = getLocaleFromPath(pathname);
+  const routes = localizeRoutes(RoutesUtils.getRoutes(pathname, version), locale);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
   const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
   const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);
   const canonicalUrl =
     version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
       ? RoutesUtils.getCanonicalUrl(pathname)
+      : undefined;
+  const latestVersionPath =
+    version === 'unversioned'
+      ? RoutesUtils.getLatestVersionPath(RoutesUtils.getRoutes(pathname, 'latest'), pathname)
       : undefined;
   const techArticleSchema =
     title && canonicalUrl
@@ -179,6 +197,12 @@ export default function DocumentationPage({
       return;
     }
     window.sessionStorage.setItem('expo-docs-ask-ai-visible', String(isAskAIVisible));
+  }, [isAskAIVisible]);
+
+  useEffect(() => {
+    if (isAskAIVisible) {
+      setHasActivatedAskAI(true);
+    }
   }, [isAskAIVisible]);
 
   useEffect(() => {
@@ -329,7 +353,8 @@ export default function DocumentationPage({
           title={title}
           description={description}
           canonicalUrl={canonicalUrl}
-          markdownPath={markdownPath}>
+          markdownPath={markdownPath}
+          locale={locale}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
@@ -346,19 +371,27 @@ export default function DocumentationPage({
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'from-default bg-linear-to-b to-transparent opacity-90'
+            'bg-linear-to-b from-default to-transparent opacity-90'
           )}
         />
-        <main
-          className={mergeClasses(
-            'mx-auto px-14 pt-10',
-            'max-lg-gutters:px-4 max-lg-gutters:pt-5'
-          )}>
+        <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
+          <p className="sr-only">
+            This documentation is available as Markdown for AI agents and LLMs. See the{' '}
+            <A openInNewTab href="/llms.txt">
+              full Markdown index
+            </A>{' '}
+            or append .md to any documentation URL.
+          </p>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
-              This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
-              <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
-              {versionToText(LATEST_VERSION)}).
+              This is documentation for the next SDK version.
+              {latestVersionPath && (
+                <>
+                  {' '}
+                  For up-to-date documentation, see the{' '}
+                  <A href={latestVersionPath}>latest version</A> ({versionToText(LATEST_VERSION)}).
+                </>
+              )}
             </InlineHelp>
           )}
           {title && (
@@ -377,12 +410,6 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
-          <blockquote className="sr-only">
-            <p>
-              For the complete documentation index, see <A href="/llms.txt">llms.txt</A>. Use this
-              file to discover all available pages.
-            </p>
-          </blockquote>
           {children}
         </main>
         <Footer
@@ -394,8 +421,8 @@ export default function DocumentationPage({
           modificationDate={modificationDate}
         />
       </DocumentationNestedScrollLayout>
-      {isAskAIEligiblePage && (
-        <AskPageAIOverlay
+      {isAskAIEligiblePage && hasActivatedAskAI && (
+        <AskPageAILazyMount
           onClose={handleAskAIChatClose}
           onMinimize={handleAskAIMinimize}
           pageTitle={title}

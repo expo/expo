@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { AssetData } from '@expo/metro/metro';
+import type { Platform } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { AssetData } from '@expo/metro/metro';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -45,7 +46,7 @@ const BLT = '\u203A';
 
 export type BundleOptions = {
   entryPoint: string;
-  platform: 'android' | 'ios' | 'web';
+  platform: Platform;
   dev?: boolean;
   minify?: boolean;
   bytecode: boolean;

@@ -109,12 +109,16 @@ function getApplication(
 
 function runApplication(appKey: string, appParameters: AppParameters): any {
   if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
-    const params = { ...appParameters, rootTag: `#${appParameters.rootTag?.id}` };
-    console.log(
-      `Running application "${appKey}" with appParams:\n`,
-      params,
-      `\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF.`
-    );
+    const params: Record<string, unknown> = { rootTag: `#${appParameters.rootTag?.id}` };
+    for (const key of Object.keys(appParameters)) {
+      if (key !== 'rootTag') {
+        params[key] = appParameters[key as keyof AppParameters];
+      }
+    }
+    // NOTE(@kitten): Only log when the parameters are non-default
+    if (params.rootTag !== '#root' || params.hydrate || params.initialProps) {
+      console.log(`Running application "${appKey}" with appParams:`, params);
+    }
   }
 
   const runnable = runnables[appKey];

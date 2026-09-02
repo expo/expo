@@ -1,1 +1,0 @@
-{"version":3,"file":"index.server.js","sourceRoot":"","sources":["../src/index.server.ts"],"names":[],"mappings":"AAAA,cAAc,gBAAgB,CAAC;AAE/B,MAAM,UAAU,SAAS;IACvB,OAAO,CAAC,EAAE,EAAE,SAAS,CAAC,CAAC;AACzB,CAAC","sourcesContent":["export * from './Asset.server';\n\nexport function useAssets() {\n  return [[], undefined];\n}\n"]}

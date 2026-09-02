@@ -45,9 +45,9 @@ describe(setColorItem, () => {
     // reassign the color
     colors = setColorItem(colorItemToAdd, colors);
     // check the object is reassigned
-    expect(colors.resources.color[0]._).toBe('#000000');
+    expect(colors.resources.color![0]!._).toBe('#000000');
     // ensure an extra color was not added
-    expect(colors.resources.color.length).toBe(1);
+    expect(colors.resources.color!.length).toBe(1);
     // Remove the color item
     colors = removeColorItem('somn', colors);
     // doesn't fully reset the colors.

@@ -18,6 +18,40 @@ public:
     jni::alias_ref<NativeStatePropsGetter::javaobject> self,
     jni::alias_ref<jobject> stateWrapper
   );
+
+  // Synchronously flushes a shadow-node size state update in the current frame
+  // (`UpdateMode::unstable_Immediate`) — the same path iOS uses. This avoids the layout shift an
+  // asynchronous `StateWrapper.updateState` causes for matchContents Hosts in Expo UI Compose views
+  static void updateStyleSizeImmediate(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jni::alias_ref<jobject> stateWrapper,
+    jdouble styleWidth,
+    jdouble styleHeight
+  );
+
+  static void updateViewSizeImmediate(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jni::alias_ref<jobject> stateWrapper,
+    jdouble width,
+    jdouble height
+  );
+
+  // Publishes where Compose actually placed a hosted view inside its `Host`, which Yoga cannot see.
+  static void setContentOrigin(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jint tag,
+    jdouble x,
+    jdouble y
+  );
+
+  static void clearContentOrigin(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jint tag
+  );
+
+  static void clearAllContentOrigins(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self
+  );
 };
 
 } // namespace expo

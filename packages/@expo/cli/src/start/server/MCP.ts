@@ -2,6 +2,7 @@ import type {
   McpServerProxy,
   TunnelMcpServerProxy as TunnelMcpServerProxyType,
 } from '@expo/mcp-tunnel' with { 'resolution-mode': 'import' };
+import { loadModule } from '@expo/require-utils';
 import path from 'node:path';
 import resolveFrom from 'resolve-from';
 
@@ -9,10 +10,7 @@ import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { Log } from '../../log';
 import { env } from '../../utils/env';
 import { installExitHooks } from '../../utils/exit';
-
-const importESM = require('@expo/cli/add-module') as <T>(moduleName: string) => Promise<T>;
-
-const debug = require('debug')('expo:start:server:mcp') as typeof console.log;
+import { debugEvent } from './devtoolsEvents';
 
 /**
  * The MCP server
@@ -57,21 +55,18 @@ export async function maybeCreateMCPServerAsync({
   const mcpServerUrlObject = new URL(normalizedServer);
   const scheme = mcpServerUrlObject.protocol ?? 'wss:';
   const mcpServerUrl = `${scheme}//${mcpServerUrlObject.host}`;
-  debug(`Creating MCP tunnel - server URL: ${mcpServerUrl}`);
+  debugEvent('mcp_tunnel_create', { url: mcpServerUrl });
 
   try {
-    const { addMcpCapabilities } = await importESM<{
+    const { addMcpCapabilities } = (await loadModule(mcpPackagePath)) as {
       addMcpCapabilities: (server: McpServerProxy, projectRoot: string) => void;
-    }>(mcpPackagePath);
-    const { TunnelMcpServerProxy } = await importESM<{
+    };
+    const { TunnelMcpServerProxy } = (await loadModule(mcpTunnelPackagePath)) as {
       TunnelMcpServerProxy: typeof TunnelMcpServerProxyType;
-    }>(mcpTunnelPackagePath);
+    };
 
     const logger = {
       ...Log,
-      debug(...message: any[]): void {
-        debug(...message);
-      },
       info(...message: any[]): void {
         Log.log(...message);
       },
@@ -95,7 +90,7 @@ export async function maybeCreateMCPServerAsync({
 
     return server;
   } catch (error: unknown) {
-    debug(`Error creating MCP tunnel: ${error}`);
+    debugEvent('mcp_tunnel_failed', { error: debugEvent.error(error as Error) });
   }
   return null;
 }

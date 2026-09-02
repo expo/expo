@@ -5,7 +5,7 @@ import android.os.IBinder
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSessionService.SERVICE_INTERFACE
-import expo.modules.audio.AudioPlayer
+import expo.modules.audio.LockScreenPlayable
 import expo.modules.audio.getPlaybackServiceErrorMessage
 import expo.modules.kotlin.AppContext
 import java.lang.ref.WeakReference
@@ -14,7 +14,7 @@ class AudioPlaybackServiceBinder(val service: AudioControlsService) : android.os
 
 @OptIn(UnstableApi::class)
 class AudioPlaybackServiceConnection(
-  val player: WeakReference<AudioPlayer>,
+  val playable: WeakReference<LockScreenPlayable>,
   appContext: AppContext
 ) : BaseServiceConnection<AudioPlaybackServiceBinder>(appContext) {
   var playbackServiceBinder: AudioPlaybackServiceBinder? = null
@@ -51,8 +51,8 @@ class AudioPlaybackServiceConnection(
   }
 
   override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
-    val player = player.get()
-    if (player == null || isReleased) {
+    val playable = playable.get()
+    if (playable == null || isReleased) {
       transitionToState(ServiceBindingState.FAILED)
       return
     }
@@ -69,17 +69,17 @@ class AudioPlaybackServiceConnection(
     serviceBinder.service.appContext = appContext
     serviceBinder.service.playsInSilentMode = playsInSilentMode
 
-    if (player.isActiveForLockScreen) {
-      serviceBinder.service.setPlayerOptions(player, player.metadata, player.lockScreenOptions)
+    if (playable.isActiveForLockScreen) {
+      serviceBinder.service.setPlayableOptions(playable, playable.metadata, playable.lockScreenOptions)
     }
   }
 
   override fun onServiceDisconnected(componentName: ComponentName) {
     playbackServiceBinder?.service?.let { service ->
       service.playbackListener?.let { listener ->
-        val player = player.get()
-        if (player != null && !isReleased) {
-          player.ref.removeListener(listener)
+        val playable = playable.get()
+        if (playable != null && !isReleased) {
+          playable.player.removeListener(listener)
         }
       }
       service.playbackListener = null

@@ -1,15 +1,16 @@
 ---
-title: Migrate to expo-contacts/next
-sidebar_title: expo-contacts/next
-description: Migrate from the legacy expo-contacts API to the new class-based expo-contacts/next API.
+title: Migrate to the new expo-contacts API
+sidebar_title: expo-contacts/legacy
+description: Migrate from the legacy expo-contacts API to the new class-based expo-contacts API with Contact.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
-The `expo-contacts/next` API is now stable. The legacy `expo-contacts` module is deprecated. Migrate to `expo-contacts/next` to benefit from the new API and future fixes.
+The new class-based `expo-contacts` API is now stable. The legacy API is available from `expo-contacts/legacy`. Migrate to the root `expo-contacts` import to benefit from the new API and future fixes.
 
 The new API replaces the function-based API with a `Contact` class. Contacts are represented as class instances that hold only the ID of the native contact. Key changes:
 
@@ -19,16 +20,16 @@ The new API replaces the function-based API with a `Contact` class. Contacts are
 
 ## Installation
 
-Install the SDK-compatible package that includes `expo-contacts/next`:
+Install the SDK-compatible package:
 
 <Terminal cmd={['$ npx expo install expo-contacts']} />
 
 ## Importing the new API
 
-Import from `expo-contacts/next`:
+Import from `expo-contacts`:
 
 ```ts
-import { Contact } from 'expo-contacts/next';
+import { Contact } from 'expo-contacts';
 ```
 
 ## Contacts
@@ -131,7 +132,7 @@ All scalar contact properties are now async getters and setters. Use `get*` to r
 | Given name               | `getGivenName`          | `setGivenName`          |
 | Family name              | `getFamilyName`         | `setFamilyName`         |
 | Middle name              | `getMiddleName`         | `setMiddleName`         |
-| Full name                | `getFullName`           | —                       |
+| Full name                | `getFullName`           | <NoIcon />              |
 | Nickname (iOS only)      | `getNickname`           | `setNickname`           |
 | Prefix                   | `getPrefix`             | `setPrefix`             |
 | Suffix                   | `getSuffix`             | `setSuffix`             |
@@ -143,7 +144,7 @@ All scalar contact properties are now async getters and setters. Use `get*` to r
 | Birthday (iOS only)      | `getBirthday`           | `setBirthday`           |
 | Note                     | `getNote`               | `setNote`               |
 | Image                    | `getImage`              | `setImage`              |
-| Thumbnail                | `getThumbnail`          | —                       |
+| Thumbnail                | `getThumbnail`          | <NoIcon />              |
 | Favourite (Android only) | `getIsFavourite`        | `setIsFavourite`        |
 
 ### Name
@@ -309,8 +310,8 @@ removeAllContactsChangeListeners();
 ## Reference
 
 <BoxLink
-  title="Contacts (next)"
-  description="See the full API reference for expo-contacts/next."
-  href="/versions/latest/sdk/contacts-next/"
+  title="Contacts"
+  description="See the full API reference for expo-contacts."
+  href="/versions/latest/sdk/contacts/"
   Icon={BookOpen02Icon}
 />

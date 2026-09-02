@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ExpoHeader.pch"
-
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 

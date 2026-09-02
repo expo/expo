@@ -1,6 +1,5 @@
+import { event } from '../../hmrEvents';
 import type { SocketId, SocketMap } from './createSocketMap';
-
-const debug = require('debug')('expo:metro:dev-server:broadcaster') as typeof console.log;
 
 export function createBroadcaster(sockets: SocketMap) {
   return function broadcast(senderSocketId: SocketId | null, message: string) {
@@ -13,7 +12,7 @@ export function createBroadcaster(sockets: SocketMap) {
       try {
         socket.send(message);
       } catch (error) {
-        debug(`Failed to broadcast message to socket "${socketId}"`, error);
+        event('broadcast_failed', { socketId, error: event.error(error as Error) });
       }
     }
   };

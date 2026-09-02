@@ -11,6 +11,9 @@ export default {
   hideMenu() {
     throw new WebUnsupportedError();
   },
+  setToolsButtonVisible() {
+    throw new WebUnsupportedError();
+  },
   addDevMenuCallbacks() {
     throw new WebUnsupportedError();
   },

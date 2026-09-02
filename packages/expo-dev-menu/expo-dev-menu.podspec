@@ -109,8 +109,6 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.requires_app_host = false
     test_spec.source_files = 'ios/Tests/**/*'
-    test_spec.dependency 'Quick'
-    test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'

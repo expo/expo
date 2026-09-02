@@ -1,11 +1,13 @@
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 
-import type { ColumnProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 import type { UniversalAlignment } from '../types';
+import type { ColumnProps } from './types';
 
 const styles = StyleSheet.create({
-  column: { flexDirection: 'column' },
+  // `alignSelf: 'stretch'` — match SwiftUI `VStack` / Compose `Column`, which fill their parent's cross-axis.
+  // Without this, a nested Column inherits its parent's `alignItems` (often `flex-start`) and shrinks to content.
+  column: { flexDirection: 'column', alignSelf: 'stretch' },
   hidden: { display: 'none' },
   disabled: {
     opacity: 0.5,

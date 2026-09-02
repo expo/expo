@@ -1,12 +1,16 @@
 import { vol } from 'memfs';
 
-import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
+import { isInteractive } from '../interactive';
 import { selectAsync } from '../prompts';
+import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
 jest.mock('../../utils/prompts');
+jest.mock('../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock('../../api/user/user');
 jest.mock('../../api/graphql/queries/AppQuery', () => ({
   AppQuery: {
@@ -46,6 +50,9 @@ jest.mock('../../api/getExpoGoIntermediateCertificate', () => ({
 
 beforeEach(() => {
   vol.reset();
+
+  jest.mocked(isInteractive).mockReturnValue(true);
+  jest.mocked(selectAsync).mockReset();
 
   jest.mocked(getUserAsync).mockImplementation(async () => ({
     __typename: 'User',
@@ -116,6 +123,16 @@ describe(getCodeSigningInfoAsync, () => {
           undefined
         );
         expect(result).toBeNull();
+      });
+
+      it('rejects easProjectId values that contain path segments', async () => {
+        await expect(
+          getCodeSigningInfoAsync(
+            { extra: { eas: { projectId: '../outside-project' } } } as any,
+            'keyid="expo-root", alg="rsa-v1_5-sha256"',
+            undefined
+          )
+        ).rejects.toThrow('Invalid EAS project ID for development code signing cache');
       });
 
       it('falls back to cached when there is a network error', async () => {
@@ -203,6 +220,24 @@ describe(getCodeSigningInfoAsync, () => {
   });
 
   describe('non expo-root certificate keyid requested', () => {
+    it('returns null when codeSigningCertificate and private key path are not specified', async () => {
+      await expect(
+        getCodeSigningInfoAsync({} as any, 'keyid="test", alg="rsa-v1_5-sha256"', undefined)
+      ).resolves.toBeNull();
+    });
+
+    it('throws when private key path is specified without codeSigningCertificate', async () => {
+      await expect(
+        getCodeSigningInfoAsync(
+          {} as any,
+          'keyid="test", alg="rsa-v1_5-sha256"',
+          'keys/private-key.pem'
+        )
+      ).rejects.toThrow(
+        '--private-key-path was specified, but updates.codeSigningCertificate is not set in the resolved app config'
+      );
+    });
+
     it('normal case gets the configured certificate', async () => {
       vol.fromJSON({
         'certs/cert.pem': mockSelfSigned.certificate,

@@ -19,16 +19,16 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
           className="justify-center px-2.5"
           onClick={onClick}
           aria-pressed={isActive}
-          aria-label="Ask about this page with AI">
+          aria-label="Ask AI about this page">
           <div className="flex items-center gap-1.5">
-            <Star06Icon className="icon-sm text-palette-purple11" />
+            <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
+      <Tooltip.Content sideOffset={8} className="max-w-75 text-center">
         <FOOTNOTE>Open the contextual AI assistant for this SDK page</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>
@@ -42,19 +42,19 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
         <Button
           type="button"
           theme="quaternary"
-          className={mergeClasses('min-h-[36px] justify-center px-2.5')}
+          className={mergeClasses('min-h-9 justify-center px-2.5')}
           onClick={onClick}
           aria-pressed={isActive}
-          aria-label="Ask about this configuration page with AI">
+          aria-label="Ask AI about this configuration page">
           <div className="flex items-center gap-2">
-            <Star06Icon className="icon-sm text-palette-purple11" />
+            <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
+      <Tooltip.Content sideOffset={8} className="max-w-75 text-center">
         <FOOTNOTE>Open the contextual AI assistant for this configuration reference</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>

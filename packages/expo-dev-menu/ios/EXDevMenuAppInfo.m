@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import <EXDevMenu/EXDevMenuAppInfo.h>
-#import <React/RCTBridge+Private.h>
 #if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
 #import <EXDevMenu/EXDevMenu-Swift.h>
 #else
@@ -37,22 +36,11 @@
   }
 
   NSString *engine;
-  NSString *bridgeDescription = [[[manager currentBridge] batchedBridge] bridgeDescription];
-
-  // In bridgeless mode the bridgeDescription always is "BridgeProxy" instead of actual engine name
-  if ([bridgeDescription containsString:@"BridgeProxy"]) {
-  #if USE_HERMES
-    engine = @"Hermes";
-  #else
-    engine = @"JSC";
-  #endif
-  } else if ([bridgeDescription containsString:@"Hermes"]) {
-    engine = @"Hermes";
-  } else if ([bridgeDescription containsString:@"V8"]) {
-    engine = @"V8";
-  } else {
-    engine = @"JSC";
-  }
+#if USE_HERMES
+  engine = @"Hermes";
+#else
+  engine = @"JSC";
+#endif
 
   NSString *hostUrl = [manager.currentManifestURL absoluteString] ?: @"";
 

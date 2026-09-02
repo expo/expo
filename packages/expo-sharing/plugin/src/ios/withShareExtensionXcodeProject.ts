@@ -27,7 +27,7 @@ export const withShareExtensionXcodeProject: ConfigPlugin<WithShareExtensionXcod
     const targetUuid = xcodeProject.generateUuid();
 
     // Technically we should be able to remove the existing target, but I don't have time to add it before the release.
-    // Most users will chose not to modify the identifier anyways.
+    // Most users will choose not to modify the identifier anyways.
     // TODO: Add smart existing target removal
     const conflict_status = conflictingExtensionExists(xcodeProject, targetName, bundleIdentifier);
     if (conflict_status === 'exists-conflicting') {
@@ -43,7 +43,8 @@ export const withShareExtensionXcodeProject: ConfigPlugin<WithShareExtensionXcod
       return config;
     }
 
-    const xcConfigurationList = addXCConfigurationList(
+    // TODO(@kitten): This was untyped before and types now fail
+    const xcConfigurationList: any = addXCConfigurationList(
       xcodeProject,
       targetName,
       bundleIdentifier,
@@ -51,8 +52,8 @@ export const withShareExtensionXcodeProject: ConfigPlugin<WithShareExtensionXcod
       config.ios?.buildNumber ?? '1',
       config.version ?? '1.0'
     );
-
-    const productFile = addProductFile(xcodeProject, targetName, groupName);
+    // TODO(@kitten): This was untyped before and types now fail
+    const productFile: any = addProductFile(xcodeProject, targetName, groupName);
 
     const pbxNativeTargetObject = addToPbxNativeTargetSection(
       xcodeProject,

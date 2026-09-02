@@ -9,16 +9,28 @@ import {
   AudioRecorder,
   AudioQuality,
   IOSOutputFormat,
+  RecordingOptions,
 } from 'expo-audio';
+import { File, Paths } from 'expo-file-system';
+import { PermissionStatus } from 'expo-modules-core';
 import { isMatch } from 'lodash';
 import { Platform } from 'react-native';
 
-import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
+import type { JasmineInterface } from '../types';
+import { waitFor } from './helpers';
 
 export const name = 'Recording';
 
 const defaultRecordingDurationMillis = 500;
+
+const recordAndStop = async (recorder: AudioRecorder) => {
+  recorder.record();
+  await waitFor(defaultRecordingDurationMillis);
+  await recorder.stop();
+};
+
+const normalizeFileUriForComparison = (uri: string) => uri.replace('file:///private/', 'file:///');
 
 const retryForStatus = (recorder: AudioRecorder, status: Partial<RecorderState>) =>
   asyncRetry(
@@ -41,7 +53,7 @@ const retryForStatus = (recorder: AudioRecorder, status: Partial<RecorderState>)
     { retries: 5, minTimeout: 100 }
   );
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
@@ -65,16 +77,16 @@ export async function test(t) {
     // According to the documentation pausing should be supported on Android API >= 24,
     // unfortunately such test fails on Android v24.
     const pausingIsSupported = Platform.OS !== 'android' || Platform.Version >= 25;
-    let recorder: AudioRecorder | null = null;
+    let recorder: AudioRecorder = null!;
 
     t.beforeEach(async () => {
       const { status } = await getRecordingPermissionsAsync();
-      t.expect(status).toEqual('granted');
+      t.expect(status).toEqual(PermissionStatus.GRANTED);
       recorder = new AudioModule.AudioRecorder({});
     });
 
     t.afterEach(() => {
-      recorder = null;
+      recorder = null!;
     });
 
     t.describe('Recorder.prepareToRecordAsync(preset)', () => {
@@ -237,6 +249,61 @@ export async function test(t) {
         }
         await recorder.stop();
       });
+
+      if (Platform.OS !== 'web') {
+        const recordWithOptionsAndExpectUri = async (
+          options: RecordingOptions,
+          expectedRootUri: string
+        ) => {
+          const currentRecorder = recorder;
+          let recordingUri: string | null = null;
+
+          try {
+            await currentRecorder.prepareToRecordAsync(options);
+
+            recordingUri = currentRecorder.uri;
+            if (!recordingUri) {
+              throw new Error('Expected recorder.uri to be set after preparing a recording');
+            }
+            t.expect(recordingUri).toContain('file:///');
+            t.expect(
+              normalizeFileUriForComparison(recordingUri).startsWith(
+                normalizeFileUriForComparison(expectedRootUri)
+              )
+            ).toBe(true);
+
+            await recordAndStop(currentRecorder);
+
+            t.expect(new File(recordingUri).exists).toBe(true);
+          } finally {
+            if (recordingUri) {
+              const recordingFile = new File(recordingUri);
+              if (recordingFile.exists) {
+                recordingFile.delete();
+              }
+            }
+          }
+        };
+
+        t.it('stores recordings in the cache directory by default', async () => {
+          await recordWithOptionsAndExpectUri(
+            {
+              ...RecordingPresets.LOW_QUALITY,
+            },
+            Paths.cache.uri
+          );
+        });
+
+        t.it('stores recordings in the document directory when requested', async () => {
+          await recordWithOptionsAndExpectUri(
+            {
+              ...RecordingPresets.LOW_QUALITY,
+              directory: 'document',
+            },
+            Paths.document.uri
+          );
+        });
+      }
     });
   });
 }

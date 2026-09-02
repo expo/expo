@@ -1,9 +1,9 @@
-import { buildEvent, buildChangeEvent, type DateTimePickerProps } from './types';
 import { DatePicker, type DatePickerProps } from '../../swift-ui/DatePicker';
 import { Host } from '../../swift-ui/Host';
 import { disabled as disabledModifier, type ModifierConfig, tint } from '../../swift-ui/modifiers';
 import { datePickerStyle } from '../../swift-ui/modifiers/datePickerStyle';
 import { environment } from '../../swift-ui/modifiers/environment';
+import { buildEvent, buildChangeEvent, type DateTimePickerProps } from './types';
 
 type DatePickerStyleType = 'automatic' | 'compact' | 'graphical' | 'wheel';
 
@@ -54,6 +54,11 @@ export function DateTimePicker(props: DateTimePickerProps) {
 
   const pickerStyle = displayToDatePickerStyle(display);
 
+  // The compact style hugs its content, so the Host must match it
+  // on both axes, otherwise it collapses to 0 width under a non-stretch parent like
+  // `alignItems: 'center'` https://github.com/expo/expo/issues/46904.
+  const isCompactStyle = pickerStyle === 'compact' || pickerStyle === 'automatic';
+
   const modifiers: ModifierConfig[] = [datePickerStyle(pickerStyle)];
   if (accentColor) {
     modifiers.push(tint(accentColor));
@@ -87,7 +92,10 @@ export function DateTimePicker(props: DateTimePickerProps) {
   };
 
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
+    <Host
+      matchContents={isCompactStyle ? true : { vertical: true }}
+      style={style}
+      ignoreSafeArea="all">
       <DatePicker {...iosProps} />
     </Host>
   );

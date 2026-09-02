@@ -1149,7 +1149,7 @@ export default {
               release {
                   signingConfig signingConfigs.debug
                   minifyEnabled enableMinifyInReleaseBuilds
-                  proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+                  proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
               }
           }
           applicationVariants.all { variant ->

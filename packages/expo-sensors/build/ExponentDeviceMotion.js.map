@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentDeviceMotion.js","sourceRoot":"","sources":["../src/ExponentDeviceMotion.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,sBAAsB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExponentDeviceMotion');\n"]}

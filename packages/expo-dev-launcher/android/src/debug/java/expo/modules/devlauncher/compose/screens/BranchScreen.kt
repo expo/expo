@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devlauncher.compose.Update
 import expo.modules.devlauncher.compose.models.BranchAction
 import expo.modules.devlauncher.compose.primitives.CircularProgressBar
@@ -56,7 +56,7 @@ fun BranchScreen(
         color = Color.Transparent,
         modifier = Modifier.align(Alignment.CenterStart)
       ) {
-        Button(
+        UnstyledButton(
           onClick = goBack
         ) {
           LauncherIcons.Chevron(
@@ -110,7 +110,7 @@ fun BranchScreen(
           itemsIndexed(items = updates) { index, update ->
             val formatedTime = DateFormat.formatUpdateDate(update.createdAt)
 
-            Button(
+            UnstyledButton(
               modifier = Modifier
                 .background(
                   NewAppTheme.colors.background.subtle,

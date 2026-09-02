@@ -195,6 +195,8 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+On Android and iOS, `expo-audio` saves recordings in the app's cache directory by default. The system may delete cache files when the device runs low on storage. To keep new recordings in a more persistent location, pass `{ ...RecordingPresets.HIGH_QUALITY, directory: 'document' }` to `useAudioRecorder` or `prepareToRecordAsync()`. This stores them under the app's document directory. For existing recordings already saved in cache, use the returned recording URI to move them with [`expo-file-system`](./filesystem/).
+
 ### Playing audio in the background
 
 Background audio playback allows your app to continue playing audio when it moves to the background or when the device screen locks.

@@ -114,18 +114,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (void)hostDidStart:(NSURL *)bundleURL
 {
   if ([self _isDevModeEnabledForHost:bundleURL]) {
-    // Set the bundle url for the packager connection manually
-    NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
     settings.packagerScheme = ([bundleURL.scheme isEqualToString:@"https"] || [bundleURL.scheme isEqualToString:@"exps"]) ? @"https" : @"http";
-    
-    RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
-    if (devSettings == nil) {
-      RCTLogWarn(@"Couldn't find the devSettings module when setting packager port; packager connection will not be updated.");
-    } else {
-      [[devSettings packagerConnection] reconnect:packagerServerHostPort];
-    }
-    
+
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
 
     NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
@@ -268,18 +259,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [devSettings toggleElementInspector];
 }
 
-- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
-                                    queue:(dispatch_queue_t)queue
-                                forMethod:(NSString *)method
-{
-  RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
-  if (devSettings == nil) {
-    RCTLogWarn(@"Couldn't find the devSettings module when setting packager port");
-  }
-  
-  return [[devSettings packagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
-}
-
 #pragma mark - internal
 
 - (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
@@ -289,6 +268,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (void)_openJsInspector:(NSURL *)bundleURL
 {
+  // TODO(@kitten): This might be unreachable. If it isn't it shouldn't hardcode `http`, but it looks unused to me
   NSInteger port = [[bundleURL port] integerValue] ?: RCT_METRO_PORT;
   NSString *host = [bundleURL host] ?: @"localhost";
   NSString *url =

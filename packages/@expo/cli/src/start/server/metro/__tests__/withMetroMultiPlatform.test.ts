@@ -1,7 +1,7 @@
 import { getBareExtensions } from '@expo/config/paths';
-import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver';
+import type Bundler from '@expo/metro/metro/Bundler';
 import { resolveFrom } from '@expo/require-utils';
 import { vol } from 'memfs';
 import assert from 'node:assert';
@@ -171,6 +171,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -193,6 +194,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -228,16 +230,17 @@ describe(withExtendedResolver, () => {
 
         const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
           isTsconfigPathsEnabled: false,
+          getMetroBundler: getMetroBundlerGetter(),
         });
 
         modified.resolver.resolveRequest!(
           {
             ...getDefaultRequestContext(),
             dev: true,
-            originModulePath,
+            originModulePath: originModulePath!,
           },
-          targetModulePath,
-          platform
+          targetModulePath!,
+          platform!
         );
 
         expect(getResolveFunc()).not.toHaveBeenCalled();
@@ -249,6 +252,7 @@ describe(withExtendedResolver, () => {
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -270,6 +274,7 @@ describe(withExtendedResolver, () => {
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -290,12 +295,13 @@ describe(withExtendedResolver, () => {
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === '@expo/vector-icons/package.json'
         ? 'node_modules/@expo/vector-icons'
-        : undefined;
+        : null;
     });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -316,12 +322,13 @@ describe(withExtendedResolver, () => {
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === '@expo/vector-icons/package.json'
         ? 'node_modules/@expo/vector-icons'
-        : undefined;
+        : null;
     });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -339,7 +346,7 @@ describe(withExtendedResolver, () => {
   });
 
   it(`does not alias react-native-vector-icons if @expo/vector-icons is not installed`, async () => {
-    jest.mocked(resolveFrom).mockReturnValue(undefined);
+    jest.mocked(resolveFrom).mockReturnValue(null);
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -393,6 +400,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -427,6 +435,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -455,6 +464,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -660,22 +670,44 @@ describe(withExtendedResolver, () => {
     );
   });
 
-  it('aliases assets registry to virtual shim', async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        mock: '',
-      },
-      '/'
-    );
+  it('aliases assets registry to virtual shim on all platforms', async () => {
+    vol.fromJSON({ mock: '' }, '/');
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    for (const platform of ['ios', 'web']) {
+      for (const moduleName of [
+        'react-native/asset-registry',
+        '@react-native/assets-registry/registry',
+      ]) {
+        const result = modified.resolver.resolveRequest!(
+          getDefaultRequestContext(),
+          moduleName,
+          platform
+        );
+
+        expect(result).toEqual({
+          filePath: '\0polyfill:assets-registry',
+          type: 'sourceFile',
+        });
+      }
+    }
+  });
+
+  it("aliases react-native's internal asset registry imports to the virtual shim", async () => {
+    vol.fromJSON({ mock: '' }, '/');
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       getMetroBundler: getMetroBundlerGetter(),
     });
 
     const result = modified.resolver.resolveRequest!(
-      getDefaultRequestContext(),
-      '@react-native/assets-registry/registry',
+      getResolverContext({
+        originModulePath: '/root/node_modules/react-native/Libraries/Image/resolveAssetSource.js',
+      }),
+      '../../src/private/assets/AssetRegistry',
       'ios'
     );
 
@@ -698,7 +730,7 @@ describe(withExtendedResolver, () => {
     );
 
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
-      return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : undefined;
+      return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : null;
     });
 
     const config = asMetroConfig({ projectRoot: '/root/' });
@@ -855,6 +887,118 @@ describe(withExtendedResolver, () => {
       });
 
       expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('EXPO_ROUTER_DISABLE_NATIVE_TABS_MD', () => {
+    const materialConverterAndroidPath =
+      '/root/node_modules/expo-router/build/native-tabs/utils/materialIconConverter.android.js';
+    const materialConverterNotImplementedPath =
+      '/root/node_modules/expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js';
+
+    afterEach(() => {
+      delete process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
+    });
+
+    function mockMaterialConverterResolver() {
+      jest.mocked(getResolveFunc()).mockImplementation((_context, moduleName, _platform) => {
+        if (moduleName.endsWith('materialIconConverter-not-implemented.js')) {
+          return { type: 'sourceFile', filePath: materialConverterNotImplementedPath };
+        }
+        return { type: 'sourceFile', filePath: materialConverterAndroidPath };
+      });
+    }
+
+    it('rewrites the Android Material Symbols converter to the not-implemented stub when set on Android', () => {
+      mockMinFs();
+      process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD = 'true';
+      mockMaterialConverterResolver();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './materialIconConverter',
+        'android'
+      );
+
+      expect(result).toEqual({
+        type: 'sourceFile',
+        filePath: materialConverterNotImplementedPath,
+      });
+    });
+
+    it('leaves the resolved path untouched when the flag is unset', () => {
+      mockMinFs();
+      mockMaterialConverterResolver();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './materialIconConverter',
+        'android'
+      );
+
+      expect(result).toEqual({
+        type: 'sourceFile',
+        filePath: materialConverterAndroidPath,
+      });
+    });
+
+    it('leaves the resolved path untouched on iOS even when the flag is set', () => {
+      mockMinFs();
+      process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD = 'true';
+      mockMaterialConverterResolver();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './materialIconConverter',
+        'ios'
+      );
+
+      expect(result).toEqual({
+        type: 'sourceFile',
+        filePath: materialConverterAndroidPath,
+      });
+    });
+
+    it('does not rewrite unrelated Android paths when the flag is set', () => {
+      mockMinFs();
+      process.env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD = 'true';
+
+      const optionsConverterAndroidPath =
+        '/root/node_modules/expo-router/build/native-tabs/utils/optionsIconConverter.android.js';
+      jest.mocked(getResolveFunc()).mockImplementation((_context, _moduleName, _platform) => {
+        return { type: 'sourceFile', filePath: optionsConverterAndroidPath };
+      });
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        './optionsIconConverter',
+        'android'
+      );
+
+      expect(result).toEqual({
+        type: 'sourceFile',
+        filePath: optionsConverterAndroidPath,
+      });
     });
   });
 
@@ -1128,6 +1272,7 @@ describe(withExtendedResolver, () => {
               return {
                 rootPath: '/root/node_modules/my-package',
                 packageJson: { name: 'my-package' },
+                packageRelativePath: 'src/index.js',
               };
             }
             return null;
@@ -1252,6 +1397,7 @@ describe(withExtendedResolver, () => {
           resolvedModulePaths: {
             'expo-router': '/sticky/expo-router',
           },
+          moduleNameRewrites: {},
         },
       });
 

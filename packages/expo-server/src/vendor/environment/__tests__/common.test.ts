@@ -6,7 +6,7 @@ import type {
   RenderingConfiguration,
   RouteInfo,
 } from '../../../manifest';
-import type { ServerRenderModule } from '../../../rendering';
+import type { LegacyServerRenderModule, ServerRenderModule } from '../../../rendering';
 import { createEnvironment } from '../common';
 
 describe('getRoutesManifest', () => {
@@ -27,7 +27,7 @@ describe('getRoutesManifest', () => {
     const manifest = await env.getRoutesManifest();
 
     expect(input.readJson).toHaveBeenCalledWith('_expo/routes.json');
-    expect(manifest.htmlRoutes).toHaveLength(1);
+    expect(manifest!.htmlRoutes).toHaveLength(1);
   });
 
   it('converts `namedRegex` strings to RegExp instances', async () => {
@@ -60,9 +60,9 @@ describe('getRoutesManifest', () => {
 
     const manifest = await env.getRoutesManifest();
 
-    expect(manifest.htmlRoutes[0].namedRegex).toBeInstanceOf(RegExp);
-    expect(manifest.apiRoutes[0].namedRegex).toBeInstanceOf(RegExp);
-    expect(manifest.notFoundRoutes[0].namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.htmlRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.apiRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.notFoundRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
   });
 
   it('caches the manifest on subsequent calls in production', async () => {
@@ -295,6 +295,48 @@ describe('getHtml', () => {
     expect(input.loadModule).toHaveBeenCalledTimes(2);
   });
 
+  it('uses the legacy SSR renderer for SDK 55 exports', async () => {
+    const mockLegacySSRModule = createMockLegacySSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: ['/style.css'], js: ['/app.js'] },
+      },
+      modules: { '_expo/server/render.js': mockLegacySSRModule },
+    });
+    const env = createEnvironment(input);
+    const request = new Request('http://localhost/path?query=1');
+
+    const result = await env.getHtml(
+      request,
+      createMockRoute({
+        file: './path.tsx',
+        page: '/path',
+        namedRegex: new RegExp('^/path(?:/)?$'),
+      })
+    );
+    expect(result).toEqual('<html>Legacy SSR content</html>');
+
+    expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pathname: '/path',
+        search: '?query=1',
+      }),
+      expect.objectContaining({
+        request,
+        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
+      })
+    );
+    expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        request: expect.objectContaining({
+          signal: request.signal,
+        }),
+      })
+    );
+  });
+
   it('passes location, request, and assets to `getStreamingContent()`', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
@@ -323,7 +365,7 @@ describe('getHtml', () => {
       }),
       expect.objectContaining({
         request,
-        assets: { css: ['/style.css'], js: ['/app.js'] },
+        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
       })
     );
     expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
@@ -362,8 +404,53 @@ describe('getHtml', () => {
       expect.objectContaining({
         assets: {
           css: ['/global.css'],
+          externalCss: [],
           js: ['/runtime.js', '/entry.js', '/layout-chunk.js', '/index-chunk.js'],
         },
+      })
+    );
+  });
+
+  it('merges top-level and per-route external CSS', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: {
+          css: [],
+          externalCss: [{ href: 'https://fonts.googleapis.com/css2?family=Roboto' }],
+          js: [],
+        },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+        assets: {
+          css: [],
+          externalCss: [
+            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          ],
+          js: [],
+        },
+      })
+    );
+
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        assets: expect.objectContaining({
+          externalCss: [
+            { href: 'https://fonts.googleapis.com/css2?family=Roboto' },
+            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          ],
+        }),
       })
     );
   });
@@ -831,6 +918,15 @@ function createMockRoute<T extends string | RegExp = string>(
     page: '',
     namedRegex: '' as T,
     routeKeys: {},
+    ...overrides,
+  };
+}
+
+function createMockLegacySSRModule(
+  overrides: Partial<LegacyServerRenderModule> = {}
+): LegacyServerRenderModule {
+  return {
+    getStaticContent: jest.fn().mockResolvedValue('<html>Legacy SSR content</html>'),
     ...overrides,
   };
 }

@@ -32,17 +32,19 @@ export function SymbolView(props: SymbolViewProps): JSX.Element {
   if (!name) {
     return <>{props.fallback}</>;
   }
+  const size = props.size ?? 24;
+  const style = [{ width: size, height: size }, props.style];
   if (!loaded) {
-    return <View style={{ width: props.size ?? 24, height: props.size ?? 24 }} />;
+    return <View style={style} />;
   }
   return (
-    <View style={{ width: props.size ?? 24, height: props.size ?? 24 }}>
+    <View style={style}>
       <Text
         style={{
           fontFamily: font.name,
           color: props.tintColor ?? DEFAULT_SYMBOL_COLOR,
-          fontSize: props.size ?? 24,
-          lineHeight: props.size ?? 24,
+          fontSize: size,
+          lineHeight: size,
         }}>
         {androidSymbolToString(name)}
       </Text>

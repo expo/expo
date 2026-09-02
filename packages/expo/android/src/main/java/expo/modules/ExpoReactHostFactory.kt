@@ -11,6 +11,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
@@ -101,13 +102,14 @@ object ExpoReactHostFactory {
     jsMainModulePath: String = ".expo/.virtual-metro-entry",
     jsBundleAssetPath: String = "index.android.bundle",
     jsBundleFilePath: String? = null,
-    jsRuntimeFactory: JSRuntimeFactory? = null,
     useDevSupport: Boolean = ReactBuildConfig.DEBUG,
     bindingsInstaller: BindingsInstaller? = null
   ): ReactHost {
     if (reactHost == null) {
       val hostHandlers = ExpoModulesPackage.packageList
         .flatMap { it.createReactNativeHostHandlers(context) }
+
+      val devSupportManagerFactory = hostHandlers.firstNotNullOfOrNull { it.devSupportManagerFactory as? DevSupportManagerFactory }
 
       val reactHostDelegate = ExpoReactHostDelegate(
         WeakReference(context),
@@ -129,10 +131,11 @@ object ExpoReactHostFactory {
       val reactHostImpl =
         ReactHostImpl(
           context,
-          delegate = reactHostDelegate,
+          reactHostDelegate = reactHostDelegate,
           componentFactory = componentFactory,
           allowPackagerServerAccess = true,
-          useDevSupport = useDevSupport
+          useDevSupport = useDevSupport,
+          devSupportManagerFactory = devSupportManagerFactory
         )
 
       hostHandlers.forEach { handler ->

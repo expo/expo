@@ -172,6 +172,17 @@ U=</data>
       const parsed = parseFixture('<dict><key>a</key><dict><key>a1</key><true/></dict></dict>');
       assert.deepEqual(parsed, { a: { a1: true } });
     });
+
+    it('should treat a __proto__ key as own data, not a prototype mutation', function () {
+      const parsed = parseFixture(
+        '<dict><key>__proto__</key><dict><key>isAdmin</key><true/></dict></dict>'
+      );
+      assert.strictEqual(Object.getPrototypeOf(parsed), null);
+      assert.strictEqual(Object.hasOwn(parsed, '__proto__'), true);
+      assert.strictEqual((parsed as any).isAdmin, undefined);
+      // eslint-disable-next-line no-proto
+      assert.deepEqual((parsed as any).__proto__, { isAdmin: true });
+    });
   });
 
   describe('integration', function () {

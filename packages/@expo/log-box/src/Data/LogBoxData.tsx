@@ -11,11 +11,11 @@
 import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
+import { parseErrorStack } from '../utils/parseErrorStack';
 import { LogBoxLog, LogContext } from './LogBoxLog';
 import type { LogLevel, MetroStackFrame, StackType, Category, Message } from './Types';
 import type { ExtendedExceptionData } from './parseLogBoxLog';
 import { isError, parseLogBoxException, parseLogBoxLog } from './parseLogBoxLog';
-import { parseErrorStack } from '../utils/parseErrorStack';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -342,7 +342,7 @@ export function addIgnorePatterns(patterns: IgnorePattern[]): void {
   }
   // We need to recheck all of the existing logs.
   // This allows adding an ignore pattern anywhere in the codebase.
-  // Without this, if you ignore a pattern after the a log is created,
+  // Without this, if you ignore a pattern after a log is created,
   // then we would keep showing the log.
   logs = new Set(Array.from(logs).filter((log) => !isMessageIgnored(log.message.content)));
   handleUpdate();

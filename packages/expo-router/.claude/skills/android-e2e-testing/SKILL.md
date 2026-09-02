@@ -66,6 +66,7 @@ adb shell uiautomator dump /sdcard/ui.xml && adb shell cat /sdcard/ui.xml
 ```
 
 This returns XML with every UI element including:
+
 - `text` — displayed text
 - `content-desc` — accessibility description (useful for icon buttons)
 - `bounds` — position as `[left,top][right,bottom]`
@@ -84,6 +85,7 @@ adb shell input tap <x> <y>
 ```
 
 **Example:** For `bounds="[367,498][714,633]"`:
+
 - x = (367 + 714) / 2 = 540
 - y = (498 + 633) / 2 = 565
 
@@ -151,11 +153,12 @@ adb shell screencap -p /sdcard/screenshot.png && adb pull /sdcard/screenshot.png
 ```
 
 Then use the `Read` tool to view `/tmp/screenshot.png`. Screenshots are useful for:
+
 - Confirming visual appearance (colors, layout, styling)
 - Verifying toolbar/tab positioning
 - Checking selection states and visual feedback
 
-**Note:** Use screenshots for *visual* verification only. For element positions and tapping, always use `uiautomator dump`.
+**Note:** Use screenshots for _visual_ verification only. For element positions and tapping, always use `uiautomator dump`.
 
 ### Programmatic verification via UI dump
 
@@ -164,6 +167,7 @@ adb shell uiautomator dump /sdcard/ui.xml && adb shell cat /sdcard/ui.xml
 ```
 
 Search the XML for expected content:
+
 - Verify text content appears
 - Check `content-desc` for accessibility labels
 - Confirm element presence after navigation
@@ -186,12 +190,12 @@ adb logcat -d *:E | tail -30
 
 After testing, summarize results in a table:
 
-| Test | Result |
-|------|--------|
-| Navigation to screen | PASS/FAIL |
+| Test                        | Result    |
+| --------------------------- | --------- |
+| Navigation to screen        | PASS/FAIL |
 | Component renders correctly | PASS/FAIL |
-| Interaction works | PASS/FAIL |
-| No JS errors in logcat | PASS/FAIL |
+| Interaction works           | PASS/FAIL |
+| No JS errors in logcat      | PASS/FAIL |
 
 Include details for any failures: what was expected vs what happened, relevant logcat output, and screenshots.
 
@@ -207,6 +211,7 @@ Components from `@expo/ui/jetpack-compose` (like `HorizontalFloatingToolbar`, `I
 - `android.view.View` with `content-desc` — icon buttons with accessibility labels
 
 When testing Compose components:
+
 1. Look for `content-desc` attributes to identify buttons (e.g., `content-desc="Clear selection"`)
 2. The `ComposeView` wrapper may have different bounds than the inner interactive elements
 3. Tap the interactive element's bounds, not the container's

@@ -29,10 +29,17 @@ public final class ModuleDefinition: ObjectDefinition {
 
   let eventObservers: [AnyEventObservingDefinition]
 
+  /// The raw list of definitions used to construct this module. Retained so
+  /// that `ModuleHolder` can merge in the entries synthesized by the
+  /// `@ExpoModule` macro without losing the user-authored ones.
+  let rawDefinitions: [AnyDefinition]
+
   /**
    Initializer that is called by the `ModuleDefinitionBuilder` results builder.
    */
   override init(definitions: [AnyDefinition]) {
+    self.rawDefinitions = definitions
+
     self.name = definitions
       .compactMap { $0 as? ModuleNameDefinition }
       .last?

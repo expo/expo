@@ -144,6 +144,30 @@ describe(appendStackTitlePropsToOptions, () => {
       );
       expect(result.headerTitleAlign).toBe(align);
     });
+
+    it('does not clear headerTitleAlign from options when style omits textAlign', () => {
+      const result = appendStackTitlePropsToOptions(
+        { headerTitleAlign: 'center' },
+        { children: 'Title', style: { fontSize: 18 } }
+      );
+      expect(result.headerTitleAlign).toBe('center');
+    });
+
+    it('does not clear headerTitleAlign from options when style prop is omitted', () => {
+      const result = appendStackTitlePropsToOptions(
+        { headerTitleAlign: 'center' },
+        { children: 'Title' }
+      );
+      expect(result.headerTitleAlign).toBe('center');
+    });
+
+    it('applies explicit textAlign over inherited headerTitleAlign', () => {
+      const result = appendStackTitlePropsToOptions(
+        { headerTitleAlign: 'center' },
+        { children: 'Title', style: { textAlign: 'left' } }
+      );
+      expect(result.headerTitleAlign).toBe('left');
+    });
   });
 
   describe('largeStyle prop', () => {

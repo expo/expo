@@ -8,11 +8,9 @@ struct AvatarView: View {
 
   var body: some View {
     let isOrganization = account.ownerUserActor == nil
-    let profilePhoto = account.ownerUserActor?.profilePhoto
-    let name = account.ownerUserActor?.username ?? account.name
-    let firstLetter = String(name.prefix(1).uppercased())
+    let firstLetter = String(account.name.prefix(1).uppercased())
 
-    if isOrganization {
+    if isOrganization && !hasCustomProfileImage {
       let color = getExpoAvatarColor(for: firstLetter)
       Circle()
         .fill(color.background)
@@ -22,9 +20,9 @@ struct AvatarView: View {
             .font(.system(size: size * 0.44))
             .foregroundColor(color.foreground)
         )
-    } else if let profilePhoto,
-      !profilePhoto.isEmpty,
-      let url = URL(string: profilePhoto) {
+    } else if let profileImageUrl = account.profileImageUrl,
+      !profileImageUrl.isEmpty,
+      let url = URL(string: profileImageUrl) {
       Avatar(url: url) { image in
         image
           .resizable()
@@ -33,14 +31,14 @@ struct AvatarView: View {
         Circle()
           .fill(Color.expoSystemGray5)
           .overlay(
-            Image(systemName: "person")
+            Image(systemName: isOrganization ? "building.2" : "person")
               .font(.system(size: size * 0.44))
               .foregroundColor(.secondary)
           )
       }
       .frame(width: size, height: size)
       .clipShape(Circle())
-      .id("\(account.id)-\(profilePhoto)")
+      .id("\(account.id)-\(profileImageUrl)")
     } else {
       let color = getExpoAvatarColor(for: firstLetter)
       Circle()
@@ -52,6 +50,14 @@ struct AvatarView: View {
             .foregroundColor(color.foreground)
         )
     }
+  }
+
+  /// Whether the account has a custom uploaded profile image vs a default Gravatar fallback
+  private var hasCustomProfileImage: Bool {
+    guard let profileImageUrl = account.profileImageUrl, !profileImageUrl.isEmpty else {
+      return false
+    }
+    return !profileImageUrl.contains("expo-website-default-avatars")
   }
 
   private func getExpoAvatarColor(for letter: String) -> (background: Color, foreground: Color) {

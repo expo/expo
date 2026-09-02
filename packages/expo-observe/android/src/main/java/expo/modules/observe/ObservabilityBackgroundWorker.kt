@@ -15,16 +15,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import expo.modules.observe.storage.PendingLogsManager
-import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
- * Background worker that dispatches previously queued metrics to EAS Observe.
- *
- * This worker intentionally does NOT register a [SessionManager.MetricsInsertListener].
- * It only dispatches metrics that were already queued in the pending table by the foreground
- * [ObservabilityManager].
+ * Background worker that dispatches stored metrics and logs to EAS Observe.
  */
 class ObservabilityBackgroundWorker(
   context: Context,
@@ -33,7 +27,6 @@ class ObservabilityBackgroundWorker(
   private val observabilityManager: BaseObservabilityManager? = run {
     val projectId = inputData.getString("projectId")
     val baseUrl = inputData.getString("baseUrl")
-    val useOpenTelemetry = inputData.getBoolean("useOpenTelemetry", false)
 
     if (projectId == null || baseUrl == null) {
       return@run null
@@ -43,18 +36,12 @@ class ObservabilityBackgroundWorker(
       context = context
     )
 
-    val pendingMetricsManager = PendingMetricsManager(context)
-    val pendingLogsManager = PendingLogsManager(context)
-
     BaseObservabilityManager(
       context = context,
       projectId = projectId,
       sessionManager = sessionManager,
-      pendingMetricsManager = pendingMetricsManager,
-      pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG,
-      useOpenTelemetry = useOpenTelemetry
+      isDebugBuild = BuildConfig.DEBUG
     )
   }
 
@@ -100,8 +87,7 @@ class ObservabilityBackgroundWorker(
     fun scheduleBackgroundDispatch(
       context: Context,
       projectId: String,
-      baseUrl: String,
-      useOpenTelemetry: Boolean = false
+      baseUrl: String
     ) {
       val constraints = Constraints
         .Builder()
@@ -110,8 +96,7 @@ class ObservabilityBackgroundWorker(
 
       val data = workDataOf(
         Pair("projectId", projectId),
-        Pair("baseUrl", baseUrl),
-        Pair("useOpenTelemetry", useOpenTelemetry)
+        Pair("baseUrl", baseUrl)
       )
 
       val periodicWork = OneTimeWorkRequestBuilder<ObservabilityBackgroundWorker>()
@@ -123,7 +108,8 @@ class ObservabilityBackgroundWorker(
         .getInstance(context)
         .enqueueUniqueWork(
           WORK_NAME,
-          ExistingWorkPolicy.REPLACE,
+          // Keep an in-flight dispatch; cancelling it can duplicate a request the server received.
+          ExistingWorkPolicy.KEEP,
           periodicWork
         )
     }

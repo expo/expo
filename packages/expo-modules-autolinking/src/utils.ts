@@ -26,7 +26,9 @@ export async function listFilesInDirectories(
 ): Promise<string[]> {
   return (
     await Promise.all(
-      (await fs.promises.readdir(targetPath, { withFileTypes: true }))
+      (
+        await fs.promises.readdir(targetPath, { withFileTypes: true })
+      )
         .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(async (directory) => {
@@ -94,6 +96,11 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
     return null;
   }
 };
+
+export function isPathInside(child: string, parent: string): boolean {
+  const relative = path.relative(parent, child);
+  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+}
 
 export type PackageJson = Record<string, unknown> & {
   name?: string;

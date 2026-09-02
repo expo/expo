@@ -17,7 +17,7 @@ internal fun findPermissionsToOverride(problematicPermissions: Map<String, Permi
   // Basic security
   factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true) // Disallow parsing <!DOCTYPE> files
   factory.setFeature("http://xml.org/sax/features/external-general-entities", false) // Prevent external general entities
-  factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false) // Prevent external paramater entities
+  factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false) // Prevent external parameter entities
 
   val builder = factory.newDocumentBuilder()
   val brokenPermissions = mutableMapOf<String, PermissionInfo>()

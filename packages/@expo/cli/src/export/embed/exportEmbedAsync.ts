@@ -6,21 +6,18 @@
  */
 import { getConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
+import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
-import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
-import type { Options } from './resolveOptions';
-import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
-import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
@@ -31,17 +28,18 @@ import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/mid
 import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
-import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
+import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
-import { copyPublicFolderAsync } from '../publicFolder';
+import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
 import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
 import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
-import { ensureProcessExitsAfterDelay } from '../../utils/exit';
-
-const debug = require('debug')('expo:export:embed');
+import type { Options } from './resolveOptions';
+import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
+import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
@@ -49,7 +47,7 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
     !bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//) &&
     !bundleOutput.match(/\/CoreSimulator\/Devices\/.*\/data\/Containers\/Bundle\/Application\//)
   ) {
-    debug('Bundling to non-standard location:', bundleOutput);
+    debugEvent('embed:nonstandard_location', { bundleOutput });
     return false;
   }
   const bundleName = path.basename(bundleOutput);
@@ -60,7 +58,7 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
     // bundle identifiers can start with dots.
     dot: true,
   })[0];
-  debug('Possible path for previous bundle:', possiblePath);
+  debugEvent('embed:possible_previous_bundle', { possiblePath: possiblePath ?? '' });
   return possiblePath;
 }
 
@@ -68,12 +66,8 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // The React Native build scripts always enable the cache reset but we shouldn't need this in CI environments.
   // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
   if (env.CI && options.resetCache) {
-    debug('CI environment detected, disabling automatic cache reset');
     options.resetCache = false;
   }
-
-  setNodeEnv(options.dev ? 'development' : 'production');
-  loadEnvFiles(projectRoot);
 
   // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
   // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
@@ -92,10 +86,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       // Copy the eager bundleOutput and assets to the new locations.
       await removeAsync(options.bundleOutput);
 
-      copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
+      await copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
 
       if (eagerBundleOptions.options.assetsDest && options.assetsDest) {
-        copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
+        await copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
       }
 
       console.log('info: Copied output to binary:', options.bundleOutput);
@@ -115,16 +109,21 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   ensureProcessExitsAfterDelay();
 }
 
+// Apple platforms (ios/tvos/macos) all build via Xcode and share the same bundle output and
+// error-reporting handling.
+const isApplePlatform = (platform: string): boolean =>
+  platform === 'ios' || platform === 'tvos' || platform === 'macos';
+
 export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
   await removeAsync(options.bundleOutput);
 
   // The iOS bundle is copied in to the Xcode project, so we need to remove the old one
   // to prevent Xcode from loading the old one after a build failure.
-  if (options.platform === 'ios') {
+  if (isApplePlatform(options.platform)) {
     const previousPath = guessCopiedAppleBundlePath(options.bundleOutput);
     if (previousPath && fs.existsSync(previousPath)) {
-      debug('Removing previous iOS bundle:', previousPath);
+      debugEvent('embed:removing_previous_bundle', { previousPath });
       await removeAsync(previousPath);
     }
   }
@@ -148,7 +147,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
     // Copy public folder for dom components only if
     hasDomComponents
       ? copyPublicFolderAsync(
-          path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER),
+          getPublicFolderPath(projectRoot),
           path.join(domComponentProxyOutputDir, DOM_COMPONENTS_BUNDLE_DIR)
         )
       : null,
@@ -255,7 +254,8 @@ export async function exportEmbedBundleAndAssetsAsync(
             dev: options.dev,
             devServer,
             isHermes,
-            includeSourceMaps: !!sourceMapUrl,
+            // don't ship sourcemap in the www.bundle
+            includeSourceMaps: false,
             exp,
             files,
           });
@@ -293,7 +293,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.
       // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
-      if (options.platform === 'ios') {
+      if (isApplePlatform(options.platform)) {
         // If the error is about to be presented in Xcode, strip the ansi characters from the message.
         if ('message' in error && isExecutingFromXcodebuild()) {
           error.message = stripAnsi(error.message) as string;
@@ -432,7 +432,7 @@ export async function exportEmbedAssetsAsync(
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.
       // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
-      if (options.platform === 'ios') {
+      if (isApplePlatform(options.platform)) {
         // If the error is about to be presented in Xcode, strip the ansi characters from the message.
         if ('message' in error && isExecutingFromXcodebuild()) {
           error.message = stripAnsi(error.message) as string;

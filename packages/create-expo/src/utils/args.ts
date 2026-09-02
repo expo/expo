@@ -4,8 +4,8 @@ import type { Spec } from 'arg';
 import arg from 'arg';
 import chalk from 'chalk';
 
-import { replaceValue } from './array';
 import * as Log from '../log';
+import { replaceValue } from './array';
 
 /**
  * Parse args and assert unknown options.

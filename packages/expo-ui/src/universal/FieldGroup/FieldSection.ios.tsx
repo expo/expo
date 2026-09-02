@@ -1,8 +1,8 @@
 import { Section } from '@expo/ui/swift-ui';
 
+import { transformToModifiers } from '../transformStyle';
 import { extractFieldSectionSlots } from './FieldSectionSlots';
 import type { FieldSectionProps } from './types';
-import { transformToModifiers } from '../transformStyle';
 
 /**
  * iOS implementation of [`FieldGroup.Section`](#fieldgroupsection). Extracts

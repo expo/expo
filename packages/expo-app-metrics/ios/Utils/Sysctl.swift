@@ -1,12 +1,8 @@
 import Darwin.sys.sysctl
 
-/**
- Contains utils that call into kernel's `sysctl` function.
- */
+/// Contains utils that call into kernel's `sysctl` function.
 internal struct Sysctl {
-  /**
-   Returns seconds since Unix epoch (January 1, 1970) when the device booted.
-   */
+  /// Returns seconds since Unix epoch (January 1, 1970) when the device booted.
   static func getSystemBootTime() -> TimeInterval {
     var mib: [Int32] = [CTL_KERN, KERN_BOOTTIME]
     var bootTime = timeval()

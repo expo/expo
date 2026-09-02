@@ -25,13 +25,13 @@ export const ExpoDashboardItem = ({ item, onSelect, query }: Props) => {
       isExternalLink>
       <div className="flex justify-between gap-3">
         <div className="inline-flex items-center justify-between gap-3">
-          <Icon className="text-icon-secondary" />
+          <Icon aria-hidden="true" className="text-icon-secondary" />
           <p
             className="text-sm font-medium"
             dangerouslySetInnerHTML={{ __html: addHighlight(item.label, query) }}
           />
         </div>
-        <ArrowUpRightIcon className="text-icon-tertiary" />
+        <ArrowUpRightIcon aria-hidden="true" className="text-icon-tertiary" />
       </div>
     </CommandItemBaseWithCopy>
   );

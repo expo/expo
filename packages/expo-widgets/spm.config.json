@@ -4,14 +4,13 @@
     {
       "name": "ExpoWidgets",
       "podName": "ExpoWidgets",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-core/ExpoModulesCore",
+        "expo-modules-core/ExpoModulesWorklets",
         "@expo/ui/ExpoUI"
       ],
       "targets": [
@@ -25,12 +24,10 @@
             "React",
             "Hermes",
             "expo-modules-core/ExpoModulesCore",
+            "expo-modules-core/ExpoModulesWorklets",
             "@expo/ui/ExpoUI"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

@@ -53,12 +53,15 @@ export interface SharedBuildConfigFields {
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 
   /**
-   * Enable the experimental Hermes V1 engine.
+   * Enable Hermes V1 engine. Turning on will provide faster startup times, improved runtime
+   * performance, and reduced memory usage.
    *
-   * In React Native 0.83, using Hermes V1 requires building React Native from source.
-   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   * Hermes V1 is the default JavaScript engine starting in React Native 0.84.
+   * Set this to `false` to use the legacy Hermes engine instead, which also
+   * requires setting `buildReactNativeFromSource` to `true`.
    *
-   * @default false
+   * @default true
+   * @see [Hermes V1 as Default](https://reactnative.dev/blog/2026/02/11/react-native-0.84#hermes-v1-as-default)
    */
   useHermesV1?: boolean;
 }
@@ -112,6 +115,10 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
    *  Override the default `buildToolsVersion` version number in **build.gradle**.
    */
   buildToolsVersion?: string;
+  /**
+   * Override the CMake version, applied to the app and all autolinked native modules.
+   */
+  cmakeVersion?: string;
   /**
    * Override the Kotlin version used when building the app.
    */
@@ -226,6 +233,51 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
    * @default false
    */
   enableBundleCompression?: boolean;
+
+  /**
+   * Enable precompiled headers (PCH) for Android native builds.
+   * When enabled, creates a custom CMakeLists.txt with PCH support for all autolinked
+   * native libraries, significantly speeding up C++ compilation by pre-compiling
+   * commonly used React Native headers.
+   *
+   * Can also be enabled by setting the `EXPO_USE_ANDROID_PRECOMPILED_HEADERS=1` environment variable.
+   *
+   * > **Note:** This feature is experimental and might not work with all native libraries.
+   *
+   * @default false
+   * @experimental
+   */
+  usePrecompiledHeaders?: boolean;
+
+  /**
+   * Enable GIF support in React Native's `<Image>` component. This property does not affect
+   * `expo-image`, which uses Glide on Android.
+   *
+   * @see [Optimizing app size](/distribution/app-size/)
+   *
+   * @default true
+   */
+  gifEnabled?: boolean;
+
+  /**
+   * Enable WebP support in React Native's `<Image>` component. This property does not affect
+   * `expo-image`, which uses Glide on Android.
+   *
+   * @see [Optimizing app size](/distribution/app-size/)
+   *
+   * @default true
+   */
+  webpEnabled?: boolean;
+
+  /**
+   * Enable animated WebP support in React Native's `<Image>` component. Requires `webpEnabled`
+   * to also be `true`. iOS does not support animated WebP via React Native's `<Image>`.
+   *
+   * @see [Optimizing app size](/distribution/app-size/)
+   *
+   * @default false
+   */
+  webpAnimated?: boolean;
 
   /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
@@ -427,7 +479,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * When enabled, sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable to `1`
    * during `pod install`, which causes matching modules to be linked as vendored frameworks.
    *
-   * @default false
+   * @default true
    */
   usePrecompiledModules?: boolean;
 }
@@ -632,6 +684,7 @@ const schema: JSONSchema<PluginConfigType> = {
         compileSdkVersion: { type: 'integer', nullable: true },
         targetSdkVersion: { type: 'integer', nullable: true },
         buildToolsVersion: { type: 'string', nullable: true },
+        cmakeVersion: { type: 'string', nullable: true },
         kotlinVersion: { type: 'string', nullable: true },
 
         enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
@@ -745,6 +798,10 @@ const schema: JSONSchema<PluginConfigType> = {
           nullable: true,
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
+        usePrecompiledHeaders: { type: 'boolean', nullable: true },
+        gifEnabled: { type: 'boolean', nullable: true },
+        webpEnabled: { type: 'boolean', nullable: true },
+        webpAnimated: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },

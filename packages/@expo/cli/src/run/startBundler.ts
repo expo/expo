@@ -1,13 +1,13 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { getWellKnownTemporaryLogFile, installEventLogger } from '../events';
 import * as Log from '../log';
 import { startInterfaceAsync } from '../start/interface/startInterface';
 import type { BundlerStartOptions } from '../start/server/BundlerDevServer';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
+import type { EnvironmentMode } from '../utils/nodeEnv';
 
 export async function startBundlerAsync(
   projectRoot: string,
@@ -15,21 +15,20 @@ export async function startBundlerAsync(
     port,
     headless,
     scheme,
+    mode,
   }: {
     port: number;
     headless?: boolean;
     scheme?: string;
+    mode: EnvironmentMode;
   }
 ): Promise<DevServerManager> {
-  // Later than the traditional start command but emulates the start logging that you would normally expect.
-  // This mirrors the `run:android` command which directly runs `expo start` if it's not already running.
-  installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'start'));
-
   const options: BundlerStartOptions = {
     port,
     headless,
     devClient: true,
     minify: false,
+    mode,
 
     location: {
       scheme,

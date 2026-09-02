@@ -292,7 +292,7 @@ var encodeSpecialCharacters = (str, encode = true) => {
   return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
 };
 var generateElementAttributesAsString = (attributes) => Object.keys(attributes).reduce((str, key) => {
-  const attr = typeof attributes[key] !== "undefined" ? `${key}="${attributes[key]}"` : `${key}`;
+  const attr = typeof attributes[key] !== "undefined" ? `${key}="${encodeSpecialCharacters(attributes[key])}"` : `${key}`;
   return str ? `${str} ${attr}` : attr;
 }, "");
 var generateTitleAsString = (type, title, attributes, encode) => {

@@ -5,8 +5,8 @@
  * Unblocked knowledge base. Reads `UNBLOCKED_API_KEY` from the environment.
  */
 
+import { randomUUID } from 'crypto';
 import open from 'open';
-import { v4 as uuidv4 } from 'uuid';
 
 import { sleepAsync } from './Utils';
 
@@ -111,7 +111,7 @@ export function setApiKey(key: string): void {
  * that can be used to poll for the answer.
  */
 export async function submitQuestionAsync(question: string): Promise<string> {
-  const questionId = uuidv4();
+  const questionId = randomUUID();
   await requestAsync('PUT', `/answers/${questionId}`, { question });
   return questionId;
 }

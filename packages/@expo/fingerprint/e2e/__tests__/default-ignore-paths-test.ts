@@ -4,6 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import { createFingerprintAsync } from '../../src/Fingerprint';
+import { E2E_EXPECTED_3RD_PARTY_MODULES, E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
@@ -22,15 +23,19 @@ describe('default template ignore paths', () => {
 
   beforeAll(async () => {
     await fs.rm(projectRoot, { force: true, recursive: true });
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `default@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
   });
 
   afterAll(async () => {
@@ -40,7 +45,9 @@ describe('default template ignore paths', () => {
   it('should not contain non-native node modules', async () => {
     const fingerprint = await createFingerprintAsync(projectRoot);
     for (const source of fingerprint.sources) {
-      if (source.type === 'contents') {
+      // `contents` and `package` sources are hashed by value/identity, not by including a module's
+      // files, so they're not subject to this check (e.g. the `react-native` package source).
+      if (source.type === 'contents' || source.type === 'package') {
         continue;
       }
       const { filePath } = source;
@@ -55,6 +62,11 @@ describe('default template ignore paths', () => {
       if (moduleName === 'expo' || moduleName === '@expo' || moduleName.startsWith('expo-')) {
         continue;
       }
+
+      if (E2E_EXPECTED_3RD_PARTY_MODULES.includes(moduleName)) {
+        continue;
+      }
+
       expect(moduleName).toMatch(/^(react-native-)/);
     }
   });
@@ -80,6 +92,48 @@ export default ({ config }) => {
     expect(packageJsonSource).toBeUndefined();
     await fs.rm(appConfigPath, { force: true });
   });
+
+  it('loads development env files after inheriting dotenv values from a parent process', async () => {
+    const appConfigPath = path.join(projectRoot, 'app.config.js');
+    const envPath = path.join(projectRoot, '.env.development');
+    const appConfigContent = `\
+export default ({ config }) => ({
+  ...config,
+  extra: {
+    ...config.extra,
+    fingerprintDev: globalThis.__DEV__,
+    fingerprintConfigModeIsSet: process.env.__EXPO_CONFIG_MODE !== undefined,
+    fingerprintEnvValue: process.env.EXPO_PUBLIC_FINGERPRINT_MODE,
+  },
+});
+`;
+    await fs.writeFile(appConfigPath, appConfigContent);
+    await fs.writeFile(envPath, 'EXPO_PUBLIC_FINGERPRINT_MODE=development-value\n');
+    const originalEnv = process.env;
+    process.env = {
+      ...originalEnv,
+      NODE_ENV: 'production',
+      __EXPO_CONFIG_MODE: 'production',
+      __EXPO_ENV_LOADED: JSON.stringify(['EXPO_PUBLIC_FINGERPRINT_MODE']),
+      EXPO_PUBLIC_FINGERPRINT_MODE: 'from-parent-dotenv',
+    };
+    try {
+      const fingerprint = await createFingerprintAsync(projectRoot);
+      const expoConfigSource = fingerprint.sources.find(
+        (source) => source.type === 'contents' && source.id === 'expoConfig'
+      );
+      expect(expoConfigSource?.type).toBe('contents');
+      if (expoConfigSource?.type === 'contents') {
+        const expoConfig = JSON.parse(expoConfigSource.contents.toString());
+        expect(expoConfig.extra.fingerprintDev).toBe(true);
+        expect(expoConfig.extra.fingerprintConfigModeIsSet).toBe(false);
+        expect(expoConfig.extra.fingerprintEnvValue).toBe('development-value');
+      }
+    } finally {
+      process.env = originalEnv;
+      await Promise.all([fs.rm(appConfigPath, { force: true }), fs.rm(envPath, { force: true })]);
+    }
+  });
 });
 
 macosDescribe('CocoaPods generated files', () => {
@@ -89,15 +143,19 @@ macosDescribe('CocoaPods generated files', () => {
 
   beforeAll(async () => {
     await fs.rm(projectRoot, { force: true, recursive: true });
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `default@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
     const appJsonPath = path.join(projectRoot, 'app.json');
     const config = JSON.parse(await fs.readFile(appJsonPath, 'utf8'));
     config.expo.ios.bundleIdentifier = 'com.example.test';

@@ -1,0 +1,19 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+| Property       | Type    | Required    | Description                                                                                                                                                  |
+| -------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `content`      | string  | <YesIcon /> | The annotation text.                                                                                                                                         |
+| `date_marker`  | string  | <NoIcon />  | The ISO 8601 timestamp the annotation is pinned to. Defaults to the current time.                                                                            |
+| `api_key`      | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `annotation:write` scope.                                 |
+| `project_id`   | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                           |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, a network error or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error always fails the step. |
+
+<BoxLink
+  title="eas/posthog_annotation source code"
+  description="View the source code for the eas/posthog_annotation function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/createPosthogAnnotation.ts"
+/>

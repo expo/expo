@@ -7,8 +7,13 @@ namespace expo::SharedObject {
 
 #pragma mark - NativeState
 
-NativeState::NativeState(ObjectId objectId, ObjectReleaser releaser)
-: EventEmitter::NativeState(), objectId(objectId), releaser(std::move(releaser)) {}
+NativeState::NativeState(ObjectId objectId,
+                         ObjectReleaser releaser,
+                         void *context,
+                         void (*contextDeallocator)(void *))
+: EventEmitter::NativeState(context, contextDeallocator),
+  objectId(objectId),
+  releaser(std::move(releaser)) {}
 
 NativeState::~NativeState() {
   releaser(objectId);

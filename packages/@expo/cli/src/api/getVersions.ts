@@ -1,5 +1,5 @@
-import { createCachedFetch, getResponseDataOrThrow } from './rest/client';
 import { CommandError } from '../utils/errors';
+import { createCachedFetch, getResponseDataOrThrow } from './rest/client';
 
 /** Represents version info for a particular SDK. */
 export type SDKVersion = {

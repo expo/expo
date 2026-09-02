@@ -4,6 +4,7 @@
  *  - formatVersionRequirement
  *  - findFirstExisting
  *  - findXCFrameworkInDir
+ *  - getBuildPlatformsFromProductPlatform
  */
 import fs from 'fs-extra';
 import assert from 'node:assert/strict';
@@ -16,7 +17,18 @@ import {
   formatVersionRequirement,
   findFirstExisting,
   findXCFrameworkInDir,
+  getBuildPlatformsFromProductPlatform,
 } from './SPMBuild';
+
+// ---------------------------------------------------------------------------
+// getBuildPlatformsFromProductPlatform
+// ---------------------------------------------------------------------------
+
+describe('getBuildPlatformsFromProductPlatform', () => {
+  it('expands iOS 16.4 to device and simulator build platforms', () => {
+    assert.deepEqual(getBuildPlatformsFromProductPlatform('iOS("16.4")'), ['iOS', 'iOS Simulator']);
+  });
+});
 
 // ---------------------------------------------------------------------------
 // derivePackageName

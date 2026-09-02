@@ -27,6 +27,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
   'expo-ui/community/masked-view': ['community/masked-view/index.tsx', 'expo-ui'],
   'expo-ui/community/menu': ['community/menu/index.tsx', 'expo-ui'],
+  'expo-ui/community/pager-view': ['community/pager-view/index.tsx', 'expo-ui'],
   'expo-ui/community/picker': ['community/picker/index.tsx', 'expo-ui'],
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
   'expo-ui/community/slider': ['community/slider/index.tsx', 'expo-ui'],
@@ -36,6 +37,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'swift-ui/AccessoryWidgetBackground/index.tsx',
     'expo-ui',
   ],
+  'expo-ui/swift-ui/background': ['swift-ui/Background/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -71,6 +73,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/swipeactions': ['swift-ui/SwipeActions/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/tabview': ['swift-ui/TabView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
@@ -104,7 +107,6 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'jetpack-compose/DockedSearchBar/index.tsx',
     'expo-ui',
   ],
-  'expo-ui/jetpack-compose/filterchip': ['jetpack-compose/FilterChip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/floatingactionbutton': [
     'jetpack-compose/FloatingActionButton/index.tsx',
     'expo-ui',
@@ -120,6 +122,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/icon': ['jetpack-compose/Icon/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/iconbutton': ['jetpack-compose/IconButton/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/image': ['jetpack-compose/Image/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/box': ['jetpack-compose/Box/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/row': ['jetpack-compose/Row/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
@@ -129,6 +132,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/navigationbar': ['jetpack-compose/NavigationBar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/segmentedbutton': [
     'jetpack-compose/SegmentedButton/index.tsx',
     'expo-ui',
@@ -145,12 +149,17 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/spacer': ['jetpack-compose/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/surface': ['jetpack-compose/Surface/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/checkbox': ['jetpack-compose/Checkbox/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/snackbar': ['jetpack-compose/Snackbar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/loadingindicator': [
+    'jetpack-compose/LoadingIndicator/index.tsx',
+    'expo-ui',
+  ],
 
   // Universal (cross-platform JS components)
   'expo-ui/universal/host': ['universal/Host/index.tsx', 'expo-ui'],
@@ -167,12 +176,18 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
   'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/universal/textinput': ['universal/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/universal/collapsible': ['universal/Collapsible/index.tsx', 'expo-ui'],
+  'expo-ui/universal/list': ['universal/List/index.tsx', 'expo-ui'],
+  'expo-ui/universal/listitem': ['universal/ListItem/index.ts', 'expo-ui'],
+  'expo-ui/universal/picker': ['universal/Picker/index.ts', 'expo-ui'],
+  'expo-ui/universal/rnhostview': ['universal/RNHostView/index.tsx', 'expo-ui'],
 };
 
-const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
+export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
+  'expo-app-intents': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': ['index.ts'],
   'expo-auth-session': ['index.ts'],
@@ -183,11 +198,13 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
+  'expo-type-information': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
-  'expo-calendar': ['Calendar.ts'],
-  'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
+  'expo-calendar': ['index.ts'],
+  'expo-calendar-legacy': ['legacy/index.ts', 'expo-calendar'],
+  'expo-calendar-next': ['next/index.ts', 'expo-calendar'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
@@ -195,6 +212,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
   'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
+  'expo-contacts-legacy': ['legacy/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-dev-menu': ['DevMenu.ts'],
@@ -232,8 +250,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
-  'expo-media-library': ['MediaLibrary.ts'],
-  'expo-media-library-next': ['next/index.ts', 'expo-media-library'],
+  'expo-media-library': ['index.ts'],
+  'expo-media-library-legacy': ['legacy/index.ts', 'expo-media-library'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],
@@ -254,7 +272,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-server': ['index.ts'],
   'expo-sharing': ['index.ts'],
   'expo-sms': ['SMS.ts'],
-  'expo-speech': ['Speech/Speech.ts'],
+  'expo-speech': ['Speech.ts'],
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
   'expo-status-bar': ['StatusBar.ts'],
@@ -271,6 +289,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-observe': ['index.ts'],
   'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
 };
@@ -357,6 +376,33 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
+    const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
+    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+      const pluginApp = await Application.bootstrapWithPlugins(
+        {
+          ...typedocOptions,
+          entryPoints: [pluginEntryPath],
+          tsconfig: pluginTsConfigPath,
+        } as unknown as TypeDocOptions,
+        [new TSConfigReader(), new TypeDocReader()]
+      );
+      const pluginProject = await pluginApp.convert();
+      if (pluginProject) {
+        const tempPluginJson = path.join(os.tmpdir(), `${jsonFileName}-plugin-${Date.now()}.json`);
+        await pluginApp.generateJson(pluginProject, tempPluginJson);
+        const pluginOutput = await fs.readJson(tempPluginJson);
+        await fs.remove(tempPluginJson);
+        const pluginChildren = (pluginOutput.children ?? [])
+          .filter((entry: any) => entry.name !== 'default')
+          .map((entry: any) => ({
+            ...entry,
+            _source: 'plugin',
+          }));
+        output.children = [...(output.children ?? []), ...pluginChildren];
+      }
+    }
+
     const { readme, symbolIdMap, ...trimmedOutput } = output;
 
     await applyDocsInline(trimmedOutput, {
@@ -390,35 +436,38 @@ function filterOutKeys(data: Record<string, any>) {
 async function action({ packageName, sdk }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
-  try {
-    if (packageName) {
-      const packagesEntries = Object.entries(PACKAGES_MAPPING)
-        .filter(([key, value]) => key === packageName || value.includes(packageName))
-        .map(([key, value]) => taskQueue.add(() => executeCommand(key, sdk, ...value)));
-      if (packagesEntries.length) {
-        await Promise.all(packagesEntries);
-        logger.log(
-          chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`)
-        );
-      } else {
-        logger.warn(
-          `🚨 Package '${packageName}' API data generation is not supported yet! Add it to the mapping in ${
-            __filename
-          }.`
-        );
-      }
-    } else {
-      const packagesEntries = Object.entries(PACKAGES_MAPPING).map(([key, value]) =>
-        taskQueue.add(() => executeCommand(key, sdk, ...value))
-      );
-      await Promise.all(packagesEntries);
-      logger.log(
-        chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`)
-      );
-    }
-  } catch (error) {
-    logger.error(error);
+  const entries = Object.entries(PACKAGES_MAPPING).filter(
+    ([key, value]) => !packageName || key === packageName || value.includes(packageName)
+  );
+  if (!entries.length) {
+    logger.warn(
+      `🚨 Package '${packageName}' API data generation is not supported yet! Add it to the mapping in ${
+        __filename
+      }.`
+    );
+    return;
   }
+
+  const results = await Promise.allSettled(
+    entries.map(([key, value]) => taskQueue.add(() => executeCommand(key, sdk, ...value)))
+  );
+  const failures = results.flatMap((result, index) =>
+    result.status === 'rejected' ? [{ key: entries[index][0], reason: result.reason }] : []
+  );
+  if (failures.length) {
+    for (const { key, reason } of failures) {
+      logger.error(`💥 Failed to generate docs API data for '${key}':`, reason);
+    }
+    process.exitCode = 1;
+    return;
+  }
+  logger.log(
+    chalk.green(
+      `\n🎉 Successful extraction of docs API data for ${
+        packageName ? 'the selected package' : 'all available packages'
+      }!`
+    )
+  );
 }
 
 export default (program: Command) => {

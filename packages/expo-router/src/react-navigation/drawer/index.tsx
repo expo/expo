@@ -1,7 +1,7 @@
 /**
  * Navigators
  */
-export { createDrawerNavigator } from './navigators/createDrawerNavigator';
+export { createStandardDrawerNavigator } from './navigators/createDrawerNavigator';
 
 /**
  * Views
@@ -30,7 +30,6 @@ export type {
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
   DrawerNavigationProp,
-  DrawerNavigatorProps,
   DrawerOptionsArgs,
   DrawerScreenProps,
 } from './types';

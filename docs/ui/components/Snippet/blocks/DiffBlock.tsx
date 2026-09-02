@@ -133,7 +133,12 @@ export const DiffBlock = ({
           float={collapseDeletedFiles && type === 'delete'}>
           {newPath && filenameToLinkUrl && type !== 'delete' ? (
             <SnippetAction
-              rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary shrink-0" />}
+              rightSlot={
+                <ArrowUpRightIcon
+                  aria-hidden="true"
+                  className="icon-sm shrink-0 text-icon-secondary"
+                />
+              }
               onClick={() => {
                 window.open(filenameToLinkUrl(newPath), '_blank');
               }}>
@@ -143,7 +148,12 @@ export const DiffBlock = ({
           <SettingsAction />
         </SnippetHeaderComponent>
         {!collapseDeletedFiles || type !== 'delete' ? (
-          <SnippetContent className="p-0" hideOverflow>
+          <SnippetContent
+            ref={content => {
+              content?.querySelector('table.diff')?.setAttribute('role', 'presentation');
+            }}
+            className="p-0"
+            hideOverflow>
             <Diff viewType="unified" diffType={type} hunks={hunks}>
               {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
             </Diff>

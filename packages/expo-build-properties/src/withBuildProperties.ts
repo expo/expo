@@ -4,6 +4,7 @@ import {
   withAndroidBuildProperties,
   withAndroidCleartextTraffic,
   withAndroidDayNightTheme,
+  withAndroidPrecompiledHeaders,
   withAndroidProguardRules,
   withAndroidPurgeProguardRulesOnce,
   withAndroidQueries,
@@ -36,6 +37,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   // plugins order matter: the later one would run first
   config = withAndroidPurgeProguardRulesOnce(config);
   config = withAndroidDayNightTheme(config, pluginConfig);
+  config = withAndroidPrecompiledHeaders(config, pluginConfig);
 
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);

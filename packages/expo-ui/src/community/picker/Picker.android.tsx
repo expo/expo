@@ -1,13 +1,6 @@
 import * as React from 'react';
 
-import {
-  extractPickerItems,
-  PickerItem,
-  type PickerItemProps,
-  type PickerItemValue,
-  type PickerProps,
-} from './types';
-import { useNativeState } from '../../State/useNativeState';
+import { useNativeState } from '../../State';
 import { DropdownMenuItem } from '../../jetpack-compose/DropdownMenu/DropdownMenuItem';
 import {
   ExposedDropdownMenuBox,
@@ -17,6 +10,13 @@ import { Host } from '../../jetpack-compose/Host';
 import { Text } from '../../jetpack-compose/Text';
 import { TextField } from '../../jetpack-compose/TextField';
 import { menuAnchor } from '../../jetpack-compose/modifiers';
+import {
+  extractPickerItems,
+  PickerItem,
+  type PickerItemProps,
+  type PickerItemValue,
+  type PickerProps,
+} from './types';
 
 /**
  * A drop-in replacement for `@react-native-picker/picker` on Android.

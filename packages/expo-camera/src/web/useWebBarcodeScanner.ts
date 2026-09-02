@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import * as WebBarcodeScanner from './WebBarcodeScanner';
 import type { BarcodeType, BarcodeScanningResult, MountErrorListener } from '../Camera.types';
+import * as WebBarcodeScanner from './WebBarcodeScanner';
 
 function mapToViewCoordinates(
   result: BarcodeScanningResult,
@@ -97,12 +97,12 @@ export function useWebBarcodeScanner(
     } finally {
       if (interval === 0) {
         stop();
-        return;
+      } else {
+        const intervalToUse = !interval || interval < 0 ? 16 : interval;
+        timeout.current = setTimeout(() => {
+          scanAsync();
+        }, intervalToUse);
       }
-      const intervalToUse = !interval || interval < 0 ? 16 : interval;
-      timeout.current = setTimeout(() => {
-        scanAsync();
-      }, intervalToUse);
     }
   }
 

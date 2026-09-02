@@ -17,7 +17,7 @@ export function getHotReplaceTemplate(id: string) {
 // WARN: The emitted code below is hand-authored as ES5 so it can be embedded
 // verbatim into a Metro module factory without going through Babel
 export function wrapDevelopmentCSS(props: { src: string; filename: string; reactServer: boolean }) {
-  // Ensure we had HMR support to the CSS module in development.
+  // Ensure we add HMR support to the CSS module in development.
   // Why?
   // -----
   // • Metro recompiles *every* direct dependency of the file you edit. When you

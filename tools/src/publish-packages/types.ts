@@ -1,9 +1,9 @@
-import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 import { Changelog, ChangelogChanges } from '../Changelogs';
 import { GitLog, GitFileLog, GitDirectory } from '../Git';
 import { PackageViewType } from '../Npm';
 import { Package } from '../Packages';
 import { PackagesGraphNode } from '../packages-graph';
+import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 
 /**
  * Command's options.
@@ -27,6 +27,7 @@ export type CommandOptions = {
   cascadeAll: boolean;
   skipAndroidArtifacts: boolean;
   skipIosPrebuilds: boolean;
+  skipTurboChecks: boolean;
   /**
    * When true, automatically selects packages whose current package.json version
    * has already been bumped locally but that version has not been published yet.
@@ -84,9 +85,9 @@ export type PublishState = {
   isRequested?: boolean;
 
   /**
-   * Name of the tarball the package was packed to.
+   * Path to the tarball the package was packed to.
    */
-  packageTarballFilename?: string;
+  packageTarballPath?: string;
 };
 
 export type BaseParcel<State> = {

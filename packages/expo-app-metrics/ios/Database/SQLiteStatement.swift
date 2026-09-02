@@ -4,11 +4,10 @@ import Foundation
 import SQLite3
 
 // SQLite expects this sentinel for parameters that need to be copied into its own buffers.
+// swift-format-ignore: AlwaysUseLowerCamelCase
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 
-/**
- A prepared SQLite statement. Reset and finalized automatically when the wrapper is destroyed.
- */
+/// A prepared SQLite statement. Reset and finalized automatically when the wrapper is destroyed.
 final class SQLiteStatement {
   private let db: OpaquePointer
   private var handle: OpaquePointer?
@@ -73,9 +72,7 @@ final class SQLiteStatement {
     }
   }
 
-  /**
-   Binds a sequence of values starting at index 1. Convenience for short, position-based queries.
-   */
+  /// Binds a sequence of values starting at index 1. Convenience for short, position-based queries.
   func bindAll(_ values: [SQLiteBindable?]) throws {
     for (offset, value) in values.enumerated() {
       try value?.bind(to: self, at: Int32(offset + 1)) ?? bind(nil as String?, at: Int32(offset + 1))
@@ -84,9 +81,7 @@ final class SQLiteStatement {
 
   // MARK: - Execution
 
-  /**
-   Steps the statement to completion, ignoring any rows. Use for INSERT/UPDATE/DELETE.
-   */
+  /// Steps the statement to completion, ignoring any rows. Use for INSERT/UPDATE/DELETE.
   func run() throws {
     let result = sqlite3_step(handle)
     if result != SQLITE_DONE && result != SQLITE_ROW {
@@ -94,9 +89,7 @@ final class SQLiteStatement {
     }
   }
 
-  /**
-   Steps the statement and yields each row to the closure. Use for SELECT.
-   */
+  /// Steps the statement and yields each row to the closure. Use for SELECT.
   func forEachRow(_ body: (SQLiteRow) throws -> Void) throws {
     while true {
       let result = sqlite3_step(handle)
@@ -112,9 +105,7 @@ final class SQLiteStatement {
   }
 }
 
-/**
- A type that can be bound as a SQLite parameter.
- */
+/// A type that can be bound as a SQLite parameter.
 protocol SQLiteBindable {
   func bind(to statement: SQLiteStatement, at index: Int32) throws
 }
@@ -149,9 +140,7 @@ extension Double: SQLiteBindable {
   }
 }
 
-/**
- Read-only view of one row of a stepped statement.
- */
+/// Read-only view of one row of a stepped statement.
 struct SQLiteRow {
   let handle: OpaquePointer?
 

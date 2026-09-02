@@ -14,6 +14,11 @@ class DevMenuViewModel: ObservableObject {
   @Published var showDebuggingTip: Bool = false
   @Published var showFastRefresh: Bool = false
   @Published var showHostUrl: Bool = false
+  @Published var showPerformanceMonitor: Bool = false
+  @Published var showElementInspector: Bool = false
+  @Published var showRuntimeVersion: Bool = false
+  @Published var showSystemSection: Bool = false
+  @Published var hasBeenEdited: Bool = false
 
   private let manager: DevMenuManager
   private var cancellables = Set<AnyCancellable>()
@@ -27,6 +32,7 @@ class DevMenuViewModel: ObservableObject {
     loadData()
     checkOnboardingStatus()
     observeManifestChanges()
+    observeSnackEditingChanges()
   }
 
   private func loadData() {
@@ -34,6 +40,21 @@ class DevMenuViewModel: ObservableObject {
     loadDevSettings()
     loadFloatingActionButtonState()
     updateSectionVisibility()
+  }
+
+  /// True when running a lesson (vs a free-form snack)
+  var isLessonSession: Bool {
+    return SnackEditingSession.shared.isLesson
+  }
+
+  /// True for lessons and embedded playground/demo sessions.
+  var isLessonLikeSession: Bool {
+    return SnackEditingSession.shared.isLessonLikeSession
+  }
+
+  /// Hides the "Tools button" toggle for lessons / lesson-like snacks
+  var shouldHideFABToggle: Bool {
+    return isLessonLikeSession
   }
 
   private func loadAppInfo() {
@@ -47,9 +68,34 @@ class DevMenuViewModel: ObservableObject {
   private func updateSectionVisibility() {
     let manifest = manager.currentManifest
     let isDev = manifest?.isDevelopmentMode() == true || manifest?.isUsingDeveloperTool() == true
-    showDebuggingTip = isDev
-    showFastRefresh = isDev
-    showHostUrl = !isDev && manager.isCurrentAppSnack
+    let isSnack = manager.isCurrentAppSnack
+
+    if isSnack {
+      // Snacks: hide dev tools, show snack-specific tools (source explorer, undo)
+      showDebuggingTip = false
+      showFastRefresh = false
+      showPerformanceMonitor = false
+      showElementInspector = false
+      showRuntimeVersion = false
+      showHostUrl = false
+      showSystemSection = false
+    } else if !isDev {
+      showDebuggingTip = false
+      showFastRefresh = false
+      showPerformanceMonitor = false
+      showElementInspector = false
+      showRuntimeVersion = false
+      showHostUrl = false
+      showSystemSection = true
+    } else {
+      showDebuggingTip = true
+      showFastRefresh = true
+      showPerformanceMonitor = true
+      showElementInspector = true
+      showRuntimeVersion = true
+      showHostUrl = false
+      showSystemSection = true
+    }
   }
 
   func hideMenu() {
@@ -150,5 +196,11 @@ class DevMenuViewModel: ObservableObject {
         self?.updateSectionVisibility()
       }
       .store(in: &cancellables)
+  }
+
+  private func observeSnackEditingChanges() {
+    // hasBeenEdited is @Published on the session; republish it directly
+    SnackEditingSession.shared.$hasBeenEdited
+      .assign(to: &$hasBeenEdited)
   }
 }

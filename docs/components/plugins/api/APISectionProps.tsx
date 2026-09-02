@@ -79,8 +79,8 @@ const renderInheritedProps = (
     inheritedData.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length > 0) {
     return (
-      <div className={mergeClasses('border-palette-gray4 border-t px-4 py-3')}>
-        {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
+      <div className={mergeClasses('border-t border-palette-gray4 px-4 py-3')}>
+        {exposeInSidebar ? <H3>Inherited props</H3> : <H4>Inherited props</H4>}
         <UL>{inheritedProps.map(prop => renderInheritedProp(prop, sdkVersion))}</UL>
       </div>
     );
@@ -117,7 +117,11 @@ const renderProps = (
   return (
     <div
       key={`props-definition-${def.name}`}
-      className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:mb-0!')}>
+      className={mergeClasses(
+        STYLES_APIBOX,
+        !exposeInSidebar && 'mb-0 rounded-none border-0 shadow-none',
+        '[&>*:last-child]:mb-0!'
+      )}>
       {propsDeclarations?.map(prop =>
         prop
           ? renderProp(
@@ -160,7 +164,7 @@ export const renderProp = (
   return (
     <div
       key={`prop-entry-${name}`}
-      className={mergeClasses('border-palette-gray4 border-t first:border-t-0')}>
+      className={mergeClasses('border-t border-palette-gray4 first:border-t-0')}>
       <APISectionDeprecationNote comment={extractedComment} className="mx-4 mt-3 mb-0" />
       <APIBoxHeader
         name={name}
@@ -171,7 +175,7 @@ export const renderProp = (
       />
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
-        {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
+        {flags?.isReadonly && <>Read only&emsp;&bull;&emsp;</>}
         {definedLiteralGeneric && <>Literal type: {definedLiteralGeneric}</>}
         {!isLiteralLike && (
           <>

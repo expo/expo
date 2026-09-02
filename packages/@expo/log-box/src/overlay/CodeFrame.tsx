@@ -6,10 +6,10 @@
  */
 import React, { useEffect } from 'react';
 
-import { Ansi } from './AnsiHighlight';
-import styles from './CodeFrame.module.css';
 import type { CodeFrame as CodeFrameData } from '../Data/Types';
 import { formatProjectFilePath, openFileInEditor } from '../utils/devServerEndpoints';
+import { Ansi } from './AnsiHighlight';
+import styles from './CodeFrame.module.css';
 
 export function ErrorCodeFrame({
   showPathsRelativeTo,

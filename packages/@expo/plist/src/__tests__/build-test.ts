@@ -146,5 +146,13 @@ describe('plist', function () {
 </plist>`
       );
     });
+
+    it('should serialize null-prototype dicts (as produced by parse)', function () {
+      const inner = Object.create(null);
+      inner.a1 = true;
+      const outer = Object.create(null);
+      outer.a = inner;
+      assert.doesNotThrow(() => plist.build(outer));
+    });
   });
 });

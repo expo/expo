@@ -7,7 +7,9 @@ export type GeneratedData = EnumDefinitionData &
   TypeGeneralData &
   InterfaceDefinitionData &
   ConstantDefinitionData &
-  ClassDefinitionData;
+  ClassDefinitionData & {
+    _source?: 'plugin';
+  };
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export enum TypeDocKind {

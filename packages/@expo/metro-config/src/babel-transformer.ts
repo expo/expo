@@ -16,9 +16,10 @@ import { getCacheKey as getFileCacheKey } from '@expo/metro/metro-cache-key';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import type { TransformOptions } from './babel-core';
+import type { PluginItem, TransformOptions } from './babel-core';
 import { loadPartialConfigSync } from './babel-core';
 import { loadBabelConfig, resolveBabelrcName } from './loadBabelConfig';
+import { debugEvent } from './transform-worker/events';
 import { transformSync } from './transformSync';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
@@ -44,8 +45,6 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   isDomComponent?: boolean;
 };
 
-const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
-
 function isCustomTruthy(value: any): boolean {
   return String(value) === 'true';
 }
@@ -64,7 +63,7 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 }
 
 const memoizeWarning = memoize((message: string) => {
-  debug(message);
+  debugEvent('babel:missing_router_root', { message });
 });
 
 function getBabelCaller({
@@ -166,6 +165,130 @@ function stringOrUndefined(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
+function getDefaultExpoPreset(): PluginItem {
+  try {
+    return require('expo/internal/babel-preset');
+  } catch {
+    return require('babel-preset-expo');
+  }
+}
+
+function comparablePartialOptions(options: TransformOptions): unknown {
+  const {
+    babelrc: _babelrc,
+    caller: _caller,
+    configFile: _configFile,
+    cwd: _cwd,
+    envName: _envName,
+    filename: _filename,
+    plugins: _plugins,
+    presets: _presets,
+    root: _root,
+    ...comparable
+  } = options;
+  return comparable;
+}
+
+interface ResolvedConfigItem {
+  value: unknown;
+  options?: unknown;
+}
+
+interface ConfigComparison {
+  plugins: ResolvedConfigItem[];
+  presets: ResolvedConfigItem[];
+  options: string;
+}
+
+const defaultConfigComparisonCache = new Map<string, ConfigComparison>();
+
+function toConfigComparison(options: TransformOptions): ConfigComparison {
+  return {
+    plugins: (options.plugins ?? []) as ResolvedConfigItem[],
+    presets: (options.presets ?? []) as ResolvedConfigItem[],
+    options: JSON.stringify(comparablePartialOptions(options)),
+  };
+}
+
+/**
+ * Resolves the project config through Babel and compares its effective top-level
+ * configuration with Expo's default preset. This deliberately compares resolved
+ * descriptors rather than config filenames or source text.
+ */
+function isDefaultConfig({ filename, options, plugins = [] }: BabelTransformerArgs): boolean {
+  if (options.enableBabelRCLookup === false) return true;
+  const configName = options.extendsBabelConfigPath ?? resolveBabelrcName(options.projectRoot);
+  if (!configName) return true;
+
+  const shared: TransformOptions = {
+    sourceType: 'unambiguous',
+    cwd: options.projectRoot,
+    root: options.projectRoot,
+    filename,
+    babelrc: false,
+    configFile: false,
+    cloneInputAst: false,
+    caller: getBabelCaller({ filename, options }),
+    plugins,
+  };
+  try {
+    const configured = loadPartialConfigSync({
+      ...shared,
+      extends: path.resolve(options.projectRoot, configName),
+    });
+    if (!configured) return false;
+    const baselineKey = JSON.stringify({
+      caller: shared.caller,
+      cwd: shared.cwd,
+      root: shared.root,
+      sourceType: shared.sourceType,
+    });
+    let baseline = defaultConfigComparisonCache.get(baselineKey);
+    if (!baseline) {
+      const partial = loadPartialConfigSync({
+        ...shared,
+        // The default descriptor does not expand the preset, so it does not vary
+        // by filename. Cache it by the caller and resolution roots, while still
+        // resolving the project config for every filename so Babel overrides
+        // remain authoritative.
+        presets: [getDefaultExpoPreset()],
+      });
+      if (!partial) return false;
+      baseline = toConfigComparison(partial.options);
+      defaultConfigComparisonCache.set(baselineKey, baseline);
+    }
+    const comparison = toConfigComparison(configured.options);
+    const configuredPlugins = comparison.plugins;
+    const baselinePlugins = baseline.plugins;
+    if (
+      configuredPlugins.length !== baselinePlugins.length ||
+      configuredPlugins.some(
+        (descriptor, index) =>
+          descriptor.value !== baselinePlugins[index]?.value ||
+          JSON.stringify(descriptor.options) !== JSON.stringify(baselinePlugins[index]?.options)
+      )
+    ) {
+      return false;
+    }
+    const configuredPresets = comparison.presets;
+    const baselinePresets = baseline.presets;
+    if (
+      configuredPresets.length !== baselinePresets.length ||
+      configuredPresets.some(
+        (descriptor, index) =>
+          descriptor.value !== baselinePresets[index]?.value ||
+          JSON.stringify(descriptor.options) !== JSON.stringify(baselinePresets[index]?.options)
+      )
+    ) {
+      return false;
+    }
+    return comparison.options === baseline.options;
+  } catch {
+    // Babel remains the source of truth when config resolution is ambiguous.
+    return false;
+  }
+}
+
 const transform: BabelTransformer['transform'] = ({
   filename,
   src,
@@ -176,6 +299,7 @@ const transform: BabelTransformer['transform'] = ({
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
+  const done = debugEvent.span();
   try {
     const { enableBabelRCLookup } = options;
     const { exts, presets } = loadBabelConfig(options);
@@ -236,6 +360,7 @@ const transform: BabelTransformer['transform'] = ({
     assert(result.ast);
     return { ast: result.ast, metadata: result.metadata };
   } finally {
+    done('babel', { file: debugEvent.path(filename) });
     // Restore the old process.env.BABEL_ENV
     if (OLD_BABEL_ENV == null) {
       // We have to treat this as a special case because writing undefined to
@@ -286,9 +411,13 @@ function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
   return getFileCacheKey([...files].sort());
 }
 
-const babelTransformer: BabelTransformer = {
+const babelTransformer: BabelTransformer & {
+  isDefaultConfig: typeof isDefaultConfig;
+} = {
   transform,
   getCacheKey,
+  // This is an Expo extension consumed by the matching Metro worker.
+  isDefaultConfig,
 };
 
 module.exports = babelTransformer;

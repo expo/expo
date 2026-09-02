@@ -1,8 +1,8 @@
 'use client';
 import { useId } from 'react';
 
-import type { NativeToolbarViewProps } from './types';
 import { RouterToolbarItem } from '../../../../toolbar/native';
+import type { NativeToolbarViewProps } from './types';
 
 /**
  * Native toolbar view component for bottom toolbar.

@@ -1,0 +1,18 @@
+appId: dev.expo.routere2e
+name: Bottom toolbar button is tappable (ENG-22124 control)
+---
+# Control for ENG-22124: the toolbar button itself receives touches today. This passes on the
+# current build, isolating the bug to screen content underneath the Compose host (see
+# press-blocked.yml).
+- stopApp: dev.expo.routere2e
+- openLink: router-e2e://
+- runFlow: close-warning.yml
+- assertVisible:
+    id: "toolbar-count"
+    text: "Toolbar: 0"
+# The toolbar button is a Compose IconButton; accessibilityLabel maps to its content-desc
+# (not a resource-id), so match it by accessibility text rather than `id`.
+- tapOn: "toolbar-add-button"
+- assertVisible:
+    id: "toolbar-count"
+    text: "Toolbar: 1"

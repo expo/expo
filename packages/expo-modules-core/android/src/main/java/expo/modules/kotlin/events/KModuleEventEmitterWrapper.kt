@@ -96,7 +96,7 @@ open class KEventEmitterWrapper(
   override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
     val context = reactContextHolder.get() ?: return
     val uiEvent = UIEvent(surfaceId = -1, viewId, eventName, eventBody, coalescingKey)
-    UIManagerHelper.getEventDispatcherForReactTag(context, viewId)
+    UIManagerHelper.getEventDispatcher(context)
       ?.dispatchEvent(uiEvent)
   }
 
@@ -105,7 +105,7 @@ open class KEventEmitterWrapper(
     val surfaceId = UIManagerHelper.getSurfaceId(view)
     val viewId = view.id
     val uiEvent = UIEvent(surfaceId, viewId, eventName, eventBody, coalescingKey)
-    UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
+    UIManagerHelper.getEventDispatcher(context)
       ?.dispatchEvent(uiEvent)
   }
 

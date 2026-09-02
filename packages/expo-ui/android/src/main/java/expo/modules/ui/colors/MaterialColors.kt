@@ -13,6 +13,7 @@ import com.google.android.material.color.utilities.MaterialDynamicColors
 import com.google.android.material.color.utilities.SchemeTonalSpot
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.ui.ExpoColorScheme
 
 /**
@@ -21,6 +22,7 @@ import expo.modules.ui.ExpoColorScheme
  */
 internal val isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
+@OptimizedRecord
 internal class MaterialColorsOptions : Record {
   @Field val scheme: ExpoColorScheme? = null
 
@@ -30,6 +32,14 @@ internal class MaterialColorsOptions : Record {
 internal fun Context.isSystemInDarkTheme(): Boolean {
   val nightFlag = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
   return nightFlag == Configuration.UI_MODE_NIGHT_YES
+}
+
+/**
+ * Allows `expo-widgets` to back `getMaterialColors` inside the widgets JS runtime.
+ */
+fun getMaterialColorTokens(context: Context, isDark: Boolean): Map<String, String> {
+  val scheme = if (isDark) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+  return scheme.toColorScheme(context).toTokenMap()
 }
 
 /**

@@ -6,10 +6,7 @@ describe(pluginFactory, () => {
   function doFactory(input: any) {
     const factory = pluginFactory();
 
-    return [
-      // @ts-expect-error
-      ...factory(input),
-    ];
+    return [...factory(input)];
   }
   it(`collects common plugins`, () => {
     expect(

@@ -1,3 +1,3 @@
 import redirect from '~/common/redirect';
 
-export default redirect('/submit/introduction');
+export default redirect('/deploy/submit-to-app-stores');

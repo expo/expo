@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 
+import type { ColumnInfo, QueryResult } from '@/types';
+
 import { useDevToolsConnectionContext } from './useDevToolsConnection';
 import * as shared from './useSQLiteDatabase.shared';
-
-import type { ColumnInfo, QueryResult } from '@/types';
 
 /**
  * Hook for remote database operations through DevTools.

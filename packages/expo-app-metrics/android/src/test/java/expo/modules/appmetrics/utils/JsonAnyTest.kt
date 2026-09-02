@@ -38,4 +38,32 @@ class JsonAnyTest {
     assertEquals(listOf("a", "b"), decoded["tags"])
     assertEquals(mapOf("k" to true), decoded["nested"])
   }
+
+  @Test
+  fun `decodeJsonStringToMap round-trips encodeMapToJsonString output`() {
+    val original = mapOf(
+      "screen" to "home",
+      "attempt" to 3,
+      "active" to true,
+      "tags" to listOf("a", "b"),
+      "nested" to mapOf("k" to false)
+    )
+    val decoded = JsonAny.decodeJsonStringToMap(JsonAny.encodeMapToJsonString(original))!!
+    assertEquals("home", decoded["screen"])
+    assertEquals(3L, decoded["attempt"])
+    assertEquals(true, decoded["active"])
+    assertEquals(listOf("a", "b"), decoded["tags"])
+    assertEquals(mapOf("k" to false), decoded["nested"])
+  }
+
+  @Test
+  fun `decodeJsonStringToMap returns null on invalid JSON`() {
+    assertNull(JsonAny.decodeJsonStringToMap("not json"))
+  }
+
+  @Test
+  fun `decodeJsonStringToMap returns null when the JSON is not an object`() {
+    assertNull(JsonAny.decodeJsonStringToMap("[1, 2, 3]"))
+    assertNull(JsonAny.decodeJsonStringToMap("\"a string\""))
+  }
 }

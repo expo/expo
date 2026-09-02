@@ -1,0 +1,231 @@
+---
+title: クラウドで開発ビルドを設定する
+sidebar_title: 開発ビルドを設定する
+description: EAS Build を使ってプロジェクトの開発ビルドを設定する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、サンプルアプリ向けに EAS で開発ビルドをセットアップして設定します。
+
+<VideoBoxLink
+  videoId="uQCE9zl3dXU"
+  title="視聴：開発ビルドを設定する方法"
+  description="expo-dev-client のインストール、eas.json でのビルドプロファイルの設定、そして EAS Build による最初の開発ビルド作成までを学びます。"
+/>
+
+---
+
+## 開発ビルドを理解する
+
+まずは、開発ビルドとは何か、なぜ必要なのかを学びましょう。
+
+[開発ビルド](/develop/development-builds/introduction/) は、プロジェクトのデバッグビルドです。アプリ作成時に素早く試行錯誤を繰り返せるように最適化されています。堅牢で完全な開発環境を提供する [`expo-dev-client`](/versions/latest/sdk/dev-client/) ライブラリを含んでいます。この構成なら、任意のネイティブライブラリを組み込んだり、必要に応じて [ネイティブディレクトリ](/workflow/overview/#android-and-ios-native-projects) 内のコードを変更したりできます。
+
+### 主なポイント
+
+> **Note:** [Expo Go](/get-started/set-up-your-environment/) を使ったことがあるなら、開発ビルドは「そのプロジェクトの要件に合わせてカスタマイズできる Expo Go」だと考えてください。
+
+| 特徴                             | 開発ビルド                                                                                                                                               | Expo Go                                                                                   |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **開発フェーズ**                 | モバイルアプリ開発でも、web 開発のような速さで変更を確認しながら進められます。                                                                           | クライアントアプリを使って Expo SDK のプロジェクトを素早く試作・テストできます。          |
+| **コラボレーション**             | 共通のネイティブランタイムでチームでのテストがしやすくなります。                                                                                         | QR コードでデバイスに簡単にプロジェクトを共有できます。                                   |
+| **サードパーティライブラリ対応** | カスタムネイティブコードを必要とするものも含め、あらゆる [サードパーティライブラリ](/workflow/using-libraries/#third-party-libraries) に対応しています。 | Expo SDK に含まれるライブラリに限られ、カスタムネイティブ依存には向きません。             |
+| **カスタマイズ性**               | [config plugins](/config-plugins/introduction/) とネイティブコードへの直接アクセスにより、幅広くカスタマイズできます。                                   | ネイティブコードを直接変更せず、Expo SDK の範囲に限られた限定的なカスタマイズになります。 |
+| **想定される用途**               | 完全な開発環境とツールを備え、ストア公開を目指す本格的なアプリ開発に最適です。                                                                           | 学習、プロトタイピング、実験に最適です。本番アプリには推奨されません。                    |
+
+<Step label="1">
+
+## expo-dev-client ライブラリをインストールする
+
+開発ビルド向けにプロジェクトを初期化するため、プロジェクトディレクトリに [`cd`](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line#basic_built-in_terminal_commands) して、次のコマンドでライブラリをインストールしましょう。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
+
+### 開発サーバーを起動する
+
+`npx expo start` を実行して [開発サーバー](/get-started/start-developing/#start-a-development-server) を起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+このコマンドは Metro バンドラーを起動します。ターミナルウィンドウには QR コードに続いて `Metro waiting on...` とマニフェスト URL が表示されます。
+
+<ContentSpotlight
+  alt="Running development server"
+  src="/static/images/tutorial/eas/development-server.webp"
+  className="max-w-[600px]"
+/>
+
+`expo-dev-client` ライブラリをインストールしたことによる変化に注目しましょう。
+
+- マニフェスト URL にアプリのスキームとともに `expo-development-client` が含まれる
+- 開発サーバーが（Expo Go ではなく）開発ビルド向けに動作するようになる
+
+実機やエミュレーター/シミュレーターに開発ビルドがまだインストールされていないため、この時点ではプロジェクトを実行できません。
+
+</Step>
+
+<Step label="2">
+
+## 開発ビルドを初期化する
+
+### EAS CLI をインストールする
+
+ローカルマシンにグローバル依存として EAS コマンドラインインターフェース (CLI) ツールをインストールする必要があります。次のコマンドを実行しましょう。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
+
+### Expo アカウントにログインまたは登録する
+
+> Expo アカウントを持っていて Expo CLI でサインイン済みなら、このステップは飛ばしてください。アカウントがない場合は [こちらから登録](https://expo.dev/signup) して、下のログインコマンドに進みます。
+
+ログインするには次のコマンドを実行します。
+
+<Terminal cmd={['$ eas login']} />
+
+このコマンドは、ログインを完了するために Expo アカウントのメールアドレスまたはユーザー名とパスワードを尋ねます。
+
+### プロジェクトを初期化して EAS にリンクする
+
+新しいプロジェクトではまず、初期化して EAS サーバーにリンクします。次のコマンドを実行しましょう。
+
+<Terminal cmd={['$ eas init']} />
+
+実行すると、このコマンドは次のことを行います。
+
+- Expo アカウントの認証情報を入力してアカウント所有者の確認を求め、新しい EAS プロジェクトを作成するか尋ねます。
+
+<Terminal
+  cmd={[
+    '# Output after running eas init',
+    '✔ Which account should own this project? > your-username',
+    '✔ Would you like to create a project for @your-username/sticker-smash? … yes',
+    '✔ Created @your-username/sticker-smash',
+    '✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)',
+  ]}
+/>
+
+- EAS プロジェクトを作成し、EAS ダッシュボードで開けるリンクを表示します。
+
+<ContentSpotlight
+  alt="New project in EAS dashboard"
+  src="/static/images/tutorial/eas/new-project.png"
+/>
+
+- 一意の `projectId` を生成し、この EAS プロジェクトを開発マシン上のサンプルアプリにリンクします。
+- **app.json** を変更して [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) を追加し、生成された一意の ID をその値に設定します。
+
+<Collapsible summary={<>app.json の <CODE>projectId</CODE> とは？</>}>
+
+`eas init` を実行すると、**app.json** の `extra.eas.projectId` にプロジェクトの一意な識別子が関連付けられます。このプロパティの値は、EAS サーバー上でプロジェクトを識別するために使われます。
+
+```json
+{
+  "extra": {
+    "eas": {
+      "projectId": "0cd3da2d-xxx-xxx-xxx-xxxxxxxxxx"
+    }
+  }
+}
+```
+
+</Collapsible>
+
+</Step>
+
+<Step label="3">
+
+## EAS Build 向けにプロジェクトを設定する
+
+EAS Build 用にプロジェクトをセットアップするには、次のコマンドを実行します。
+
+<Terminal cmd={['$ eas build:configure']} />
+
+実行すると、このコマンドは次のことを行います。
+
+- プラットフォームの選択を求めます。**Android**、**iOS**、**All** から選べます。ここでは Android と iOS のアプリを作るので、**All** を選びましょう。
+- プロジェクトのルートディレクトリに、次の設定を持つ **eas.json** を作成します。
+
+```json eas.json
+{
+  "cli": {
+    "version": ">= 16.18.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
+```
+
+これは新しいプロジェクトにおける **eas.json** のデフォルト設定です。次の 2 つを行っています。
+
+- 現在の EAS CLI のバージョンを定義する。
+- `development`、`preview`、`production` という 3 つの [ビルドプロファイル](/build/eas-json/#build-profiles) を追加する。
+
+</Step>
+
+<Collapsible summary="development プロファイルをさらに詳しく見る">
+
+**eas.json** はさまざまなビルドプロファイルの集まりです。各プロファイルは、特定のビルド種別を生成するための個別の設定を持ちます。Android や iOS 向けのプラットフォーム固有の設定を含めることもできます。
+
+いまは `development` プロファイルに注目します。これは次の設定を含んでいます。
+
+- [`developmentClient`](/eas/json/#developmentclient): デバッグビルドを作成するために有効 (`true`) になっています。`expo-dev-client` ライブラリを使ってアプリを読み込み、開発ツールを提供します。実機やエミュレーター / シミュレーターにインストールできるビルド成果物を生成し、JavaScript をその場で更新できるためローカル開発に利用できます。
+- [`distribution`](/eas/json/#distribution): `internal` に設定され、（アプリストアにアップロードするのではなく）ビルドを内部で共有したいことを示します。
+
+> **Note**: ビルドには、プラットフォーム固有の設定や、異なるビルドプロファイル間で設定を継承する機能など、幅広いカスタマイズオプションがあります。詳しくは [ビルドプロファイルのカスタマイズ](/build/eas-json/#build-profiles) を参照してください。
+
+</Collapsible>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/configure-development-build"
+  chapterTitle="第 1 章：クラウドで開発ビルドを設定する"
+  summary="EAS CLI を使ってプロジェクトを初期化・設定し、EAS サーバーにリンクして、開発ビルドの準備を整えました。"
+  nextChapterDescription="次の章では、Android 向けの開発ビルドを作成し、実機とエミュレーターにインストールして、開発サーバーにつないで実行してみましょう。"
+  nextChapterTitle="Android 向けのクラウドビルドを作成して実行する"
+  nextChapterLink="/ja/tutorial/eas/android-development-build/"
+/>

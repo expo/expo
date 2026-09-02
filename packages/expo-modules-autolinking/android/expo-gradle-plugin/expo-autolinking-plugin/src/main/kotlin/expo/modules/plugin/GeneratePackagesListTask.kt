@@ -2,11 +2,11 @@ package expo.modules.plugin
 
 import expo.modules.plugin.configuration.ExpoModule
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -38,17 +38,18 @@ abstract class GeneratePackagesListTask : DefaultTask() {
   lateinit var modules: List<ExpoModule>
 
   /**
-   * The output file where the package list should be written.
+   * The output directory where the package list should be written.
    */
-  @get:OutputFile
-  abstract val outputFile: RegularFileProperty
+  @get:OutputDirectory
+  abstract val outputDirectory: DirectoryProperty
 
   @TaskAction
   fun generatePackagesList() {
-    val target = outputFile.get().asFile
-    val content = generatePackageListFileContent()
-
-    target.writeText(content)
+    val target = outputDirectory.get().asFile
+      .resolve(namespace.get().replace('.', '/'))
+      .resolve(generatedPackageListFilename)
+    target.parentFile.mkdirs()
+    target.writeText(generatePackageListFileContent())
   }
 
   private fun generatePackageListFileContent(): String {

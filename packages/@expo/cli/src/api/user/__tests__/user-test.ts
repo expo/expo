@@ -58,6 +58,13 @@ const robotStub: Actor = {
   accounts: [],
 };
 
+const partnerActorStub: Actor = {
+  __typename: 'PartnerActor',
+  id: 'userId',
+  username: 'partner-username',
+  accounts: [],
+};
+
 function mockLoginRequest() {
   nock(getExpoApiBaseUrl())
     .post('/v2/auth/loginAsync')
@@ -159,6 +166,8 @@ describe(logoutAsync, () => {
   resetEnv();
   it('removes the session secret', async () => {
     mockLoginRequest();
+    nock(getExpoApiBaseUrl()).post('/v2/auth/logout').reply(200, { data: {} });
+
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
     expect(getSession()?.sessionSecret).toBe('SESSION_SECRET');
 
@@ -168,6 +177,8 @@ describe(logoutAsync, () => {
 
   it('removes code signing data', async () => {
     mockLoginRequest();
+    nock(getExpoApiBaseUrl()).post('/v2/auth/logout').reply(200, { data: {} });
+
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
 
     await DevelopmentCodeSigningInfoFile.setAsync('test', {});
@@ -175,6 +186,39 @@ describe(logoutAsync, () => {
 
     await logoutAsync();
     expect(fs.existsSync(getDevelopmentCodeSigningDirectory())).toBe(false);
+  });
+
+  it('calls the server logout endpoint when session secret exists', async () => {
+    mockLoginRequest();
+    const logoutScope = nock(getExpoApiBaseUrl())
+      .post('/v2/auth/logout')
+      .matchHeader('expo-session', 'SESSION_SECRET')
+      .reply(200, { data: {} });
+
+    await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
+    await logoutAsync();
+
+    expect(logoutScope.isDone()).toBe(true);
+  });
+
+  it('clears the local session even if the server logout call fails', async () => {
+    mockLoginRequest();
+    nock(getExpoApiBaseUrl()).post('/v2/auth/logout').reply(500, 'Internal Server Error');
+
+    await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
+    expect(getSession()?.sessionSecret).toBe('SESSION_SECRET');
+
+    await logoutAsync();
+    expect(getSession()?.sessionSecret).toBeUndefined();
+  });
+
+  it('skips the server logout call when there is no session secret', async () => {
+    const logoutScope = nock(getExpoApiBaseUrl()).post('/v2/auth/logout').reply(200, { data: {} });
+
+    await logoutAsync();
+
+    expect(logoutScope.isDone()).toBe(false);
+    nock.cleanAll();
   });
 });
 
@@ -198,5 +242,9 @@ describe(getActorDisplayName, () => {
 
   it('returns robot prefix only for robot actors without firstName', () => {
     expect(getActorDisplayName({ ...robotStub, firstName: undefined })).toBe('robot');
+  });
+
+  it('returns username for partner provisioned actors', () => {
+    expect(getActorDisplayName(partnerActorStub)).toBe('partner-username');
   });
 });

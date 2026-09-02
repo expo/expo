@@ -82,7 +82,7 @@ data class ResponsePartHeaderData(
 )
 
 /**
- * Full info about a update response part.
+ * Full info about an update response part.
  * For non-multipart responses, this is the info about the full response.
  * For multipart responses, this is the info about a single part (but includes the outer headers for processing).
  */

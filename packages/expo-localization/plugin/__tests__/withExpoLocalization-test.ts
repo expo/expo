@@ -1,4 +1,39 @@
-import { convertBcp47ToResourceQualifier } from '../src/withExpoLocalization';
+import { AndroidConfig } from 'expo/config-plugins';
+
+import {
+  convertBcp47ToResourceQualifier,
+  setAndroidSupportsRtl,
+  setResourceConfigurations,
+} from '../src/withExpoLocalization';
+
+function getManifest(): AndroidConfig.Manifest.AndroidManifest {
+  return {
+    manifest: {
+      $: { 'xmlns:android': 'http://schemas.android.com/apk/res/android' },
+      application: [{ $: { 'android:name': '.MainApplication' } }],
+      queries: [],
+    },
+  };
+}
+
+describe('setAndroidSupportsRtl', () => {
+  it('sets android:supportsRtl to "true"', () => {
+    const manifest = setAndroidSupportsRtl(getManifest(), true);
+    expect(manifest.manifest.application?.[0].$['android:supportsRtl']).toBe('true');
+  });
+
+  it('sets android:supportsRtl to "false"', () => {
+    const manifest = setAndroidSupportsRtl(getManifest(), false);
+    expect(manifest.manifest.application?.[0].$['android:supportsRtl']).toBe('false');
+  });
+
+  it('overwrites an existing android:supportsRtl value', () => {
+    const manifest = getManifest();
+    manifest.manifest.application![0].$['android:supportsRtl'] = 'true';
+    setAndroidSupportsRtl(manifest, false);
+    expect(manifest.manifest.application?.[0].$['android:supportsRtl']).toBe('false');
+  });
+});
 
 describe('converts locales to BCP-47 format', () => {
   it('should convert simple language codes to BCP-47 format', () => {
@@ -17,5 +52,36 @@ describe('converts locales to BCP-47 format', () => {
     expect(convertBcp47ToResourceQualifier('zh-Hant')).toBe('b+zh+Hant');
     expect(convertBcp47ToResourceQualifier('es-419')).toBe('b+es+419');
     expect(convertBcp47ToResourceQualifier('zh-Hant-TW')).toBe('b+zh+Hant+TW');
+  });
+});
+
+const buildGradle = `android {
+    defaultConfig {
+        applicationId "com.example"
+        versionCode 1
+        versionName "1.0.0"
+    }
+}
+`;
+
+describe('setResourceConfigurations', () => {
+  it('inserts resourceConfigurations after versionName', () => {
+    const result = setResourceConfigurations(buildGradle, ['b+en', 'b+fr']);
+    expect(result).toContain('resourceConfigurations += ["b+en", "b+fr"]');
+  });
+
+  it('is idempotent across repeated prebuilds without --clean', () => {
+    const once = setResourceConfigurations(buildGradle, ['b+en', 'b+fr']);
+    const twice = setResourceConfigurations(once, ['b+en', 'b+fr']);
+    expect(twice).toEqual(once);
+    expect(twice.match(/resourceConfigurations \+=/g)).toHaveLength(1);
+  });
+
+  it('updates the resourceConfigurations when supportedLocales change', () => {
+    const before = setResourceConfigurations(buildGradle, ['b+en', 'b+fr']);
+    const after = setResourceConfigurations(before, ['b+en']);
+    expect(after).toContain('resourceConfigurations += ["b+en"]');
+    expect(after).not.toContain('"b+fr"');
+    expect(after.match(/resourceConfigurations \+=/g)).toHaveLength(1);
   });
 });

@@ -5,6 +5,7 @@ import android.provider.ContactsContract.CommonDataKinds.Photo
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.photo.operations.ExistingPhoto
 import expo.modules.contacts.next.domain.wrappers.DataId
+import expo.modules.contacts.next.extensions.getRequiredString
 
 object PhotoField : ExtractableField.Data<ExistingPhoto> {
   override val mimeType = Photo.CONTENT_ITEM_TYPE
@@ -16,7 +17,7 @@ object PhotoField : ExtractableField.Data<ExistingPhoto> {
 
   override fun extract(cursor: Cursor): ExistingPhoto = with(cursor) {
     return@with ExistingPhoto(
-      dataId = DataId(getString(getColumnIndexOrThrow(Photo._ID))),
+      dataId = DataId(getRequiredString(getColumnIndexOrThrow(Photo._ID))),
       photo = getBlob(getColumnIndexOrThrow(Photo.PHOTO))
     )
   }

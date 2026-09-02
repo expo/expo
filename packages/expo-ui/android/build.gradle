@@ -12,17 +12,18 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.ui'
-version = '56.0.7'
+version = '56.0.14'
 
 android {
   namespace "expo.modules.ui"
   defaultConfig {
     versionCode 1
-    versionName "56.0.7"
+    versionName "56.0.14"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   buildFeatures {
     compose true
+    buildConfig true
   }
   lintOptions {
     abortOnError false

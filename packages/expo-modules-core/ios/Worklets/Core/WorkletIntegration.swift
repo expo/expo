@@ -8,20 +8,13 @@ import ExpoModulesJSI
 @objc(EXWorkletIntegration)
 public final class WorkletIntegration: NSObject {
   @objc public static func register() {
-    AppContext.uiRuntimeFactory = { _, pointerValue, runtime in
-      // The worklet runtime pointer is passed as a JS ArrayBuffer containing the raw address.
-      // This is an internal transport between the worklets package's own install code and this
-      // factory — we trust the ArrayBuffer bytes to be a valid `jsi::Runtime *`. No authentication
-      // is performed; the size check below is only a sanity guard against malformed transport.
-      guard pointerValue.isArrayBuffer() else {
-        throw WorkletRuntimePointerExtractionException()
+    AppContext.uiRuntimeFactory = { _, holder, runtime in
+      let runtimePointer: UnsafeMutableRawPointer? = runtime.withUnsafePointee { runtimePointee in
+        holder.withUnsafePointee { holderPointee in
+          WorkletRuntimeResolver.uiRuntimePointer(runtimePointer: runtimePointee, holderPointer: holderPointee)
+        }
       }
-      let arrayBuffer = pointerValue.getArrayBuffer()
-      guard arrayBuffer.size == MemoryLayout<UnsafeMutableRawPointer>.size else {
-        throw WorkletRuntimePointerExtractionException()
-      }
-      let pointer = UnsafeMutableRawPointer(arrayBuffer.data()).load(as: UnsafeMutableRawPointer.self)
-      guard let workletRuntime = WorkletRuntime(runtimePointer: pointer) else {
+      guard let runtimePointer, let workletRuntime = WorkletRuntime(runtimePointer: runtimePointer) else {
         throw WorkletRuntimePointerExtractionException()
       }
       return workletRuntime
@@ -29,7 +22,7 @@ public final class WorkletIntegration: NSObject {
   }
 }
 
-private final class WorkletRuntimePointerExtractionException: Exception, @unchecked Sendable {
+internal final class WorkletRuntimePointerExtractionException: Exception, @unchecked Sendable {
   override var reason: String {
     "Cannot extract pointer to UI worklet runtime"
   }

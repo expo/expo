@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { type Ref } from 'react';
 import { type ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -16,7 +17,7 @@ export type TooltipBoxRef = {
   dismiss: () => Promise<void>;
 };
 
-export type TooltipBoxProps = {
+export interface TooltipBoxProps {
   /**
    * Ref to imperatively show/dismiss the tooltip.
    */
@@ -50,7 +51,7 @@ export type TooltipBoxProps = {
    * The anchor content triggers the tooltip on long-press.
    */
   children: React.ReactNode;
-};
+}
 
 const TooltipBoxNativeView: React.ComponentType<TooltipBoxProps> = requireNativeView(
   'ExpoUI',
@@ -76,12 +77,12 @@ function transformProps(
 
 // --- PlainTooltip (compound component of TooltipBox) ---
 
-export type PlainTooltipProps = {
+export interface PlainTooltipProps {
   containerColor?: ColorValue;
   contentColor?: ColorValue;
   modifiers?: ModifierConfig[];
   children: React.ReactNode;
-};
+}
 
 const PlainTooltipNativeView: React.ComponentType<PlainTooltipProps> = requireNativeView(
   'ExpoUI',
@@ -108,14 +109,14 @@ function PlainTooltipComponent(props: PlainTooltipProps) {
 
 // --- RichTooltip (compound component of TooltipBox) ---
 
-export type RichTooltipProps = {
+export interface RichTooltipProps {
   containerColor?: ColorValue;
   contentColor?: ColorValue;
   titleContentColor?: ColorValue;
   actionContentColor?: ColorValue;
   modifiers?: ModifierConfig[];
   children: React.ReactNode;
-};
+}
 
 const RichTooltipNativeView: React.ComponentType<RichTooltipProps> = requireNativeView(
   'ExpoUI',
@@ -146,7 +147,7 @@ function RichTooltipComponent(props: RichTooltipProps) {
         modifiers={modifiers}
         {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
         {...restProps}>
-        {children}
+        <PresentedContent>{children}</PresentedContent>
       </RichTooltipNativeView>
     </SlotNativeView>
   );

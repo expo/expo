@@ -67,6 +67,8 @@ public final class ImageView: ExpoView {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
+        placeholderImage = nil
+        sourceImage = nil
       }
     }
   }
@@ -137,7 +139,7 @@ public final class ImageView: ExpoView {
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
     if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-      // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
+      // The mask layer we adjusted would be invalidated from `RCTViewComponentView.traitCollectionDidChange`.
       // After that we have to recalculate the mask layer in `applyContentPosition`.
       applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     }
@@ -150,7 +152,11 @@ public final class ImageView: ExpoView {
       return
     }
     if isViewEmpty {
-      displayPlaceholderIfNecessary()
+      if placeholderImage != nil {
+        displayPlaceholderIfNecessary()
+      } else {
+        loadPlaceholderIfNecessary()
+      }
     }
     guard let source = bestSource else {
       displayPlaceholderIfNecessary()
@@ -265,6 +271,12 @@ public final class ImageView: ExpoView {
         ]
       ])
 
+      appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+        url: imageUrl?.absoluteString ?? "",
+        width: image.size.width * image.scale,
+        height: image.size.height * image.scale
+      )
+
       let scale = window?.screen.scale ?? UIScreen.main.scale
       imageLayoutSize = idealSize(
         contentPixelSize: image.size * image.scale,
@@ -275,7 +287,7 @@ public final class ImageView: ExpoView {
       let imageIdealSize = imageLayoutSize.rounded(.up)
       let image = processImage(image, idealSize: imageIdealSize, scale: scale)
       applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-      renderSourceImage(image)
+      renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
     } else {
       displayPlaceholderIfNecessary()
     }
@@ -347,22 +359,21 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
-    let path: String? = {
-      // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
-      // It also crashes with EXC_BREAKPOINT when parsing data:image uris
-      // manually drop the leading slash below iOS 16
-      if let path = source.uri?.path {
-        return String(path.dropFirst())
-      }
-      return nil
-    }()
-
-    if let path, !path.isEmpty, let local = UIImage(named: path) {
-      renderSourceImage(local)
+    if let local = localAssetImage(from: source) {
+      // `UIImage(named:)` serves bundled assets from the system's in-memory cache, so report a
+      // memory hit — this lets `transition.skipOnCacheHit` treat them as instantly available.
+      renderSourceImage(local, cacheType: .memory)
       return true
     }
 
     return false
+  }
+
+  private func localAssetImage(from source: ImageSource) -> UIImage? {
+    guard let path = localAssetName(from: source.uri) else {
+      return nil
+    }
+    return UIImage(named: path)
   }
 
   // MARK: - Placeholder
@@ -412,6 +423,14 @@ public final class ImageView: ExpoView {
     // Exit early if placeholder is not set or there is already an image attached to the view.
     // The placeholder is only used until the first image is loaded.
     guard canDisplayPlaceholder, let placeholder = bestPlaceholder else {
+      return
+    }
+
+    // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
+    // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
+    if let localImage = localAssetImage(from: placeholder) {
+      placeholderImage = localImage
+      displayPlaceholderIfNecessary()
       return
     }
 
@@ -492,14 +511,17 @@ public final class ImageView: ExpoView {
     }
   }
 
-  internal func renderSourceImage(_ image: UIImage?) {
+  internal func renderSourceImage(_ image: UIImage?, cacheType: ImageCacheType = .none) {
+    let isInitialDisplay = sourceImage == nil
+
     // Update the source image before it gets rendered or transitioned to.
     sourceImage = image
 
     // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
     let isSFReplaceEffect = transition?.effect.isSFReplaceEffect == true && isSFSymbolSource
 
-    if let transition = transition, transition.duration > 0, !isSFReplaceEffect {
+    if let transition = transition, transition.duration > 0, !isSFReplaceEffect,
+      transition.shouldPlay(forCacheType: cacheType, isInitialDisplay: isInitialDisplay) {
       let options = transition.toAnimationOptions()
       let seconds = transition.duration / 1000
 
@@ -840,4 +862,26 @@ public final class ImageView: ExpoView {
     return interaction as? ImageAnalysisInteraction
   }
 #endif
+}
+
+func localAssetName(from url: URL?) -> String? {
+  guard let url else {
+    return nil
+  }
+
+  // `ExpoModulesCore` converts scheme-less URI strings from JS via
+  // `URL(fileURLWithPath:)`, so asset names like "my_image" arrive here with
+  // `scheme == "file"`. Accept those alongside truly scheme-less URLs; reject
+  // remote/SF Symbol/blurhash/etc. schemes.
+  if let scheme = url.scheme, scheme != "file" {
+    return nil
+  }
+
+  // Use `relativePath` so we recover the original input ("my_image") instead of
+  // the absolute path it resolves to against the file:// base
+  var path = url.relativePath
+  if path.hasPrefix("/") {
+    path.removeFirst()
+  }
+  return path.isEmpty ? nil : path
 }

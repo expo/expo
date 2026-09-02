@@ -57,11 +57,11 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('preserves all falsy non-nullish values', () => {
-        expect(({ v: 0 })?.v).toBe(0);
-        expect(({ v: '' })?.v).toBe('');
-        expect(({ v: false })?.v).toBe(false);
-        expect(({ v: NaN })?.v).not.toBe(NaN); // NaN !== NaN
-        expect(typeof ({ v: NaN })?.v).toBe('number');
+        expect({ v: 0 }?.v).toBe(0);
+        expect({ v: '' }?.v).toBe('');
+        expect({ v: false }?.v).toBe(false);
+        expect({ v: NaN }?.v).not.toBe(NaN); // NaN !== NaN
+        expect(typeof { v: NaN }?.v).toBe('number');
       });
 
       it('works on non-plain objects', () => {
@@ -106,7 +106,10 @@ export function test({ describe, it, xit, expect }) {
 
       it('computed key expression is not evaluated when base is nullish', () => {
         let evaluated = false;
-        const key = () => { evaluated = true; return 'foo'; };
+        const key = () => {
+          evaluated = true;
+          return 'foo';
+        };
         const obj = null;
         obj?.[key()];
         expect(evaluated).toBe(false);
@@ -114,7 +117,10 @@ export function test({ describe, it, xit, expect }) {
 
       it('computed key expression evaluated once when base is non-nullish', () => {
         let count = 0;
-        const key = () => { count++; return 'foo'; };
+        const key = () => {
+          count++;
+          return 'foo';
+        };
         const obj = { foo: 'bar' };
         expect(obj?.[key()]).toBe('bar');
         expect(count).toBe(1);
@@ -163,7 +169,9 @@ export function test({ describe, it, xit, expect }) {
     describe('method calls (?.method())', () => {
       it('calls method on object', () => {
         const obj = {
-          greet() { return 'hello'; },
+          greet() {
+            return 'hello';
+          },
         };
         expect(obj?.greet()).toBe('hello');
       });
@@ -171,7 +179,9 @@ export function test({ describe, it, xit, expect }) {
       it('preserves this context', () => {
         const obj = {
           name: 'test',
-          getName() { return this.name; },
+          getName() {
+            return this.name;
+          },
         };
         expect(obj?.getName()).toBe('test');
       });
@@ -189,7 +199,9 @@ export function test({ describe, it, xit, expect }) {
       it('chained method calls', () => {
         const obj = {
           inner: {
-            getValue() { return 42; },
+            getValue() {
+              return 42;
+            },
           },
         };
         expect(obj?.inner?.getValue()).toBe(42);
@@ -197,7 +209,9 @@ export function test({ describe, it, xit, expect }) {
 
       it('method on prototype chain', () => {
         class Base {
-          hello() { return 'base'; }
+          hello() {
+            return 'base';
+          }
         }
         class Child extends Base {}
         const c = new Child();
@@ -209,7 +223,9 @@ export function test({ describe, it, xit, expect }) {
           x: 10,
           inner: {
             x: 20,
-            getX() { return this.x; },
+            getX() {
+              return this.x;
+            },
           },
         };
         expect(obj?.inner?.getX()).toBe(20);
@@ -220,7 +236,10 @@ export function test({ describe, it, xit, expect }) {
       it('does not access further properties after null', () => {
         let accessed = false;
         const handler = {
-          get() { accessed = true; return {}; },
+          get() {
+            accessed = true;
+            return {};
+          },
         };
         const obj = null;
         obj?.foo;
@@ -237,27 +256,42 @@ export function test({ describe, it, xit, expect }) {
       it('entire chain short-circuits', () => {
         let sideEffect = false;
         const obj = null;
-        obj?.a.b.c.d.e?.f?.(() => { sideEffect = true; });
+        obj?.a.b.c.d.e?.f?.(() => {
+          sideEffect = true;
+        });
         expect(sideEffect).toBe(false);
       });
 
       it('short-circuits computed access after null', () => {
         let keyEvaluated = false;
         const obj = null;
-        obj?.[(() => { keyEvaluated = true; return 'key'; })()];
+        obj?.[
+          (() => {
+            keyEvaluated = true;
+            return 'key';
+          })()
+        ];
         expect(keyEvaluated).toBe(false);
       });
 
       it('side effects in base are evaluated once', () => {
         let count = 0;
-        const getObj = () => { count++; return { a: 1 }; };
+        const getObj = () => {
+          count++;
+          return { a: 1 };
+        };
         expect(getObj()?.a).toBe(1);
         expect(count).toBe(1);
       });
 
       it('non-optional part after ?. still evaluates if base is present', () => {
         let count = 0;
-        const obj = { get a() { count++; return { b: 42 }; } };
+        const obj = {
+          get a() {
+            count++;
+            return { b: 42 };
+          },
+        };
         expect(obj?.a.b).toBe(42);
         expect(count).toBe(1);
       });
@@ -350,8 +384,8 @@ export function test({ describe, it, xit, expect }) {
 
       it('double NOT coerces to boolean', () => {
         expect(!!null?.foo).toBe(false);
-        expect(!!({ foo: 1 })?.foo).toBe(true);
-        expect(!!({ foo: 0 })?.foo).toBe(false);
+        expect(!!{ foo: 1 }?.foo).toBe(true);
+        expect(!!{ foo: 0 }?.foo).toBe(false);
       });
 
       it('ternary with optional chaining', () => {
@@ -446,8 +480,12 @@ export function test({ describe, it, xit, expect }) {
     describe('with classes', () => {
       it('optional access on class instance', () => {
         class User {
-          constructor(name) { this.name = name; }
-          greet() { return 'Hi, ' + this.name; }
+          constructor(name) {
+            this.name = name;
+          }
+          greet() {
+            return 'Hi, ' + this.name;
+          }
         }
         const user = new User('Alice');
         expect(user?.name).toBe('Alice');
@@ -462,10 +500,14 @@ export function test({ describe, it, xit, expect }) {
 
       it('optional access on inherited method', () => {
         class Animal {
-          speak() { return 'generic'; }
+          speak() {
+            return 'generic';
+          }
         }
         class Dog extends Animal {
-          speak() { return 'woof'; }
+          speak() {
+            return 'woof';
+          }
         }
         const d = new Dog();
         expect(d?.speak()).toBe('woof');
@@ -475,7 +517,9 @@ export function test({ describe, it, xit, expect }) {
 
       it('optional access on static method', () => {
         class Utils {
-          static parse(s) { return parseInt(s, 10); }
+          static parse(s) {
+            return parseInt(s, 10);
+          }
         }
         expect(Utils?.parse('42')).toBe(42);
         const Cls = null;
@@ -485,8 +529,12 @@ export function test({ describe, it, xit, expect }) {
       it('optional access on getter', () => {
         class Box {
           #val;
-          constructor(v) { this.#val = v; }
-          get value() { return this.#val; }
+          constructor(v) {
+            this.#val = v;
+          }
+          get value() {
+            return this.#val;
+          }
         }
         const box = new Box(42);
         expect(box?.value).toBe(42);
@@ -528,7 +576,7 @@ export function test({ describe, it, xit, expect }) {
       it('array base', () => {
         const arr = [1, 2, 3];
         expect(arr?.length).toBe(3);
-        expect(arr?.map(x => x * 2)).toEqual([2, 4, 6]);
+        expect(arr?.map((x) => x * 2)).toEqual([2, 4, 6]);
         expect(arr?.[2]).toBe(3);
       });
 
@@ -589,7 +637,9 @@ export function test({ describe, it, xit, expect }) {
 
       it('optional call on async method', async () => {
         const obj = {
-          async getData() { return 'data'; },
+          async getData() {
+            return 'data';
+          },
         };
         const result = await obj?.getData();
         expect(result).toBe('data');
@@ -682,9 +732,9 @@ export function test({ describe, it, xit, expect }) {
 
       it('parenthesized optional chain', () => {
         const obj = { a: { b: 42 } };
-        expect((obj?.a)?.b).toBe(42);
+        expect(obj?.a?.b).toBe(42);
         const nul = null;
-        expect((nul?.a)?.b).toBe(undefined);
+        expect(nul?.a?.b).toBe(undefined);
       });
 
       it('optional chaining with comma operator', () => {
@@ -712,7 +762,9 @@ export function test({ describe, it, xit, expect }) {
       it('safe event handler invocation', () => {
         let called = false;
         const props = {
-          onPress: () => { called = true; },
+          onPress: () => {
+            called = true;
+          },
         };
         props?.onPress?.();
         expect(called).toBe(true);
@@ -724,7 +776,10 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('safe array element access', () => {
-        const matrix = [[1, 2], [3, 4]];
+        const matrix = [
+          [1, 2],
+          [3, 4],
+        ];
         expect(matrix?.[0]?.[1]).toBe(2);
         expect(matrix?.[5]?.[0]).toBe(undefined);
       });
@@ -735,7 +790,7 @@ export function test({ describe, it, xit, expect }) {
           { category: null, value: 2 },
           { category: { name: 'B' }, value: 3 },
         ];
-        const categories = items.map(item => item.category?.name ?? 'Unknown');
+        const categories = items.map((item) => item.category?.name ?? 'Unknown');
         expect(categories).toEqual(['A', 'Unknown', 'B']);
       });
 
@@ -749,7 +804,9 @@ export function test({ describe, it, xit, expect }) {
             ],
           },
         };
-        expect(response.data?.users?.[0]?.profile?.avatar?.url).toBe('https://example.com/photo.jpg');
+        expect(response.data?.users?.[0]?.profile?.avatar?.url).toBe(
+          'https://example.com/photo.jpg'
+        );
         expect(response.data?.users?.[1]?.profile?.avatar?.url).toBe(undefined);
         expect(response.data?.users?.[2]?.profile?.avatar?.url).toBe(undefined);
         expect(response.data?.users?.[99]?.profile?.avatar?.url).toBe(undefined);
@@ -758,8 +815,13 @@ export function test({ describe, it, xit, expect }) {
       it('safe method chaining pattern', () => {
         class Builder {
           #parts = [];
-          add(part) { this.#parts.push(part); return this; }
-          build() { return this.#parts.join(' '); }
+          add(part) {
+            this.#parts.push(part);
+            return this;
+          }
+          build() {
+            return this.#parts.join(' ');
+          }
         }
         const builder = new Builder();
         const result = builder?.add('hello')?.add('world')?.build();

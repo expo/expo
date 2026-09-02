@@ -26,7 +26,7 @@ export type ButtonContentPadding = {
   bottom?: number;
 };
 
-export type ButtonProps = {
+export interface ButtonProps {
   /**
    * Callback that is called when the button is clicked.
    */
@@ -57,7 +57,7 @@ export type ButtonProps = {
    * Content to display inside the button.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeButtonProps = Omit<ButtonProps, 'onClick' | 'shape' | 'children'> & {
   shape?: ShapeRecordProps;

@@ -1,6 +1,10 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    // React Native 0.87 makes the Flow-generated typings the default. They drop legacy exports such
+    // as `NativeMethods`, which the community libraries used here still reference. Opt into the
+    // hand-written typings, matching `expo-module-scripts/tsconfig.base.json`.
+    "customConditions": ["react-native", "react-native-legacy-deep-imports"],
     "noImplicitAny": true,
     "experimentalDecorators": true,
     "paths": {

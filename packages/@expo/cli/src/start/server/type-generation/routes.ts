@@ -337,7 +337,7 @@ declare module "expo-router" {
     : IsParameter<Path>;
 
   /**
-   * Returns all segements of a route.
+   * Returns all segments of a route.
    *
    * /(group)/123/abc/[id]/[...rest] -> ['(group)', '123', 'abc', '[id]', '[...rest]'
    */

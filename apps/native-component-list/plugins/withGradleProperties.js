@@ -1,42 +1,24 @@
-const { withDangerousMod } = require('@expo/config-plugins');
-const assert = require('assert');
-const fs = require('fs/promises');
-const path = require('path');
+const { withGradleProperties } = require('expo/config-plugins');
 
-// Use this improve gradle builds
-module.exports = (config, options) => {
-  assert(options, 'gradle.properties must be defined');
-  return withDangerousMod(config, [
-    'android',
-    async (config) => {
-      const filePath = path.join(config.modRequest.projectRoot, 'android', 'gradle.properties');
-      const contents = await fs.readFile(filePath, 'utf-8');
-      const results = [];
-      const lines = contents.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (line && !line.startsWith('#')) {
-          const eok = line.indexOf('=');
-          const keyName = line.slice(0, eok);
-          let value;
-          if (keyName in options) {
-            value = options[keyName];
-            delete options[keyName];
-          } else {
-            value = line.slice(eok + 1, line.length);
-          }
-          results.push(`${keyName}=${value}`);
-        } else {
-          results.push(line);
-        }
-      }
+/**
+ * Apply the `{ [key]: value }` object to the Gradle properties.
+ * This will replace the value of existing properties, or append the property definition at the end.
+ * @type {import('expo/config-plugins').ConfigPlugin<Record<string, string>>}
+ */
+module.exports = (config, options = {}) => {
+  return withGradleProperties(config, (config) => {
+    for (const [key, value] of Object.entries(options)) {
+      const idx = config.modResults.findIndex((node) => {
+        return node.type === 'property' && node.key === key;
+      });
 
-      // Add the remaining options
-      for (const [key, value] of Object.entries(options)) {
-        results.push(`${key}=${value}`);
+      if (idx < 0) {
+        config.modResults.push({ type: 'property', key, value });
+      } else {
+        config.modResults[idx].value = value;
       }
-      await fs.writeFile(filePath, results.join('\n'));
-      return config;
-    },
-  ]);
+    }
+
+    return config;
+  });
 };

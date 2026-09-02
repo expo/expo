@@ -1,9 +1,10 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import { Tabs, type TabsHostProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
+import type { ErrorBoundaryProps } from '../../views/Try';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabsProps } from '../types';
 
@@ -24,6 +25,26 @@ jest.mock('react-native-screens', () => {
 
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+
+it('uses a navigator error boundary for an individual tab screen', () => {
+  function ThrowingRoute(): never {
+    throw new Error('Expected route error');
+  }
+  function ErrorBoundary({ error }: ErrorBoundaryProps) {
+    return <Text testID="error-boundary">{error.message}</Text>;
+  }
+
+  renderRouter({
+    _layout: () => (
+      <NativeTabs unstable_screenErrorBoundary={ErrorBoundary}>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: ThrowingRoute,
+  });
+
+  expect(screen.getByTestId('error-boundary')).toBeVisible();
+});
 
 it.each([
   { value: undefined, expected: 'automatic' },
@@ -243,5 +264,71 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(TabsHost.mock.calls.at(-1)![0].direction).toBe('rtl');
+  });
+});
+
+// TODO: drop this describe block once react-native-screens honors its documented
+// fallback where `icon` is reused when `selectedIcon` is not provided.
+describe('selectedIcon fallback', () => {
+  it('mirrors sf icon onto selectedIcon when no selected variant is provided', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon sf="house" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
+    expect(TabsScreen.mock.calls[0][0].ios?.selectedIcon).toEqual({
+      type: 'sfSymbol',
+      name: 'house',
+    });
+  });
+
+  it('mirrors src icon onto selectedIcon when no selected variant is provided', () => {
+    const src = { uri: 'https://example.com/icon.png' };
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon src={src} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    const ios = TabsScreen.mock.calls[0][0].ios;
+    expect(ios?.icon).toEqual({ type: 'imageSource', imageSource: src });
+    expect(ios?.selectedIcon).toEqual({ type: 'imageSource', imageSource: src });
+  });
+
+  it('does not override an explicitly provided selectedIcon', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
+    expect(TabsScreen.mock.calls[0][0].ios?.selectedIcon).toEqual({
+      type: 'sfSymbol',
+      name: 'house.fill',
+    });
   });
 });

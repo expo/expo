@@ -13,8 +13,12 @@ jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: {
     markInteractive: jest.fn(),
-    getMainSessionId: jest.fn(() => 'session-1'),
-    addCustomMetricToSession: jest.fn(),
+    getMainSession: jest.fn(() => ({
+      id: 'session-1',
+      type: 'main',
+      startDate: '2026-01-01T00:00:00.000Z',
+      addMetric: jest.fn(),
+    })),
   },
 }));
 
@@ -114,7 +118,7 @@ describe('ObserveRouterIntegrationProvider', () => {
         </ObserveRouterIntegrationProvider>
       )
     ).toThrow(
-      '[expo-observe] Router integration was enabled after application mounted. Call ExpoObserve.configure() before mounting AppMetricsRoot.'
+      '[expo-observe] Router integration was enabled after application mounted. Call Observe.configure() before mounting AppMetricsRoot.'
     );
   });
 

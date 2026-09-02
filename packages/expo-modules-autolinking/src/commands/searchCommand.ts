@@ -1,8 +1,8 @@
 import type commander from 'commander';
 
+import { findModulesAsync } from '../autolinking/findModules';
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
-import { findModulesAsync } from '../autolinking/findModules';
 
 interface SearchArguments extends AutolinkingCommonArguments {
   json?: boolean | null;

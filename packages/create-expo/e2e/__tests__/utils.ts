@@ -34,7 +34,7 @@ export async function createFixtureTarball(fixtureName: string) {
   return path.join(fixturePath, JSON.parse(result.stdout).pop().filename);
 }
 
-/** Get the path witihin the default project root, and ensure that folder exists */
+/** Get the path within the default project root, and ensure that folder exists */
 export function createTestPath(...args: string[]) {
   const testPath = getTestPath(...args);
   ensureFolderExists(testPath);

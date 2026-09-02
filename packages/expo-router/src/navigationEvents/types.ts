@@ -5,6 +5,7 @@ export interface BasePageEvent {
   pathname: string;
   params: Record<string, string | string[]>;
   screenId: string;
+  segments: string[];
 }
 
 /**

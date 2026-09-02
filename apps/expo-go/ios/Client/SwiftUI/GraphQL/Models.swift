@@ -18,12 +18,13 @@ struct GraphQLErrorLocation: Codable {
   let column: Int
 }
 
-struct MeUserActorResponse: Codable {
-  let data: MeUserActorData
+struct MeActorResponse: Codable {
+  let data: MeActorData
 }
 
-struct MeUserActorData: Codable {
-  let meUserActor: UserActor
+struct MeActorData: Codable {
+  /// Null for an unauthenticated request.
+  let meActor: UserActor?
 }
 
 struct HomeScreenDataResponse: Codable {
@@ -74,11 +75,13 @@ struct UserActor: Codable {
 struct Account: Codable {
   let id: String
   let name: String
+  let profileImageUrl: String?
   let ownerUserActor: UserActorSimple?
 
   enum CodingKeys: String, CodingKey {
     case id
     case name
+    case profileImageUrl
     case ownerUserActor
   }
 }

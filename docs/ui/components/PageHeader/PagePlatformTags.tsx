@@ -31,7 +31,7 @@ export function PagePlatformTags({ platforms, className }: Props) {
             key={text}
             platform="expo-go"
             label="Included in Expo Go"
-            className="border-palette-gray4 bg-palette-gray3 text-palette-gray12 dark:border-palette-gray4 dark:bg-palette-gray4 rounded-full px-2.5 py-1.5"
+            className="rounded-full border-palette-gray4 bg-palette-gray3 px-2.5 py-1.5 text-palette-gray12 dark:border-palette-gray4 dark:bg-palette-gray4"
           />
         );
       })}

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include <worklets/Compat/StableApi.h>
 #include <worklets/SharedItems/Serializable.h>
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
 
@@ -163,6 +164,26 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   return handle;
 }
 
+- (void * _Nullable)uiRuntimePointerWithRuntimePointer:(void *)runtimePointer
+                                         holderPointer:(const void *)holderPointer
+{
+  jsi::Runtime &rt = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  const jsi::Value &holderValue = *reinterpret_cast<const jsi::Value *>(holderPointer);
+
+  if (!holderValue.isObject()) {
+    return nullptr;
+  }
+
+  jsi::Object holder = holderValue.getObject(rt);
+  std::shared_ptr<worklets::WorkletRuntime> workletRuntime = worklets::getWorkletRuntimeFromHolder(rt, holder);
+  if (!workletRuntime) {
+    return nullptr;
+  }
+
+  jsi::Runtime &uiRuntime = worklets::getJSIRuntimeFromWorkletRuntime(workletRuntime);
+  return &uiRuntime;
+}
+
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
                             serializable:(EXJavaScriptSerializable *)serializable
                                arguments:(NSArray *)arguments
@@ -212,7 +233,7 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
     return;
   }
 
-  workletRuntime->executeSync([worklet, arguments](jsi::Runtime &rt) -> jsi::Value {
+  workletRuntime->runSync([worklet, arguments](jsi::Runtime &rt) -> jsi::Value {
     return callWorklet(rt, worklet, arguments);
   });
 }

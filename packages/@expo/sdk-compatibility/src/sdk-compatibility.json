@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "sdkVersions": [
+    {
+      "sdk": "57.0.0",
+      "android": {
+        "minimumVersion": 7,
+        "compileSdkVersion": 36,
+        "targetSdkVersion": 36,
+        "buildToolsVersion": "36.0.0"
+      },
+      "ios": {
+        "minimumVersion": "16.4",
+        "xcodeVersionRange": ">=26.4.0",
+        "xcodeVersionCheckRange": ">=26.4.0"
+      },
+      "runtime": {
+        "reactNative": "0.86",
+        "reactNativeWeb": "0.21.0",
+        "reactNativeTvos": "0.86-stable",
+        "react": "19.2.3"
+      },
+      "node": {
+        "minimumVersion": "22.13.0"
+      }
+    },
+    {
+      "sdk": "56.0.0",
+      "android": {
+        "minimumVersion": 7,
+        "compileSdkVersion": 36,
+        "targetSdkVersion": 36,
+        "buildToolsVersion": "36.0.0"
+      },
+      "ios": {
+        "minimumVersion": "16.4",
+        "xcodeVersionRange": ">=26.4.0"
+      },
+      "runtime": {
+        "reactNative": "0.85",
+        "reactNativeWeb": "0.21.0",
+        "reactNativeTvos": "0.85-stable",
+        "react": "19.2.3"
+      },
+      "node": {
+        "minimumVersion": "20.19.0"
+      }
+    },
+    {
+      "sdk": "55.0.0",
+      "android": {
+        "minimumVersion": 7,
+        "compileSdkVersion": 36,
+        "targetSdkVersion": 36,
+        "buildToolsVersion": "36.0.0"
+      },
+      "ios": {
+        "minimumVersion": "15.1",
+        "xcodeVersionRange": ">=26.2.0",
+        "xcodeVersionCheckRange": ">=26.0.0"
+      },
+      "runtime": {
+        "reactNative": "0.83",
+        "reactNativeWeb": "0.21.0",
+        "reactNativeTvos": "0.83-stable",
+        "react": "19.2.0"
+      },
+      "node": {
+        "minimumVersion": "20.19.0"
+      }
+    },
+    {
+      "sdk": "54.0.0",
+      "android": {
+        "minimumVersion": 7,
+        "compileSdkVersion": 36,
+        "targetSdkVersion": 36,
+        "buildToolsVersion": "36.0.0"
+      },
+      "ios": {
+        "minimumVersion": "15.1",
+        "xcodeVersionRange": ">=16.1.0"
+      },
+      "runtime": {
+        "reactNative": "0.81",
+        "reactNativeWeb": "0.21.0",
+        "reactNativeTvos": "0.81-stable",
+        "react": "19.1.0"
+      },
+      "node": {
+        "minimumVersion": "20.19.0"
+      }
+    },
+    {
+      "sdk": "53.0.0",
+      "android": {
+        "minimumVersion": 7,
+        "compileSdkVersion": 35,
+        "targetSdkVersion": 35,
+        "buildToolsVersion": "35.0.0"
+      },
+      "ios": {
+        "minimumVersion": "15.1",
+        "xcodeVersionRange": ">=16.0.0"
+      },
+      "runtime": {
+        "reactNative": "0.79",
+        "reactNativeWeb": "0.20.0",
+        "reactNativeTvos": "0.79-stable",
+        "react": "19.0.0"
+      },
+      "node": {
+        "minimumVersion": "20.18.0"
+      }
+    },
+    {
+      "sdk": "52.0.0",
+      "android": {
+        "minimumVersion": 7,
+        "compileSdkVersion": 35,
+        "targetSdkVersion": 34,
+        "buildToolsVersion": "35.0.0"
+      },
+      "ios": {
+        "minimumVersion": "15.1",
+        "xcodeVersionRange": ">=16.0.0"
+      },
+      "runtime": {
+        "reactNative": "0.76",
+        "reactNativeWeb": "0.19.13",
+        "reactNativeTvos": "0.77-stable",
+        "react": "18.3.1"
+      },
+      "node": {
+        "minimumVersion": "20.18.0"
+      }
+    },
+    {
+      "sdk": "51.0.0",
+      "android": {
+        "minimumVersion": 6,
+        "compileSdkVersion": 34
+      },
+      "ios": {
+        "minimumVersion": "13.4",
+        "xcodeVersionRange": ">=15.4.0 <=16.2.0",
+        "xcodeVersionCheckRange": "<=16.2.0"
+      },
+      "runtime": {
+        "reactNative": "0.74",
+        "reactNativeWeb": "0.19.10"
+      }
+    }
+  ]
+}

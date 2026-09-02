@@ -69,7 +69,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
 
       val backgroundActivityIntent = Intent(context, NotificationForwarderActivity::class.java)
       backgroundActivityIntent.data = broadcastIntent.data
-      backgroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+      backgroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
       backgroundActivityIntent.putExtras(broadcastIntent)
       val requestCode = broadcastIntent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode()
       return PendingIntent.getActivity(context, requestCode, backgroundActivityIntent, intentFlags)
@@ -96,8 +96,19 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       return null
     }
 
-    private fun getMainActivityLauncher(context: Context) =
-      context.packageManager.getLaunchIntentForPackage(context.packageName)
+    /**
+     * Returns the intent that launches the app's main activity, or `null` if there is none.
+     *
+     * Some OEM ROMs throw (e.g. `NullPointerException: class name is null`) instead of
+     * returning `null` when no launcher activity resolves for the package. A throwing
+     * lookup is treated as "no launch intent" so callers degrade gracefully.
+     */
+    fun getMainActivityLauncher(context: Context): Intent? =
+      runCatching { context.packageManager.getLaunchIntentForPackage(context.packageName) }
+        .onFailure {
+          Log.w("expo-notifications", "getLaunchIntentForPackage threw while resolving the main activity launcher; treating as no launch intent.", it)
+        }
+        .getOrNull()
   }
 
   fun isAppInForeground() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)

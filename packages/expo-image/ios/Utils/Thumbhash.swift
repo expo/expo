@@ -461,8 +461,9 @@ import UIKit
 
 func thumbHash(fromImage: UIImage) -> Data {
   let size = fromImage.size
-  let w = Int(round(100 * size.width / max(size.width, size.height)))
-  let h = Int(round(100 * size.height / max(size.width, size.height)))
+  // Extreme aspect ratios can lead to dimension of 0 after rounding
+  let w = max(1, Int(round(100 * size.width / max(size.width, size.height))))
+  let h = max(1, Int(round(100 * size.height / max(size.width, size.height))))
   var rgba = Data(count: w * h * 4)
   rgba.withUnsafeMutableBytes { rgba in
     if

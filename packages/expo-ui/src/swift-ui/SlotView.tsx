@@ -1,8 +1,21 @@
 import { requireNativeView } from 'expo';
 
-const SlotNativeView: React.ComponentType<{ name: string; children?: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'SlotView');
+type SlotProps<ExtraProps extends Record<string, unknown> = Record<string, unknown>> = {
+  name: string;
+  extraProps?: ExtraProps;
+  children?: React.ReactNode;
+};
 
-export function Slot({ name, children }: { name: string; children?: React.ReactNode }) {
-  return <SlotNativeView name={name}>{children}</SlotNativeView>;
+const SlotNativeView: React.ComponentType<SlotProps> = requireNativeView('ExpoUI', 'SlotView');
+
+export function Slot<ExtraProps extends Record<string, unknown> = Record<string, unknown>>({
+  name,
+  extraProps,
+  children,
+}: SlotProps<ExtraProps>) {
+  return (
+    <SlotNativeView name={name} extraProps={extraProps}>
+      {children}
+    </SlotNativeView>
+  );
 }

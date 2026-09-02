@@ -1,10 +1,10 @@
 import escape from 'escape-string-regexp';
 import type * as queryString from 'query-string';
 
-import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import type { InitialState } from '../react-navigation/native';
 import { parseUrlUsingCustomBase } from '../utils/url';
+import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 
 export type ExpoOptions = {
   previousSegments?: string[];
@@ -30,7 +30,7 @@ export function populateParams(routes?: ParsedRoute[], params?: Record<string, a
   if (!routes || !params || Object.keys(params).length === 0) return;
 
   for (const route of routes) {
-    Object.assign(route, { params });
+    route.params = { ...params, ...route.params };
   }
 
   return routes;

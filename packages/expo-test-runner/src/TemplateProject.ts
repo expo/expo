@@ -41,7 +41,7 @@ export default class TemplateProject {
     fs.renameSync(path.join(parentFolder, appName), projectPath);
 
     const repoRoot = path.resolve(this.configFilePath, '..', '..', '..');
-    const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+    const localCliBin = path.join(repoRoot, 'packages/@expo/cli/bin/cli.js');
     await spawnAsync(localCliBin, ['install', 'detox', 'jest'], {
       stdio: 'inherit',
       cwd: projectPath,

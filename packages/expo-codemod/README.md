@@ -83,11 +83,11 @@ _Used to migrate a React Navigation app to Expo Router (SDK 56)._
 
 Replaces imports from `@react-navigation/*` with their `expo-router` equivalents.
 
-| From                                | To                         |
-| ----------------------------------- | -------------------------- |
-| `@react-navigation/native`          | `expo-router`              |
-| `@react-navigation/stack`           | `expo-router/js-stack`     |
-| `@react-navigation/bottom-tabs`     | `expo-router/js-tabs`      |
+| From                                  | To                        |
+| ------------------------------------- | ------------------------- |
+| `@react-navigation/native`            | `expo-router`             |
+| `@react-navigation/stack`             | `expo-router/js-stack`    |
+| `@react-navigation/bottom-tabs`       | `expo-router/js-tabs`     |
 | `@react-navigation/material-top-tabs` | `expo-router/js-top-tabs` |
 
 Default and namespace imports (`import X from ...` / `import * as X from ...`) from the mapped packages are not supported.
@@ -104,7 +104,7 @@ import { useRouter } from 'expo-router';
 Output:
 
 ```ts
-import { NavigationContainer, useNavigation, useRouter } from "expo-router";
+import { NavigationContainer, useNavigation, useRouter } from 'expo-router';
 ```
 
 # Contributing

@@ -6,4 +6,5 @@ export {
   generateModuleTypesFileContent,
   generateViewTypesFileContent,
   generateJSXIntrinsicsFileContent,
+  type OutputFile,
 } from './typescriptGeneration';

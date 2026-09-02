@@ -15,6 +15,7 @@ import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import {
   background,
   clip,
+  fillMaxHeight,
   fillMaxWidth,
   height,
   padding,
@@ -22,8 +23,11 @@ import {
   weight,
   width,
 } from '@expo/ui/jetpack-compose/modifiers';
+import { FlashList } from '@shopify/flash-list';
 import * as React from 'react';
-import { Pressable, Text as RNText, View } from 'react-native';
+import { Pressable, StyleSheet, Text as RNText, View } from 'react-native';
+
+const LIST_DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 
 export default function BottomSheetScreen() {
   const [showSheet, setShowSheet] = React.useState(false);
@@ -31,12 +35,16 @@ export default function BottomSheetScreen() {
   const [showRNContentWithFlex, setShowRNContentWithFlex] = React.useState(false);
   const [counter, setCounter] = React.useState(0);
 
+  const [showScrollableList, setShowScrollableList] = React.useState(false);
+
   const sheetRef = React.useRef<ModalBottomSheetRef>(null);
   const rnContentSheetRef = React.useRef<ModalBottomSheetRef>(null);
   const flexSheetRef = React.useRef<ModalBottomSheetRef>(null);
+  const scrollableListSheetRef = React.useRef<ModalBottomSheetRef>(null);
 
   // Configurable props
   const [skipPartiallyExpanded, setSkipPartiallyExpanded] = React.useState(false);
+  const [initialFullyExpanded, setInitialFullyExpanded] = React.useState(false);
   const [showDragHandle, setShowDragHandle] = React.useState(true);
   const [useCustomDragHandle, setUseCustomDragHandle] = React.useState(false);
   const [sheetGesturesEnabled, setSheetGesturesEnabled] = React.useState(true);
@@ -59,6 +67,11 @@ export default function BottomSheetScreen() {
     setShowRNContentWithFlex(false);
   };
 
+  const hideScrollableListSheet = async () => {
+    await scrollableListSheetRef.current?.hide();
+    setShowScrollableList(false);
+  };
+
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
@@ -78,6 +91,15 @@ export default function BottomSheetScreen() {
                   Skip partially expanded
                 </ComposeText>
                 <Switch value={skipPartiallyExpanded} onCheckedChange={setSkipPartiallyExpanded} />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>
+                  Initial fully expanded
+                </ComposeText>
+                <Switch value={initialFullyExpanded} onCheckedChange={setInitialFullyExpanded} />
               </Row>
               <Row
                 modifiers={[fillMaxWidth()]}
@@ -168,6 +190,20 @@ export default function BottomSheetScreen() {
             </Button>
           </Column>
         </Card>
+
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 4 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText style={{ typography: 'titleMedium' }}>
+              Scrollable List (FlashList)
+            </ComposeText>
+            <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
+              A nested RN FlashList. Scroll to the top, then keep dragging down to move the sheet.
+            </ComposeText>
+            <Button onClick={() => setShowScrollableList(true)} modifiers={[fillMaxWidth()]}>
+              <ComposeText>Open Scrollable List Sheet</ComposeText>
+            </Button>
+          </Column>
+        </Card>
       </LazyColumn>
 
       {showSheet && (
@@ -175,6 +211,7 @@ export default function BottomSheetScreen() {
           ref={sheetRef}
           onDismissRequest={() => setShowSheet(false)}
           skipPartiallyExpanded={skipPartiallyExpanded}
+          initialFullyExpanded={initialFullyExpanded}
           showDragHandle={showDragHandle}
           sheetGesturesEnabled={sheetGesturesEnabled}
           properties={{
@@ -334,9 +371,51 @@ export default function BottomSheetScreen() {
           </Column>
         </ModalBottomSheet>
       )}
+
+      {showScrollableList && (
+        <ModalBottomSheet
+          ref={scrollableListSheetRef}
+          onDismissRequest={() => setShowScrollableList(false)}>
+          {/*
+            fillMaxHeight gives the list a bounded viewport to scroll within. The FlashList sets
+            nestedScrollEnabled so, once it reaches the top, the leftover drag is handed to the sheet.
+          */}
+          <Column modifiers={[fillMaxHeight(), padding(16, 16, 16, 16)]}>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText modifiers={[weight(1)]}>Scrollable list</ComposeText>
+              <Button onClick={hideScrollableListSheet}>
+                <ComposeText>✕</ComposeText>
+              </Button>
+            </Row>
+            <RNHostView>
+              <FlashList
+                nestedScrollEnabled
+                style={styles.list}
+                data={LIST_DATA}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <View style={styles.listRow}>
+                    <RNText style={styles.listRowText}>{item}</RNText>
+                  </View>
+                )}
+              />
+            </RNHostView>
+          </Column>
+        </ModalBottomSheet>
+      )}
     </Host>
   );
 }
+
+const styles = StyleSheet.create({
+  list: { flex: 1 },
+  listRow: {
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#cccccc',
+  },
+  listRowText: { fontSize: 16 },
+});
 
 BottomSheetScreen.navigationOptions = {
   title: 'BottomSheet',

@@ -19,7 +19,7 @@ When you run the command for the first time, it will initialize your EAS project
 
 <ContentSpotlight
   alt="Terminal running eas build command with platform Android and iOS options available"
-  src="/static/images/eas-build/configure/01-configure-platform.png"
+  src="/static/images/eas-build/configure/01-configure-platform.webp"
 />
 
 </Step>
@@ -45,7 +45,7 @@ The command will create an **eas.json** file in the root directory with the defa
 }
 ```
 
-If you have a bare project, it will look a bit different.
+If you have an [existing React Native project](/bare/overview/), it will look a bit different.
 
 This is your EAS Build configuration. It defines three build profiles named `"development"`, `"preview"`, and `"production"` (you can have multiple build profiles like `"production"`, `"debug"`, `"testing"`, and so on) for each platform. If you want to learn more about **eas.json** see the [Configuration with **eas.json**](/build/eas-json) page.
 
@@ -65,7 +65,7 @@ This completes the initialization of your project to be compatible with EAS Buil
 
 <ContentSpotlight
   alt="Initialization step complete prompt in eas build:configure"
-  src="/static/images/eas-build/configure/02-initialization-complete.png"
+  src="/static/images/eas-build/configure/02-initialization-complete.webp"
 />
 
 </Step>
@@ -90,9 +90,9 @@ In the example above, the `eas build --platform android` command prompts to set 
 
 <Step label="3.3">
 
-### Bare React Native project
+### Existing React Native project
 
-There are no additional steps for bare projects.
+There are no additional steps for existing React Native projects.
 
 </Step>
 
@@ -102,6 +102,6 @@ There are no additional steps for bare projects.
 
 ## Next steps
 
-That's all there is to configuring a project to be compatible with EAS Build. There is one more step, if you set `cli.requireCommit` to `true` in your **eas.json** &mdash; you'll be prompted to commit all the changes we made for you. You can choose to review them before committing, and you can either specify the git commit message or use a default message.
+That's all there is to configuring a project to be compatible with EAS Build. There is one more step, if you set `cli.requireCommit` to `true` in your **eas.json** — you'll be prompted to commit all the changes we made for you. You can choose to review them before committing, and you can either specify the git commit message or use a default message.
 
 </Step>

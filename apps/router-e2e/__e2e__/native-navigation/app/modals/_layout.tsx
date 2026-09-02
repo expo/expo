@@ -12,6 +12,24 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
+        name="form-sheet-nested"
+        options={{
+          presentation: 'formSheet',
+          headerShown: false,
+          sheetAllowedDetents: [0.3, 0.6, 1],
+          sheetGrabberVisible: true,
+        }}
+      />
+      <Stack.Screen
+        name="form-sheet-single"
+        options={{
+          presentation: 'formSheet',
+          headerShown: false,
+          sheetAllowedDetents: [0.3, 0.6, 1],
+          sheetGrabberVisible: true,
+        }}
+      />
+      <Stack.Screen
         name="form-sheet-content"
         options={{
           presentation: 'formSheet',

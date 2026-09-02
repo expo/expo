@@ -126,11 +126,11 @@ class OpenTelemetryTest {
 
   @Test
   fun `toOTMetric falls back to expo_unknown when category mismatches a known name`() {
-    // The pair (frameRate, timeToInteractive) is not in the map, so even though
+    // `xyz` is not a known category, so even though
     // `timeToInteractive` is a known metric name under `appStartup`, it falls back.
     assertEquals(
       "expo.unknown.timeToInteractive",
-      nameFor(MetricCategory.FrameRate.categoryName, AppStartupMetric.TimeToInteractive.metricName)
+      nameFor("xyz", AppStartupMetric.TimeToInteractive.metricName)
     )
   }
 
@@ -196,6 +196,14 @@ class OpenTelemetryTest {
 
     val expectedNanos = 1767960489000L * 1_000_000L
     assertEquals(expectedNanos, otMetric.gauge.dataPoints[0].timeUnixNano)
+  }
+
+  @Test
+  fun `toOTMetric converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    val metric = makeMetric("loadTime", 1.0, "2026-01-09T12:08:09.123Z")
+    val otMetric = metric.toOTMetric()
+
+    assertEquals(1_767_960_489_123_000_000L, otMetric.gauge.dataPoints[0].timeUnixNano)
   }
 
   @Test
@@ -520,10 +528,13 @@ internal val OTAnyValue.stringValue: String?
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class LogEventToOTLogRecordTest {
-  private fun makeLog(severity: String): LogEvent =
+  private fun makeLog(
+    severity: String,
+    timestamp: String = "2025-01-01T00:00:00.000Z"
+  ): LogEvent =
     LogEvent(
       sessionId = "session-1",
-      timestamp = "2025-01-01T00:00:00.000Z",
+      timestamp = timestamp,
       name = "auth.login_failed",
       body = "invalid_credentials",
       severity = severity,
@@ -550,5 +561,16 @@ class LogEventToOTLogRecordTest {
     val ot = makeLog(severity = "frobnicate").toOTLogRecord()
     assertEquals("INFO", ot.severityText)
     assertEquals(9, ot.severityNumber)
+  }
+
+  @Test
+  fun `converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    val ot = makeLog(
+      severity = "info",
+      timestamp = "2026-01-09T12:08:09.123Z"
+    ).toOTLogRecord()
+
+    assertEquals(1_767_960_489_123_000_000L, ot.timeUnixNano)
+    assertEquals(1_767_960_489_123_000_000L, ot.observedTimeUnixNano)
   }
 }

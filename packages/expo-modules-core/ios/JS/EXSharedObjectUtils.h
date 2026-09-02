@@ -10,18 +10,24 @@ NS_ASSUME_NONNULL_BEGIN
  Bridges Swift to `expo::SharedObject::NativeState` (which inherits from
  `expo::EventEmitter::NativeState`), so that later `addListener` calls on
  the same JS object find the existing state instead of overwriting it.
-
- TODO: remove once `EventEmitter`'s native state is migrated onto the Swift
- `JavaScriptNativeState` / `expo::NativeState` system.
  */
 NS_SWIFT_NAME(SharedObjectUtils)
 @interface EXSharedObjectUtils : NSObject
 
-+ (void)setNativeState:(nonnull void *)runtimePointer
-          valuePointer:(nonnull void *)valuePointer
-              objectId:(long)objectId
-              releaser:(nonnull ObjectReleaser)releaser
-    NS_SWIFT_NAME(setNativeState(runtimePointer:valuePointer:objectId:releaser:));
+/**
+ Builds an `expo::SharedObject::NativeState` for the given `objectId` and returns
+ a heap-allocated `expo::NativeStateShared` (`std::shared_ptr<jsi::NativeState>`)
+ that owns it. The caller transfers ownership of the returned pointer to Swift via
+ `JavaScriptNativeState(adoptingFactory:)`, which consumes the heap allocation.
+
+ The `context` and `contextDeallocator` are forwarded to `expo::NativeState` so
+ the JS-side `getNativeState` can later round-trip back to the Swift wrapper.
+ */
++ (nonnull void *)makeSharedObjectNativeStatePtr:(long)objectId
+                                        releaser:(nonnull ObjectReleaser)releaser
+                                         context:(nullable void *)context
+                              contextDeallocator:(nullable void (*)(void * _Nullable))contextDeallocator
+    NS_SWIFT_NAME(makeSharedObjectNativeStatePtr(objectId:releaser:context:contextDeallocator:));
 
 @end
 

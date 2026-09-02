@@ -1,6 +1,6 @@
 import { resolveEntryPoint } from '@expo/config/paths';
-import type { OutputOptions } from '@expo/metro/metro/shared/types';
 import canonicalize from '@expo/metro/metro-core/canonicalize';
+import type { OutputOptions } from '@expo/metro/metro/shared/types';
 import type arg from 'arg';
 import os from 'os';
 import path from 'path';
@@ -134,10 +134,11 @@ export function resolveEagerOptionsAsync(
 
   if (!bundleOutput) {
     destination ??= getTemporaryPath();
+    // Apple platforms (ios/tvos/macos) use `main.jsbundle`; Android uses `index.js`.
     bundleOutput =
-      platform === 'ios'
-        ? path.join(destination, 'main.jsbundle')
-        : path.join(destination, 'index.js');
+      platform === 'android'
+        ? path.join(destination, 'index.js')
+        : path.join(destination, 'main.jsbundle');
   }
 
   return {

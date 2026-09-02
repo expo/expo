@@ -1,9 +1,10 @@
 {
   "name": "eslint-config-universe",
-  "version": "15.1.1",
+  "version": "16.0.0",
   "description": "Shared ESLint configs for internal Expo projects.",
   "main": "default.js",
   "scripts": {
+    "depscheck": "expo-module depscheck",
     "lint": "eslint .",
     "test": "jest"
   },
@@ -60,7 +61,7 @@
     }
   },
   "devDependencies": {
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "eslint": "^9.24.0",
     "eslint8": "npm:eslint@^8.57.1",
     "jest": "^29.7.0",

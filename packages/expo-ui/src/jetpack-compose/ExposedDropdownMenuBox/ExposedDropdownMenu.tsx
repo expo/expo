@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { ReactNode } from 'react';
 import { type ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -13,7 +14,7 @@ const NativeView: React.ComponentType<ExposedDropdownMenuProps> = requireNativeV
 /**
  * Props for the `ExposedDropdownMenu` component.
  */
-export type ExposedDropdownMenuProps = {
+export interface ExposedDropdownMenuProps {
   /**
    * Whether the dropdown menu is expanded (visible).
    */
@@ -34,7 +35,7 @@ export type ExposedDropdownMenuProps = {
    * Children should be `DropdownMenuItem` components.
    */
   children?: ReactNode;
-};
+}
 
 /**
  * A Material 3 `ExposedDropdownMenu` that displays menu items in a dropdown.
@@ -48,7 +49,8 @@ export function ExposedDropdownMenu(props: ExposedDropdownMenuProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {children}
+      {/* The menu is a popup in its own window. The anchor stays in `ExposedDropdownMenuBox`. */}
+      <PresentedContent>{children}</PresentedContent>
     </NativeView>
   );
 }

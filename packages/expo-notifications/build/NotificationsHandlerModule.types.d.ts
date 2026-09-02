@@ -1,6 +1,0 @@
-import type { ProxyNativeModule } from 'expo-modules-core';
-import type { NotificationBehavior } from './Notifications.types';
-export interface NotificationsHandlerModule extends ProxyNativeModule {
-    handleNotificationAsync?: (notificationId: string, notificationBehavior: NotificationBehavior) => Promise<void>;
-}
-//# sourceMappingURL=NotificationsHandlerModule.types.d.ts.map

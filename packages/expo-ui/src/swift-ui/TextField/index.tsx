@@ -1,10 +1,8 @@
 import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
-import { worklets } from '../../State/optionalWorklets';
-import type { ObservableState } from '../../State/useNativeState';
-import { useWorkletProp } from '../../State/useWorkletProp';
-import { getStateId } from '../../State/utils';
+import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
+import { useHostedTextInput } from '../../keyboard';
 import type { ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -31,7 +29,7 @@ export type TextFieldRef = {
  */
 export type TextFieldSelection = { start: number; end: number };
 
-export type TextFieldProps = {
+export interface TextFieldProps extends CommonViewModifierProps {
   ref?: Ref<TextFieldRef>;
   /**
    * An observable state that holds the current text.
@@ -83,7 +81,7 @@ export type TextFieldProps = {
    * placeholder's styling).
    */
   children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 export type NativeTextFieldProps = Omit<
   TextFieldProps,
@@ -117,15 +115,21 @@ export function TextField(props: TextFieldProps) {
     onFocusChange,
     onSelectionChange,
     modifiers,
+    ref,
     ...restProps
   } = props;
 
   const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
   const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
+  // `blurOnUnmount`: a field left first responder while its row is removed makes UIKit
+  // assert ("refused to resign"); native teardown hooks run too late to clear SwiftUI's
+  // `@FocusState`. https://github.com/expo/expo/issues/49348
+  const hosted = useHostedTextInput<TextFieldRef>(ref, onFocusChange, { blurOnUnmount: true });
 
   return (
     <TextFieldNativeView
       {...restProps}
+      ref={hosted.ref}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       text={getStateId(text)}
@@ -134,7 +138,7 @@ export function TextField(props: TextFieldProps) {
       onTextChange={
         !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined
       }
-      onFocusChange={onFocusChange ? (event) => onFocusChange(event.nativeEvent.value) : undefined}
+      onFocusChange={(event) => hosted.onFocusChange(event.nativeEvent.value)}
       onSelectionChange={
         onSelectionChange
           ? (event) =>

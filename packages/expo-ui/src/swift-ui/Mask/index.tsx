@@ -4,14 +4,14 @@ import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type Alignment, type CommonViewModifierProps } from '../types';
 
-export type MaskProps = {
+export interface MaskProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * The alignment of the mask content relative to the base content.
    * @default 'center'
    */
   alignment?: Alignment;
-} & CommonViewModifierProps;
+}
 
 const MaskNativeView: React.ComponentType<MaskProps> = requireNativeView('ExpoUI', 'MaskView');
 

@@ -21,7 +21,14 @@ This guide provides steps to set up and configure ESLint and Prettier.
 
 To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **eslint.config.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
 
-<Terminal cmd={['# Install and configure ESLint', '$ npx expo lint']} />
+<Terminal
+  cmd={{
+    npm: ['# Install and configure ESLint', '$ npx expo lint'],
+    yarn: ['# Install and configure ESLint', '$ yarn expo lint'],
+    pnpm: ['# Install and configure ESLint', '$ pnpm expo lint'],
+    bun: ['# Install and configure ESLint', '$ bun expo lint'],
+  }}
+/>
 
 ### Usage
 
@@ -30,10 +37,24 @@ To set up ESLint in your Expo project, you can use the Expo CLI to install the n
 You can lint your code manually from the command line with the `npx expo lint` script:
 
 <Terminal
-  cmd={[
-    '# After ESLint has been configured, run the command again to lint your code.',
-    '$ npx expo lint',
-  ]}
+  cmd={{
+    npm: [
+      '# After ESLint has been configured, run the command again to lint your code.',
+      '$ npx expo lint',
+    ],
+    yarn: [
+      '# After ESLint has been configured, run the command again to lint your code.',
+      '$ yarn expo lint',
+    ],
+    pnpm: [
+      '# After ESLint has been configured, run the command again to lint your code.',
+      '$ pnpm expo lint',
+    ],
+    bun: [
+      '# After ESLint has been configured, run the command again to lint your code.',
+      '$ bun expo lint',
+    ],
+  }}
 />
 
 Running the above command will run the `lint` script from **package.json**.
@@ -125,7 +146,12 @@ To install Prettier in your project:
 <Tab label="macOS/Linux">
 
 <Terminal
-  cmd={['$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier --dev']}
+  cmd={{
+    npm: ['$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier --dev'],
+    yarn: ['$ yarn expo install prettier eslint-config-prettier eslint-plugin-prettier --dev'],
+    pnpm: ['$ pnpm expo install prettier eslint-config-prettier eslint-plugin-prettier --dev'],
+    bun: ['$ bun expo install prettier eslint-config-prettier eslint-plugin-prettier --dev'],
+  }}
 />
 
 </Tab>
@@ -133,7 +159,12 @@ To install Prettier in your project:
 <Tab label="Windows">
 
 <Terminal
-  cmd={['$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev']}
+  cmd={{
+    npm: ['$ npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev'],
+    yarn: ['$ yarn expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev'],
+    pnpm: ['$ pnpm expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev'],
+    bun: ['$ bun expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --dev'],
+  }}
 />
 
 </Tab>
@@ -207,7 +238,7 @@ If you're using VS Code, install the [ESLint extension](https://marketplace.visu
 ESLint can be slow to run on large projects. The easiest way to speed up the process is to lint fewer files. Add a **.eslintignore** file to your project root to ignore certain files and directories such as:
 
 ```sh .eslintignore
-# @info Ignore the root <b>.expo</b> directory. #
+# @info Ignore the root **.expo** directory. #
 /.expo
 # @end #
 node_modules
@@ -223,13 +254,27 @@ Upgrade ESLint and `eslint-config-expo`:
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install eslint eslint-config-expo  --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install eslint eslint-config-expo  --dev'],
+    yarn: ['$ yarn expo install eslint eslint-config-expo  --dev'],
+    pnpm: ['$ pnpm expo install eslint eslint-config-expo  --dev'],
+    bun: ['$ bun expo install eslint eslint-config-expo  --dev'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install eslint eslint-config-expo "--" --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install eslint eslint-config-expo "--" --dev'],
+    yarn: ['$ yarn expo install eslint eslint-config-expo "--" --dev'],
+    pnpm: ['$ pnpm expo install eslint eslint-config-expo "--" --dev'],
+    bun: ['$ bun expo install eslint eslint-config-expo "--" --dev'],
+  }}
+/>
 
 </Tab>
 
@@ -237,6 +282,13 @@ Upgrade ESLint and `eslint-config-expo`:
 
 If you haven't customized your ESLint config at all, delete your **.eslintrc.js** and generate the new config with:
 
-<Terminal cmd={['$ npx expo lint']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo lint'],
+    yarn: ['$ yarn expo lint'],
+    pnpm: ['$ pnpm expo lint'],
+    bun: ['$ bun expo lint'],
+  }}
+/>
 
 Alternatively, migrate your config based on the [ESLint's migration guide](https://eslint.org/docs/latest/use/configure/migration-guide). `npx expo lint` supports both legacy and flat config, so the new config will automatically be picked up by the CLI.

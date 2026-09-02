@@ -23,8 +23,7 @@ interface KeyBasedEncryptor<E : KeyStore.Entry> {
   suspend fun createEncryptedItem(
     plaintextValue: String,
     keyStoreEntry: E,
-    requireAuthentication: Boolean,
-    authenticationPrompt: String,
+    options: SecureStoreOptions,
     authenticationHelper: AuthenticationHelper
   ): JSONObject
 

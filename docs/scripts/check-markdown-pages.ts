@@ -20,6 +20,7 @@
  * - Validates that key content survived conversion and no artifacts leaked through.
  */
 
+import * as cheerio from 'cheerio';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -29,17 +30,52 @@ import {
   extractFrontmatter,
   findHtmlPages,
   findMarkdownPages,
+  findMdxSource,
 } from './generate-markdown-pages-utils.ts';
+import { isUpgradePairMarkdownPath } from './generate-upgrade-diff-pages.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
+const PAGES_DIR = path.join(process.cwd(), 'pages');
 
 let failCount = 0;
+
+function findMissingTabLabels(markdown: string, mdxPath: string): string[] {
+  const mdx = fs.readFileSync(mdxPath, 'utf-8');
+  const labelRegex = /<Tab\s+label=(?:"([^"]*)"|'([^']*)')/g;
+  const missing: string[] = [];
+  let match: RegExpExecArray | null = null;
+  while ((match = labelRegex.exec(mdx)) !== null) {
+    const label = (match[1] ?? match[2] ?? '').trim();
+    if (label && !markdown.includes(label)) {
+      missing.push(label);
+    }
+  }
+  return missing;
+}
+
+function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
+  if (!fs.existsSync(htmlPath)) {
+    return 0;
+  }
+  const html = fs.readFileSync(htmlPath, 'utf-8');
+  if (!html.includes('data-md="tabs"')) {
+    return 0;
+  }
+  const panels = cheerio.load(html)('[role="tabpanel"]').length;
+  if (panels === 0) {
+    return 0;
+  }
+  const headings = (markdown.match(/^#{4} /gm) ?? []).length;
+  return Math.max(0, panels - headings);
+}
 
 // --- Bulk quality gate (requires out/ from a full build) ---
 
 if (fs.existsSync(OUT_DIR)) {
   const htmlFiles = findHtmlPages(OUT_DIR);
-  const mdFiles = findMarkdownPages(OUT_DIR);
+  const mdFiles = findMarkdownPages(OUT_DIR).filter(
+    mdPath => !isUpgradePairMarkdownPath(path.relative(OUT_DIR, mdPath))
+  );
 
   if (mdFiles.length === 0) {
     console.error('No markdown files found in out/. Did generate-markdown-pages run?');
@@ -58,6 +94,21 @@ if (fs.existsSync(OUT_DIR)) {
     const rel = path.relative(OUT_DIR, mdPath);
     const htmlRel = rel.replace(/\.md$/, '.html');
     const errors = checkPage(markdown, htmlRel);
+
+    const mdxPath = findMdxSource(mdPath, OUT_DIR, PAGES_DIR);
+    if (mdxPath) {
+      const missingLabels = findMissingTabLabels(markdown, mdxPath);
+      for (const label of missingLabels) {
+        errors.push(`Tab "${label}" from source MDX is missing (content dropped)`);
+      }
+    }
+
+    const htmlPath = path.join(OUT_DIR, htmlRel);
+    const deficit = tabPanelHeadingDeficit(markdown, htmlPath);
+    if (deficit > 0) {
+      errors.push(`${deficit} tab panel(s) dropped: fewer h4 headings than rendered tab panels`);
+    }
+
     if (errors.length > 0) {
       for (const error of errors) {
         console.error(`  \x1b[31m✗\x1b[0m ${rel}: ${error}`);
@@ -135,7 +186,13 @@ if (integrationMd === null) {
     ['bold text', 'md-test-bold-text'],
     ['unordered list', 'md-test-unordered-item'],
     ['ordered list', 'md-test-ordered-item'],
-    ['npm tab content', 'md-test-npm-pkg'],
+    ['first tab label', 'md-test-tab-one-label'],
+    ['first tab content', 'md-test-tab-one-pkg'],
+    ['second tab label', 'md-test-tab-two-label'],
+    ['second tab content', 'md-test-tab-two-pkg'],
+    ['collapsible summary heading', '#### md-test-collapsible-summary'],
+    ['requirement title heading', '##### md-test-requirement-title'],
+    ['requirement body', 'md-test-requirement-body'],
   ];
   for (const [label, text] of mustContain) {
     if (!integrationMd.includes(text)) {
@@ -144,9 +201,6 @@ if (integrationMd === null) {
   }
 
   // Negative: artifacts must not leak
-  if (integrationMd.includes('md-test-yarn-pkg')) {
-    errors.push('Non-default tab panel content leaked (yarn tab should be stripped)');
-  }
   if (/^Terminal$/m.test(integrationMd)) {
     errors.push('Snippet header "Terminal" label leaked as standalone text');
   }

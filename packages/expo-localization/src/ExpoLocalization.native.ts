@@ -1,4 +1,4 @@
-import { type EventSubscription, requireNativeModule } from 'expo-modules-core';
+import { type EventSubscription, requireNativeModule } from 'expo';
 
 const ExpoLocalizationModule = requireNativeModule('ExpoLocalization');
 

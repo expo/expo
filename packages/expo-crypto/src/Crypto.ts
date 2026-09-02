@@ -1,5 +1,4 @@
-import type { UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError, type UintBasedTypedArray, type IntBasedTypedArray } from 'expo';
 
 import type { CryptoDigestOptions, Digest } from './Crypto.types';
 import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';

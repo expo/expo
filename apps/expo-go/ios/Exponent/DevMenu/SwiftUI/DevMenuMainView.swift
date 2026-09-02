@@ -28,7 +28,9 @@ struct DevMenuMainView: View {
           )
         }
 
-        DevMenuAppInfo()
+        if viewModel.showSystemSection {
+          DevMenuAppInfo()
+        }
       }
       .padding()
     }

@@ -2,16 +2,17 @@
 
 import { use } from 'react';
 
-import type { UsePreventZoomTransitionDismissalOptions } from './usePreventZoomTransitionDismissal.types';
-import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../navigationParams';
+import { NavigatorStateContext } from '../../react-navigation/core/useNavigationState';
 import { useRoute } from '../../react-navigation/native';
 import { useNavigation } from '../../useNavigation';
 import { isRoutePreloadedInStack } from '../../utils/stack';
 import { isModalPresentation } from '../../utils/stackPresentation';
 import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import { useIsPreview } from '../preview/PreviewRouteContext';
+import type { UsePreventZoomTransitionDismissalOptions } from './usePreventZoomTransitionDismissal.types';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
 
 export function usePreventZoomTransitionDismissal(
   options?: UsePreventZoomTransitionDismissalOptions
@@ -19,9 +20,10 @@ export function usePreventZoomTransitionDismissal(
   const context = use(ZoomTransitionTargetContext);
   const route = useRoute();
   const navigation = useNavigation();
+  const navigatorState = use(NavigatorStateContext);
   const isPreview = useIsPreview();
   const isFocused = navigation.isFocused();
-  const isPreloaded = isPreview ? false : isRoutePreloadedInStack(navigation.getState(), route);
+  const isPreloaded = isPreview ? false : isRoutePreloadedInStack(navigatorState, route);
 
   const descriptorsMap = use(DescriptorsContext);
   const currentDescriptor = descriptorsMap[route.key];

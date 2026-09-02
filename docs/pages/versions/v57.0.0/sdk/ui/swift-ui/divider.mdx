@@ -1,0 +1,146 @@
+---
+title: Divider
+description: A SwiftUI Divider component for creating visual separators.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-57/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI Divider matches the official SwiftUI [Divider API](https://developer.apple.com/documentation/swiftui/divider) and creates a visual separator between content.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/divider/ios-light.webp"
+  darkSrc="/static/images/expo-ui/divider/ios-dark.webp"
+  alt="Divider separating a heading from body text"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic divider
+
+<ComponentExample
+  title="BasicDividerExample.tsx"
+  src="/static/images/expo-ui/examples/divider-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/divider-basic-ios-dark.webp"
+  alt="A horizontal rule separating the text First section from Second section">
+
+```tsx
+import { Host, Divider, VStack, Text } from '@expo/ui/swift-ui';
+
+export default function BasicDividerExample() {
+  // A divider spans the width it is given, so `matchContents` collapses it.
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Text>First section</Text>
+        <Divider />
+        <Text>Second section</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Divider in a list
+
+<ComponentExample
+  title="DividerInListExample.tsx"
+  src="/static/images/expo-ui/examples/divider-in-list-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/divider-in-list-ios-dark.webp"
+  alt="Item 1 through Item 4 stacked with a horizontal rule between each pair">
+
+```tsx
+import { Host, Divider, VStack, Text } from '@expo/ui/swift-ui';
+
+export default function DividerInListExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={8}>
+        <Text>Item 1</Text>
+        <Divider />
+        <Text>Item 2</Text>
+        <Divider />
+        <Text>Item 3</Text>
+        <Divider />
+        <Text>Item 4</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Divider in a context menu
+
+Dividers are commonly used to separate groups of actions in context menus.
+
+<ComponentExample
+  title="DividerInContextMenuExample.tsx"
+  src="/static/images/expo-ui/examples/divider-context-menu-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/divider-context-menu-ios-dark.webp"
+  alt="A context menu with a rule separating Edit and Duplicate from a red Delete">
+
+```tsx
+import {
+  Host,
+  ContextMenu,
+  Button,
+  Text,
+  Divider,
+} from '@expo/ui/swift-ui';
+
+export default function DividerInContextMenuExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
+          <Button
+            label="Duplicate"
+            onPress={() => console.log('Duplicate')}
+          />
+          <Divider />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press me</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+## API
+
+```tsx
+import { Divider } from '@expo/ui/swift-ui';
+```
+
+<APISection
+  packageName="expo-ui/swift-ui/divider"
+  apiName="Divider"
+/>

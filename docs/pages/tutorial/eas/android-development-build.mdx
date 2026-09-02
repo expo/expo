@@ -39,7 +39,7 @@ To create a **.apk**:
 
 This command prompts us with the following questions:
 
-- **What would you like your Android application id to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
+- **What would you like your Android application id to be?** Press <kbd>Return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
 - **Generate a new Android Keystore**? Press <kbd>Y</kbd>.
 
 After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the EAS dashboard:
@@ -116,7 +116,7 @@ The **Install** button in the **Build artifact** generates a QR code for install
 
 <ContentSpotlight
   alt="Unsafe app message dialog on Android device when installing development build"
-  src="/static/images/tutorial/eas/android-unsafe-dialog.png"
+  src="/static/images/tutorial/eas/android-unsafe-dialog.webp"
   className="max-w-[300px]"
 />
 
@@ -128,9 +128,16 @@ The **Install** button in the **Build artifact** generates a QR code for install
 
 ### Run development build
 
-Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>A</kbd> in the terminal window to open the project:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
@@ -160,24 +167,19 @@ Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **
 
 ### Run the development build
 
-Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>a</kbd> in the terminal window to open the project:
+Start the development server by running `npx expo start` from the project directory. Once the server is running, press <kbd>A</kbd> in the terminal window to open the project:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 
 ## Summary
 
-<ProgressTracker
-  currentChapterIndex={1}
-  name="EAS_TUTORIAL"
-  summary={
-    <>
-      We successfully used EAS Build to create and run development builds on Android devices and
-      emulators, and learned about <strong>.apk</strong> and <strong>.aab</strong> file formats.
-    </>
-  }
-  nextChapterDescription="In the next chapter, learn how to configure a development build for iOS Simulators using EAS Build and get it running."
-  nextChapterTitle="Create and run a cloud build for iOS Simulator"
-  nextChapterLink="/tutorial/eas/ios-development-build-for-simulators/"
-/>
+<ProgressTracker name="EAS_TUTORIAL" currentChapterSlug="/tutorial/eas/android-development-build" />

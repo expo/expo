@@ -1,5 +1,7 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#pragma once
+
 #include "../ExpoHeader.pch"
 
 #include "../MethodMetadata.h"

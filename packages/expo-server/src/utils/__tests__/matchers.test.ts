@@ -236,6 +236,35 @@ describe('edge cases', () => {
   });
 });
 
+describe('open-redirect hardening', () => {
+  it('keeps internal redirects on-host when a catch-all param starts with `/`', () => {
+    const url = new URL('https://example.com/legacy//evil.example/path');
+    const request = createMockRequest(url);
+    const route = createMockRoute('/[...rest]', /^\/legacy\/(?<catch_all>.+?)(?:\/)?$/, {
+      catch_all: 'rest',
+    });
+
+    const result = getRedirectRewriteLocation(url, request, route);
+
+    expect(result).not.toMatch(/^https?:\/\//);
+    expect(result.startsWith('//')).toBe(false);
+  });
+
+  it('preserves literal external redirects in route.page', () => {
+    const url = new URL('https://example.com/docs/quickstart');
+    const request = createMockRequest(url);
+    const route = createMockRoute(
+      'https://docs.example.com/[...rest]',
+      /^\/docs\/(?<catch_all>.+?)(?:\/)?$/,
+      { catch_all: 'rest' }
+    );
+
+    const result = getRedirectRewriteLocation(url, request, route);
+
+    expect(result).toBe('https://docs.example.com/quickstart');
+  });
+});
+
 // NOTE: These test cases are adapted from expo-router/src/__tests__/getId.test.ios.tsx
 describe(resolveLoaderContextKey, () => {
   it(`returns the context string when the route is not dynamic and there are no search params`, () => {

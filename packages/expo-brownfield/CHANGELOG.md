@@ -6,9 +6,131 @@
 
 ### 🎉 New features
 
+- [android] Add `ReactNativeViewFactory.createSurface`, returning a `ReactNativeSurfaceHandle` the host disposes when its container goes away. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
+
 ### 🐛 Bug fixes
 
+- [android] Stop React Native surfaces when their container is destroyed instead of when the Activity is, so embedding a surface in a Compose node, fragment or tab no longer leaves it running off screen while a second one is created. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
+- [android] Fix `ReactDelegate.onHostResume()` throwing in host Activities that don't implement `DefaultHardwareBackBtnHandler`. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
+- [android] Fix `brownfield.fused.strip-packages` corrupting the generated `ExpoModulesPackageList.kt` when given a broad prefix (e.g. `expo.modules`). ([@gabrieldonadel](https://github.com/gabrieldonadel)) ([#48118](https://github.com/expo/expo/pull/48118) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix `ARG_MAX` error when using `multipleFrameworks`. ([#47999](https://github.com/expo/expo/pull/47999) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Use `minSdk { version = release(24) }` in the fused library template, since AGP 9 replaced the `minSdk` property on `androidFusedLibrary` with a `MinSdkSpec` block. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Declare the fused-mode AGP version as a minimum constraint instead of forcing it, so `--fused` builds no longer downgrade AGP below the version React Native's Gradle plugin was compiled against. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Add support for React Native 0.87 ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+## 57.0.8 - 2026-07-29
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `build:ios` with precompiled modules: locate frameworks under `XCFrameworkIntermediates/`, bundle `ExpoModulesJSI`, copy SPM deps as real flavor-matched directories instead of symlinks, and fail fast on duplicate or colliding target names. ([#48065](https://github.com/expo/expo/pull/48065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 57.0.7 - 2026-07-22
+
+### 🎉 New features
+
+- [android] Add support for publishing a single fused AAR via AGP Fused Library ([#47921](https://github.com/expo/expo/pull/45878) by [@gabrieldonadel](https://github.com/gabrieldonadel)) ([#45878](https://github.com/expo/expo/pull/45878) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 57.0.6 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.20 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.19 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-06-05
+
+### 🎉 New features
+
+- [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.17 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.15 — 2026-05-26
+
+### 🎉 New features
+
+- [iOS] Make `ReactNativeHostManager` accessible directly to Objective-C. ([#46227](https://github.com/expo/expo/pull/46227) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [iOS] `build:ios` now detects a missing iOS workspace and prompts to run `pod install` instead of failing with a vague "Could not find brownfield iOS workspace". ([#46247](https://github.com/expo/expo/pull/46247) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix following prebuilt symlinks when using SPM ([#46311](https://github.com/expo/expo/pull/46311) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed brownfield mangling builds writing products outside the Pods build directory. (by [@ry-allan](https://github.com/ry-allan))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 56.0.11 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix `addSharedStateListener` callback type to match the native event shape ([#44401](https://github.com/expo/expo/pull/44401) by [@mberube09](https://github.com/mberube09))
+
+### 💡 Others
+
+- [Internal] Replace command invocation with `@expo/spawn-async` ([#45891](https://github.com/expo/expo/pull/45891) by [@kitten](https://github.com/kitten))
+
+## 56.0.10 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Fixed POM rewriter appending a duplicate `<version>` element instead of replacing the existing one, which caused `publish*PublicationToMavenLocal` to fail with `POM file is invalid` for dependencies declared with a placeholder version. ([#45783](https://github.com/expo/expo/pull/45783) by [@tsapeta](https://github.com/tsapeta))
+- Validate and sanitize values passed to `otool`, Gradle, and as iOS bundle identifier ([#45836](https://github.com/expo/expo/pull/45836) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.9 — 2026-05-13
 

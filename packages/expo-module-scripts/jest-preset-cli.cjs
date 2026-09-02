@@ -1,10 +1,10 @@
 /** @type {import('jest').Config} */
 module.exports = {
   testEnvironment: 'node',
+  ...require('jest-expo/config/maxWorkers'),
+  passWithNoTests: true,
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
-  transform: {
-    '^.+\\.[jt]sx?$': ['babel-jest', { configFile: require.resolve('./babel.config.cli.cjs') }],
-  },
+  transform: require('./jest-swc-transform.cjs'),
   watchPlugins: [
     require.resolve('jest-watch-typeahead/filename'),
     require.resolve('jest-watch-typeahead/testname'),

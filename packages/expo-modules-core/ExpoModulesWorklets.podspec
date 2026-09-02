@@ -31,4 +31,11 @@ Pod::Spec.new do |s|
 
   s.source_files = 'ios/Worklets/**/*.{h,m,mm,swift,cpp}'
   s.private_header_files = 'ios/Worklets/**/*+Private.h'
+
+  s.test_spec 'Tests' do |test_spec|
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
+
+    test_spec.source_files = 'ios/WorkletsTests/**/*.{m,swift}'
+  end
 end

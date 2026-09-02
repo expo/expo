@@ -83,8 +83,6 @@ open class DevMenuManager: NSObject {
 
   static public var wasInitilized = false
 
-  private var contentDidAppearObserver: NSObjectProtocol?
-
   /**
    Shared singleton instance.
    */
@@ -110,41 +108,10 @@ open class DevMenuManager: NSObject {
 
   private var isNavigatingHome = false
 
+  private var isReloading = false
+  private var lastReloadEventAt: Date?
+
   weak var hostDelegate: DevMenuHostDelegate?
-
-  @objc
-  public private(set) var currentBridge: RCTBridge? {
-    didSet {
-      updateAutoLaunchObserver()
-
-      if let currentBridge {
-        DispatchQueue.main.async {
-          self.disableRNDevMenuHoykeys(for: currentBridge)
-        }
-        observeContentDidAppear()
-      } else {
-        updateFABVisibility()
-      }
-    }
-  }
-
-  private func observeContentDidAppear() {
-    if let observer = contentDidAppearObserver {
-      NotificationCenter.default.removeObserver(observer)
-    }
-
-    contentDidAppearObserver = NotificationCenter.default.addObserver(
-      forName: NSNotification.Name.RCTContentDidAppear,
-      object: nil,
-      queue: .main
-    ) { [weak self] _ in
-      self?.updateFABVisibility()
-      if let observer = self?.contentDidAppearObserver {
-        NotificationCenter.default.removeObserver(observer)
-        self?.contentDidAppearObserver = nil
-      }
-    }
-  }
 
   private let manifestSubject = PassthroughSubject<Void, Never>()
   public var manifestPublisher: AnyPublisher<Void, Never> {
@@ -196,6 +163,16 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public func setShowsAtLaunch(_ enabled: Bool) {
+    DevMenuPreferences.showsAtLaunch = enabled
+  }
+
+  @objc
+  public func getShowsAtLaunch() -> Bool {
+    return DevMenuPreferences.showsAtLaunch
+  }
+
+  @objc
   public func setShowFloatingActionButton(_ enabled: Bool) {
     DevMenuPreferences.showFloatingActionButton = enabled
   }
@@ -204,6 +181,8 @@ open class DevMenuManager: NSObject {
   public func setAppContext(_ appContext: AppContext?) {
     currentAppContext = appContext
     if appContext != nil {
+      isReloading = false
+      lastReloadEventAt = Date()
       isNavigatingHome = false
       isReactAppRunning = true
       // Re-run packager connection setup now that the app context (and devSettings) is available.
@@ -213,6 +192,20 @@ open class DevMenuManager: NSObject {
       isReactAppRunning = false
     }
     updateAutoLaunchObserver()
+  }
+
+  /**
+   Clears the app context, but only if `context` is still the active one.
+   On reload the incoming context's `OnCreate` can run before the outgoing context's
+   `OnDestroy`, so an unconditional reset would wipe the new context and leave the dev
+   menu unable to open.
+   */
+  @objc
+  public func clearAppContext(current context: AppContext?) {
+    if currentAppContext != nil && currentAppContext !== context {
+      return
+    }
+    setAppContext(nil)
   }
 
   @objc
@@ -243,23 +236,6 @@ open class DevMenuManager: NSObject {
       NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
     }
     // swiftlint:enable legacy_objc_type
-  }
-
-  private func disableRNDevMenuHoykeys(for bridge: RCTBridge) {
-    if let devMenu = bridge.devMenu {
-      devMenu.hotkeysEnabled = false
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        if DevMenuPreferences.keyCommandsEnabled {
-          DevMenuKeyCommandsInterceptor.isInstalled = false
-          DevMenuKeyCommandsInterceptor.isInstalled = true
-        }
-      }
-    } else {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        self.disableRNDevMenuHoykeys(for: bridge)
-      }
-    }
   }
 
   override init() {
@@ -463,9 +439,7 @@ open class DevMenuManager: NSObject {
         self.updateFABVisibility()
 
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-          self.window?.windowScene = windowScene
+          self.window?.windowScene = SceneGeometry.foregroundActiveScene()
         }
         self.window?.makeKeyAndVisible()
 #endif
@@ -502,6 +476,32 @@ open class DevMenuManager: NSObject {
     }
   }
 
+  // The list of AppRegistry component names pushed by JS. Drives the
+  // "Components" section of the dev menu when the app registers more than
+  // one root component.
+  private let availableAppKeysSubject = PassthroughSubject<[String], Never>()
+  public var availableAppKeysPublisher: AnyPublisher<[String], Never> {
+    availableAppKeysSubject.eraseToAnyPublisher()
+  }
+
+  public var availableAppKeys: [String] = [] {
+    didSet {
+      availableAppKeysSubject.send(availableAppKeys)
+    }
+  }
+
+  /**
+   Swaps the currently mounted React root view to the AppRegistry component
+   registered under `moduleName`. Notifies JS via the `componentSwitched`
+   event so any teardown listeners can run.
+   */
+  @objc
+  public func switchToComponent(_ moduleName: String) {
+    if DevMenuComponentSwitcher.shared.switchToComponent(moduleName) {
+      sendEventToDelegateBridge("componentSwitched", data: moduleName)
+    }
+  }
+
   func getDevToolsDelegate() -> DevMenuDevOptionsDelegate? {
     if let appContext = currentAppContext {
       let devDelegate = DevMenuDevOptionsDelegate(forAppContext: appContext)
@@ -514,8 +514,21 @@ open class DevMenuManager: NSObject {
   }
 
   func reload() {
-    let devToolsDelegate = getDevToolsDelegate()
-    devToolsDelegate?.reload()
+    let now = Date()
+    if isReloading || (lastReloadEventAt.map { now.timeIntervalSince($0) < 0.5 } ?? false) {
+      lastReloadEventAt = now
+      return
+    }
+    guard let devToolsDelegate = getDevToolsDelegate() else {
+      return
+    }
+    isReloading = true
+    lastReloadEventAt = now
+    // Clear the guard even if a new app context never registers, for example a failed reload.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+      self?.isReloading = false
+    }
+    devToolsDelegate.reload()
   }
 
   func togglePerformanceMonitor() {
@@ -561,8 +574,7 @@ open class DevMenuManager: NSObject {
       guard let self else { return }
 
       if self.fabWindow == nil {
-        if let windowScene = UIApplication.shared.connectedScenes
-          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+        if let windowScene = SceneGeometry.foregroundActiveScene() {
           self.setupFABWindowIfNeeded(for: windowScene)
         }
       }

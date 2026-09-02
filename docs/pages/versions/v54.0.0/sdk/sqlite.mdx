@@ -298,7 +298,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Suspense fallback={<Fallback />}>
+      <Suspense fallback={<Text>Loading...</Text>}>
         <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded} useSuspense>
           <Header />
           <Content />
@@ -316,7 +316,7 @@ const db = await SQLite.openDatabaseAsync('databaseName');
 
 await db.withTransactionAsync(async () => {
   const result = await db.getFirstAsync('SELECT COUNT(*) FROM USERS');
-  console.log('Count:', result.rows[0]['COUNT(*)']);
+  console.log('Count:', result['COUNT(*)']);
 });
 ```
 

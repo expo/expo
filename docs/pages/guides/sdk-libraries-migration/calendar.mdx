@@ -1,7 +1,7 @@
 ---
-title: Migrate to expo-calendar/next
-sidebar_title: expo-calendar/next
-description: Migrate from the legacy expo-calendar API to the new class-based expo-calendar/next API with ExpoCalendar, ExpoCalendarEvent, and hooks.
+title: Migrate to the new expo-calendar API
+sidebar_title: expo-calendar/legacy
+description: Migrate from the legacy expo-calendar API to the new class-based expo-calendar API with ExpoCalendar, ExpoCalendarEvent, and hooks.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -9,7 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-The `expo-calendar/next` API is now stable. The legacy `expo-calendar` module is deprecated. Migrate to `expo-calendar/next` to benefit from the new API and future fixes.
+The new object-oriented `expo-calendar` API is now stable. The legacy API is available from `expo-calendar/legacy`. Migrate to the root `expo-calendar` import to benefit from the new API and future fixes.
 
 The new API replaces free functions that accepted IDs with methods on class instances. Calendars, events, reminders, and attendees are now represented as class instances with their own methods. Key changes:
 
@@ -18,16 +18,20 @@ The new API replaces free functions that accepted IDs with methods on class inst
 
 ## Installation
 
-Install the SDK-compatible package that includes `expo-calendar/next`:
+Install the SDK-compatible package that includes the new `expo-calendar` API:
 
 <Terminal cmd={['$ npx expo install expo-calendar']} />
 
 ## Importing the new API
 
-Import from `expo-calendar/next`:
+Import the legacy API from `expo-calendar/legacy` while you migrate, and import the new API from `expo-calendar`:
 
 ```ts
-import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
+// Before
+import * as Calendar from 'expo-calendar/legacy';
+
+// After
+import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar';
 ```
 
 ## Calendars
@@ -167,7 +171,7 @@ await Calendar.updateEventAsync(eventId, { title: 'Lunch with Alex' });
 await event.update({ title: 'Lunch with Alex' });
 ```
 
-The legacy `updateEventAsync` accepted `recurringEventOptions` (iOS only) to target a single occurrence or future occurrences of a recurring event. This is not supported in the new API &mdash; `update()` always modifies the entire recurring event series.
+The legacy `updateEventAsync` accepted `recurringEventOptions` (iOS only) to target a single occurrence or future occurrences of a recurring event. This is not supported in the new API — `update()` always modifies the entire recurring event series.
 
 ### Delete an event
 
@@ -179,7 +183,7 @@ await Calendar.deleteEventAsync(eventId);
 await event.delete();
 ```
 
-The legacy `deleteEventAsync` accepted `recurringEventOptions` (iOS only) to target a single occurrence or future occurrences of a recurring event. This is not supported in the new API &mdash; `delete()` always deletes the entire recurring event series.
+The legacy `deleteEventAsync` accepted `recurringEventOptions` (iOS only) to target a single occurrence or future occurrences of a recurring event. This is not supported in the new API — `delete()` always deletes the entire recurring event series.
 
 ### Open event in calendar
 
@@ -191,7 +195,7 @@ await Calendar.openEventInCalendarAsync(params);
 await event.openInCalendar(params);
 ```
 
-The `id` field is no longer part of params &mdash; it comes from the event instance. Presentation options (`allowsEditing`, `allowsCalendarPreview`, `startNewActivityTask`) are now passed in the same params object instead of as a separate argument.
+The `id` field is no longer part of params — it comes from the event instance. Presentation options (`allowsEditing`, `allowsCalendarPreview`, `startNewActivityTask`) are now passed in the same params object instead of as a separate argument.
 
 ### Edit event with native form
 
@@ -207,7 +211,7 @@ await event.editInCalendar(params);
 await calendar.addEventWithForm({ title, startDate, endDate });
 ```
 
-The `id` field is no longer part of params &mdash; it comes from the event instance. Presentation options (`startNewActivityTask`) are now passed in the same params object instead of as a separate argument.
+The `id` field is no longer part of params — it comes from the event instance. Presentation options (`startNewActivityTask`) are now passed in the same params object instead of as a separate argument.
 
 ### Get recurring event occurrence
 
@@ -356,7 +360,7 @@ await getRemindersPermissions();
 
 - Calendars, events, reminders, and attendees are now class instances. Operations are methods on the instance instead of free functions that accept an ID. Use the corresponding `.get(id)` static method to obtain an instance if you only have an ID.
 - `createCalendar`, `createEvent`, and `createReminder` return class instances instead of string IDs.
-- The `Async` suffix is dropped. The majority of the library is asynchronous &mdash; only synchronous functions use a `Sync` suffix (for example, `getDefaultCalendarSync`, `getSourcesSync`, `getOccurrenceSync`).
+- The `Async` suffix is dropped. The majority of the library is asynchronous — only synchronous functions use a `Sync` suffix (for example, `getDefaultCalendarSync`, `getSourcesSync`, `getOccurrenceSync`).
 - `getSourcesAsync` is replaced by the synchronous `getSourcesSync`. Fetching a single source by ID has no direct equivalent.
 - `createEventInCalendarAsync` is renamed to `calendar.addEventWithForm`.
 - `openEventInCalendar` (the fire-and-forget sync variant) is removed. Use `event.openInCalendar()` instead.
@@ -365,8 +369,8 @@ await getRemindersPermissions();
 ## Reference
 
 <BoxLink
-  title="Calendar (next)"
-  description="See the full API reference for expo-calendar/next."
-  href="/versions/latest/sdk/calendar-next/"
+  title="Calendar"
+  description="See the full API reference for expo-calendar."
+  href="/versions/latest/sdk/calendar/"
   Icon={BookOpen02Icon}
 />

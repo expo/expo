@@ -5,7 +5,7 @@ import { type NativeSyntheticEvent, processColor } from 'react-native';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type ColorPickerProps = {
+export interface ColorPickerProps extends CommonViewModifierProps {
   /**
    * The currently selected color in the format `#RRGGBB` or `#RRGGBBAA`.
    */
@@ -22,7 +22,7 @@ export type ColorPickerProps = {
    * Whether the color picker should support opacity.
    */
   supportsOpacity?: boolean;
-} & CommonViewModifierProps;
+}
 
 type onSelectionChangeEvent = NativeSyntheticEvent<{ value: string }>;
 

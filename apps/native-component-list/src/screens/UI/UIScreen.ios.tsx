@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'Label component',
+    route: 'ui/label',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LabelScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
@@ -83,6 +91,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community PagerView replacement',
+    route: 'ui/community-pager-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPagerViewScreen'));
+    },
+  },
+  {
     name: 'TabView component',
     route: 'ui/tabview',
     options: {},
@@ -136,6 +152,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MenuScreen'));
+    },
+  },
+  {
+    name: 'AlertDialog component',
+    route: 'ui/alert-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AlertDialogScreen'));
     },
   },
   {
@@ -235,6 +259,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Swipe Actions',
+    route: 'ui/swipe-actions',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SwipeActionsScreen'));
+    },
+  },
+  {
     name: 'Animation Modifier',
     route: 'ui/animation-modifier',
     options: {},
@@ -251,6 +283,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Symbol Effect',
+    route: 'ui/symbol-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SymbolEffectScreen'));
+    },
+  },
+  {
     name: 'Glass Effect',
     route: 'ui/glass-effect',
     options: {},
@@ -264,6 +304,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
+  {
+    name: 'Geometry Group',
+    route: 'ui/geometry-group',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GeometryGroupScreen'));
     },
   },
   {
@@ -336,6 +384,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./OverlayScreen'));
+    },
+  },
+  {
+    name: 'Background component',
+    route: 'ui/background',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BackgroundScreen'));
     },
   },
   {

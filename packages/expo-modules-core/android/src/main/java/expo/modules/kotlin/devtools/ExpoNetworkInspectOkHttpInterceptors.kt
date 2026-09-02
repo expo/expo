@@ -105,7 +105,7 @@ internal fun peekResponseBody(
   try {
     if (peeked.request(byteCount + 1)) {
       // When the request() returns true,
-      // it means the source have more available bytes then [byteCount].
+      // it means the source has more available bytes than [byteCount].
       return null
     }
   } catch (_: IOException) {}

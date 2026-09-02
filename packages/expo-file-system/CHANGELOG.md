@@ -4,17 +4,81 @@
 
 ### 🛠 Breaking changes
 
+- `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
+- `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
+
 ### 🎉 New features
+
+- Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
+- Added `File.digest()` for asynchronously calculating MD5, SHA-1, SHA-256, SHA-384 and SHA-512 file digests. ([#48089](https://github.com/expo/expo/pull/48089) by [@wh201906](https://github.com/wh201906))
 
 ### 🐛 Bug fixes
 
+- Fix `File.readableStream()` returning zeroed bytes and writing past the requested region when a BYOB read targets a view that starts at a non-zero offset. ([#49234](https://github.com/expo/expo/pull/49234) by [@dennytosp](https://github.com/dennytosp))
+- [Android][iOS] Fix `File.size` returning `null` for a missing or unreadable file. ([#49086](https://github.com/expo/expo/pull/49086)) by [@ACHP](https://github.com/ACHP))
+- [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
+- Fixed `copyAsync` on iOS copying the unedited original when a `ph://` asset has edits applied in Photos. ([#48248](https://github.com/expo/expo/pull/48248) by [@CoffeeFlux](https://github.com/CoffeeFlux))
+- Fixed iOS file previews rejecting a new preview while the previous Quick Look dismissal animation is still finishing. ([#47947](https://github.com/expo/expo/pull/47947) by [@eliotgevers](https://github.com/eliotgevers))
+- Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
+- Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
+- Fixed potential file offset races when asynchronous and synchronous `FileHandle` operations overlap on Android and iOS. ([#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
+- Fixed `readAsStringAsync` to respect `position` and `length` when reading UTF-8 strings. ([#20291](https://github.com/expo/expo/issues/20291) by [@mvincentong](https://github.com/mvincentong)) ([#45714](https://github.com/expo/expo/pull/45714) by [@mvincentong](https://github.com/mvincentong))
+- [android] Fixed `rename()` storing an unencoded URI, so reading `.uri` afterwards threw for names containing a space. ([#48496](https://github.com/expo/expo/issues/48496) by [@yagiz2000](https://github.com/yagiz2000), [#48510](https://github.com/expo/expo/pull/48510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [android] Fixed slow uploads of SAF-backed `content://` files by resolving the request body's content length once, instead of querying it through `ContentResolver` for every 8 KiB written. ([#49206](https://github.com/expo/expo/pull/49206) by [@gmaclennan](https://github.com/gmaclennan))
+
 ### 💡 Others
+
+- Marked `File.md5` and the MD5-related `File.info()` types (`InfoOptions`, `InfoOptions.md5` and `FileInfo.md5`) as deprecated. ([#48089](https://github.com/expo/expo/pull/48089) by [@wh201906](https://github.com/wh201906))
+- Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376), [#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
+- Improved `FileHandle` docs. ([#46849](https://github.com/expo/expo/pull/46849) by [@barthap](https://github.com/barthap))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-20
+
+### 🛠 Breaking changes
+
+- [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
+
+## 56.0.6 — 2026-05-19
+
+### 🎉 New features
+
+- Added `File.json()` and `File.formData()` to satisfy `Blob` type augmentations in consumer projects. ([#45685](https://github.com/expo/expo/pull/45685) by [@mvincentong](https://github.com/mvincentong))
+
+### 🐛 Bug fixes
+
+- Fixed the jest mock's `FileSystemFileHandle` to honor `FileMode` string values (`'r'`, `'w'`, `'wa'`, `'wt'`, `'rw'`) instead of the obsolete name table, expose handle and file metadata, and match the documented default mode for `content://` URIs. The dispatch is now exhaustive over `FileMode`, so future enum additions fail to compile in the mock. (by [@radko93](https://github.com/radko93))
+- [Android] Added missing permission checks to `delete()` and `openHandle()` in the next-gen File System API. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+- [Android] Fixed path traversal vulnerability in `createFile`, `createDirectory`, and `rename` that allowed escaping the parent directory. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+- [Android] Fixed `Paths.cache` and `Paths.document` pointing to wrong directory in Expo Go. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+- [Android] Remove unused native dependencies. ([#45939](https://github.com/expo/expo/pull/45939) by [@jakex7](https://github.com/jakex7))
+
+## 56.0.5 — 2026-05-15
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.4 — 2026-05-08
 
 ### 💡 Others
 
 - Improved public API docs. ([#45530](https://github.com/expo/expo/pull/45530) by [@barthap](https://github.com/barthap))
+- Re-organized package TypeScript code. ([#45531](https://github.com/expo/expo/pull/45531) by [@barthap](https://github.com/barthap))
 
 ## 56.0.3 — 2026-05-06
 
@@ -57,6 +121,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Add behavioral Jest mocks for the class-based `File` / `Directory` / `Paths` API, backed by an in-memory filesystem so tests can exercise create/write/read/move/copy/delete roundtrips without hand-rolling a `jest.mock`. ([#45027](https://github.com/expo/expo/pull/45027) by [@radko93](https://github.com/radko93))
 - Deprecate `modificationTime` in favor of new `lastModified`, compatible with web `File` interface. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
 - Deprecate `File.pickFileAsync(arg1, arg2)` in favour of new `File.pickFileAsync(options)`. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
 - [Android] Optimized performance of copy and move operations. ([#44357](https://github.com/expo/expo/pull/44357), [#44358](https://github.com/expo/expo/pull/44358) by [@barthap](https://github.com/barthap))

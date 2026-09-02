@@ -14,6 +14,13 @@ export type NotificationsPluginProps = {
    */
   icon?: string;
   /**
+   * Local path to an image to use as the large icon for notifications. The image is resized to
+   * 64x64 dp and shown next to the notification text. A notification that carries its own image
+   * uses that image instead.
+   * @platform android
+   */
+  largeIcon?: string;
+  /**
    * Tint color for the push notification image when it appears in the notification tray.
    * @default '#ffffff'
    * @platform android

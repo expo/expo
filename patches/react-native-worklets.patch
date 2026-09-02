@@ -1,16 +1,16 @@
 diff --git a/RNWorklets.podspec b/RNWorklets.podspec
-index d658b49..7462f91 100644
+index 11e10b7a731f754b524c9e8ccd8126334b6adb68..1d0b6ede2e7278398eaa8557b91ea27a3605d9b3 100644
 --- a/RNWorklets.podspec
 +++ b/RNWorklets.podspec
-@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
+@@ -56,6 +56,7 @@
    install_modules_dependencies(s)
  
    s.dependency 'React-jsi'
 +  s.dependency 'React-jsitooling'
-   using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-   if using_hermes && !$worklets_config[:is_tvos_target]
-     s.dependency 'React-hermes'
-@@ -71,6 +72,7 @@ Pod::Spec.new do |s|
+   s.dependency 'React-hermes'
+   
+   s.pod_target_xcconfig = {
+@@ -70,6 +71,7 @@
        '"$(PODS_ROOT)/DoubleConversion"',
        '"$(PODS_ROOT)/Headers/Private/React-Core"',
        '"$(PODS_ROOT)/Headers/Private/Yoga"',
@@ -18,3 +18,18 @@ index d658b49..7462f91 100644
      ].join(' '),
      "FRAMEWORK_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes"',
      "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+diff --git a/compatibility.json b/compatibility.json
+--- a/compatibility.json
++++ b/compatibility.json
+@@ -1,9 +1,9 @@
+ {
+   "nightly": {
+-    "react-native": ["0.83", "0.84", "0.85", "0.86"]
++    "react-native": ["0.83", "0.84", "0.85", "0.86", "0.87"]
+   },
+   "0.10.x": {
+-    "react-native": ["0.83", "0.84", "0.85", "0.86"]
++    "react-native": ["0.83", "0.84", "0.85", "0.86", "0.87"]
+   },
+   "0.9.x": {
+     "react-native": ["0.83", "0.84", "0.85", "0.86"]

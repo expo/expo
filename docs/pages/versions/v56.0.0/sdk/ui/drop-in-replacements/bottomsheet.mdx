@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 A `BottomSheet` component with an API compatible with `@gorhom/bottom-sheet`. It wraps the platform-specific `@expo/ui` primitives: [Jetpack Compose ModalBottomSheet](../jetpack-compose/bottomsheet) on Android and [SwiftUI BottomSheet](../swift-ui/bottomsheet) on iOS. On web, it uses a [vaul](https://github.com/emilkowalski/vaul) drawer.
 
@@ -121,6 +122,39 @@ export default function DynamicBottomSheetExample() {
 }
 ```
 
+### Scrollable React Native content
+
+The bottom sheet supports a React Native `FlatList` or `ScrollView` (or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list)) as a child for scrollable content. With `nestedScrollEnabled`, the list scrolls its own content first; once it reaches the top edge, the remaining drag moves the sheet. `BottomSheetFlatList` and `BottomSheetScrollView` are also exported for `@gorhom/bottom-sheet` compatibility, but they are plain re-exports of the React Native components.
+
+```tsx BottomSheetScrollableExample.tsx
+import { useRef } from 'react';
+import { Button, FlatList, Text, View } from 'react-native';
+import BottomSheet from '@expo/ui/community/bottom-sheet';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function BottomSheetScrollableExample() {
+  const sheetRef = useRef<BottomSheet>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Open" onPress={() => sheetRef.current?.snapToIndex(0)} />
+
+      <BottomSheet ref={sheetRef} snapPoints={['50%', '90%']} index={-1} enablePanDownToClose>
+        <FlatList
+          nestedScrollEnabled
+          style={{ flex: 1 }}
+          data={DATA}
+          keyExtractor={item => item}
+          contentContainerStyle={{ padding: 24 }}
+          renderItem={({ item }) => <Text style={{ paddingVertical: 16 }}>{item}</Text>}
+        />
+      </BottomSheet>
+    </View>
+  );
+}
+```
+
 ## Platform behavior
 
 `@gorhom/bottom-sheet` renders inline at the bottom of its parent view. This component uses native modal presentation on Android and iOS, and a drawer overlay on web.
@@ -135,22 +169,24 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 | Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables drawer dismiss        |
 | Persistent inline peek | Not supported                                  | Not supported                     | Not supported                 |
 
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
+
 ## Supported exports
 
-| Export                     | Supported | Notes                                                     |
-| -------------------------- | --------- | --------------------------------------------------------- |
-| `BottomSheet`              | Yes       | Modal on Android and iOS, drawer on web                   |
-| `BottomSheetModal`         | Yes       | Starts closed and opens with `present()`                  |
-| `BottomSheetModalProvider` | Yes       | Renders children directly for compatibility               |
-| `BottomSheetView`          | Yes       | Wraps sheet content                                       |
-| `BottomSheetScrollView`    | Yes       | Re-export of React Native `ScrollView`                    |
-| `BottomSheetFlatList`      | Yes       | Re-export of React Native `FlatList`                      |
-| `BottomSheetSectionList`   | Yes       | Re-export of React Native `SectionList`                   |
-| `BottomSheetTextInput`     | Yes       | Re-export of React Native `TextInput`                     |
-| `useBottomSheet`           | Yes       | Returns the sheet ref methods from context                |
-| `BottomSheetBackdrop`      | No        | The native sheet or web drawer handles the backdrop       |
-| `BottomSheetHandle`        | No        | The native sheet or web drawer handles the drag indicator |
-| `BottomSheetFooter`        | No        | No equivalent in this implementation                      |
+| Export                     | Supported   | Notes                                                     |
+| -------------------------- | ----------- | --------------------------------------------------------- |
+| `BottomSheet`              | <YesIcon /> | Modal on Android and iOS, drawer on web                   |
+| `BottomSheetModal`         | <YesIcon /> | Starts closed and opens with `present()`                  |
+| `BottomSheetModalProvider` | <YesIcon /> | Renders children directly for compatibility               |
+| `BottomSheetView`          | <YesIcon /> | Wraps sheet content                                       |
+| `BottomSheetScrollView`    | <YesIcon /> | Re-export of React Native `ScrollView`                    |
+| `BottomSheetFlatList`      | <YesIcon /> | Re-export of React Native `FlatList`                      |
+| `BottomSheetSectionList`   | <YesIcon /> | Re-export of React Native `SectionList`                   |
+| `BottomSheetTextInput`     | <YesIcon /> | Re-export of React Native `TextInput`                     |
+| `useBottomSheet`           | <YesIcon /> | Returns the sheet ref methods from context                |
+| `BottomSheetBackdrop`      | <NoIcon />  | The native sheet or web drawer handles the backdrop       |
+| `BottomSheetHandle`        | <NoIcon />  | The native sheet or web drawer handles the drag indicator |
+| `BottomSheetFooter`        | <NoIcon />  | No equivalent in this implementation                      |
 
 ## Compatibility notes
 

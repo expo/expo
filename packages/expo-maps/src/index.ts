@@ -28,6 +28,8 @@ export namespace GoogleMaps {
   export type MapView = GoogleTypes.GoogleMapsViewType;
 
   export type StreetViewProps = GoogleTypes.GoogleStreetViewProps;
+
+  export type Circle = GoogleTypes.GoogleMapsCircle;
 }
 
 /**
@@ -55,6 +57,13 @@ export namespace AppleMaps {
 
   export type MapProps = AppleTypes.AppleMapsViewProps;
   export type MapView = AppleTypes.AppleMapsViewType;
+
+  export const PointOfInterestCategory = AppleTypes.AppleMapPointOfInterestCategory;
+  export type PointOfInterestCategory = AppleTypes.AppleMapPointOfInterestCategory;
+
+  export type PointOfInterestCategories = AppleTypes.AppleMapsPointOfInterestCategories;
+
+  export type Circle = AppleTypes.AppleMapsCircle;
 }
 
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;

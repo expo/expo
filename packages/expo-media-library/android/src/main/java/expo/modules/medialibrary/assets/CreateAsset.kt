@@ -17,6 +17,7 @@ import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.UnableToLoadPermissionException
 import expo.modules.medialibrary.UnableToSaveException
 import expo.modules.medialibrary.albums.getAlbumFileOrNull
+import expo.modules.medialibrary.transferAllTo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -83,7 +84,7 @@ class CreateAssetWithAlbumFile(
     coroutineContext.ensureActive()
     FileInputStream(localFile).channel.use { input ->
       (contentResolver.openOutputStream(assetUri) as FileOutputStream).channel.use { output ->
-        val transferred = input.transferTo(0, input.size(), output)
+        val transferred = input.transferAllTo(output)
         if (transferred != input.size()) {
           contentResolver.delete(assetUri, null, null)
           throw IOException("Could not save file to $assetUri Not enough space.")

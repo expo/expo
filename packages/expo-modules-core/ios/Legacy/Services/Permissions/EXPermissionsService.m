@@ -37,7 +37,7 @@ NSString * const EXPermissionExpiresNever = @"never";
   }
 }
 
-# pragma mark - permission requsters / getters
+# pragma mark - permission requesters / getters
 
 
 - (void)getPermissionUsingRequesterClass:(Class)requesterClass

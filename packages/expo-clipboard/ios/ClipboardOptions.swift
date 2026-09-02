@@ -34,6 +34,8 @@ internal struct SetStringOptions: Record {
   var inputFormat: StringFormat = .plainText
 }
 
+internal struct SetImageOptions: Record {}
+
 internal enum StringFormat: String, Enumerable {
   case plainText
   case html

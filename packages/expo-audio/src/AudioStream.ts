@@ -1,4 +1,4 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useReleasingSharedObject } from 'expo';
 import { useEffect, useRef, useState } from 'react';
 
 import { AUDIO_STREAM_BUFFER, AUDIO_STREAM_STATUS } from './AudioEventKeys';

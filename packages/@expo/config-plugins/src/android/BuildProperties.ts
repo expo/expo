@@ -1,12 +1,12 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import type { PropertiesItem } from './Properties';
 import type { ConfigPlugin } from '../Plugin.types';
 import { withGradleProperties } from '../plugins/android-plugins';
 import type {
   BuildPropertiesConfig,
   ConfigToPropertyRuleType,
 } from '../utils/BuildProperties.types';
+import type { PropertiesItem } from './Properties';
 
 /**
  * Creates a `withGradleProperties` config-plugin based on given config to property mapping rules.

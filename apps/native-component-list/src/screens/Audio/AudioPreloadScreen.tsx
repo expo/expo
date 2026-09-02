@@ -11,6 +11,7 @@ import {
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import HeadingText from '../../components/HeadingText';
 import ListButton from '../../components/ListButton';
 import Colors from '../../constants/Colors';
@@ -33,19 +34,19 @@ export default function AudioPreloadScreen(props: any) {
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <HeadingText>Sound Effects</HeadingText>
-      <Text style={styles.hint}>
+      <BodyText color="secondary" style={styles.hint}>
         Both sounds were preloaded in module scope. Tap the buttons to play — they should start
         near-instantly.
-      </Text>
+      </BodyText>
       <SoundEffectButtons />
 
       <HeadingText>Preload Cache</HeadingText>
       <PreloadCacheInfo />
 
       <HeadingText>Preloaded Player</HeadingText>
-      <Text style={styles.hint}>
+      <BodyText color="secondary" style={styles.hint}>
         This player uses a preloaded source. Try replacing to swap between the two preloaded tracks.
-      </Text>
+      </BodyText>
       <PreloadedPlayer />
     </ScrollView>
   );
@@ -110,10 +111,10 @@ function PreloadCacheInfo() {
 
   return (
     <View>
-      <Text style={styles.hint}>
+      <BodyText color="secondary" style={styles.hint}>
         Preloaded sources are consumed when a player is created with a matching URL. Use the buttons
         below to preload, inspect, and clear the cache.
-      </Text>
+      </BodyText>
       <ListButton
         title="Preload Both"
         onPress={async () => {
@@ -123,13 +124,13 @@ function PreloadCacheInfo() {
         }}
       />
       <ListButton title="Query Cache" onPress={refresh} />
-      <Text style={styles.hint}>
+      <BodyText color="secondary" style={styles.hint}>
         {sources.length === 0 ? 'Cache is empty.' : `${sources.length} source(s) in cache:`}
-      </Text>
+      </BodyText>
       {sources.map((uri) => (
-        <Text key={uri} style={styles.cacheUri} numberOfLines={1}>
+        <BodyText key={uri} style={styles.cacheUri} numberOfLines={1}>
           {uri}
-        </Text>
+        </BodyText>
       ))}
       <ListButton
         title="Clear Cache"
@@ -159,11 +160,11 @@ function PreloadedPlayer() {
 
   return (
     <View>
-      <Text style={styles.hint}>Current: Sound {currentSource}</Text>
-      <Text style={styles.hint}>
+      <BodyText style={styles.hint}>Current: Sound {currentSource}</BodyText>
+      <BodyText color="secondary" style={styles.hint}>
         {status.isLoaded ? `Loaded — ${Math.round(status.duration)}s` : 'Loading...'}
         {status.playing ? ' — Playing' : ''}
-      </Text>
+      </BodyText>
       <View style={styles.buttonRow}>
         <ListButton
           title={status.playing ? 'Pause' : 'Play'}
@@ -192,7 +193,6 @@ const styles = StyleSheet.create({
   hint: {
     marginVertical: 4,
     fontSize: 13,
-    color: '#666',
   },
   sfxRow: {
     flexDirection: 'row',

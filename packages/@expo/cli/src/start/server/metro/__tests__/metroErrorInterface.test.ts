@@ -5,10 +5,16 @@ import {
   dropStackIfContainsCodeFrame,
 } from '../metroErrorInterface';
 
-type ErrorWithImportStack = Error & {
+interface ErrorWithImportStack extends Error {
   _expoImportStack?: string;
   cause?: ErrorWithImportStack;
-};
+}
+
+// `new Error()` is typed as `Error` (whose `cause` is `unknown`), so build the
+// loosely-typed test errors through a helper that yields an `ErrorWithImportStack`.
+function makeError(message: string): ErrorWithImportStack {
+  return new Error(message) as ErrorWithImportStack;
+}
 
 describe('attachImportStackToRootMessage', () => {
   it('no change to error', () => {
@@ -20,7 +26,7 @@ describe('attachImportStackToRootMessage', () => {
   });
 
   it('import from root', () => {
-    const actual: ErrorWithImportStack = new Error('Test error');
+    const actual = makeError('Test error');
     actual._expoImportStack = `
       Import stack:
         hooks/hooks/useBananas.ts
@@ -31,7 +37,7 @@ describe('attachImportStackToRootMessage', () => {
   });
 
   it('import from root', () => {
-    const actual: ErrorWithImportStack = new Error('Test error');
+    const actual = makeError('Test error');
     actual._expoImportStack = `
       Import stack:
         hooks/hooks/useBananas.ts
@@ -47,8 +53,8 @@ describe('attachImportStackToRootMessage', () => {
   });
 
   it('import from direct cause', () => {
-    const actual: ErrorWithImportStack = new Error('Test error');
-    actual.cause = new Error('Direct cause');
+    const actual = makeError('Test error');
+    actual.cause = new Error('Direct cause') as ErrorWithImportStack;
     actual.cause._expoImportStack = `
       Import stack:
         hooks/hooks/useBananas.ts
@@ -64,9 +70,9 @@ describe('attachImportStackToRootMessage', () => {
   });
 
   it('import from cause chain', () => {
-    const actual: ErrorWithImportStack = new Error('Test error');
-    actual.cause = new Error('Direct cause');
-    actual.cause.cause = new Error('Indirect cause');
+    const actual = makeError('Test error');
+    actual.cause = new Error('Direct cause') as ErrorWithImportStack;
+    actual.cause.cause = new Error('Indirect cause') as ErrorWithImportStack;
     actual.cause.cause._expoImportStack = `
       Import stack:
         hooks/hooks/useBananas.ts
@@ -82,10 +88,10 @@ describe('attachImportStackToRootMessage', () => {
   });
 
   it('import from nearest cause in chain', () => {
-    const actual: ErrorWithImportStack = new Error('Test error');
-    actual.cause = new Error('Direct cause');
-    actual.cause.cause = new Error('Indirect cause');
-    actual.cause.cause.cause = new Error('Another indirect cause');
+    const actual = makeError('Test error');
+    actual.cause = new Error('Direct cause') as ErrorWithImportStack;
+    actual.cause.cause = new Error('Indirect cause') as ErrorWithImportStack;
+    actual.cause.cause.cause = new Error('Another indirect cause') as ErrorWithImportStack;
     actual.cause.cause._expoImportStack = `
       Import stack:
         hooks/hooks/useBananas.ts
@@ -115,7 +121,7 @@ describe('nearestImportStack', () => {
   });
 
   it('returns import stack from root error', () => {
-    const error: ErrorWithImportStack = new Error('Test error');
+    const error = makeError('Test error');
     error._expoImportStack = `
       Import stack:
         hooks/hooks/useBananas.ts
@@ -128,7 +134,7 @@ describe('nearestImportStack', () => {
   });
 
   it('returns import stack from direct cause', () => {
-    const error: ErrorWithImportStack = new Error('Test error');
+    const error = makeError('Test error');
     error.cause = new Error('Direct cause') as ErrorWithImportStack;
     error.cause._expoImportStack = `
       Import stack:
@@ -142,7 +148,7 @@ describe('nearestImportStack', () => {
   });
 
   it('returns import stack from deeper in cause chain', () => {
-    const error: ErrorWithImportStack = new Error('Test error');
+    const error = makeError('Test error');
     error.cause = new Error('Direct cause') as ErrorWithImportStack;
     error.cause.cause = new Error('Indirect cause') as ErrorWithImportStack;
     error.cause.cause._expoImportStack = `
@@ -157,7 +163,7 @@ describe('nearestImportStack', () => {
   });
 
   it('returns import stack from nearest cause in chain', () => {
-    const error: ErrorWithImportStack = new Error('Test error');
+    const error = makeError('Test error');
     error.cause = new Error('Direct cause') as ErrorWithImportStack;
     error.cause.cause = new Error('Indirect cause') as ErrorWithImportStack;
     error.cause.cause._expoImportStack = `

@@ -24,6 +24,9 @@ appId: dev.expo.Payments
       # Explicitly unset testID and mode to prevent them from persisting from previous flows
       testID: ''
       mode: ''
+      # Same for captureMode, except it must hold a valid value ('' fails the schema) and
+      # full-screen comparisons always capture the screen anyway
+      captureMode: 'screen'
 
 - assertTrue:
     condition: ${output.comparisonResult.success}

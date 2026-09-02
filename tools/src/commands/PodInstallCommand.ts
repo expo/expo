@@ -17,7 +17,7 @@ type ActionOptions = {
 const importantProjects = ['apps/bare-expo/ios', 'apps/expo-go/ios'];
 const otherProjects = ['apps/minimal-tester/ios', 'apps/native-tests/ios'];
 
-async function action(options: ActionOptions) {
+export async function action(options: ActionOptions): Promise<boolean> {
   if (process.platform !== 'darwin') {
     throw new Error('This command is not supported on this platform.');
   }
@@ -41,11 +41,12 @@ async function action(options: ActionOptions) {
           // In this case, the output has already been printed.
           logger.error(`💥 Installation failed with output: ${e.output}`);
         }
-        return;
+        return false;
       }
     }
   }
   logger.success('🥳 All iOS projects have up-to-date local pods');
+  return true;
 }
 
 async function md5(path: string): Promise<string | null> {

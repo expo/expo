@@ -28,6 +28,22 @@ const EXAMPLE_BUILD_GRADLE = `
   }
   `;
 
+const EXAMPLE_BUILD_GRADLE_ASSIGNMENT_FORM = `
+  android {
+      compileSdkVersion rootProject.ext.compileSdkVersion
+      buildToolsVersion rootProject.ext.buildToolsVersion
+
+      namespace = "com.helloworld"
+      defaultConfig {
+          applicationId = "com.helloworld"
+          minSdkVersion rootProject.ext.minSdkVersion
+          targetSdkVersion rootProject.ext.targetSdkVersion
+          versionCode 1
+          versionName "1.0"
+      }
+  }
+  `;
+
 describe('package', () => {
   afterAll(async () => {
     vol.reset();
@@ -40,23 +56,28 @@ describe('package', () => {
     expect(getPackage({ android: { package: 'com.example.xyz' } })).toBe('com.example.xyz');
   });
 
-  it(`returns the applicationId defined in build.gradle`, () => {
-    const projectRoot = '/';
-    vol.fromJSON(rnFixture, projectRoot);
+  describe.each([
+    ['method-call', EXAMPLE_BUILD_GRADLE, ' '],
+    ['assignment', EXAMPLE_BUILD_GRADLE_ASSIGNMENT_FORM, ' = '],
+  ])(`with Gradle %s syntax`, (_syntax, buildGradle, separator) => {
+    it(`returns the applicationId defined in build.gradle`, async () => {
+      const projectRoot = '/';
+      vol.fromJSON({ 'android/app/build.gradle': buildGradle }, projectRoot);
 
-    expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
-  });
+      await expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
+    });
 
-  it(`sets the applicationId in build.gradle if package is given`, () => {
-    expect(
-      setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
-    ).toMatch("applicationId 'my.new.app'");
-  });
+    it(`sets the applicationId in build.gradle if package is given`, () => {
+      expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
+        `applicationId${separator}'my.new.app'`
+      );
+    });
 
-  it(`sets the namespace in build.gradle if package is given`, () => {
-    expect(
-      setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
-    ).toMatch("namespace 'my.new.app'");
+    it(`sets the namespace in build.gradle if package is given`, () => {
+      expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
+        `namespace${separator}'my.new.app'`
+      );
+    });
   });
 });
 
@@ -106,7 +127,7 @@ describe(renamePackageOnDiskForType, () => {
     const projectRoot = '/';
     vol.fromJSON(rnFixture, projectRoot);
 
-    // Execute the intial rename from cloning the template.
+    // Execute the initial rename from cloning the template.
     // This step is executed when extracting the template tarball, through a stream transform.
     // It's necessary to generate the proper project when creating a bare project (without prebuild).
     await renamePackageOnDiskForType({

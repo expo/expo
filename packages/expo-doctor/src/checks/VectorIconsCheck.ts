@@ -1,5 +1,5 @@
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
+import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class VectorIconsCheck implements DoctorCheck {
   description =

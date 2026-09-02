@@ -23,7 +23,6 @@ struct WidgetReload: AppIntent {
   }
 }
 
-@available(iOS 16.0, *)
 struct WidgetUserInteraction: AppIntent {
   // title is not used for non-discoverable intents, but it is required
   static var title: LocalizedStringResource = "User Interaction"
@@ -53,24 +52,32 @@ struct WidgetUserInteraction: AppIntent {
       return .result()
     }
 
-    let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(source)_layout") ?? ""
+    guard let layout = WidgetsLayoutRegistry.layout(for: source) else {
+      return .result()
+    }
     let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(source)_timeline")
 
     guard let timeline,
           let entryIndex,
+          timeline.indices.contains(entryIndex),
           let entry = timeline[entryIndex] as? [String: Any],
           let props = entry["props"] as? [String: Any],
-          let context = createWidgetContext(layout: layout),
           let environmentData = environmentString?.data(using: .utf8),
           var environment = try? JSONSerialization.jsonObject(with: environmentData) as? [String: Any] else {
       return .result()
     }
     environment["target"] = target
 
-    let result = context.objectForKeyedSubscript("__expoWidgetHandlePress")?.call(
-      withArguments: [props, environment]
-    )
-    if let newProps = result?.toObject() as? [String: Any] {
+    let newProps: [String: Any]?
+    switch evaluateWidgetButtonPress(layout: layout, props: props, environment: environment) {
+    case .success(let result):
+      newProps = result
+    case .failure(let error):
+      print("[ExpoWidgets] Button press evaluation failed: \(error.message)")
+      newProps = nil
+    }
+
+    if let newProps {
       var newEntry = entry
       if let originalProps = entry["props"] as? [String: Any] {
         newEntry["props"] = originalProps.merging(newProps) { _, new in new }
@@ -94,7 +101,6 @@ struct WidgetUserInteraction: AppIntent {
   }
 }
 
-@available(iOS 16.0, *)
 struct LiveActivityUserInteraction: LiveActivityIntent {
   // title is not used for non-discoverable intents, but it is required
   static var title: LocalizedStringResource = "User Interaction"

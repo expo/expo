@@ -1,7 +1,7 @@
 ---
-title: Migrate to expo-media-library/next
-sidebar_title: expo-media-library/next
-description: Migrate from the legacy expo-media-library API to the new class-based expo-media-library/next API with Asset, Album, and Query.
+title: Migrate to the new expo-media-library API
+sidebar_title: expo-media-library/legacy
+description: Migrate from the legacy expo-media-library API to the new class-based expo-media-library API with Asset, Album, and Query.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -9,22 +9,22 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-The `expo-media-library/next` API is now stable. The legacy `expo-media-library` module is deprecated. Migrate to `expo-media-library/next` to benefit from the new API and future fixes.
+The new class-based `expo-media-library` API is now stable. The legacy API is available from `expo-media-library/legacy`. Migrate to the root `expo-media-library` import to benefit from the new API and future fixes.
 
 The new API replaces the function-based `MediaLibrary.getAssetsAsync({ ... })` style with `Asset`, `Album`, and `Query` classes. Albums and assets are now represented as class instances that hold only the ID of the native asset. Asset properties are async getters instead of pre-fetched fields. `Query` replaces the `getAssetsAsync` function with a chainable builder pattern.
 
 ## Installation
 
-Install the SDK-compatible package that includes `expo-media-library/next`:
+Install the SDK-compatible package:
 
 <Terminal cmd={['$ npx expo install expo-media-library']} />
 
 ## Importing the new API
 
-Import from `expo-media-library/next`:
+Import from `expo-media-library`:
 
 ```ts
-import { Asset, Album, Query } from 'expo-media-library/next';
+import { Asset, Album, Query } from 'expo-media-library';
 ```
 
 ## Assets
@@ -104,6 +104,48 @@ await asset.delete();
 
 // After, multiple assets
 await Asset.delete([asset1, asset2]);
+```
+
+### Use legacy assets alongside the new API
+
+> If possible, migrate your app to use the new API end-to-end. The helpers below are intended for gradual migrations where both APIs are used at the same time.
+
+If you have a legacy `Asset` object in memory and need a new `Asset` instance, use `asset.uri` on iOS (it is already a `ph://` URI accepted by the new API) and `getAssetContentUriAsync` on Android to convert the numeric MediaStore ID to a `content://` URI.
+
+```ts
+import { Asset } from 'expo-media-library';
+import * as LegacyMediaLibrary from 'expo-media-library/legacy';
+import { Platform } from 'react-native';
+
+async function toNewAsset(legacyAsset: LegacyMediaLibrary.Asset): Promise<Asset> {
+  switch (Platform.OS) {
+    case 'ios':
+      return new Asset(legacyAsset.uri);
+    case 'android': {
+      const contentUri = await LegacyMediaLibrary.getAssetContentUriAsync(legacyAsset);
+      return new Asset(contentUri);
+    }
+    default:
+      throw new Error(`Unsupported platform: ${Platform.OS}`);
+  }
+}
+```
+
+If your app stores asset IDs returned by the legacy API (for example, in a database), convert them before creating `Asset` instances. On iOS, prefix the legacy ID with `ph://`. On Android, use `getAssetContentUriAsync` to resolve the numeric MediaStore ID to a `content://` URI.
+
+```ts
+async function convertStoredId(legacyId: string): Promise<Asset> {
+  switch (Platform.OS) {
+    case 'ios':
+      return new Asset(`ph://${legacyId}`);
+    case 'android': {
+      const contentUri = await LegacyMediaLibrary.getAssetContentUriAsync(legacyId);
+      return new Asset(contentUri);
+    }
+    default:
+      throw new Error(`Unsupported platform: ${Platform.OS}`);
+  }
+}
 ```
 
 ## Albums
@@ -238,8 +280,8 @@ The listener event shape is unchanged.
 ## Reference
 
 <BoxLink
-  title="MediaLibrary (next)"
-  description="See the full API reference for expo-media-library/next."
-  href="/versions/latest/sdk/media-library-next/"
+  title="MediaLibrary"
+  description="See the full API reference for expo-media-library."
+  href="/versions/latest/sdk/media-library/"
   Icon={BookOpen02Icon}
 />

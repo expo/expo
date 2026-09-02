@@ -4,7 +4,7 @@
 
 ### 1. Checking packages
 
-- Run `et check-packages` to make sure every package build successfully, `build` folder is up to date and all unit tests pass.
+- Run `et check-packages` to make sure every package builds, type-checks, and passes its unit tests. This runs the Turborepo task graph (build, typecheck, depscheck, test, lint); the `build/` output is generated and cached on demand rather than committed.
 
 ### 2. React Native dev tools
 

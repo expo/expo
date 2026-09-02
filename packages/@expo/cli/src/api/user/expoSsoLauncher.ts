@@ -1,11 +1,11 @@
 import assert from 'assert';
-import openBrowserAsync from 'better-opn';
 import crypto from 'crypto';
 import http from 'http';
 import type { Socket } from 'node:net';
 
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
+import { openBrowserAsync } from '../../utils/open';
 import { fetchAsync, getResponseDataOrThrow } from '../rest/client';
 
 const CLIENT_ID = 'expo-cli';
@@ -87,7 +87,7 @@ export async function getSessionUsingBrowserAuthFlowAsync({
 
   // Start server and begin auth flow
   const executeAuthFlow = (): Promise<string> => {
-    return new Promise<string>(async (resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       const connections = new Set<Socket>();
 
       const server = http.createServer(

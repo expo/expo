@@ -1,37 +1,33 @@
 package expo.modules.medialibrary.next.objects.query
 
-import android.content.Context
+import android.content.ContentResolver
 import android.os.Build
 import android.provider.MediaStore
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.asIterable
-import expo.modules.medialibrary.next.extensions.getOrThrow
+import expo.modules.medialibrary.next.extensions.asSequence
 import expo.modules.medialibrary.next.extensions.resolver.extractAssetContentUri
 import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreFile
+import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreFileColumnIndexes
 import expo.modules.medialibrary.next.objects.query.builder.QueryLegacyExecutor
 import expo.modules.medialibrary.next.objects.query.builder.QueryModernExecutor
 import expo.modules.medialibrary.next.records.AssetField
+import expo.modules.medialibrary.next.records.AssetMetadata
 import expo.modules.medialibrary.next.records.SortDescriptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import java.lang.ref.WeakReference
 import kotlin.collections.joinToString
 
 class Query(
   val assetFactory: AssetFactory,
-  context: Context
+  val assetMapper: AssetMapper,
+  val contentResolver: ContentResolver
 ) : SharedObject() {
-  private val contextRef = WeakReference(context)
-
-  private val contentResolver
-    get() = contextRef
-      .getOrThrow()
-      .contentResolver ?: throw ContentResolverNotObtainedException()
-
   private val clauses = mutableListOf<String>()
   private val args = mutableListOf<String>()
   private val orderBy = mutableListOf<SortDescriptor>()
@@ -40,11 +36,13 @@ class Query(
   private var offset: Int? = null
 
   fun eq(field: AssetField, value: String) = apply {
+    if (field == AssetField.IS_FAVORITE && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@apply
     clauses.add("${field.toMediaStoreColumn()} = ?")
     args.add(value)
   }
 
   fun within(field: AssetField, values: List<String>) = apply {
+    if (field == AssetField.IS_FAVORITE && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@apply
     val questionMarks = values.joinToString(", ") { "?" }
     clauses.add("${field.toMediaStoreColumn()} IN ($questionMarks)")
     args.addAll(values)
@@ -106,6 +104,23 @@ class Query(
       it.asIterable()
         .map { row -> row.extractAssetContentUri(idColumn, typeColumn) }
         .map { uri -> assetFactory.create(uri) }
+        .toList()
+    }
+  }
+
+  suspend fun exeForMetadata(): List<AssetMetadata> = withContext(Dispatchers.IO) {
+    val queryExecutor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      QueryModernExecutor(clauses, args, orderBy, limit, offset)
+    } else {
+      QueryLegacyExecutor(clauses, args, orderBy, limit, offset)
+    }
+
+    queryExecutor.exe(MediaStoreFile.projection, contentResolver).use {
+      ensureActive()
+      val columnIndexes = MediaStoreFileColumnIndexes.from(it)
+      it.asSequence()
+        .map { row -> MediaStoreFile.from(row, columnIndexes) }
+        .map { fileAsset -> assetMapper.toMetadata(fileAsset) }
         .toList()
     }
   }

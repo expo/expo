@@ -7,7 +7,7 @@ export type NavigationEventEmitter<T extends Record<string, any>> = EventEmitter
   create: (target: string) => EventConsumer<T>;
 };
 
-type Listeners = ((e: any) => void)[];
+type Listeners = Set<(e: any) => void>;
 
 /**
  * Hook to manage the event system used by the navigator to notify screens of various events.
@@ -31,17 +31,13 @@ export function useEventEmitter<T extends Record<string, any>>(
         return;
       }
 
-      const index = callbacks.indexOf(callback);
-
-      if (index > -1) {
-        callbacks.splice(index, 1);
-      }
+      callbacks.delete(callback);
     };
 
     const addListener = (type: string, callback: (data: any) => void) => {
       listeners.current[type] = listeners.current[type] || {};
-      listeners.current[type][target] = listeners.current[type][target] || [];
-      listeners.current[type][target].push(callback);
+      listeners.current[type][target] = listeners.current[type][target] || new Set();
+      listeners.current[type][target].add(callback);
 
       let removed = false;
       return () => {
@@ -65,21 +61,21 @@ export function useEventEmitter<T extends Record<string, any>>(
       data,
       target,
       canPreventDefault,
+      preventDefault,
     }: {
       type: string;
       data?: any;
       target?: string;
       canPreventDefault?: boolean;
+      preventDefault?: () => void;
     }) => {
       const items = listeners.current[type] || {};
 
       // Copy the current list of callbacks in case they are mutated during execution
       const callbacks =
         target !== undefined
-          ? items[target]?.slice()
-          : ([] as Listeners)
-              .concat(...Object.keys(items).map((t) => items[t]!))
-              .filter((cb, i, self) => self.lastIndexOf(cb) === i);
+          ? [...(items[target] ?? [])]
+          : [...new Set(Object.keys(items).flatMap((target) => [...items[target]!]))];
 
       const event: EventArg<any, any, any> = {
         get type() {
@@ -120,6 +116,17 @@ export function useEventEmitter<T extends Record<string, any>>(
             value() {
               defaultPrevented = true;
             },
+          },
+        });
+      } else if (preventDefault) {
+        Object.defineProperties(event, {
+          defaultPrevented: {
+            enumerable: true,
+            value: false,
+          },
+          preventDefault: {
+            enumerable: true,
+            value: preventDefault,
           },
         });
       }

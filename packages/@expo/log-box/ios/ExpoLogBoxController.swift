@@ -5,8 +5,8 @@ import WebKit
 import React
 
 @objc public class ExpoLogBoxScreenProvider: NSObject {
-    @objc public static func makeHostingController(message: String?, stack: [RCTJSStackFrame]?) -> UIViewController {
-        return ExpoLogBoxController(message: message, stack:stack)
+    @objc public static func makeHostingController(message: String?, stack: [RCTJSStackFrame]?, bundleURL: URL?) -> UIViewController {
+        return ExpoLogBoxController(message: message, stack:stack, bundleURL: bundleURL)
     }
 }
 
@@ -17,8 +17,11 @@ struct Colors {
 class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
     private var message: String
     private var stack: [Dictionary<String, Any>]
+    /// URL the running bundle was loaded from, when it was served over HTTP.
+    private var bundleURL: URL?
 
-    init(message: String?, stack: [RCTJSStackFrame]?) {
+    init(message: String?, stack: [RCTJSStackFrame]?, bundleURL: URL?) {
+        self.bundleURL = bundleURL
         self.message = message ?? "Error without message."
         self.stack = stack?.map { frame in
             return [
@@ -36,6 +39,7 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
     required init?(coder: NSCoder) {
         self.message = "If you see this message this is an issue in ExpoLogBox."
         self.stack = []
+        self.bundleURL = nil
         super.init(coder: coder)
     }
 
@@ -52,7 +56,7 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
                     "stack": self.stack,
                 ],
             ]
-        ])
+        ], bundleURL: self.bundleURL)
         let webView = webViewWrapper.prepareWebView()
         view.addSubview(webView)
         NSLayoutConstraint.activate([

@@ -13,7 +13,7 @@ Here's an example of an app screen's content getting concealed by the status bar
 
 <ContentSpotlight
   alt="Without defining a safe area, the content can be obscured by the device's interface elements."
-  src="/static/images/safe-area/without-safe-area.png"
+  src="/static/images/safe-area/without-safe-area.webp"
   className="max-w-[480px]"
 />
 
@@ -25,7 +25,7 @@ Using the library, the result of the previous example changes as it displays the
 
 <ContentSpotlight
   alt="On using react-native-safe-area-context, the content is positioned within the safe area."
-  src="/static/images/safe-area/with-safe-area.png"
+  src="/static/images/safe-area/with-safe-area.webp"
   className="max-w-[480px]"
 />
 
@@ -33,7 +33,14 @@ Using the library, the result of the previous example changes as it displays the
 
 You can skip installing `react-native-safe-area-context` if you have created a project using [the default template](/get-started/create-a-project/). This library is installed as peer dependency for Expo Router library. Otherwise, install it by running the following command:
 
-<Terminal cmd={['$ npx expo install react-native-safe-area-context']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-safe-area-context'],
+    yarn: ['$ yarn expo install react-native-safe-area-context'],
+    pnpm: ['$ pnpm expo install react-native-safe-area-context'],
+    bun: ['$ bun expo install react-native-safe-area-context'],
+  }}
+/>
 
 ### Usage
 
@@ -56,12 +63,15 @@ export default function HomeScreen() {
 
 Import and add [`SafeAreaProvider`](https://appandflow.github.io/react-native-safe-area-context/api/safe-area-provider) to the root component file (such as **App.tsx**) before using `SafeAreaView` in your screen component.
 
+{/* prettier-ignore */}
 ```tsx App.tsx
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
   return (
-    return <SafeAreaProvider>...</SafeAreaProvider>;
+    <SafeAreaProvider>
+      {/* Your app content */}
+    </SafeAreaProvider>
   );
 }
 ```

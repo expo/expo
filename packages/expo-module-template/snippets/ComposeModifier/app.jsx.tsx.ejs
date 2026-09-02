@@ -1,0 +1,13 @@
+        {process.env.EXPO_OS === 'android' && (
+          <Group name="Compose Modifier">
+            <ComposeHost style={styles.view}>
+              <Column
+                modifiers={[
+                  paddingAll(20),
+                  <%= project.composeModifierName.charAt(0).toLowerCase() + project.composeModifierName.slice(1) %>({ color: 0xFFFF6B35, width: 3, cornerRadius: 8 }),
+                ]}>
+                <ComposeText>Custom modifier example</ComposeText>
+              </Column>
+            </ComposeHost>
+          </Group>
+        )}

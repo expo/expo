@@ -2,9 +2,9 @@
 import { Box, RNHostView } from '@expo/ui/jetpack-compose';
 import { fillMaxHeight } from '@expo/ui/jetpack-compose/modifiers';
 
-import type { NativeToolbarViewProps } from './types';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { useToolbarPlacement } from '../context';
+import type { NativeToolbarViewProps } from './types';
 
 const bottomPlacementModifiers = [fillMaxHeight()];
 

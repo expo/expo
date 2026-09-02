@@ -177,9 +177,15 @@ export interface ExpoConfig {
      */
     useNativeDebug?: boolean;
     /**
-     * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to false.
+     * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to true.
      */
     enableBsdiffPatchSupport?: boolean;
+    /**
+     * Whether to exclude the expo-updates directory from device backups (iCloud). Defaults to false. When set to true, downloaded updates are not included in backups, which can significantly shrink backup size for apps with large updates. On restore the device has no cached update and runs the embedded update until the latest update is downloaded again.
+     *
+     * @platform ios
+     */
+    excludeFromBackup?: boolean;
   };
   /**
    * Provide per-locale values for System Dialog prompts such as Permissions Boxes, and create Localizable.strings file to localize (for example) push notifications. Platform-specific locale strings should be nested under `ios` and `android` keys.
@@ -217,6 +223,10 @@ export interface ExpoConfig {
    * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
    */
   experiments?: {
+    /**
+     * Enable experimental support for select out-of-tree platforms, if their support packages are installed.
+     */
+    outOfTreePlatforms?: boolean;
     /**
      * Enables Expo's On-Demand Filesystem allowing Metro bundling outside of the watchFolders and with package manager global virtual stores.
      */
@@ -280,6 +290,10 @@ export interface ExpoConfig {
        * List of directories watched for inline modules.
        */
       watchedDirectories: string[];
+      /**
+       * List of targets to which inline modules files are added. If undefined defaults to the main target only.
+       */
+      xcodeProjectTargets?: string[];
     };
   };
   /**

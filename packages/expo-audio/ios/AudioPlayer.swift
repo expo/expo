@@ -6,12 +6,13 @@ private enum AudioConstants {
   static let audioSample = "audioSampleUpdate"
 }
 
-public class AudioPlayer: SharedRef<AVPlayer>, Playable {
+public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   let id = UUID().uuidString
   var shouldCorrectPitch = true
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
   var isActiveForLockScreen = false
   var metadata: Metadata?
+  var lockScreenOptions: LockScreenOptions?
   var currentRate: Float = 1.0 {
     didSet {
       currentRate = max(0, currentRate)
@@ -24,6 +25,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+  var onRelease: (() -> Void)?
 
   var isLooping = false {
     didSet {
@@ -66,6 +68,10 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
 
   var isLive: Bool {
     ref.currentItem?.duration.isIndefinite ?? false
+  }
+
+  var lockScreenPlayer: AVPlayer {
+    ref
   }
 
   var currentOffsetFromLive: Double? {
@@ -157,10 +163,11 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
   func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
     self.metadata = metadata
     self.isActiveForLockScreen = active
+    self.lockScreenOptions = active ? options : nil
     if active {
-      MediaController.shared.setActivePlayer(self, options: options)
+      MediaController.shared.setActivePlayable(self, options: options)
     } else {
-      MediaController.shared.setActivePlayer(nil)
+      MediaController.shared.setActivePlayable(nil)
     }
   }
 
@@ -169,7 +176,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     arguments.merge(dict) { _, new in
       new
     }
-    self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
+    self.emit(event: AudioConstants.playbackStatus, payload: arguments)
 
     if isActiveForLockScreen {
       MediaController.shared.updateNowPlayingInfo(for: self)
@@ -260,7 +267,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     }
   }
 
-  func replaceCurrentSource(source: AudioSource) {
+  func replaceCurrentSource(source: AudioSource?) {
     self.source = source
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
@@ -390,7 +397,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
           return ["frames": channelData]
         }
 
-        self.emit(event: AudioConstants.audioSample, arguments: [
+        self.emit(event: AudioConstants.audioSample, payload: [
           "channels": channels,
           "timestamp": timestamp
         ])
@@ -504,11 +511,13 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
   }
 
   public override func sharedObjectWillRelease() {
+    onRelease?()
+    onRelease = nil
     ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
 
     if isActiveForLockScreen {
-      MediaController.shared.setActivePlayer(nil)
+      MediaController.shared.setActivePlayable(nil)
     }
 
     teardownPlayer()

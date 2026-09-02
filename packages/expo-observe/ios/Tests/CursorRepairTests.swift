@@ -65,7 +65,10 @@ struct CursorRepairTests {
     repairCursorIfStale(
       signalName: "metric",
       readCursor: { stored },
-      writeCursor: { stored = $0; writeCalled = true },
+      writeCursor: {
+        stored = $0
+        writeCalled = true
+      },
       readMaxId: { nil }
     )
     #expect(stored == -1)
@@ -81,7 +84,10 @@ struct CursorRepairTests {
     repairCursorIfStale(
       signalName: "metric",
       readCursor: { stored },
-      writeCursor: { stored = $0; writeCalled = true },
+      writeCursor: {
+        stored = $0
+        writeCalled = true
+      },
       readMaxId: { throw CursorRepairTestsError.boom }
     )
     #expect(stored == 42)

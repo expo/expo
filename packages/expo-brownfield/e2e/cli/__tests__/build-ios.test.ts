@@ -92,20 +92,24 @@ describe('build:ios command', () => {
 
     /**
      * Command: npx expo-brownfield build:ios
-     * Expected behavior: The CLI should validate and ask for prebuild
+     * Expected behavior: The CLI runs prebuild automatically in non-TTY
+     * contexts (CI) instead of hanging on the prompt. The command still exits
+     * non-zero: the pod-install prompt is also non-interactive and CocoaPods
+     * has not been installed. NOTE: mutates TEMP_DIR (creates ios/) — keep
+     * this the last test in the "without prebuild" block.
      */
-    it('should validate and ask for prebuild', async () => {
-      // The command fails, because `expo-brownfield` is not added to app.json
-      // But the prebuild should succeed
+    it('should automatically run prebuild in a non-interactive shell', async () => {
       const { exitCode, stdout, stderr } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', `yes no | node ${CLI_PATH} build:ios`],
+        ['-c', `node ${CLI_PATH} build:ios < /dev/null`],
         { ignoreErrors: true }
       );
-      expect(exitCode).not.toBe(0);
       expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
-      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stdout).not.toContain(BUILD.PREBUILD_PROMPT);
+      expect(stdout).toContain(BUILD.PREBUILD_AUTO('ios'));
+      expect(exitCode).not.toBe(0);
+      expect(stderr).toContain(ERROR.MISSING_POD_INSTALL());
     });
   });
 

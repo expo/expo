@@ -1,9 +1,14 @@
+import { events } from '2g';
 import * as env from '@expo/env';
 import path from 'node:path';
 
-import { events, shouldReduceLogs } from '../events';
+import { env as cliEnv } from './env';
+import { CommandError } from './errors';
+import { shouldReduceLogs } from './interactive';
 
 type EnvOutput = Record<string, string | undefined>;
+
+export type EnvironmentMode = env.EnvMode;
 
 // TODO(@kitten): We assign this here to run server-side code bundled by metro
 // It's not isolated into a worker thread yet
@@ -11,54 +16,68 @@ declare namespace globalThis {
   let __DEV__: boolean | undefined;
 }
 
-// prettier-ignore
-export const event = events('env', (t) => [
-  t.event<'mode', {
-    nodeEnv: string;
-    babelEnv: string;
-    mode: 'development' | 'production';
-  }>(),
-  t.event<'load', {
-    mode: string | undefined;
-    files: string[];
-    env: Record<string, string | undefined>;
-  }>(),
-]);
+declare module '2g' {
+  interface EventRegistry {
+    'env:mode': {
+      nodeEnv: EnvironmentMode;
+      babelEnv: string;
+      mode: EnvironmentMode;
+    };
+    'env:load': {
+      mode: EnvironmentMode;
+      files: string[];
+      keys: string[];
+    };
+  }
+}
 
-/**
- * Set the environment to production or development
- * lots of tools use this to determine if they should run in a dev mode.
- */
-export function setNodeEnv(mode: 'development' | 'production') {
-  process.env.NODE_ENV = process.env.NODE_ENV || mode;
-  process.env.BABEL_ENV = process.env.BABEL_ENV || process.env.NODE_ENV;
-  globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
+export const event = events('env');
+
+/** Defer relativizing a list of paths until the event is written. */
+function relativeFiles(files: string[]) {
+  return { toJSON: () => files.map((file) => event.path(file).toJSON()) };
+}
+
+export function setNodeEnv(mode: EnvironmentMode) {
+  env.setNodeEnv(mode);
+  process.env.BABEL_ENV = process.env.BABEL_ENV || mode;
+  globalThis.__DEV__ = mode === 'development';
 
   event('mode', {
-    nodeEnv: process.env.NODE_ENV,
+    nodeEnv: mode,
     babelEnv: process.env.BABEL_ENV,
     mode,
   });
 }
 
+export function getConfigEnvMode(): EnvironmentMode {
+  try {
+    // Older EAS Build versions do not pass __EXPO_CONFIG_MODE.
+    return env.consumeConfigEnvMode() ?? (cliEnv.EAS_BUILD ? 'production' : 'development');
+  } catch (error) {
+    throw new CommandError(
+      'BAD_ARGS',
+      error instanceof Error ? error.message : 'Invalid __EXPO_CONFIG_MODE value.'
+    );
+  }
+}
+
 interface LoadEnvFilesOptions {
   force?: boolean;
   silent?: boolean;
-  mode?: string;
+  mode: EnvironmentMode;
 }
 
 let prevEnvKeys: Set<string> | undefined;
 
-/**
- * Load the dotenv files into the current `process.env` scope.
- * Note, this requires `NODE_ENV` being set through `setNodeEnv`.
- */
-export function loadEnvFiles(projectRoot: string, options?: LoadEnvFilesOptions) {
+/** Set the mode before loading env files. */
+export function loadEnvFiles(projectRoot: string, options: LoadEnvFilesOptions) {
+  setNodeEnv(options.mode);
+
   const params = {
     ...options,
-    silent: !!options?.silent || shouldReduceLogs(),
-    force: !!options?.force,
-    mode: process.env.NODE_ENV,
+    silent: !!options.silent || shouldReduceLogs(),
+    force: !!options.force,
     systemEnv: process.env,
   };
 
@@ -75,8 +94,8 @@ export function loadEnvFiles(projectRoot: string, options?: LoadEnvFilesOptions)
   if (envInfo.result === 'loaded') {
     event('load', {
       mode: params.mode,
-      files: envInfo.files.map((file) => event.path(file)),
-      env: envOutput,
+      files: relativeFiles(envInfo.files),
+      keys: Object.keys(envOutput),
     });
   }
 
@@ -86,19 +105,19 @@ export function loadEnvFiles(projectRoot: string, options?: LoadEnvFilesOptions)
   return process.env;
 }
 
-export function getEnvFiles(projectRoot: string) {
-  return env
-    .getEnvFiles({ mode: process.env.NODE_ENV })
-    .map((fileName) => path.join(projectRoot, fileName));
+export function getEnvFiles(projectRoot: string, mode: EnvironmentMode) {
+  return env.getEnvFiles({ mode }).map((fileName) => path.join(projectRoot, fileName));
 }
 
-export function reloadEnvFiles(projectRoot: string) {
+export function reloadEnvFiles(projectRoot: string, mode: EnvironmentMode) {
+  setNodeEnv(mode);
+
   const isEnabled = env.isEnabled();
   if (isEnabled) {
     const params = {
       force: true,
       silent: true,
-      mode: process.env.NODE_ENV,
+      mode,
       systemEnv: process.env,
     };
 
@@ -121,8 +140,8 @@ export function reloadEnvFiles(projectRoot: string) {
 
     event('load', {
       mode: params.mode,
-      files: envInfo.files.map((file) => event.path(file)),
-      env: envOutput,
+      files: relativeFiles(envInfo.files),
+      keys: Object.keys(envOutput),
     });
   }
 }

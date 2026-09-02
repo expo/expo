@@ -1,10 +1,10 @@
 import process from 'node:process';
 
+import { getUserAsync } from '../../api/user/user';
+import { env } from '../env';
 import type { Telemetry } from './Telemetry';
 import { commandEvent } from './events';
 import type { TelemetryRecord } from './types';
-import { getUserAsync } from '../../api/user/user';
-import { env } from '../env';
 
 /** The singleton telemetry manager to use */
 let telemetry: Telemetry | null = null;

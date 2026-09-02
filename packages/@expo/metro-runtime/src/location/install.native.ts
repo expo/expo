@@ -1,6 +1,7 @@
-// This MUST be first to ensure that `fetch` is defined in the React Native environment.
+// WARN(@kitten): We must ensure that the core react-native globals are initialized before ours
+// Otherwise we're relying on `getModulesRunBeforeMainModule` which is unstable or can be missing
+// See: `expo/winter/runtime.native.ts`
 import 'react-native/Libraries/Core/InitializeCore';
-
 // Ensure fetch is installed before adding our fetch polyfill to ensure Headers and Request are available globally.
 import 'whatwg-fetch';
 // This MUST be imported to ensure URL is installed.
@@ -8,9 +9,9 @@ import 'expo';
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
 import Constants from 'expo-constants';
+import { getBundleOrigin } from 'expo/internal/bundle-origin';
 
 import { install, setLocationHref } from './Location';
-import getDevServer from '../getDevServer';
 
 interface ExpoExtraRouterConfig {
   router?: {
@@ -23,9 +24,13 @@ const manifest = Constants.expoConfig;
 
 function getOrigin() {
   if (process.env.NODE_ENV !== 'production') {
-    // e.g. http://localhost:8081
-    return getDevServer().url;
+    // In development, we serve from the bundle's origin, unless it's unavailable
+    const bundleOrigin = getBundleOrigin();
+    if (bundleOrigin) {
+      return bundleOrigin;
+    }
   }
+  // In production or otherwise, we always use the configured origin
   const extra = manifest?.extra as ExpoExtraRouterConfig | null;
   return (
     extra?.router?.origin ??
@@ -56,11 +61,17 @@ export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]
   }
 
   const _fetch = (...props: any[]) => {
-    if (props[0] && typeof props[0] === 'string' && props[0].startsWith('/')) {
-      props[0] = new URL(props[0], window.location?.origin).toString();
-    } else if (props[0] && typeof props[0] === 'object') {
-      if (props[0].url && typeof props[0].url === 'string' && props[0].url.startsWith('/')) {
-        props[0].url = new URL(props[0].url, window.location?.origin).toString();
+    // `window.location` is unset when the bundle wasn't served over HTTP and the app configures no
+    // origin. A relative URL is then passed through, so the request fails on its own terms instead of
+    // throwing "Invalid URL" from here.
+    const origin = typeof window !== 'undefined' ? window.location?.origin : undefined;
+    if (origin) {
+      if (props[0] && typeof props[0] === 'string' && props[0].startsWith('/')) {
+        props[0] = new URL(props[0], origin).toString();
+      } else if (props[0] && typeof props[0] === 'object') {
+        if (props[0].url && typeof props[0].url === 'string' && props[0].url.startsWith('/')) {
+          props[0].url = new URL(props[0].url, origin).toString();
+        }
       }
     }
     return fetch(...props);
@@ -70,6 +81,8 @@ export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]
 
   return _fetch;
 }
+
+declare const global: typeof globalThis;
 
 const extra = manifest?.extra as ExpoExtraRouterConfig | null;
 if (extra?.router?.origin !== false) {

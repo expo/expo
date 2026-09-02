@@ -1,27 +1,35 @@
 import commander from 'commander';
 import path from 'path';
 
+import { generateFullTsInterface } from '../typescriptGeneration';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
+  maybePrepareOutputDirectory,
   parseCommandArguments,
   runCommandOnWatch,
   TypeInformationCommandCommonAllArguments,
   writeToStableFile,
 } from './commandUtils';
-import { generateFullTsInterface } from '../typescriptGeneration';
 
 export function moduleInterfaceCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('module-interface'))
-    .summary('Generates a full ts interface for a Swift module.')
+    .summary('generate a full TypeScript interface for a Swift module')
     .description(
-      'Generates a full ts interface for a Swift module. It consists of types.ts file with all types defined in the module, module.ts with the native module definition, and view.tsx for each view defined in the module, and an index.ts file which reexports some functions.'
+      `Generates a full TypeScript interface for a Swift module. It consists of:
+
+- **types.ts** file with all types defined in the module
+- **module.ts** with the native module definition
+- **view.tsx** for each view defined in the module
+- **index.ts** file which reexports some functions
+`
     )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options, false);
       if (!parsedArgs) {
         return;
       }
+      maybePrepareOutputDirectory(parsedArgs.realOutputPath);
       const { realInputPaths, realOutputPath } = parsedArgs;
 
       const command = async () => {

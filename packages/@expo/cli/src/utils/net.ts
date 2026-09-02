@@ -32,7 +32,26 @@ export const isMatchingOrigin = (
   if (!request.headers.origin) {
     return true;
   }
-  const actualHost = new URL(`${request.headers.origin}`).host;
+  let actualHost: string;
+  try {
+    actualHost = new URL(`${request.headers.origin}`).host;
+  } catch {
+    // Malformed Origin — treat as untrusted.
+    return false;
+  }
   const expectedHost = new URL(serverBaseUrl).host;
   return actualHost === expectedHost;
+};
+
+const DEV_CALL_THROTTLE_MS = 2_000;
+let lastRemoteDevCallAt = 0;
+
+/** Process-wide throttle. Returns `true` if another call fired within the cooldown window. */
+export const shouldThrottleRemoteDevCall = (): boolean => {
+  const now = Date.now();
+  if (now - lastRemoteDevCallAt < DEV_CALL_THROTTLE_MS) {
+    return true;
+  }
+  lastRemoteDevCallAt = now;
+  return false;
 };

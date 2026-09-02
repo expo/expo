@@ -20,6 +20,13 @@ private val RESERVED_ATTRIBUTE_PATTERNS: List<Regex> = listOf(
 )
 
 /**
+ * Attribute key under which the SDK stores a log event's display name. Reserved (it matches the
+ * `expo.*` pattern above), so callers can't set it themselves; the SDK injects it after
+ * sanitization via [withDisplayNameAttribute].
+ */
+internal const val DISPLAY_NAME_ATTRIBUTE_KEY = "expo.log.display_name"
+
+/**
  * Maximum number of attributes accepted per log record. Mirrors the OTel SDK
  * default (`OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT`) — collectors and backends
  * start to push back well before this limit, so we cap eagerly and surface the
@@ -112,4 +119,19 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
     attributes = if (sanitized.isEmpty()) null else sanitized,
     droppedCount = emptyKeyDrops + reservedKeyDrops.size + overflowDrops
   )
+}
+
+/**
+ * Returns `attributes` with the validated display name added under [DISPLAY_NAME_ATTRIBUTE_KEY],
+ * or `attributes` unchanged when `displayName` is `null`. Call this after
+ * [sanitizeLogEventAttributes] so the reserved key bypasses the `expo.*` drop.
+ */
+internal fun withDisplayNameAttribute(
+  attributes: Map<String, Any?>?,
+  displayName: String?
+): Map<String, Any?>? {
+  if (displayName == null) {
+    return attributes
+  }
+  return (attributes ?: emptyMap()) + (DISPLAY_NAME_ATTRIBUTE_KEY to displayName)
 }

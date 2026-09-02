@@ -1,0 +1,59 @@
+---
+title: 'EAS チュートリアル：はじめに'
+sidebar_title: はじめに
+description: Expo Application Services (EAS) を使って Android と iOS 向けのアプリを構築するチュートリアルの入門です。Build、Update、Submit のワークフローを扱います。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+
+## このチュートリアルについて
+
+このチュートリアルでは、[Expo Application Services (EAS)](https://expo.dev/eas) の中核サービスである [Build](/build/introduction/)、[Submit](/deploy/submit-to-app-stores/)、[Update](/eas-update/introduction/) を使いこなせるようになります。チュートリアルを終えると、個人プロジェクトでもチームプロジェクトでも、本格的なモバイルの継続的インテグレーション (CI)/継続的デリバリー (CD) パイプラインを構築できるようになります。
+
+このチュートリアルでは以下のトピックを扱います。
+
+- EAS Build で開発ビルドを作成してインストールし、実機、エミュレーター、シミュレーターで実行する
+- Expo Go の代わりに開発ビルドを使うメリットを体験する
+- 開発ビルドをチームや社外の関係者と共有するワークフローを実践する
+- アプリのビルドバージョンを自動で 1 つずつ増やす
+- development や preview など、異なるアプリバリアントを 1 台のデバイスに同時にインストールする
+- EAS Update を使って、開発フェーズ中に素早くアップデートを作成・配信する
+- GitHub リポジトリと連携してビルドプロセスを自動化する
+
+これらのトピックは、EAS を効果的に使い、必要に応じてより高度なトピックへ進むための土台になります。
+
+このチュートリアルは実践形式で、完了までに 2 時間ほどかかります。
+
+<Prerequisites>
+  <Requirement title="ローカルにセットアップ済みの Expo プロジェクト">
+    以下のいずれかを選んで進めてください。
+
+    - 前のチュートリアルで作成した Sticker Smash アプリを引き続き使う。初めての場合は [GitHub](https://github.com/expo/examples/tree/master/stickersmash) からダウンロードできます。
+    - [`npx create-expo-app`](/get-started/create-a-project/) で新しいプロジェクトを作成する。
+    - [既存の React Native プロジェクト](/bare/overview/) を使う。`expo` パッケージがインストールされていることを確認してください。[自動](/bare/installing-expo-modules/) または [手動](/bare/installing-expo-modules/#manual-installation) でインストールできます。
+
+  </Requirement>
+</Prerequisites>
+
+## ツール
+
+[Expo Orbit](https://expo.dev/orbit) を使うと、macOS、Windows、Linux でビルドをワンクリックで管理・起動できます。
+
+ローカルマシン上でビルドを同時にインストールして実行したい場合は、Android Emulator や iOS Simulator を使えます。セットアップ方法は以下を参照してください。
+
+- [Android Emulator](/workflow/android-studio-emulator/)
+- [iOS Simulator](/workflow/ios-simulator/)（macOS でのみ利用可能）
+
+## 次のステップ
+
+Expo プロジェクトをローカルにセットアップできたら、いよいよ出発です。次の章では、EAS Build で最初のビルドを作成する方法を学びましょう。
+
+<BoxLink
+  title="始める"
+  description="まずは開発ビルドを設定しましょう。"
+  Icon={BookOpen02Icon}
+  href="/ja/tutorial/eas/configure-development-build/"
+/>

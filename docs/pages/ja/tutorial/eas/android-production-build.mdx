@@ -1,0 +1,338 @@
+---
+title: Android 向けの本番ビルドを作成する
+sidebar_title: Android 本番ビルド
+description: Android 向けの本番ビルドを作成する流れと、リリースプロセスを自動化する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、サンプルアプリの本番バージョンを作成して Google Play ストアに提出します。あわせて、新しいアプリバージョンの作成とリリースを自動化する方法も見ていきます。
+
+<VideoBoxLink
+  videoId="nxlt8uwqhpE"
+  title="視聴：Android 向けの本番ビルドを作成してリリースする"
+  description="EAS で Android の本番ビルドを作成し、Google Play ストアに提出して、リリースプロセスを自動化します。"
+/>
+
+---
+
+<Prerequisites>
+  <Requirement title="Google Play デベロッパーアカウント">
+    有料の Google Play デベロッパーアカウントが必要です。作成方法については [Google Play
+    の登録ページ](https://play.google.com/apps/publish/signup/) を参照してください。
+  </Requirement>
+  <Requirement title="eas.json の production ビルドプロファイル">
+    **eas.json** に `production`
+    ビルドプロファイルがあることを確認してください。デフォルトで追加されています。
+  </Requirement>
+  <Requirement title="Google サービスアカウントキー（任意）">
+    [リリースプロセスを自動化する](#自動リリース) には、Google サービスアカウントのメールアドレスと
+    JSON キーが必要です。[Google
+    サービスアカウントキーの作成、または既存アカウントからのダウンロード](https://expo.fyi/creating-google-service-account)
+    の手順に従ってから、このガイドに戻ってください。
+  </Requirement>
+</Prerequisites>
+
+## Android 向けの本番ビルド
+
+[Android の本番ビルド](/build/eas-json/#production-builds) は、Google Play ストアでの配布に最適化された **.aab** 形式です。**.apk** ビルドとは異なり、**.aab** ファイルは Google Play ストア経由でのみ配布・インストールできます。
+
+<Step label="1">
+
+## 本番ビルドを作成する
+
+デフォルトの `production` プロファイルで Android の本番ビルドを作成するには、ターミナルを開いて次のコマンドを実行します。EAS の設定では `production` がデフォルトプロファイルになっているため、`--profile` フラグで明示的に指定する必要はありません。
+
+<Terminal cmd={['$ eas build --platform android']} />
+
+このコマンドでビルドがキューに入ります。EAS ダッシュボードで **Version Code** が自動的にインクリメントされていることに注目してください。
+
+</Step>
+
+<Step label="2">
+
+## Google Play Console でアプリを作成する
+
+> **info** 最初のリリースを手動で作る必要はありません。`eas submit` はアプリの最初のリリースを直接作成できます。このチュートリアルでは、リリースの仕組みに慣れるために Play Console を一通り操作します。
+
+アプリを初めて Google Play ストアにアップロードするには、次のようにします。
+
+- Google Play のダッシュボードに移動します。
+- **ホーム** ページで **アプリを作成** をクリックして新しいアプリを作ります。
+
+<ContentSpotlight
+  alt="Create app on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-01.webp"
+  className="max-w-[800px]"
+/>
+
+- アプリの詳細を入力し、**アプリを作成** ボタンをクリックします。
+
+<ContentSpotlight
+  alt="Create app form on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-02.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+## 内部テストバージョンをリリースする
+
+Google Play Console でアプリを作成すると、そのアプリのダッシュボード画面にリダイレクトされます。ここでアプリの内部テストバージョンを準備します。
+
+- **ダッシュボード** で **今すぐテストを開始** をクリックします。
+
+<ContentSpotlight
+  alt="Steps under start testing now on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-03.png"
+  className="max-w-[800px]"
+/>
+
+- **内部テスト** > **内部テストリリースのテスター** で、ユーザーのメールアドレスリストを作成します。
+
+<ContentSpotlight
+  alt="Create an email list for internal testers"
+  src="/static/images/tutorial/eas/play-store-04.png"
+  className="max-w-[800px]"
+/>
+
+- Google Play Console が内部テストリリースの作成を促します。
+- 新しいリリースを作成するには、**ダッシュボード** に移動して **新しいリリースを作成** をクリックします。まず、**アプリの完全性** の下で署名鍵が Google Play Console によって自動生成されていることが分かります。
+
+<ContentSpotlight
+  alt="Selecting the signing key for the app bundle"
+  src="/static/images/tutorial/eas/play-store-05.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="4">
+
+## アプリのバイナリをアップロードする
+
+EAS が本番ビルドを作成し終えたら、次のようにします。
+
+- EAS ダッシュボードを開き、**Download** をクリックして **.aab** ファイルを取得します。
+
+<ContentSpotlight
+  alt="Downloading the aab file"
+  src="/static/images/tutorial/eas/play-store-07.png"
+/>
+
+- Google Play Console に戻り、**テストとリリース** > **テスト** > **内部テスト** に移動します。
+- **App Bundle** の下で **アップロード** をクリックして **.aab** ファイルを追加します。続いてアプリのリリース情報を入力し、**次へ** をクリックします。
+- 次の画面で **保存して公開** をクリックします。
+
+<ContentSpotlight
+  alt="Uploading aab file to Google Play Console"
+  src="/static/images/tutorial/eas/play-store-08.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="5">
+
+## 内部リリースバージョンを共有する
+
+**トラックの概要** を見ると、最新のリリースに一時的なアプリ名が表示されています。これはアプリがまだ審査されていないためです。
+
+<ContentSpotlight
+  alt="App pending review on Google Play Console"
+  src="/static/images/tutorial/eas/play-store-09.png"
+  className="max-w-[800px]"
+/>
+
+**リリース** の下では、アプリが内部テスターに提供されていることが分かります。テスターのチームにアプリを共有するには、次のようにします。
+
+- **リリース** の隣にある **テスター** タブに切り替えます。
+- **テスターがテストに参加する方法** の下にある **リンクをコピー** をクリックします。このリンクをメールやメッセージで送れば、テスターのチームに共有できます。
+
+<ContentSpotlight
+  alt="Sharing the internal release version"
+  src="/static/images/tutorial/eas/play-store-14.png"
+  className="max-w-[800px]"
+/>
+
+- デバイスでテスト用のメールを開き、手順に従ってアプリをダウンロードします。
+
+<ContentSpotlight
+  alt="Downloading app on the device as an internal tester"
+  src="/static/images/tutorial/eas/play-store-15.webp"
+  className="max-w-[240px]"
+/>
+
+- テスト用メールの受信者は招待を承諾する必要があります。承諾すると、アプリをデバイスにインストールできます。
+
+<ContentSpotlight
+  alt="On accepting the invite, the app can be installed on the device"
+  src="/static/images/tutorial/eas/play-store-16.webp"
+  className="max-w-[240px]"
+/>
+
+<ContentSpotlight
+  alt="App installed on the device as an internal tester"
+  src="/static/images/tutorial/eas/play-store-17.webp"
+  className="max-w-[260px]"
+/>
+
+> **info** **ヒント**: アプリを Play ストアで公開するには、Google のダッシュボードで **アプリのセットアップ** の各ステップを完了してください。これらは Play ストアで初めてアプリをリリースする前に必須です。プライバシーポリシーへのリンク、対象ユーザー、データセーフティなどの情報を入力する必要があります。
+
+> **ストア掲載情報を整える**: ストア掲載に向けてアプリを準備するには、スクリーンショットやプレビューの作り方について [アプリストア用アセットを作成する](/guides/store-assets/) を参照してください。
+
+<Collapsible summary="テストリリースを昇格させる">
+
+内部テストリリースを **アルファ版** に昇格させるには、Google Play Console で次のようにします。
+
+- **テストとリリース** の下で **テスト** > **クローズドテスト** に移動します。
+- **クローズドテスト - アルファ版** の隣にある **トラックを管理** をクリックします。
+
+</Collapsible>
+
+</Step>
+
+<Step label="6">
+
+## Google サービスアカウントの権限キーを追加する
+
+> **info** **ヒント**: このセクションの手順に進む前に、[Google サービスアカウントキーの作成、または既存アカウントからのダウンロード](https://expo.fyi/creating-google-service-account) のガイドを参照してください。
+
+これ以降は、[EAS Submit](/submit/android/) を使ってリリースを自動化し、手作業を避けられます。そのためには、プロジェクトの認証情報にサービスアカウントキーを追加する必要があります。
+
+Google サービスアカウントのガイドの手順を終えたら、ダウンロードした JSON キーを EAS ダッシュボードにアップロードします。
+
+- プロジェクトの EAS ダッシュボードで **Credentials** をクリックし、**Android** の下にあるアプリの **Application identifier** をクリックします。
+
+<ContentSpotlight
+  alt="Adding a new Google Service Account key to EAS dashboard"
+  src="/static/images/tutorial/eas/credentials-01.png"
+  className="max-w-[640px]"
+/>
+
+- **Service Credentials** の下で **Add a Google Service Account Key** をクリックします。
+
+<ContentSpotlight
+  alt="Uploading the Google Service Account key to EAS dashboard under Change Google Service Account Key"
+  src="/static/images/tutorial/eas/credentials-02.png"
+  className="max-w-[640px]"
+/>
+
+- **Change Google Service Account Key** で **Upload new key** が選択されていることを確認し、ダウンロードした JSON キーをアップロードします。これでプロジェクトの認証情報にキーが追加されます。
+
+<ContentSpotlight
+  alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
+  src="/static/images/tutorial/eas/credentials-03.png"
+  className="max-w-[640px]"
+/>
+
+</Step>
+
+<Step label="7">
+
+## 内部リリース
+
+**eas.json** でトラックを `internal` に設定しましょう。
+
+- `submit.production` プロファイルで `track` を `internal` に設定します。
+
+{/* prettier-ignore */}
+```json
+{
+  /* @hide ... */ /* @end */
+  "submit": {
+    "production": {
+      /* @info `track` を `internal` に設定する。 */
+      "android": {
+        "track": "internal"
+      }
+      /* @end */
+    }
+  }
+}
+```
+
+上のスニペットでは [`track`](/eas/json/#track) プロパティを追加し、その値を `internal` に設定しています。これにより `eas submit` コマンドで本番ビルドをアップロードし、Google Play ストアの内部テスト向けにリリースできるようになります。
+
+- では `eas submit` コマンドを実行して、新しい内部テストバージョンをリリースしましょう。
+
+<Terminal cmd={['$ eas submit --platform android']} />
+
+- このコマンドは Google Play Console に新しい内部リリースバージョンを自動的に作成します。
+
+<ContentSpotlight
+  alt="Automatic internal release version created in Google Play Console by EAS Submit"
+  src="/static/images/tutorial/eas/play-store-18.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="8">
+
+## 本番リリース
+
+アプリを本番向けにリリースするには、次のようにします。
+
+- **eas.json** の `track` の値を `production` に変更します。
+
+```json
+{
+  /* @hide ... */ /* @end */
+  "submit": {
+    "production": {
+      "android": {
+        /* @info トラックを `production` に変更する。 */
+        "track": "production"
+        /* @end */
+      }
+    }
+  }
+}
+```
+
+- 内部テストリリースで使ったのと同じ EAS Build を再利用できます。`eas submit` コマンドを実行して Play ストアにリリースします。
+
+<Terminal cmd={['$ eas submit --platform android']} />
+
+- トラックを作成してアプリを Google Play ストアの審査に提出するには、**テストとリリース** > **製品版** に移動し、**リリース** の下から審査に送るビルドを選びます。
+
+</Step>
+
+<Step label="9">
+
+## 自動リリース
+
+今後のリリースでは、`eas build` に [`--auto-submit`](/build/automate-submissions/) フラグを付けることで、ビルドの作成と Play ストアへの提出を 1 ステップにまとめて効率化できます。
+
+<Terminal cmd={['$ eas build --platform android --auto-submit']} />
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/android-production-build"
+  chapterTitle="第 8 章：Android 向けの本番ビルドを作成する"
+  summary={
+    <>
+      本番向けの Android ビルドを作成し、<CODE>eas submit</CODE> を使った Google Play
+      ストアへの手動・自動アップロードについて確認して、<CODE>--auto-submit</CODE>{' '}
+      でリリースプロセスを自動化しました。
+    </>
+  }
+  nextChapterDescription="次の章では、iOS 向けの本番ビルドを作成する流れを学びます。"
+  nextChapterTitle="iOS 向けの本番ビルドを作成する"
+  nextChapterLink="/ja/tutorial/eas/ios-production-build/"
+/>

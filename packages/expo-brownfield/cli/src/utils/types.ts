@@ -1,15 +1,5 @@
 export type Platform = 'android' | 'ios';
 
-export interface RunCommandOptions {
-  cwd?: string;
-  env?: Record<string, string>;
-  verbose?: boolean;
-}
-
-export interface RunCommandResult {
-  stdout: string;
-}
-
 export interface WithSpinnerParams<T> {
   operation: () => Promise<T>;
   loaderMessage: string;
@@ -30,6 +20,7 @@ export interface AndroidConfig extends CommonConfig {
   library: string;
   tasks: string[];
   variant: BuildVariant;
+  fused: boolean;
 }
 
 export interface PackageConfiguration {
@@ -43,6 +34,7 @@ export interface IosConfig extends CommonConfig {
   buildConfiguration: BuildConfiguration;
   derivedDataPath: string;
   device: string;
+  hostProvidedFrameworks: string[];
   output: 'frameworks' | PackageConfiguration;
   scheme: string;
   simulator: string;

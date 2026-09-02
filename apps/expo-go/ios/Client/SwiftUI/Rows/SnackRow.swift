@@ -4,6 +4,7 @@ import SwiftUI
 
 struct SnackRow: View {
   let snack: Snack
+  var isLoading: Bool = false
   let onTap: () -> Void
 
   private var isSupported: Bool {
@@ -58,9 +59,13 @@ struct SnackRow: View {
 
         Spacer()
 
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+        if isLoading {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

@@ -1,6 +1,5 @@
-import '../State/index.fx';
-
 export * from './AccessoryWidgetBackground';
+export * from './Alert';
 export * from './BottomSheet';
 export * from './Button';
 export * from './Chart';
@@ -33,8 +32,10 @@ export * from './ShareLink';
 export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
+export * from './SwipeActions';
 export * from './Text';
-export { useNativeState } from '../State/useNativeState';
+export { useNativeState } from '../State';
+export { withAnimation, type WithAnimationCompletionCriteria } from './withAnimation';
 export * from './SyncToggle';
 export * from './TabView';
 export * from './Toggle';
@@ -51,6 +52,7 @@ export * from './ScrollView';
 export * from './Shapes';
 export * from './Mask';
 export * from './Overlay';
+export * from './Background';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';

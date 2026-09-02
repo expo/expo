@@ -8,7 +8,7 @@ import {
   packBareTemplateTarballAsync,
   packBlankTemplateTarballAsync,
 } from './localPackages';
-const localExpoCli = path.join(__dirname, '../../../@expo/cli/build/bin/cli');
+const localExpoCli = path.join(__dirname, '../../../@expo/cli/bin/cli.js');
 const localPatchProjectCli = path.join(__dirname, '../../bin/cli.js');
 
 const originalCI = process.env.CI;

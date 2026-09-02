@@ -22,7 +22,7 @@ export function IOSPermissions(props: IOSPermissionsProps) {
     <Table>
       <TableHead>
         <Row>
-          <HeaderCell>Info.plist Key</HeaderCell>
+          <HeaderCell>Info.plist key</HeaderCell>
           <HeaderCell>Description</HeaderCell>
         </Row>
       </TableHead>

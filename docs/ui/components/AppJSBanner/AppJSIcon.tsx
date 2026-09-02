@@ -7,6 +7,7 @@ export function AppJSIcon({ className }: SVGProps<SVGSVGElement>) {
       width="141"
       height="141"
       viewBox="0 0 141 141"
+      aria-hidden="true"
       className={mergeClasses('icon-md', className)}
       fill="none"
       xmlns="http://www.w3.org/2000/svg">

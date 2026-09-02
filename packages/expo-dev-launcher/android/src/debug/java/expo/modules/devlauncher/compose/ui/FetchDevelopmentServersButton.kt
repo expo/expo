@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.primitives.CircularProgressBar
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -24,7 +24,7 @@ fun FetchDevelopmentServersButton(
     color = NewAppTheme.colors.background.element,
     borderRadius = NewAppTheme.borderRadius.xl
   ) {
-    Button(
+    UnstyledButton(
       onClick = {
         onAction(HomeAction.RefreshServers)
       },

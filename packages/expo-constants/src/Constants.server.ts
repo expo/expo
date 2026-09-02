@@ -1,4 +1,3 @@
-import type { ExpoConfig } from 'expo/config';
 import type {
   EmbeddedManifest,
   EASConfig,
@@ -6,6 +5,7 @@ import type {
   ExpoUpdatesManifest,
 } from 'expo-manifests';
 import type { Manifest as UpdatesManifest } from 'expo-updates';
+import type { ExpoConfig } from 'expo/config';
 
 import type { Constants } from './Constants.types';
 import ExponentConstants from './ExponentConstants.web.js';

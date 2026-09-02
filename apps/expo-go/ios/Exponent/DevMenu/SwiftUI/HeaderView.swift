@@ -17,7 +17,7 @@ struct HeaderView: View {
           .clipShape(RoundedRectangle(cornerRadius: 16))
       }
 
-      VersionInfo(appInfo: viewModel.appInfo)
+      VersionInfo(appInfo: viewModel.appInfo, showRuntimeVersion: viewModel.showRuntimeVersion)
 
       Spacer()
 
@@ -69,6 +69,7 @@ struct HeaderView: View {
 
 private struct VersionInfo: View {
   let appInfo: AppInfo?
+  let showRuntimeVersion: Bool
 
   var body: some View {
     VStack(alignment: .leading, spacing: 2) {
@@ -77,16 +78,18 @@ private struct VersionInfo: View {
         .fontWeight(.bold)
         .lineLimit(1)
 
-      if let runtimeVersion = appInfo?.runtimeVersion {
-        Text("Runtime version: \(runtimeVersion)")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
+      if showRuntimeVersion {
+        if let runtimeVersion = appInfo?.runtimeVersion {
+          Text("Runtime version: \(runtimeVersion)")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
 
-      if let sdkVersion = appInfo?.sdkVersion {
-        Text("SDK version: \(sdkVersion)")
-          .font(.caption)
-          .foregroundColor(.secondary)
+        if let sdkVersion = appInfo?.sdkVersion {
+          Text("SDK version: \(sdkVersion)")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
     }
   }

@@ -11,12 +11,16 @@ import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.frames.FrameMetricsRecord
 import expo.modules.appmetrics.frames.FrameMetricsRecorder
+import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.utils.DeviceConditions
+import expo.modules.appmetrics.utils.MetricParamsBuilder
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
 import expo.modules.appmetrics.utils.TimeUtils.getProcessStartTimeInMillis
 import org.json.JSONObject
+import java.util.Date
+import java.util.concurrent.CopyOnWriteArrayList
 
 enum class AppStartType { COLD, WARM }
 
@@ -35,14 +39,23 @@ data class EASObserveAppStartupInfo(
 object AppStartupManager {
   private const val BACKGROUND_THRESHOLD_MS = 60_000L
 
-  private val _metrics: MutableList<Metric> = mutableListOf()
+  // CopyOnWriteArrayList: writes (addMetric) happen on the React/JS/main threads;
+  // reads (saveStartupMetricsIfNotSaved) happen on appContext.modulesQueue. Snapshot
+  // iteration on the read side means we never CME under concurrent add().
+  private val _metrics: MutableList<Metric> = CopyOnWriteArrayList()
   internal val metrics: List<Metric>
     get() = _metrics
 
-  private var bundleLoadStartTime: Long? = null
-  private var launchTimeInMillis: Long? = null
-  private var hasRecordedInteractive = false
-  private var hasRecordedFirstRender = false
+  // These fields are read and written across the React marker thread, the main thread,
+  // and the JS thread. @Volatile guarantees writes are visible across threads so the
+  // one-shot guards (hasRecorded*) don't spuriously fire twice.
+  @Volatile private var bundleLoadStartTime: Long? = null
+
+  @Volatile private var launchTimeInMillis: Long? = null
+
+  @Volatile private var hasRecordedInteractive = false
+
+  @Volatile private var hasRecordedFirstRender = false
 
   @Volatile
   var startupState: StartupState = StartupState.LAUNCHING
@@ -225,16 +238,19 @@ object AppStartupManager {
     frameMetrics: FrameMetricsRecord,
     userParams: Map<String, Any>?
   ): Map<String, Any> {
-    val merged = mutableMapOf<String, Any>()
-    userParams?.let { merged.putAll(it) }
-    if (frameMetrics.expectedFrames > 0) {
-      merged["expo.frameRate.slowFrames"] = frameMetrics.slowFrames
-      merged["expo.frameRate.frozenFrames"] = frameMetrics.frozenFrames
-      merged["expo.frameRate.totalDelay"] = frameMetrics.freezeTimeMs.toDouble() / 1000.0
+    // Window the network summary to `launchTimeInMillis -> now` - same anchor iOS uses
+    // (`markers.finishedLaunchingDate`). When the anchor is missing we skip the summary
+    // entirely; an unbounded window would silently include requests from before launch.
+    val networkRequests = launchTimeInMillis?.let { launchStart ->
+      NetworkRequestMonitor.shared.summarize(start = Date(launchStart), end = Date())
     }
-    merged.putAll(DeviceConditions.deviceParams(context))
-    merged.putAll(DeviceConditions.networkParams(context))
-    return merged
+    return MetricParamsBuilder.build(
+      userParams = userParams,
+      frameMetrics = frameMetrics,
+      deviceState = DeviceConditions.deviceState(context),
+      networkState = DeviceConditions.networkState(context),
+      networkRequests = networkRequests
+    )
   }
 
   fun markFirstRender() {

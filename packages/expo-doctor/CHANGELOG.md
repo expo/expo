@@ -4,11 +4,62 @@
 
 ### 🛠 Breaking changes
 
+- Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+- Use an explicit mode for `.env` files and Expo config. ([#48845](https://github.com/expo/expo/pull/48845) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
+
+- Warn projects using Expo SDKs affected by the Hermes v1 memory regression ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
+- [Internal] Prevent `ncc` from removing dynamic requires where we need them ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
+- Keep loaded `.env` values out of `expo install --check`. ([#48845](https://github.com/expo/expo/pull/48845) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Report a stale `@expo/dom-webview` left over from an older SDK in the overridden dependency check. ([#49345](https://github.com/expo/expo/pull/49345) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 1.20.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 1.20.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.10 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Recognize the React Native Directory `new-arch-only` status so New-Architecture-only libraries aren't flagged ([#46755](https://github.com/expo/expo/pull/46755) by [@zoontek](https://github.com/zoontek))
+
+## 1.19.9 - 2026-06-05
+
+### 🐛 Bug fixes
+
+- Fix SDK 55 Metro config check for missing `metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+
+## 1.19.8 — 2026-05-23
+
+### 💡 Others
+
+- Switch Metro config loading to `expo/metro-config`'s `loadUserConfig` ([#46155](https://github.com/expo/expo/pull/46155) by [@kitten](https://github.com/kitten))
+
+## 1.19.7 — 2026-05-20
+
+### 🎉 New features
+
+- Add check for committed `*.local` env files ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Pass original env to Expo sub-command ([#45832](https://github.com/expo/expo/pull/45832) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+- Switch React Native Directory compatibility check request from POST to GET. ([#45673](https://github.com/expo/expo/pull/45673) by [@simek](https://github.com/simek))
 
 ## 1.19.6 — 2026-05-11
 

@@ -1,33 +1,42 @@
+import * as Log from '../../../log';
+import { installExitHooks } from '../../../utils/exit';
+import { event } from '../events';
 import { assertSdkRoot } from './AndroidSdk';
 import type { Device } from './adb';
 import { adbArgs, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
-import * as Log from '../../../log';
-import { installExitHooks } from '../../../utils/exit';
-
-const debug = require('debug')('expo:start:platforms:android:adbReverse') as typeof console.log;
 
 let removeExitHook: (() => void) | null = null;
+const ADB_REVERSE_WAIT_LIMIT_MS = 2_000;
+const ADB_REVERSE_CLEANUP_WAIT_LIMIT_MS = 2_000;
 
 export function hasAdbReverseAsync(): boolean {
   try {
     return !!assertSdkRoot();
   } catch (error: any) {
-    debug('Failed to resolve the Android SDK path, skipping ADB: %s', error.message);
+    event('adb_reverse_sdk_missing', { error: event.error(error as Error) });
     return false;
   }
 }
 
-export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
+export async function startAdbReverseAsync(
+  ports: number[],
+  signal?: AbortSignal
+): Promise<boolean> {
+  const exitController = new AbortController();
+  const operationSignal = signal
+    ? AbortSignal.any([signal, exitController.signal])
+    : exitController.signal;
   // Install cleanup automatically...
   removeExitHook = installExitHooks(() => {
-    stopAdbReverseAsync(ports);
+    exitController.abort();
+    return stopAdbReverseAsync(ports).catch(() => undefined);
   });
 
-  const devices = await getAttachedDevicesAsync();
+  const devices = await getAttachedDevicesAsync({ signal: operationSignal });
   for (const device of devices) {
     for (const port of ports) {
-      if (!(await adbReverseAsync(device, port))) {
-        debug(`Failed to start reverse port ${port} on device "${device.name}"`);
+      if (!(await adbReverseAsync(device, port, operationSignal))) {
+        event('adb_reverse_port_failed', { port, deviceName: device.name });
         return false;
       }
     }
@@ -35,43 +44,63 @@ export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   return true;
 }
 
-export async function stopAdbReverseAsync(ports: number[]): Promise<void> {
+export async function stopAdbReverseAsync(ports: number[], signal?: AbortSignal): Promise<void> {
   removeExitHook?.();
 
-  const devices = await getAttachedDevicesAsync();
+  const cleanupSignal = AbortSignal.timeout(ADB_REVERSE_CLEANUP_WAIT_LIMIT_MS);
+  const operationSignal = signal ? AbortSignal.any([signal, cleanupSignal]) : cleanupSignal;
+  const devices = await getAttachedDevicesAsync({ signal: operationSignal });
   for (const device of devices) {
     for (const port of ports) {
-      await adbReverseRemoveAsync(device, port);
+      await adbReverseRemoveAsync(device, port, operationSignal);
     }
   }
 }
 
-async function adbReverseAsync(device: Device, port: number): Promise<boolean> {
+async function adbReverseAsync(
+  device: Device,
+  port: number,
+  signal?: AbortSignal
+): Promise<boolean> {
   if (!device.isAuthorized) {
     logUnauthorized(device);
     return false;
   }
 
   try {
-    await getServer().runAsync(adbArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`));
+    await getServer().runDeviceMutationAsync(
+      adbArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`),
+      'reverse port',
+      signal,
+      ADB_REVERSE_WAIT_LIMIT_MS
+    );
     return true;
   } catch (error: any) {
+    if (signal?.aborted && error === signal.reason) throw error;
     Log.warn(`[ADB] Couldn't reverse port ${port}: ${error.message}`);
     return false;
   }
 }
 
-async function adbReverseRemoveAsync(device: Device, port: number): Promise<boolean> {
+async function adbReverseRemoveAsync(
+  device: Device,
+  port: number,
+  signal?: AbortSignal
+): Promise<boolean> {
   if (!device.isAuthorized) {
     return false;
   }
 
   try {
-    await getServer().runAsync(adbArgs(device.pid, 'reverse', '--remove', `tcp:${port}`));
+    await getServer().runDeviceMutationAsync(
+      adbArgs(device.pid, 'reverse', '--remove', `tcp:${port}`),
+      'remove reverse port',
+      signal,
+      ADB_REVERSE_CLEANUP_WAIT_LIMIT_MS
+    );
     return true;
   } catch (error: any) {
-    // Don't send this to warn because we call this preemptively sometimes
-    debug(`Could not unforward port ${port}: ${error.message}`);
+    if (signal?.aborted && error === signal.reason) throw error;
     return false;
   }
 }

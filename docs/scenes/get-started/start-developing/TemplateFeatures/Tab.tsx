@@ -14,8 +14,8 @@ export function Tab({ title, onClick, isSelected }: Props) {
     <ButtonBase
       onClick={onClick}
       className={mergeClasses(
-        'hocus:bg-hover rounded-md border border-transparent px-3 py-1.5 text-left',
-        isSelected && 'border-default bg-default border shadow-xs'
+        'rounded-md border border-transparent px-3 py-1.5 text-left hocus:bg-hover',
+        isSelected && 'border border-default bg-default shadow-xs'
       )}>
       <CALLOUT theme={isSelected ? 'default' : 'secondary'}>{title}</CALLOUT>
     </ButtonBase>

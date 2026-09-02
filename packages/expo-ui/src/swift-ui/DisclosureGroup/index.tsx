@@ -1,11 +1,15 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export interface DisclosureGroupProps extends CommonViewModifierProps {
-  label: string;
+  /**
+   * Text label for the disclosure group. Use `DisclosureGroup.Label` for custom label content.
+   */
+  label?: string;
   children: React.ReactNode;
   /**
    * Controls whether the disclosure group is expanded.
@@ -25,7 +29,11 @@ type NativeDisclosureGroupProps = Omit<DisclosureGroupProps, 'onIsExpandedChange
 const DisclosureGroupNativeView: React.ComponentType<NativeDisclosureGroupProps> =
   requireNativeView('ExpoUI', 'DisclosureGroupView');
 
-export function DisclosureGroup(props: DisclosureGroupProps) {
+function Label({ children }: { children: React.ReactNode }) {
+  return <Slot name="label">{children}</Slot>;
+}
+
+function DisclosureGroupComponent(props: DisclosureGroupProps) {
   const { onIsExpandedChange, modifiers, ...rest } = props;
 
   function handleStateChange(event: { nativeEvent: { isExpanded: boolean } }) {
@@ -40,3 +48,7 @@ export function DisclosureGroup(props: DisclosureGroupProps) {
 
   return <DisclosureGroupNativeView {...transformedProps} onIsExpandedChange={handleStateChange} />;
 }
+
+DisclosureGroupComponent.Label = Label;
+
+export { DisclosureGroupComponent as DisclosureGroup };

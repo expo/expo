@@ -1,12 +1,12 @@
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
+import type { EmbeddedManifest } from 'expo-manifests';
 import { resolveEntryPoint } from 'expo/config/paths';
 import {
   drawableFileTypes,
   createMetroServerAndBundleRequestAsync,
   exportEmbedAssetsAsync,
 } from 'expo/internal/unstable-expo-updates-cli-exports';
-import type { EmbeddedManifest } from 'expo-manifests';
 import fs from 'fs';
 import path from 'path';
 
@@ -64,12 +64,14 @@ export async function createManifestForBuildAsync(
         'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/main/packages/expo-updates/README.md#metroconfigjs for an example.'
       );
     }
-    filterPlatformAssetScales(platform, asset.scales).forEach(function (scale, index) {
+    filterPlatformAssetScales(platform, asset.scales).forEach(function (scale) {
       const baseAssetInfoForManifest = {
         name: asset.name,
         type: asset.type,
         scale,
-        packagerHash: asset.fileHashes[index],
+        // `fileHashes` is parallel to the unfiltered `asset.scales`, so it must be indexed by the
+        // scale's position there rather than by its position in the filtered list.
+        packagerHash: asset.fileHashes[asset.scales.indexOf(scale)],
         subdirectory: asset.httpServerLocation,
       };
       if (platform === 'ios') {

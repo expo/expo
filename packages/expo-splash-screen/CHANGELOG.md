@@ -8,7 +8,51 @@
 
 ### 🐛 Bug fixes
 
+- Generate a transparent Android splash drawable when the config plugin has no image. ([#49371](https://github.com/expo/expo/pull/49371) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
+
 ### 💡 Others
+
+## 57.0.5 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- Fix `exports` field resolving to the web stubs on native, making functions like `preventAutoHideAsync` no-ops. ([#45798](https://github.com/expo/expo/pull/45798) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.6 — 2026-05-13
 
@@ -743,7 +787,7 @@ _This version does not introduce any user-facing changes._
 - On Android fixed `SplashScreen` methods not working in managed workflow. Scoped the `SplashScreen` native object to the separate `singletons` sub-package to work with versioned code. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@expo/configure-splash-screen` to `v0.2.0`.
   - This version fixes the problem with the wrong `SplashScreen.show` method signature on Android. It properly adds the `ReactRootView` parameter now.
-  - Additionally it properly imports the `SplashScreen` object from the `singletons` sub-packagae on Android.
+  - Additionally it properly imports the `SplashScreen` object from the `singletons` sub-package on Android.
 - `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout. Every parameter has to provided via the `--[option name]` syntax now.
 
 ## 0.6.1 - 2020-09-17

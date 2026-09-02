@@ -14,7 +14,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll learn how to set up [internal distribution builds](/build/internal-distribution/#internal-distribution).
+In this chapter, we'll learn how to set up [internal distribution builds](/build/internal-distribution/#using-internal-distribution).
 
 <VideoBoxLink
   videoId="1fQuGLHxWks"
@@ -55,7 +55,7 @@ From our initial setup in **eas.json**, we already have a default configuration 
 {
   "build": {
     "preview": {
-      /* @info The <CODE>distribution</CODE> in <CODE>preview</CODE> profile has its value set to <CODE>internal</CODE>. */
+      /* @info The `distribution` in `preview` profile has its value set to `internal`. */
       "distribution": "internal"
       /* @end */
     }
@@ -108,6 +108,8 @@ Apps signed with an ad hoc provisioning profile can be installed by an iOS devic
 - This command registers an iOS device for app installation, generating a shareable URL (or QR code) for device registration.
 
   > **info** **Tip**: This command enables device registration at any time. However, only builds created post-registration will work on the newly added device.
+
+  > **warning** **On a new or recently renewed Apple Developer Program membership, a newly registered device may not be immediately installable.** Registering a device with Expo does not register it with Apple. The device is added to Apple only when it's first included in a build or re-sign. For such a membership, Apple can then take [up to 24–72 hours](https://developer.apple.com/help/account/reference/device-registration-updates/) to finish processing the device before it can be added to a provisioning profile. If a build fails right after you register a new device, wait for Apple to finish processing and then run the build again. Learn more about [managing devices](/build/internal-distribution/#managing-devices).
 
 - To create the preview build, we need to use the `preview` profile with the `eas build` command:
 
@@ -200,7 +202,7 @@ Since we have already set up multiple app variants, we can see both the developm
 
 <ContentSpotlight
   alt="Internal distribution build details and install link in EAS dashboard for iOS"
-  src="/static/images/tutorial/eas/ios-multi-variants-installed.png"
+  src="/static/images/tutorial/eas/ios-multi-variants-installed.webp"
   className="max-w-[250px]"
 />
 
@@ -209,10 +211,6 @@ Since we have already set up multiple app variants, we can see both the developm
 ## Summary
 
 <ProgressTracker
-  currentChapterIndex={5}
   name="EAS_TUTORIAL"
-  summary="We successfully created internal distribution builds for Android and iOS, used ad hoc provisioning for iOS, and installed multiple app variants on the same device."
-  nextChapterDescription="In the next chapter, learn about developer-facing and user-facing app versions and how to manage them automatically."
-  nextChapterTitle="Manage different app versions"
-  nextChapterLink="/tutorial/eas/manage-app-versions/"
+  currentChapterSlug="/tutorial/eas/internal-distribution-builds"
 />

@@ -313,6 +313,8 @@ export interface BottomSheetProps {
    * Style for the sheet background.
    *
    * @remarks On Android, `backgroundColor` is extracted and applied as `containerColor`.
+   * On iOS, `backgroundColor` is extracted and applied via SwiftUI's
+   * `.presentationBackground(_:)` modifier.
    * Other style properties may not take effect on native platforms.
    * On web, the full style is applied.
    */

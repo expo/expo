@@ -27,7 +27,7 @@ The Expo team collaborates with Meta to develop Metro for Expo Router, adding fe
 
 ## Battle-tested at scale
 
-Nearly every React Native app in the world uses Metro, making it a battle-tested solution optimized for large-scale projects. This makes it suitable for developers of all sizes, from hobbyists to large companies. Metro is designed specifically to handle large-scale Meta apps, which is why it has features such as native file watching with Watchman and [shared remote caches](https://metrobundler.dev/docs/caching).
+Nearly every React Native app in the world uses Metro, making it a battle-tested solution optimized for large-scale projects. This makes it suitable for developers of all sizes, from hobbyists to large companies. Metro is designed specifically to handle large-scale Meta apps, which is why it has features such as delta bundling and [shared remote caches](https://metrobundler.dev/docs/caching).
 
 ## On-demand processing
 
@@ -70,7 +70,7 @@ While bundlers like Vite leverage built-in ESM support in the browser, this appr
 Several bundlers are opting to write their core in Rust for performance reasons, but this comes with some trade-offs, such as more challenging contributions, patches, and development. Metro uses a mix of technologies based on the operation:
 
 - The core bundler and utilities are written in JS/Flow.
-- File watching is written in C++ via Watchman, with a JS fallback. Watchman is then used across projects on your computer.
+- File watching uses a JS crawler by default, and can optionally use Watchman (C++) when installed.
 - AST is parsed with Hermes parser (WebAssembly) to a Babel-compatible format.
 - AST transformation is done with Babel. This maximizes developer customization.
 - Minification uses Hermes on native platforms and Terser (with optional ESBuild support) for web.

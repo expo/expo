@@ -3,50 +3,35 @@
 import SwiftUI
 
 struct DevServerInfoModal: View {
-  @Binding var showingInfoDialog: Bool
+  @Environment(\.dismiss) private var dismiss
 
   var body: some View {
-    Group {
-      if #available(iOS 15.0, tvOS 16.0, *) {
-        if showingInfoDialog {
-          Color.black.opacity(0.4)
-            .ignoresSafeArea(.all)
-            .onTapGesture {
-              showingInfoDialog = false
-            }
-          content
-        }
-      }
-    }
-    .animation(.easeInOut(duration: 0.3), value: showingInfoDialog)
-  }
-
-  private var content: some View {
-    VStack(spacing: 16) {
+    VStack(alignment: .leading, spacing: 16) {
       header
-      Divider()
       info
+      Spacer()
     }
     .padding(20)
-    .background(Color.expoSystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 16))
-    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
-    .padding(.horizontal, 40)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    #if os(iOS)
+    .presentationDetents([.medium])
+    #endif
   }
 
   private var header: some View {
     HStack {
       Text("Development Servers")
-        .font(.headline)
-        .fontWeight(.semibold)
+        .font(.title2)
+        .fontWeight(.bold)
       Spacer()
       Button {
-        showingInfoDialog = false
+        dismiss()
       } label: {
-        Image(systemName: "xmark")
-          .font(.title3)
+        Image(systemName: "xmark.circle.fill")
+          .font(.title2)
           .foregroundColor(.secondary)
       }
+      .buttonStyle(.plain)
     }
   }
 

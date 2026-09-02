@@ -87,7 +87,7 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
           IMP imp = method_getImplementation(method);
           const EXMethodInfo *info = ((const EXMethodInfo *(*)(id, SEL))imp)(klass, methodSelector);
           NSString *fullSelectorName = [NSString stringWithUTF8String:info->objcName];
-          // `objcName` constains a method declaration string
+          // `objcName` contains a method declaration string
           // (eg. `doSth:(NSString *)string options:(NSDictionary *)options`)
           // We only need a selector string  (eg. `doSth:options:`)
           NSString *simpleSelectorName = [self selectorNameFromName:fullSelectorName];

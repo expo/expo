@@ -16,9 +16,4 @@ object Utils {
   }
 }
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun AppContext?.toStrongReference(): AppContext {
-  return this ?: throw Exceptions.AppContextLost()
-}
-
 fun <T : Any> T?.weak() = WeakReference<T>(this)

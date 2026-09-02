@@ -1,8 +1,12 @@
 import { vol } from 'memfs';
 
 import { RootPathUtils } from '../../../lib/RootPathUtils';
-import type { FallbackFilesystem } from '../../../types';
+import type { FallbackFilesystem, FileMetadata } from '../../../types';
 import createFallbackFilesystem, { isFallbackDir } from '../fallback';
+
+// memfs is POSIX-only; pin to POSIX path semantics
+// TODO(@kitten): Fork the test for posix v windows
+jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
 
 const rootDir = '/project';
 
@@ -211,10 +215,10 @@ describe('createFallbackFilesystem', () => {
         '/project/src/file.js': 'new',
       });
       const fallback = createFallback();
-      const existing = new Map([['file.js', [999, 5, 0, null, 0, null] as any]]);
+      const existing = new Map([['file.js', [999, 5, 0, null, 0, null] as FileMetadata]]);
       const result = fallback.readdir('src', '/project/src', existing);
 
-      expect(result!.get('file.js')?.[0]).toBe(999); // preserved
+      expect((result!.get('file.js') as FileMetadata)?.[0]).toBe(999); // preserved
     });
 
     test('skips .git and .hg directories', () => {

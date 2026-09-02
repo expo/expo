@@ -8,14 +8,15 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI SecureField matches the official SwiftUI [SecureField API](https://developer.apple.com/documentation/swiftui/securefield) and provides a text field that masks user input for passwords and other sensitive text.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/securefield/ios-light.webp"
-  darkSource="/static/images/expo-ui/securefield/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/securefield/ios-light.webp"
+  darkSrc="/static/images/expo-ui/securefield/ios-dark.webp"
   alt="Three SecureField rows for changing a password"
 />
 
@@ -36,7 +37,7 @@ export default function BasicSecureFieldExample() {
 
   return (
     <Host matchContents>
-      <SecureField placeholder="Password" onValueChange={setPassword} />
+      <SecureField placeholder="Password" onTextChange={setPassword} />
     </Host>
   );
 }
@@ -58,7 +59,7 @@ export default function SecureFieldSubmitExample() {
     <Host matchContents>
       <SecureField
         placeholder="Password"
-        onValueChange={setPassword}
+        onTextChange={setPassword}
         modifiers={[submitLabel('done'), onSubmit(() => console.log('Login submitted'))]}
       />
     </Host>

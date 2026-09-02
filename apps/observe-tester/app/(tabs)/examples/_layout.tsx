@@ -11,9 +11,11 @@ export default function ExamplesLayout() {
         headerTintColor: theme.text.default,
       }}>
       <Stack.Screen name="index" options={{ title: 'Examples' }} />
+      <Stack.Screen name="expo-image" options={{ headerShown: false }} />
       <Stack.Screen name="nested-stack" options={{ headerShown: false }} />
       <Stack.Screen name="preloaded" options={{ headerShown: false }} />
       <Stack.Screen name="modals" options={{ headerShown: false }} />
+      <Stack.Screen name="event-flood" options={{ title: 'Event flood' }} />
     </Stack>
   );
 }

@@ -2,13 +2,20 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import android.util.Base64
+import expo.modules.filesystem.unifiedfile.ContentProviderFile
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.services.FilePermissionService
-import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
 import java.security.MessageDigest
+
+internal fun FileMode.requiredPermissions(): List<FilePermissionService.Permission> = when (this) {
+  FileMode.READ -> listOf(FilePermissionService.Permission.READ)
+  FileMode.WRITE, FileMode.APPEND, FileMode.TRUNCATE -> listOf(FilePermissionService.Permission.WRITE)
+  FileMode.READ_WRITE -> listOf(FilePermissionService.Permission.READ, FilePermissionService.Permission.WRITE)
+}
 
 class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   private val contentResolver
@@ -56,9 +63,31 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun openHandle(mode: FileMode?): FileSystemFileHandle {
     val fileImpl = file
+    val resolvedMode = mode ?: when (fileImpl) {
+      is SAFDocumentFile, is ContentProviderFile -> FileMode.READ
+      else -> FileMode.READ_WRITE
+    }
+    for (permission in resolvedMode.requiredPermissions()) {
+      validatePermission(permission)
+    }
     return when (fileImpl) {
-      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, mode ?: FileMode.READ_WRITE)
-      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, mode ?: FileMode.READ, contentResolver)
+      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, resolvedMode)
+      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
+      is ContentProviderFile -> {
+        if (resolvedMode == FileMode.READ_WRITE) {
+          throw UnsupportedContentUriReadWriteException()
+        }
+        try {
+          FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
+        } catch (e: Exception) {
+          throw Exceptions.IllegalStateException(
+            "Failed to open file handle for content:// URI: ${fileImpl.uri}. " +
+              "The content provider may not support random access. " +
+              "Try reading the file using File.text() or File.bytes() instead.",
+            e
+          )
+        }
+      }
       else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
     }
   }
@@ -74,7 +103,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
-  fun write(content: TypedArray, append: Boolean = false) {
+  fun write(content: NativeArrayBuffer, append: Boolean = false) {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     if (!exists) {
@@ -82,7 +111,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
     if (uri.isContentUri) {
       file.outputStream(append).use { outputStream ->
-        val array = ByteArray(content.length)
+        val array = ByteArray(content.size())
         content.toDirectBuffer().get(array)
         outputStream.write(array)
       }
@@ -145,12 +174,24 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     return file.getContentUri(appContext ?: throw MissingAppContextException())
   }
 
-  @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
+    return digest("MD5")
+  }
+
+  @OptIn(ExperimentalStdlibApi::class)
+  fun digest(algorithm: String): String {
     val bufferSize = 65536
 
+    validateType()
     validatePermission(FilePermissionService.Permission.READ)
-    val md = MessageDigest.getInstance("MD5")
+    val md = when (algorithm) {
+      "MD5" -> MessageDigest.getInstance("MD5")
+      "SHA-1" -> MessageDigest.getInstance("SHA-1")
+      "SHA-256" -> MessageDigest.getInstance("SHA-256")
+      "SHA-384" -> MessageDigest.getInstance("SHA-384")
+      "SHA-512" -> MessageDigest.getInstance("SHA-512")
+      else -> throw UnsupportedDigestAlgorithmException(algorithm)
+    }
     file.inputStream().use { stream ->
       val buffer = ByteArray(bufferSize)
       var bytesRead: Int

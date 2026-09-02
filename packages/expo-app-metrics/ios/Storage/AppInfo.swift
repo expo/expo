@@ -2,9 +2,7 @@
 
 import EXUpdatesInterface
 
-/**
- Provides some basic informations about the app.
- */
+/// Provides some basic information about the app.
 public struct AppInfo: Codable, Equatable, Sendable {
   public let appId: String?
   public let appName: String?
@@ -21,16 +19,12 @@ public struct AppInfo: Codable, Equatable, Sendable {
     public let runtimeVersion: String?
     public let requestHeaders: [String: String]?
     public var channel: String? {
-      get {
-        return requestHeaders?["expo-channel-name"]
-      }
+      return requestHeaders?["expo-channel-name"]
     }
 
-    /**
-     True when none of the carried fields are populated. Lets callers omit the whole struct from
-     wire payloads instead of sending `{ updateId: null, runtimeVersion: null, requestHeaders: null }`,
-     matching the pre-SQLite shape where `AppInfo.updatesInfo` was itself optional.
-     */
+    /// True when none of the carried fields are populated. Lets callers omit the whole struct from
+    /// wire payloads instead of sending `{ updateId: null, runtimeVersion: null, requestHeaders: null }`,
+    /// matching the pre-SQLite shape where `AppInfo.updatesInfo` was itself optional.
     public var isEmpty: Bool {
       return updateId == nil && runtimeVersion == nil && requestHeaders == nil
     }
@@ -63,8 +57,6 @@ public struct AppInfo: Codable, Equatable, Sendable {
   public nonisolated(unsafe) static var current: AppInfo = {
     let bundle = Bundle.main
     let infoPlist = bundle.infoDictionary ?? [:]
-    let updatesInfo = UpdatesMonitoring.getUpdatesMetricsInfo()
-
     return AppInfo(
       appId: bundle.bundleIdentifier,
       appName: (infoPlist["CFBundleDisplayName"] ?? infoPlist["CFBundleName"]) as? String,

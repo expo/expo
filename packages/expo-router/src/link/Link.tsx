@@ -16,7 +16,7 @@ export const Link = Object.assign(
    * [`WebAnchorProps`](#webanchorprops) for more details.
    *
    * > **Note**: Client-side navigation works with both single-page apps,
-   * and [static-rendering](/router/reference/static-rendering/).
+   * and [static-rendering](/router/web/static-rendering/).
    *
    * @example
    * ```tsx
@@ -32,6 +32,7 @@ export const Link = Object.assign(
    *}
    * ```
    */
+  // TODO(@ubax): Expose pending status scoped to this link's navigation.
   function Link(props: LinkProps) {
     // Re-exporting ExpoLink here so that Link.* can be used in server components.
     return <ExpoLink {...props} />;

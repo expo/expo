@@ -1,8 +1,7 @@
-import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import { Children, ReactElement, ReactNode, PropsWithChildren, isValidElement } from 'react';
 
-import sdkVersions from '~/ui/components/SDKTables/sdk-versions.json';
+import { sdkVersionValues } from '~/ui/components/SDKTables/utils';
 
 import { toString } from './utilities';
 
@@ -10,7 +9,7 @@ import { toString } from './utilities';
  * Build the code block variables map for a given SDK version entry.
  * Variables can be used in fenced code blocks with the `{{variableName}}` syntax.
  */
-function buildVariablesForSdk(sdk: (typeof sdkVersions.sdkVersions)[0]): Record<string, string> {
+function buildVariablesForSdk(sdk: (typeof sdkVersionValues)[0]): Record<string, string> {
   return {
     '{{iosDeploymentTarget}}': sdk.ios.replace('+', ''),
     '{{androidVersion}}': sdk.android.replace('+', ''),
@@ -35,10 +34,10 @@ function getVariablesForVersion(version?: string): Record<string, string> {
     return cached;
   }
 
-  let sdk = sdkVersions.sdkVersions[0];
+  let sdk = sdkVersionValues[0];
   if (version && version !== 'latest' && version !== 'unversioned') {
     const normalized = version.replace(/^v/, '');
-    const match = sdkVersions.sdkVersions.find(s => s.sdk === normalized);
+    const match = sdkVersionValues.find(s => s.sdk === normalized);
     if (match) {
       sdk = match;
     }
@@ -102,7 +101,12 @@ export function cleanCopyValue(value: string, version?: string) {
 }
 
 export function escapeHtml(text: string) {
-  return text.replace(/"/g, '&quot;');
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 export function replaceXmlCommentsWithAnnotations(value: string) {
@@ -203,20 +207,32 @@ export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
     );
 }
 
+function partition<T>(items: T[], predicate: (item: T) => boolean): [T[], T[]] {
+  const matched: T[] = [];
+  const rest: T[] = [];
+  for (const item of items) {
+    (predicate(item) ? matched : rest).push(item);
+  }
+  return [matched, rest];
+}
+
 export function parseValue(value: string) {
   if (value.startsWith('@@@')) {
     const valueChunks = value.split('@@@');
     const titleChunks = valueChunks[1].split('|');
+    // Boolean params are bare flags (no `=`) because an `=` in the code fence meta
+    // breaks Vale's code block detection via the TokenIgnores patterns in .vale.ini.
+    const BOOLEAN_PARAMS = ['wrap'];
     const [params, title] = partition(
       titleChunks,
-      chunk => chunk.includes('=') && !chunk.includes(' ')
+      chunk => (chunk.includes('=') && !chunk.includes(' ')) || BOOLEAN_PARAMS.includes(chunk)
     );
     return {
       title: title[0],
       params: Object.assign(
         {},
         ...params.map(param => {
-          const [key, value] = param.split('=');
+          const [key, value = 'true'] = param.split('=');
           return { [key]: value };
         })
       ) as Record<string, string>,
@@ -301,7 +317,7 @@ export function getCodeData(value: string, className?: string, version?: string)
 
   const processedValue = replaceCodeBlockVariables(value, version);
   const rawHtml = Prism.highlight(processedValue, grammar, lang);
-  if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
+  if (['properties', 'ruby', 'bash', 'yaml', 'yml'].includes(lang)) {
     return replaceHashCommentsWithAnnotations(rawHtml);
   } else if (['xml', 'html'].includes(lang)) {
     return replaceXmlCommentsWithAnnotations(rawHtml);

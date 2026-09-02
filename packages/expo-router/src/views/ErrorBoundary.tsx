@@ -4,11 +4,11 @@ import { use } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Pressable } from './Pressable';
-import type { ErrorBoundaryProps } from './Try';
 import { Link } from '../link/Link';
 import { BottomTabBarHeightContext } from '../react-navigation/bottom-tabs';
 import { ReactServerError } from '../rsc/router/errors';
+import { Pressable } from './Pressable';
+import type { ErrorBoundaryProps } from './Try';
 
 function StandardErrorView({ error }: { error: Error }) {
   return (

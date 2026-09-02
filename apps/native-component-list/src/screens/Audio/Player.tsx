@@ -1,6 +1,6 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { AudioMetadata } from 'expo-audio';
 import React from 'react';
 import {
@@ -15,6 +15,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Colors from '../../constants/Colors';
 
 interface Props {
@@ -202,9 +203,12 @@ export default function Player(props: Props) {
                 setInitialScrubbingMillis(props.currentTime);
               }}
             />
-            <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
+            <BodyText
+              style={{ width: 100, textAlign: 'right' }}
+              adjustsFontSizeToFit
+              numberOfLines={1}>
               {_formatTime(props.currentTime)} / {_formatTime(props.duration)}
-            </Text>
+            </BodyText>
           </>
         )}
         {_renderReplayButton()}

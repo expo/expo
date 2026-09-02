@@ -69,7 +69,7 @@ public class ParseException extends IllegalArgumentException {
     }
 
     /**
-     * Return the raw data on which the parser operated..
+     * Return the raw data on which the parser operated.
      * 
      * @return the raw data.
      */

@@ -4,7 +4,7 @@ import React from 'react';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type GridProps = {
+export interface GridProps extends CommonViewModifierProps {
   /**
    * The guide for aligning the child views within the space allocated for a given cell. The default is center.
    */
@@ -33,7 +33,7 @@ export type GridProps = {
    */
   horizontalSpacing?: number;
   children: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 const GridNativeView: React.ComponentType<GridProps> = requireNativeView('ExpoUI', 'GridView');
 

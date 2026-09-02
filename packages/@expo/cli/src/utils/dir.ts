@@ -60,6 +60,14 @@ export const removeAsync = (path: string): Promise<void> => {
   });
 };
 
+export function maybeRealpathSync(target: string): string | null {
+  try {
+    return fs.realpathSync(target);
+  } catch {
+    return null;
+  }
+}
+
 export function isPathInside(child: string, parent: string): boolean {
   const relative = path.relative(parent, child);
   return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);

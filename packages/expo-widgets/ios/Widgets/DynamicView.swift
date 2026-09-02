@@ -48,7 +48,9 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   public var body: some View {
     switch node["type"] as? String {
     case "TextView":
-      render(TextView.self, TextViewProps.self, updateProps: updateChildren)
+      // TextView applies common modifiers internally so concatenated text keeps
+      // its SwiftUI.Text representation. Avoid applying those modifiers again.
+      render(TextView.self, TextViewProps.self, updateProps: updateChildren, wrapInUIBaseView: false)
     case "HStackView":
       render(HStackView.self, HStackViewProps.self, updateProps: updateChildren)
     case "VStackView":
@@ -127,7 +129,12 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   // MARK: - Render Method
 
   @ViewBuilder
-  private func render<P, V>(_ viewType: V.Type, _ propsType: P.Type, updateProps: ((_ initialProps: P) throws -> Void)? = nil) -> some View
+  private func render<P, V>(
+    _ viewType: V.Type,
+    _ propsType: P.Type,
+    updateProps: ((_ initialProps: P) throws -> Void)? = nil,
+    wrapInUIBaseView: Bool = true
+  ) -> some View
   where P: UIBaseViewProps, V: ExpoSwiftUI.View, V.Props == P {
     // immediately invoked closure {}() here because we can't use 'do-catch' inside @ViewBuilder
     {
@@ -136,7 +143,10 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
           let props = try propsType.init(rawProps: rawProps, context: WidgetsContext.shared.context)
           try updateProps?(props)
           // TODO(@jakex7): Prevent unwanted transition when view is updated with new props - we want to have the same view instance recreated with new props instead of creating a new view instance and transitioning to it
-          return AnyView(UIBaseView<P, V>(props: props).transition(.identity))
+          if wrapInUIBaseView {
+            return AnyView(UIBaseView<P, V>(props: props).transition(.identity))
+          }
+          return AnyView(V(props: props).transition(.identity))
         }
         return AnyView(EmptyView())
       } catch {
@@ -151,11 +161,23 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [Any] {
-        let validChildren = children.compactMap { $0 as? [String: Any] }
+        let validChildren = flattenChildNodes(children)
         initialProps.children = validChildren.map { WidgetsDynamicView(name: name, kind: kind, node: $0, entryIndex: entryIndex, environmentString: environmentString) }
       } else if let child = props["children"] as? [String: Any] {
         initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
       }
+    }
+  }
+
+  private func flattenChildNodes(_ children: [Any]) -> [[String: Any]] {
+    return children.flatMap { child -> [[String: Any]] in
+      if let node = child as? [String: Any] {
+        return [node]
+      }
+      if let nested = child as? [Any] {
+        return flattenChildNodes(nested)
+      }
+      return []
     }
   }
 }

@@ -13,10 +13,11 @@ import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 class DevLauncherEmbeddedAppLoader(
   private val appHost: ReactHost,
   private val context: Context,
-  controller: DevLauncherControllerInterface
+  controller: DevLauncherControllerInterface,
+  private val assetBundlePath: String = "assets://index.android.bundle"
 ) : DevLauncherAppLoader(appHost, context, controller) {
   override fun injectBundleLoader(): Boolean {
-    val loader = JSBundleLoader.createAssetLoader(context, "assets://index.android.bundle", true)
+    val loader = JSBundleLoader.createAssetLoader(context, assetBundlePath, true)
     return injectBundleLoader(appHost, loader)
   }
 }

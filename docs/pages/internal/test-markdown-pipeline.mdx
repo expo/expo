@@ -6,6 +6,7 @@ hideFromSearch: true
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -21,17 +22,17 @@ This page exists to validate the HTML-to-Markdown conversion pipeline.
 ## Tab Panels
 
 <Tabs>
-<Tab label="npm">
+<Tab label="md-test-tab-one-label">
 
 ```sh
-npm install md-test-npm-pkg
+npm install md-test-tab-one-pkg
 ```
 
 </Tab>
-<Tab label="yarn">
+<Tab label="md-test-tab-two-label">
 
 ```sh
-yarn add md-test-yarn-pkg
+yarn add md-test-tab-two-pkg
 ```
 
 </Tab>
@@ -39,9 +40,17 @@ yarn add md-test-yarn-pkg
 
 ## Collapsible Section
 
-<Collapsible summary="Expand for details">
+<Collapsible summary="md-test-collapsible-summary">
   This is md-test-collapsible-content that should survive conversion.
 </Collapsible>
+
+## Prerequisites Section
+
+<Prerequisites>
+  <Requirement title="md-test-requirement-title">
+    This is md-test-requirement-body that should survive conversion.
+  </Requirement>
+</Prerequisites>
 
 ## Step-by-Step Guide
 

@@ -1,45 +1,53 @@
 {
   "name": "uri-scheme",
-  "version": "2.0.22",
+  "version": "2.2.0",
   "description": "Interact with native URI schemes",
-  "main": "build/index.js",
   "keywords": [
+    "android",
     "expo",
     "ios",
-    "uri-scheme",
-    "android"
+    "uri-scheme"
   ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/uri-scheme#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/uri-scheme"
   },
-  "author": "Expo <support@expo.dev>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/uri-scheme#readme",
   "bin": "cli.js",
   "files": [
     "build",
     "cli.js"
   ],
+  "main": "build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
+    "prebuild": "expo-module clean",
     "build": "ncc build ./src/index.ts -o build/",
+    "prebuild:prod": "expo-module clean",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "watch": "pnpm run build --watch",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
     "@expo/config-plugins": "workspace:*",
     "@expo/plist": "workspace:*",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/spawn-async": "^1.8.0",
     "@types/prompts": "^2.0.6",
+    "@vercel/ncc": "^0.38.4",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",

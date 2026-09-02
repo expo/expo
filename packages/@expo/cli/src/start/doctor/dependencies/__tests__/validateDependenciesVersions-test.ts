@@ -1,9 +1,12 @@
+import nodeFs from 'fs';
 import { vol } from 'memfs';
+// eslint-disable-next-line no-restricted-imports
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../../log';
 import {
+  getVersionedDependenciesAsync,
   isDependencyVersionIncorrect,
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
@@ -15,6 +18,7 @@ jest.mock('../bundledNativeModules', () => ({
     'expo-splash-screen': '~1.2.3',
     'expo-updates': '~2.3.4',
     firebase: '9.1.0',
+    'react-native': '0.85.3',
   }),
 }));
 jest.mock('../getVersionedPackages', () => ({
@@ -23,6 +27,7 @@ jest.mock('../getVersionedPackages', () => ({
     'expo-updates': '~2.3.4',
     firebase: '9.1.0',
     expo: '49.0.7',
+    'react-native': '0.85.3',
   })),
 }));
 
@@ -291,6 +296,118 @@ describe(validateDependenciesVersionsAsync, () => {
     await expect(
       validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)
     ).resolves.toBeNull();
+  });
+});
+
+describe('getVersionedDependenciesAsync (TV)', () => {
+  const projectRoot = '/test-project';
+
+  beforeEach(() => {
+    vol.reset();
+    // Reset to flush any queued `mockImplementationOnce` from earlier tests in
+    // this file, then re-install a memfs-backed implementation matching the
+    // manual mock at `__mocks__/resolve-from.ts`.
+    // `resolveFrom.silent` is a separate `jest.fn` in the manual mock, so we
+    // have to re-implement it alongside the main function. We use the `fs`
+    // imported at the top of this file so we share the same memfs instance as
+    // `vol` — re-requiring `fs` inside this closure can return a fresh memfs
+    // after earlier tests' `jest.resetModules()`.
+    const resolveSilent = (fromDirectory: string, request: string): string | undefined => {
+      const candidate = path.join(fromDirectory, 'node_modules', request);
+      return nodeFs.existsSync(candidate) ? candidate : undefined;
+    };
+    jest.mocked(resolveFrom).mockReset();
+    jest.mocked(resolveFrom).mockImplementation((fromDirectory, request) => {
+      const result = resolveSilent(fromDirectory, request);
+      if (!result) {
+        const err: any = new Error(`Cannot find module '${request}'`);
+        err.code = 'MODULE_NOT_FOUND';
+        throw err;
+      }
+      return result;
+    });
+    const silentMock = jest.mocked(resolveFrom).silent as unknown as jest.Mock;
+    silentMock.mockReset();
+    silentMock.mockImplementation(resolveSilent);
+    delete process.env.EXPO_OFFLINE;
+  });
+
+  it('flags react-native in TV projects whose minor lags the bundled react-native', async () => {
+    // For TV projects the alias is `react-native: npm:react-native-tvos@<version>`, and the
+    // file at `node_modules/react-native/package.json` is the upstream react-native-tvos
+    // package, so the installed version reads as a plain version string.
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({ version: '55.0.0' }),
+        'node_modules/react-native/package.json': JSON.stringify({
+          name: 'react-native-tvos',
+          version: '0.83.0-0',
+        }),
+      },
+      projectRoot
+    );
+    const exp = { sdkVersion: '55.0.0' };
+    const pkg = {
+      dependencies: { 'react-native': 'npm:react-native-tvos@0.83.0-0' },
+    };
+
+    const incorrect = await getVersionedDependenciesAsync(projectRoot, exp as any, pkg);
+
+    expect(incorrect).toEqual([
+      {
+        packageName: 'react-native',
+        packageType: 'dependencies',
+        expectedVersionOrRange: 'npm:react-native-tvos@0.85-stable',
+        actualVersion: '0.83.0-0',
+      },
+    ]);
+  });
+
+  it('does not flag react-native when the TV project shares the bundled minor', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({ version: '55.0.0' }),
+        'node_modules/react-native/package.json': JSON.stringify({
+          name: 'react-native-tvos',
+          version: '0.85.2-0',
+        }),
+      },
+      projectRoot
+    );
+    const exp = { sdkVersion: '55.0.0' };
+    const pkg = {
+      dependencies: { 'react-native': 'npm:react-native-tvos@0.85-stable' },
+    };
+
+    const incorrect = await getVersionedDependenciesAsync(projectRoot, exp as any, pkg);
+    expect(incorrect).toEqual([]);
+  });
+
+  it('leaves the expected version untouched for non-TV projects with an outdated react-native', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({ version: '55.0.0' }),
+        'node_modules/react-native/package.json': JSON.stringify({
+          name: 'react-native',
+          version: '0.84.0',
+        }),
+      },
+      projectRoot
+    );
+    const exp = { sdkVersion: '55.0.0' };
+    const pkg = {
+      dependencies: { 'react-native': '0.84.0' },
+    };
+
+    const incorrect = await getVersionedDependenciesAsync(projectRoot, exp as any, pkg);
+    expect(incorrect).toEqual([
+      {
+        packageName: 'react-native',
+        packageType: 'dependencies',
+        expectedVersionOrRange: '0.85.3',
+        actualVersion: '0.84.0',
+      },
+    ]);
   });
 });
 

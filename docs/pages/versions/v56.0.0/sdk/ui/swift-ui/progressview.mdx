@@ -8,14 +8,15 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI ProgressView matches the official SwiftUI [ProgressView API](https://developer.apple.com/documentation/swiftui/progressview) and supports styling via the [`progressViewStyle`](modifiers/#progressviewstylestyle) modifier.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/progressview/ios-light.webp"
-  darkSource="/static/images/expo-ui/progressview/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/progressview/ios-light.webp"
+  darkSrc="/static/images/expo-ui/progressview/ios-dark.webp"
   alt="Indeterminate spinner and a determinate ProgressView with a label"
 />
 

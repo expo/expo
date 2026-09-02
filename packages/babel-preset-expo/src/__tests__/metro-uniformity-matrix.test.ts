@@ -44,7 +44,7 @@ afterAll(() => {
 });
 
 // These are tolerable differences between platforms.
-const comparableCode = (code) => code.trim().replace(/\s+/g, ' ');
+const comparableCode = (code: string) => code.trim().replace(/\s+/g, ' ');
 
 // import { createPlugin as createReactServerPlugin } from '../server-actions-plugin';
 
@@ -70,10 +70,10 @@ describe.each(['ios', 'android', 'web'])('%s', (platform) => {
       const meta = results.metadata as unknown as { hasCjsExports?: boolean };
 
       // Parse again to ensure the output is valid code
-      babel.parse(results.code, options);
+      babel.parse(results.code!, options);
 
       return {
-        code: results.code,
+        code: results.code!,
         hasCjsExports: meta.hasCjsExports,
         metadata: meta,
       };

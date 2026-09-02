@@ -3,6 +3,8 @@
 import SwiftUI
 import AuthenticationServices
 import AppTrackingTransparency
+import EXApplication
+import ExpoModulesCore
 
 struct SettingsTabView: View {
   @Binding var selectedTab: HomeTab
@@ -47,13 +49,13 @@ struct SettingsTabView: View {
           .background(Color.expoSecondarySystemBackground)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
-          Text("Automatic is only supported on operating systems that allow you to control the system-wide color scheme.")
+          Text("Automatic follows your device's system appearance.")
             .font(.caption)
             .foregroundColor(.secondary)
         }
 
         VStack(alignment: .leading, spacing: 16) {
-          Text("Developer Menu Gestures")
+          Text("Tool Menu Gestures")
             .font(.headline)
             .foregroundColor(.primary)
 
@@ -75,47 +77,51 @@ struct SettingsTabView: View {
           .background(Color.expoSecondarySystemBackground)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
-          Text("Selected gestures will toggle the developer menu while inside an experience. The menu allows you to reload or return to home in a published experience, and exposes developer tools in development mode.")
+          Text("Selected gestures will open the tool menu.")
             .font(.caption)
             .foregroundColor(.secondary)
         }
 
         if shouldShowTrackingSection {
           VStack(alignment: .leading, spacing: 16) {
-          Text("Tracking")
-            .font(.headline)
-            .foregroundColor(.primary)
+            Text("Tracking")
+              .font(.headline)
+              .foregroundColor(.primary)
 
-          VStack(spacing: 0) {
-            Button {
-              requestTrackingPermission()
-            } label: {
-              HStack {
-                Text("Allow access to app-related data for tracking")
-                  .font(.body)
-                  .foregroundColor(.primary)
-                  .multilineTextAlignment(.leading)
+            Text("The system prompt lets you choose whether to allow tracking.")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
 
-                Spacer()
+            VStack(spacing: 0) {
+              Button {
+                requestTrackingPermission()
+              } label: {
+                HStack {
+                  Text("Show prompt")
+                    .font(.body)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
 
-                if isTrackingRequestInFlight {
-                  ProgressView()
+                  Spacer()
+
+                  if isTrackingRequestInFlight {
+                    ProgressView()
+                  }
                 }
+                .padding()
               }
-              .padding()
+              .disabled(isTrackingRequestInFlight)
+              .buttonStyle(PlainButtonStyle())
             }
-            .disabled(isTrackingRequestInFlight)
-            .buttonStyle(PlainButtonStyle())
-          }
-          .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+            .background(Color.expoSecondarySystemBackground)
+            .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
-          if let destination = URL(string: "https://expo.dev/privacy") {
-            Link("Learn more about what data Expo collects and why.", destination: destination)
-              .font(.caption)
-              .foregroundColor(.expoBlue)
+            if let destination = URL(string: "https://expo.dev/privacy") {
+              Link("Learn more about what data Expo collects and why.", destination: destination)
+                .font(.caption)
+                .foregroundColor(.expoBlue)
+            }
           }
-        }
         }
         VStack(alignment: .leading, spacing: 16) {
           Text("App Info")
@@ -126,6 +132,10 @@ struct SettingsTabView: View {
             AppInfoRow(label: "Client Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")
             Divider()
             AppInfoRow(label: "Supported SDK", value: getExpoSDKVersion())
+            if let expiration = appExpirationValue() {
+              Divider()
+              AppInfoRow(label: "Expires in", value: expiration)
+            }
           }
           .background(Color.expoSecondarySystemBackground)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
@@ -206,6 +216,24 @@ struct SettingsTabView: View {
     return getSupportedSDKVersion()
   }
 
+  private func appExpirationValue() -> String? {
+    guard let expiration = EXProvisioningProfile.main().expirationDate() else {
+      return nil
+    }
+
+    let calendar = Calendar.current
+    let today = calendar.startOfDay(for: Date())
+    let expirationDay = calendar.startOfDay(for: expiration)
+    let days = calendar.dateComponents([.day], from: today, to: expirationDay).day ?? 0
+
+    if days == 0 {
+      return "today"
+    } else if days == 1 {
+      return "1 day"
+    }
+    return "\(days) days"
+  }
+
   private func copyBuildInfoToClipboard() {
     let buildInfo = """
     Client Version: \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")
@@ -276,10 +304,6 @@ struct SettingsTabView: View {
 
 private class AuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-    let window = UIApplication.shared.connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }
-    return window ?? ASPresentationAnchor()
+    return SceneGeometry.keyWindow() ?? ASPresentationAnchor()
   }
 }

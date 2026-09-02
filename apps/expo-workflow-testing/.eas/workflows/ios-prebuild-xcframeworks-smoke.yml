@@ -1,5 +1,9 @@
 name: Smoke Test Precompiled iOS XCFrameworks
 
+defaults:
+  tools:
+    pnpm: '10.34.5'
+
 on:
   workflow_dispatch:
     inputs:
@@ -22,7 +26,7 @@ jobs:
   smoke_test:
     name: Prebuild XCFrameworks (Debug)
     runs_on: macos-large
-    image: latest
+    image: macos-tahoe-26.4-xcode-26.4
     steps:
       - uses: eas/checkout
       - id: detect

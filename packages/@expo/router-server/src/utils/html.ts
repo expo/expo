@@ -28,6 +28,10 @@ export function escapeUnsafeCharacters(str: string): string {
   return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }
 
+function escapeHtmlAttribute(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 /**
  * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
  * CSS href.
@@ -37,10 +41,13 @@ export function escapeUnsafeCharacters(str: string): string {
  */
 export function createInjectedCssAsString(hrefs: string[]): string {
   return hrefs
-    .flatMap((href) => [
-      `<link rel="preload" href="${href}" as="style">`,
-      `<link rel="stylesheet" href="${href}">`,
-    ])
+    .flatMap((href) => {
+      const safeHref = escapeHtmlAttribute(href);
+      return [
+        `<link rel="preload" href="${safeHref}" as="style">`,
+        `<link rel="stylesheet" href="${safeHref}">`,
+      ];
+    })
     .join('\n');
 }
 
@@ -51,7 +58,18 @@ export function createInjectedCssAsString(hrefs: string[]): string {
  * HTML document's `<body>` element.
  */
 export function createInjectedScriptsAsString(srcs: string[]): string {
-  return srcs.map((src) => `<script src="${src}" defer></script>`).join('\n');
+  return srcs.map((src) => `<script src="${escapeHtmlAttribute(src)}" defer></script>`).join('\n');
+}
+
+/**
+ * Returns a `<link rel="icon" />` HTML string for the given favicon href.
+ *
+ * Used by the SPA export path, which splices into a pre-rendered template instead of a React
+ * tree. Output must stay byte-equivalent to `createFaviconAsNode` (rendered to static markup)
+ * so both rendering paths agree on the tag shape.
+ */
+export function createFaviconAsString(href: string): string {
+  return `<link rel="icon" href="${escapeHtmlAttribute(href)}"/>`;
 }
 
 /**
@@ -95,6 +113,68 @@ export function getLoaderDataScriptContents(data: Record<string, unknown>): stri
  */
 export function createLoaderDataScriptAsString(data: Record<string, unknown>): string {
   return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
+}
+
+export type StaticContentCssAsset =
+  | { type: 'css'; href: string }
+  | { type: 'inline'; source: string; hmrId?: string }
+  | { type: 'external'; source: string };
+
+export type StaticContentAssets = {
+  /**
+   * NOTE(@hassankhan): We still need to support SDK 55 deployments, where CSS assets are
+   * exported as plain hrefs
+   */
+  css: (StaticContentCssAsset | string)[];
+  js: string[];
+  favicon?: string;
+};
+
+/**
+ * Injects favicon, hydration flag, and CSS (in that order) before `</head>`, and deferred scripts
+ * before `</body>`.
+ */
+export function injectAssetsIntoHtml(
+  html: string,
+  { assets, hydrate }: { assets?: StaticContentAssets; hydrate?: boolean }
+): string {
+  if (assets?.favicon) {
+    html = html.replace('</head>', `${createFaviconAsString(assets.favicon)}</head>`);
+  }
+
+  if (hydrate) {
+    html = html.replace('</head>', `${getHydrationFlagScriptAsString()}</head>`);
+  }
+
+  if (assets) {
+    const styleString = assets.css
+      .map((entry) => {
+        // NOTE(@hassankhan): We still need to support SDK 55 deployments, where CSS assets are
+        // exported as plain hrefs
+        if (typeof entry === 'string') {
+          return createInjectedCssAsString([entry]);
+        }
+        switch (entry.type) {
+          case 'css':
+            return createInjectedCssAsString([entry.href]);
+          case 'inline':
+            return `<style data-expo-css-hmr="${entry.hmrId}">${entry.source}\n</style>`;
+          case 'external':
+            return entry.source;
+        }
+      })
+      .join('');
+    if (styleString) {
+      html = html.replace('</head>', `${styleString}</head>`);
+    }
+
+    const scripts = assets.js.map((src) => createInjectedScriptsAsString([src])).join('');
+    if (scripts) {
+      html = html.replace('</body>', `${scripts}\n</body>`);
+    }
+  }
+
+  return html;
 }
 
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;

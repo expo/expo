@@ -18,7 +18,10 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -31,9 +34,11 @@ import androidx.compose.ui.unit.dp
 import expo.modules.devmenu.compose.DevMenuState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private val FabDefaultSize = DpSize(72.dp, 94.dp)
+private val FabDefaultSize = DpSize(52.dp, 94.dp)
+private val FabContentSize = DpSize(52.dp, 52.dp)
 private val Margin = 16.dp
 private const val ClickDragTolerance = 40f
 
@@ -46,22 +51,38 @@ private const val ClickDragTolerance = 40f
 fun MovableFloatingActionButton(
   state: DevMenuState,
   modifier: Modifier = Modifier,
-  fabSize: DpSize = FabDefaultSize,
   margin: Dp = Margin,
   onPress: () -> Unit = {}
 ) {
+  var showLabel by remember { mutableStateOf(true) }
+
+  LaunchedEffect(Unit) {
+    delay(10_000)
+    showLabel = false
+  }
+
   BoxWithConstraints(
     modifier = modifier
       .safeDrawingPadding()
       .fillMaxSize()
   ) {
-    val totalFabSize = DpSize(fabSize.width + margin * 2, fabSize.height + margin * 2)
+    val effectiveFabSize = if (showLabel) {
+      FabDefaultSize
+    } else {
+      FabContentSize
+    }
+    val totalFabSize = DpSize(effectiveFabSize.width + margin * 2, effectiveFabSize.height + margin * 2)
     val totalFabSizePx = with(LocalDensity.current) {
       Offset(totalFabSize.width.toPx(), totalFabSize.height.toPx())
     }
+    val fabPressableSizeWithMargin = DpSize(FabContentSize.width + margin * 2, FabContentSize.height + margin * 2)
+    val fabPressableSizeWithMarginPx = with(LocalDensity.current) {
+      Offset(fabPressableSizeWithMargin.width.toPx(), fabPressableSizeWithMargin.height.toPx())
+    }
+
     val bounds = Offset(
-      x = constraints.maxWidth - totalFabSizePx.x,
-      y = constraints.maxHeight - totalFabSizePx.y
+      x = constraints.maxWidth - fabPressableSizeWithMarginPx.x,
+      y = constraints.maxHeight - fabPressableSizeWithMarginPx.y
     )
 
     val halfFab = Offset(totalFabSizePx.x / 2f, totalFabSizePx.y / 2f)
@@ -185,6 +206,7 @@ fun MovableFloatingActionButton(
           isPressed = fab.isPressed,
           isDragging = fab.isDragging,
           isIdle = fab.isIdle,
+          showLabel = showLabel,
           modifier = Modifier.fillMaxSize()
         )
       }

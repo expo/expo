@@ -4,10 +4,25 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import path from 'node:path';
 
-interface CoordinatesRequest {
-  action: 'getCoordinates';
-  accessibilityId: string;
-}
+type InspectorRequestBody =
+  | {
+      action: 'getCoordinates';
+      accessibilityId: string;
+    }
+  | {
+      action: 'captureView';
+      accessibilityId: string;
+      // Path where the inspector writes the captured PNG.
+      outputPath: string;
+    };
+
+type InspectorRequest = InspectorRequestBody & {
+  // Unique response pipe created by the client for this request, so that a response can never
+  // pair with another request's reader; see resolveResponsePipePath in ScreenInspector.swift.
+  responsePipe: string;
+};
+
+let nextRequestId = 0;
 
 interface InspectorResponse {
   success: boolean;
@@ -17,6 +32,9 @@ interface InspectorResponse {
     width: number;
     height: number;
   };
+  path?: string;
+  width?: number;
+  height?: number;
   error: string;
 }
 
@@ -38,105 +56,158 @@ export class ScreenInspectorIOS {
   private requestPipePath = '/tmp/ios_screen_inspector_request';
   private responsePipePath = '/tmp/ios_screen_inspector_response';
 
-  async getCoordinates(accessibilityId: string): Promise<{
+  async getCoordinates(
+    accessibilityId: string,
+    timeoutMs: number = 15000
+  ): Promise<{
     x: number;
     y: number;
     width: number;
     height: number;
   }> {
-    const request: CoordinatesRequest = {
-      action: 'getCoordinates',
-      accessibilityId,
-    };
+    const response = await this.sendRequest(
+      {
+        action: 'getCoordinates',
+        accessibilityId,
+      },
+      timeoutMs
+    );
 
+    if (!response.success) {
+      throw new Error(`Get coordinates failed: ${response.error}`);
+    }
+
+    if (!response.bounds) {
+      throw new Error('No bounds returned in response');
+    }
+
+    return response.bounds;
+  }
+
+  async captureView(
+    accessibilityId: string,
+    outputPath: string,
+    timeoutMs: number = 15000
+  ): Promise<string> {
+    const response = await this.sendRequest(
+      {
+        action: 'captureView',
+        accessibilityId,
+        outputPath,
+      },
+      timeoutMs
+    );
+
+    if (!response.success) {
+      throw new Error(`Capture view failed: ${response.error}`);
+    }
+
+    if (!response.path) {
+      throw new Error('No output path returned in response');
+    }
+
+    return response.path;
+  }
+
+  private async sendRequest(
+    request: InspectorRequestBody,
+    timeoutMs: number
+  ): Promise<InspectorResponse> {
+    const responsePipePath = `${this.responsePipePath}_${process.pid}_${nextRequestId++}`;
+
+    await spawnAsync('mkfifo', [responsePipePath]);
+    let responseFd: number | null = null;
     try {
-      await this.writeToNamedPipe(this.requestPipePath, request);
+      // Open the read end first (non-blocking, so this doesn't wait for a writer): the dylib's
+      // write-open then succeeds immediately, and polling with a deadline below means an
+      // abandoned request leaks nothing.
+      responseFd = fs.openSync(responsePipePath, fs.constants.O_RDONLY | fs.constants.O_NONBLOCK);
 
-      const response = await this.readFromNamedPipe(this.responsePipePath);
+      await this.writeToNamedPipe(this.requestPipePath, {
+        ...request,
+        responsePipe: responsePipePath,
+      });
 
-      if (!response.success) {
-        throw new Error(`Get coordinates failed: ${response.error}`);
-      }
-
-      if (!response.bounds) {
-        throw new Error('No bounds returned in response');
-      }
-
-      return response.bounds;
+      return await this.pollResponse(responseFd, timeoutMs);
     } catch (error: any) {
-      console.error('❌ iOS get coordinates failed:', error.message);
+      console.error(`❌ iOS ${request.action} request failed:`, error.message);
       throw error;
+    } finally {
+      if (responseFd != null) {
+        fs.closeSync(responseFd);
+      }
+      fs.rmSync(responsePipePath, { force: true });
     }
   }
 
-  private async writeToNamedPipe(pipePath: string, request: CoordinatesRequest): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Open the FIFO for writing
-      fs.open(pipePath, 'w', (err: any, fd: number) => {
-        if (err) {
-          reject(new Error(`Failed to open pipe ${pipePath}: ${err.message}`));
-          return;
+  private async writeToNamedPipe(
+    pipePath: string,
+    request: InspectorRequest,
+    timeoutMs: number = 10000
+  ): Promise<void> {
+    const buffer = Buffer.from(JSON.stringify(request), 'utf8');
+    console.log(`📤 Sending request: ${buffer.toString()}`);
+
+    // Open the write end non-blocking: it fails with ENXIO while the inspector isn't reading
+    // (e.g. still busy with a previous request or not running), so poll with a deadline. A
+    // blocking open would park a file descriptor forever when the inspector is gone, and
+    // enough of those exhaust the fs thread pool and starve every later lookup.
+    const deadline = Date.now() + timeoutMs;
+    let fd: number | null = null;
+    try {
+      while (fd == null) {
+        try {
+          fd = fs.openSync(pipePath, fs.constants.O_WRONLY | fs.constants.O_NONBLOCK);
+        } catch (error: any) {
+          if (error.code !== 'ENXIO' || Date.now() >= deadline) {
+            throw new Error(`Failed to open pipe ${pipePath} for writing: ${error.message}`);
+          }
+          await new Promise((resolve) => setTimeout(resolve, 50));
         }
+      }
 
-        const data = JSON.stringify(request);
-        const buffer = Buffer.from(data, 'utf8');
-
-        console.log(`📤 Sending request: ${data}`);
-
-        fs.write(fd, buffer, 0, buffer.length, null, (err: any, bytesWritten: number) => {
-          fs.close(fd); // Always close the file descriptor
-
-          if (err) {
-            reject(new Error(`Failed to write to pipe ${pipePath}: ${err.message}`));
-            return;
-          }
-
-          if (bytesWritten !== buffer.length) {
-            reject(
-              new Error(`Partial write to pipe ${pipePath}: ${bytesWritten}/${buffer.length} bytes`)
-            );
-            return;
-          }
-
-          resolve();
-        });
-      });
-    });
+      const bytesWritten = fs.writeSync(fd, buffer);
+      if (bytesWritten !== buffer.length) {
+        throw new Error(
+          `Partial write to pipe ${pipePath}: ${bytesWritten}/${buffer.length} bytes`
+        );
+      }
+    } finally {
+      if (fd != null) {
+        fs.closeSync(fd);
+      }
+    }
   }
 
-  private async readFromNamedPipe(pipePath: string): Promise<InspectorResponse> {
-    return new Promise((resolve, reject) => {
-      // Open the FIFO for reading
-      fs.open(pipePath, 'r', (err: any, fd: number) => {
-        if (err) {
-          reject(new Error(`Failed to open pipe ${pipePath}: ${err.message}`));
-          return;
+  private async pollResponse(fd: number, timeoutMs: number): Promise<InspectorResponse> {
+    const buffer = Buffer.alloc(4096);
+    const deadline = Date.now() + timeoutMs;
+
+    console.log('📥 Waiting for response...');
+
+    // The fd is non-blocking: reads return 0 bytes while no writer has connected yet and throw
+    // EAGAIN while a writer is connected but hasn't written, so poll until data or deadline.
+    while (Date.now() < deadline) {
+      let bytesRead = 0;
+      try {
+        bytesRead = fs.readSync(fd, buffer, 0, buffer.length, null);
+      } catch (error: any) {
+        if (error.code !== 'EAGAIN') {
+          throw new Error(`Failed to read from response pipe: ${error.message}`);
         }
+      }
 
-        const buffer = Buffer.alloc(4096);
+      if (bytesRead > 0) {
+        const data = buffer.subarray(0, bytesRead).toString('utf8');
+        const json = JSON.parse(data);
+        console.log(`📨 Response received: ${JSON.stringify(json, null, 2)}`);
+        return json;
+      }
 
-        console.log('📥 Waiting for response...');
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
 
-        fs.read(fd, buffer, 0, buffer.length, null, (err: any, bytesRead: number) => {
-          fs.close(fd); // Always close the file descriptor
-
-          if (err) {
-            reject(new Error(`Failed to read from pipe ${pipePath}: ${err.message}`));
-            return;
-          }
-
-          if (bytesRead === 0) {
-            reject(new Error(`No data read from pipe ${pipePath}`));
-            return;
-          }
-
-          const data = buffer.subarray(0, bytesRead).toString('utf8');
-          const json = JSON.parse(data);
-          console.log(`📨 Response received: ${JSON.stringify(json, null, 2)}`);
-          resolve(json);
-        });
-      });
-    });
+    throw new Error(`Timed out waiting for the inspector response after ${timeoutMs}ms`);
   }
 
   async startSimulatorAppWithDylib(

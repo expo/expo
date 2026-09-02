@@ -56,7 +56,14 @@ RESEND_API_KEY=YOUR_RESEND_API_KEY
 
 In your Expo project, install the Resend SDK using the following command:
 
-<Terminal cmd={['$ npx expo install resend']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install resend'],
+    yarn: ['$ yarn expo install resend'],
+    pnpm: ['$ pnpm expo install resend'],
+    bun: ['$ bun expo install resend'],
+  }}
+/>
 
 The resend SDK library is a server-only library. It allows you to send emails from the server-side code of your app. Since this guide uses [API Routes](/router/web/api-routes/) to handle email submissions, you need to install the resend as part of your Expo project.
 
@@ -228,7 +235,14 @@ To make the API route (`/api/audience`) accessible from a URL, you can deploy it
 
 1. Run the following command to export the web and API assets. The exported files are saved inside a **dist** directory and the API route file is part of this directory:
 
-<Terminal cmd={['$ npx expo export --platform web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 2. Run the following to create a production deployment via EAS Hosting:
 

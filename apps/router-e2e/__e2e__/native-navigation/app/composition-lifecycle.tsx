@@ -67,9 +67,7 @@ export default function CompositionLifecycleScreen() {
         )}
       </Stack.Screen>
 
-      {showSearchBar && (
-        <Stack.SearchBar placeholder="Search..." onChangeText={() => {}} />
-      )}
+      {showSearchBar && <Stack.SearchBar placeholder="Search..." onChangeText={() => {}} />}
 
       <ScrollView
         style={styles.container}

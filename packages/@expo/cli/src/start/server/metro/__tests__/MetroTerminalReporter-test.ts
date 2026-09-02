@@ -1,5 +1,4 @@
 import type { Terminal } from '@expo/metro/metro-core';
-import arg = require('arg');
 import { stripVTControlCharacters } from 'node:util';
 
 import { stripAnsi } from '../../../../utils/ansi';
@@ -30,6 +29,7 @@ jest.useFakeTimers();
 const mockIsInteractive = jest.fn(() => false);
 jest.mock('../../../../utils/interactive', () => ({
   isInteractive: () => mockIsInteractive(),
+  shouldReduceLogs: () => false,
 }));
 
 jest.mock('../../serverLogLikeMetro', () => {
@@ -50,8 +50,9 @@ describe('symbolicate React stacks', () => {
     persistStatus: jest.fn(),
     status: jest.fn(),
     flush: jest.fn(),
+    // `_update` is a private member of `Terminal`, so it must be added explicitly.
     _update: jest.fn(),
-  } satisfies Partial<Terminal>;
+  } satisfies Partial<Terminal> & { _update: jest.Mock };
 
   const reporter = new MetroTerminalReporter('/', terminal as any);
   reporter._getElapsedTime = jest.fn(() => BigInt(100));
@@ -166,6 +167,50 @@ describe('symbolicate React stacks', () => {
 `);
   });
 
+  it('should symbolicate a web error stack', async () => {
+    let parsedError: any;
+    jest
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockImplementationOnce((_projectRoot, _level, error) => {
+        parsedError = error;
+        return Promise.resolve({
+          isFallback: false,
+          stack: '\n\n  at app/index.tsx:1:1',
+        });
+      });
+
+    reporter._log({
+      type: 'client_log',
+      level: 'error',
+      data: [
+        '[Error: Hello]',
+        'Error: Hello\n    at Page (http://localhost:8081/packages/expo-router/entry.bundle?platform=web&dev=true&hot=false:123:45)',
+      ],
+      mode: 'web',
+    } as any);
+
+    expect(parseErrorStringToObject).toHaveBeenCalledWith(
+      expect.stringContaining('/packages/expo-router/entry.bundle?platform=web')
+    );
+    expect(maybeSymbolicateAndFormatJSErrorStackLogAsync).toHaveBeenCalledTimes(1);
+    expect(parsedError.stack[0]).toEqual({
+      arguments: [],
+      column: 44,
+      file: 'http://localhost:8081/packages/expo-router/entry.bundle?platform=web&dev=true&hot=false',
+      lineNumber: 123,
+      methodName: 'Page',
+    });
+
+    await jest.runAllTimersAsync();
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+"Web  ERROR [Error: Hello]
+
+  at app/index.tsx:1:1"
+`);
+  });
+
   it(`should symbolicate multiple errors stacks - SDK 54 style`, async () => {
     jest
       .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
@@ -210,8 +255,9 @@ describe('client log platform prefix and format substitution', () => {
     persistStatus: jest.fn(),
     status: jest.fn(),
     flush: jest.fn(),
+    // `_update` is a private member of `Terminal`, so it must be added explicitly.
     _update: jest.fn(),
-  } satisfies Partial<Terminal>;
+  } satisfies Partial<Terminal> & { _update: jest.Mock };
 
   const reporter = new MetroTerminalReporter('/', terminal as any);
 
@@ -545,7 +591,7 @@ describe('non-interactive terminal output', () => {
   function collectOutputOrder(terminal: { log: jest.Mock; status: jest.Mock }) {
     const output: { type: 'log' | 'status'; content: string }[] = [];
     terminal.log.mockImplementation((...args: any[]) => {
-      output.push({ type: 'log', content: stripAnsi(args.join(' ')) });
+      output.push({ type: 'log', content: stripAnsi(args.join(' ')) ?? '' });
     });
     terminal.status.mockImplementation((...args: any[]) => {
       const content = stripAnsi(args.join(' '));
@@ -626,7 +672,6 @@ describe('non-interactive terminal output', () => {
 
     // Now check the status calls: in non-TTY mode, these become permanent output.
     // After a bundle completes, the status should not contain progress bars for completed bundles.
-    const statusMessages = output.filter((o) => o.type === 'status');
 
     // Find the status call that happens right after the first "Bundled" log
     const firstBundledIndex = output.findIndex(
@@ -689,19 +734,11 @@ describe('status cleared before log lines', () => {
    */
 
   const buildID1 = 'build-1';
-  const buildID2 = 'build-2';
   const entryFile = 'node_modules/expo-router/entry.js';
-  const serverEntry = 'packages/@expo/router-server/node/render.js';
   const webDetails = asBundleDetails({
     entryFile,
     platform: 'web',
     bundleType: 'bundle',
-  });
-  const serverDetails = asBundleDetails({
-    entryFile: serverEntry,
-    platform: 'web',
-    bundleType: 'bundle',
-    customTransformOptions: { environment: 'node' },
   });
 
   function createReporter() {
@@ -709,13 +746,15 @@ describe('status cleared before log lines', () => {
 
     const terminal = {
       log: jest.fn((...args: any[]) => {
-        const content = stripAnsi(args.join(' '));
+        const content = stripAnsi(args.join(' ')) ?? '';
         callOrder.push({ type: 'log', content });
       }),
       persistStatus: jest.fn(),
       status: jest.fn((...args: any[]) => {
-        const content = stripAnsi(args.join(' '));
+        const content = stripAnsi(args.join(' ')) ?? '';
         callOrder.push({ type: 'status', content });
+        // `Terminal.status` returns the resolved status string.
+        return content;
       }),
       flush: jest.fn(),
     } satisfies Partial<Terminal>;

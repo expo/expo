@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
@@ -48,7 +47,7 @@ class LocationTaskService : Service() {
   }
 
   fun stop() {
-    stopForeground(true)
+    stopForeground(STOP_FOREGROUND_REMOVE)
     stopSelf()
   }
 
@@ -125,7 +124,7 @@ class LocationTaskService : Service() {
 
   /**
    * Returns the best available notification icon resource ID.
-   * Prefers the `notification_icon` drawable (configured via configured via expo notifications config plugin ) over `applicationInfo.icon`. The launcher icon is
+   * Prefers the `notification_icon` drawable (configured via expo notifications config plugin) over `applicationInfo.icon`. The launcher icon is
    * full-color and renders as a solid white square in notifications, since Android
    * requires small notification icons to be monochrome.
    */

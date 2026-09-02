@@ -8,14 +8,15 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Section matches the official SwiftUI [Section API](https://developer.apple.com/documentation/swiftui/section) and is used to group related content within [`List`](list), [`Form`](form) or [`Picker`](picker) components.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/section/ios-light.webp"
-  darkSource="/static/images/expo-ui/section/ios-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/section/ios-light.webp"
+  darkSrc="/static/images/expo-ui/section/ios-dark.webp"
   alt="Two Sections within a Form, each with a header and grouped Toggles"
 />
 
@@ -94,6 +95,7 @@ Use the `isExpanded` prop to control whether the section is expanded or collapse
 ```tsx CollapsibleSectionExample.tsx
 import { useState } from 'react';
 import { Host, List, Section, Text } from '@expo/ui/swift-ui';
+import { listStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function CollapsibleSectionExample() {
   const [favoritesExpanded, setFavoritesExpanded] = useState(false);
@@ -101,7 +103,7 @@ export default function CollapsibleSectionExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <List listStyle="sidebar">
+      <List modifiers={[listStyle('sidebar')]}>
         <Section
           title="Favorites"
           isExpanded={favoritesExpanded}

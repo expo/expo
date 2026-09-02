@@ -8,7 +8,24 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Run Sign in with Apple requests on the main queue to prevent a dispatch assertion. ([#47733](https://github.com/expo/expo/pull/47733) by [@eliotgevers](https://github.com/eliotgevers))
+- [iOS] Resolve the presentation window scene-aware and fail gracefully instead of crashing when no window is available for the Sign in with Apple sheet. ([#46955](https://github.com/expo/expo/pull/46955) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.3 — 2026-05-06
 

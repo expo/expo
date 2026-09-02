@@ -72,7 +72,7 @@ export type DrawStopIndicatorConfig = {
   stopSize?: number;
 };
 
-export type LinearProgressIndicatorProps = ProgressCommonConfig & {
+export interface LinearProgressIndicatorProps extends ProgressCommonConfig {
   /**
    * Stroke cap style for the indicator ends.
    * @default 'round'
@@ -86,7 +86,7 @@ export type LinearProgressIndicatorProps = ProgressCommonConfig & {
    * Configuration for the stop indicator dot at the end of the determinate progress track.
    */
   drawStopIndicator?: DrawStopIndicatorConfig;
-};
+}
 
 /**
  * A linear progress indicator that displays progress in a horizontal bar.
@@ -101,7 +101,7 @@ export const LinearProgressIndicator = createProgressComponent<LinearProgressInd
 
 // region CircularProgressIndicator
 
-export type CircularProgressIndicatorProps = ProgressCommonConfig & {
+export interface CircularProgressIndicatorProps extends ProgressCommonConfig {
   /**
    * Width of the circular stroke in dp.
    */
@@ -115,7 +115,7 @@ export type CircularProgressIndicatorProps = ProgressCommonConfig & {
    * Gap size between the indicator and track in dp.
    */
   gapSize?: number;
-};
+}
 
 /**
  * A circular progress indicator that displays progress in a circular format.
@@ -128,14 +128,43 @@ export const CircularProgressIndicator = createProgressComponent<CircularProgres
 
 // endregion
 
+// region WavyProgressIndicators
+
+/**
+ * Wave configuration shared by the wavy progress indicator variants.
+ */
+export type WavyProgressCommonConfig = {
+  /**
+   * Height of the wave, where `0` draws a flat line and `1` draws the full wave height.
+   * When set, the amplitude stays the same across the whole track.
+   * When omitted, a determinate indicator uses the Material 3 default, which flattens the wave as
+   * progress approaches `0` and `1`.
+   * An indeterminate indicator defaults to the full wave height.
+   */
+  amplitude?: number;
+  /**
+   * Length of a single wave in dp. `CircularWavyProgressIndicator` rounds this to fit a whole
+   * number of waves around the ring, so the wave it draws can be slightly shorter or longer.
+   */
+  wavelength?: number;
+  /**
+   * Speed of the wave in dp per second. Defaults to `wavelength`, which advances the wave by one
+   * wavelength per second. Set it to `0` to stop the wave from moving.
+   */
+  waveSpeed?: number;
+};
+
+// endregion
+
 // region LinearWavyProgressIndicator
 
-export type LinearWavyProgressIndicatorProps = ProgressCommonConfig & {
+export interface LinearWavyProgressIndicatorProps
+  extends ProgressCommonConfig, WavyProgressCommonConfig {
   /**
    * Size of the stop indicator in dp at the end of the determinate progress track.
    */
   stopSize?: number;
-};
+}
 
 /**
  * A linear progress indicator with wavy animation style.
@@ -149,7 +178,8 @@ export const LinearWavyProgressIndicator =
 
 // region CircularWavyProgressIndicator
 
-export type CircularWavyProgressIndicatorProps = ProgressCommonConfig;
+export interface CircularWavyProgressIndicatorProps
+  extends ProgressCommonConfig, WavyProgressCommonConfig {}
 
 /**
  * A circular progress indicator with wavy animation style.

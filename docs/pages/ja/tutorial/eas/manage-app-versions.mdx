@@ -1,0 +1,113 @@
+---
+title: 異なるアプリバージョンを管理する
+sidebar_title: アプリバージョンを管理する
+description: 開発者向けとユーザー向けのアプリバージョンについて、そして EAS Build が開発者向けバージョンを自動で管理する仕組みを学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、Android と iOS の開発者向けアプリバージョンを EAS Build がどのように自動管理するかを学びます。次の 2 つの章で本番ビルドに取り組む前に、知っておくと役立ちます。
+
+<VideoBoxLink
+  videoId="C8x4N9UmzS8"
+  title="視聴：アプリのバージョンコードを自動化する"
+  description="開発者向けとユーザー向けのアプリバージョンの違いと、EAS Build がバージョン管理をどう自動化するかを理解します。"
+/>
+
+---
+
+## 開発者向けとユーザー向けのアプリバージョンを理解する
+
+アプリバージョンは 2 つの値で構成されます。
+
+- 開発者向けの値: Android では [`versionCode`](/versions/latest/config/app/#versioncode)、iOS では [`buildNumber`](/versions/latest/config/app/#buildnumber) で表されます。
+- ユーザー向けの値: **app.config.js** の [`version`](/versions/latest/config/app/#version) で表されます。
+
+Google Play ストアも Apple App Store も、それぞれのビルドを識別するために開発者向けの値を使います。たとえばアプリバージョン `1.0.0 (1)`（ユーザー向けの値と開発者向けの値の組み合わせ）でアプリをアップロードした場合、同じアプリバージョンで別のビルドをストアに提出することはできません。重複したアプリバージョン番号のビルドを提出すると、提出は失敗します。
+
+開発者向けの値を手動で管理する例として、**app.config.js** の `android.versionCode` と `ios.buildNumber` を下に示します。**EAS Build がこれを自動化してくれるので、これらの値を手動で追加・管理する必要はありません**。
+
+```js app.config.js
+{
+  ios: {
+    buildNumber: 1
+    /* @hide ... */ /* @end */
+  },
+  android: {
+    versionCode: 1
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+> **Note**: [ユーザー向けのバージョン番号](/build-reference/app-versions/#user-facing-version) は EAS では扱いません。本番アプリを審査に提出する前に、各アプリストアのデベロッパーポータルで定義します。
+
+## EAS Build による自動バージョン管理
+
+EAS Build はデフォルトで、開発者向けの値の自動化を助けてくれます。[リモートバージョンソース](/build-reference/app-versions/#remote-version-source) を利用し、新しい本番リリースを作成するたびに開発者向けの値を自動でインクリメントします。
+
+`eas init` コマンドでプロジェクトを初期化したとき、EAS CLI は **eas.json** に次のプロパティを自動的に追加しています。
+
+- `remote` に設定された `cli.appVersionSource`
+- `true` に設定された [`build.production.autoIncrement`](/eas/json/#autoincrement-1)
+
+自分のプロジェクトの **eas.json** で確認できます。
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "cli": {
+    /* @hide ... */ /* @end */
+    /* @info `appVersionSource` は `remote` に設定されています。 */
+    "appVersionSource": "remote"
+    /* @end */
+  },
+  "build": {
+    "production": {
+      /* @info `versionCode` や `buildNumber` を自動でインクリメントするため、`autoIncrement` は `true` に設定されています。 */
+      "autoIncrement": true
+      /* @end */
+    }
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+次の 2 つの章で新しい本番ビルドを作成すると、Android の `versionCode` と iOS の `buildNumber` が自動的にインクリメントされます。
+
+<Collapsible summary="公開済みアプリの開発者向けアプリバージョンを EAS に同期する">
+
+すでにアプリストアで公開しているアプリなら、開発者向けのアプリバージョンはすでに設定されています。そのアプリを EAS Build に移行する場合は、次の手順でバージョンを同期してください。
+
+- ターミナルウィンドウで `eas build:version:set` コマンドを実行します。
+
+<Terminal cmd={['$ eas build:version:set']} />
+
+- 尋ねられたらプラットフォーム（Android または iOS）を選びます。
+- **Do you want to set app version source to remote now?**（アプリバージョンのソースをいま remote に設定しますか？）と尋ねられたら **yes** を選びます。これにより **eas.json** の `cli.appVersionSource` が `remote` に設定されます。
+- **What version would you like to initialize it with?**（どのバージョンで初期化しますか？）と尋ねられたら、アプリストアで設定した最新のバージョン番号を入力します。
+
+これらの手順を終えると、アプリバージョンが EAS Build のリモートに同期されます。**eas.json** で `build.production.autoIncrement` を `true` に設定できます。以降、新しい本番ビルドを作成すると `versionCode` と `buildNumber` が自動的にインクリメントされます。
+
+</Collapsible>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/manage-app-versions"
+  chapterTitle="第 7 章：異なるアプリバージョンを管理する"
+  summary={
+    <>
+      アプリのバージョニングの違いを確認し、ストアでの却下を防ぐために一意のアプリバージョンが重要であることを理解して、本番ビルド向けに{' '}
+      <strong>eas.json</strong> でバージョンの自動更新を有効にしました。
+    </>
+  }
+  nextChapterDescription="次の章では、Android 向けの本番ビルドを作成する流れを学びます。"
+  nextChapterTitle="Android 向けの本番ビルドを作成する"
+  nextChapterLink="/ja/tutorial/eas/android-production-build/"
+/>

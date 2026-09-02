@@ -3,12 +3,12 @@ import { requireNativeView } from 'expo';
 import type { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type SpacerProps = {
+export interface SpacerProps {
   /**
    * Modifiers for the component. Use `weight()` modifier to make the spacer flexible.
    */
   modifiers?: ExpoModifier[];
-};
+}
 
 type NativeSpacerProps = SpacerProps;
 const SpacerNativeView: React.ComponentType<SpacerProps> = requireNativeView(

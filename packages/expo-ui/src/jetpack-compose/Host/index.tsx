@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { useMemo } from 'react';
+import { useMemo, type Ref } from 'react';
 import {
   type ColorSchemeName,
   type ColorValue,
@@ -9,10 +9,12 @@ import {
   useColorScheme as useRNColorScheme,
 } from 'react-native';
 
+import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
+import { useMergeRefs } from '../../utils/useMergeRefs';
 import { getMaterialColors, HostPaletteContext } from '../colors';
 import { type PrimitiveBaseProps } from '../layout';
 
-export type HostProps = {
+export interface HostProps extends PrimitiveBaseProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from Jetpack Compose.
    * Can be only set once on mount.
@@ -64,13 +66,17 @@ export type HostProps = {
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-} & PrimitiveBaseProps;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
+  /** @hidden */
+  ref?: Ref<any>;
+}
 
 type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
   matchContentsVertical?: boolean;
   matchContentsHorizontal?: boolean;
   colorScheme?: ColorSchemeName;
   seedColor?: ColorValue;
+  ref?: Ref<any>;
 };
 
 const HostNativeView: React.ComponentType<NativeHostProps> = requireNativeView(
@@ -86,6 +92,7 @@ export function Host(props: HostProps) {
     layoutDirection,
     colorScheme,
     seedColor,
+    ref,
     ...restProps
   } = props;
   const schemeString = colorScheme === 'light' || colorScheme === 'dark' ? colorScheme : undefined;
@@ -96,25 +103,30 @@ export function Host(props: HostProps) {
     () => getMaterialColors({ scheme: resolvedScheme, seedColor }),
     [resolvedScheme, seedColor]
   );
+  const hostRef = useTextInputHostRef();
+  const mergedRef = useMergeRefs(ref, hostRef);
 
   return (
     <HostPaletteContext.Provider value={palette}>
-      <HostNativeView
-        {...restProps}
-        modifiers={modifiers}
-        matchContentsVertical={
-          typeof matchContents === 'object' ? matchContents.vertical : matchContents
-        }
-        matchContentsHorizontal={
-          typeof matchContents === 'object' ? matchContents.horizontal : matchContents
-        }
-        colorScheme={schemeString}
-        seedColor={seedColor}
-        onLayoutContent={onLayoutContent}
-        layoutDirection={
-          layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
-        }
-      />
+      <TextInputHostProvider hostRef={hostRef}>
+        <HostNativeView
+          {...restProps}
+          modifiers={modifiers}
+          matchContentsVertical={
+            typeof matchContents === 'object' ? matchContents.vertical : matchContents
+          }
+          matchContentsHorizontal={
+            typeof matchContents === 'object' ? matchContents.horizontal : matchContents
+          }
+          colorScheme={schemeString}
+          seedColor={seedColor}
+          onLayoutContent={onLayoutContent}
+          layoutDirection={
+            layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
+          }
+          ref={mergedRef}
+        />
+      </TextInputHostProvider>
     </HostPaletteContext.Provider>
   );
 }

@@ -23,6 +23,7 @@ export default function Layout() {
         colors: {
           ...DefaultTheme.colors,
           text: '#0F0',
+          background: '#00f',
         },
       }}>
       <Stack screenOptions={{ headerShown: false }} />

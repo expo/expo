@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 
-import { renderWithTestRouter } from '~/common/test-utilities';
+import { axe, renderWithTestRouter } from '~/common/test-utilities';
 
 import { Footer } from './Footer';
 import { githubUrl } from './utils';
@@ -45,6 +45,12 @@ describe('Footer', () => {
     expect(link.getAttribute('href')).toBe(
       'https://github.com/software-mansion/react-native-gesture-handler/issues'
     );
+  });
+
+  test('has no axe violations', async () => {
+    const router = { pathname: '/sdk/' };
+    const { container } = renderWithTestRouter(<Footer title="test-title" />, router);
+    expect(await axe(container)).toHaveNoViolations();
   });
 });
 

@@ -45,6 +45,7 @@
           }
         }
       ],
+      ["./plugins/withCrashOnLaunch", { "android": false, "ios": false }],
       [
         "expo-build-properties",
         {
@@ -67,7 +68,10 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": true,
+      "inlineModules": {
+        "watchedDirectories": ["modules"]
+      }
     },
     "extra": {
       "router": {},

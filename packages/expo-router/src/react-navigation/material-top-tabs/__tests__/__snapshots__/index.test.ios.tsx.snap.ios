@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders no top tab UI when no screens are declared in the layout 1`] = `
+[
+  [
+    "No screens are declared in ./_layout.js, so the navigator renders nothing. Only screens declared in the layout become visible. Declare each screen you want to show, for example <Tabs.Screen name="index" /> or <NativeTabs.Trigger name="index" />. Undeclared routes: index.",
+  ],
+]
+`;

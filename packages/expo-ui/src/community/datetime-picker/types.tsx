@@ -24,7 +24,7 @@ export type DateTimePickerChangeEvent = {
   };
 };
 
-export type DateTimePickerProps = {
+export interface DateTimePickerProps extends Pick<ViewProps, 'style'> {
   /**
    * The current date value (controlled).
    */
@@ -123,7 +123,7 @@ export type DateTimePickerProps = {
    * @platform android
    */
   negativeButton?: { label?: string };
-} & Pick<ViewProps, 'style'>;
+}
 
 // -- Helpers ---------------------------------------------------------------
 

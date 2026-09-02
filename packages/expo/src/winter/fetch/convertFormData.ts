@@ -93,7 +93,7 @@ export async function convertFormDataAsync(
 }
 
 /**
- * Create mutipart boundary
+ * Create multipart boundary
  */
 export function createBoundary(): string {
   const boundaryChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

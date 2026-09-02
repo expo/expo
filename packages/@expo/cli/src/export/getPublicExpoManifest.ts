@@ -1,10 +1,10 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 
-import type { LocaleMap } from './getResolvedLocales';
-import { getResolvedLocalesAsync } from './getResolvedLocales';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import type { LocaleMap } from './getResolvedLocales';
+import { getResolvedLocalesAsync } from './getResolvedLocales';
 
 /** Get the public Expo manifest from the local project config. */
 export async function getPublicExpoManifestAsync(

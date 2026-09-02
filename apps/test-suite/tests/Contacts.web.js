@@ -1,4 +1,4 @@
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 
 export const name = 'Contacts';

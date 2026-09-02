@@ -63,6 +63,43 @@ async function timeAsync(
   return performance.now() - start;
 }
 
+const TICK_INTERVAL_MS = 16;
+
+// Wraps a benchmark to log JS-thread responsiveness during the run. Schedules a
+// `setInterval` tick and compares the actual tick count against the expected
+// count for the elapsed wall time. Ratio ≈ 1.0 means the JS thread stayed
+// responsive; lower means it was blocked.
+function withResponsiveness(
+  label: string,
+  run: (iterations: number) => Promise<number>
+): (iterations: number) => Promise<number> {
+  return async (iterations) => {
+    let ticks = 0;
+    const handle = setInterval(() => {
+      ticks++;
+    }, TICK_INTERVAL_MS);
+    const start = performance.now();
+    try {
+      const elapsed = await run(iterations);
+      const expectedTicks = (performance.now() - start) / TICK_INTERVAL_MS;
+
+      if (expectedTicks < 5) {
+        console.log(
+          `[benchmark: ${label}] JS responsiveness: skipped (run too short, ${expectedTicks.toFixed(1)} expected ticks)`
+        );
+      } else {
+        const ratio = ticks / expectedTicks;
+        console.log(
+          `[benchmark: ${label}] JS responsiveness: ${ratio.toFixed(2)} (${ticks}/${expectedTicks.toFixed(0)} ticks)`
+        );
+      }
+      return elapsed;
+    } finally {
+      clearInterval(handle);
+    }
+  };
+}
+
 export const GROUPS: Group[] = [
   {
     id: 'nothing',
@@ -72,7 +109,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'ExpoModule',
+        label: 'Function',
         available: ExpoModule?.nothing != null,
         async run(iterations) {
           ExpoModule.nothing();
@@ -82,8 +119,19 @@ export const GROUPS: Group[] = [
         },
       },
       {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.nothingSynthesized != null,
+        async run(iterations) {
+          ExpoModule.nothingSynthesized();
+          return timeSync(iterations, () => {
+            ExpoModule.nothingSynthesized();
+          });
+        },
+      },
+      {
         id: 'expo-optimized',
-        label: 'ExpoModule (optimized)',
+        label: '@OptimizedFunction',
         available: ExpoModule?.nothingOptimized != null,
         async run(iterations) {
           ExpoModule.nothingOptimized();
@@ -125,12 +173,23 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'ExpoModule',
+        label: 'AsyncFunction',
         available: ExpoModule?.nothingAsync != null,
         async run(iterations) {
           await ExpoModule.nothingAsync();
           return timeAsync(iterations, () => {
             return ExpoModule.nothingAsync();
+          });
+        },
+      },
+      {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.nothingAsyncSynthesized != null,
+        async run(iterations) {
+          await ExpoModule.nothingAsyncSynthesized();
+          return timeAsync(iterations, () => {
+            return ExpoModule.nothingAsyncSynthesized();
           });
         },
       },
@@ -166,7 +225,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'ExpoModule',
+        label: 'Function',
         available: ExpoModule?.addNumbers != null,
         async run(iterations) {
           ExpoModule.addNumbers(0, 1);
@@ -176,8 +235,19 @@ export const GROUPS: Group[] = [
         },
       },
       {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.addNumbersSynthesized != null,
+        async run(iterations) {
+          ExpoModule.addNumbersSynthesized(0, 1);
+          return timeSync(iterations, () => {
+            ExpoModule.addNumbersSynthesized(2, 5);
+          });
+        },
+      },
+      {
         id: 'expo-optimized',
-        label: 'ExpoModule (optimized)',
+        label: '@OptimizedFunction',
         available: ExpoModule?.addNumbersOptimized != null,
         async run(iterations) {
           ExpoModule.addNumbersOptimized(0, 1);
@@ -219,7 +289,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'ExpoModule',
+        label: 'AsyncFunction',
         available: ExpoModule?.addNumbersAsync != null,
         async run(iterations) {
           await ExpoModule.addNumbersAsync(0, 1);
@@ -229,8 +299,19 @@ export const GROUPS: Group[] = [
         },
       },
       {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.addNumbersAsyncSynthesized != null,
+        async run(iterations) {
+          await ExpoModule.addNumbersAsyncSynthesized(0, 1);
+          return timeAsync(iterations, (iteration) => {
+            return ExpoModule.addNumbersAsyncSynthesized(iteration, 5);
+          });
+        },
+      },
+      {
         id: 'expo-optimized',
-        label: 'ExpoModule (optimized)',
+        label: '@OptimizedFunction',
         available: ExpoModule?.addNumbersAsyncOptimized != null,
         async run(iterations) {
           await ExpoModule.addNumbersAsyncOptimized(0, 1);
@@ -249,7 +330,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'ExpoModule',
+        label: 'Function',
         available: ExpoModule?.addStrings != null,
         async run(iterations) {
           ExpoModule.addStrings('hello ', 'world');
@@ -259,8 +340,19 @@ export const GROUPS: Group[] = [
         },
       },
       {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.addStringsSynthesized != null,
+        async run(iterations) {
+          ExpoModule.addStringsSynthesized('hello ', 'world');
+          return timeSync(iterations, () => {
+            ExpoModule.addStringsSynthesized('hello ', 'world');
+          });
+        },
+      },
+      {
         id: 'expo-optimized',
-        label: 'ExpoModule (optimized)',
+        label: '@OptimizedFunction',
         available: ExpoModule?.addStringsOptimized != null,
         async run(iterations) {
           ExpoModule.addStringsOptimized('hello ', 'world');
@@ -294,14 +386,45 @@ export const GROUPS: Group[] = [
     ],
   },
   {
+    id: 'addStringsAsync',
+    title: 'addStringsAsync(a, b)',
+    description:
+      'Asynchronous variant of `addStrings`. Adds Promise allocation/resolution on top of the string conversion cost and stresses how arguments cross the asynchronous boundary. Only Expo Module is implemented — no Turbo or Bridge counterpart.',
+    iterations: DEFAULT_ASYNC_ITERATIONS,
+    benchmarks: [
+      {
+        id: 'expo',
+        label: 'AsyncFunction',
+        available: ExpoModule?.addStringsAsync != null,
+        async run(iterations) {
+          await ExpoModule.addStringsAsync('hello ', 'world');
+          return timeAsync(iterations, () => {
+            return ExpoModule.addStringsAsync('hello ', 'world');
+          });
+        },
+      },
+      {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.addStringsAsyncSynthesized != null,
+        async run(iterations) {
+          await ExpoModule.addStringsAsyncSynthesized('hello ', 'world');
+          return timeAsync(iterations, () => {
+            return ExpoModule.addStringsAsyncSynthesized('hello ', 'world');
+          });
+        },
+      },
+    ],
+  },
+  {
     id: 'passthrough',
     title: 'passthrough({ x, y })',
     description:
-      'Synchronous round-trip of a 2D point represented in three different ways. Compares `[String: Any]` dictionary, `Record`, and `SharedObject` decoding/encoding within Expo Modules. TurboModule and BridgeModule provide a dictionary baseline.',
+      'Synchronous round-trip of a 2D point represented in four different ways. Compares `[String: Any]` dictionary, `Record`, `@Record`-synthesized record, and `SharedObject` decoding/encoding within Expo Modules. TurboModule and BridgeModule provide a dictionary baseline.',
     benchmarks: [
       {
         id: 'expo-dict',
-        label: 'ExpoModule (dictionary)',
+        label: 'Dictionary',
         available: ExpoModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
@@ -313,7 +436,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-record',
-        label: 'ExpoModule (record)',
+        label: 'Record + @Field',
         available: ExpoModule?.passthroughRecord != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
@@ -324,8 +447,20 @@ export const GROUPS: Group[] = [
         },
       },
       {
+        id: 'expo-synthesized-record',
+        label: '@Record + @ExpoModule',
+        available: ExpoModule?.passthroughSynthesizedRecord != null,
+        async run(iterations) {
+          const point = { x: 1.5, y: 2.5 };
+          ExpoModule.passthroughSynthesizedRecord(point);
+          return timeSync(iterations, () => {
+            ExpoModule.passthroughSynthesizedRecord(point);
+          });
+        },
+      },
+      {
         id: 'expo-shared',
-        label: 'ExpoModule (shared object)',
+        label: 'SharedObject',
         available: ExpoModule?.passthroughSharedObject != null && ExpoModule?.SharedPoint != null,
         async run(iterations) {
           const point = new ExpoModule.SharedPoint(1.5, 2.5);
@@ -337,7 +472,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'turbo-dict',
-        label: 'TurboModule (dictionary)',
+        label: 'Dictionary (TurboModule)',
         available: TurboModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
@@ -349,7 +484,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'bridge-dict',
-        label: 'BridgeModule (dictionary)',
+        label: 'Dictionary (BridgeModule)',
         available: BridgeModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
@@ -369,13 +504,25 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'ExpoModule',
+        label: 'Function',
         available: ExpoModule?.foldArray != null,
         async run(iterations) {
           const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
           ExpoModule.foldArray(numbers);
           return timeSync(iterations, () => {
             ExpoModule.foldArray(numbers);
+          });
+        },
+      },
+      {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.foldArraySynthesized != null,
+        async run(iterations) {
+          const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+          ExpoModule.foldArraySynthesized(numbers);
+          return timeSync(iterations, () => {
+            ExpoModule.foldArraySynthesized(numbers);
           });
         },
       },
@@ -402,6 +549,48 @@ export const GROUPS: Group[] = [
             BridgeModule.foldArray(numbers);
           });
         },
+      },
+    ],
+  },
+  {
+    id: 'runtimeExecute',
+    title: 'runtime.execute() — iOS',
+    iterations: DEFAULT_ASYNC_ITERATIONS,
+    description:
+      'Round-trips `runtime.execute(...)` from a non-JS caller, calling `runtime.global().hasProperty("Math")` inside the closure.\n' +
+      'The JS thread should stay responsive across all four overloads (ratio logged to the console).',
+    benchmarks: [
+      {
+        id: 'blocking-sync',
+        label: 'blocking caller, sync closure',
+        available: ExpoModule?.executeBlockingSync != null,
+        run: withResponsiveness('executeBlockingSync', (iterations) =>
+          ExpoModule.executeBlockingSync(iterations)
+        ),
+      },
+      {
+        id: 'blocking-async',
+        label: 'blocking caller, async closure',
+        available: ExpoModule?.executeBlockingAsync != null,
+        run: withResponsiveness('executeBlockingAsync', (iterations) =>
+          ExpoModule.executeBlockingAsync(iterations)
+        ),
+      },
+      {
+        id: 'async-sync',
+        label: 'async caller, sync closure',
+        available: ExpoModule?.executeAsyncSync != null,
+        run: withResponsiveness('executeAsyncSync', (iterations) =>
+          ExpoModule.executeAsyncSync(iterations)
+        ),
+      },
+      {
+        id: 'async-async',
+        label: 'async caller, async closure',
+        available: ExpoModule?.executeAsyncAsync != null,
+        run: withResponsiveness('executeAsyncAsync', (iterations) =>
+          ExpoModule.executeAsyncAsync(iterations)
+        ),
       },
     ],
   },

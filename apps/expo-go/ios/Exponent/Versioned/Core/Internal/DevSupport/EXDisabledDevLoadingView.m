@@ -22,7 +22,7 @@ RCT_EXPORT_METHOD(hide)
   }
 }
 
-RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
+RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor dismissButton:(BOOL)dismissButton)
 {
   RCTDevSettings *settings =  [self.bridge devSettings];
   BOOL isFastRefreshEnabled = [settings isHotLoadingEnabled];
@@ -60,9 +60,6 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
 
 - (void)updateProgress:(RCTLoadingProgress *)progress
 {
-}
-
-- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor dismissButton:(BOOL)dismissButton {
 }
 
 @end

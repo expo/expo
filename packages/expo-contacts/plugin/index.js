@@ -1,1 +1,1 @@
-export { default } from './build';
+module.exports = require('./build');

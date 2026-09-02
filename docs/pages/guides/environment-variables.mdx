@@ -66,9 +66,11 @@ You may choose to commit the default **.env** file or other standard configurati
 
 #### Environment variables and `NODE_ENV`
 
-We recommend against using `NODE_ENV` to switch between **.env** files (such as **.env.test** and **.env.production**). While it is technically possible (`NODE_ENV=test npx expo start` will load **.env.test**) &mdash; it may not behave as you would expect. For example, `npx expo export` always forces `NODE_ENV` to `production`, so `NODE_ENV=test npx expo export` will not actually run the command with the `NODE_ENV` set to `test`.
+`NODE_ENV` is the standard Node.js variable that identifies which mode your code is running in (typically `development`, `production`, or `test`). Tools like module resolvers, bundlers, and test runners read it to decide how to build, install, or run your code.
 
-Other tools that build on top of Expo CLI commands will exhibit the same behavior &mdash; for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further for this use case.
+We recommend against using `NODE_ENV` to switch between **.env** files (such as **.env.test** and **.env.production**). While it is technically possible (`NODE_ENV=test npx expo start` will load **.env.test**) — it may not behave as you would expect. For example, `npx expo export` always forces `NODE_ENV` to `production`, so `NODE_ENV=test npx expo export` will not actually run the command with the `NODE_ENV` set to `test`.
+
+Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further for this use case.
 
 If you use EAS, consider using `eas env:pull` instead. This will swap your **.env.local** with an environment of your choice, rather than depending on `NODE_ENV`. You can accomplish a similar behavior without EAS by writing a script to overwrite **.env.local** or **.env** with the appropriate contents for the environment you wish to work with.
 
@@ -140,7 +142,7 @@ After updating your Babel config file, be sure to clear your cache with `npx exp
 
 Move any environment variables used in your JavaScript from their **.envrc** file to a **.env** file and prefix it with `EXPO_PUBLIC_`.
 
-Previously with `direnv`, you would need to use a [dynamic app config](/versions/latest/config/app/#app-config) that reads from [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) to set environment variables on the `extra` field so they can be used in your JavaScript code via [`expo-constants`](/versions/latest/sdk/constants). Move those references directly into your code, adding the `EXPO_PUBLIC_` prefix:
+Previously with `direnv`, you would need to use a [dynamic app config](/workflow/configuration/#dynamic-configuration) that reads from [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) to set environment variables on the `extra` field so they can be used in your JavaScript code via [`expo-constants`](/versions/latest/sdk/constants). Move those references directly into your code, adding the `EXPO_PUBLIC_` prefix:
 
 ```diff
 - import Constants from 'expo-constants';

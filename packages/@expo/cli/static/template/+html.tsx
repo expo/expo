@@ -7,7 +7,6 @@ import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html
 // The contents of this function only run in Node.js environments and
 // do not have access to the DOM or browser APIs.
 export default function Root({ children }: { children: React.ReactNode }) {
-
   // This is only required for server-side rendering.
   const { bodyAttributes, bodyNodes, htmlAttributes, headNodes } = useServerDocumentContext();
 

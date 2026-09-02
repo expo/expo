@@ -28,12 +28,12 @@ describe(JsonFile, () => {
     'deleteKey',
     'deleteKeys',
     'merge',
-  ];
+  ] as const;
 
   it(`has static methods`, () => {
     for (const method of methodNames) {
       expect(JsonFile[method]).toBeDefined();
-      expect(JsonFile[`${method}Async`]).toBeDefined();
+      expect(JsonFile[`${method}Async` as keyof typeof JsonFile]).toBeDefined();
     }
   });
 
@@ -44,7 +44,7 @@ describe(JsonFile, () => {
 
     for (const method of methodNames) {
       expect(file[method]).toBeDefined();
-      expect(file[`${method}Async`]).toBeDefined();
+      expect(file[`${method}Async` as keyof typeof file]).toBeDefined();
     }
   });
 });
@@ -100,6 +100,14 @@ describe('async', () => {
     await file.writeAsync(testObject);
     expect(fs.existsSync(testFilename)).toBe(true);
     await expect(file.readAsync()).resolves.toEqual(testObject);
+  });
+
+  it(`writes JSON with the requested file mode`, async () => {
+    const file = new JsonFile(testFilename, { ensureDir: true, mode: 0o600 });
+
+    await file.writeAsync(testObject);
+
+    expect((await fs.promises.stat(testFilename)).mode & 0o777).toBe(0o600);
   });
 
   it(`rewrite async`, async () => {
@@ -244,6 +252,14 @@ describe('sync', () => {
     expect(file.read()).toEqual(testObject);
   });
 
+  it(`writes JSON with the requested file mode`, () => {
+    const file = new JsonFile(testFilename, { ensureDir: true, mode: 0o600 });
+
+    file.write(testObject);
+
+    expect(fs.statSync(testFilename).mode & 0o777).toBe(0o600);
+  });
+
   it(`rewrite async`, () => {
     vol.fromJSON({ [testFilename]: loadFixture('test.json') });
 
@@ -339,5 +355,5 @@ describe('sync', () => {
 function loadFixture(filename: string) {
   return jest
     .requireActual('node:fs')
-    .readFileSync(path.join(__dirname, 'files', filename), 'utf8');
+    .readFileSync(path.join(__dirname, '..', '__fixtures__', filename), 'utf8');
 }

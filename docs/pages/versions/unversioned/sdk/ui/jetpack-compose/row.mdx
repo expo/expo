@@ -8,14 +8,18 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** For cross-platform usage, see the universal [`Row`](../universal/row) — it renders the appropriate native component per platform.
 
 Expo UI Row matches the official Jetpack Compose [Row](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Row) API and places children horizontally with configurable arrangement and alignment.
 
-<ComponentDiagram
-  mode="landscape"
-  source="/static/images/expo-ui/row/android-light.webp"
-  darkSource="/static/images/expo-ui/row/android-dark.webp"
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/row/android-light.webp"
+  darkSrc="/static/images/expo-ui/row/android-dark.webp"
   alt="Three colored boxes laid out horizontally inside a Row"
 />
 
@@ -27,25 +31,49 @@ Expo UI Row matches the official Jetpack Compose [Row](https://developer.android
 
 `Row` places children horizontally. Use `horizontalArrangement` and `verticalAlignment` to control spacing and alignment.
 
-```tsx RowExample.tsx
-import { Host, Row, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, height } from '@expo/ui/jetpack-compose/modifiers';
+<ComponentExample
+  title="RowExample.tsx"
+  src="/static/images/expo-ui/examples/row-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/row-basic-android-dark.webp"
+  alt="Three labels spread evenly across the width of a row">
+
+```tsx
+import {
+  Host,
+  Row,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  height,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function RowExample() {
+  const colors = useMaterialColors();
+
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Row
         horizontalArrangement="spaceEvenly"
         verticalAlignment="center"
         modifiers={[fillMaxWidth(), height(60)]}>
-        <Text>Item 1</Text>
-        <Text>Item 2</Text>
-        <Text>Item 3</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Item 1
+        </Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Item 2
+        </Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Item 3
+        </Text>
       </Row>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -53,4 +81,7 @@ export default function RowExample() {
 import { Row } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/row" apiName="Row" />
+<APISection
+  packageName="expo-ui/jetpack-compose/row"
+  apiName="Row"
+/>

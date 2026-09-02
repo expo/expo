@@ -1,5 +1,4 @@
-import { isRunningInExpoGo } from 'expo';
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { isRunningInExpoGo, Platform, UnavailabilityError } from 'expo';
 import * as TaskManager from 'expo-task-manager';
 
 import { type BackgroundFetchOptions, BackgroundFetchStatus } from './BackgroundFetch.types';
@@ -77,7 +76,7 @@ export async function setMinimumIntervalAsync(minimumInterval: number): Promise<
 // @needsAudit
 /**
  * Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
- * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](task-manager/#taskmanagerdefinetaskttaskname-taskexecutor)
+ * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](task-manager/#taskmanagerdefinetasktaskname-taskexecutor)
  * for more details.
  * @param options An object containing the background fetch options.
  *

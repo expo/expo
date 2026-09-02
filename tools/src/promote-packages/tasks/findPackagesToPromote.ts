@@ -27,9 +27,9 @@ export const findPackagesToPromote = new Task<TaskArgs>(
         state.versionToReplace = versionToReplace;
         // A canary version (e.g. 56.0.0-canary-20260212-4f61309) should always be
         // considered less than any non-canary version for promotion purposes.
+        const prereleaseTag = versionToReplace ? semver.prerelease(versionToReplace)?.[0] : null;
         const replacingCanary =
-          !!versionToReplace &&
-          (semver.prerelease(versionToReplace)?.[0] as string)?.startsWith('canary');
+          typeof prereleaseTag === 'string' && prereleaseTag.startsWith('canary');
         state.isDemoting =
           !!versionToReplace && semver.lt(pkg.packageVersion, versionToReplace) && !replacingCanary;
 

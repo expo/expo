@@ -48,7 +48,7 @@ jobs:
 
 Once you have this workflow file, you can kick it off by pushing a commit to the `main` branch, or by running the following EAS CLI command:
 
-<Terminal cmd={['$ eas workflow:run build-ios-production.yml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/build-ios-production.yml']} />
 
 You can provide parameters to make Android builds or use other build profiles. Learn more about build job parameters with the [build job documentation](/eas/workflows/syntax/#build).
 
@@ -60,7 +60,7 @@ You can submit your app to the app stores using EAS CLI with the `eas submit` co
 
 To write this command as a workflow, create a workflow file named **.eas/workflows/submit-ios.yml** at the root of your project.
 
-Inside **submit-ios.yml**, you can use the following workflow to kick off a job that submits an iOS app.
+The submit job requires the ID of the build to submit. Inside **submit-ios.yml**, you can use the following workflow to create an iOS build and then submit it:
 
 ```yaml .eas/workflows/submit-ios.yml
 name: Submit iOS app
@@ -70,18 +70,27 @@ on:
     branches: ['main']
 
 jobs:
-  submit_ios:
-    name: Submit iOS
-    type: submit
+  build_ios:
+    name: Build iOS
+    type: build
     params:
       platform: ios
+      profile: production
+  submit_ios:
+    name: Submit iOS
+    needs: [build_ios]
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
 ```
+
+To submit an existing build instead of creating a new one, pass its `build_id` directly to the submit job, or use the [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) job to look one up dynamically and pass its `build_id` output.
 
 Once you have this workflow file, you can kick it off by pushing a commit to the `main` branch, or by running the following EAS CLI command:
 
-<Terminal cmd={['$ eas workflow:run submit-ios.yml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/submit-ios.yml']} />
 
-You can provide parameters to submit other platforms or use other submit profiles. Learn more about submit job parameters with the [submit job documentation](/eas/workflows/syntax/#submit).
+You can provide parameters to use other submit profiles. Learn more about submit job parameters with the [submit job documentation](/eas/workflows/syntax/#submit).
 
 ## Publishing updates
 
@@ -110,7 +119,7 @@ jobs:
 
 Once you have this workflow file, you can kick it off by pushing a commit to any branch, or by running the following EAS CLI command:
 
-<Terminal cmd={['$ eas workflow:run publish-update.yml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/publish-update.yml']} />
 
 You can provide parameters to update specific branches or channels, and configure the update's message. Learn more about update job parameters with the [update job documentation](/eas/workflows/syntax/#update).
 

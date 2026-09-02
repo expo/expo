@@ -19,9 +19,9 @@ class AuthenticationHelper(
 ) {
   private var isAuthenticating = false
 
-  suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: Boolean, title: String): Cipher {
-    if (requiresAuthentication) {
-      return openAuthenticationPrompt(cipher, title).cryptoObject?.cipher
+  internal suspend fun authenticateCipher(cipher: Cipher, options: AuthenticationPromptOptions): Cipher {
+    if (options.requireAuthentication) {
+      return openAuthenticationPrompt(cipher, options).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
     return cipher
@@ -29,7 +29,7 @@ class AuthenticationHelper(
 
   private suspend fun openAuthenticationPrompt(
     cipher: Cipher,
-    title: String
+    options: AuthenticationPromptOptions
   ): BiometricPrompt.AuthenticationResult {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       throw AuthenticationException("Biometric authentication requires Android API 23")
@@ -45,7 +45,12 @@ class AuthenticationHelper(
       val fragmentActivity = getCurrentActivity() as? FragmentActivity
         ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
-      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title)
+      val authenticationPrompt = AuthenticationPrompt(
+        fragmentActivity,
+        context,
+        options.authenticationPrompt,
+        options.requireConfirmation
+      )
 
       return withContext(Dispatchers.Main.immediate) {
         return@withContext authenticationPrompt.authenticate(cipher)

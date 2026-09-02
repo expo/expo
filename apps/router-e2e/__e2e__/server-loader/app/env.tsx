@@ -38,5 +38,5 @@ const EnvScreen = () => {
         <SiteLink href="/second">Go to Second</SiteLink>
       </SiteLinks>
     </>
-  )
-}
+  );
+};

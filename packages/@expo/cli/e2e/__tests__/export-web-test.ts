@@ -1,16 +1,15 @@
-/* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 
+import { executeExpoAsync } from '../utils/expo';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
-import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;

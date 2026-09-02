@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import type { SuspenseFallbackProps } from '../exports';
 import { Slot } from '../exports';
-import { renderRouter } from '../testing-library';
+import { renderRouterAsync } from '../testing-library';
 
 const renderFallback = (route: string, testID = 'custom-fallback') => (
   <View testID={testID}>
@@ -12,7 +12,7 @@ const renderFallback = (route: string, testID = 'custom-fallback') => (
   </View>
 );
 
-it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
+it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', async () => {
   const pending = new Promise<string>(() => {});
 
   function SuspendingRoute() {
@@ -24,7 +24,7 @@ it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
     renderFallback(route, 'layout-fallback')
   );
 
-  renderRouter(
+  await renderRouterAsync(
     {
       '(app)/_layout': {
         default: () => <Slot />,
@@ -41,7 +41,7 @@ it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
   expect(LayoutFallback).toHaveBeenCalledTimes(1);
 });
 
-it('uses the nearest layout `<SuspenseFallback>` in sync mode', () => {
+it('uses the nearest layout `<SuspenseFallback>` in sync mode', async () => {
   const pending = new Promise<string>(() => {});
 
   function SuspendingRoute() {
@@ -54,7 +54,7 @@ it('uses the nearest layout `<SuspenseFallback>` in sync mode', () => {
   const NestedFallback = ({ route }: SuspenseFallbackProps) =>
     renderFallback(route, 'nested-layout-fallback');
 
-  renderRouter(
+  await renderRouterAsync(
     {
       _layout: {
         default: () => <Slot />,
@@ -75,7 +75,7 @@ it('uses the nearest layout `<SuspenseFallback>` in sync mode', () => {
   expect(screen.getByText('Loading ./(app)/profile/[id].js...')).toBeOnTheScreen();
 });
 
-it('passes route params to layout-level `<SuspenseFallback>`', () => {
+it('passes route params to layout-level `<SuspenseFallback>`', async () => {
   const pending = new Promise<string>(() => {});
 
   function SuspendingRoute() {
@@ -91,7 +91,7 @@ it('passes route params to layout-level `<SuspenseFallback>`', () => {
     </View>
   ));
 
-  renderRouter(
+  await renderRouterAsync(
     {
       '(app)/_layout': {
         default: () => <Slot />,
@@ -116,7 +116,7 @@ it('passes route params to layout-level `<SuspenseFallback>`', () => {
   );
 });
 
-it('renders default `<SuspenseFallback>` when one is not available', () => {
+it('renders default `<SuspenseFallback>` when one is not available', async () => {
   const pending = new Promise<string>(() => {}); // Promise that never resolves
 
   function SuspendingRoute() {
@@ -124,7 +124,7 @@ it('renders default `<SuspenseFallback>` when one is not available', () => {
     return <Text testID="route-content">{value}</Text>;
   }
 
-  renderRouter({
+  await renderRouterAsync({
     index: SuspendingRoute,
   });
 

@@ -6,6 +6,7 @@ import Foundation
 class DataService: ObservableObject {
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
+  @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
   @Published var dataError: APIError?
 
@@ -54,8 +55,9 @@ class DataService: ObservableObject {
         return
       }
 
-      let newProjects = response.data.account.byName.apps.map { $0.toExpoProject() }
-      let newSnacks = response.data.account.byName.snacks
+      let accountData = response.data.account.byName
+      let newProjects = accountData.apps.map { $0.toExpoProject() }
+      let newSnacks = accountData.snacks
 
       if newProjects != self.projects {
         self.projects = newProjects
@@ -63,6 +65,7 @@ class DataService: ObservableObject {
       if newSnacks != self.snacks {
         self.snacks = newSnacks
       }
+      self.totalProjectCount = accountData.appCount
       if self.dataError != nil {
         self.dataError = nil
       }

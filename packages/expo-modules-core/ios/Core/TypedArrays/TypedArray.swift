@@ -9,6 +9,7 @@ public class TypedArray: AnyTypedArray {
   /**
    Creates a concrete TypedArray from the given JavaScriptTypedArray
    */
+  @usableFromInline
   internal static func create(from jsTypedArray: consuming JavaScriptTypedArray) -> TypedArray {
     switch jsTypedArray.kind {
     case .Int8Array:
@@ -41,7 +42,8 @@ public class TypedArray: AnyTypedArray {
   /**
    A JavaScript object of the underlying typed array.
    */
-  let jsTypedArray: JavaScriptTypedArray
+  @usableFromInline
+  internal let jsTypedArray: JavaScriptTypedArray
 
   /**
    The length in bytes from the start of the underlying ArrayBuffer.
@@ -87,7 +89,93 @@ public class TypedArray: AnyTypedArray {
   /**
    Initializes the typed array with the given JS typed array.
    */
+  // `@usableFromInline internal`, not `public`: the `@inlinable` decode bodies need to call it, but it
+  // must not be public API. A concrete subclass binds the buffer to its `ContentType`, so wrapping a
+  // mismatched-kind JS typed array (e.g. `Int32Array(someUint8Array)`) would reinterpret memory. The
+  // `decode` paths only call it after checking the kind.
+  @usableFromInline
   required init(_ jsTypedArray: consuming JavaScriptTypedArray) {
     self.jsTypedArray = jsTypedArray
+  }
+
+  /// `JavaScriptDecodable` witness. It's a `class func` in the class body, not in the conformance
+  /// extension, so the concrete subclasses can override it (extension methods can't be overridden).
+  /// The base accepts any kind and resolves the concrete subclass via `create(from:)`.
+  @JavaScriptActor
+  @inlinable
+  public class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self {
+    guard value.isTypedArray() else {
+      throw NotATypedArrayException()
+    }
+    // `create(from:)` returns the concrete subclass for the JS kind. For the base `TypedArray` the cast
+    // to `Self` always holds; it only fails when this inherited witness runs for a narrower `Self` (a
+    // `GenericTypedArray<T>` specialization) whose element type doesn't match the JS kind. Guard rather
+    // than force-cast so that surfaces as a thrown error instead of a trap.
+    let typedArray = create(from: value.getTypedArray())
+    guard let typed = typedArray as? Self else {
+      throw KindMismatchException(expected: nil, received: typedArray.kind)
+    }
+    return typed
+  }
+
+  /// Shared body for the concrete subclasses' `decode` overrides: constructs `Self` directly for a
+  /// matching `kind`, skipping `create(from:)`'s dispatch and a downcast.
+  @JavaScriptActor
+  @inlinable
+  internal static func decode(
+    _ value: borrowing JavaScriptValue,
+    expectingKind kind: JavaScriptTypedArray.Kind
+  ) throws -> Self {
+    guard value.isTypedArray() else {
+      throw NotATypedArrayException()
+    }
+    let jsTypedArray = value.getTypedArray()
+    guard jsTypedArray.kind == kind else {
+      throw KindMismatchException(expected: kind, received: jsTypedArray.kind)
+    }
+    return Self(jsTypedArray)
+  }
+}
+
+// MARK: - Decoding exceptions
+
+extension TypedArray {
+  /// Thrown when decoding a typed array from a JavaScript value that is not a typed array.
+  public struct NotATypedArrayException: JavaScriptThrowable {
+    // An explicit initializer because a struct's synthesized init is internal and so can't be called
+    // from the `@inlinable` decode bodies.
+    public init() {}
+
+    public var code: String {
+      "ERR_NOT_TYPED_ARRAY"
+    }
+    public var message: String {
+      "Expected a JavaScript typed array, but received a value of another type"
+    }
+  }
+
+  /// Thrown when a typed array is the wrong kind for the concrete type being decoded, e.g. decoding a
+  /// `Uint8Array` from a JavaScript `Int16Array`. `expected` is `nil` when the decoded type is a
+  /// `GenericTypedArray<T>` specialization that has no single expected kind.
+  public struct KindMismatchException: JavaScriptThrowable {
+    public let expected: JavaScriptTypedArray.Kind?
+    public let received: JavaScriptTypedArray.Kind
+
+    // An explicit initializer because a struct's synthesized memberwise init is internal even with
+    // public fields, so it can't be called from the `@inlinable` decode bodies.
+    public init(expected: JavaScriptTypedArray.Kind?, received: JavaScriptTypedArray.Kind) {
+      self.expected = expected
+      self.received = received
+    }
+
+    public var code: String {
+      "ERR_TYPED_ARRAY_KIND_MISMATCH"
+    }
+    public var message: String {
+      if let expected {
+        return "Expected a typed array of kind \(expected), but received \(received)"
+      }
+      return "A typed array of kind \(received) cannot be decoded as the expected typed array type"
+    }
   }
 }

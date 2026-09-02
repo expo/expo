@@ -51,15 +51,18 @@ export function CopyTextButton({ children, copyText, className }: CopyTextButton
         className={mergeClasses(
           'inline-flex items-center justify-center rounded-sm p-1 transition-colors',
           'hover:bg-element focus-visible:bg-element',
-          'focus-visible:ring-link focus:outline-none focus-visible:ring-2',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-link',
           copied && 'opacity-100'
         )}
         aria-label="Copy to clipboard"
         title="Copy to clipboard">
         {copied ? (
-          <CheckIcon className="icon-xs text-success" />
+          <CheckIcon aria-hidden="true" className="icon-xs text-success" />
         ) : (
-          <ClipboardIcon className="icon-xs text-icon-secondary hover:text-icon-default" />
+          <ClipboardIcon
+            aria-hidden="true"
+            className="icon-xs text-icon-secondary hover:text-icon-default"
+          />
         )}
       </button>
     </span>

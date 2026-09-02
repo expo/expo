@@ -1,5 +1,4 @@
-import { isRunningInExpoGo } from 'expo';
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { isRunningInExpoGo, Platform, UnavailabilityError } from 'expo';
 import * as TaskManager from 'expo-task-manager';
 
 import type { BackgroundTaskOptions } from './BackgroundTask.types';
@@ -55,7 +54,7 @@ export const getStatusAsync = async (): Promise<BackgroundTaskStatus> => {
  * import * as TaskManager from 'expo-task-manager';
  *
  * // Register the task outside of the component
- * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, () => {
+ * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
  *   try {
  *     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
  *   } catch (error) {

@@ -1,7 +1,8 @@
 import Checkbox from 'expo-checkbox';
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
+import { BodyText } from '../BodyText';
 import EnumButton from './EnumButton';
 import Platforms from './Platforms';
 import {
@@ -43,9 +44,9 @@ export default function ConfiguratorChoice({
   return (
     <View style={styles.container}>
       <Platforms platforms={platforms} />
-      <Text style={[styles.label, disabled && styles.labelDisabled]}>
+      <BodyText style={[styles.label, disabled && styles.labelDisabled]}>
         {Array.isArray(name) ? name.join('.') : name}
-      </Text>
+      </BodyText>
       {type === 'boolean' ? (
         <Checkbox
           disabled={disabled}

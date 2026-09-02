@@ -2,10 +2,10 @@ package expo.modules.kotlin.views
 
 import android.view.View
 import com.facebook.react.bridge.Dynamic
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.PropSetException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.types.ConverterContext
 
 open class ConcreteViewProp<ViewType : View, PropType>(
   name: String,
@@ -14,20 +14,20 @@ open class ConcreteViewProp<ViewType : View, PropType>(
 ) : AnyViewProp(name, propType) {
   private var _isStateProp = false
 
-  override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
-    setPropDirectly(prop, onView, appContext)
+  override fun set(prop: Dynamic, onView: View, converterContext: ConverterContext) {
+    setPropDirectly(prop, onView, converterContext)
   }
 
-  override fun set(prop: Any?, onView: View, appContext: AppContext?) {
-    setPropDirectly(prop, onView, appContext)
+  override fun set(prop: Any?, onView: View, converterContext: ConverterContext) {
+    setPropDirectly(prop, onView, converterContext)
   }
 
-  private fun setPropDirectly(prop: Any?, onView: View, appContext: AppContext?) {
+  private fun setPropDirectly(prop: Any?, onView: View, converterContext: ConverterContext) {
     exceptionDecorator({
       PropSetException(name, onView::class, it)
     }) {
       @Suppress("UNCHECKED_CAST")
-      setter(onView as ViewType, type.convert(prop, appContext) as PropType)
+      setter(onView as ViewType, type.convert(prop, converterContext) as PropType)
     }
   }
 
@@ -49,11 +49,11 @@ class ConcreteViewPropWithDefault<ViewType : View, PropType>(
   private val defaultValue: PropType
 ) : ConcreteViewProp<ViewType, PropType>(name, propType, setter) {
   @Suppress("UNCHECKED_CAST")
-  override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
+  override fun set(prop: Dynamic, onView: View, converterContext: ConverterContext) {
     if (prop.isNull) {
       setter(onView as ViewType, defaultValue)
       return
     }
-    super.set(prop, onView, appContext)
+    super.set(prop, onView, converterContext)
   }
 }

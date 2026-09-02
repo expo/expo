@@ -27,8 +27,6 @@ import android.widget.ScrollView;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.fabric.interop.UIBlockViewResolver;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
-import com.facebook.react.uimanager.UIBlock;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -58,7 +56,7 @@ import static android.view.View.VISIBLE;
 /**
  * Snapshot utility class allow to screenshot a view.
  */
-public class ViewShot implements UIBlock, com.facebook.react.fabric.interop.UIBlock {
+public class ViewShot implements com.facebook.react.fabric.interop.UIBlock {
     //region Constants
     /**
      * Tag fort Class logs.
@@ -183,18 +181,13 @@ public class ViewShot implements UIBlock, com.facebook.react.fabric.interop.UIBl
 
     //region Overrides
     @Override
-    public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
-        executeImpl(nativeViewHierarchyManager, null);
-    }
-
-    @Override
     public void execute(@NonNull UIBlockViewResolver uiBlockViewResolver) {
-        executeImpl(null, uiBlockViewResolver);
+        executeImpl(uiBlockViewResolver);
     }
     //endregion
 
     //region Implementation
-    private void executeImpl(final NativeViewHierarchyManager nativeViewHierarchyManager, final UIBlockViewResolver uiBlockViewResolver) {
+    private void executeImpl(final UIBlockViewResolver uiBlockViewResolver) {
         executor.execute(new Runnable () {
             @Override
             public void run() {
@@ -203,10 +196,8 @@ public class ViewShot implements UIBlock, com.facebook.react.fabric.interop.UIBl
 
                     if (tag == -1) {
                         view = currentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
-                    } else if (uiBlockViewResolver != null) {
-                        view = uiBlockViewResolver.resolveView(tag);
                     } else {
-                        view = nativeViewHierarchyManager.resolveView(tag);
+                        view = uiBlockViewResolver.resolveView(tag);
                     }
 
                     if (view == null) {

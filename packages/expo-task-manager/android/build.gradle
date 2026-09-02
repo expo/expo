@@ -4,13 +4,14 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.8'
+version = '56.0.15'
 
 android {
   namespace "expo.modules.taskmanager"
   defaultConfig {
     versionCode 23
-    versionName "56.0.8"
+    versionName "56.0.15"
+    consumerProguardFiles 'proguard-rules.pro'
   }
 }
 
@@ -18,4 +19,6 @@ dependencies {
   implementation project(':unimodules-app-loader')
   api "androidx.core:core:1.17.0"
   compileOnly "com.facebook.react:react-android"
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
 }

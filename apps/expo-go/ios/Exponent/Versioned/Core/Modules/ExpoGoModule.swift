@@ -26,16 +26,5 @@ final class ExpoGoModule: Module {
       ]
     }
 
-    Function("getModulesSchema") {
-      let jsonEncoder = JSONEncoder()
-      guard let registry = appContext?.moduleRegistry else {
-        return ""
-      }
-      if let jsonData = try? jsonEncoder.encode(ModuleRegistryEncoder(registry)),
-        let jsonString = String(data: jsonData, encoding: .utf8) {
-        return jsonString
-      }
-      return ""
-    }
   }
 }

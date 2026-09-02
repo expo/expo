@@ -11,6 +11,7 @@ import {
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
+import { configureWorkspacesAsync } from './configureWorkspaces';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
@@ -57,18 +58,24 @@ async function resolveProjectRootArgAsync(
   }
 }
 
-async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
+export async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
+
+  // For monorepo templates: normalize workspace-package dependency specs to
+  // the chosen package manager's convention, and write a `pnpm-workspace.yaml`
+  // when pnpm is the resolved manager. No-op for single-app templates.
+  await configureWorkspacesAsync(projectRoot, packageManager);
 
   // Configure package manager, which is unrelated to installing or not
   await configureNodeDependenciesAsync(projectRoot, packageManager);
 
   // Install dependencies
   let podsInstalled: boolean = false;
+  let nodeModulesInstalled: boolean = false;
   const needsPodsInstalled = await fs.existsSync(path.join(projectRoot, 'ios'));
   if (shouldInstall) {
-    await installNodeDependenciesAsync(projectRoot, packageManager);
+    nodeModulesInstalled = await installNodeDependenciesAsync(projectRoot, packageManager);
     if (needsPodsInstalled) {
       podsInstalled = await installCocoaPodsAsync(projectRoot);
     }
@@ -76,7 +83,8 @@ async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 
   const cdPath = getChangeDirectoryPath(projectRoot);
   console.log();
   Template.logProjectReady({ cdPath, packageManager });
-  if (!shouldInstall) {
+  // The install can also fail without stopping the command, so check the result and not the flag.
+  if (!nodeModulesInstalled) {
     logNodeInstallWarning(cdPath, packageManager, needsPodsInstalled && !podsInstalled);
   }
 }
@@ -126,7 +134,11 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
   });
 
   await withSectionLog(
-    () => Template.extractAndPrepareTemplateAppAsync(projectRoot, { npmPackage: resolvedTemplate }),
+    async () => {
+      await Template.extractAndPrepareTemplateAppAsync(projectRoot, {
+        npmPackage: resolvedTemplate,
+      });
+    },
     {
       pending: chalk.bold('Locating project files.'),
       success: 'Downloaded and extracted project files.',
@@ -138,7 +150,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
   await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
-    generateAgentFiles(projectRoot);
+    await generateAgentFiles(projectRoot);
   }
 
   // for now, we will just init a git repo if they have git installed and the
@@ -217,17 +229,22 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     properties: { phase: AnalyticsEventPhases.ATTEMPT, example: resolvedExample },
   });
 
-  await withSectionLog(() => downloadAndExtractExampleAsync(projectRoot, resolvedExample), {
-    pending: chalk.bold('Locating example files...'),
-    success: 'Downloaded and extracted example files.',
-    error: (error) =>
-      `Something went wrong in downloading and extracting the example files: ${error.message}`,
-  });
+  await withSectionLog(
+    async () => {
+      await downloadAndExtractExampleAsync(projectRoot, resolvedExample);
+    },
+    {
+      pending: chalk.bold('Locating example files...'),
+      success: 'Downloaded and extracted example files.',
+      error: (error) =>
+        `Something went wrong in downloading and extracting the example files: ${error.message}`,
+    }
+  );
 
   await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
-    generateAgentFiles(projectRoot);
+    await generateAgentFiles(projectRoot);
   }
 
   // for now, we will just init a git repo if they have git installed and the
@@ -267,18 +284,21 @@ async function configureNodeDependenciesAsync(
   }
 }
 
+/** Install the node modules. Returns `false` when the package manager failed. */
 async function installNodeDependenciesAsync(
   projectRoot: string,
   packageManager: PackageManagerName
-): Promise<void> {
+): Promise<boolean> {
   try {
     await installDependenciesAsync(projectRoot, packageManager, { silent: false });
+    return true;
   } catch (error: any) {
     debug(`Error installing node modules: %O`, error);
     Log.error(
       `Something went wrong installing JavaScript dependencies. Check your ${packageManager} logs. Continuing to create the app.`
     );
     Log.exception(error);
+    return false;
   }
 }
 

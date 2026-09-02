@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import { BottomSheetContext, BottomSheetInternalContext } from './context';
-import type { BottomSheetMethods, BottomSheetProps } from './types';
-import { parseSnapPoint } from './types';
 import { Host } from '../../jetpack-compose/Host';
 import { ModalBottomSheet, type ModalBottomSheetRef } from '../../jetpack-compose/ModalBottomSheet';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
+import { BottomSheetContext, BottomSheetInternalContext } from './context';
+import { SheetScrollContextReset } from './scrollContextReset';
+import type { BottomSheetMethods, BottomSheetProps } from './types';
+import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
 
@@ -118,18 +119,6 @@ export function BottomSheet(props: BottomSheetProps) {
     }
   }, [clampIndex, indexProp, fireCloseCallbacks]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const targetIndex = pendingIndexRef.current ?? 0;
-    if (hasMultipleSnapPoints && targetIndex === maxIndex) {
-      sheetRef.current?.expand();
-    } else if (hasMultipleSnapPoints) {
-      sheetRef.current?.partialExpand();
-    }
-    pendingIndexRef.current = null;
-  }, [hasMultipleSnapPoints, isOpen, maxIndex]);
-
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
     fireCloseCallbacks();
@@ -197,11 +186,12 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }}>
+        <Host style={{ position: 'absolute', width }} pointerEvents="none">
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}
             skipPartiallyExpanded={skipPartially}
+            initialFullyExpanded={hasMultipleSnapPoints && pendingIndexRef.current === maxIndex}
             showDragHandle={handleComponent !== null}
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
@@ -210,7 +200,11 @@ export function BottomSheet(props: BottomSheetProps) {
               shouldDismissOnClickOutside: enablePanDownToClose,
             }}>
             <RNHostView matchContents={fitToContents}>
-              <View style={fitToContents ? undefined : { flex: 1 }}>{children}</View>
+              {/* flexGrow:1 + height:0 (flex-basis 0) fills RNHostView's measured height without
+                  inheriting the scrollable child's content height, which would block scrolling to the end. */}
+              <View style={fitToContents ? undefined : { flexGrow: 1, height: 0 }}>
+                <SheetScrollContextReset>{children}</SheetScrollContextReset>
+              </View>
             </RNHostView>
           </ModalBottomSheet>
         </Host>

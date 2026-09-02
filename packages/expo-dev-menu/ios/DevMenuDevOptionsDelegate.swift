@@ -35,11 +35,17 @@ class DevMenuDevOptionsDelegate {
     guard let bundleURL = appContext?.bundleURL else {
       return
     }
-    let port = bundleURL.port ?? Int(RCT_METRO_PORT)
-    let host = bundleURL.host ?? "localhost"
-    let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
-    guard let url = URL(string: openURL) else {
-      NSLog("[DevMenu] Invalid openJSInspector URL: $@", openURL)
+    let isServed = bundleURL.scheme == "http" || bundleURL.scheme == "https" || bundleURL.scheme == "exps" || bundleURL.scheme == "exp"
+    var components = URLComponents()
+    components.scheme = bundleURL.scheme == "https" || bundleURL.scheme == "exps" ? "https" : "http"
+    components.host = isServed ? bundleURL.host : "localhost"
+    components.port = isServed ? bundleURL.port : Int(RCT_METRO_PORT)
+    components.path = "/_expo/debugger"
+    components.queryItems = [
+      URLQueryItem(name: "applicationId", value: Bundle.main.bundleIdentifier ?? "")
+    ]
+    guard let url = components.url else {
+      NSLog("[DevMenu] Invalid openJSInspector URL: $@", components.description)
       return
     }
     let request = NSMutableURLRequest(url: url)

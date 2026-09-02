@@ -1,6 +1,7 @@
 # ${packageName}
 
 ${description}
+
 <!--- remove for interfaces --->
 
 # API documentation
@@ -9,6 +10,7 @@ ${description}
 - [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/${docName}/)
 
 <!--- end remove for interfaces --->
+
 # Installation in managed Expo projects
 
 For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
@@ -24,11 +26,13 @@ npm install ${packageName}
 ```
 
 <!--- remove for no-android --->
+
 ### Configure for Android
 
 <!--- remove for interfaces --->
 
 <!--- remove for no-package --->
+
 No additional setup necessary.
 
 <!--- end remove for no-package --->
@@ -36,11 +40,13 @@ No additional setup necessary.
 <!--- end remove for no-android --->
 
 <!--- remove for no-ios --->
+
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package.
 
 <!--- end remove for no-ios --->
+
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

@@ -26,15 +26,18 @@ struct ProjectsListView: View {
         }
 
         if viewModel.hasMore && !viewModel.isLoading {
-          Button("Load More") {
+          Button {
             Task {
               await viewModel.loadMore()
             }
+          } label: {
+            Text("Load more")
+              .frame(maxWidth: .infinity)
+              .padding()
+              .background(Color.expoSecondarySystemBackground)
+              .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+              .contentShape(Rectangle())
           }
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
 
         if viewModel.isLoading && !viewModel.projects.isEmpty {
@@ -75,7 +78,7 @@ class ProjectsListViewModel: ObservableObject {
 
   private let accountName: String
   private var currentOffset = 0
-  private let pageSize = 15
+  private let pageSize = 20
   private var totalCount = 0
 
   init(accountName: String) {
@@ -90,7 +93,6 @@ class ProjectsListViewModel: ObservableObject {
 
   func refresh() async {
     currentOffset = 0
-    projects = []
     await fetchProjects()
   }
 
@@ -126,6 +128,9 @@ class ProjectsListViewModel: ObservableObject {
 
       hasMore = projects.count < totalCount
     } catch {
+      if (error as? APIError)?.isCancellation == true {
+        return
+      }
       self.error = error
       self.showingError = true
     }

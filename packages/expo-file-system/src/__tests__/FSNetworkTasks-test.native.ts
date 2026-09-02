@@ -70,6 +70,14 @@ describe('UploadTask', () => {
   let file: File;
   const url = 'https://example.com/upload';
   const mockUploadResult = { body: '{"ok":true}', status: 200, headers: { 'x-req-id': '1' } };
+  const leakedSharedObjectMethods = [
+    'emit',
+    'listenerCount',
+    'removeListener',
+    'removeAllListeners',
+    'startObserving',
+    'stopObserving',
+  ];
 
   beforeEach(() => {
     file = new File(Paths.cache, 'photo.jpg');
@@ -89,6 +97,22 @@ describe('UploadTask', () => {
   it('starts in idle state', () => {
     const task = new UploadTask(file, url);
     expect(task.state).toBe('idle');
+  });
+
+  it('is a public facade, not a native upload task instance', () => {
+    const task = new UploadTask(file, url);
+
+    expect(task).not.toBeInstanceOf(ExpoFileSystem.FileSystemUploadTask);
+  });
+
+  it('does not expose SharedObject methods except release()', () => {
+    const task = new UploadTask(file, url);
+
+    expect(typeof task.addListener).toBe('function');
+    expect(typeof task.release).toBe('function');
+    for (const method of leakedSharedObjectMethods) {
+      expect((task as any)[method]).toBeUndefined();
+    }
   });
 
   it('transitions to active then completed on successful upload', async () => {
@@ -207,6 +231,14 @@ describe('DownloadTask', () => {
   const url = 'https://example.com/video.mp4';
   let destination: File;
   const mockOutputUri = 'file:///mock/cache/video.mp4';
+  const leakedSharedObjectMethods = [
+    'emit',
+    'listenerCount',
+    'removeListener',
+    'removeAllListeners',
+    'startObserving',
+    'stopObserving',
+  ];
 
   beforeEach(() => {
     destination = new File(Paths.cache, 'video.mp4');
@@ -232,6 +264,22 @@ describe('DownloadTask', () => {
   it('starts in idle state', () => {
     const task = new DownloadTask(url, destination);
     expect(task.state).toBe('idle');
+  });
+
+  it('is a public facade, not a native download task instance', () => {
+    const task = new DownloadTask(url, destination);
+
+    expect(task).not.toBeInstanceOf(ExpoFileSystem.FileSystemDownloadTask);
+  });
+
+  it('does not expose SharedObject methods except release()', () => {
+    const task = new DownloadTask(url, destination);
+
+    expect(typeof task.addListener).toBe('function');
+    expect(typeof task.release).toBe('function');
+    for (const method of leakedSharedObjectMethods) {
+      expect((task as any)[method]).toBeUndefined();
+    }
   });
 
   it('transitions to active then completed on successful download', async () => {

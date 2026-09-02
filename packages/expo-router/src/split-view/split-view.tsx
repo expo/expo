@@ -1,11 +1,17 @@
 import React, { createContext, isValidElement, use, type ReactNode } from 'react';
 import { Split, type SplitHostProps } from 'react-native-screens/experimental';
 
-import { SplitViewColumn, SplitViewInspector } from './elements';
 import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
 import { Slot } from '../views/Navigator';
+import { SplitViewColumn, SplitViewInspector } from './elements';
 
 const IsWithinSplitViewContext = createContext(false);
+
+const WrappedSlot = () => (
+  <IsWithinLayoutContext value>
+    <Slot />
+  </IsWithinLayoutContext>
+);
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -30,12 +36,6 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
     );
     return <Slot />;
   }
-
-  const WrappedSlot = () => (
-    <IsWithinLayoutContext value>
-      <Slot />
-    </IsWithinLayoutContext>
-  );
 
   const allChildrenArray = React.Children.toArray(children);
   const columnChildren = allChildrenArray.filter(

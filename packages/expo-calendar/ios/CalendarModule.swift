@@ -457,7 +457,7 @@ public class CalendarModule: Module {
     }
     if let requester, !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
       let message = requester.permissionType().uppercased()
-      throw MissionPermissionsException(message)
+      throw MissingPermissionsException(message)
     }
 
     resetEventStoreIfPermissionWasChanged(entity: entity)

@@ -47,12 +47,3 @@ struct ErrorStateView: View {
     .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 }
-
-#Preview {
-  ErrorStateView(
-    message: "Failed to load projects. Please check your connection and try again.",
-    onRetry: {}
-  )
-  .padding()
-  .background(Color.expoSystemBackground)
-}

@@ -1,3 +1,4 @@
+import { Asset } from 'expo-asset';
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
 import { File, Directory, Paths, FileMode, UploadType, DownloadTask } from 'expo-file-system';
@@ -12,7 +13,7 @@ import type {
   WatchEvent,
 } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -27,6 +28,7 @@ import {
   DimensionValue,
 } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
@@ -46,6 +48,65 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+const previewPdfFixture = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 47 >>
+stream
+BT /F1 24 Tf 72 720 Td (File Preview PDF) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000115 00000 n
+0000000241 00000 n
+0000000338 00000 n
+trailer
+<< /Root 1 0 R /Size 6 >>
+startxref
+408
+%%EOF`;
+
+const getPreviewDirectory = () => {
+  const directory = new Directory(Paths.cache, 'file-system-preview');
+  directory.create({ intermediates: true, idempotent: true });
+  return directory;
+};
+
+async function writePreviewFixtureAsync(fileName: string, contents: string) {
+  const file = new File(getPreviewDirectory(), fileName);
+  await file.write(contents);
+  return file;
+}
+
+async function copyPreviewAssetAsync(assetModule: number, fileName: string) {
+  const asset = Asset.fromModule(assetModule);
+  await asset.downloadAsync();
+
+  if (!asset.localUri) {
+    throw new Error('Unable to resolve local asset URI.');
+  }
+
+  const source = new File(asset.localUri);
+  const destination = new File(getPreviewDirectory(), fileName);
+  await source.copy(destination, { overwrite: true });
+  return destination;
 }
 
 export default function FileSystemScreen() {
@@ -72,6 +133,11 @@ export default function FileSystemScreen() {
 
         <FileSourcesSection setCurrentFile={setCurrentFile} />
         <FileInfoSection withCurrentFile={withCurrentFile} />
+        <FilePreviewSection
+          currentFile={currentFile}
+          setCurrentFile={setCurrentFile}
+          withCurrentFile={withCurrentFile}
+        />
         <ReadWriteSection withCurrentFile={withCurrentFile} />
         <FileHandleSection currentFile={currentFile} />
         <FileWatcherSection currentFile={currentFile} />
@@ -108,10 +174,10 @@ function FileSourcesSection({ setCurrentFile }: { setCurrentFile: (f: File) => v
 
       <ListButton
         title="Create local file"
-        onPress={() => {
+        onPress={async () => {
           const file = new File(Paths.cache, 'test_sandbox', 'test.txt');
           file.create({ intermediates: true, overwrite: true });
-          file.write('Hello from FileSystem sandbox! Timestamp: ' + Date.now());
+          await file.write('Hello from FileSystem sandbox! Timestamp: ' + Date.now());
           setCurrentFile(file);
           Alert.alert('Created', file.uri);
         }}
@@ -226,7 +292,8 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           exists: file.exists,
           size: file.size,
           type: file.type,
-          md5: file.md5,
+          md5: await file.digest('MD5'),
+          sha256: await file.digest('SHA-256'),
           modificationTime: file.modificationTime,
           creationTime: file.creationTime,
         }))}
@@ -240,9 +307,87 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           }))}
         />
       )}
+      <SimpleActionDemo title="Show info()" action={withCurrentFile(async (file) => file.info())} />
+    </>
+  );
+}
+
+// ===== Section: File Preview =====
+
+function FilePreviewSection({
+  currentFile,
+  setCurrentFile,
+  withCurrentFile,
+}: {
+  currentFile: File | null;
+  setCurrentFile: (f: File) => void;
+  withCurrentFile: WithCurrentFile;
+}) {
+  async function createFixture(title: string, prepareFileAsync: () => Promise<File>) {
+    try {
+      const file = await prepareFileAsync();
+      setCurrentFile(file);
+      Alert.alert(title, file.uri);
+    } catch (e: any) {
+      Alert.alert('Error', e.message);
+    }
+  }
+
+  return (
+    <>
+      <HeadingText>File Preview</HeadingText>
+      <Text style={styles.note}>Open local files with the platform file preview flow</Text>
+
+      <ListButton
+        title="Create PDF fixture"
+        onPress={() =>
+          createFixture('PDF fixture', () =>
+            writePreviewFixtureAsync('file-preview-test.pdf', previewPdfFixture)
+          )
+        }
+      />
+      <ListButton
+        title="Create image fixture"
+        onPress={() =>
+          createFixture('Image fixture', () =>
+            copyPreviewAssetAsync(
+              require('../../assets/images/large-example.jpg'),
+              'file-preview-test.jpg'
+            )
+          )
+        }
+      />
+      <ListButton
+        title="Create text fixture"
+        onPress={() =>
+          createFixture('Text fixture', () =>
+            writePreviewFixtureAsync(
+              'file-preview-test.txt',
+              'File Preview text fixture.\n\nThis file was generated locally in the Expo test app.'
+            )
+          )
+        }
+      />
       <SimpleActionDemo
-        title="Show info({ md5: true })"
-        action={withCurrentFile(async (file) => file.info({ md5: true }))}
+        title="canPreview()"
+        action={withCurrentFile(async (file) => ({
+          uri: file.uri,
+          type: file.type,
+          canPreview: await file.canPreview(),
+        }))}
+      />
+      <ListButton
+        title="preview()"
+        disabled={!currentFile}
+        onPress={async () => {
+          try {
+            await currentFile!.preview({
+              title: currentFile!.name,
+            });
+          } catch (e: any) {
+            Alert.alert('Error', e.message);
+          }
+        }}
       />
     </>
   );
@@ -278,7 +423,7 @@ function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFil
       <SimpleActionDemo
         title="write() text"
         action={withCurrentFile(async (file) => {
-          file.write('Written at ' + new Date().toISOString());
+          await file.write('Written at ' + new Date().toISOString());
           return 'OK - size is now: ' + file.size;
         })}
       />
@@ -286,7 +431,7 @@ function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFil
         title="write() base64"
         action={withCurrentFile(async (file) => {
           // Base64 of "Hello Base64!"
-          file.write('SGVsbG8gQmFzZTY0IQ==', { encoding: 'base64' });
+          await file.write('SGVsbG8gQmFzZTY0IQ==', { encoding: 'base64' });
           return 'OK - text() = ' + truncate(await file.text());
         })}
       />
@@ -294,7 +439,7 @@ function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFil
         title="write() Uint8Array"
         action={withCurrentFile(async (file) => {
           const bytes = new Uint8Array([72, 101, 108, 108, 111]); // "Hello"
-          file.write(bytes);
+          await file.write(bytes);
           return 'OK - text() = ' + file.textSync();
         })}
       />
@@ -374,9 +519,9 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
       <ListButton
         title="Read 10 bytes"
         disabled={!handleRef.current}
-        onPress={() => {
+        onPress={async () => {
           try {
-            const bytes = handleRef.current!.readBytes(10);
+            const bytes = await handleRef.current!.readBytes(10);
             setHandleInfo(`offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`);
             appendLog(`Read ${bytes.length}B: [${Array.from(bytes).join(', ')}]`);
           } catch (e: any) {
@@ -387,9 +532,9 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
       <ListButton
         title="Write 'TEST' bytes"
         disabled={!handleRef.current}
-        onPress={() => {
+        onPress={async () => {
           try {
-            handleRef.current!.writeBytes(new Uint8Array([84, 69, 83, 84]));
+            await handleRef.current!.writeBytes(new Uint8Array([84, 69, 83, 84]));
             setHandleInfo(`offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`);
             appendLog('Wrote 4 bytes (TEST)');
           } catch (e: any) {
@@ -568,7 +713,7 @@ function CopyMoveSection({
       <HeadingText>Copy & Move</HeadingText>
       <View style={styles.optionRow}>
         <Checkbox value={overwrite} onValueChange={setOverwrite} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>overwrite</Text>
+        <BodyText style={styles.optionLabel}>overwrite</BodyText>
       </View>
       <SimpleActionDemo
         title="Copy to cache dir (file://)"
@@ -686,7 +831,7 @@ function DirectoryOperationsSection({
             title="Create file 'test_created.txt' in picked dir"
             action={async () => {
               const file = safDirectory.createFile('test_created.txt', 'text/plain');
-              file.write('Created at ' + new Date().toISOString());
+              await file.write('Created at ' + new Date().toISOString());
               setCurrentFile(file);
               return { uri: file.uri, name: file.name };
             }}
@@ -787,7 +932,7 @@ function FileLifecycleSection({
           const name = `test_${Date.now()}.txt`;
           const file = new File(Paths.cache, 'test_sandbox', name);
           file.create({ intermediates: true });
-          file.write('Created for lifecycle test');
+          await file.write('Created for lifecycle test');
           setCurrentFile(file);
           return { uri: file.uri, exists: file.exists, size: file.size };
         }}
@@ -860,22 +1005,22 @@ function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => vo
       <HeadingText>File Picker</HeadingText>
       <View style={styles.optionRow}>
         <Checkbox value={multiple} onValueChange={setMultiple} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>multiple files</Text>
+        <BodyText style={styles.optionLabel}>multiple files</BodyText>
       </View>
-      <Text>Mime types</Text>
+      <BodyText>Mime types</BodyText>
       <View style={styles.optionRow}>
         <Checkbox value={imageMime} onValueChange={setPngMime} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>images</Text>
+        <BodyText style={styles.optionLabel}>images</BodyText>
       </View>
       <View style={styles.optionRow}>
         <Checkbox value={pdfMime} onValueChange={setPdfMime} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>pdf files</Text>
+        <BodyText style={styles.optionLabel}>pdf files</BodyText>
       </View>
       <View style={styles.optionRow}>
         <Checkbox value={allMime} onValueChange={setAllMime} style={styles.checkbox} />
-        <Text style={styles.optionLabel}>all files</Text>
+        <BodyText style={styles.optionLabel}>all files</BodyText>
       </View>
-      <Text> Selected mime types: {JSON.stringify(mimeTypes())}</Text>
+      <BodyText> Selected mime types: {JSON.stringify(mimeTypes())}</BodyText>
       <SimpleActionDemo
         title={multiple ? 'Pick multiple files' : 'Pick a single file'}
         action={async () => {
@@ -905,16 +1050,16 @@ function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => vo
                     style={{ width: 100, height: 100 }}
                   />
                 ) : null}
-                <Text numberOfLines={1} ellipsizeMode="middle">
+                <BodyText numberOfLines={1} ellipsizeMode="middle">
                   {file?.name} ({file?.size! / 1000} KB)
-                </Text>
-                <Text numberOfLines={1} ellipsizeMode="middle">
+                </BodyText>
+                <BodyText numberOfLines={1} ellipsizeMode="middle">
                   URI: {file?.uri}
-                </Text>
-                <Text numberOfLines={1} ellipsizeMode="middle">
+                </BodyText>
+                <BodyText numberOfLines={1} ellipsizeMode="middle">
                   Mime type: {file?.type}
-                </Text>
-                <Text>Last modified: {file?.lastModified}</Text>
+                </BodyText>
+                <BodyText>Last modified: {file?.lastModified}</BodyText>
               </View>
             );
           })}

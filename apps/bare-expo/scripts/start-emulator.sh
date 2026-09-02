@@ -1,42 +1,50 @@
 #!/usr/bin/env bash
 
-port=${2:-8081}
-
 CURRENT_ENV=${NODE_ENV:-"development"}
 ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-$ANDROID_HOME}
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+has_device=false
+
+for arg in "$@"; do
+    if [[ "$arg" == "--device" || "$arg" == "-d" ]]; then
+        has_device=true
+        break
+    fi
+done
+
 echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 
 "$DIR/setup-android-project.sh"
 
-if ! $ANDROID_SDK_ROOT/tools/android list avd | grep -q bare-expo; then
-    echo " ⚠️  No emulator for bare Expo found, creating one..."
-    $DIR/create-emulator.sh 34
-fi
+if ! $has_device; then
+    if ! $ANDROID_SDK_ROOT/tools/android list avd | grep -q bare-expo; then
+        echo " ⚠️  No emulator for bare Expo found, creating one..."
+        $DIR/create-emulator.sh 34
+    fi
 
-if $ANDROID_SDK_ROOT/platform-tools/adb devices -l | grep -q emulator; then
-    echo " ✅ Emulator is already running"
-else
-    echo " ⚠️  Starting emulator..."
-    echo "no" | $ANDROID_SDK_ROOT/emulator/emulator "-avd" "bare-expo" "-no-audio" "-no-boot-anim" "-port" "5554" "-no-snapshot" "-partition-size" "1024" &
+    if $ANDROID_SDK_ROOT/platform-tools/adb devices -l | grep -q emulator; then
+        echo " ✅ Emulator is already running"
+    else
+        echo " ⚠️  Starting emulator..."
+        echo "no" | $ANDROID_SDK_ROOT/emulator/emulator "-avd" "bare-expo" "-no-audio" "-no-boot-anim" "-port" "5554" "-no-snapshot" "-partition-size" "1024" &
 
-    $DIR/wait-for-emulator.sh
-    sleep 30
+        $DIR/wait-for-emulator.sh
+        sleep 30
 
-    $ANDROID_SDK_ROOT/platform-tools/adb wait-for-device
-    $ANDROID_SDK_ROOT/platform-tools/adb shell settings put global window_animation_scale 0
-    $ANDROID_SDK_ROOT/platform-tools/adb shell settings put global transition_animation_scale 0
-    $ANDROID_SDK_ROOT/platform-tools/adb shell settings put global animator_duration_scale 0
-    $ANDROID_SDK_ROOT/platform-tools/adb shell am broadcast -a android.intent.action.BOOT_COMPLETED &
+        $ANDROID_SDK_ROOT/platform-tools/adb wait-for-device
+        $ANDROID_SDK_ROOT/platform-tools/adb shell settings put global window_animation_scale 0
+        $ANDROID_SDK_ROOT/platform-tools/adb shell settings put global transition_animation_scale 0
+        $ANDROID_SDK_ROOT/platform-tools/adb shell settings put global animator_duration_scale 0
+        $ANDROID_SDK_ROOT/platform-tools/adb shell am broadcast -a android.intent.action.BOOT_COMPLETED &
 
-    sleep 5
-    echo " ✅ Emulator is running"
+        sleep 5
+        echo " ✅ Emulator is running"
+    fi
 fi
 
 if [ "${CURRENT_ENV}" = "test" ]; then
-
     if [ -f "android/app/build/outputs/apk/release/app-release.apk" ]; then
         echo " ✅ Project is built for Android"
     else
@@ -49,5 +57,5 @@ if [ "${CURRENT_ENV}" = "test" ]; then
     "${DIR}/start-android-e2e-test.ts --test"
 else
     echo " ☛  Running the Android project..."
-    npx expo run:android --port "${port}"
+    npx expo run:android --port 8081 "$@"
 fi

@@ -7,6 +7,8 @@ appId: dev.expo.updatese2e
 - runFlow:
     file: basic_reload.yml
 - runFlow:
+    file: reload_update.yml
+- runFlow:
     file: basic_runUpdate.yml
 - runFlow:
     file: basic_updateInvalidHash.yml

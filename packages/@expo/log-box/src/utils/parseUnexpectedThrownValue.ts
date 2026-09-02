@@ -6,9 +6,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { parseErrorStack } from './parseErrorStack';
+import { withoutANSIColorStyles } from '@expo/log-box-utils';
+
 import type { ExtendedExceptionData } from '../LogBox';
-import { withoutANSIColorStyles } from './withoutANSIStyles';
+import { parseErrorStack } from './parseErrorStack';
 
 /**
  * Handles the developer-visible aspect of errors and exceptions

@@ -1,3 +1,4 @@
+import { getOriginalEnvValue } from '@expo/env';
 import JsonFile from '@expo/json-file';
 import crypto from 'crypto';
 import { boolish } from 'getenv';
@@ -26,8 +27,12 @@ export type UserSettingsData = {
 export function getExpoHomeDirectory() {
   const home = homedir();
 
-  if (process.env.__UNSAFE_EXPO_HOME_DIRECTORY) {
-    return process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
+  // Read from the pre-dotenv env — this redirects the directory used for the
+  // auth-token cache and other settings. The `__UNSAFE_` prefix marks it as a
+  // shell-only escape hatch; a project `.env` setting it would hijack credentials.
+  const unsafeHome = getOriginalEnvValue('__UNSAFE_EXPO_HOME_DIRECTORY');
+  if (unsafeHome) {
+    return unsafeHome;
   } else if (boolish('EXPO_STAGING', false)) {
     return path.join(home, '.expo-staging');
   } else if (boolish('EXPO_LOCAL', false)) {
@@ -46,10 +51,14 @@ export function getSettingsFilePath(): string {
   return path.join(getExpoHomeDirectory(), 'state.json');
 }
 
+// state.json holds the auth session secret, so restrict it to the owner only.
+const SETTINGS_FILE_MODE = 0o600;
+
 /** Get a new JsonFile instance pointed towards the settings file */
 export function getSettings(): JsonFile<UserSettingsData> {
   return new JsonFile<UserSettingsData>(getSettingsFilePath(), {
     ensureDir: true,
+    mode: SETTINGS_FILE_MODE,
     jsonParseErrorDefault: {},
     // This will ensure that an error isn't thrown if the file doesn't exist.
     cantReadFileDefault: {},
@@ -65,10 +74,7 @@ export function getSession() {
 }
 
 export async function setSessionAsync(sessionData?: SessionData) {
-  await getSettings().setAsync('auth', sessionData, {
-    default: {},
-    ensureDir: true,
-  });
+  await getSettings().setAsync('auth', sessionData, { default: {} });
 }
 
 /**

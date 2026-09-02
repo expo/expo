@@ -1,7 +1,8 @@
-import { Contact, ContactAccessButton, requestPermissionsAsync } from 'expo-contacts/next';
+import { Contact, ContactAccessButton, requestPermissionsAsync } from 'expo-contacts';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, Text } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 
 export default function ContactPickersScreen() {
@@ -53,9 +54,9 @@ export default function ContactPickersScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.status}>
+      <BodyText style={styles.status}>
         {selectedContact ? `Selected contact ID: ${selectedContact.id}` : 'No contact selected'}
-      </Text>
+      </BodyText>
       <View style={styles.buttons}>
         <Button title="Contact.presentCreateForm()" onPress={handlePresentCreateForm} />
         <Button title="Contact.presentPicker()" onPress={handlePresentPicker} />
@@ -82,7 +83,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   status: {
     marginBottom: 20,

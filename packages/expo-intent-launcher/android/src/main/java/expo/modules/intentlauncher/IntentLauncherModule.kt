@@ -8,9 +8,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
+import androidx.core.graphics.createBitmap
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException
 import expo.modules.intentlauncher.exceptions.PackageNotFoundException
@@ -50,11 +52,11 @@ class IntentLauncherModule : Module() {
 
       // `setData` and `setType` are exclusive, so we need to use `setDataAndType` in that case.
       if (params.data != null && params.type != null) {
-        intent.setDataAndType(Uri.parse(params.data), params.type)
+        intent.setDataAndType(params.data.toUri(), params.type)
       } else {
         intent.apply {
           if (params.data != null) {
-            data = Uri.parse(params.data)
+            data = params.data.toUri()
           } else if (params.type != null) {
             type = params.type
           }
@@ -74,6 +76,7 @@ class IntentLauncherModule : Module() {
                 value.toInt()
               }
             }
+
             else -> value
           }
         }
@@ -100,27 +103,22 @@ class IntentLauncherModule : Module() {
       val pm = context.packageManager
       val appInfo = try {
         pm.getApplicationInfo(packageName, 0)
-      } catch (e: PackageManager.NameNotFoundException) {
+      } catch (_: PackageManager.NameNotFoundException) {
         throw PackageNotFoundException(packageName)
       }
 
       // Get the app icon as a base64-encoded string
       val iconDrawable = pm.getApplicationIcon(appInfo)
-      val bitmap = when (iconDrawable) {
-        is BitmapDrawable -> iconDrawable.bitmap
-        is AdaptiveIconDrawable -> {
-          // Create a bitmap from AdaptiveIconDrawable
-          val bitmap = Bitmap.createBitmap(
-            iconDrawable.intrinsicWidth,
-            iconDrawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-          )
-          val canvas = Canvas(bitmap)
-          iconDrawable.setBounds(0, 0, canvas.width, canvas.height)
-          iconDrawable.draw(canvas)
-          bitmap
-        }
-        else -> null
+      val bitmap = if (iconDrawable is BitmapDrawable) {
+        iconDrawable.bitmap
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iconDrawable is AdaptiveIconDrawable) {
+        val bitmap = createBitmap(iconDrawable.intrinsicWidth, iconDrawable.intrinsicHeight)
+        val canvas = Canvas(bitmap)
+        iconDrawable.setBounds(0, 0, canvas.width, canvas.height)
+        iconDrawable.draw(canvas)
+        bitmap
+      } else {
+        null
       }
 
       bitmap?.let {

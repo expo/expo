@@ -1,17 +1,53 @@
-import { act, render } from '@testing-library/react-native';
+import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { DefaultRouterOptions, NavigationState, Router } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Group } from '../Group';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 jest.useFakeTimers();
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+});
+
+test('describes absent routes on demand', () => {
+  const barOptions = jest.fn(() => ({ title: 'Bar' }));
+  const wrapper = ({ children }: React.PropsWithChildren) => (
+    <BaseNavigationContainer>{children}</BaseNavigationContainer>
+  );
+  const { result } = renderHook(
+    () =>
+      useNavigationBuilder(MockRouter, {
+        children: [
+          <Screen key="foo" name="foo" component={React.Fragment} options={{ title: 'Foo' }} />,
+          <Screen key="bar" name="bar" component={React.Fragment} options={barOptions} />,
+        ],
+      }),
+    { wrapper }
+  );
+
+  const foo = result.current.state.routes[0]!;
+
+  expect(result.current.descriptors[foo.key]).toMatchObject({
+    route: foo,
+    options: { title: 'Foo' },
+  });
+  expect(result.current.descriptors[foo.key]!.render()).not.toBeNull();
+  expect(result.current.descriptors.bar).toBeUndefined();
+  expect(barOptions).not.toHaveBeenCalled();
+
+  const descriptor = result.current.describe({ key: undefined, name: 'bar' });
+  expect(descriptor).toMatchObject({
+    route: { key: undefined, name: 'bar' },
+    options: { title: 'Bar' },
+  });
+  expect(descriptor.render()).toBeNull();
+  expect(descriptor.navigation).toBeDefined();
+  expect(barOptions).toHaveBeenCalledTimes(1);
 });
 
 test('sets options with options prop as an object', () => {
@@ -82,13 +118,13 @@ test('sets options with options prop as a fuction', () => {
   const TestScreen = (): any => 'Test screen';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'foo', params: { author: 'Jane' } }] }}>
       <TestNavigator>
         <Screen
           name="foo"
           component={TestScreen}
           options={({ route }: any) => ({ title: route.params.author })}
-          initialParams={{ author: 'Jane' }}
         />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
@@ -138,7 +174,7 @@ test('sets options with screenOptions prop as an object', () => {
   const TestScreenB = (): any => 'Test screen B';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={{ routes: [{ name: 'foo' }, { name: 'bar' }] }}>
       <TestNavigator screenOptions={{ title: 'Hello world' }}>
         <Screen name="foo" component={TestScreenA} />
         <Screen name="bar" component={TestScreenB} />
@@ -199,13 +235,19 @@ test('sets options with screenOptions prop as a fuction', () => {
   const TestScreenB = (): any => 'Test screen B';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        routes: [
+          { name: 'foo', params: { author: 'Jane' } },
+          { name: 'bar', params: { fruit: 'Apple' } },
+        ],
+      }}>
       <TestNavigator
         screenOptions={({ route }: any) => ({
           title: `${route.name}: ${route.params.author || route.params.fruit}`,
         })}>
-        <Screen name="foo" component={TestScreenA} initialParams={{ author: 'Jane' }} />
-        <Screen name="bar" component={TestScreenB} initialParams={{ fruit: 'Apple' }} />
+        <Screen name="foo" component={TestScreenA} />
+        <Screen name="bar" component={TestScreenB} />
       </TestNavigator>
     </BaseNavigationContainer>
   );
@@ -594,7 +636,7 @@ test('returns true for canGoBack when current router handles GO_BACK', () => {
 
       getStateForAction(state, action, options) {
         if (action.type === 'GO_BACK') {
-          return state;
+          return { state, affectedRouteKey: state.routes[state.index]?.key };
         }
 
         return CurrentMockRouter.getStateForAction(state, action, options);
@@ -667,7 +709,7 @@ test('returns true for canGoBack when parent router handles GO_BACK', () => {
 
       getStateForAction(state, action, options) {
         if (action.type === 'GO_BACK') {
-          return state;
+          return { state, affectedRouteKey: state.routes[state.index]?.key };
         }
 
         return CurrentMockRouter.getStateForAction(state, action, options);

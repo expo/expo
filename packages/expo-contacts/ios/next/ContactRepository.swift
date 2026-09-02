@@ -49,10 +49,10 @@ class ContactRepository {
     offset: Int?,
     filter: ((CNContact) -> Bool) = { _ in return true },
     sortOrder: CNContactSortOrder? = CNContactSortOrder.userDefault,
-    unifyResults: Bool? = false
+    unifyResults: Bool
   ) throws -> [CNContact] {
     let request = CNContactFetchRequest(keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
-    request.unifyResults = unifyResults ?? false
+    request.unifyResults = unifyResults
     request.predicate = predicate
     request.sortOrder = sortOrder ?? CNContactSortOrder.userDefault
 

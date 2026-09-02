@@ -13,6 +13,10 @@ const MODULE_LEVEL_FEATURES: Feature[] = [
   'AsyncFunction',
   'View',
   'SharedObject',
+  'SwiftUIView',
+  'SwiftUIModifier',
+  'ComposeView',
+  'ComposeModifier',
 ];
 
 const VIEW_LEVEL_FEATURES: Feature[] = ['ViewEvent'];
@@ -24,6 +28,10 @@ const APP_SNIPPET_FEATURES: Feature[] = [
   'Event',
   'View',
   'SharedObject',
+  'SwiftUIView',
+  'SwiftUIModifier',
+  'ComposeView',
+  'ComposeModifier',
 ];
 
 async function readSnippet(
@@ -189,6 +197,66 @@ const FILE_SNIPPET_SPECS: FileSnippetSpec[] = [
     feature: 'SharedObject',
     source: 'sharedObject.ts.ejs',
     dest: (d) => path.join('src', `${d.project.sharedObjectName}.ts`),
+  },
+  {
+    feature: 'SwiftUIView',
+    source: 'view.swift.ejs',
+    dest: (d) => path.join('ios', `${d.project.swiftUIViewName}.swift`),
+    platform: 'apple',
+  },
+  {
+    feature: 'SwiftUIView',
+    source: 'view.tsx.ejs',
+    dest: (d) => path.join('src', `${d.project.swiftUIViewName}.tsx`),
+  },
+  {
+    feature: 'SwiftUIModifier',
+    source: 'modifier.swift.ejs',
+    dest: (d) => path.join('ios', `${d.project.swiftUIModifierName}.swift`),
+    platform: 'apple',
+  },
+  {
+    feature: 'SwiftUIModifier',
+    source: 'modifiers.ts.ejs',
+    dest: (d) => path.join('src', `${d.project.swiftUIModifierName}.ts`),
+  },
+  {
+    feature: 'ComposeView',
+    source: 'view.kt.ejs',
+    dest: (d) =>
+      path.join(
+        'android',
+        'src',
+        'main',
+        'java',
+        ...d.project.package.split('.'),
+        `${d.project.composeViewName}.kt`
+      ),
+    platform: 'android',
+  },
+  {
+    feature: 'ComposeView',
+    source: 'view.tsx.ejs',
+    dest: (d) => path.join('src', `${d.project.composeViewName}.tsx`),
+  },
+  {
+    feature: 'ComposeModifier',
+    source: 'modifier.kt.ejs',
+    dest: (d) =>
+      path.join(
+        'android',
+        'src',
+        'main',
+        'java',
+        ...d.project.package.split('.'),
+        `${d.project.composeModifierName}.kt`
+      ),
+    platform: 'android',
+  },
+  {
+    feature: 'ComposeModifier',
+    source: 'modifiers.ts.ejs',
+    dest: (d) => path.join('src', `${d.project.composeModifierName}.ts`),
   },
 ];
 

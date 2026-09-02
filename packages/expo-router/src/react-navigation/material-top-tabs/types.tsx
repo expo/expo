@@ -7,17 +7,17 @@ import type {
   TextStyle,
   ViewStyle,
 } from 'react-native';
+import type { SceneRendererProps, TabBarIndicatorProps, TabViewProps } from 'react-native-tab-view';
+import type { NavigatorArgs } from 'standard-navigation';
 
 import type {
-  DefaultNavigatorOptions,
   Descriptor,
-  NavigationHelpers,
+  DescriptorRouteProp,
   NavigationProp,
   ParamListBase,
   RouteProp,
   TabActionHelpers,
   TabNavigationState,
-  TabRouterOptions,
   Theme,
 } from '../native';
 
@@ -29,22 +29,35 @@ export type MaterialTopTabNavigationEventMap = {
   /**
    * Event which fires on long press on the tab in the tab bar.
    */
-  tabLongPress: { data: undefined };
+  tabLongPress: { data: undefined; canPreventDefault: false };
   /**
    * Event which fires when a swipe gesture starts, i.e. finger touches the screen.
    */
-  swipeStart: { data: undefined };
+  swipeStart: { data: undefined; canPreventDefault: false };
   /**
    * Event which fires when a swipe gesture ends, i.e. finger leaves the screen.
    */
-  swipeEnd: { data: undefined };
+  swipeEnd: { data: undefined; canPreventDefault: false };
 };
 
-export type MaterialTopTabNavigationHelpers = NavigationHelpers<
-  ParamListBase,
+export type MaterialTopTabViewRoute = {
+  key: string;
+  name: string;
+  params?: object;
+};
+
+/**
+ * The navigator state consumed by `MaterialTopTabView` and the tab bar.
+ */
+export type MaterialTopTabViewState = {
+  index: number;
+  routes: MaterialTopTabViewRoute[];
+};
+
+export type MaterialTopTabEmitter = NavigatorArgs<
+  Record<string, never>,
   MaterialTopTabNavigationEventMap
-> &
-  TabActionHelpers<ParamListBase>;
+>['emitter'];
 
 export type MaterialTopTabNavigationProp<
   ParamList extends ParamListBase,
@@ -73,11 +86,19 @@ export type MaterialTopTabOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = MaterialTopTabScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<MaterialTopTabScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
 export type MaterialTopTabNavigationOptions = {
+  /**
+   * Hides the tab item. If the screen is focused, the navigator redirects to its initial visible
+   * screen.
+   * @default false
+   */
+  hidden?: boolean;
+
   /**
    * Title text for the screen.
    */
@@ -85,7 +106,7 @@ export type MaterialTopTabNavigationOptions = {
 
   /**
    * Title string of a tab displayed in the tab bar
-   * or a function that given { focused: boolean, color: ColorValue } returns a React.Node, to display in tab bar.
+   * or a function that given { focused: boolean, color: ColorValue } returns a React.Node to display in tab bar.
    *
    * When undefined, scene title is used. Use `tabBarShowLabel` to hide the label.
    */
@@ -128,10 +149,9 @@ export type MaterialTopTabNavigationOptions = {
    * Function that returns a React element as the tab bar indicator.
    */
   tabBarIndicator?: (
-    props: Omit<
-      Parameters<NonNullable<React.ComponentProps<any>['renderIndicator']>>[0],
-      'navigationState'
-    > & { state: TabNavigationState<ParamListBase> }
+    props: Omit<TabBarIndicatorProps<MaterialTopTabViewRoute>, 'navigationState'> & {
+      state: MaterialTopTabViewState;
+    }
   ) => React.ReactNode;
 
   /**
@@ -197,7 +217,7 @@ export type MaterialTopTabNavigationOptions = {
   tabBarContentContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * Style object for the the tab bar.
+   * Style object for the tab bar.
    */
   tabBarStyle?: StyleProp<ViewStyle>;
 
@@ -270,7 +290,7 @@ export type MaterialTopTabDescriptor = Descriptor<
 export type MaterialTopTabDescriptorMap = Record<string, MaterialTopTabDescriptor>;
 
 export type MaterialTopTabNavigationConfig = Omit<
-  any,
+  TabViewProps<MaterialTopTabViewRoute>,
   | 'navigationState'
   | 'onIndexChange'
   | 'onSwipeStart'
@@ -282,7 +302,8 @@ export type MaterialTopTabNavigationConfig = Omit<
   | 'animationEnabled'
   | 'lazy'
   | 'lazyPreloadDistance'
-  | 'lazyPlaceholder'
+  | 'options'
+  | 'direction'
 > & {
   /**
    * Function that returns a React element to display as the tab bar.
@@ -290,23 +311,13 @@ export type MaterialTopTabNavigationConfig = Omit<
   tabBar?: (props: MaterialTopTabBarProps) => React.ReactNode;
 };
 
-export type MaterialTopTabBarProps = any & {
-  state: TabNavigationState<ParamListBase>;
-  navigation: NavigationHelpers<ParamListBase, MaterialTopTabNavigationEventMap>;
+export type MaterialTopTabBarProps = SceneRendererProps & {
+  state: MaterialTopTabViewState;
   descriptors: MaterialTopTabDescriptorMap;
+  emitter: MaterialTopTabEmitter;
+  navigateToTab: (routeKey: string) => void;
 };
 
 export type MaterialTopTabAnimationContext = {
   position: Animated.AnimatedInterpolation<number>;
 };
-
-export type MaterialTopTabNavigatorProps = DefaultNavigatorOptions<
-  ParamListBase,
-  string | undefined,
-  TabNavigationState<ParamListBase>,
-  MaterialTopTabNavigationOptions,
-  MaterialTopTabNavigationEventMap,
-  MaterialTopTabNavigationProp<ParamListBase>
-> &
-  TabRouterOptions &
-  MaterialTopTabNavigationConfig;

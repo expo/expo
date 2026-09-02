@@ -1,4 +1,8 @@
-import { requestPermissionsAsync, getAssetsAsync, getAssetInfoAsync } from 'expo-media-library';
+import {
+  requestPermissionsAsync,
+  getAssetsAsync,
+  getAssetInfoAsync,
+} from 'expo-media-library/legacy';
 import { VideoSource } from 'expo-video';
 const localVideoId: VideoSource = require('../../../assets/videos/ace.mp4') as number;
 const seekOptimizedVideoId: VideoSource =
@@ -9,6 +13,16 @@ const localVideoSource: VideoSource = {
   metadata: {
     title: 'Cute Doggo',
     artist: 'Doggo',
+  },
+};
+
+const starVideoId: VideoSource = require('../../../assets/videos/star.mp4') as number;
+
+const starVideoSource: VideoSource = {
+  assetId: starVideoId,
+  metadata: {
+    title: 'Star',
+    artist: 'Expo',
   },
 };
 
@@ -145,6 +159,7 @@ export {
   forBiggerBlazesSource,
   elephantsDreamSource,
   localVideoSource,
+  starVideoSource,
   androidDrmSource,
   videoLabels,
   videoSources,

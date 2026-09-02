@@ -1,3 +1,5 @@
+/// <reference path="./ts-declarations/xcode.d.ts" />
+
 /**
  * For internal use in Expo CLI
  */

@@ -6,9 +6,72 @@
 
 ### 🎉 New features
 
+- Add `ios`, `android`, `macos`, `tvos` per-platform override support ([#46508](https://github.com/expo/expo/pull/46508) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
+- Escape backslashes when serializing `'widget'` functions so escape sequences like `\n` in a widget layout survive the template-literal round-trip instead of corrupting the stored function and crashing the widget with `SyntaxError: Unexpected EOF`. ([#47626](https://github.com/expo/expo/pull/47626) by [@alecmolloy](https://github.com/alecmolloy))
+- Fix legacy decorators on class properties when corresponding class transforms are disabled, which the decorators plugin relies on ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano), [@kitten](https://github.com/kitten))
+- Disable `@babel/plugin-transform-object-rest-spread` in Hermes v1 and Modern Web sub-presets. The ordering dependence on `@babel/plugin-transform-destructuring` could cause computed exclusion to be missed ([#49278](https://github.com/expo/expo/pull/49278) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 57.0.5 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Inline `EXPO_PUBLIC_USE_RN_FETCH` inside `node_modules` so the `expo/fetch` opt-out works in production builds. ([#46986](https://github.com/expo/expo/pull/46986) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 56.0.15 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.14 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-19
+
+### 💡 Others
+
+- Enforce `routerRoot` to be within `projectRoot` ([#45892](https://github.com/expo/expo/pull/45892) by [@kitten](https://github.com/kitten))
 
 ## 56.0.8 — 2026-05-13
 

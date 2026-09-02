@@ -1,0 +1,52 @@
+---
+title: Add stickers
+description: In this chapter, direct your AI agent to add an emoji picker modal and make the sticker respond to drag and tap gestures.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+
+In this chapter, the app earns its name: you'll pick an emoji from a sliding panel, smash it onto your photo, and move it around with your fingers.
+
+<Step label="1">
+
+## Add the emoji picker
+
+Once a photo is chosen, the app should switch from "picking a photo" mode to "decorating it" mode. Paste the following prompt into your agent:
+
+```text Prompt|wrap
+When a photo has been chosen (either picked from the library or by tapping "Use this photo"), replace the two buttons with a row of options: a "Reset" option on the left that brings back the original buttons, and a circular "+" button in the middle. Tapping "+" should slide up a modal from the bottom titled "Choose a sticker" that shows the emoji images from the assets/images folder in a horizontally scrolling list. When I tap an emoji, close the modal and place that emoji on top of the photo as a sticker.
+```
+
+**What you should see**: after choosing a photo, the buttons change to the new option row. Tapping **+** slides up a panel of emoji; you can scroll the list sideways. Tapping one closes the panel and the emoji appears on your photo:
+
+<ContentSpotlight
+  alt="Emoji picker modal sliding up from the bottom of the screen"
+  src="/static/images/tutorial/emoji-picker.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## Move and resize the sticker
+
+A sticker stuck in one spot isn't much fun. Paste the following prompt into your agent:
+
+```text Prompt|wrap
+Make the sticker interactive using the react-native-gesture-handler and react-native-reanimated libraries: I want to drag the sticker around with my finger to place it anywhere on the photo, and double-tap it to double its size (double-tapping again should shrink it back). The movement and resizing should animate smoothly.
+```
+
+**What you should see**: drag the emoji around the photo with your finger, and double-tap it to grow and shrink it.
+
+This step is a good reminder of your role: the agent can read its own code, but it can't feel a gesture. Only you can confirm that dragging feels right. If the sticker lags, jumps, or snaps back, describe exactly that to the agent.
+
+</Step>
+
+> If a result doesn't match what you expected, tell the agent what you see. The [When something looks wrong](/tutorial/build-with-ai/create-your-first-app/#when-something-looks-wrong) section has the playbook.
+
+## Summary
+
+<ProgressTracker name="BUILD_WITH_AI" currentChapterSlug="/tutorial/build-with-ai/add-stickers" />

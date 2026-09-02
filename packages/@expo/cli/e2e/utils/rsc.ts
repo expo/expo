@@ -12,7 +12,7 @@ const maybeParseString = (match: string): string | null => {
   }
 };
 
-const pathReplacePattern = /^(\/)?node_modules\/(\.pnpm\/[\w@+.-]+\/)?/g;
+const pathReplacePattern = /^(\/)?node_modules\/(\.pnpm\/[\w@+.=-]+\/)?/g;
 
 export function sanitizeRSCPayloadString(input: string): string {
   // TODO(@kitten): We currently don't parse the RSC payloads. We only sanitize the pnpm paths in them for now

@@ -252,55 +252,6 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes imageRenderingMode as template when tintColor is set', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton icon={{ uri: 'image' }} tintColor="blue">
-          Test
-        </StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'template',
-      }),
-      undefined
-    );
-  });
-
-  it('passes imageRenderingMode as original when no tintColor', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton icon={{ uri: 'image' }}>Test</StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'original',
-      }),
-      undefined
-    );
-  });
-
-  it('uses explicit iconRenderingMode prop', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton icon={{ uri: 'image' }} iconRenderingMode="template">
-          Test
-        </StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'template',
-      }),
-      undefined
-    );
-  });
-
   it('passes xcassetName from StackToolbarIcon xcasset child', () => {
     render(
       <ToolbarPlacementContext.Provider value="bottom">
@@ -391,23 +342,6 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('Icon child renderingMode overrides parent iconRenderingMode for src icon', () => {
-    render(
-      <ToolbarPlacementContext.Provider value="bottom">
-        <StackToolbarButton iconRenderingMode="original">
-          <StackToolbarIcon src={{ uri: 'image' }} renderingMode="template" />
-        </StackToolbarButton>
-      </ToolbarPlacementContext.Provider>
-    );
-
-    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
-      expect.objectContaining({
-        imageRenderingMode: 'template',
-      }),
-      undefined
-    );
-  });
-
   it('extracts label from StackToolbarLabel child in bottom placement', () => {
     render(
       <ToolbarPlacementContext.Provider value="bottom">
@@ -481,6 +415,87 @@ describe('StackToolbarButton component', () => {
       expect(consoleSpy).toHaveBeenCalledWith(
         'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
       );
+    });
+  });
+
+  describe('image icon warning in bottom placement', () => {
+    const originalEnv = process.env.NODE_ENV;
+    let consoleSpy: jest.SpyInstance;
+    const imageWarning = expect.stringContaining(
+      'Stack.Toolbar.Button in placement="bottom" on iOS does not support image icons'
+    );
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalEnv;
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when icon prop is an image source in development', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon={{ uri: 'image' }}>Test</StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('warns when <StackToolbarIcon src> child is used in development', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton>
+            <StackToolbarIcon src={{ uri: 'image' }} />
+          </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn in production', () => {
+      process.env.NODE_ENV = 'production';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon={{ uri: 'image' }}>Test</StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn for SF Symbol string icon', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon="star.fill">Test</StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn for xcasset icon child', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton>
+            <StackToolbarIcon xcasset="custom-icon" />
+          </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
     });
   });
 });

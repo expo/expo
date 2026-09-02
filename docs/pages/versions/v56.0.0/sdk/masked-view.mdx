@@ -12,6 +12,8 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 
+> **important** [`@expo/ui` provides a drop-in replacement](./ui/drop-in-replacements/maskedview) for `@react-native-masked-view/masked-view`, powered by Jetpack Compose on Android and SwiftUI on iOS.
+
 `@react-native-masked-view/masked-view` provides a masked view that only displays the pixels that overlap with the view rendered in its mask element.
 
 > **warning** You can only have one of either `@react-native-community/masked-view` (deprecated) or `@react-native-masked-view/masked-view` installed in your project at any given time. React Navigation v6 and later requires `@react-native-masked-view/masked-view`, so you should use that package instead if you are using the latest version of React Navigation.

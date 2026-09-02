@@ -208,26 +208,28 @@ describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
   });
 
   describe('image icons', () => {
-    it('converts image icon to imageSource format by default', () => {
+    it('passes image icon as untinted by default', () => {
       const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
         icon: { uri: 'https://example.com/icon.png' },
       });
 
       expect(result.icon).toEqual({
-        type: 'imageSource',
-        imageSource: { uri: 'https://example.com/icon.png' },
+        type: 'image',
+        source: { uri: 'https://example.com/icon.png' },
+        tinted: false,
       });
     });
 
-    it('converts image icon to templateSource format when iconRenderingMode is template', () => {
+    it('passes image icon as tinted when iconRenderingMode is template', () => {
       const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
         icon: { uri: 'https://example.com/icon.png' },
         iconRenderingMode: 'template',
       });
 
       expect(result.icon).toEqual({
-        type: 'templateSource',
-        templateSource: { uri: 'https://example.com/icon.png' },
+        type: 'image',
+        source: { uri: 'https://example.com/icon.png' },
+        tinted: true,
       });
     });
   });
@@ -413,7 +415,7 @@ describe('submenu conversion', () => {
       });
     });
 
-    it('converts image icons to imageSource format in submenu', () => {
+    it('passes image icons in submenu', () => {
       const result = convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
           <StackToolbarMenu title="Submenu" icon={{ uri: 'https://example.com/icon.png' }}>
@@ -424,13 +426,14 @@ describe('submenu conversion', () => {
 
       expect(result?.menu.items[0]).toMatchObject({
         icon: {
-          type: 'imageSource',
-          imageSource: { uri: 'https://example.com/icon.png' },
+          type: 'image',
+          source: { uri: 'https://example.com/icon.png' },
+          tinted: false,
         },
       });
     });
 
-    it('converts xcasset icons in submenu to imageSource format', () => {
+    it('passes xcasset icons in submenu as image icons', () => {
       const result = convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
           <StackToolbarMenu title="Submenu">
@@ -441,7 +444,7 @@ describe('submenu conversion', () => {
       });
 
       expect(result?.menu.items[0]).toMatchObject({
-        icon: { type: 'imageSource', imageSource: { uri: 'custom-icon' } },
+        icon: { type: 'image', source: { uri: 'custom-icon' }, tinted: false },
       });
     });
   });
@@ -648,6 +651,95 @@ describe('StackToolbarMenu component', () => {
       expect(consoleSpy).toHaveBeenCalledWith(
         'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
       );
+    });
+  });
+
+  describe('image icon warning in bottom placement', () => {
+    const originalEnv = process.env.NODE_ENV;
+    let consoleSpy: jest.SpyInstance;
+    const imageWarning = expect.stringContaining(
+      'Stack.Toolbar.Menu in placement="bottom" on iOS does not support image icons'
+    );
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalEnv;
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when icon prop is an image source in development', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu icon={{ uri: 'image' }}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('warns when <StackToolbarIcon src> child is used in development', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu>
+            <StackToolbarIcon src={{ uri: 'image' }} />
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn in production', () => {
+      process.env.NODE_ENV = 'production';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu icon={{ uri: 'image' }}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn for SF Symbol string icon', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu icon="ellipsis.circle">
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
+    });
+
+    it('does not warn for xcasset icon child', () => {
+      process.env.NODE_ENV = 'development';
+
+      render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu>
+            <StackToolbarIcon xcasset="custom-icon" />
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
     });
   });
 });

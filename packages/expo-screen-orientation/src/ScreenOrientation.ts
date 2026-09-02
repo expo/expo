@@ -1,4 +1,4 @@
-import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { Platform, type EventSubscription, UnavailabilityError } from 'expo';
 import { Dimensions } from 'react-native';
 
 import ExpoScreenOrientation from './ExpoScreenOrientation';
@@ -23,8 +23,7 @@ export {
   type ScreenOrientationInfo,
 } from './ScreenOrientation.types';
 
-// TODO(@kitten): Remove re-export from EMC
-export type { EventSubscription as Subscription } from 'expo-modules-core';
+export type { EventSubscription as Subscription } from 'expo';
 
 let _orientationChangeSubscribers: EventSubscription[] = [];
 

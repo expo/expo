@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import StatusIndicator from './StatusIndicator';
 import { useTheme } from '../../common/ThemeProvider';
 import Statuses, { type Status } from '../constants/Statuses';
+import StatusIndicator from './StatusIndicator';
 
 type SpecResultProps = {
   status?: Status;

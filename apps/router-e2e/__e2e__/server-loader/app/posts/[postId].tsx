@@ -2,7 +2,7 @@ import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
 import { ImmutableRequest } from 'expo-router/server';
 import { Suspense } from 'react';
 
-import { Loading } from '../../components/Loading';;
+import { Loading } from '../../components/Loading';
 import { SiteLinks, SiteLink } from '../../components/SiteLink';
 import { Table, TableRow } from '../../components/Table';
 
@@ -52,4 +52,4 @@ const PostByIdScreen = () => {
       </SiteLinks>
     </>
   );
-}
+};

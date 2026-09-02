@@ -1,13 +1,12 @@
 import type { NextHandleFunction } from 'connect';
 import { WebSocketServer } from 'ws';
 
-import { createHandlersFactory } from './createHandlersFactory';
-import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
 import { env, envIsHeadless } from '../../../../utils/env';
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 import type { TerminalReporter } from '../TerminalReporter';
-
-const debug = require('debug')('expo:metro:debugging:middleware') as typeof console.log;
+import { event } from '../inspectorEvents';
+import { createHandlersFactory } from './createHandlersFactory';
+import { recordNetworkResponse } from './messageHandlers/NetworkResponse';
 
 interface DebugMiddleware {
   debugMiddleware: NextHandleFunction;
@@ -110,9 +109,10 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
   const wss = new WebSocketServer({
     noServer: true,
     perMessageDeflate: true,
-    // Don't crash on exceptionally large messages - assume the device is
-    // well-behaved and the debugger is prepared to handle large messages.
-    maxPayload: 0,
+    // Bounded so an unauthenticated client cannot exhaust dev-server memory
+    // with one oversized frame. 16 MiB covers realistic response bodies
+    // (image previews, large JSON dumps, base64-inflated assets).
+    maxPayload: 16 * 1024 * 1024,
   });
 
   wss.on('connection', (networkSocket) => {
@@ -124,7 +124,7 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
         if (message.method === 'Expo(Network.receivedResponseBody)' && message.params) {
           // If its a response body, write it to the global storage
           const { requestId, ...requestInfo } = message.params;
-          NETWORK_RESPONSE_STORAGE.set(requestId, requestInfo);
+          recordNetworkResponse(requestId, requestInfo);
         } else if (message.method.startsWith('Network.')) {
           // Otherwise, directly re-broadcast the Network events to all connected debuggers
           debuggerWebsocket.clients.forEach((debuggerSocket) => {
@@ -134,7 +134,7 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
           });
         }
       } catch (error) {
-        debug('Failed to handle Network CDP event', error);
+        event('network_cdp_failed', { error: event.error(error as Error) });
       }
     });
   });

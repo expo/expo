@@ -1,7 +1,5 @@
 import type commander from 'commander';
 
-import type { AutolinkingCommonArguments } from './autolinkingOptions';
-import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import { findModulesAsync } from '../autolinking/findModules';
 import { getConfiguration } from '../autolinking/getConfiguration';
 import {
@@ -14,6 +12,8 @@ import type {
   ModuleDescriptorAndroid,
   ModuleDescriptorIos,
 } from '../types';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 
 function hasCoreFeatures(
   module: ModuleDescriptor

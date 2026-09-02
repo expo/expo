@@ -6,16 +6,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
-
-import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
 import {
   parseBabelCodeFrameError,
   parseBabelTransformError,
   type ParsedBuildError,
   parseMetroError,
-} from '../utils/metroBuildErrorsFormat';
+} from '@expo/log-box-utils';
+import React from 'react';
+
 import { parseErrorStack } from '../utils/parseErrorStack';
+import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
 
 type ExceptionData = {
   message: string;
@@ -331,17 +331,13 @@ export function parseLogBoxLog(args: any[]): {
     error = new Error(message);
   }
 
-  // Use the official stack from componentDidCatch
-  if ('componentStack' in error) {
-    // @ts-expect-error
-    error.stack = error.componentStack;
-  } else {
-    // Try to capture owner stack now if missing.
-    error.stack = React.captureOwnerStack() || undefined;
-  }
+  const componentStack =
+    'componentStack' in error && typeof error.componentStack === 'string'
+      ? error.componentStack
+      : React.captureOwnerStack() || undefined;
 
   return {
-    componentStack: parseErrorStack(error.stack ?? ''),
+    componentStack: parseErrorStack(componentStack ?? ''),
     category: error.message,
     message: {
       content: message,

@@ -1,7 +1,7 @@
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getSchemaAsync } from '../api/getSchemaAsync';
 import { learnMore } from '../utils/TerminalLink';
 import { validateWithSchemaAsync } from '../utils/schema';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class ExpoConfigSchemaCheck implements DoctorCheck {
   description = 'Check Expo config (app.json/ app.config.js) schema';

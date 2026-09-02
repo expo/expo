@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig, AssetData } from '@expo/metro/metro';
+import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import type {
   MixedOutput,
   Module,
@@ -13,10 +14,12 @@ import type {
 } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import path from 'path';
 
+import getMetroAssets from '../transform-worker/getAssets';
+import { toPosixPath } from '../utils/filePath';
+import { precomputeChunkFilenames } from './computeChunkFilenames';
 import { stringToUUID } from './debugId';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
@@ -24,8 +27,6 @@ import { getCssSerialAssets } from './getCssDeps';
 import type { SerialAsset } from './serializerAssets';
 import { appendDebugIdToSourceMap, sourceMapString } from './sourceMap';
 import type { SerializerConfigOptions } from './withExpoSerializers';
-import getMetroAssets from '../transform-worker/getAssets';
-import { toPosixPath } from '../utils/filePath';
 
 // Lazy-loaded to avoid pulling in metro-source-map at startup
 let _buildHermesBundleAsync: typeof import('./exportHermes').buildHermesBundleAsync;
@@ -94,8 +95,7 @@ export async function graphToSerialAssetsAsync(
 
   // Create chunks for splitting.
   const chunks = new Set<Chunk>();
-
-  gatherChunks(
+  const entryChunks = gatherChunks(
     preModules,
     chunks,
     { test: pathToRegex(entryFile) },
@@ -106,8 +106,10 @@ export async function graphToSerialAssetsAsync(
     true
   );
 
-  const entryChunk = findEntryChunk(chunks, entryFile);
-
+  // TODO(@kitten): We know that the returned `entryChunks` should only have a single value
+  // with `!isAsync` and matching `.hasAbsolutePath(entryFile)` due to us only starting with
+  // an entry module. This is temporarily implicit and not enforced by an invariant
+  const entryChunk = entryChunks.values().next().value;
   if (entryChunk) {
     removeEntryDepsFromAsyncChunks(entryChunk, chunks);
 
@@ -125,10 +127,14 @@ export async function graphToSerialAssetsAsync(
     }
   }
 
+  // TODO(@kitten): unclear why `isExporting` is hardcoded below
+  const recomputeChunkNames = !!(options as ExpoSerializerOptions).serializerOptions?.exporting;
+
   const jsAssets = await serializeChunksAsync(
     chunks,
     config.serializer ?? {},
-    serializeChunkOptions
+    serializeChunkOptions,
+    recomputeChunkNames
   );
 
   // TODO: Can this be anything besides true?
@@ -169,9 +175,17 @@ export class Chunk {
   // These are included in the HTML as <script> tags.
   public requiredChunks: Set<Chunk> = new Set();
 
+  /** Whether this chunk owns an isolated module registry and must retain all of its dependencies.
+   * @remarks
+   * When a chunk is sealed, its `deps` and `preModules` shouldn't be altered, and it doesn't qualify
+   * for bundle/chunk splitting. This is the case for web workers, which must form a "closed" and
+   * self-sufficient entry bundle.
+   */
+  public sealed = false;
+
   constructor(
     public name: string,
-    public entries: Module<MixedOutput>[],
+    public entries: Set<Module<MixedOutput>>,
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: ExpoSerializerOptions,
     public isAsync: boolean = false,
@@ -179,6 +193,10 @@ export class Chunk {
     public isEntry: boolean = false
   ) {
     this.deps = new Set(entries);
+  }
+
+  seal(): void {
+    this.sealed = true;
   }
 
   private getPlatform() {
@@ -189,7 +207,7 @@ export class Chunk {
     return this.graph.transformOptions.platform;
   }
 
-  private getFilename(src: string) {
+  getFilename(src: string) {
     return !this.options.serializerOptions?.exporting
       ? this.name
       : getExportPathForDependencyWithOptions(this.name, {
@@ -199,7 +217,7 @@ export class Chunk {
         });
   }
 
-  private getStableChunkSource(serializerConfig: Partial<SerializerConfigT>) {
+  getStableChunkSource(serializerConfig: Partial<SerializerConfigT>) {
     return this.options.dev
       ? ''
       : this.serializeToCodeWithTemplates(serializerConfig, {
@@ -211,10 +229,6 @@ export class Chunk {
           sourceMapUrl: undefined,
           debugId: undefined,
         }).code;
-  }
-
-  private getFilenameForConfig(serializerConfig: Partial<SerializerConfigT>) {
-    return this.getFilename(this.getStableChunkSource(serializerConfig));
   }
 
   private serializeToCodeWithTemplates(
@@ -252,12 +266,41 @@ export class Chunk {
   }
 
   hasAbsolutePath(absolutePath: string): boolean {
-    return [...this.deps].some((module) => module.path === absolutePath);
+    for (const dep of this.deps) {
+      if (dep.path === absolutePath) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private _asyncTargets?: Set<Chunk>;
+
+  getAsyncChunkTargets(chunkByPath: Map<string, Chunk>): Set<Chunk> {
+    if (this._asyncTargets) {
+      return this._asyncTargets;
+    }
+    const targets = new Set<Chunk>();
+    this._asyncTargets = targets;
+    if (this.options.includeAsyncPaths) {
+      return targets;
+    }
+    for (const module of this.deps) {
+      for (const dep of module.dependencies.values()) {
+        if (isResolvedDependency(dep) && dep.data.data.asyncType) {
+          const target = chunkByPath.get(dep.absolutePath);
+          // NOTE(kitten): Chunk merges can leave async imports pointing at non-async
+          // (entry/vendor) chunks; those are loaded eagerly so we skip them here.
+          if (target?.isAsync) targets.add(target);
+        }
+      }
+    }
+    return targets;
   }
 
   private getComputedPathsForAsyncDependencies(
-    serializerConfig: Partial<SerializerConfigT>,
-    chunks: Chunk[]
+    chunksByPath: Map<string, Chunk>,
+    filenamesByChunk: Map<Chunk, string>
   ) {
     const baseUrl = getBaseUrlOption(this.graph, this.options);
     // Only calculate production paths when all chunks are being exported.
@@ -269,20 +312,18 @@ export class Chunk {
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
         if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
-          const chunkContainingModule = chunks.find((chunk) =>
-            chunk.hasAbsolutePath(dependency.absolutePath)
-          );
+          const chunkContainingModule = chunksByPath.get(dependency.absolutePath);
           assert(
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
 
-          // NOTE(kitten): We shouldn't have any async imports on non-async chunks
-          // However, due to how chunks merge, some async imports may now be pointing
-          // at entrypoint (or vendor) chunks. We omit the path so that the async import
-          // helper doesn't reload and reevaluate the entrypoint.
           if (chunkContainingModule.isAsync) {
-            const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+            const moduleIdName = filenamesByChunk.get(chunkContainingModule);
+            assert(
+              moduleIdName,
+              'Precomputed filename missing for async chunk: ' + chunkContainingModule.name
+            );
             computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
           }
         }
@@ -291,7 +332,7 @@ export class Chunk {
     return computedAsyncModulePaths;
   }
 
-  private getAdjustedSourceMapUrl(serializerConfig: Partial<SerializerConfigT>): string | null {
+  private getAdjustedSourceMapUrl(filename: string): string | null {
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       return this.options.sourceMapUrl ?? null;
@@ -309,7 +350,6 @@ export class Chunk {
     const isAbsolute = platform !== 'web';
 
     const baseUrl = getBaseUrlOption(this.graph, this.options);
-    const filename = this.getFilenameForConfig(serializerConfig);
     const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
     const pathname =
       (isAbsoluteBaseUrl ? '' : baseUrl.replace(/\/+$/, '')) +
@@ -347,12 +387,27 @@ export class Chunk {
 
   private serializeToCode(
     serializerConfig: Partial<SerializerConfigT>,
-    { debugId, chunks, preModules }: { debugId: string; chunks: Chunk[]; preModules: Set<Module> }
+    {
+      debugId,
+      chunksByPath,
+      filenamesByChunk,
+      filename,
+      preModules,
+    }: {
+      debugId: string;
+      chunksByPath: Map<string, Chunk>;
+      filenamesByChunk: Map<Chunk, string>;
+      filename: string;
+      preModules: Set<Module>;
+    }
   ) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
-      sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
-      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+      sourceMapUrl: this.getAdjustedSourceMapUrl(filename) ?? undefined,
+      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(
+        chunksByPath,
+        filenamesByChunk
+      ),
       debugId,
       preModules,
     });
@@ -365,11 +420,12 @@ export class Chunk {
 
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
-    chunks: Chunk[],
+    chunksByPath: Map<string, Chunk>,
+    filenamesByChunk: Map<Chunk, string>,
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
-    // Create hash without wrapping to prevent it changing when the wrapping changes.
-    const outputFile = this.getFilenameForConfig(serializerConfig);
+    const outputFile = filenamesByChunk.get(this);
+    assert(outputFile, 'Precomputed filename missing for chunk: ' + this.name);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
 
@@ -385,7 +441,9 @@ export class Chunk {
     }
 
     const jsCode = this.serializeToCode(serializerConfig, {
-      chunks,
+      chunksByPath,
+      filenamesByChunk,
+      filename: outputFile,
       debugId,
       preModules: new Set(finalPreModules),
     });
@@ -398,9 +456,11 @@ export class Chunk {
       type: 'js',
       metadata: {
         isAsync: this.isAsync,
-        requires: [...this.requiredChunks.values()].map((chunk) =>
-          chunk.getFilenameForConfig(serializerConfig)
-        ),
+        requires: [...this.requiredChunks.values()].map((chunk) => {
+          const filename = filenamesByChunk.get(chunk);
+          assert(filename, 'Precomputed filename missing for required chunk: ' + chunk.name);
+          return filename;
+        }),
         // Provide a list of module paths that can be used for matching chunks to routes.
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
@@ -587,19 +647,26 @@ function collectOutputReferences(modules: Iterable<Module>, key: string): string
   ].filter((value): value is string => typeof value === 'string');
 }
 
-function getEntryModulesForChunkSettings(graph: ReadOnlyGraph, settings: ChunkSettings) {
-  return [...graph.dependencies.entries()]
-    .filter(([path]) => settings.test.test(path))
-    .map(([, module]) => module);
+function getEntryModulesForChunkSettings(
+  graph: ReadOnlyGraph,
+  settings: ChunkSettings
+): Set<Module<MixedOutput>> {
+  const modules = new Set<Module<MixedOutput>>();
+  for (const entry of graph.dependencies) {
+    if (settings.test.test(entry[0])) {
+      modules.add(entry[1]);
+    }
+  }
+  return modules;
 }
 
-function chunkIdForModules(modules: Module[]) {
-  return modules
-    .map((module) => module.path)
-    .sort()
-    .join('=>');
+function chunkIdForModules(modules: Iterable<Module>) {
+  const modPaths: string[] = [];
+  for (const mod of modules) modPaths.push(mod.path);
+  return modPaths.sort().join('=>');
 }
 
+// TODO(@kitten): The recursion is starting to hurt clarity here a bit
 function gatherChunks(
   runtimePremodules: readonly Module[],
   chunks: Set<Chunk>,
@@ -610,17 +677,23 @@ function gatherChunks(
   isAsync: boolean = false,
   isEntry: boolean = false
 ): Set<Chunk> {
-  let entryModules = getEntryModulesForChunkSettings(graph, settings);
+  const entryModules = getEntryModulesForChunkSettings(graph, settings);
+  const entryChunks = new Set<Chunk>();
+  if (!entryModules.size) {
+    return entryChunks;
+  }
 
-  const existingChunks = [...chunks.values()];
-
-  entryModules = entryModules.filter((module) => {
-    return !existingChunks.find((chunk) => chunk.entries.includes(module));
-  });
-
-  // Prevent processing the same entry file twice.
-  if (!entryModules.length) {
-    return chunks;
+  for (const chunk of chunks) {
+    for (const entry of chunk.entries) {
+      // Remove already processed entries
+      if (entryModules.delete(entry)) {
+        entryChunks.add(chunk);
+      }
+    }
+    // Prevent processing the same entry file twice.
+    if (!entryModules.size) {
+      return entryChunks;
+    }
   }
 
   const entryChunk = new Chunk(
@@ -642,28 +715,38 @@ function gatherChunks(
   }
 
   chunks.add(entryChunk);
+  entryChunks.add(entryChunk);
 
   function includeModule(entryModule: Module<MixedOutput>) {
+    const splitChunks = entryChunk.options.serializerOptions?.splitChunks !== false;
     for (const dependency of entryModule.dependencies.values()) {
+      const asyncType = dependency.data.data.asyncType;
+      const isWorker = asyncType === 'worker';
       if (!isResolvedDependency(dependency)) {
         continue;
       } else if (
-        dependency.data.data.asyncType &&
-        // Support disabling multiple chunks.
-        entryChunk.options.serializerOptions?.splitChunks !== false
+        asyncType &&
+        // Workers require standalone bundles even when ordinary chunk splitting is disabled.
+        (isWorker || splitChunks)
       ) {
-        const isEntry = dependency.data.data.asyncType === 'worker';
-
-        gatherChunks(
+        const asyncChunks = gatherChunks(
           runtimePremodules,
           chunks,
           { test: pathToRegex(dependency.absolutePath) },
-          isEntry ? runtimePremodules : [],
+          isWorker ? runtimePremodules : [],
           graph,
           options,
           true,
-          isEntry
+          isWorker
         );
+
+        // Seal all chunks that are for web workers, as these must be self-sufficient chunks
+        if (isWorker) {
+          assert(asyncChunks.size, `Worker chunk not found for: ${dependency.absolutePath}`);
+          for (const chunk of asyncChunks) {
+            chunk.seal();
+          }
+        }
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
         if (module) {
@@ -681,17 +764,13 @@ function gatherChunks(
     includeModule(entryModule);
   }
 
-  return chunks;
-}
-
-function findEntryChunk(chunks: Set<Chunk>, entryFile: string): Chunk | undefined {
-  return [...chunks.values()].find((chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile));
+  return entryChunks;
 }
 
 function removeEntryDepsFromAsyncChunks(entryChunk: Chunk, chunks: Set<Chunk>): void {
-  for (const chunk of chunks.values()) {
-    if (!chunk.isEntry && chunk.isAsync) {
-      for (const dep of chunk.deps.values()) {
+  for (const chunk of chunks) {
+    if (!chunk.sealed && !chunk.isEntry && chunk.isAsync) {
+      for (const dep of chunk.deps) {
         if (entryChunk.deps.has(dep)) {
           // Remove the dependency from the async chunk since it will be loaded in the main chunk.
           chunk.deps.delete(dep);
@@ -706,30 +785,27 @@ function extractCommonChunk(
   graph: ReadOnlyGraph,
   options: SerializerOptions
 ): Chunk | undefined {
-  const toCompare = [...chunks.values()];
-
-  const commonDependencies = [];
+  const toCompare = [...chunks.values()].filter((chunk) => !chunk.sealed);
+  const commonDependencies = new Set<Module<MixedOutput>>();
 
   while (toCompare.length) {
     const chunk = toCompare.shift()!;
     for (const chunk2 of toCompare) {
       if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
-        const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
-
-        for (const dep of commonDeps) {
-          chunk.deps.delete(dep);
-          chunk2.deps.delete(dep);
+        for (const dep of chunk.deps) {
+          if (chunk2.deps.has(dep)) {
+            chunk.deps.delete(dep);
+            chunk2.deps.delete(dep);
+            commonDependencies.add(dep);
+          }
         }
-
-        commonDependencies.push(...commonDeps);
       }
     }
   }
 
   // If common dependencies were found, extract them to the shared chunk.
-  if (commonDependencies.length) {
-    const commonDependenciesUnique = [...new Set(commonDependencies)];
-    return new Chunk('/__common.js', commonDependenciesUnique, graph, options, false, true);
+  if (commonDependencies.size) {
+    return new Chunk('/__common.js', commonDependencies, graph, options, false, true);
   }
 
   return undefined;
@@ -742,8 +818,8 @@ function deduplicateAgainstKnownChunks(
 ): void {
   // TODO: Optimize this pass more.
   // Remove all dependencies from async chunks that are already in the common chunk.
-  for (const chunk of [...chunks.values()]) {
-    if (!chunk.isEntry && chunk !== commonChunk) {
+  for (const chunk of chunks) {
+    if (!chunk.sealed && !chunk.isEntry && chunk !== commonChunk) {
       for (const dep of chunk.deps) {
         if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
           chunk.deps.delete(dep);
@@ -754,8 +830,8 @@ function deduplicateAgainstKnownChunks(
 }
 
 function removeEmptyChunks(chunks: Set<Chunk>): void {
-  for (const chunk of [...chunks.values()]) {
-    if (!chunk.isEntry && chunk.deps.size === 0) {
+  for (const chunk of chunks) {
+    if (!chunk.sealed && !chunk.isEntry && chunk.deps.size === 0) {
       chunks.delete(chunk);
     }
   }
@@ -767,7 +843,14 @@ function createRuntimeChunk(
   graph: ReadOnlyGraph,
   options: SerializerOptions
 ): void {
-  const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
+  const runtimeChunk = new Chunk(
+    '/__expo-metro-runtime.js',
+    new Set(),
+    graph,
+    options,
+    false,
+    true
+  );
 
   // All premodules (including metro-runtime) should load first
   for (const preModule of entryChunk.preModules) {
@@ -782,21 +865,72 @@ function createRuntimeChunk(
   chunks.add(runtimeChunk);
 }
 
+function makeChunkByPathLookupMap(chunks: Set<Chunk>): Map<string, Chunk> {
+  const chunkByPath = new Map<string, Chunk>();
+  // First, we populate chunks with entry module paths
+  for (const chunk of chunks) {
+    for (const entry of chunk.entries) {
+      if (!chunkByPath.has(entry.path)) {
+        chunkByPath.set(entry.path, chunk);
+      }
+    }
+  }
+  // We then populate the chunks' module paths, excluding sealed chunks...
+  for (const chunk of chunks) {
+    if (!chunk.sealed) {
+      for (const module of chunk.deps) {
+        if (!chunkByPath.has(module.path)) {
+          chunkByPath.set(module.path, chunk);
+        }
+      }
+    }
+  }
+  // ...then populate with missing paths from sealed chunks.
+  // This gives precedence for modules from unsealed chunks after entry modules
+  for (const chunk of chunks) {
+    if (chunk.sealed) {
+      for (const module of chunk.deps) {
+        if (!chunkByPath.has(module.path)) {
+          chunkByPath.set(module.path, chunk);
+        }
+      }
+    }
+  }
+  return chunkByPath;
+}
+
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
-  options: SerializeChunkOptions
+  options: SerializeChunkOptions,
+  recomputeChunkNames: boolean
 ) {
   const jsAssets: SerialAsset[] = [];
 
-  const chunksArray = [...chunks.values()];
-  await Promise.all(
-    chunksArray.map(async (chunk) => {
-      jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options))
-      );
-    })
-  );
+  const chunksByPath = makeChunkByPathLookupMap(chunks);
+  const filenamesByChunk = precomputeChunkFilenames({
+    chunks,
+    chunksByPath,
+    serializerConfig,
+    recomputeChunkNames,
+  });
 
+  const serializeTasks: Promise<unknown>[] = [];
+  for (const chunk of chunks) {
+    serializeTasks.push(
+      (async () => {
+        jsAssets.push(
+          ...(await chunk.serializeToAssetsAsync(
+            serializerConfig,
+            chunksByPath,
+            filenamesByChunk,
+            options
+          ))
+        );
+      })()
+    );
+  }
+
+  await Promise.all(serializeTasks);
   return jsAssets;
 }

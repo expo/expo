@@ -59,6 +59,12 @@ class Asset(val assetDelegate: AssetDelegate) : SharedObject() {
   suspend fun getExif(): Bundle =
     assetDelegate.getExif()
 
+  suspend fun getFavorite(): Boolean =
+    assetDelegate.getFavorite()
+
+  suspend fun setFavorite(isFavorite: Boolean) =
+    assetDelegate.setFavorite(isFavorite)
+
   suspend fun move(relativePath: RelativePath) = withContext(Dispatchers.IO) {
     assetDelegate.move(relativePath)
   }

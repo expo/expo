@@ -22,7 +22,7 @@ export type SegmentedButtonColors = {
   disabledInactiveContainerColor?: ColorValue;
 };
 
-export type SegmentedButtonProps = {
+export interface SegmentedButtonProps {
   /**
    * Whether the button is currently selected (used inside `SingleChoiceSegmentedButtonRow`).
    */
@@ -56,7 +56,7 @@ export type SegmentedButtonProps = {
    * Children containing a `Label` slot.
    */
   children?: React.ReactNode;
-};
+}
 
 type NativeSlotViewProps = {
   slotName: string;

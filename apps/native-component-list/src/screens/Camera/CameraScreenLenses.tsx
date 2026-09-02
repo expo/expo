@@ -1,8 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
-import { Camera, CameraMode, CameraType, CameraView, PermissionStatus } from 'expo-camera';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
+import {
+  Camera,
+  CameraMode,
+  CameraType,
+  CameraView,
+  LensInfo,
+  PermissionStatus,
+} from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 
@@ -21,7 +27,7 @@ interface State {
 
 export default function CameraScreenLenses() {
   const camera = useRef<CameraView>(null);
-  const [availableLenses, setAvailableLenses] = useState<string[]>([]);
+  const [availableLenses, setAvailableLenses] = useState<LensInfo[]>([]);
 
   const [state, setState] = useState<State>({
     permission: undefined,
@@ -61,7 +67,7 @@ export default function CameraScreenLenses() {
       }
       return {
         ...state,
-        selectedLens: availableLenses[newId],
+        selectedLens: availableLenses[newId]?.deviceType,
         lensId: newId,
       };
     });
@@ -117,7 +123,7 @@ export default function CameraScreenLenses() {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.bottomButton} onPress={clearSelectedLens}>
-          <MaterialIcons name="clear" size={32} color="white" />
+          <Ionicons name="close" size={32} color="white" />
         </TouchableOpacity>
       </View>
       <Slider
@@ -130,24 +136,30 @@ export default function CameraScreenLenses() {
     </View>
   );
 
-  const renderMoreOptions = () => (
-    <View style={styles.options}>
-      <View style={styles.lensContainer}>
-        <Text style={styles.lensNameLabel}>Selected Lens</Text>
-        <View style={styles.lensChooser}>
-          <TouchableOpacity onPress={previousLens} style={{ padding: 6 }}>
-            <Ionicons name="arrow-back" size={14} color="white" />
-          </TouchableOpacity>
-          <View style={styles.lensLabel}>
-            <Text style={{ color: 'white', flex: 1 }}>{state.selectedLens}</Text>
+  const renderMoreOptions = () => {
+    // Find the current lens to get its localizedName for display
+    const currentLens = availableLenses.find((l) => l.deviceType === state.selectedLens);
+    return (
+      <View style={styles.options}>
+        <View style={styles.lensContainer}>
+          <Text style={styles.lensNameLabel}>Selected Lens</Text>
+          <View style={styles.lensChooser}>
+            <TouchableOpacity onPress={previousLens} style={{ padding: 6 }}>
+              <Ionicons name="arrow-back" size={14} color="white" />
+            </TouchableOpacity>
+            <View style={styles.lensLabel}>
+              <Text style={{ color: 'white', flex: 1 }}>
+                {currentLens?.localizedName ?? state.selectedLens}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={nextLens} style={{ padding: 6 }}>
+              <Ionicons name="arrow-forward" size={14} color="white" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={nextLens} style={{ padding: 6 }}>
-            <Ionicons name="arrow-forward" size={14} color="white" />
-          </TouchableOpacity>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderNoPermissions = () => (
     <View style={styles.noPermissions}>

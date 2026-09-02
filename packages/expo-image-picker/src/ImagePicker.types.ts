@@ -517,7 +517,7 @@ export type ImagePickerOptions = {
    * - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes.
    *   This limit is applied automatically, if `0` or no value is specified.
    * - **On Android**, effect of this option depends on support of installed camera app.
-   * - **On Web** this option has no effect - the limit is browser-dependant.
+   * - **On Web** this option has no effect - the limit is browser-dependent.
    */
   videoMaxDuration?: number;
   /**
@@ -552,8 +552,16 @@ export type ImagePickerOptions = {
    * When enabled, allows the picker to access and download media from iCloud or other remote sources
    * if the asset is not stored locally on the device.
    *
-   * For videos, this option applies only when [`videoExportPreset`](#videoexportpreset) is set to `Passthrough`.
-   * In all other cases, the video will be downloaded from iCloud automatically.
+   * This option gates the direct resource read that the picker attempts first. That read is used for
+   * Live Photos, and for videos when [`videoExportPreset`](#videoexportpreset) is set to `Passthrough`.
+   * In all other cases, the media will be downloaded from iCloud automatically.
+   *
+   * > Note: For videos, this option does not prevent a download. When it is disabled and the direct
+   * > read fails because the data is not stored locally, the picker falls back to a slower path that
+   * > fetches the asset from iCloud on its own. Enable this option to take the faster path for such videos.
+   *
+   * > Note: Live Photos also honor this option, and they have no fallback path. Enable it when
+   * > picking Live Photos that may not be stored locally.
    *
    * @platform ios
    * @default false

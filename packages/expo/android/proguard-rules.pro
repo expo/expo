@@ -29,3 +29,6 @@
 -keep class com.facebook.react.views.view.WindowUtilKt {
   *;
 }
+
+# Workaround zstd-kmp R8 issue - https://github.com/square/zstd-kmp/issues/108
+-keep class com.squareup.zstd.** { *; }

@@ -21,7 +21,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
     class="px-4 [table_&]:mb-0! [table_&]:px-0"
   >
     <div
-      class="mb-3 flex flex-row items-start [table_&]:mb-2.5"
+      class="mb-3 flex flex-row items-start in-[table]:mb-2.5"
       data-md="api-platforms"
     >
       <span
@@ -29,11 +29,12 @@ exports[`APICommentTextBlock comment with example 1`] = `
         data-text="true"
       >
         <div
-          class="mr-2 inline-flex min-h-[21px] items-center gap-1 rounded-full border px-[7px] py-0.5 select-none last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+          class="mr-2 inline-flex min-h-5.25 items-center gap-1 rounded-full border px-1.75 py-0.5 select-none last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
           data-md="platform-badge"
         >
           <svg
-            class="translate-z icon-2xs text-palette-green12 mt-[-0.5px] shrink-0 opacity-80"
+            aria-hidden="true"
+            class="translate-z mt-[-0.5px] icon-2xs shrink-0 text-palette-green12 opacity-80"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -62,13 +63,13 @@ exports[`APICommentTextBlock comment with example 1`] = `
     >
       Gets the referrer URL of the installed app with the 
       <a
-        class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+        class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
         href="https://developer.android.com/google/play/installreferrer"
         rel="noopener noreferrer"
         target="_blank"
       >
         <code
-          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           Install Referrer API
@@ -81,14 +82,15 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       class="mb-2.5 [table_&]:last:mb-0 [&>*:last-child]:mb-0!"
     >
       <p
-        class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-tertiary flex border-y px-4 py-2 text-xs font-medium -mx-4 mt-1 mb-3"
+        class="tracking-[-0.006rem] flex border-y border-palette-gray4 bg-subtle px-4 py-2 text-xs font-medium text-tertiary -mx-4 mt-1 mb-3"
         data-text="true"
       >
         <span
-          class="tracking-[-0.006rem] text-tertiary flex flex-row items-center gap-2 text-xs font-medium"
+          class="tracking-[-0.006rem] flex flex-row items-center gap-2 text-xs font-medium text-tertiary"
           data-text="true"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 icon-sm text-icon-secondary"
             fill="none"
             role="img"
@@ -110,60 +112,64 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
           Example
         </span>
       </p>
-      <pre
-        class="border-secondary bg-subtle relative my-4 overflow-x-auto rounded-md border whitespace-pre [p+&]:mt-0"
-        data-md-lang="ts"
-        data-text="true"
+      <div
+        class="code-block-wrapper my-4 overflow-clip rounded-3xl border border-secondary bg-subtle [p+&]:mt-0"
       >
-        <div
-          class="w-fit p-4"
+        <pre
+          class="relative overflow-x-auto whitespace-pre [scrollbar-color:var(--slate-5)_transparent] scrollbar-thin"
+          data-md-lang="ts"
+          data-text="true"
         >
-          <code
-            class="text-default text-xs"
+          <div
+            class="w-fit p-4"
           >
-            <span
-              class="token keyword"
+            <code
+              class="text-xs text-default"
             >
-              await
-            </span>
-             Application
-            <span
-              class="token punctuation"
-            >
-              .
-            </span>
-            <span
-              class="token function"
-            >
-              getInstallReferrerAsync
-            </span>
-            <span
-              class="token punctuation"
-            >
-              (
-            </span>
-            <span
-              class="token punctuation"
-            >
-              )
-            </span>
-            <span
-              class="token punctuation"
-            >
-              ;
-            </span>
-            
+              <span
+                class="token keyword"
+              >
+                await
+              </span>
+               Application
+              <span
+                class="token punctuation"
+              >
+                .
+              </span>
+              <span
+                class="token function"
+              >
+                getInstallReferrerAsync
+              </span>
+              <span
+                class="token punctuation"
+              >
+                (
+              </span>
+              <span
+                class="token punctuation"
+              >
+                )
+              </span>
+              <span
+                class="token punctuation"
+              >
+                ;
+              </span>
+              
 
-            <span
-              class="token comment"
-            >
-              // "utm_source=google-play&utm_medium=organic"
-            </span>
-            
+              <span
+                class="token comment"
+              >
+                // "utm_source=google-play&utm_medium=organic"
+              </span>
+              
 
-          </code>
-        </div>
-      </pre>
+            </code>
+          </div>
+        </pre>
+      </div>
     </div>
   </div>
 </div>

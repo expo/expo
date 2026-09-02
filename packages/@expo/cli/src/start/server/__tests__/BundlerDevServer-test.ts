@@ -2,9 +2,10 @@ import { vol } from 'memfs';
 
 import { envIsWebcontainer } from '../../../utils/env';
 import { openBrowserAsync } from '../../../utils/open';
+import { AsyncNgrok } from '../AsyncNgrok';
+import { AsyncWsTunnel } from '../AsyncWsTunnel';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
-import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 
 jest.mock(`../../../utils/env`, () => ({
@@ -49,6 +50,9 @@ beforeEach(() => {
   vol.reset();
   jest.mocked(envIsWebcontainer).mockReset();
   delete process.env.EXPO_NO_REDIRECT_PAGE;
+  delete process.env.EXPO_UNSTABLE_TUNNEL_V2;
+  delete process.env.EXPO_PACKAGER_PROXY_URL;
+  delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
 });
 
 afterAll(() => {
@@ -65,16 +69,14 @@ class MockBundlerDevServer extends BundlerDevServer {
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
     const port = options.port || 3000;
-    this.urlCreator = new UrlCreator(
-      {
+    await this.initUrlCreator({
+      ...options,
+      port,
+      location: {
         scheme: options.https ? 'https' : 'http',
         ...options.location,
       },
-      {
-        port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      }
-    );
+    });
 
     const protocol = 'http';
     const host = 'localhost';
@@ -83,8 +85,8 @@ class MockBundlerDevServer extends BundlerDevServer {
       server: { close: jest.fn((fn) => fn?.()), addListener() {} },
       // URL Info
       location: {
-        url: `${protocol}://${host}:${port}`,
-        port,
+        url: `${protocol}://${host}:${this.getPort()}`,
+        port: this.getPort(),
         protocol,
         host,
       },
@@ -140,6 +142,64 @@ describe('broadcastMessage', () => {
     expect(devServer.getInstance()!.messageSocket.broadcast).toHaveBeenCalledWith('reload', {
       foo: true,
     });
+  });
+});
+
+describe('initUrlCreator', () => {
+  function createDevServer() {
+    return new MockBundlerDevServer('/', getPlatformBundlers('/', { web: { bundler: 'metro' } }));
+  }
+
+  it(`passes the hostname override from the environment`, async () => {
+    process.env.REACT_NATIVE_PACKAGER_HOSTNAME = 'from-env.dev';
+    const urlCreator = await createDevServer()['initUrlCreator']({ port: 3000, location: {} });
+    expect(urlCreator.constructUrl({})).toBe('http://from-env.dev:3000');
+  });
+
+  it(`passes the proxy url from the environment`, async () => {
+    process.env.EXPO_PACKAGER_PROXY_URL = 'http://proxy.dev';
+    const urlCreator = await createDevServer()['initUrlCreator']({ port: 3000, location: {} });
+    expect(urlCreator.constructUrl({})).toBe('http://proxy.dev');
+  });
+
+  it(`ignores a whitespace-only hostname override from the environment`, async () => {
+    process.env.REACT_NATIVE_PACKAGER_HOSTNAME = '\t';
+    const urlCreator = await createDevServer()['initUrlCreator']({ port: 3000, location: {} });
+    expect(urlCreator.constructUrl({})).toBe('http://100.100.1.100:3000');
+  });
+
+  it(`keeps serving URLs from a creator that outlives the dev server`, async () => {
+    const devServer = createDevServer();
+    const urlCreator = await devServer['initUrlCreator']({ port: 3000, location: {} });
+    // The manifest middleware holds this bound function for the life of the server.
+    const constructUrl = urlCreator.constructUrl.bind(urlCreator);
+    expect(constructUrl({})).toBe('http://100.100.1.100:3000');
+
+    await devServer.stopAsync();
+
+    expect(constructUrl({})).toBe('http://100.100.1.100:3000');
+  });
+
+  it(`throws when the port is read before the dev server starts`, () => {
+    expect(() => createDevServer()['getPort']()).toThrow(/port is unresolved/);
+  });
+});
+
+describe('startHeadlessAsync', () => {
+  it(`reports the resolved port without a real server`, async () => {
+    const devServer = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    const instance = await devServer.startAsync({ location: {}, port: 3000, headless: true });
+
+    expect(instance.location).toEqual({
+      url: 'http://localhost:3000',
+      port: 3000,
+      protocol: 'http',
+      host: 'localhost',
+    });
+    expect(devServer.getUrlCreator().constructUrl({})).toBe('http://100.100.1.100:3000');
   });
 });
 
@@ -415,6 +475,31 @@ describe('_startTunnelAsync', () => {
   );
   it(`returns null when the server isn't running`, async () => {
     expect(await server._startTunnelAsync()).toEqual(null);
+  });
+
+  it('uses an ngrok tunnel by default', async () => {
+    const devServer = await getRunningServer();
+    const tunnel = await devServer._startTunnelAsync();
+    expect(tunnel).toBeInstanceOf(AsyncNgrok);
+  });
+
+  it('uses a webcontainer ws tunnel without a signed URL', async () => {
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
+
+    const devServer = await getRunningServer();
+    const tunnel = (await devServer._startTunnelAsync()) as AsyncWsTunnel;
+    expect(tunnel).toBeInstanceOf(AsyncWsTunnel);
+    // Bolt/Stackblitz use the default service, not the signed Expo-account URL.
+    expect((tunnel as any).options).toEqual({ useExpoAccount: false });
+  });
+
+  it('routes --tunnel through a signed ws tunnel when opted in', async () => {
+    process.env.EXPO_UNSTABLE_TUNNEL_V2 = '1';
+
+    const devServer = await getRunningServer();
+    const tunnel = (await devServer._startTunnelAsync()) as AsyncWsTunnel;
+    expect(tunnel).toBeInstanceOf(AsyncWsTunnel);
+    expect((tunnel as any).options).toEqual({ useExpoAccount: true });
   });
 });
 

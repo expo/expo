@@ -1,9 +1,9 @@
 import type { AndroidConfig } from 'expo/config-plugins';
 import { withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
 
-import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
+import { compileMockModWithResultsAsync } from './mockMods';
 
 jest.mock('expo/config-plugins', () => {
   const plugins = jest.requireActual('expo/config-plugins');
@@ -296,6 +296,30 @@ describe(withBuildProperties, () => {
     });
   });
 
+  it('generates the android.cmakeVersion property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { cmakeVersion: '3.31.6' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'android.cmakeVersion',
+      value: '3.31.6',
+    });
+  });
+
   it('generates the android.reactNativeReleaseLevel property', async () => {
     const pluginProps: PluginConfigType = {
       android: { reactNativeReleaseLevel: 'canary' },
@@ -317,6 +341,78 @@ describe(withBuildProperties, () => {
       type: 'property',
       key: 'reactNativeReleaseLevel',
       value: 'canary',
+    });
+  });
+
+  it('generates the expo.gif.enabled property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { gifEnabled: false },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.gif.enabled',
+      value: 'false',
+    });
+  });
+
+  it('generates the expo.webp.enabled property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { webpEnabled: false },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.webp.enabled',
+      value: 'false',
+    });
+  });
+
+  it('generates the expo.webp.animated property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { webpAnimated: true },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.webp.animated',
+      value: 'true',
     });
   });
 });

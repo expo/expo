@@ -55,18 +55,17 @@ struct RecordingUtils {
 
 struct AudioUtils {
   #if os(iOS)
-  static func createRecorder(directory: URL?, with options: RecordingOptions) -> AVAudioRecorder {
-    if let directory {
-      let fileUrl = createRecordingUrl(from: directory, with: options)
-      do {
-        let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
-        recorder.isMeteringEnabled = options.isMeteringEnabled
-        return recorder
-      } catch {
-        return AVAudioRecorder()
-      }
+  static func createRecorder(directory: URL, with options: RecordingOptions) throws -> AVAudioRecorder {
+    let fileUrl = try createRecordingUrl(from: directory, with: options)
+    do {
+      let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
+      recorder.isMeteringEnabled = options.isMeteringEnabled
+      return recorder
+    } catch let exception as Exception {
+      throw exception
+    } catch {
+      throw AudioRecordingException("Failed to create recorder: \(error.localizedDescription)")
     }
-    return AVAudioRecorder()
   }
   #endif
 
@@ -163,11 +162,21 @@ struct AudioUtils {
     return "dat"
   }
 
-  private static func createRecordingUrl(from dir: URL, with options: RecordingOptions) -> URL {
+  private static func createRecordingUrl(from dir: URL, with options: RecordingOptions) throws -> URL {
     let directoryPath = dir.appendingPathComponent("ExpoAudio")
     FileSystemUtilities.ensureDirExists(at: directoryPath)
-    let fileName = "recording-\(UUID().uuidString)\(options.extension)"
-    return directoryPath.appendingPathComponent(fileName)
+
+    let baseName: String
+    if let provided = options.fileName, !provided.isEmpty {
+      if provided.contains("/") || provided.contains("\\") || provided.contains("..") {
+        throw InvalidRecordingFileNameException(provided)
+      }
+      baseName = provided
+    } else {
+      baseName = "recording-\(UUID().uuidString)"
+    }
+
+    return directoryPath.appendingPathComponent("\(baseName)\(options.extension)")
   }
 
   private static func getFormatIDFromString(typeString: String) -> UInt32? {

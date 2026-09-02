@@ -16,7 +16,7 @@ function browserSupportsWebGL() {
   }
 }
 
-function optionalRequire(requirer) {
+function optionalRequire<T>(requirer: () => T): T | undefined {
   try {
     return requirer();
   } catch {
@@ -73,7 +73,6 @@ export function getTestModules() {
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
     require('./tests/HTML'),
-    require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
     require('./tests/Fetch'),
@@ -85,6 +84,10 @@ export function getTestModules() {
   }
 
   if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/ExpoUIMeasurement'));
+    modules.push(require('./tests/ExpoUIHostSize'));
+    modules.push(require('./tests/ExpoUIRNHostViewSize'));
+    modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
     modules.push(require('./tests/CalendarNext'));

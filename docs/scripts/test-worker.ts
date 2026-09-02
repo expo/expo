@@ -56,13 +56,17 @@ function setupTestDirectory(): void {
   fs.mkdirSync(TEST_DIR, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/test-page`, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/html-only-page`, { recursive: true });
+  fs.mkdirSync(`${TEST_DIR}/bare/upgrade/52-to-57`, { recursive: true });
 
-  // Copy worker files
+  // Copy worker files, including the real _redirects: its /*.md wildcard
+  // rewrite shapes how .md URLs resolve, so tests must run against it
   const routesContent = fs.readFileSync('public/_routes.json', 'utf8');
   const workerContent = fs.readFileSync('public/_worker.js', 'utf8');
+  const redirectsContent = fs.readFileSync('public/_redirects', 'utf8');
 
   fs.writeFileSync(`${TEST_DIR}/_routes.json`, routesContent);
   fs.writeFileSync(`${TEST_DIR}/_worker.js`, workerContent);
+  fs.writeFileSync(`${TEST_DIR}/_redirects`, redirectsContent);
   fs.writeFileSync(`${TEST_DIR}/index.html`, '<html><body><h1>Test Page</h1></body></html>');
   fs.writeFileSync(
     `${TEST_DIR}/test-page/index.html`,
@@ -77,6 +81,13 @@ function setupTestDirectory(): void {
     `${TEST_DIR}/html-only-page/index.html`,
     '<html><body><h1>HTML Only Page</h1></body></html>'
   );
+  // Upgrade helper page with a default index.md and one version-pair file
+  fs.writeFileSync(
+    `${TEST_DIR}/bare/upgrade/index.html`,
+    '<html><body><h1>Upgrade Helper HTML</h1></body></html>'
+  );
+  fs.writeFileSync(`${TEST_DIR}/bare/upgrade/index.md`, '# Default Upgrade Markdown');
+  fs.writeFileSync(`${TEST_DIR}/bare/upgrade/52-to-57/index.md`, '# Upgrade Pair 52 To 57');
 
   console.log('✓ Test directory created');
 }
@@ -133,6 +144,13 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Normal request serves HTML');
 
+  if (!varyTokens(htmlResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the HTML variant, got: ${htmlResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ HTML variant of a negotiated page returns Vary: Accept');
+
   // With Accept: text/markdown, should serve markdown
   const mdResponse = await fetch(`${BASE_URL}/test-page`, {
     headers: { Accept: 'text/markdown' },
@@ -150,6 +168,17 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
     throw new Error(`Expected Content-Type text/markdown, got: ${mdContentType}`);
   }
   console.log('✓ Accept: text/markdown request returns correct Content-Type');
+
+  if (!varyTokens(mdResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept, got: ${mdResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request returns Vary: Accept');
+}
+
+function varyTokens(response: Response): string[] {
+  return (response.headers.get('vary') ?? '').split(',').map(token => token.trim().toLowerCase());
 }
 
 async function testMarkdownNotFoundAsync(): Promise<void> {
@@ -165,6 +194,28 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
   }
   console.log('✓ Missing .md file returns 404');
 
+  if (!varyTokens(missingMd).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the markdown 404, got: ${missingMd.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Markdown 404 response includes Vary: Accept');
+
+  const missingMdType = missingMd.headers.get('content-type') ?? '';
+
+  if (!missingMdType.includes('text/markdown')) {
+    throw new Error(`Expected markdown Content-Type on the 404, got: ${missingMdType}`);
+  }
+
+  const missingMdBody = await missingMd.text();
+
+  if (!missingMdBody.includes('/llms.txt') || !missingMdBody.includes('/sitemap.xml')) {
+    throw new Error(
+      `Expected recovery links on the markdown 404, got: ${missingMdBody.slice(0, 200)}`
+    );
+  }
+  console.log('✓ Markdown 404 responds with a markdown body and recovery links');
+
   // Nonexistent page should also 404
   const notFound = await fetch(`${BASE_URL}/nonexistent-page`, {
     headers: { Accept: 'text/markdown' },
@@ -174,6 +225,229 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
     throw new Error(`Expected 404 for nonexistent page, got: HTTP ${notFound.status}`);
   }
   console.log('✓ Nonexistent page returns 404');
+}
+
+async function testAcceptQualityValuesAsync(): Promise<void> {
+  console.log('\n--- Testing Accept header q-values ---');
+
+  const htmlPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/html;q=0.9, text/markdown;q=0.1' },
+  });
+  const htmlPreferredBody = await htmlPreferred.text();
+
+  if (!htmlPreferredBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when it carries the higher q, got: ' + htmlPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ HTML with the higher q is served over markdown');
+
+  const markdownRejected = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0, text/html' },
+  });
+  const markdownRejectedBody = await markdownRejected.text();
+
+  if (!markdownRejectedBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when markdown has q=0, got: ' + markdownRejectedBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with q=0 is never served');
+
+  const markdownPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0.9, text/html;q=0.1' },
+  });
+  const markdownPreferredBody = await markdownPreferred.text();
+
+  if (!markdownPreferredBody.includes('Test Markdown Content')) {
+    throw new Error(
+      'Expected markdown when it carries the higher q, got: ' + markdownPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with the higher q is served');
+}
+
+async function testUpgradePairNegotiationAsync(): Promise<void> {
+  console.log('\n--- Testing upgrade helper version-pair negotiation ---');
+
+  // Valid pair params should serve the pair-specific markdown
+  const pairResponse = await fetch(`${BASE_URL}/bare/upgrade/?fromSdk=52&toSdk=57`, {
+    headers: { Accept: 'text/markdown' },
+  });
+  const pairBody = await pairResponse.text();
+
+  if (!pairBody.includes('Upgrade Pair 52 To 57')) {
+    throw new Error(
+      'Expected pair markdown for fromSdk=52&toSdk=57, got: ' + pairBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Valid version pair serves pair-specific markdown');
+
+  // Missing pair file should fall back to the default index.md
+  const missingPair = await fetch(`${BASE_URL}/bare/upgrade/?fromSdk=52&toSdk=99`, {
+    headers: { Accept: 'text/markdown' },
+  });
+  const missingPairBody = await missingPair.text();
+
+  if (!missingPairBody.includes('Default Upgrade Markdown')) {
+    throw new Error('Expected fallback to default markdown for a missing pair');
+  }
+  console.log('✓ Missing pair file falls back to default markdown');
+
+  // No query params should serve the default index.md
+  const noQuery = await fetch(`${BASE_URL}/bare/upgrade/`, {
+    headers: { Accept: 'text/markdown' },
+  });
+  const noQueryBody = await noQuery.text();
+
+  if (!noQueryBody.includes('Default Upgrade Markdown')) {
+    throw new Error('Expected default markdown when no version pair is selected');
+  }
+  console.log('✓ No version pair serves default markdown');
+
+  // Path-traversal style params must be rejected, not resolved as paths
+  const traversal = await fetch(
+    `${BASE_URL}/bare/upgrade/?fromSdk=${encodeURIComponent('../secret')}&toSdk=57`,
+    { headers: { Accept: 'text/markdown' } }
+  );
+  const traversalBody = await traversal.text();
+
+  if (traversal.status >= 500) {
+    throw new Error(`Server error for traversal params: HTTP ${traversal.status}`);
+  }
+  if (!traversalBody.includes('Default Upgrade Markdown')) {
+    throw new Error('Expected traversal params to fall back to default markdown');
+  }
+  console.log('✓ Invalid version params fall back to default markdown');
+
+  // The /<slug>.md convention resolves pair pages via the _redirects wildcard
+  const slugUrl = await fetch(`${BASE_URL}/bare/upgrade/52-to-57.md`);
+  const slugBody = await slugUrl.text();
+
+  if (!slugUrl.ok || !slugBody.includes('Upgrade Pair 52 To 57')) {
+    throw new Error('Expected /bare/upgrade/52-to-57.md to serve the pair page');
+  }
+  console.log('✓ Pair page resolves at the /<slug>.md convention');
+
+  // Known limit: .md paths bypass the worker (excluded in _routes.json) and
+  // _redirects cannot read query strings, so a pair query on the .md page
+  // path serves the default markdown, whose top note points at pair URLs.
+  const mdPathWithQuery = await fetch(`${BASE_URL}/bare/upgrade.md?fromSdk=52&toSdk=57`);
+  const mdPathWithQueryBody = await mdPathWithQuery.text();
+
+  if (!mdPathWithQuery.ok || !mdPathWithQueryBody.includes('Default Upgrade Markdown')) {
+    throw new Error('Expected /bare/upgrade.md with a pair query to serve the default markdown');
+  }
+  console.log('✓ .md page path with pair query serves default markdown (documented limit)');
+
+  // Appending .md to the page path without a query serves the default
+  const mdPathPlain = await fetch(`${BASE_URL}/bare/upgrade.md`);
+  const mdPathPlainBody = await mdPathPlain.text();
+
+  if (!mdPathPlain.ok || !mdPathPlainBody.includes('Default Upgrade Markdown')) {
+    throw new Error('Expected /bare/upgrade.md to serve the default markdown');
+  }
+  console.log('✓ .md page path without query serves default markdown');
+
+  // Appending .md to the last query value (the copy-paste gesture) also works
+  const mdSuffixParam = await fetch(`${BASE_URL}/bare/upgrade/?fromSdk=52&toSdk=57.md`);
+  const mdSuffixParamBody = await mdSuffixParam.text();
+
+  if (!mdSuffixParam.ok || !mdSuffixParamBody.includes('Upgrade Pair 52 To 57')) {
+    throw new Error('Expected ?fromSdk=52&toSdk=57.md to serve the pair page');
+  }
+  console.log('✓ .md suffix on the toSdk value serves pair markdown');
+
+  // The /<slug>.md convention on regular pages still works through the worker
+  const regularSlug = await fetch(`${BASE_URL}/test-page.md`);
+  const regularSlugBody = await regularSlug.text();
+
+  if (!regularSlug.ok || !regularSlugBody.includes('Test Markdown Content')) {
+    throw new Error('Expected /test-page.md to serve the page markdown');
+  }
+  console.log('✓ Regular /<slug>.md path serves markdown through the worker');
+
+  // The canonical index.md file path serves directly (bypassing the worker)
+  const direct = await fetch(`${BASE_URL}/bare/upgrade/52-to-57/index.md`);
+  const directBody = await direct.text();
+
+  if (!direct.ok || !directBody.includes('Upgrade Pair 52 To 57')) {
+    throw new Error('Expected direct pair index.md request to serve the static file');
+  }
+  console.log('✓ Direct pair index.md request serves content correctly');
+}
+
+async function testDeletedPageRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing deleted development build page redirects ---');
+
+  const easRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build`, {
+    redirect: 'manual',
+  });
+  const easLocation = easRedirect.headers.get('location') ?? '';
+
+  if (
+    easRedirect.status !== 301 ||
+    !easLocation.includes(
+      '?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build'
+    )
+  ) {
+    throw new Error(
+      `Expected 301 to the introduction EAS path, got: HTTP ${easRedirect.status} -> ${easLocation}`
+    );
+  }
+  console.log('✓ create-a-build redirects to the introduction EAS path');
+
+  const goRedirect = await fetch(`${BASE_URL}/develop/development-builds/expo-go-to-dev-build`, {
+    redirect: 'manual',
+  });
+  const goLocation = goRedirect.headers.get('location') ?? '';
+
+  if (goRedirect.status !== 301 || !goLocation.includes('#build-locally')) {
+    throw new Error(
+      `Expected 301 to the introduction build locally section, got: HTTP ${goRedirect.status} -> ${goLocation}`
+    );
+  }
+  console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
+
+  const mdRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build`, {
+    headers: { Accept: 'text/markdown' },
+    redirect: 'manual',
+  });
+  const mdLocation = mdRedirect.headers.get('location') ?? '';
+
+  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-eas')) {
+    throw new Error(
+      `Expected the markdown request to pass through the page redirect, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request passes through page redirects');
+}
+
+async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing agent discovery redirects ---');
+
+  const api = await fetch(`${BASE_URL}/api`, { redirect: 'manual' });
+  const apiLocation = api.headers.get('location') ?? '';
+
+  if (api.status !== 301 || !apiLocation.includes('/versions/latest')) {
+    throw new Error(
+      `Expected /api to redirect to /versions/latest, got: HTTP ${api.status} -> ${apiLocation}`
+    );
+  }
+  console.log('✓ /api redirects to the API reference');
+
+  const developers = await fetch(`${BASE_URL}/developers`, { redirect: 'manual' });
+  const developersLocation = developers.headers.get('location') ?? '';
+
+  if (
+    developers.status !== 301 ||
+    !(developersLocation === '/' || developersLocation === `${BASE_URL}/`)
+  ) {
+    throw new Error(
+      `Expected /developers to redirect to /, got: HTTP ${developers.status} -> ${developersLocation}`
+    );
+  }
+  console.log('✓ /developers redirects to the docs home');
 }
 
 async function testHtmlNotFoundAsync(): Promise<void> {
@@ -198,6 +472,10 @@ async function mainAsync(): Promise<void> {
     await testDirectMarkdownAccessAsync();
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
+    await testAcceptQualityValuesAsync();
+    await testUpgradePairNegotiationAsync();
+    await testDeletedPageRedirectsAsync();
+    await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
 
     console.log('\n=== All tests passed! ===');

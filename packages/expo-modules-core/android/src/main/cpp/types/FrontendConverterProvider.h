@@ -26,6 +26,14 @@ public:
   void createConverters();
 
   /**
+   * Registers an additional converter for the given type.
+   */
+  void registerConverter(
+    CppType type,
+    std::shared_ptr<FrontendConverter> converter
+  );
+
+  /**
    * Obtains a converter for an expected type.
    */
   std::shared_ptr<FrontendConverter> obtainConverter(

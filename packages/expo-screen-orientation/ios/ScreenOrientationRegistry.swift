@@ -19,17 +19,12 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
   private let queue = DispatchQueue(label: "expo.screenorientationregistry", attributes: .concurrent)
+  private let notificationQueue = DispatchQueue(label: "expo.screenorientationregistry.notifications")
   @objc
   public var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
-    let keyWindow = UIApplication
-      .shared
-      .connectedScenes
-      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
-      .last { $0.isKeyWindow }
-
-    return keyWindow?.rootViewController
+    return SceneGeometry.keyWindow()?.rootViewController
   }
 
   public var currentOrientationMask: UIInterfaceOrientationMask {
@@ -58,7 +53,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called by ScreenOrientationAppDelegate in order to set initial interface orientation.
    */
   public func updateCurrentScreenOrientation() {
-      self.currentScreenOrientation = rootViewController?.view.window?.windowScene?.interfaceOrientation ?? .unknown
+    self.currentScreenOrientation = SceneGeometry.interfaceOrientation(for: rootViewController?.view)
   }
 
   deinit {
@@ -89,11 +84,20 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         return
       }
 
-      if #available(iOS 16.0, *) {
-        let windowScene = self.rootViewController?.view.window?.windowScene
-        windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
-        self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+      let windowScene = SceneGeometry.windowScene(for: self.rootViewController?.view)
+      windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask)) { error in
+        #if DEBUG
+        log.warn(
+          "Couldn't lock the screen orientation because the system refused the request. This happens "
+          + "when your app is resizable, such as iPad multitasking, iPhone Mirroring, or any app on "
+          + "iOS 27 and later, where a supported orientation is only a preference. Design your screens "
+          + "to adapt to the available space, or on iPad set `ios.requireFullScreen` to `true` in your "
+          + "app config. See https://docs.expo.dev/versions/latest/sdk/screen-orientation/ "
+          + "Underlying error: \(error.localizedDescription)"
+        )
+        #endif
       }
+      self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
       UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
       UIViewController.attemptRotationToDeviceOrientation()
 
@@ -150,7 +154,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     var newScreenOrientation = UIInterfaceOrientation.unknown
 
-    // We need to deduce what is the new screen orientaiton based on currentOrientationMask and new dimensions of the view
+    // We need to deduce what is the new screen orientation based on currentOrientationMask and new dimensions of the view
     if orientation.isPortrait {
       // From trait collection, we know that screen is in portrait or upside down orientation.
       let portraitMask = currentOrientationMask.intersection([.portrait, .portraitUpsideDown])
@@ -201,23 +205,23 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called at the end of the screen orientation change. Notifies the controllers about the orientation change.
    */
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
-    queue.sync(flags: .barrier) {
+    let controllers = queue.sync(flags: .barrier) {
       // Write with the barrier:
       if self.currentScreenOrientation != newScreenOrientation {
         // Only change if necessary, to prevent listeners from re-calling this method.
         self.currentScreenOrientation = newScreenOrientation
       }
+      return self.orientationControllers
     }
-    queue.async {
-      // Read without the barrier:
-      for controller in self.orientationControllers {
+    notificationQueue.async {
+      for controller in controllers {
         controller.screenOrientationDidChange(newScreenOrientation)
       }
     }
   }
 
   public func registerController(_ controller: ScreenOrientationController) {
-    queue.sync {
+    queue.sync(flags: .barrier) {
       self.orientationControllers.append(controller)
     }
   }
@@ -225,7 +229,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public func unregisterController(_ controller: ScreenOrientationController) {
     let controllerIdentifier = ObjectIdentifier(controller)
 
-    queue.sync {
+    queue.sync(flags: .barrier) {
       self.controllerInterfaceMasks.removeValue(forKey: controllerIdentifier)
       self.orientationControllers.removeAll(where: { $0 === controller })
     }

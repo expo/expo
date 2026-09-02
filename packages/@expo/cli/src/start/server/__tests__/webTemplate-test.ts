@@ -88,4 +88,24 @@ describe(createTemplateHtmlFromExpoConfigAsync, () => {
     // Sanity
     expect(contents).toMatchSnapshot();
   });
+  it('injects extraHead before `</head>`', async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        'public/index.html': `<!DOCTYPE html><html lang="%LANG_ISO_CODE%"><head></head><body><div id="root"></div></body></html>`,
+      },
+      projectRoot
+    );
+
+    const contents = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+      scripts: [],
+      extraHead: '<link rel="icon" href="/favicon.ico"/>',
+      exp: {
+        name: 'My App',
+        slug: 'my-app',
+      },
+    });
+
+    expect(contents).toMatch('<link rel="icon" href="/favicon.ico"/></head>');
+  });
 });

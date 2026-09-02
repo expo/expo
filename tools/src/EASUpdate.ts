@@ -1,7 +1,8 @@
+import spawnAsync from '@expo/spawn-async';
 import process from 'process';
 
+import { EXPO_DIR } from './Constants';
 import * as EASCLI from './EASCLI';
-import * as ExpoCLI from './ExpoCLI';
 import * as Log from './Log';
 
 type Options = {
@@ -32,7 +33,14 @@ export async function setAuthAndPublishProjectWithEasCliAsync(
 
     if (username && password) {
       Log.collapsed('Logging in...');
-      await ExpoCLI.runExpoCliAsync('login', ['-u', username, '-p', password]);
+      // Pass the password via stdin instead of argv to keep it out of the process table.
+      const child = spawnAsync('npx', ['expo', 'login', '-u', username, '-p', '-'], {
+        cwd: EXPO_DIR,
+        stdio: ['pipe', 'inherit', 'inherit'],
+        env: { ...process.env, EXPO_NO_DOCTOR: 'true' },
+      });
+      child.child.stdin!.end(`${password}\n`);
+      await child;
     } else {
       Log.collapsed('Expo username and password not specified. Using currently logged-in account.');
     }

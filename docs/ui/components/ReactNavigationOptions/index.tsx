@@ -83,7 +83,7 @@ export const ReactNavigationOptions = ({
   const sortedOptions = filteredOptions.sort((a, b) => a.name.localeCompare(b.name));
 
   if (category && sortedOptions.length === 0) {
-    return <div className="text-secondary text-sm">No options found for category: {category}</div>;
+    return <div className="text-sm text-secondary">No options found for category: {category}</div>;
   }
 
   const categoryTitles: Record<string, string> = {

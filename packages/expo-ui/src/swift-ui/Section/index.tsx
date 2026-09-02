@@ -4,7 +4,7 @@ import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type SectionProps = {
+export interface SectionProps extends CommonViewModifierProps {
   /**
    * The title of the section.
    */
@@ -35,7 +35,7 @@ export type SectionProps = {
    * @platform tvos 17.0+
    */
   onIsExpandedChange?: (isExpanded: boolean) => void;
-} & CommonViewModifierProps;
+}
 
 type SectionNativeProps = Omit<SectionProps, 'onIsExpandedChange'> & {
   onIsExpandedChange?: (e: { nativeEvent: { isExpanded: boolean } }) => void;

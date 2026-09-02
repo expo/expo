@@ -54,7 +54,7 @@ Config plugins have the following characteristics:
 
 - Plugins are **synchronous** functions that accept an [ExpoConfig](/workflow/configuration) and return a modified `ExpoConfig`. In rare cases, plugins can also be asynchronous if available methods to communicate with native projects are asynchronous, but they won't be performant.
 - Plugins should be named using the following convention: `with<Plugin Functionality>`, for example, `withFacebook`
-- Plugins should be synchronous and their return value should be serializable, except for adding any [`mods`](#mods)
+- Plugins should be synchronous and their return value should be serializable, except for adding any [`mods`](#mod)
 - Plugins are always evaluated during the app config evaluation phase.
 - Optionally, a second argument can be passed to the plugin to configure it
 - Mods are only evaluated during the **syncing** phase of `npx expo prebuild` (prebuild process) and modify native files during code generation. Because of that, any modifications made to app config in a config plugin should be outside of a mod to ensure that they are executed in non-prebuild configuration scenarios.

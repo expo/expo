@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import type { NotificationsEmitterModule } from './NotificationsEmitterModule.types';
 
@@ -12,6 +12,12 @@ export default {
       );
       warningHasBeenShown = true;
     }
+    return {
+      remove: () => {},
+    };
   },
-  removeListeners: () => {},
+  removeListener: () => {},
+  removeAllListeners: () => {},
+  emit: () => {},
+  listenerCount: () => 0,
 } as NotificationsEmitterModule;

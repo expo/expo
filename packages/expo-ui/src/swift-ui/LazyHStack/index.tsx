@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type LazyHStackProps = {
+export interface LazyHStackProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * The spacing between children.
@@ -13,7 +13,7 @@ export type LazyHStackProps = {
    * The vertical alignment of children within the stack.
    */
   alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
-} & CommonViewModifierProps;
+}
 
 const LazyHStackNativeView: React.ComponentType<LazyHStackProps> = requireNativeView(
   'ExpoUI',

@@ -1,0 +1,142 @@
+---
+title: GitHub リポジトリからビルドをトリガーする
+sidebar_title: GitHub からのビルド
+description: GitHub リポジトリからビルドをトリガーする流れを学びます。
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+[Expo GitHub App](/build/building-from-github/) は、GitHub 上のプロジェクトから EAS のビルドを自動的にトリガーします。開発チームの好みに応じて、どのビルドプロファイルでもビルドをトリガーできます。リポジトリに直接コミットされた `git` push や、プルリクエストからビルドをトリガーすることもできます。
+
+この章では、この機能を設定します。説明用に、サンプルアプリの GitHub リポジトリはすでに用意されています。
+
+<VideoBoxLink
+  videoId="fBLFEFC0ip0"
+  title="視聴：GitHub リポジトリからビルドをトリガーする方法"
+  description="Expo GitHub App をリポジトリに接続し、push やプルリクエストで EAS のビルドがトリガーされるよう設定します。"
+/>
+
+---
+
+<Step label="1">
+
+## Expo GitHub app を設定する
+
+この機能を使うには、GitHub アカウントを接続する必要があります。
+
+- EAS ダッシュボードで [expo.dev/settings](https://expo.dev/settings#connections) に移動し、**Connections** > **GitHub** で **Connect** をクリックします。**Connect GitHub** アカウントのページが開きます。
+- **Get started** ボタンをクリックすると、Expo GitHub app を認可するポップアップが開きます。**Install and Authorize** をクリックします。
+- アプリが GitHub アカウントにインストールされたら、Expo アカウントにリンクします。次のポップアップで **Link installation** をクリックします。
+- アカウントがリンクされると、**GitHub** の下に表示されます。
+
+<ContentSpotlight
+  alt="Linked GitHub account shows in EAS dashboard"
+  src="/static/images/tutorial/eas/github-01.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## GitHub リポジトリを接続する
+
+GitHub リポジトリからビルドをトリガーできるようにするには、EAS ダッシュボードでリポジトリをプロジェクトに接続します。
+
+- EAS ダッシュボードで **Projects** > 自分のプロジェクトを選択 > **Project settings** > **GitHub** に移動します。
+- **Connect a GitHub repository** の下に GitHub リポジトリの一覧が表示されるので、目的のものを接続します。この例では **sticker-smash** を探しています。
+- プロジェクトのリポジトリの **Connect** をクリックします。
+
+<ContentSpotlight
+  alt="List of GitHub repositories to connect to the project in EAS dashboard"
+  src="/static/images/tutorial/eas/github-02.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+## リポジトリのデフォルト設定を使う
+
+Expo GitHub app は、プロジェクトのソースコードがどこにあるかを知る必要があります。デフォルトでは `/` を使ってルートディレクトリを選択します。このサンプルプロジェクトでもソースコードはリポジトリのルートにあるため、EAS ダッシュボードではデフォルトのままで構いません。
+
+</Step>
+
+<Step label="4">
+
+## GitHub の PR ラベルでビルドをトリガーする
+
+Expo GitHub app には、ビルドをトリガーする [複数の方法](/build/building-from-github/#trigger-a-build-from-github) があります。
+
+- Builds ページから特定のプラットフォーム向けに手動で実行する
+- 新しいコードがリポジトリに push されたときに自動で実行する
+- GitHub の PR ラベルを使って自動で実行する
+
+GitHub の PR ラベルでビルドを自動的にトリガーするため、上の一覧の 3 つ目を使います。
+
+- 使用するビルドイメージを指定する必要があります。**eas.json** を開き、`development` プロファイルに [`android.image`](/eas/json/#image) と [`ios.image`](/eas/json/#image-1) プロパティを追加して、値を [`latest`](/build-reference/infrastructure/#configuring-build-environment) に設定します。
+
+  ```json eas.json
+  {
+    "build": {
+      "development": {
+        /* @hide ... */ /* @end */
+        /* @info */
+        "android": {
+          "image": "latest"
+        },
+        "ios": {
+          "image": "latest"
+        }
+        /* @end */
+      }
+    }
+    /* @hide ... */ /* @end */
+  }
+  ```
+
+- 次に `dev` という新しいブランチを作成し、アプリの JavaScript コードを変更します。変更をコミットしてブランチを push し、そのブランチから PR を作成します。
+- PR のページで **Labels** から `eas-build-all:development` というラベルを作成します。
+
+<ContentSpotlight
+  alt="Creating a label in a GitHub PR"
+  src="/static/images/tutorial/eas/github-04.png"
+  className="max-w-[320px]"
+/>
+
+- **Create pull request** ボタンをクリックして PR を作成します。Expo GitHub app が開発ビルドの作成を開始します。
+
+- EAS ダッシュボードの **Builds** ページで、Android と iOS の両方のビルドがトリガーされたことを確認できます。
+
+<ContentSpotlight
+  alt="Builds triggered in the EAS dashboard for Android and iOS platforms"
+  src="/static/images/tutorial/eas/github-06.png"
+  className="max-w-[800px]"
+/>
+
+- 個々のビルドの詳細を見ると、**Created by** に GitHub app がビルドを作成したことが表示されています。
+
+<ContentSpotlight
+  alt="Individual build details in the EAS dashboard"
+  src="/static/images/tutorial/eas/github-07.png"
+  className="max-w-[760px]"
+/>
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/using-github"
+  chapterTitle="第 11 章：GitHub リポジトリからビルドをトリガーする"
+  summary="GitHub アカウントを Expo にリンクし、リポジトリを EAS プロジェクトに接続して、GitHub の PR ラベルによる開発ビルドの自動作成について学びました。"
+  nextChapterDescription="EAS を使ううえでの次のステップを学びましょう。"
+  nextChapterTitle="EAS を使う旅の次のステップ"
+  nextChapterLink="/ja/tutorial/eas/next-steps/"
+/>

@@ -233,7 +233,7 @@ If you need to link from one MDX file to another, use the static/full path to th
 - From: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
 - From: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-Validate all current links by running `pnpm lint-links` script.
+Validate all current links by running the `pnpm check-internal-links` script after a build (it scans the exported site in **out**).
 
 ### Update latest version of API reference docs
 
@@ -390,6 +390,30 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 <ContentSpotlight file="guides/color-schemes.mp4" />;
 ```
 
+### Add Expo UI component previews
+
+For documenting `@expo/ui` components (Jetpack Compose and SwiftUI) with a fixed-size, theme-aware preview frame, use the `component` variant of `ContentSpotlight`. It renders a bordered dot-grid card and swaps between light and dark sources based on the active theme.
+
+```tsx
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/badgedbox/android-light.webp"
+  darkSrc="/static/images/expo-ui/badgedbox/android-dark.webp"
+  alt="Mail icon with a count badge of 5 and a wifi icon with a small dot badge"
+/>;
+```
+
+| Param     | Description                                                                                                                                                |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant` | Set to `"component"` to render the SDK UI preview chrome. Defaults to `"screenshot"`, which keeps the original lightbox-on-click behavior used elsewhere.  |
+| `aspect`  | **Required** when `variant="component"`. Use `"landscape"` (3:2, 540px wide) for wide previews or `"portrait"` (9:16, 220px wide) for phone-shaped mocks.  |
+| `src`     | **Required**. Path to the light-theme image. Place assets under `/public/static/images/expo-ui/<component>/` and reference them from `/static/images/...`. |
+| `darkSrc` | Optional. Path to the dark-theme image. Rendered via `<picture>` and shown when the user has the dark theme active.                                        |
+| `alt`     | **Required**. Alt text describing the component preview for screen readers.                                                                                |
+
 ### Add video links from Expo's YouTube channel
 
 To reference a video from Expo's YouTube channel, use the `VideoBoxLink` component. This component is imported from `~/ui/components/VideoBoxLink`.
@@ -442,7 +466,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 ### Code block variables
 
-Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from `sdk-versions.json` at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
+Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from the shared SDK compatibility registry at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
 
 **Available variables:**
 
@@ -475,7 +499,7 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
 
 The rendered output will show the resolved values (for example, `"expo": "~55.0.0"`). The copy button also copies the resolved values.
 
-All variables are defined in `common/code-utilities.ts` and sourced from the first (latest) entry in `ui/components/SDKTables/sdk-versions.json`. To add a new variable, add an entry to the `CODE_BLOCK_VARIABLES` map in that file.
+All variables are defined in `common/code-utilities.ts` and sourced from `sdkVersionValues` in `ui/components/SDKTables/utils.ts`, which reads `@expo/sdk-compatibility/data`. To add a new variable, add a new key to the object returned by `buildVariablesForSdk` in `common/code-utilities.ts`.
 
 > [!NOTE]
 > These variables only work inside fenced code blocks. For dynamic values in prose text, import `latestSdkVersionValues` from `~/ui/components/SDKTables` and use JSX expressions directly.
@@ -653,7 +677,7 @@ modificationDate: April 8th, 2024
 ---
 ```
 
-This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](/docs/pages/build-reference/infrastructure.mdx).
+This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](/docs/pages/build-reference/infrastructure.mdx). When updating build image details on that page, update its `modificationDate` in the same change.
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 

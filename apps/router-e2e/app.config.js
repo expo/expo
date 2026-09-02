@@ -26,9 +26,10 @@ module.exports = {
     package: 'dev.expo.routere2e',
   },
   // For testing the output bundle
-  jsEngine: process.env.E2E_ROUTER_JS_ENGINE ?? (process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes'),
+  jsEngine: 'hermes',
   newArchEnabled: true,
   experiments: {
+    noxcturnalTransformWorker: true,
     autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
@@ -40,6 +41,7 @@ module.exports = {
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',
     bundler: 'metro',
+    favicon: process.env.E2E_FAVICON || undefined,
   },
   plugins: [
     [
@@ -85,6 +87,9 @@ module.exports = {
                 'Set-Cookie': ['session=123', 'token=xyz'],
               }
             : undefined,
+        pageHeaders: process.env.E2E_ROUTER_PAGE_HEADERS
+          ? JSON.parse(process.env.E2E_ROUTER_PAGE_HEADERS)
+          : undefined,
         unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
         unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
         unstable_useServerRendering: process.env.E2E_ROUTER_SERVER_RENDERING === 'true',

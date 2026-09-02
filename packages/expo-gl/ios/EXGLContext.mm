@@ -2,8 +2,8 @@
 
 #import <ExpoGL/EXGLContext.h>
 #import <ExpoGL/EXGLObjectManager.h>
-
 #import <ExpoModulesCore/EXUtilities.h>
+
 
 #import <React/RCTLog.h>
 
@@ -177,12 +177,22 @@
 // - `framebuffer`: WebGLFramebuffer that we will be reading from. If not specified, the default framebuffer for this context will be used.
 // - `rect`: { x, y, width, height } object used to crop the snapshot.
 // - `format`: "jpeg" or "png" - specifies what type of compression and file extension should be used.
-// - `compress`: A value in 0 - 1 range specyfing compression level. JPEG format only.
+// - `compress`: A value in 0 - 1 range specifying compression level. JPEG format only.
 - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options
                         resolve:(EXPromiseResolveBlock)resolve
                          reject:(EXPromiseRejectBlock)reject
 {
   [self flush];
+
+  // The drawable is sized with the view's scale, so the snapshot must convert pixels to points with
+  // the same value. Read it on the main thread before handing off to the GL queue.
+  __block CGFloat scale = 1;
+  id<EXGLContextDelegate> delegate = self.delegate;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    if (delegate) {
+      scale = [delegate glContextGetScale];
+    }
+  }];
 
   [self runAsync:^{
     NSDictionary *rect = options[@"rect"] ?: [self currentViewport];
@@ -242,7 +252,6 @@
                                         providerRef, NULL, true, kCGRenderingIntentDefault);
 
     // Begin image context
-    CGFloat scale = [EXUtilities screenScale];
     NSInteger widthInPoints = width / scale;
     NSInteger heightInPoints = height / scale;
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);

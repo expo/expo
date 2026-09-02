@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import type { Command } from 'commander';
 import path from 'node:path';
@@ -6,7 +7,6 @@ import {
   processRepositories,
   processTasks,
   resolveTasksConfigAndroid,
-  runCommand,
   validatePrebuild,
   withSpinner,
 } from '../utils';
@@ -17,9 +17,9 @@ const tasksAndroid = async (command: Command) => {
   const config = resolveTasksConfigAndroid(command.opts());
   const { stdout } = await withSpinner({
     operation: () =>
-      runCommand('./gradlew', [`${config.library}:tasks`, '--group', 'publishing'], {
+      spawnAsync('./gradlew', [`${config.library}:tasks`, '--group', 'publishing'], {
         cwd: path.join(process.cwd(), 'android'),
-        verbose: config.verbose,
+        stdio: config.verbose ? 'inherit' : 'pipe',
       }),
     loaderMessage: 'Reading publish tasks from the android project...',
     successMessage: 'Successfully read publish tasks from the android project\n',

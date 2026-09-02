@@ -1,8 +1,6 @@
 'use client';
 import { Children, useMemo } from 'react';
 
-import { NativeToolbarButton } from './native';
-import type { StackToolbarButtonProps } from './types';
 import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../../utils/children';
 import { useToolbarPlacement } from '../context';
@@ -12,6 +10,8 @@ import {
   extractXcassetName,
 } from '../shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../toolbar-primitives';
+import { NativeToolbarButton } from './native';
+import type { StackToolbarButtonProps } from './types';
 
 export type { StackToolbarButtonProps, NativeToolbarButtonProps } from './types';
 

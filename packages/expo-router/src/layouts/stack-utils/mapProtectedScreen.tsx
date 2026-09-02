@@ -1,10 +1,10 @@
 import React, { Children } from 'react';
 
-import { StackHeaderComponent } from './StackHeaderComponent';
-import { StackScreen, appendScreenStackPropsToOptions } from './StackScreen';
 import { isChildOfType } from '../../utils/children';
 import { Protected, type ProtectedProps } from '../../views/Protected';
 import { Screen } from '../../views/Screen';
+import { StackHeaderComponent } from './StackHeaderComponent';
+import { StackScreen, appendScreenStackPropsToOptions } from './StackScreen';
 
 export function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
   return {

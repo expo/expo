@@ -70,7 +70,7 @@
     locationManager.desiredAccuracy = [EXLocation CLLocationAccuracyFromOption:accuracy];
     locationManager.distanceFilter = [self numberToDouble:options[@"distanceInterval"] defaultValue:kCLDistanceFilterNone];
     locationManager.activityType = [EXLocation CLActivityTypeFromOption:[self numberToInteger:options[@"activityType"] defaultValue:CLActivityTypeOther]];
-    locationManager.pausesLocationUpdatesAutomatically = [self numberToBool:options[@"pausesUpdatesAutomatically"] defaultValue:true];
+    locationManager.pausesLocationUpdatesAutomatically = [self numberToBool:options[@"pausesUpdatesAutomatically"] defaultValue:false];
     locationManager.showsBackgroundLocationIndicator = [self numberToBool:options[@"showsBackgroundLocationIndicator"] defaultValue:false];
 
     [locationManager startUpdatingLocation];

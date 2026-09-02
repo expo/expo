@@ -28,7 +28,7 @@ function mockedNodeModule(
 const symlinkMany = (symlinks: Record<string, string>) => {
   for (const from in symlinks) {
     vol.mkdirSync(path.dirname(path.join(projectRoot, from)), { recursive: true });
-    vol.symlinkSync(path.join(projectRoot, symlinks[from]), path.join(projectRoot, from));
+    vol.symlinkSync(path.join(projectRoot, symlinks[from]!), path.join(projectRoot, from));
   }
 };
 

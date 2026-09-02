@@ -12,7 +12,7 @@ export function withMetroServer(projectRoot = '/project'): {
   metro: ReturnType<typeof createMetroMiddleware>;
   server: ReturnType<typeof createServer> & {
     fetch: (url: string, init?: RequestInit) => Promise<Response>;
-    connect: (url: string) => WebSocket;
+    connect: (url: string, options?: ClientOptions) => WebSocket;
   };
 } {
   const metro = createMetroMiddleware(
@@ -22,6 +22,7 @@ export function withMetroServer(projectRoot = '/project'): {
         ({
           ready: () => Promise.resolve(),
         }) as any,
+      serverBaseUrl: 'http://localhost',
     }
   );
 
@@ -41,9 +42,13 @@ export function withMetroServer(projectRoot = '/project'): {
   // Ensure the websockets can be tested
   server.on('upgrade', (request, socket, head) => {
     const { pathname } = parse(request.url!);
-    if (pathname != null && metro.websocketEndpoints[pathname]) {
-      metro.websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
-        metro.websocketEndpoints[pathname].emit('connection', ws, request);
+    const endpoint =
+      pathname != null
+        ? metro.websocketEndpoints[pathname as keyof typeof metro.websocketEndpoints]
+        : undefined;
+    if (endpoint) {
+      endpoint.handleUpgrade(request, socket, head, (ws) => {
+        endpoint.emit('connection', ws, request);
       });
     } else {
       socket.destroy();
@@ -63,7 +68,7 @@ export function withMetroServer(projectRoot = '/project'): {
 
         Object.defineProperty(server, 'connect', {
           value: (url = '', options?: ClientOptions) =>
-            new WebSocket(`ws://${hostname}:${address.port}${url}`),
+            new WebSocket(`ws://${hostname}:${address.port}${url}`, options),
         });
 
         resolve();
@@ -108,7 +113,7 @@ export function waitForExpect(
       try {
         Promise.resolve(expectation()).then(resolve).catch(retryOnReject);
       } catch (error) {
-        retryOnReject(error);
+        retryOnReject(error as Error);
       }
     }
 

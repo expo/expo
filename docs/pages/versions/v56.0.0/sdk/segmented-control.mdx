@@ -12,6 +12,8 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 
+> **important** [`@expo/ui` provides a drop-in replacement](./ui/drop-in-replacements/segmentedcontrol) for `@react-native-segmented-control/segmented-control`, powered by Jetpack Compose on Android and SwiftUI on iOS.
+
 It's like a fancy radio button, or in Apple's words: "A horizontal control that consists of multiple segments, each segment functioning as a discrete button" ([source](https://developer.apple.com/documentation/uikit/uisegmentedcontrol)). This component renders to a [`UISegmentedControl`](https://developer.apple.com/documentation/uikit/uisegmentedcontrol) on iOS, and to faithful recreations of that control on Android and web (because no equivalent exists on those platforms' standard libraries).
 
 ## Installation

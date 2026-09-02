@@ -1,7 +1,7 @@
 import { Text as RNText, StyleSheet, useColorScheme } from 'react-native';
 
-import type { TextProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+import type { TextProps } from './types';
 
 const styles = StyleSheet.create({
   light: { color: '#000000' },

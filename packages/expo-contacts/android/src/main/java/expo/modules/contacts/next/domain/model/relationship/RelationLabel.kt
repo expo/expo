@@ -2,7 +2,7 @@ package expo.modules.contacts.next.domain.model.relationship
 
 import android.provider.ContactsContract.CommonDataKinds.Relation
 
-sealed class RelationLabel(val type: Int, val label: String? = null) {
+sealed class RelationLabel(val type: Int?, val label: String? = null) {
   object Assistant : RelationLabel(Relation.TYPE_ASSISTANT)
   object Brother : RelationLabel(Relation.TYPE_BROTHER)
   object Child : RelationLabel(Relation.TYPE_CHILD)
@@ -18,4 +18,9 @@ sealed class RelationLabel(val type: Int, val label: String? = null) {
   object Sister : RelationLabel(Relation.TYPE_SISTER)
   object Spouse : RelationLabel(Relation.TYPE_SPOUSE)
   class Custom(label: String) : RelationLabel(Relation.TYPE_CUSTOM, label)
+
+  // Ideally these states would not be necessary, but Android does not enforce
+  // type and label columns as non-null, so malformed label data can exist there.
+  class MalformedType(label: String?) : RelationLabel(null, label)
+  object MalformedCustom : RelationLabel(Relation.TYPE_CUSTOM)
 }

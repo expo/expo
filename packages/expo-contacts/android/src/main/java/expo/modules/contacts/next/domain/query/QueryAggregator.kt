@@ -21,6 +21,7 @@ import expo.modules.contacts.next.domain.model.structuredname.operations.Existin
 import expo.modules.contacts.next.domain.model.structuredpostal.operations.ExistingStructuredPostal
 import expo.modules.contacts.next.domain.model.website.operations.ExistingWebsite
 import expo.modules.contacts.next.domain.wrappers.ContactId
+import expo.modules.contacts.next.extensions.getRequiredString
 
 class QueryAggregator(extractableFields: Collection<ExtractableField<*>>) {
   private val contactsExtractableFields = extractableFields.filterIsInstance<ExtractableField.Contacts<*>>()
@@ -33,8 +34,8 @@ class QueryAggregator(extractableFields: Collection<ExtractableField<*>>) {
   fun buildContacts(): List<ExistingContact> = contactBuilders.values.map { it.build() }
 
   fun aggregateDataRow(cursor: Cursor) {
-    val contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_DATA_TABLE))
-    val mime = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))
+    val contactId = cursor.getRequiredString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_DATA_TABLE))
+    val mime = cursor.getRequiredString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))
     val builder = contactBuilders.getOrPut(contactId) {
       ContactModelBuilder(ContactId(contactId))
     }
@@ -45,7 +46,7 @@ class QueryAggregator(extractableFields: Collection<ExtractableField<*>>) {
   }
 
   fun aggregateContactsRow(cursor: Cursor) {
-    val contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_CONTACTS_TABLE))
+    val contactId = cursor.getRequiredString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_CONTACTS_TABLE))
     val builder = contactBuilders.getOrPut(contactId) {
       ContactModelBuilder(ContactId(contactId))
     }

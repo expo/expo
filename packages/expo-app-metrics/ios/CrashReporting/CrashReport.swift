@@ -1,66 +1,67 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-/**
- Structured crash report extracted from MetricKit's `MXCrashDiagnostic`.
- */
+/// Structured crash report extracted from MetricKit's `MXCrashDiagnostic`.
+///
+/// This is the native-crash shape: a Mach exception, signal, and native call-stack tree over a
+/// payload time window. Unhandled JavaScript errors are recorded separately as `exception` log
+/// events (see `ErrorReport`).
 public struct CrashReport: Codable, Sendable {
-  /** Mach exception type (e.g. EXC_BAD_ACCESS, EXC_CRASH). */
+  private static let maxLogStackFrames = 25
+  private static let maxLogStacktraceLength = 65_536
+
+  /// Mach exception type (e.g. EXC_BAD_ACCESS, EXC_CRASH).
   public let exceptionType: Int?
 
-  /** Processor-specific exception code. */
+  /// Processor-specific exception code.
   public let exceptionCode: Int?
 
-  /** Unix signal number (e.g. SIGSEGV = 11, SIGABRT = 6). */
+  /// Unix signal number (e.g. SIGSEGV = 11, SIGABRT = 6).
   public let signal: Int?
 
-  /** Human-readable description of the termination reason. */
+  /// Human-readable description of the termination reason.
   public let terminationReason: String?
 
-  /** Memory region info for bad-access crashes. */
+  /// Memory region info for bad-access crashes.
   public let virtualMemoryRegionInfo: String?
 
-  /** Objective-C exception details, available when the crash was caused by an unhandled NSException. */
+  /// Objective-C exception details, available when the crash was caused by an unhandled NSException.
   public let exceptionReason: ExceptionReason?
 
-  /** Call stack tree, suitable for off-device symbolication. */
+  /// Call stack tree, suitable for off-device symbolication.
   public let callStackTree: CallStackTree?
 
-  /** App version at the time of the crash. */
+  /// App version at the time of the crash.
   public let appVersion: String
 
-  /** Timestamp range start of the diagnostic payload. */
+  /// Timestamp range start of the diagnostic payload.
   public let timestampBegin: Date
 
-  /** Timestamp range end of the diagnostic payload. */
+  /// Timestamp range end of the diagnostic payload.
   public let timestampEnd: Date
 
-  /**
-   Timestamp at which this device received the diagnostic and constructed the report.
-   Distinct from `timestampEnd` because MetricKit can deliver historical or backlogged
-   diagnostics — `ingestedAt` reflects when *we* learned about the crash, not when it
-   happened.
-   */
+  /// Timestamp at which this device received the diagnostic and constructed the report.
+  /// Distinct from `timestampEnd` because MetricKit can deliver historical or backlogged
+  /// diagnostics — `ingestedAt` reflects when *we* learned about the crash, not when it
+  /// happened.
   public let ingestedAt: Date
 
-  /**
-   Picks the most likely main session that this crash report belongs to.
-
-   MetricKit only gives us the diagnostic payload's time window (`timestampBegin` to
-   `timestampEnd`, typically a 24-hour bucket), not an exact crash time. Xcode's
-   "Simulate MetricKit Payloads" delivers a zero-width window where both timestamps
-   equal "now," so we can't rely on the session's start time falling inside it.
-
-   1. Treat each session as the interval `[startDate, endDate ?? .distantFuture]` and
-      pick sessions that intersect the payload window. Among those, prefer the one
-      that never finished (`endDate == nil`) — an unfinished main session is a strong
-      signal of a crash. Otherwise pick the intersecting session with the latest start time.
-   2. If nothing intersects *and* the window is zero-width (Xcode-simulated payloads
-      where intersection is impossible by construction), fall back to the latest
-      unfinished session overall, then to the latest session by start time.
-   3. Otherwise return `nil` — a real payload window that doesn't overlap any session
-      is genuinely unattributable, and silently misattributing it to the current
-      session would hide that.
-   */
+  /// Picks the most likely main session that this crash report belongs to.
+  ///
+  /// MetricKit only gives us the diagnostic payload's time window (`timestampBegin` to
+  /// `timestampEnd`, typically a 24-hour bucket), not an exact crash time. Xcode's
+  /// "Simulate MetricKit Payloads" delivers a zero-width window where both timestamps
+  /// equal "now," so we can't rely on the session's start time falling inside it.
+  ///
+  /// 1. Treat each session as the interval `[startDate, endDate ?? .distantFuture]` and
+  /// pick sessions that intersect the payload window. Among those, prefer the one
+  /// that never finished (`endDate == nil`) — an unfinished main session is a strong
+  /// signal of a crash. Otherwise pick the intersecting session with the latest start time.
+  /// 2. If nothing intersects *and* the window is zero-width (Xcode-simulated payloads
+  /// where intersection is impossible by construction), fall back to the latest
+  /// unfinished session overall, then to the latest session by start time.
+  /// 3. Otherwise return `nil` — a real payload window that doesn't overlap any session
+  /// is genuinely unattributable, and silently misattributing it to the current
+  /// session would hide that.
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
     let payloadBegin = timestampBegin.ISO8601Format()
     let payloadEnd = timestampEnd.ISO8601Format()
@@ -89,10 +90,118 @@ public struct CrashReport: Codable, Sendable {
     return candidates.max(by: { $0.startTimestamp < $1.startTimestamp })
   }
 
-  /**
-   Mirrors the shape of `MXCallStackTree.JSONRepresentation()`. Every field is optional so that
-   silently-renamed or removed Apple fields don't break decoding for the rest of the report.
-   */
+  func toLogRecord() -> LogRecord {
+    var attributes: [String: Any] = [
+      "exception.type": exceptionReason?.exceptionName
+        ?? exceptionType.map { exceptionName(for: $0) }
+        ?? signal.map { signalName(for: $0) }
+        ?? "NativeCrash",
+      "exception.message": exceptionMessage,
+      "exception.stacktrace": renderedStacktrace as Any,
+      "expo.error.source": "nativeCrash",
+      "expo.error.is_fatal": true,
+    ]
+    if let exceptionType {
+      attributes["expo.crash.exception_type"] = exceptionName(for: exceptionType)
+      attributes["expo.crash.exception_type_code"] = exceptionType
+    }
+    if let exceptionCode {
+      attributes["expo.crash.exception_code"] = exceptionCode
+    }
+    if let signal {
+      attributes["expo.crash.signal"] = signalName(for: signal)
+      attributes["expo.crash.signal_number"] = signal
+    }
+    if let terminationReason {
+      attributes["expo.crash.termination_reason"] = terminationReason
+    }
+    if let exceptionReason {
+      attributes["expo.crash.objc_exception_type"] = exceptionReason.exceptionType
+      attributes["expo.crash.objc_exception_message"] = exceptionReason.composedMessage
+    }
+    return LogRecord(
+      name: "native.exception",
+      attributes: attributes,
+      severity: .fatal,
+      // MetricKit gives a time window; its end is the tightest crash-time bound and matches Android.
+      timestamp: timestampEnd.ISO8601Format()
+    )
+  }
+
+  private var exceptionMessage: String {
+    let parts = [terminationReason, exceptionReason?.composedMessage].compactMap { value -> String? in
+      guard let value, !value.isEmpty else {
+        return nil
+      }
+      return value
+    }
+    if !parts.isEmpty {
+      return parts.joined(separator: "\n")
+    }
+    if let signal {
+      return signalName(for: signal)
+    }
+    if let exceptionType {
+      return exceptionName(for: exceptionType)
+    }
+    return "Native crash"
+  }
+
+  private var renderedStacktrace: String? {
+    guard let callStacks = callStackTree?.callStacks else {
+      return nil
+    }
+    let attributedStacks = callStacks.filter { $0.threadAttributed == true }
+    let selectedStacks = attributedStacks.isEmpty ? callStacks : attributedStacks
+    var frames: [CallStackTree.Frame] = []
+    var totalFrames = 0
+    var lines: [String] = []
+    for callStack in selectedStacks {
+      collectFrames(callStack.callStackRootFrames ?? [], into: &frames, total: &totalFrames)
+    }
+    lines.append(contentsOf: frames.map(renderFrame))
+    if totalFrames > frames.count {
+      lines.append("… +\(totalFrames - frames.count) more frames")
+    }
+    guard !lines.isEmpty else {
+      return nil
+    }
+    return truncateToMaxLength(
+      lines.joined(separator: "\n"),
+      maxLength: Self.maxLogStacktraceLength,
+      warningMessage: "[AppMetrics] Native crash stack trace exceeded the maximum length and was truncated."
+    )
+  }
+
+  private func collectFrames(
+    _ source: [CallStackTree.Frame],
+    into frames: inout [CallStackTree.Frame],
+    total: inout Int
+  ) {
+    for frame in source {
+      total += 1
+      if frames.count < Self.maxLogStackFrames {
+        frames.append(frame)
+      }
+      collectFrames(frame.subFrames ?? [], into: &frames, total: &total)
+    }
+  }
+
+  private func renderFrame(_ frame: CallStackTree.Frame) -> String {
+    if let symbol = frame.symbol {
+      return symbol
+    }
+    if let binaryName = frame.binaryName, let offset = frame.offsetIntoBinaryTextSegment {
+      return "\(binaryName) + \(offset)"
+    }
+    if let address = frame.address {
+      return "0x\(String(address, radix: 16))"
+    }
+    return frame.binaryName ?? "<unknown>"
+  }
+
+  /// Mirrors the shape of `MXCallStackTree.JSONRepresentation()`. Every field is optional so that
+  /// silently-renamed or removed Apple fields don't break decoding for the rest of the report.
   public struct CallStackTree: Codable, Sendable {
     public let callStacks: [CallStack]?
 
@@ -108,35 +217,31 @@ public struct CrashReport: Codable, Sendable {
       public let offsetIntoBinaryTextSegment: UInt64?
       public let sampleCount: Int?
       public let subFrames: [Frame]?
-      /**
-       Resolved symbol from on-device `dladdr` symbolication. Swift and Itanium-ABI C++
-       names are demangled; Objective-C selectors and plain C symbols are returned as-is.
-       `nil` when the binary is not loaded in this process or `dladdr` could not resolve it.
-       */
+      /// Resolved symbol from on-device `dladdr` symbolication. Swift and Itanium-ABI C++
+      /// names are demangled; Objective-C selectors and plain C symbols are returned as-is.
+      /// `nil` when the binary is not loaded in this process or `dladdr` could not resolve it.
       public let symbol: String?
     }
   }
 
-  /**
-   Objective-C exception details from `MXCrashDiagnosticObjectiveCExceptionReason`.
-   */
+  /// Objective-C exception details from `MXCrashDiagnosticObjectiveCExceptionReason`.
   public struct ExceptionReason: Codable, Sendable {
-    /** Human-readable exception summary. */
+    /// Human-readable exception summary.
     public let composedMessage: String
 
-    /** Exception message template before argument substitution. */
+    /// Exception message template before argument substitution.
     public let formatString: String
 
-    /** Arguments substituted into the format string. */
+    /// Arguments substituted into the format string.
     public let arguments: [String]
 
-    /** Human-readable exception type (e.g. "NSInvalidArgumentException"). */
+    /// Human-readable exception type (e.g. "NSInvalidArgumentException").
     public let exceptionType: String
 
-    /** Exception class name (e.g. "NSException"). */
+    /// Exception class name (e.g. "NSException").
     public let className: String
 
-    /** Exception name field. */
+    /// Exception name field.
     public let exceptionName: String
   }
 }
@@ -183,7 +288,9 @@ extension CrashReport: CustomStringConvertible {
     var lines: [String] = ["[CrashReport] App version: \(appVersion)"]
 
     if let exceptionType {
-      lines.append("  Exception: type=\(exceptionName(for: exceptionType)) code=\(exceptionCode.map(String.init) ?? "unknown")")
+      lines.append(
+        "  Exception: type=\(exceptionName(for: exceptionType)) code=\(exceptionCode.map(String.init) ?? "unknown")"
+      )
     }
     if let signal {
       lines.append("  Signal: \(signalName(for: signal)) (\(signal))")

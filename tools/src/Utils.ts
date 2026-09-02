@@ -2,6 +2,7 @@ import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/
 import chalk from 'chalk';
 import { glob, GlobOptions } from 'glob';
 import ora from 'ora';
+import { stripVTControlCharacters } from 'util';
 
 import { EXPO_DIR } from './Constants';
 
@@ -23,6 +24,21 @@ export function spawnAsync(
 }
 
 /**
+ * Collects the output of a failed spawn into a single string. `@expo/spawn-async`
+ * puts `stdout` and `stderr` on non-enumerable getters that error formatters skip,
+ * so without this the reason for the failure is nowhere in the printed error.
+ */
+export function spawnErrorOutput(error: unknown): string {
+  const { stdout, stderr } = (error ?? {}) as { stdout?: unknown; stderr?: unknown };
+
+  return [stderr, stdout]
+    .filter((output): output is string => typeof output === 'string')
+    .map((output) => output.trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
+/**
  * Does the same as `spawnAsync` but parses the output to JSON object.
  */
 export async function spawnJSONCommandAsync<T = object>(
@@ -30,7 +46,18 @@ export async function spawnJSONCommandAsync<T = object>(
   args: readonly string[] = [],
   options: SpawnOptions = {}
 ): Promise<T> {
-  const child = await spawnAsync(command, args, options);
+  let child: SpawnResult;
+
+  try {
+    child = await spawnAsync(command, args, options);
+  } catch (error: any) {
+    const output = spawnErrorOutput(error);
+    if (output) {
+      error.message += '\n' + output;
+    }
+    throw error;
+  }
+
   try {
     return JSON.parse(child.stdout);
   } catch (e) {
@@ -139,6 +166,10 @@ export function arrayize<T>(value: T | T[]): T[] {
     return value;
   }
   return value != null ? [value] : [];
+}
+
+export function sanitizeTerminalOutput(input: string): string {
+  return stripVTControlCharacters(input).replace(/[\x00-\x08\x0B-\x1F\x7F-\x9F]/g, '');
 }
 
 /**

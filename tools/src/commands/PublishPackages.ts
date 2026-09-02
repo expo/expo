@@ -94,6 +94,11 @@ export default (program: Command) => {
     )
     .option('--skip-ios-prebuilds', 'Skips bundling iOS xcframeworks.', false)
     .option(
+      '--skip-turbo-checks',
+      'Skips the Turbo check batch (build/typecheck/depscheck/test/lint) on the selected packages.',
+      false
+    )
+    .option(
       '--auto-select-unpublished',
       'When retrying after a failed publish, auto-select all packages whose current version is not published yet and allow deselecting in a multi-select prompt.',
       false
@@ -260,7 +265,7 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   if (options.canary) {
     if (!process.env.CI) {
       logger.info(
-        `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-canaries.yml`
+        `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-packages.yml`
       );
     }
     if (options.packageNames.length > 0) {

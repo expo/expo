@@ -4,13 +4,43 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Upgraded `com.google.android.play:age-signals` to `0.0.4`. Adds `ageRangeSource`, `significantChangeStatus`, `significantChangeApprovalDate` and `requestAgeSignalsAccessAsync`. Removed `userStatus`. ([#48487](https://github.com/expo/expo/pull/48487) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
-- [iOS] Add `isEligibleForAgeFeaturesAsync` to expose Apple's `AgeRangeService.isEligibleForAgeFeatures` (iOS 26.2+). Resolves with `null` on unsupported OS versions, other platforms, or errors. ([#45525](https://github.com/expo/expo/pull/45525) by [@frankcalise](https://github.com/frankcalise))
+- [Android] Add `setFakeAgeSignals` to fake age signals from JS, through Google Play's `FakeAgeSignalsManager`. ([#48909](https://github.com/expo/expo/pull/48909) by [@kmadden84](https://github.com/kmadden84))
 
 ### 🐛 Bug fixes
 
+- [iOS] Report `ageRangeDeclaration: 'confirmed'` for the six system-verified cases that iOS 26.2 added and iOS 26.5 deprecated, instead of reporting them as `'selfDeclared'`. ([#48486](https://github.com/expo/expo/pull/48486) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-07
+
+### 🐛 Bug fixes
+
+- [iOS] Add support for `AgeRangeService.AgeRangeDeclaration.confirmed` and fix the runtime crash it caused. ([#47475](https://github.com/expo/expo/pull/47475) by [@kudo](https://github.com/kudo))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-26
+
+### 🎉 New features
+
+- [iOS] Add `showSignificantUpdateAcknowledgmentAsync` and `getRequiredRegulatoryFeaturesAsync` to expose Apple's significant app change acknowledgment flow and required regulatory features (iOS 26.4+). ([#43519](https://github.com/expo/expo/pull/43519) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.4 — 2026-05-15
+
+### 🎉 New features
+
+- [iOS] Add `isEligibleForAgeFeaturesAsync` to expose Apple's `AgeRangeService.isEligibleForAgeFeatures` (iOS 26.2+). Resolves with `null` on unsupported OS versions, other platforms, or errors. ([#45525](https://github.com/expo/expo/pull/45525) by [@frankcalise](https://github.com/frankcalise))
 
 ## 56.0.3 — 2026-05-06
 

@@ -5,8 +5,12 @@ description: A set of components that allow you to build UIs directly with Jetpa
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android', 'ios', 'tvos', 'expo-go']
-hideTOC: true
 ---
+
+import DropInCards from '~/scenes/versions/unversioned/ui/drop-in-replacements.mdx';
+import JetpackComposeCards from '~/scenes/versions/unversioned/ui/jetpack-compose.mdx';
+import SwiftUICards from '~/scenes/versions/unversioned/ui/swift-ui.mdx';
+import UniversalCards from '~/scenes/versions/unversioned/ui/universal.mdx';
 
 `@expo/ui` is a set of native input components that allows you to build fully native interfaces with Jetpack Compose and SwiftUI. It aims to provide the commonly used features and components that a typical app will need.
 
@@ -21,3 +25,21 @@ Components are available for the following platforms:
 ## Drop-in replacements
 
 See **[Drop-in replacements](drop-in-replacements)** for API-compatible replacements for popular React Native community libraries.
+
+## Available components
+
+### Jetpack Compose
+
+<JetpackComposeCards />
+
+### SwiftUI
+
+<SwiftUICards />
+
+### Drop-in replacements
+
+<DropInCards />
+
+### Universal
+
+<UniversalCards />

@@ -6,8 +6,8 @@ import ExpoModulesCore
 struct SliderView: ExpoSwiftUI.View {
   @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
-  @State var isEditing: Bool = false
-  
+  @State private var eventCount: Int = 0
+
   init(props: SliderProps) {
     self.props = props
   }
@@ -19,13 +19,19 @@ struct SliderView: ExpoSwiftUI.View {
         value = clamp(props.value ?? 0.0)
       }
       .onChange(of: props.value) { newValue in
-        guard !isEditing else { return }
+        // A prop JS produced before our newest change is a stale echo of a drag that has
+        // since moved on, so applying it would pull the thumb back from under the finger.
+        if let seenCount = props.mostRecentEventCount, seenCount < eventCount {
+          return
+        }
         value = clamp(newValue ?? 0.0)
       }
       .onChange(of: value) { newValue in
         if props.value != newValue {
+          eventCount += 1
           props.onValueChanged([
-            "value": newValue
+            "value": newValue,
+            "eventCount": eventCount
           ])
         }
       }
@@ -53,51 +59,81 @@ struct SliderView: ExpoSwiftUI.View {
     let label = props.children?.slot("label")
     let minimumValueLabel = props.children?.slot("minimum")
     let maximumValueLabel = props.children?.slot("maximum")
+    let hasAnyLabel = label != nil || minimumValueLabel != nil || maximumValueLabel != nil
+
+    let handleEditingChanged: (Bool) -> Void = { isEditing in
+      props.onEditingChanged(["isEditing": isEditing])
+    }
 
     if let min = props.min, let max = props.max, let step = props.step {
-      Slider(
-        value: clampedBinding,
-        in: min...max,
-        step: step,
-        label: { label },
-        minimumValueLabel: { minimumValueLabel },
-        maximumValueLabel: { maximumValueLabel }
-      ) { isEditing in
-        self.isEditing = isEditing
-        props.onEditingChanged(["isEditing": isEditing])
+      if hasAnyLabel {
+        Slider(
+          value: clampedBinding,
+          in: min...max,
+          step: step,
+          label: { label },
+          minimumValueLabel: { minimumValueLabel },
+          maximumValueLabel: { maximumValueLabel },
+          onEditingChanged: handleEditingChanged
+        )
+      } else {
+        Slider(
+          value: clampedBinding,
+          in: min...max,
+          step: step,
+          onEditingChanged: handleEditingChanged
+        )
       }
     } else if let min = props.min, let max = props.max {
-      Slider(
-        value: clampedBinding,
-        in: min...max,
-        label: { label },
-        minimumValueLabel: { minimumValueLabel },
-        maximumValueLabel: { maximumValueLabel }
-      ) { isEditing in
-        self.isEditing = isEditing
-        props.onEditingChanged(["isEditing": isEditing])
+      if hasAnyLabel {
+        Slider(
+          value: clampedBinding,
+          in: min...max,
+          label: { label },
+          minimumValueLabel: { minimumValueLabel },
+          maximumValueLabel: { maximumValueLabel },
+          onEditingChanged: handleEditingChanged
+        )
+      } else {
+        Slider(
+          value: clampedBinding,
+          in: min...max,
+          onEditingChanged: handleEditingChanged
+        )
       }
     } else if let step = props.step {
-      Slider(
-        value: clampedBinding,
-        in: 0...1,
-        step: step,
-        label: { label },
-        minimumValueLabel: { minimumValueLabel },
-        maximumValueLabel: { maximumValueLabel }
-      ) { isEditing in
-        self.isEditing = isEditing
-        props.onEditingChanged(["isEditing": isEditing])
+      if hasAnyLabel {
+        Slider(
+          value: clampedBinding,
+          in: 0...1,
+          step: step,
+          label: { label },
+          minimumValueLabel: { minimumValueLabel },
+          maximumValueLabel: { maximumValueLabel },
+          onEditingChanged: handleEditingChanged
+        )
+      } else {
+        Slider(
+          value: clampedBinding,
+          in: 0...1,
+          step: step,
+          onEditingChanged: handleEditingChanged
+        )
       }
     } else {
-      Slider(
-        value: clampedBinding,
-        label: { label },
-        minimumValueLabel: { minimumValueLabel },
-        maximumValueLabel: { maximumValueLabel }
-      ) { isEditing in
-        self.isEditing = isEditing
-        props.onEditingChanged(["isEditing": isEditing])
+      if hasAnyLabel {
+        Slider(
+          value: clampedBinding,
+          label: { label },
+          minimumValueLabel: { minimumValueLabel },
+          maximumValueLabel: { maximumValueLabel },
+          onEditingChanged: handleEditingChanged
+        )
+      } else {
+        Slider(
+          value: clampedBinding,
+          onEditingChanged: handleEditingChanged
+        )
       }
     }
   }
@@ -111,6 +147,7 @@ final class SliderProps: UIBaseViewProps {
   @Field var max: Float?
   @Field var lowerLimit: Float?
   @Field var upperLimit: Float?
+  @Field var mostRecentEventCount: Int?
   var onValueChanged = EventDispatcher()
   var onEditingChanged = EventDispatcher()
 }

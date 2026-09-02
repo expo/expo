@@ -1,6 +1,6 @@
+import { createExpoStart } from '../utils/expo';
 /* eslint-env jest */
 import { setupTestProjectWithOptionsAsync } from './utils';
-import { createExpoStart } from '../utils/expo';
 
 const expo = createExpoStart({
   env: {

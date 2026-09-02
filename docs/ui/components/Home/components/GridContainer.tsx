@@ -10,9 +10,9 @@ export function GridContainer({ children, className }: GridContainerProps) {
     <div
       className={mergeClasses(
         'my-4 inline-grid w-full grid-cols-2 gap-8',
-        'max-xl-gutters:grid-cols-1',
-        'max-lg-gutters:grid-cols-2',
-        'max-md-gutters:grid-cols-1',
+        'max-xl:grid-cols-1',
+        'max-lg:grid-cols-2',
+        'max-md:grid-cols-1',
         className
       )}>
       {children}

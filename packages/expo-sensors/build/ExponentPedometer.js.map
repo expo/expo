@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentPedometer.js","sourceRoot":"","sources":["../src/ExponentPedometer.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,mBAAmB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExponentPedometer');\n"]}

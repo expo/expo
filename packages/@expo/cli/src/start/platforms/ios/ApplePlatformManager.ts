@@ -1,9 +1,9 @@
-import { AppleAppIdResolver } from './AppleAppIdResolver';
-import { AppleDeviceManager } from './AppleDeviceManager';
-import type { Device } from './simctl';
 import type { AppIdResolver } from '../AppIdResolver';
 import type { BaseOpenInCustomProps, BaseResolveDeviceProps } from '../PlatformManager';
 import { PlatformManager } from '../PlatformManager';
+import { AppleAppIdResolver } from './AppleAppIdResolver';
+import { AppleDeviceManager } from './AppleDeviceManager';
+import type { Device } from './simctl';
 
 /** Manages launching apps on Apple simulators. */
 export class ApplePlatformManager extends PlatformManager<Device> {

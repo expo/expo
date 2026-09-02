@@ -13,7 +13,8 @@ export function makeHotPredicate(predicate: (data: Record<string, any>) => boole
 export async function openPageAndEagerlyLoadJS(
   expo: ReturnType<typeof createExpoStart>,
   page: Page,
-  url?: string
+  url?: string,
+  { socketTimeout = 1_000 }: { socketTimeout?: number } = {}
 ) {
   // Keep track of the `/message` socket, which is used to control the device programmatically
   const messageSocketPromise = page.waitForEvent('websocket', (ws) =>
@@ -31,8 +32,12 @@ export async function openPageAndEagerlyLoadJS(
 
   // Ensure the sockets are registered
   const [hotSocket] = await Promise.all([
-    raceOrFail(hotSocketPromise, 1_000, 'HMR on client took too long to connect.'),
-    raceOrFail(messageSocketPromise, 1_000, 'Message socket on client took too long to connect.'),
+    raceOrFail(hotSocketPromise, socketTimeout, 'HMR on client took too long to connect.'),
+    raceOrFail(
+      messageSocketPromise,
+      socketTimeout,
+      'Message socket on client took too long to connect.'
+    ),
   ]);
 
   return {

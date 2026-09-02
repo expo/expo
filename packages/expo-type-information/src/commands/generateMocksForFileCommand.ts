@@ -1,5 +1,6 @@
 import commander from 'commander';
 
+import { generateMocks } from '../mockgen';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -7,11 +8,11 @@ import {
   runCommandOnWatch,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
-import { generateMocks } from '../mockgen';
 
 export function generateMocksForFileCommand(cli: commander.Command) {
-  return addCommonOptions(cli.command('generate-mocks-for-file')).action(
-    async (options: TypeInformationCommandCommonAllArguments) => {
+  return addCommonOptions(cli.command('generate-mocks-for-file'))
+    .description('generate mocks for a given Expo module')
+    .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) {
         return;
@@ -25,6 +26,5 @@ export function generateMocksForFileCommand(cli: commander.Command) {
         generateMocks([typeInfo], 'typescript');
       };
       runCommandOnWatch(parsedArgs, command);
-    }
-  );
+    });
 }

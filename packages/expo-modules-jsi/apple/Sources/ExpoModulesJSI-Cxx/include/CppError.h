@@ -68,12 +68,18 @@ public:
   }
 
   /**
-   Executes a block of code and catches any C++ exceptions that are thrown.
+   Executes a C++ callable and catches any C++ exceptions that are thrown.
    Caught exceptions are stored in thread-local storage and can be retrieved
    using `getCurrent()`. The function returns `nullptr` when an exception occurs.
+
+   Takes a forwarding reference to a C++ callable (e.g. a lambda) rather than an
+   Objective-C block. Every caller passes a pure C++ body, so no Swift closure
+   crosses this boundary; the block only added a non-inlinable indirect call and
+   a dependency on the Objective-C runtime. This helper is C++-only and is not
+   imported into Swift.
    */
-  template <typename Result>
-  inline static Result tryCatch(jsi::IRuntime &runtime, Result(^block)(void)) {
+  template <typename Fn>
+  inline static auto tryCatch(jsi::IRuntime &runtime, Fn &&block) -> decltype(block()) {
     try {
       return block();
     } catch (jsi::JSError e) {

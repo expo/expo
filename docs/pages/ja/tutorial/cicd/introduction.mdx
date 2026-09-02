@@ -1,0 +1,184 @@
+---
+title: 'CI/CD チュートリアル：はじめに'
+sidebar_title: はじめに
+description: EAS Workflows チュートリアルの導入と、Expo および React Native アプリ向けの CI/CD パイプラインを構築するための中心的な概念を紹介します。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BuildsVsUpdates } from '~/ui/components/FlowDiagram/Diagrams/BuildsVsUpdates';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+Expo および React Native アプリのビルド・テスト・配信は、1 ステップで終わることはまずありません。コードを変更するたびに、Android と iOS 向けのビルド、ユニットテストとエンドツーエンド（E2E）テストの実行、そしてチームメイト・QA・アプリストアへの受け渡しという、同じような流れをたどります。これをコミットのたびに手作業でこなすのはすぐに面倒になりますし、まさに CI/CD パイプラインが引き受けるべき仕事です。
+
+このチュートリアルを終える頃には、Expo プロジェクトへのすべてのプッシュが自動的にビルド・テスト・配信されるようになります。それを可能にするサービスが [EAS Workflows](/eas/workflows/introduction/) です。これは Expo および React Native アプリ向けに Expo Application Services（EAS）が提供する継続的インテグレーション（CI）/継続的デリバリー（CD）サービスです。
+
+ワークフローは、Expo プロジェクトのルートにある **.eas/workflows/** ディレクトリ内の [YAML](https://ja.wikipedia.org/wiki/YAML) ファイルで定義します。次の例は、GitHub リポジトリの `main` ブランチへプッシュするたびに Android 開発ビルドを作成する、完結したワークフローです。
+
+```yaml .eas/workflows/build.yml
+name: Build Android
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build:
+    type: build
+    params:
+      platform: android
+      profile: development
+```
+
+このわずかな行数がワークフローのすべてで、残りは EAS が処理します。チュートリアルを通して、このパターンを土台にして組み立てていきます。
+
+## EAS Workflows を使う理由
+
+EAS Workflows は、Android・iOS・web のビルド、[OTA アップデート](/deploy/send-over-the-air-updates/)の公開、アプリストアへの提出、Maestro による E2E テストの実行を行えます。いずれも上の例のような YAML ファイルで定義します。ジョブはマネージドなクラウド環境で実行されるため、自分でビルドサーバーを構築・維持する必要はありません。
+
+ワークフローは、GitHub のイベント（プッシュ、プルリクエスト、タグ、ラベル）、スケジュール（cron）、または [EAS CLI](/eas/cli/) からの手動実行によってトリガーできます。
+
+## 扱うトピック
+
+このチュートリアルは 3 つのパートで構成されています。
+
+- **開発。** カスタムジョブを作成し、[フィンガープリント](/ja/tutorial/cicd/development-builds/)を使って[開発ビルド](/develop/development-builds/introduction/)を自動化し、関係者向けに[プルリクエスト（PR）プレビューアップデート](/ja/tutorial/cicd/preview-builds/)を配信します。
+- **テストとリリース。** ワークフロー内で Maestro による E2E テストを実行し、続いてフィンガープリントを使ってネイティブビルドと OTA アップデートを使い分ける本番ワークフローを作成します。
+- **発展。** 本番のトリガーをブランチからバージョンタグに切り替え、[EAS Hosting](/eas/hosting/introduction/) で web ビルドをデプロイします。
+
+## 先に押さえておきたい概念
+
+> **info** **ヒント：** EAS Build と EAS Update をすでにご存じなら、次のセクションまで読み飛ばしてかまいません。
+
+最初のワークフローを作成する前に、押さえておきたい概念がいくつかあります。
+
+<Collapsible summary="Expo アプリはどこに配信されるのか">
+
+Expo アプリの配信先は 3 種類あります。どれを選ぶか、そしてどの EAS サービスが配信を担うかは、コードの何が変わったかによって決まります。
+
+| 配信先                   | EAS サービス            | 使いどころ                                                            |
+| ------------------------ | ----------------------- | --------------------------------------------------------------------- |
+| アプリストア             | EAS Build と EAS Submit | 新規リリース、ネイティブコードの変更                                  |
+| インストール済みデバイス | EAS Update              | TypeScript/JavaScript のみの修正。数秒で無線経由（OTA）で配信されます |
+| web                      | EAS Hosting             | ネイティブのリリースと並行して配信する web アプリ                     |
+
+</Collapsible>
+
+<Collapsible summary="ビルドプロファイル">
+
+[EAS Build](/build/introduction/) は、Expo プロジェクトのアプリバイナリをビルドするためのサービスです。デフォルトで `development`、`preview`、`production` の 3 つのビルドプロファイルに対応しています。それぞれのプロファイルは開発の異なる段階に対応しており、このチュートリアルではこの 3 つすべてを使用します。
+
+</Collapsible>
+
+<Collapsible summary="ビルドとアップデートの違い">
+
+EAS Build と同じく、[EAS Update](/eas-update/introduction/) も Expo プロジェクト向けのサービスで、[`expo-updates`](/versions/latest/sdk/updates/) ライブラリを使って OTA アップデートを配信します。
+
+<BuildsVsUpdates />
+
+- EAS Build はネイティブコードをコンパイルして、完全なアプリバイナリを作成します。ビルドには時間がかかります。プロジェクトのネイティブコードが変わったときには新しいビルドが必要です。たとえば、新しいネイティブライブラリの追加、パーミッションの変更、Expo SDK のアップグレードなどです。
+- EAS Update は、互換性のあるネイティブビルドがすでにインストールされているデバイスへ、TypeScript/JavaScript の変更を無線経由で配信します。ネイティブコードを伴う変更の場合は、先にそのビルドを作成してインストールしてから、アップデートを公開します。そうすることで、各アップデートは対象のビルドとの互換性を保てます。アップデートの公開自体は数秒で完了します。たとえば、UI のバグ修正やボタンの文言変更をアップデートとして公開できます。
+
+変更の内容に応じて、どちらか一方のサービスを使います。EAS Workflows は両者を結び付け、いつビルドしていつアップデートを公開するかをパイプライン側で判断できるようにします。
+
+</Collapsible>
+
+## 前提条件
+
+> **info** **ヒント：** EAS Build と EAS Update を設定済みの Expo プロジェクトがすでにある場合は、次の章まで読み飛ばしてかまいません。
+
+このチュートリアルは実際に手を動かして進める形式です。読み進めるには、[Continuous Native Generation](/workflow/continuous-native-generation/) を使用する既存の Expo プロジェクトが必要です。次の要件に従って、手元のマシンと EAS の両方をセットアップしてください。
+
+<Prerequisites>
+
+<Requirement title="Expo アカウント">
+
+Expo アカウントに[サインアップ](https://expo.dev/signup)しておく必要があります。
+
+</Requirement>
+
+<Requirement title="EAS CLI のインストールとログイン">
+
+EAS CLI をインストールするには、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add -g eas-cli'],
+    bun: ['$ bun add -g eas-cli'],
+  }}
+/>
+
+続いて、次のログインコマンドを実行して、EAS CLI を Expo アカウントで認証します。
+
+<Terminal cmd={['$ eas login']} />
+
+</Requirement>
+
+<Requirement title="Expo プロジェクトの作成">
+
+新しい Expo プロジェクトを作成するには、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
+  }}
+/>
+
+`create-expo-app` で新しいプロジェクトを作成すると、ネイティブの **android** ディレクトリと **ios** ディレクトリをコミットしない構成になります。このパターンは Continuous Native Generation（CNG）と呼ばれ、これらのネイティブプロジェクトディレクトリは EAS Build が自動的に生成します。
+
+</Requirement>
+
+<Requirement title="プロジェクトでの EAS の初期化">
+
+プロジェクトで EAS を初期化するには、次のコマンドを実行します。
+
+<Terminal cmd={['$ eas build:configure']} />
+
+これにより、Expo プロジェクトのルートに **eas.json** ファイルが生成され、ローカルのプロジェクトに紐づいた EAS プロジェクトが作成されます。
+
+</Requirement>
+
+<Requirement title="EAS ダッシュボードと連携した GitHub リポジトリ">
+
+プロジェクト用の GitHub リポジトリが必要です。新しいリポジトリを作成しても、既存のものを使ってもかまいません。用意できたら、その GitHub リポジトリを EAS に接続します。
+
+1. EAS ダッシュボードでプロジェクトの [GitHub 設定](https://expo.dev/accounts/[account]/projects/[projectName]/github)を開きます。
+2. ダッシュボードの案内に従って Expo GitHub アプリをインストールします。
+3. Expo プロジェクトに対応する GitHub リポジトリを選択して接続します。
+
+</Requirement>
+
+<Requirement title="EAS Submit 用のストア提出認証情報（任意）">
+
+第 5 章のあとの発展的な内容として、アプリストアへの提出を自動化する場合にのみ必要です。EAS Submit の認証情報を設定する方法については、[Google Play Store](/submit/android/) と [Apple App Store](/submit/ios/) のガイドを参照してください。
+
+</Requirement>
+
+</Prerequisites>
+
+## GitHub Actions から移ってきた方へ
+
+EAS Workflows のファイルは、GitHub Actions のワークフローが **.github/workflows/** に置かれるのと同じように、Expo プロジェクトのルートの **.eas/workflows/** ディレクトリに置きます。トリガーの構文（`on.push`、`on.pull_request` など）もよく似ています。
+
+大きな違いは、事前パッケージ済みジョブが用意されている点です。`type: build` を指定するだけで環境の準備とビルド成果物の扱いを EAS に任せられ、`runs-on` やセットアップ用のステップを書く必要はありません。これらは章を追って解説していきます。
+
+> **注：** EAS Workflows は GitHub Actions と併用でき、GitHub Actions のジョブから `eas workflow:run` でワークフローをトリガーすることもできます。詳細については [How to integrate EAS Workflows with GitHub Actions](https://expo.dev/blog/how-to-integrate-eas-workflows-with-github-actions) を参照してください。
+
+## 次のステップ
+
+プロジェクトの準備ができたので、第 1 章に進んで最初のワークフローを書いてみましょう。
+
+<BoxLink
+  title="はじめる"
+  description="EAS Workflows で最初のワークフローを作成して実行します。"
+  Icon={BookOpen02Icon}
+  href="/ja/tutorial/cicd/first-workflow/"
+/>

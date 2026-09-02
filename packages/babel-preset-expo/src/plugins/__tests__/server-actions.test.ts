@@ -57,7 +57,7 @@ function transformTest(sourceCode: string, customOptions: { filename?: string } 
   const meta = results.metadata as unknown as { hasCjsExports?: boolean };
 
   // Parse again to ensure the output is valid code
-  babel.parse(results.code, options);
+  babel.parse(results.code!, options);
 
   return {
     code: results.code,
@@ -930,7 +930,7 @@ it('supports function server actions binding in order with extraneous imports at
 
       // The extraneous import shifts the import to the wrong place
       import "foo"
-    `).code;
+    `).code!;
   expect(code).toMatchInlineSnapshot(`
     "/*rsc/actions: {"id":"./unknown","names":["_$$INLINE_ACTION"]}*/
     import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
@@ -970,7 +970,7 @@ it('supports arrow function server actions binding in order with extraneous impo
     
       // The extraneous import shifts the import to the wrong place
       import "foo"
-    `).code;
+    `).code!;
   expect(code).toMatchInlineSnapshot(`
     "/*rsc/actions: {"id":"./unknown","names":["_$$INLINE_ACTION"]}*/
     import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
@@ -1010,7 +1010,7 @@ it('supports function expression server actions binding in order with extraneous
     
       // The extraneous import shifts the import to the wrong place
       import "foo"
-    `).code;
+    `).code!;
   expect(code).toMatchInlineSnapshot(`
     "/*rsc/actions: {"id":"./unknown","names":["_$$INLINE_ACTION"]}*/
     import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";

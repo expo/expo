@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * Represents a Decimal.
  * <p>
- * A Decimal - despite it's name - is essentially the same thing as an Integer,
+ * A Decimal - despite its name - is essentially the same thing as an Integer,
  * but has an implied divisor of 1000 (in other words, a scale of 3). Thus, a
  * value represented as {@code 0.5} in a field value will be internally stored
  * as {@code long} with value {@code 500}. The only difference to

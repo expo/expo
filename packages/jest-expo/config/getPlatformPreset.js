@@ -3,6 +3,7 @@
 const { getBareExtensions } = require('./extensions');
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
+const { resolveBabelOptions } = require('../src/resolveBabelOptions');
 
 function getUpstreamBabelJest(transform) {
   const upstreamBabelJest = Object.keys(transform).find((key) =>
@@ -40,6 +41,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   });
 
   const upstreamBabelJest = getUpstreamBabelJest(expoPreset.transform) ?? '\\.[jt]sx?$';
+  const babelJestOptions = resolveBabelOptions(process.cwd());
 
   if (isReactServer && displayOptions && displayOptions.name) {
     displayOptions.name = `rsc/${extensions[0]}`;
@@ -51,6 +53,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       [upstreamBabelJest]: [
         'babel-jest',
         {
+          ...babelJestOptions,
           caller: {
             name: 'metro',
             bundler: 'metro',
@@ -86,6 +89,24 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     },
   });
 
+  preset.testEnvironmentOptions ??= {};
+  if (!preset.testEnvironmentOptions.customExportConditions) {
+    preset.testEnvironmentOptions.customExportConditions = isServer
+      ? ['node', 'require', 'expo-source']
+      : platform === 'web'
+        ? ['browser', 'expo-source']
+        : ['react-native', 'expo-source'];
+  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('expo-source')) {
+    preset.testEnvironmentOptions.customExportConditions.push('expo-source');
+  }
+  preset.moduleNameMapper = {
+    // Source exports can contain TypeScript files that use explicit `.js`
+    // extensions for runtime ESM compatibility.
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^react-native/asset-registry$': 'react-native/src/asset-registry',
+    ...preset.moduleNameMapper,
+  };
+
   if (isServer) {
     preset.testEnvironment = 'node';
   }
@@ -101,12 +122,12 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     preset.setupFilesAfterEnv ??= [];
     preset.setupFilesAfterEnv.push(require.resolve('../src/rsc-expect.ts'));
 
-    preset.testEnvironmentOptions ??= {};
     // Matches withMetroMultiPlatform, e.g. resolution for RSC.
     preset.testEnvironmentOptions.customExportConditions = [
       'node',
       'require',
       'react-server',
+      'expo-source',
       'workerd',
     ];
   }
@@ -125,6 +146,22 @@ function getBaseWebPreset() {
       // Add react-native-web alias
       // This makes the tests take ~2x longer
       '^react-native$': 'react-native-web',
+    },
+  };
+}
+
+// `getPlatformPreset` builds its own `moduleNameMapper` from scratch, so spreading it over the
+// base preset drops the mappers that the upstream React Native preset defines. Since React Native
+// 0.87 those mappers are required: `jest/setup.js` mocks `react-native/setup-env`, which is only
+// reachable through the `^react-native/setup-env$` alias. Merge them back for the native presets,
+// keeping the platform mappers last so platform-specific entries still win.
+function withNativeModuleNameMapper(platformPreset) {
+  return {
+    ...expoPreset,
+    ...platformPreset,
+    moduleNameMapper: {
+      ...expoPreset.moduleNameMapper,
+      ...platformPreset.moduleNameMapper,
     },
   };
 }
@@ -149,24 +186,22 @@ module.exports = {
     };
   },
   getIOSPreset({ isReactServer } = {}) {
-    return {
-      ...expoPreset,
-      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
+    return withNativeModuleNameMapper(
+      getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
         isReactServer,
-      }),
-    };
+      })
+    );
   },
   getAndroidPreset({ isReactServer } = {}) {
-    return {
-      ...expoPreset,
-      ...getPlatformPreset(
+    return withNativeModuleNameMapper(
+      getPlatformPreset(
         { name: 'Android', color: 'blueBright' },
         ['android', 'native'],
         'android',
         {
           isReactServer,
         }
-      ),
-    };
+      )
+    );
   },
 };

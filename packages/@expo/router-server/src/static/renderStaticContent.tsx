@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-
 import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
@@ -14,14 +13,14 @@ import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/sta
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
-import { getRootComponent } from './getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
-  createInjectedCssAsString,
-  createInjectedScriptsAsString,
   createLoaderDataScriptAsString,
+  injectAssetsIntoHtml,
   serializeHelmetToHtml,
+  type StaticContentAssets,
 } from '../utils/html';
+import { getRootComponent } from './getRootComponent';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 
@@ -42,11 +41,8 @@ export type GetStaticContentOptions = {
     key: string;
   };
   request?: Request;
-  /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
-  assets?: {
-    css: string[];
-    js: string[];
-  };
+  hydrate?: boolean;
+  assets?: StaticContentAssets;
 };
 
 /**
@@ -72,10 +68,6 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
     ),
   });
 
-  // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-  // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-  Font.resetServerContext();
-
   // This MUST be run before `ReactDOMServer.renderToString` to prevent
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
@@ -95,49 +87,37 @@ export async function getStaticContent(
   location: URL,
   options?: GetStaticContentOptions
 ): Promise<string> {
-  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-    location,
-    options
-  );
+  return Font.withServerContext(() => {
+    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+      location,
+      options
+    );
 
-  const html = ReactDOMServer.renderToString(
-    <Head.Provider context={headContext}>
-      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-    </Head.Provider>
-  );
+    const html = ReactDOMServer.renderToString(
+      <Head.Provider context={headContext}>
+        <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+      </Head.Provider>
+    );
 
-  // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+    // Eval the CSS after the HTML is rendered so that the CSS is in the same order
+    const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
 
-  let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
+    let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
 
-  output = output.replace('</head>', `${css}</head>`);
+    output = output.replace('</head>', `${css}</head>`);
 
-  const fonts = Font.getServerResources();
-  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-  // Inject static fonts loaded with expo-font
-  output = output.replace('</head>', `${fonts.join('')}</head>`);
-  if (loadedData) {
-    output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
-  }
-
-  // Inject hydration assets (JS/CSS bundles). Used in SSR mode
-  if (options?.assets) {
-    if (options.assets.css.length > 0) {
-      const injectedCSS = createInjectedCssAsString(options.assets.css);
-      output = output.replace('</head>', `${injectedCSS}\n</head>`);
+    const fonts = Font.getServerResources();
+    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+    // Inject static fonts loaded with expo-font
+    output = output.replace('</head>', `${fonts.join('')}</head>`);
+    if (loadedData) {
+      output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
     }
 
-    if (options.assets.js.length > 0) {
-      // In non-streaming mode, use deferred scripts in the body
-      output = output.replace(
-        '</body>',
-        `${createInjectedScriptsAsString(options.assets.js)}\n</body>`
-      );
-    }
-  }
+    output = injectAssetsIntoHtml(output, { assets: options?.assets, hydrate: options?.hydrate });
 
-  return '<!DOCTYPE html>' + output;
+    return '<!DOCTYPE html>' + output;
+  });
 }
 
 function mixHeadComponentsWithStaticResults(helmet: any, html: string) {

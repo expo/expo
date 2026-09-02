@@ -2,7 +2,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { getGeneratedWebStubSentinel, updateWebStub } from '../templateUtils';
+import {
+  getGeneratedWebStubSentinel,
+  getTemplateDistTag,
+  normalizeNpmPackResult,
+  updateWebStub,
+} from '../templateUtils';
 import type { SubstitutionData } from '../types';
 
 const mockData: SubstitutionData = {
@@ -14,6 +19,10 @@ const mockData: SubstitutionData = {
     package: 'expo.modules.mymodule',
     moduleName: 'MyModuleModule',
     viewName: 'MyModuleView',
+    swiftUIViewName: 'MyModuleSwiftUIView',
+    swiftUIModifierName: 'MyModuleSwiftUIModifier',
+    composeViewName: 'MyModuleComposeView',
+    composeModifierName: 'MyModuleComposeModifier',
     sharedObjectName: 'MyModuleModuleSharedObject',
     platforms: ['apple', 'web'],
     features: [],
@@ -32,6 +41,45 @@ async function writeMinimalWebTemplate(templateDir: string) {
     'export default class <%- project.moduleName %> {}\n'
   );
 }
+
+describe(normalizeNpmPackResult, () => {
+  const packageInfo = { name: 'create-expo-module-template', filename: 'template.tgz' };
+
+  it('supports the npm 11 and earlier array format', () => {
+    expect(normalizeNpmPackResult([packageInfo])).toEqual([packageInfo]);
+  });
+
+  it('supports the npm 12 package-keyed object format', () => {
+    expect(normalizeNpmPackResult({ 'create-expo-module-template': packageInfo })).toEqual([
+      packageInfo,
+    ]);
+  });
+
+  it('rejects non-container values', () => {
+    expect(normalizeNpmPackResult(null)).toBeNull();
+    expect(normalizeNpmPackResult('template.tgz')).toBeNull();
+  });
+});
+
+describe('getTemplateDistTag', () => {
+  it('maps an SDK-aligned version to its `sdk-<major>` tag', () => {
+    expect(getTemplateDistTag('56.0.3')).toBe('sdk-56');
+    expect(getTemplateDistTag('57.0.0')).toBe('sdk-57');
+    expect(getTemplateDistTag('60.1.2')).toBe('sdk-60');
+  });
+
+  it('falls back to `latest` for versions from the old, non-SDK-aligned scheme', () => {
+    expect(getTemplateDistTag('2.1.7')).toBe('latest');
+    expect(getTemplateDistTag('1.0.15')).toBe('latest');
+    expect(getTemplateDistTag('0.5.0')).toBe('latest');
+  });
+
+  it('falls back to `latest` for missing or unparsable versions', () => {
+    expect(getTemplateDistTag(undefined)).toBe('latest');
+    expect(getTemplateDistTag('')).toBe('latest');
+    expect(getTemplateDistTag('not-a-version')).toBe('latest');
+  });
+});
 
 describe('updateWebStub', () => {
   let tmpDir: string;

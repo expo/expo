@@ -43,18 +43,18 @@ internal class JavaScriptArrayBufferTest {
   }
 
   @Test
-  fun should_be_copyable_to_native_buffer() = withJSIInterop {
+  fun should_be_copyable_to_array_buffer() = withJSIInterop {
     val jsBuffer = evaluateScript("new Uint8Array([1,2,3,4]).buffer").getObject().getArrayBuffer()
 
-    val nativeBuffer = jsBuffer.copy()
+    val arrayBuffer = jsBuffer.copy()
 
-    Truth.assertThat(nativeBuffer.size()).isEqualTo(jsBuffer.size())
+    Truth.assertThat(arrayBuffer.size()).isEqualTo(jsBuffer.size())
 
-    nativeBuffer.toDirectBuffer().apply {
+    arrayBuffer.toDirectBuffer().apply {
       rewind()
       put(0x42.toByte())
     }
     Truth.assertThat(jsBuffer.readByte(0)).isEqualTo(1.toByte())
-    Truth.assertThat(nativeBuffer.readByte(0)).isEqualTo(0x42.toByte())
+    Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x42.toByte())
   }
 }

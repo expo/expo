@@ -28,7 +28,8 @@ extension UIColor: Convertible {
     // Handle `PlatformColor` and `DynamicColorIOS`
     if let opaqueValue = value as? [String: Any] {
       if let semanticName = opaqueValue["semantic"] as? String,
-        let color = resolveNamedColor(name: semanticName) {
+        let color = resolveNamedColor(name: semanticName)
+      {
         return color as! Self
       }
       if let semanticArray = opaqueValue["semantic"] as? [String] {
@@ -40,7 +41,8 @@ extension UIColor: Convertible {
       }
       if let appearances = opaqueValue["dynamic"] as? [String: Any],
         let lightColor = try appearances["light"].map({ try UIColor.convert(from: $0) }),
-        let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0) }) {
+        let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0) })
+      {
         let highContrastLightColor = try appearances["highContrastLight"].map({ try UIColor.convert(from: $0) })
         let highContrastDarkColor = try appearances["highContrastDark"].map({ try UIColor.convert(from: $0) })
 
@@ -166,9 +168,7 @@ private func uiColorWithComponents(_ components: [Double]) throws -> UIColor {
 
 // MARK: - Color String Parsing
 
-/**
- Parses a color string (hex, rgb, hsl, hwb) into a UIColor.
- */
+/// Parses a color string (hex, rgb, hsl, hwb) into a UIColor.
 private func colorFromString(_ value: String) throws -> UIColor {
   let input = value.trimmingCharacters(in: .whitespacesAndNewlines)
   let lowercased = input.lowercased()
@@ -233,80 +233,183 @@ private func colorFromRgba(_ rgba: UInt64) throws -> UIColor {
 
 // MARK: - CSS Color Function Regex Patterns
 
-nonisolated(unsafe) private let cssNumber = /[-+]?\d*\.?\d+/
-nonisolated(unsafe) private let cssNumberOrPercent = /[-+]?\d*\.?\d+%?/
+// These are built from RegexBuilder primitives only. Composing regex-literal fragments
+// (e.g. /hsla?\(\s*/) inside a builder miscompiles on some OS runtime versions
+// (observed on the iOS 27.0 beta simulator) and the patterns silently stop matching.
+
+/// A CSS number like `-12`, `+1.5`, `.5` or `100`.
+nonisolated(unsafe) private let cssNumber = Regex {
+  Optionally {
+    CharacterClass.anyOf("-+")
+  }
+  ZeroOrMore(.digit)
+  Optionally {
+    "."
+  }
+  OneOrMore(.digit)
+}
+
+nonisolated(unsafe) private let cssNumberOrPercent = Regex {
+  cssNumber
+  Optionally {
+    "%"
+  }
+}
+
+nonisolated(unsafe) private let commaSeparator = Regex {
+  ZeroOrMore(.whitespace)
+  ","
+  ZeroOrMore(.whitespace)
+}
 
 nonisolated(unsafe) private let rgbCommaRegex = Regex {
-  /rgba?\(\s*/
-  Capture { cssNumberOrPercent }
-  /\s*,\s*/
-  Capture { cssNumberOrPercent }
-  /\s*,\s*/
-  Capture { cssNumberOrPercent }
+  "rgb"
   Optionally {
-    /\s*,\s*/
-    Capture { cssNumberOrPercent }
+    "a"
   }
-  /\s*\)/
+  "("
+  ZeroOrMore(.whitespace)
+  Capture {
+    cssNumberOrPercent
+  }
+  commaSeparator
+  Capture {
+    cssNumberOrPercent
+  }
+  commaSeparator
+  Capture {
+    cssNumberOrPercent
+  }
+  Optionally {
+    commaSeparator
+    Capture {
+      cssNumberOrPercent
+    }
+  }
+  ZeroOrMore(.whitespace)
+  ")"
 }.ignoresCase()
 
 nonisolated(unsafe) private let rgbSpaceRegex = Regex {
-  /rgba?\(\s*/
-  Capture { cssNumberOrPercent }
-  /\s+/
-  Capture { cssNumberOrPercent }
-  /\s+/
-  Capture { cssNumberOrPercent }
+  "rgb"
   Optionally {
-    /\s*\/\s*/
-    Capture { cssNumberOrPercent }
+    "a"
   }
-  /\s*\)/
+  "("
+  ZeroOrMore(.whitespace)
+  Capture {
+    cssNumberOrPercent
+  }
+  OneOrMore(.whitespace)
+  Capture {
+    cssNumberOrPercent
+  }
+  OneOrMore(.whitespace)
+  Capture {
+    cssNumberOrPercent
+  }
+  Optionally {
+    ZeroOrMore(.whitespace)
+    "/"
+    ZeroOrMore(.whitespace)
+    Capture {
+      cssNumberOrPercent
+    }
+  }
+  ZeroOrMore(.whitespace)
+  ")"
 }.ignoresCase()
 
 nonisolated(unsafe) private let hslCommaRegex = Regex {
-  /hsla?\(\s*/
-  Capture { cssNumber }
-  /\s*,\s*/
-  Capture { cssNumber }
-  /%\s*,\s*/
-  Capture { cssNumber }
-  /%\s*/
+  "hsl"
   Optionally {
-    /,\s*/
-    Capture { cssNumberOrPercent }
+    "a"
   }
-  /\s*\)/
+  "("
+  ZeroOrMore(.whitespace)
+  Capture {
+    cssNumber
+  }
+  commaSeparator
+  Capture {
+    cssNumber
+  }
+  "%"
+  commaSeparator
+  Capture {
+    cssNumber
+  }
+  "%"
+  ZeroOrMore(.whitespace)
+  Optionally {
+    ","
+    ZeroOrMore(.whitespace)
+    Capture {
+      cssNumberOrPercent
+    }
+  }
+  ZeroOrMore(.whitespace)
+  ")"
 }.ignoresCase()
 
 nonisolated(unsafe) private let hslSpaceRegex = Regex {
-  /hsla?\(\s*/
-  Capture { cssNumber }
-  /\s+/
-  Capture { cssNumber }
-  /%\s+/
-  Capture { cssNumber }
-  /%\s*/
+  "hsl"
   Optionally {
-    /\/\s*/
-    Capture { cssNumberOrPercent }
+    "a"
   }
-  /\s*\)/
+  "("
+  ZeroOrMore(.whitespace)
+  Capture {
+    cssNumber
+  }
+  OneOrMore(.whitespace)
+  Capture {
+    cssNumber
+  }
+  "%"
+  OneOrMore(.whitespace)
+  Capture {
+    cssNumber
+  }
+  "%"
+  ZeroOrMore(.whitespace)
+  Optionally {
+    "/"
+    ZeroOrMore(.whitespace)
+    Capture {
+      cssNumberOrPercent
+    }
+  }
+  ZeroOrMore(.whitespace)
+  ")"
 }.ignoresCase()
 
 nonisolated(unsafe) private let hwbRegex = Regex {
-  /hwb\(\s*/
-  Capture { cssNumber }
-  /\s+/
-  Capture { cssNumber }
-  /%\s+/
-  Capture { cssNumber }
-  /%\s*/
-  Optionally {
-    /\/\s*/
-    Capture { cssNumberOrPercent }
+  "hwb("
+  ZeroOrMore(.whitespace)
+  Capture {
+    cssNumber
   }
-  /\s*\)/
+  OneOrMore(.whitespace)
+  Capture {
+    cssNumber
+  }
+  "%"
+  OneOrMore(.whitespace)
+  Capture {
+    cssNumber
+  }
+  "%"
+  ZeroOrMore(.whitespace)
+  Optionally {
+    "/"
+    ZeroOrMore(.whitespace)
+    Capture {
+      cssNumberOrPercent
+    }
+  }
+  ZeroOrMore(.whitespace)
+  ")"
 }.ignoresCase()
 
 // MARK: - CSS Color Function Parsers
@@ -387,8 +490,7 @@ private func hwbToUIColor(h: CGFloat, w: CGFloat, b: CGFloat, a: CGFloat) -> UIC
 }
 
 private func colorFromRGBString(_ rgbString: String) throws -> UIColor {
-  if let match = rgbString.wholeMatch(of: rgbCommaRegex) ?? rgbString.wholeMatch(of: rgbSpaceRegex)
-  {
+  if let match = rgbString.wholeMatch(of: rgbCommaRegex) ?? rgbString.wholeMatch(of: rgbSpaceRegex) {
     let r = parseRgbComponent(match.1)
     let g = parseRgbComponent(match.2)
     let b = parseRgbComponent(match.3)
@@ -399,8 +501,7 @@ private func colorFromRGBString(_ rgbString: String) throws -> UIColor {
 }
 
 private func colorFromHSLString(_ hslString: String) throws -> UIColor {
-  if let match = hslString.wholeMatch(of: hslCommaRegex) ?? hslString.wholeMatch(of: hslSpaceRegex)
-  {
+  if let match = hslString.wholeMatch(of: hslCommaRegex) ?? hslString.wholeMatch(of: hslSpaceRegex) {
     let h = CGFloat(Double(match.1) ?? 0)
     let s = CGFloat(min(max((Double(match.2) ?? 0) / 100.0, 0), 1))
     let l = CGFloat(min(max((Double(match.3) ?? 0) / 100.0, 0), 1))
@@ -421,10 +522,8 @@ private func colorFromHWBString(_ hwbString: String) throws -> UIColor {
   throw InvalidHWBColorException(hwbString)
 }
 
-/**
- Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
- and additionally the transparent color.
- */
+/// Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
+/// and additionally the transparent color.
 private let namedColors: [String: [Double]] = [
   "aliceblue": [240, 248, 255, 255],
   "antiquewhite": [250, 235, 215, 255],

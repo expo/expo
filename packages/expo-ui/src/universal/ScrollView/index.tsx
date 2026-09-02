@@ -1,7 +1,7 @@
 import { ScrollView as RNScrollView, StyleSheet } from 'react-native';
 
-import type { ScrollViewProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+import type { ScrollViewProps } from './types';
 
 const styles = StyleSheet.create({
   container: {

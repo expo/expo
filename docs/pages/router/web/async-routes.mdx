@@ -22,7 +22,7 @@ All Routes are wrapped inside a suspense boundary and are loaded asynchronously.
 
 {/* The [Suspense fallback](https://react.dev/reference/react/Suspense#displaying-a-fallback-while-content-is-loading) or loading state **cannot be customized** at this time. We plan to add support in the future via a **route+loading.js** file. */}
 
-Loading errors are handled in the parent route, via the [`ErrorBoundary`](/router/error-handling/#errorboundary) export.
+Loading errors are handled in the parent route, via the [`ErrorBoundary`](/router/error-handling/#error-handling) export.
 
 Async routes cannot be statically analyzed during development, so all files will be treated as routes even if they don't export a default component. After the component is bundled and loaded, any invalid route will use a fallback warning screen.
 
@@ -78,7 +78,12 @@ You can set platform-specific settings (`default`, `android`, `ios` or `web`) fo
 Then, when you are about to start your project, you can use the `--clear` flag to clear the Metro cache. This will ensure that the routes are loaded asynchronously:
 
 <Terminal
-  cmd={['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear']}
+  cmd={{
+    npm: ['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear'],
+    yarn: ['$ yarn expo start --clear', '', '# Or when exporting', '$ yarn expo export --clear'],
+    pnpm: ['$ pnpm expo start --clear', '', '# Or when exporting', '$ pnpm expo export --clear'],
+    bun: ['$ bun expo start --clear', '', '# Or when exporting', '$ bun expo export --clear'],
+  }}
 />
 
 ## Static rendering

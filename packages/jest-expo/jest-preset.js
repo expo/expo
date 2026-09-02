@@ -24,10 +24,11 @@ try {
 jestPreset = cloneDeep(jestPreset);
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
-const { resolveBabelConfig } = require('./src/resolveBabelConfig');
+const { resolveBabelOptions } = require('./src/resolveBabelOptions');
 
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
+  '^react-native/asset-registry$': 'react-native/src/asset-registry',
   ...(jestPreset.moduleNameMapper || {}),
   '^react-native-vector-icons$': '@expo/vector-icons',
   '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
@@ -41,13 +42,7 @@ if (upstreamBabelJest) {
 }
 
 // transform
-const babelOpts = {
-  caller: { name: 'metro', bundler: 'metro', platform: 'ios' },
-};
-const babelConfigFile = resolveBabelConfig(process.cwd());
-if (babelConfigFile) {
-  babelOpts.configFile = babelConfigFile;
-}
+const babelOpts = resolveBabelOptions(process.cwd());
 jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
 
 /* Update this when metro changes their default extensions */
@@ -117,7 +112,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
 
 // Also please keep `unit-testing.mdx` file up to date
 jestPreset.transformIgnorePatterns = [
-  '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base))',
+  '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|standard-navigation))',
   // Disable transforming the reanimated plugin in multi-platform tests, causing "Reentrant plugin detected trying to load react-native-reanimated/plugin.."
   '/node_modules/react-native-reanimated/plugin/',
   // Disable transforming the react-native babel preset, since it's part of the transformer itself
@@ -129,6 +124,11 @@ if (!Array.isArray(jestPreset.setupFiles)) {
   jestPreset.setupFiles = [];
 }
 jestPreset.setupFiles.push(require.resolve('jest-expo/src/preset/setup.js'));
+
+// Don't fail a package that ships the preset but has no test files yet.
+jestPreset.passWithNoTests = true;
+
+Object.assign(jestPreset, require('jest-expo/config/maxWorkers'));
 
 // Add typescript custom mapping
 module.exports = withTypescriptMapping(jestPreset);

@@ -15,14 +15,5 @@ internal data class OpenDatabaseOptions(
   val useNewConnection: Boolean = false,
 
   @Field
-  val finalizeUnusedStatementsBeforeClosing: Boolean = true,
-
-  @Field
-  val libSQLUrl: String? = null,
-
-  @Field
-  val libSQLAuthToken: String? = null,
-
-  @Field
-  val libSQLRemoteOnly: Boolean = false
+  val finalizeUnusedStatementsBeforeClosing: Boolean = true
 ) : Record

@@ -9,7 +9,9 @@ platforms: ['ios', 'tvos', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
+> **info** For cross-platform usage, see the universal [`Host`](../universal/host) — it renders the appropriate native component per platform.
+
+A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which internally uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
 
 Since the `Host` component is a React Native [`View`](https://reactnative.dev/docs/view), you can pass the [`style`](https://reactnative.dev/docs/style) prop to it or `matchContents` prop to make the `Host` component match the contents' size.
 
@@ -34,9 +36,9 @@ export default function MatchContentsExample() {
       <Button
         onPress={() => {
           console.log('Pressed');
-        }}>
-        Click
-      </Button>
+        }}
+        label="Click"
+      />
     </Host>
   );
 }
@@ -49,7 +51,9 @@ import { Host, HStack, ScrollView, Text } from '@expo/ui/swift-ui';
 
 export default function ScrollViewMatchContents() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <ScrollView axes="horizontal">
         <HStack spacing={12}>
           {Array.from({ length: 20 }).map((_, i) => (
@@ -77,9 +81,9 @@ export default function ExplicitSizingExample() {
         <Button
           onPress={() => {
             console.log('Pressed');
-          }}>
-          Click
-        </Button>
+          }}
+          label="Click"
+        />
       </VStack>
     </Host>
   );
@@ -92,7 +96,10 @@ Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard a
 
 ```tsx IgnoreKeyboardExample.tsx
 import { Host, TextField } from '@expo/ui/swift-ui';
-import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+import {
+  KeyboardProvider,
+  KeyboardStickyView,
+} from 'react-native-keyboard-controller';
 import { View } from 'react-native';
 
 export default function IgnoreKeyboardExample() {
@@ -108,8 +115,11 @@ export default function IgnoreKeyboardExample() {
             padding: 16,
             backgroundColor: 'green',
           }}>
-          <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
-            <TextField placeholder="Enter text" multiline />
+          <Host
+            matchContents
+            ignoreSafeArea="keyboard"
+            style={{ backgroundColor: 'red' }}>
+            <TextField placeholder="Enter text" axis="vertical" />
           </Host>
         </KeyboardStickyView>
       </View>
@@ -118,9 +128,43 @@ export default function IgnoreKeyboardExample() {
 }
 ```
 
+### Ignoring the container safe area
+
+Use `ignoreSafeArea="container"` to remove only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
+
+```tsx IgnoreContainerSafeAreaExample.tsx
+import { Button, Host, HStack, Spacer } from '@expo/ui/swift-ui';
+import { labelStyle } from '@expo/ui/swift-ui/modifiers';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+export default function IgnoreContainerSafeAreaExample() {
+  const insets = useSafeAreaInsets();
+  return (
+    <Host
+      style={{ width: '100%', paddingTop: insets.top }}
+      matchContents={{ vertical: true }}
+      ignoreSafeArea="container">
+      <HStack>
+        <Button
+          systemImage="chevron.backward"
+          label="Back"
+          modifiers={[labelStyle('iconOnly')]}
+        />
+        <Spacer />
+        <Button
+          systemImage="square.and.arrow.up"
+          label="Share"
+          modifiers={[labelStyle('iconOnly')]}
+        />
+      </HStack>
+    </Host>
+  );
+}
+```
+
 ### Ignoring all safe areas
 
-Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar, useful for full-screen overlays or backgrounds.
+Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar and the keyboard, useful for full-screen overlays or backgrounds.
 
 ```tsx IgnoreAllSafeAreasExample.tsx
 import { Host, Text, VStack } from '@expo/ui/swift-ui';
@@ -129,9 +173,18 @@ export default function IgnoreAllSafeAreasExample() {
   return (
     <Host
       ignoreSafeArea="all"
-      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}>
       <VStack>
-        <Text>This content extends behind the status bar and home indicator.</Text>
+        <Text>
+          This content extends behind the status bar and home
+          indicator.
+        </Text>
       </VStack>
     </Host>
   );

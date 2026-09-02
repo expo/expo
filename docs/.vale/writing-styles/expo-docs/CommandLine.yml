@@ -1,6 +1,6 @@
 extends: substitution
 message: "Use '%s' instead of '%s' when the phrase modifies a noun."
-level: warning
+level: error
 nonword: true
 scope: ~text.frontmatter
 action:

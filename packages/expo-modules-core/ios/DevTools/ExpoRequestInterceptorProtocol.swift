@@ -101,8 +101,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     } else {
       if let response = task.response as? HTTPURLResponse,
         let requestId {
-        let contentType = response.value(forHTTPHeaderField: "Content-Type")
-        let isText = (contentType?.starts(with: "text/") ?? false) || contentType == "application/json"
+        let isText = CdpNetwork.isTextContentType(response.value(forHTTPHeaderField: "Content-Type"))
         Self.delegate.didReceiveResponse(
           requestId: requestId, task: task, responseBody: responseBody as Data, isText: isText, responseBodyExceedsLimit: responseBodyExceedsLimit)
       }

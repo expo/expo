@@ -1,11 +1,11 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
   "compilerOptions": {
+    "composite": true,
     "allowJs": true,
     "rootDir": "./src",
-    "outDir": "./build",
+    "noEmit": true,
     "sourceMap": true
   },
-  "include": ["./src", "e2e/__tests__/bare-test.ts"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["./src"]
 }

@@ -28,6 +28,15 @@ object CameraUtils {
     }
   }
 
+  fun isMLKitDocumentScannerAvailable(): Boolean {
+    return try {
+      Class.forName("com.google.mlkit.vision.documentscanner.GmsDocumentScanning")
+      true
+    } catch (_: ClassNotFoundException) {
+      false
+    }
+  }
+
   fun isMLKitAvailable(context: Context?): Boolean {
     if (!hasGooglePlayServices(context)) {
       return false

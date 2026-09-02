@@ -3,10 +3,7 @@ import chalk from 'chalk';
 
 import { selectAsync } from '../../../../utils/prompts';
 import { pageIsSupported } from '../../metro/debugging/pageIsSupported';
-
-const debug = require('debug')(
-  'expo:start:server:middleware:inspector:jsInspector'
-) as typeof console.log;
+import { event } from '../../metro/inspectorEvents';
 
 export interface MetroInspectorProxyApp {
   /** Unique device ID combined with the page ID */
@@ -46,7 +43,7 @@ export interface MetroInspectorProxyApp {
  */
 export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
   if (!app.reactNative?.logicalDeviceId) {
-    debug('Failed to open React Native DevTools, target is missing device ID');
+    event('open_missing_device_id', {});
     return false;
   }
 
@@ -68,9 +65,9 @@ export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorP
   });
 
   if (!response) {
-    debug(`No response received from the React Native DevTools.`);
+    event('open_no_response', {});
   } else if (response.ok === false) {
-    debug('Failed to open React Native DevTools, received response:', response.status);
+    event('open_failed', { status: response.status });
   }
 
   return response?.ok ?? true;

@@ -9,7 +9,7 @@ import expo.modules.kotlin.exception.CodedException
 internal const val DYNAMIC_EXTENSION_PREFIX = "__expo_dynamic_extension__#"
 
 /**
- * A extension for folly::dynamic that can get or put other data types than JSON.
+ * An extension for folly::dynamic that can get or put other data types than JSON.
  * This class should use with the `convertStringToFollyDynamicIfNeeded()` in **JSIToJSIConverter.cpp**.
  */
 @DoNotStrip

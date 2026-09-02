@@ -1,3 +1,5 @@
+import type { Spec } from 'arg';
+
 import {
   assertUnknownArgs,
   resolveStringOrBooleanArgsAsync,
@@ -19,7 +21,7 @@ describe(collapseAliases, () => {
   });
 
   it(`will collapse all occurrences of an alias`, () => {
-    const arg = {
+    const arg: Spec = {
       '--platform': [String],
       '-p': '--platform',
     };
@@ -213,7 +215,7 @@ describe(assertDuplicateArgs, () => {
     ).toThrowErrorMatchingInlineSnapshot(`"Can only provide one instance of --device or -d"`);
   });
   it(`does not assert for array-type arguments`, () => {
-    const spec = {
+    const spec: Spec = {
       '--platform': [String],
       '-p': '--platform',
     };

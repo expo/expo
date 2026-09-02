@@ -13,5 +13,10 @@
         <intent>
             <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
         </intent>
+        <intent>
+            <!-- Required for preview handler checks when targeting API 30+. -->
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="*/*" />
+        </intent>
     </queries>
 </manifest>

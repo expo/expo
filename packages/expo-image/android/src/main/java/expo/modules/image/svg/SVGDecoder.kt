@@ -24,7 +24,6 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
     return try {
       val svg: SVG = SVG.getFromInputStream(source)
       // Use document width and height if view box is not set.
-      // Later, we will override the document width and height with the dimensions of the native view.
       if (svg.documentViewBox == null) {
         val documentWidth = svg.documentWidth
         val documentHeight = svg.documentHeight
@@ -32,8 +31,23 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
           svg.setDocumentViewBox(0f, 0f, documentWidth, documentHeight)
         }
       }
-      svg.documentWidth = width.toFloat()
-      svg.documentHeight = height.toFloat()
+
+      // Render at maxWidth/maxHeight if provided (preserving aspect ratio), otherwise at the viewBox's natural size.
+      val viewBox = svg.documentViewBox
+      if (viewBox != null && viewBox.width() > 0 && viewBox.height() > 0) {
+        val scaleW = if (width > 0) width.toFloat() / viewBox.width() else Float.POSITIVE_INFINITY
+        val scaleH = if (height > 0) height.toFloat() / viewBox.height() else Float.POSITIVE_INFINITY
+        val scale = if (scaleW.isFinite() || scaleH.isFinite()) minOf(scaleW, scaleH) else 1f
+        if (scale.isFinite() && scale > 0) {
+          svg.documentWidth = viewBox.width() * scale
+          svg.documentHeight = viewBox.height() * scale
+        }
+      } else if (width > 0 && height > 0) {
+        // No viewBox available to derive an aspect ratio from, fall back to the requested bounds.
+        svg.documentWidth = width.toFloat()
+        svg.documentHeight = height.toFloat()
+      }
+
       SimpleResource(svg)
     } catch (ex: SVGParseException) {
       throw IOException("Cannot load SVG from stream", ex)

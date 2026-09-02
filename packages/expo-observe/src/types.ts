@@ -1,4 +1,20 @@
-export type Config = {
+import type { NativeModule } from 'expo';
+import type { LogAttributeValue, LogEventOptions, MetricAttributes } from 'expo-app-metrics';
+
+/**
+ * Value types accepted as attribute values in `setGlobalAttributes` and the
+ * other Observe APIs. Strings, numbers, and booleans are stored as typed
+ * primitives; arrays and nested maps preserve their structure.
+ */
+export type ObserveAttribute = LogAttributeValue;
+
+/**
+ * A map of attribute key to value, as accepted by `setGlobalAttributes` and
+ * other Observe APIs that take a free-form attributes payload.
+ */
+export type ObserveAttributes = Record<string, ObserveAttribute>;
+
+export type ObserveConfig = {
   /**
    * The environment for observability events
    *
@@ -46,21 +62,219 @@ export type Config = {
    */
   sampleRate?: number;
   /**
-   * Disables the automatic `expo-router` integration that records TTR/TTI per screen.
+   * Whether to record unhandled JavaScript errors as `exception` log events.
    *
-   * When `true` or `expo-router` is not installed, the router integration will not be used.
+   * When `false`, unhandled errors are no longer recorded. React Native's own handling is
+   * unaffected either way: the red box in development and fatal termination in production still
+   * happen. Errors you report yourself with `reportError`, and render-phase errors captured by
+   * `ObserveErrorBoundary`, are also unaffected.
+   *
+   * > Note: The handler is installed when the package is first imported, which is earlier than any
+   * > `configure` call. An error thrown before `configure` runs is therefore still recorded.
+   *
+   * @default true
+   */
+  errorHandlingEnabled?: boolean;
+  /**
+   * Opt in to per-integration behavior. See the [Expo Router](/eas/observe/integrations/expo-router/)
+   * and [React Navigation](/eas/observe/integrations/react-navigation/) integrations, or
+   * [integrate your own package](/eas/observe/integrations/third-party/).
+   */
+  integrations?: ObserveIntegrationsConfig;
+};
+
+export type ObserveNavigationIntegrationConfig = {
+  /**
+   * Route or query parameter keys to remove from exported navigation metric
+   * `routeParams`. When any configured parameter is removed from a metric,
+   * the exported resolved URL/path is replaced with `urlHidden: true`.
+   * Does not affect `routeName`.
+   */
+  filteredParams?: string[];
+};
+
+export interface ObserveIntegrationsConfig {
+  /**
+   * Enables the `expo-router` integration, which records navigation metrics
+   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
+   *
+   * Requires `expo-router` to be installed.
+   *
+   * Pass an object to filter exported route/query params.
    *
    * @default false
    */
-  disableRouterIntegration?: boolean;
+  'expo-router'?: boolean | ObserveNavigationIntegrationConfig;
+  /**
+   * Enables the `@react-navigation/native` integration, which records
+   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
+   *
+   * Requires `@react-navigation/native` to be installed and the app tree
+   * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
+   * `<NavigationContainer>`.
+   *
+   * Pass an object to filter exported route/query params.
+   *
+   * @default false
+   */
+  'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
+}
+
+/**
+ * Events emitted by the native `ExpoObserve` module.
+ */
+export type ObserveModuleEvents = {
+  /**
+   * Fired on every `configure(...)` call, carrying the resolved `integrations`
+   * config
+   */
+  configure: (payload: { integrations: ObserveIntegrationsConfig }) => void;
 };
 
-export interface ExpoObserveModuleType {
+export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
+  /**
+   * The EAS client id: a random, pseudonymous identifier for this app installation, shared by all
+   * EAS client libraries. Observe records it on every metric and log event as the
+   * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
+   *
+   * The id is stored in native preferences and is stable across app launches and app updates. It
+   * changes when the app's data is cleared or the app is reinstalled, although a backup restore
+   * can carry the previous id over. It identifies an installation, not a user or a device.
+   *
+   * `null` on web, where there is no EAS client id.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * // Attach the same id to data you send elsewhere to line it up with Observe.
+   * await fetch('https://example.com/events', {
+   *   method: 'POST',
+   *   body: JSON.stringify({ easClientId: Observe.clientId }),
+   * });
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  readonly clientId: string | null;
+  /**
+   * Dispatches pending events to the server immediately.
+   *
+   * Events are dispatched automatically when the app moves to the background. On Android,
+   * a background worker dispatches events once network connectivity is available. On iOS,
+   * dispatching happens when the app resigns active state or is about to terminate. Call
+   * this method to flush events manually, for example, during testing or to ensure events
+   * are sent before a specific point.
+   *
+   * @returns A promise that resolves when the pending events have been dispatched.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * await Observe.dispatchEvents();
+   * ```
+   */
   dispatchEvents(): Promise<void>;
   /**
-   * Configures observability settings.
+   * Configures how observability events are collected and dispatched at runtime, such as
+   * the environment label, dispatching behavior, sampling, and integrations.
+   *
+   * @param config Observability settings to apply.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * Observe.configure({
+   *   environment: 'production',
+   *   dispatchingEnabled: true,
+   * });
+   * ```
    */
-  configure(config: Config): void;
+  configure(config: ObserveConfig): void;
+  /**
+   * Returns the `integrations` config from the most recent `configure(...)`
+   * call, or an empty object if `configure` has not run yet.
+   */
+  getIntegrations(): ObserveIntegrationsConfig;
+  /**
+   * Invokes a callback once when the named integration configuration becomes available.
+   *
+   * @param name Integration name.
+   * @param callback Function called with the integration configuration.
+   *
+   * @example
+   * ```ts
+   * Observe.registerIntegration('expo-router', config => {
+   *   console.log(config);
+   * });
+   * ```
+   */
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void;
+  /**
+   * Records a log event against the current main session. The event is
+   * persisted locally and dispatched on the next `dispatchEvents()` flush.
+   *
+   * Severity defaults to `"info"` when not provided.
+   *
+   * @param name Event name.
+   * @param options Optional body, attributes, and severity overrides.
+   */
+  logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Reports an error your code caught and handled, recorded as a non-fatal `exception` event. Use it
+   * to keep visibility into failures you recover from, which never reach the automatic global handler
+   * or an error boundary.
+   *
+   * The thrown value is normalized: an `Error`'s `name`, `message`, and `stack` are captured; any
+   * other value (a string, a plain object) is stringified as the message.
+   *
+   * @param error The caught value. An `Error` is preferred, but any thrown value is accepted.
+   *
+   * @example
+   * ```ts
+   * try {
+   *   await syncCart();
+   * } catch (error) {
+   *   Observe.reportError(error);
+   * }
+   * ```
+   */
+  // eslint-disable-next-line handle-callback-err -- `error` is the caught value to report, not a Node callback error.
+  reportError(error: unknown): void;
+  /**
+   * Marks the first render of the app. Used to compute the `cold_ttr` and
+   * `warm_ttr` metrics.
+   */
+  markFirstRender(): void;
+  /**
+   * Marks the moment the app becomes interactive. Used to compute the `tti`
+   * metric. Custom `routeName` and `params` can be attached via `attributes`.
+   *
+   * > Note: When the `expo-router` or `@react-navigation/native` integration
+   * > is active, prefer `useObserve().markInteractive(...)` — the hook fills
+   * > in `routeName` from the current route, while this raw call does not.
+   */
+  markInteractive(attributes?: MetricAttributes): void;
+  /**
+   * Sets attributes merged into every subsequent metric and log event.
+   * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
+   * object to clear.
+   *
+   * @example
+   * ```ts
+   * Observe.setGlobalAttributes({
+   *   subscription_tier: 'pro',
+   *   experiment_variant: 'B',
+   * });
+   * ```
+   */
+  setGlobalAttributes(attributes?: ObserveAttributes | null): void;
   /**
    * Pushes JS-bundle-derived facts (`process.env.NODE_ENV`, `__DEV__`) into native
    * storage. Called automatically once when the package is first imported; should

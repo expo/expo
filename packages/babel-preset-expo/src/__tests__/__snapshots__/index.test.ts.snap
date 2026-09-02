@@ -14,8 +14,8 @@ require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
-function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function(){return data;};return data;}
-function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));_inlineFuncWithSideEffectsFx=function(){return data;};return data;}var _jsxRuntime=require("react/jsx-runtime");var
+function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));_inlineFuncWithSideEffectsFx=function(){return data;};return data;}
+function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function(){return data;};return data;}var _jsxRuntime=require("react/jsx-runtime");var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_callSuper2.default)(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
@@ -63,8 +63,8 @@ require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
-function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function(){return data;};return data;}
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function(){return data;};return data;}var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));
+function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function(){return data;};return data;}function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function(){return data;};return data;}var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_callSuper2().default)(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
@@ -112,8 +112,8 @@ require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
-var _inlineFunc=_interopRequireDefault(require("./inline-func"));
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));var _jsxRuntime=require("react/jsx-runtime");var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));
+var _inlineFunc=_interopRequireDefault(require("./inline-func"));var _jsxRuntime=require("react/jsx-runtime");var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_callSuper2.default)(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
@@ -161,8 +161,8 @@ require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
-var _inlineFunc=_interopRequireDefault(require("./inline-func"));
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));var _jsxRuntime=require("react/jsx-runtime");var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));
+var _inlineFunc=_interopRequireDefault(require("./inline-func"));var _jsxRuntime=require("react/jsx-runtime");var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_callSuper2.default)(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
@@ -210,8 +210,8 @@ require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
-var _inlineFunc=_interopRequireDefault(require("./inline-func"));
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function(){return data;};return data;}var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));
+var _inlineFunc=_interopRequireDefault(require("./inline-func"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function(){return data;};return data;}var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_callSuper2().default)(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){

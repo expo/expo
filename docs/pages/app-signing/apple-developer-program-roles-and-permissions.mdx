@@ -14,7 +14,7 @@ On individual Apple Developer accounts, only the Account Holder role can generat
 <ContentSpotlight
   alt="Access to Certificates, Identifiers, and Profiles settings in App Store Connect."
   caption="Access to Certificates, Identifiers, and Profiles settings in App Store Connect."
-  src="/static/images/apple-access-settings.png"
+  src="/static/images/apple-access-settings.webp"
   className="max-w-[400px]"
 />
 
@@ -55,7 +55,7 @@ As a developer on the team, when running `eas build -p ios` in the terminal wind
   ]}
 />
 
-Press <kbd>n</kbd> to skip logging into Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any). The CLI displays message about skipping provisioning profile validation and other app signing credential validation and will continue creating the EAS Build with existing credentials
+Press <kbd>N</kbd> to skip logging into Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any). The CLI displays message about skipping provisioning profile validation and other app signing credential validation and will continue creating the EAS Build with existing credentials
 
 The EAS CLI needs to use the provisioning profile associated with the Expo account to create a build for iOS. When you skip login, the EAS Build will use the last provisioning profile and other credentials that were updated by the Apple Developer account's authorized user in your organization's Expo account.
 
@@ -77,7 +77,7 @@ The associated provisioning profile needs to be updated if certain [iOS capabili
 
 EAS CLI can only accept an Apple account's email and password to login into your Apple Developer account. You cannot login into [Federated Apple Developer account](https://support.apple.com/en-in/guide/apple-business-manager/axmb19317543/web) and make updates to the distribution certificate or provisioning profile. If your build credentials do not require any changes, you can skip logging in. Then, you can proceed with the build and EAS CLI will continue using your current uploaded credentials.
 
-However, you can provide an Apple Store Connect (ASC) API token with Admin access to check and update Apple credentials when running `eas build` command. Follow the steps in [Provide an ASC API Token for your Apple Team](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) to create a build by passing the required token value to the `eas build` command.
+However, you can provide an Apple Store Connect (ASC) API token with Admin access to check and update Apple credentials when running `eas build` command. Follow the steps in [Provide an ASC API token for your Apple team](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) to create a build by passing the required token value to the `eas build` command.
 
 #### EAS Submit
 

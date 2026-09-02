@@ -5,10 +5,10 @@ jsEngine: graaljs
 #- openLink: bareexpo://components
 - openLink: bareexpo://components/video/events
 
-- assertVisible: 'source = Big Buck Bunny'
+- assertVisible: 'source = Star'
 - assertVisible: 'isPlaying = false'
 - assertVisible: 'isAtStart = true'
-- assertVisible: 'duration = 634'
+- assertVisible: 'duration = 27'
 - assertVisible: 'currentTime = 0'
 - assertVisible: 'mimeType = video/avc'
 - assertVisible: 'isSupported = true'
@@ -20,12 +20,22 @@ jsEngine: graaljs
 
 - tapOn: Play
 
-- assertVisible: 'isPlaying = true'
+# Playback takes a moment to start after tapping Play; wait instead of
+# asserting instantly to avoid a startup race.
+- extendedWaitUntil:
+    visible: 'isPlaying = true'
+    timeout: 10000
 - assertVisible: 'isAtStart = false'
 
 - tapOn: Pause
-- tapOn: Seek to 30s
-- assertVisible: 'currentTime = 30'
+- tapOn: Seek to 20s
+- assertVisible: 'currentTime = 20'
+# The player reports currentTime = 20 before the paused surface repaints the
+# seeked frame. Wait for the screen to settle so the screenshot captures the
+# t=20s frame and not a stale/blank one. Safe only because the player is paused
+# here (a playing video never settles and would burn the full timeout).
+- waitForAnimationToEnd:
+    timeout: 5000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:

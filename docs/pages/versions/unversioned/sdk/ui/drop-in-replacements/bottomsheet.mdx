@@ -8,10 +8,28 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `BottomSheet` component with an API compatible with `@gorhom/bottom-sheet`. It wraps the platform-specific `@expo/ui` primitives: [Jetpack Compose ModalBottomSheet](../jetpack-compose/bottomsheet) on Android and [SwiftUI BottomSheet](../swift-ui/bottomsheet) on iOS. On web, it uses a [vaul](https://github.com/emilkowalski/vaul) drawer.
 
 If you need lower-level control over platform-specific styling, modifiers, or layout behavior, use the native primitives directly.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-bottomsheet/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-bottomsheet/android-dark.webp',
+    alt: 'A bottom sheet presented over a dimmed screen',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-bottomsheet/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-bottomsheet/ios-dark.webp',
+    alt: 'A bottom sheet presented over a dimmed screen',
+  }}
+/>
 
 ## Installation
 
@@ -36,12 +54,27 @@ If you need lower-level control over platform-specific styling, modifiers, or la
 
 ## Basic usage
 
-```tsx BottomSheetExample.tsx
+<ComponentExample
+  title="BottomSheetExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-basic-android-dark.webp',
+    alt: 'A sheet at its smallest snap point below an Open button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-basic-ios-dark.webp',
+    alt: 'A sheet at its smallest snap point below an Open button',
+  }}>
+
+```tsx
 import { useRef } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Text, useColorScheme, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
 
 export default function BottomSheetExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
   const sheetRef = useRef<BottomSheet>(null);
 
   return (
@@ -60,7 +93,7 @@ export default function BottomSheetExample() {
         }}
         enablePanDownToClose>
         <BottomSheetView style={{ flex: 1, padding: 24, alignItems: 'center' }}>
-          <Text>Sheet content</Text>
+          <Text style={ink}>Sheet content</Text>
         </BottomSheetView>
       </BottomSheet>
     </View>
@@ -68,16 +101,33 @@ export default function BottomSheetExample() {
 }
 ```
 
+</ComponentExample>
+
 ## `BottomSheetModal`
 
 Use `BottomSheetModal` when migrating from `@gorhom/bottom-sheet` modal APIs. It starts closed and opens with `present()`.
 
-```tsx BottomSheetModalExample.tsx
+<ComponentExample
+  title="BottomSheetModalExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-modal-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-modal-android-dark.webp',
+    alt: 'A half-height modal sheet with Modal content and a Dismiss button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-modal-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-modal-ios-dark.webp',
+    alt: 'A half-height modal sheet with Modal content and a Dismiss button',
+  }}>
+
+```tsx
 import { useRef } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Text, useColorScheme, View } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@expo/ui/community/bottom-sheet';
 
 export default function BottomSheetModalExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
   const modalRef = useRef<BottomSheetModal>(null);
 
   return (
@@ -86,7 +136,7 @@ export default function BottomSheetModalExample() {
 
       <BottomSheetModal ref={modalRef} snapPoints={['50%', '90%']} enablePanDownToClose>
         <BottomSheetView style={{ padding: 24 }}>
-          <Text>Modal content</Text>
+          <Text style={ink}>Modal content</Text>
           <Button title="Dismiss" onPress={() => modalRef.current?.dismiss()} />
         </BottomSheetView>
       </BottomSheetModal>
@@ -95,16 +145,33 @@ export default function BottomSheetModalExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Dynamic sizing
 
 When `snapPoints` is not provided, the sheet sizes to fit its content by default. Use `BottomSheetView` for the sheet content wrapper.
 
-```tsx DynamicBottomSheetExample.tsx
+<ComponentExample
+  title="DynamicBottomSheetExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-android-dark.webp',
+    alt: 'A sheet sized to one line of content',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-ios-dark.webp',
+    alt: 'A sheet sized to one line of content',
+  }}>
+
+```tsx
 import { useRef } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Text, useColorScheme, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
 
 export default function DynamicBottomSheetExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
   const sheetRef = useRef<BottomSheet>(null);
 
   return (
@@ -113,13 +180,65 @@ export default function DynamicBottomSheetExample() {
 
       <BottomSheet ref={sheetRef} index={-1} enablePanDownToClose>
         <BottomSheetView style={{ padding: 24 }}>
-          <Text>This sheet sizes itself to its content.</Text>
+          <Text style={ink}>This sheet sizes itself to its content.</Text>
         </BottomSheetView>
       </BottomSheet>
     </View>
   );
 }
 ```
+
+</ComponentExample>
+
+### Scrollable React Native content
+
+The bottom sheet supports a React Native `FlatList` or `ScrollView` (or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list)) as a child for scrollable content. With `nestedScrollEnabled`, the list scrolls its own content first. Once it reaches the top edge, the remaining drag moves the sheet. `BottomSheetFlatList` and `BottomSheetScrollView` are also exported for `@gorhom/bottom-sheet` compatibility, but they are plain re-exports of the React Native components.
+
+<ComponentExample
+  title="BottomSheetScrollableExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-scrollable-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-scrollable-android-dark.webp',
+    alt: 'A half-height sheet listing scrollable items',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-scrollable-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-scrollable-ios-dark.webp',
+    alt: 'A half-height sheet listing scrollable items',
+  }}>
+
+```tsx
+import { useRef } from 'react';
+import { Button, FlatList, Text, useColorScheme, View } from 'react-native';
+import BottomSheet from '@expo/ui/community/bottom-sheet';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function BottomSheetScrollableExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+  const sheetRef = useRef<BottomSheet>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Open" onPress={() => sheetRef.current?.snapToIndex(0)} />
+
+      <BottomSheet ref={sheetRef} snapPoints={['50%', '90%']} index={-1} enablePanDownToClose>
+        <FlatList
+          nestedScrollEnabled
+          style={{ flex: 1 }}
+          data={DATA}
+          keyExtractor={item => item}
+          contentContainerStyle={{ padding: 24 }}
+          renderItem={({ item }) => <Text style={{ ...ink, paddingVertical: 16 }}>{item}</Text>}
+        />
+      </BottomSheet>
+    </View>
+  );
+}
+```
+
+</ComponentExample>
 
 ## Platform behavior
 
@@ -135,22 +254,24 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 | Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables drawer dismiss        |
 | Persistent inline peek | Not supported                                  | Not supported                     | Not supported                 |
 
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
+
 ## Supported exports
 
-| Export                     | Supported | Notes                                                     |
-| -------------------------- | --------- | --------------------------------------------------------- |
-| `BottomSheet`              | Yes       | Modal on Android and iOS, drawer on web                   |
-| `BottomSheetModal`         | Yes       | Starts closed and opens with `present()`                  |
-| `BottomSheetModalProvider` | Yes       | Renders children directly for compatibility               |
-| `BottomSheetView`          | Yes       | Wraps sheet content                                       |
-| `BottomSheetScrollView`    | Yes       | Re-export of React Native `ScrollView`                    |
-| `BottomSheetFlatList`      | Yes       | Re-export of React Native `FlatList`                      |
-| `BottomSheetSectionList`   | Yes       | Re-export of React Native `SectionList`                   |
-| `BottomSheetTextInput`     | Yes       | Re-export of React Native `TextInput`                     |
-| `useBottomSheet`           | Yes       | Returns the sheet ref methods from context                |
-| `BottomSheetBackdrop`      | No        | The native sheet or web drawer handles the backdrop       |
-| `BottomSheetHandle`        | No        | The native sheet or web drawer handles the drag indicator |
-| `BottomSheetFooter`        | No        | No equivalent in this implementation                      |
+| Export                     | Supported   | Notes                                                     |
+| -------------------------- | ----------- | --------------------------------------------------------- |
+| `BottomSheet`              | <YesIcon /> | Modal on Android and iOS, drawer on web                   |
+| `BottomSheetModal`         | <YesIcon /> | Starts closed and opens with `present()`                  |
+| `BottomSheetModalProvider` | <YesIcon /> | Renders children directly for compatibility               |
+| `BottomSheetView`          | <YesIcon /> | Wraps sheet content                                       |
+| `BottomSheetScrollView`    | <YesIcon /> | Re-export of React Native `ScrollView`                    |
+| `BottomSheetFlatList`      | <YesIcon /> | Re-export of React Native `FlatList`                      |
+| `BottomSheetSectionList`   | <YesIcon /> | Re-export of React Native `SectionList`                   |
+| `BottomSheetTextInput`     | <YesIcon /> | Re-export of React Native `TextInput`                     |
+| `useBottomSheet`           | <YesIcon /> | Returns the sheet ref methods from context                |
+| `BottomSheetBackdrop`      | <NoIcon />  | The native sheet or web drawer handles the backdrop       |
+| `BottomSheetHandle`        | <NoIcon />  | The native sheet or web drawer handles the drag indicator |
+| `BottomSheetFooter`        | <NoIcon />  | No equivalent in this implementation                      |
 
 ## Compatibility notes
 
@@ -166,3 +287,5 @@ import BottomSheet from '@expo/ui/community/bottom-sheet';
 ```
 
 <APISection packageName="expo-ui/community/bottom-sheet" apiName="BottomSheet" />
+
+</PlatformTabsGroup>

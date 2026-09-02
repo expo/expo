@@ -42,7 +42,7 @@ expoModule {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.11'
+version = '56.0.17'
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -80,6 +80,11 @@ def exUpdatesCopyEmbeddedAssets = getBoolStringFromPropOrEnv("EX_UPDATES_COPY_EM
 
 def useDevClient = findProject(":expo-dev-client") != null
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
   buildFeatures {
     buildConfig true
@@ -93,7 +98,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '56.0.11'
+    versionName '56.0.17'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -105,6 +110,7 @@ android {
 
     externalNativeBuild {
       cmake {
+        abiFilters(*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
       }
@@ -162,7 +168,8 @@ dependencies {
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
-  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
+  implementation("com.squareup.zstd:zstd-kmp-okio:0.4.0")
+  implementation("org.brotli:dec:0.1.2")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.81")
 
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'

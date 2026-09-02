@@ -9,7 +9,7 @@ import { actionAsync } from './doctor';
 
 // Check Node.js version and issue a loud warning if it's too outdated
 // This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
-const NODE_MIN = [20, 19, 4] as const;
+const NODE_MIN = [22, 13, 0] as const;
 const nodeVersion = process.version?.slice(1).split('.', 3).map(Number);
 if (
   nodeVersion[0]! < NODE_MIN[0] ||
@@ -29,7 +29,13 @@ if (boolish('EXPO_DEBUG', false)) {
   process.env.EXPO_DEBUG = '1';
 }
 
-const packageJson = () => require('../package.json');
+const packageJson = () => {
+  try {
+    return require('expo-doctor/package.json');
+  } catch {
+    return null;
+  }
+};
 
 async function run() {
   const args = process.argv.slice(2);
@@ -62,13 +68,13 @@ async function run() {
   });
 
   if (showVerboseTestResults) {
-    console.log(`expo-doctor: v${packageJson().version}`);
+    console.log(`expo-doctor: v${packageJson()?.version ?? '0.0.0'}`);
   }
   await actionAsync(projectRoot, showVerboseTestResults);
 }
 
 function logVersionAndExit() {
-  console.log(packageJson().version);
+  console.log(packageJson()?.version ?? '0.0.0');
   process.exit(0);
 }
 

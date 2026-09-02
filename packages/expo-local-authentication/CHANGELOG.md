@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 57.0.2 - 2026-07-22
+
+### 🐛 Bug fixes
+
+- [Android] Ensure concurrent `authenticateAsync` calls don't resolve the active prompt's promise ([#45954](https://github.com/expo/expo/pull/45954) by [@kitten](https://github.com/kitten))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

@@ -142,7 +142,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
       }
 
       AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-        // W could pause/mix the players here individually, but we will keep the behaviour in line with iOS,
+        // We could pause/mix the players here individually, but we will keep the behaviour in line with iOS,
         // find the dominant audioMixingMode and apply it to all players.
         val audioMixingMode = findAudioMixingMode()
         if (audioMixingMode == AudioMixingMode.MIX_WITH_OTHERS) {

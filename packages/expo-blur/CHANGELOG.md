@@ -8,7 +8,26 @@
 
 ### 🐛 Bug fixes
 
+- Fix `BlurView` not applying border radius styles to the native blur layer. ([#45691](https://github.com/expo/expo/pull/45691) by [@mvincentong](https://github.com/mvincentong)) and [@behenate](https://github.com/behenate)
+- [Android] Fix content inside a `BlurTargetView` disappearing during screen exit animations. ([#48141](https://github.com/expo/expo/pull/48141) by [@alok-debnath](https://github.com/alok-debnath))
+
 ### 💡 Others
+
+- Document that every `tint` value adds a color layer on top of the blur. ([#49248](https://github.com/expo/expo/pull/49248) by [@expo-bot](https://github.com/expo-bot))
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-15
+
+### 🐛 Bug fixes
+
+- [Android] Fix gesture handlers treating views under a `BlurTargetView` as detached and cancelling their gestures. ([#47404](https://github.com/expo/expo/pull/47404) by [@efstathiosntonas](https://github.com/efstathiosntonas))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.3 — 2026-05-06
 

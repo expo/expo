@@ -14,6 +14,7 @@ export type PreloadProps = {
 export function Prefetch(props: PreloadProps) {
   const navigation = useOptionalNavigation();
 
+  // TODO(@ubax): This layout effect runs before the router bridge binds on the first commit. It works only because useOptionalNavigation returns null on the first pass. Move to useRouterActions().
   useLayoutEffect(() => {
     if (navigation?.isFocused()) {
       router.prefetch(props.href);

@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 
-import { type AnimatedValue } from './animation';
+import { type AnimatedValue, type AnimationSpec } from './animation';
 import { createModifier, createModifierWithEventListener } from './createModifier';
 export { type ExpoModifier, type ModifierConfig } from '../../types';
 export {
@@ -142,9 +142,12 @@ export const offset = (x: number, y: number) => createModifier('offset', { x, y 
 
 /**
  * Sets the background color.
+ * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
  * @param color - A color string (hex, e.g., `'#FF0000'`).
+ * @param options.animationSpec - Optional spec — animate between color changes.
  */
-export const background = (color: ColorValue) => createModifier('background', { color });
+export const background = (color: ColorValue, options?: { animationSpec?: AnimationSpec }) =>
+  createModifier('background', { color, animationSpec: options?.animationSpec });
 
 /**
  * Adds a border around the view.
@@ -159,6 +162,42 @@ export const border = (borderWidth: number, borderColor: ColorValue) =>
  * @param elevation - Shadow elevation in dp.
  */
 export const shadow = (elevation: number) => createModifier('shadow', { elevation });
+
+/**
+ * Options for the `dropShadow` and `innerShadow` modifiers.
+ */
+export type ShadowConfig = {
+  /** Blur radius of the shadow in dp. */
+  radius?: number;
+  /** Amount to expand (positive) or contract (negative) the shadow geometry in dp. */
+  spread?: number;
+  /** Shadow color string (hex). Defaults to black. */
+  color?: ColorValue;
+  /** Horizontal offset of the shadow in dp. */
+  offsetX?: number;
+  /** Vertical offset of the shadow in dp. */
+  offsetY?: number;
+  /** Shadow opacity, from 0.0 to 1.0. */
+  alpha?: number;
+};
+
+/**
+ * Draws a shadow behind the view with control over the blur radius, spread, offset, and color. Unlike
+ * `shadow`, it does not require an elevation value.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export const dropShadow = (shape: BuiltinShape, config: ShadowConfig = {}) =>
+  createModifier('dropShadow', { shape, ...config });
+
+/**
+ * Draws a shadow inside the view to create an inset effect. The view's `background` must come before
+ * this modifier for the shadow to render.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export const innerShadow = (shape: BuiltinShape, config: ShadowConfig = {}) =>
+  createModifier('innerShadow', { shape, ...config });
 
 /**
  * Sets the opacity/alpha of the view.
@@ -381,6 +420,19 @@ export const onSizeChanged = (handler: (size: { width: number; height: number })
     handler(size)
   );
 
+/**
+ * Calls the handler whenever the composable is positioned, with its position and size.
+ * `x` and `y` are relative to the window. All values are in dp.
+ * @param handler - Function called with the new layout.
+ */
+export const onGloballyPositioned = (
+  handler: (layout: { x: number; y: number; width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGloballyPositioned',
+    (layout: { x: number; y: number; width: number; height: number }) => handler(layout)
+  );
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================
@@ -518,6 +570,23 @@ export const Shapes = {
  * @param shape - A shape from `Shapes`, e.g. `Shapes.Circle` or `Shapes.Material.Heart`.
  */
 export const clip = (shape: BuiltinShape) => createModifier('clip', { shape });
+
+/**
+ * Clips a carousel item's mask to the given shape, so the item keeps its shape while the
+ * carousel masks it. Wraps Compose's `CarouselItemScope.maskClip`.
+ *
+ * A carousel reveals each item through a mask, so a plain `clip` on the item loses its
+ * corners as the item squeezes into a peek. Clipping the mask itself keeps them.
+ *
+ * Only works on a child of a Carousel component. Like `clip`, it only affects what is
+ * drawn after it in the modifier chain, so place it before `background`.
+ *
+ * @example
+ * ```tsx
+ * modifiers={[size(300, 200), maskClip(Shapes.RoundedCorner(28)), background('#6200EE')]}
+ * ```
+ */
+export const maskClip = (shape: BuiltinShape) => createModifier('maskClip', { shape });
 
 // =============================================================================
 // Scroll Modifiers

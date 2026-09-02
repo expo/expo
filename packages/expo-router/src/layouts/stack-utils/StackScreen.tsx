@@ -1,10 +1,6 @@
 'use client';
 import { Children, isValidElement, useMemo, type PropsWithChildren } from 'react';
 
-import { StackHeaderComponent, appendStackHeaderPropsToOptions } from './StackHeaderComponent';
-import { StackTitle, appendStackTitlePropsToOptions } from './StackTitle';
-import { StackScreenBackButton, appendStackScreenBackButtonPropsToOptions } from './screen';
-import { StackToolbar, appendStackToolbarPropsToOptions } from './toolbar';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import type {
   NativeStackNavigationOptions,
@@ -13,6 +9,10 @@ import type {
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
+import { StackHeaderComponent, appendStackHeaderPropsToOptions } from './StackHeaderComponent';
+import { StackTitle, appendStackTitlePropsToOptions } from './StackTitle';
+import { StackScreenBackButton, appendStackScreenBackButtonPropsToOptions } from './screen';
+import { StackToolbar, appendStackToolbarPropsToOptions } from './toolbar';
 
 type StackBaseScreenProps = BaseScreenProps<
   NativeStackNavigationOptions,
@@ -32,21 +32,6 @@ export interface StackScreenProps extends PropsWithChildren {
    * When used inside a page component, pass an options object directly.
    */
   options?: StackBaseScreenProps['options'];
-
-  /**
-   * Redirect to the nearest sibling route.
-   * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
-   *
-   * Only supported when used inside a Layout component.
-   */
-  redirect?: StackBaseScreenProps['redirect'];
-
-  /**
-   * Initial params to pass to the route.
-   *
-   * Only supported when used inside a Layout component.
-   */
-  initialParams?: StackBaseScreenProps['initialParams'];
 
   /**
    * Listeners for navigation events.

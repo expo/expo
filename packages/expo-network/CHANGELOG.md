@@ -10,6 +10,27 @@
 
 ### 💡 Others
 
+- [Android] Remove legacy `fetchNetworkState` path. ([#47007](https://github.com/expo/expo/pull/47007) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Use `LinkProperties` in `getIpAddressAsync`. ([#47028](https://github.com/expo/expo/pull/47028) by [@Wenszel](https://github.com/Wenszel))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 - 2026-06-05
+
+### 🎉 New features
+
+- [macOS] Add support for the macOS platform. ([#46535](https://github.com/expo/expo/pull/46535) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.4 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
@@ -31,6 +52,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [Android] Fixed network state listener emitting a stale "connected" event when the device disconnects from the network on Android 13+. ([#44656](https://github.com/expo/expo/pull/44656) by [@gueroverdenwshq](https://github.com/gueroverdenwshq))
+- [Android] Make `isInternetReachable` much more robust. Also emit network state changes when network capabilities change. ([#45101](https://github.com/expo/expo/pull/45101) by [@LumaDevelopment](https://github.com/LumaDevelopment))
 
 ## 55.0.13 - 2026-04-09
 

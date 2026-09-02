@@ -35,7 +35,7 @@ export function getFileExtension(url: string): string {
  * base URL would be https://exp.host/@user/project.
  *
  * We also normalize the "exp" protocol to "http" to handle internal URLs with the Expo schemes used
- * to tell the OS to open the URLs in the the Expo client.
+ * to tell the OS to open the URLs in the Expo client.
  */
 export function getManifestBaseUrl(manifestUrl: string): string {
   const urlObject = new URL(manifestUrl);

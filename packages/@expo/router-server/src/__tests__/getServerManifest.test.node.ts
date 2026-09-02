@@ -1,7 +1,7 @@
 import type { RequireContext } from 'expo-router';
 import { getExactRoutes } from 'expo-router/internal/routing';
 
-import { getServerManifest, parseParameter } from '../getServerManifest';
+import { getServerManifest } from '../getServerManifest';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
   const contextModule = jest.fn((key) => map[key]);
@@ -118,16 +118,6 @@ it(`converts a server manifest with nested root group and root layout`, () => {
   });
 });
 
-describe(parseParameter, () => {
-  it(`matches optionals using non-standard from router v1`, () => {
-    expect(parseParameter('[...all]')).toEqual({
-      name: 'all',
-      optional: true,
-      repeat: true,
-    });
-  });
-});
-
 it(`sorts deep paths before shallow paths`, () => {
   const a = getServerManifest(getRoutesFor(['./b/c.tsx', './a.tsx']));
   expect(a).toEqual(getServerManifest(getRoutesFor(['./a.tsx', './b/c.tsx'])));
@@ -187,7 +177,7 @@ it(`converts index routes`, () => {
 });
 
 function getNamedMatcher(fileName: string) {
-  return new RegExp(getServerManifest(getRoutesFor([fileName])).htmlRoutes[0].namedRegex, '');
+  return new RegExp(getServerManifest(getRoutesFor([fileName])).htmlRoutes[0]!.namedRegex, '');
 }
 
 it(`matches expected`, () => {
@@ -200,7 +190,7 @@ it(`matches expected`, () => {
 it(`matches expected with safe name`, () => {
   const matcher = getServerManifest(
     getRoutesFor(['./[user name]/category/[CATEGORY]/post/[my_lil-id].tsx'])
-  ).htmlRoutes[0];
+  ).htmlRoutes[0]!;
 
   const matched = new RegExp(matcher.namedRegex).exec(
     '/evanbacon/category/announcements/post/router-v3'
@@ -220,7 +210,7 @@ it(`matches expected with safe name`, () => {
 it(`matches expected with safe names that collide`, () => {
   const matcher = getServerManifest(
     getRoutesFor(['./[user name]/category/[my_lilid]/post/[my_lil-id].tsx'])
-  ).htmlRoutes[0];
+  ).htmlRoutes[0]!;
 
   const matched = new RegExp(matcher.namedRegex).exec(
     '/evanbacon/category/announcements/post/router-v3'
@@ -240,7 +230,7 @@ it(`matches expected with safe names that collide`, () => {
 // TODO: Maybe assert sooner?
 it(`asserts duplicate keys eventually`, () => {
   const routeNode = getRoutesFor(['./[a]/b/[a].tsx']);
-  const route = getServerManifest(routeNode).htmlRoutes[0];
+  const route = getServerManifest(routeNode).htmlRoutes[0]!;
   expect(() => new RegExp(route.namedRegex)).toThrow();
 });
 
@@ -324,7 +314,7 @@ it(`converts dynamic routes on same level with specificity`, () => {
     ['/b', './(a)/[a].tsx'],
   ]) {
     expect(
-      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher))?.file
+      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher!))?.file
     ).toBe(page);
   }
 });
@@ -597,7 +587,7 @@ it(`matches top-level catch-all before +not-found route`, () => {
     ['/b/c/', './[...a].tsx'],
   ]) {
     expect(
-      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher))?.file
+      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher!))?.file
     ).toBe(page);
   }
 });
@@ -614,5 +604,59 @@ describe('headers', () => {
       'X-Powered-By': 'expo-server',
       'Set-Cookie': ['hello=world', 'foo=bar'],
     });
+  });
+});
+
+describe('pageHeaders', () => {
+  it('applies custom `pageHeaders` to manifest', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), {
+      pageHeaders: [
+        { source: '/blog', headers: { 'Cache-Control': 'public, max-age=3600' } },
+        { source: '/blog/[slug]', headers: { 'X-Test': 'a' } },
+        { source: '/admin/[...rest]', headers: { 'X-Frame-Options': 'DENY' } },
+        { source: '/array-header', headers: { 'Set-Cookie': ['a=1', 'b=2'] } },
+      ],
+    });
+    expect(manifest.pageHeaders).toEqual([
+      {
+        namedRegex: '^/blog(?:/)?$',
+        headers: { 'Cache-Control': 'public, max-age=3600' },
+      },
+      {
+        namedRegex: '^/blog/(?<slug>[^/]+?)(?:/)?$',
+        headers: { 'X-Test': 'a' },
+      },
+      {
+        namedRegex: '^/admin(?:/(?<rest>.+?))?(?:/)?$',
+        headers: { 'X-Frame-Options': 'DENY' },
+      },
+      {
+        namedRegex: '^/array\\-header(?:/)?$',
+        headers: { 'Set-Cookie': ['a=1', 'b=2'] },
+      },
+    ]);
+  });
+
+  it('normalizes a trailing `/index` in `pageHeaders` sources', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), {
+      pageHeaders: [
+        { source: '/index', headers: { 'X-Index': '1' } },
+        { source: '/blog/index', headers: { 'X-Blog': '2' } },
+      ],
+    });
+    expect(manifest.pageHeaders).toEqual([
+      { namedRegex: '^/(?:/)?$', headers: { 'X-Index': '1' } },
+      { namedRegex: '^/blog(?:/)?$', headers: { 'X-Blog': '2' } },
+    ]);
+  });
+
+  it('omits `pageHeaders` from the manifest when none are configured', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']));
+    expect(manifest.pageHeaders).toBeUndefined();
+  });
+
+  it('omits `pageHeaders` from the manifest when the list is empty', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), { pageHeaders: [] });
+    expect(manifest.pageHeaders).toBeUndefined();
   });
 });

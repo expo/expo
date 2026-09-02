@@ -97,7 +97,52 @@ struct ExceptionsTests {
   func `sync function throw`() throws {
     let appContext = AppContext.create()
     let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
 
+    let error = try runtime.eval("try { expo.modules.TestModule.codedException() } catch (error) { error }").asObject()
+    #expect(error.getProperty("message").getString().contains("FunctionCallException: Calling the 'codedException' function has failed"))
+    #expect(error.getProperty("code").getString() == "E_TEST_CODE")
+  }
+
+  @Test
+  func `async function throw exposes the code to JS`() async throws {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    let code = try await runtime.evalAsync(
+      "expo.modules.TestModule.codedExceptionThrowAsync().then(() => 'NO_ERROR', (error) => error.code ?? 'NO_CODE')"
+    )
+    #expect(code.getString() == "E_TEST_CODE")
+  }
+
+  @Test
+  func `async function reject exposes the code to JS`() async throws {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    // A manual `promise.reject(error)` passes the error straight through (unlike a thrown error,
+    // which gets wrapped in a `FunctionCallException`), so we only assert on the preserved `code`.
+    let code = try await runtime.evalAsync(
+      "expo.modules.TestModule.codedExceptionRejectAsync().then(() => 'NO_ERROR', (error) => error.code ?? 'NO_CODE')"
+    )
+    #expect(code.getString() == "E_TEST_CODE")
+  }
+
+  @Test
+  func `concurrent async function throw exposes the code to JS`() async throws {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    let code = try await runtime.evalAsync(
+      "expo.modules.TestModule.codedExceptionConcurrentAsync().then(() => 'NO_ERROR', (error) => error.code ?? 'NO_CODE')"
+    )
+    #expect(code.getString() == "E_TEST_CODE")
+  }
+
+  private static func registerTestModule(on appContext: AppContext) {
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
       Name("TestModule")
 
@@ -117,10 +162,6 @@ struct ExceptionsTests {
         throw TestCodedException()
       }
     })
-
-    let error = try runtime.eval("try { expo.modules.TestModule.codedException() } catch (error) { error }").asObject()
-    #expect(error.getProperty("message").getString().contains("FunctionCallException: Calling the 'codedException' function has failed"))
-    #expect(error.getProperty("code").getString() == "E_TEST_CODE")
   }
 }
 

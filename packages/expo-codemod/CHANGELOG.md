@@ -4,11 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-15
+
+### 💡 Others
+
+- Fixed unit test failure on Windows. ([#45777](https://github.com/expo/expo/pull/45777) by [@kudo](https://github.com/kudo))
 
 ## 56.0.3 — 2026-05-11
 

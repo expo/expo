@@ -1,5 +1,5 @@
-import ExpoModulesCore
 import CryptoKit
+import ExpoModulesCore
 
 internal final class UnableToDownloadAssetException: GenericException<URL> {
   override var reason: String {
@@ -26,8 +26,9 @@ public class AssetModule: Module {
         return
       }
       guard let cacheFileId = md5Hash ?? getMD5Hash(fromURL: url),
-      let cachesDirectory = appContext?.fileSystem?.cachesDirectory,
-      let appContext = appContext else {
+        let cachesDirectory = appContext?.fileSystem?.cachesDirectory,
+        let appContext = appContext
+      else {
         promise.reject(UnableToDownloadAssetException(url))
         return
       }

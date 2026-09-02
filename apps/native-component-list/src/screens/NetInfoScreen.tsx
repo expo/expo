@@ -4,7 +4,6 @@ import { ScrollView, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
-import Colors from '../constants/Colors';
 
 interface ConnectionEvent {
   time: Date;
@@ -30,9 +29,7 @@ export default function NetInfoScreen() {
   }, [connectionInfo]);
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: Colors.greyBackground }}
-      contentContainerStyle={{ padding: 10 }}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 10 }}>
       <HeadingText>NetInfo current state:</HeadingText>
       <MonoText>{JSON.stringify(connectionInfo, null, 2)}</MonoText>
 

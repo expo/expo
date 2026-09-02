@@ -18,7 +18,7 @@ export type NativeSegmentedControlChangeEvent = {
  */
 export type NativeSegmentedControlIOSChangeEvent = NativeSegmentedControlChangeEvent;
 
-export type SegmentedControlProps = {
+export interface SegmentedControlProps {
   /**
    * The labels for the control's segment buttons, in order.
    */
@@ -52,7 +52,7 @@ export type SegmentedControlProps = {
   appearance?: 'dark' | 'light';
   style?: StyleProp<ViewStyle>;
   testID?: string;
-};
+}
 
 /**
  * Builds a synthetic `onChange` event matching the community library shape.

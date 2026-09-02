@@ -4,10 +4,22 @@ import ExpoModulesCore
 
 public class ExpoDevLauncherAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   #if !os(macOS)
+  public func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    EXDevLauncherController.disablePackagerServerAccess()
+    return true
+  }
+
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     return EXDevLauncherController.sharedInstance().onDeepLink(url, options: options)
   }
   #else
+  public func applicationDidFinishLaunching(_ notification: Notification) {
+    EXDevLauncherController.disablePackagerServerAccess()
+  }
+
   public func application(_ app: NSApplication, open urls: [URL]) {
     EXDevLauncherController.sharedInstance().onDeepLink(urls[0], options: [:])
   }

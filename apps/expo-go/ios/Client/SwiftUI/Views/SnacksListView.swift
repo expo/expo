@@ -26,15 +26,18 @@ struct SnacksListView: View {
         }
 
         if viewModel.hasMore && !viewModel.isLoading {
-          Button("Load More") {
+          Button {
             Task {
               await viewModel.loadMore()
             }
+          } label: {
+            Text("Load more")
+              .frame(maxWidth: .infinity)
+              .padding()
+              .background(Color.expoSecondarySystemBackground)
+              .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+              .contentShape(Rectangle())
           }
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
 
         if viewModel.isLoading && !viewModel.snacks.isEmpty {
@@ -75,7 +78,7 @@ class SnacksListViewModel: ObservableObject {
 
   private let accountName: String
   private var currentOffset = 0
-  private let pageSize = 15
+  private let pageSize = 20
 
   init(accountName: String) {
     self.accountName = accountName
@@ -89,7 +92,6 @@ class SnacksListViewModel: ObservableObject {
 
   func refresh() async {
     currentOffset = 0
-    snacks = []
     await fetchSnacks()
   }
 
@@ -123,6 +125,9 @@ class SnacksListViewModel: ObservableObject {
 
       hasMore = newSnacks.count >= pageSize
     } catch {
+      if (error as? APIError)?.isCancellation == true {
+        return
+      }
       self.error = error
       self.showingError = true
     }

@@ -1,9 +1,10 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
+import { Button } from 'react-native';
 
 import { Loading } from '../components/Loading';
-import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
+import { Table, TableRow } from '../components/Table';
 
 export async function loader() {
   return Promise.resolve({
@@ -23,6 +24,7 @@ const IndexScreen = () => {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
   const data = useLoaderData<typeof loader>();
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -32,8 +34,14 @@ const IndexScreen = () => {
         <TableRow label="Loader Data" value={data} testID="loader-result" />
       </Table>
 
+      <Table>
+        <Button testID="index-increment" onPress={() => setCount((c) => c + 1)} title="increment" />
+        <TableRow label="Count" value={count} testID="index-count" />
+      </Table>
+
       <SiteLinks>
         <SiteLink href="/second">Go to Second</SiteLink>
+        <SiteLink href="/slow">Go to Slow</SiteLink>
         <SiteLink href="/env">Go to Env</SiteLink>
         <SiteLink href="/request">Go to Request</SiteLink>
         <SiteLink href="/response">Go to Response</SiteLink>
@@ -48,5 +56,3 @@ const IndexScreen = () => {
     </>
   );
 };
-
-

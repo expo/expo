@@ -2,39 +2,58 @@ internal import jsi
 
 // MARK: - JavaScriptRepresentable
 
-/**
- A type whose values can be represented in the JS runtime.
- */
+/// A type whose values can be represented in the JS runtime.
 public protocol JavaScriptRepresentable: Sendable, ~Copyable {
-  /**
-   Creates an instance of this type from the given JS value.
-   */
+  /// Creates an instance of this type from the given JS value.
   static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self
-  /**
-   Creates a JS value representing this value in the given runtime.
-   */
+  /// Creates a JS value representing this value in the given runtime.
   func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue
 }
 
-public extension JavaScriptRepresentable {
-  static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
-    guard let jsiRuntime = value.runtime else {
-      FatalError.runtimeLost()
+extension Optional: JavaScriptRepresentable where Wrapped: JavaScriptRepresentable {
+  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+    if value.isNull() || value.isUndefined() {
+      return nil
     }
-    if let JSIRepresentableType = Self.self as? JSIRepresentable.Type {
-      return JSIRepresentableType.fromJSIValue(value.pointee, in: jsiRuntime.pointee) as! Self
-    }
-    FatalError.unimplemented()
+    return Wrapped.fromJavaScriptValue(value)
   }
 
-  func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    if let self = self as? JSIRepresentable {
-      return JavaScriptValue(runtime, self.toJSIValue(in: runtime.pointee))
+  public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    guard let self else {
+      return .null
     }
-    FatalError.unimplemented()
+    return self.toJavaScriptValue(in: runtime)
   }
 }
 
-extension Optional: JavaScriptRepresentable where Wrapped: JavaScriptRepresentable {}
-extension Array: JavaScriptRepresentable where Element: JavaScriptRepresentable {}
-extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaScriptRepresentable {}
+extension Array: JavaScriptRepresentable where Element: JavaScriptRepresentable {
+  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+    return value.getArray().map { Element.fromJavaScriptValue($0) }
+  }
+
+  public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    let values = map { $0.toJavaScriptValue(in: runtime) }
+    return JavaScriptArray(runtime, items: values).asValue()
+  }
+}
+
+extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaScriptRepresentable {
+  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+    let object = value.getObject()
+    var result: Self = [:]
+
+    for key in object.getPropertyNames() {
+      result[key] = Value.fromJavaScriptValue(object.getProperty(key))
+    }
+    return result
+  }
+
+  public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    let object = JavaScriptObject(runtime)
+
+    for (key, value) in self {
+      object.setProperty(key, value: value.toJavaScriptValue(in: runtime))
+    }
+    return object.asValue()
+  }
+}

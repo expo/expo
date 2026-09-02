@@ -1,9 +1,7 @@
-/* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   setupServer,
@@ -12,6 +10,7 @@ import {
   RUNTIME_WORKERD,
 } from '../../utils/runtime';
 import { findProjectFiles } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

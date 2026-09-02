@@ -19,7 +19,7 @@ export function Navigation({ routes }: NavigationProps) {
   const persistScroll = usePersistScroll('navigation');
 
   return (
-    <nav className="bg-subtle dark:bg-default h-full w-[280px]">
+    <nav className="h-full w-70 bg-subtle dark:bg-default">
       <LayoutScroll {...persistScroll}>
         {routes.map(route => navigationRenderer(route, activeRoutes))}
       </LayoutScroll>

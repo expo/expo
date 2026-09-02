@@ -16,5 +16,6 @@ data class AssetInfo(
   @Field val width: Int,
   @Field val mediaType: MediaType,
   @Field val modificationTime: Long?,
-  @Field val uri: Uri
+  @Field val uri: Uri,
+  @Field val isFavorite: Boolean
 ) : Record

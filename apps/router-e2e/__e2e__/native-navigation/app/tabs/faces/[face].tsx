@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 
 import { useFaceColors } from '../../../components/faces';
+import { TabBarHiddenToggle } from '../../../components/tab-bar-hidden-context';
 
 export default function Index() {
   const [shouldPerformHeavyComputation, setShouldPerformHeavyComputation] = useState(false);
@@ -29,8 +30,14 @@ export default function Index() {
         contentContainerStyle={{
           height: '150%',
         }}>
+        <TabBarHiddenToggle />
         <View
-          style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 8,
+          }}>
           <Text style={{ color: '#fff' }}>Heavy Computation</Text>
           <Switch
             value={shouldPerformHeavyComputation}
@@ -39,7 +46,12 @@ export default function Index() {
         </View>
         <Text
           testID="face-id"
-          style={{ color: '#fff', fontSize: 32, fontWeight: 'bold', marginTop: 16 }}>
+          style={{
+            color: '#fff',
+            fontSize: 32,
+            fontWeight: 'bold',
+            marginTop: 16,
+          }}>
           Face {face}
         </Text>
         <Link href="/404" style={{ color: '#fff', fontSize: 18, marginTop: 16 }}>

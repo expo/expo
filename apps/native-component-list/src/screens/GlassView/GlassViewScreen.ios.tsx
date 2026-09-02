@@ -11,9 +11,10 @@ import {
 } from 'expo-glass-effect';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
+import { BodyText } from '../../components/BodyText';
 import GlassOpacityAnimationExample from './GlassOpacityAnimationExample.ios';
 
 // Static color options for tinting
@@ -51,14 +52,15 @@ export default function GlassViewScreen() {
   const translateY = useSharedValue(100);
   const startPosition = useSharedValue({ x: 0, y: 0 });
 
-  const panGesture = Gesture.Pan()
-    .onStart(() => {
+  const panGesture = usePanGesture({
+    onActivate: () => {
       startPosition.value = { x: translateX.value, y: translateY.value };
-    })
-    .onUpdate((event) => {
+    },
+    onUpdate: (event) => {
       translateX.value = startPosition.value.x + event.translationX;
       translateY.value = startPosition.value.y + event.translationY;
-    });
+    },
+  });
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -68,13 +70,13 @@ export default function GlassViewScreen() {
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-      <Text style={styles.title}>Glass Effect View (iOS 26+)</Text>
-      <Text style={styles.subtitle}>
+      <BodyText style={styles.title}>Glass Effect View (iOS 26+)</BodyText>
+      <BodyText style={styles.subtitle}>
         Liquid Glass Available: {isLiquidGlassAvailable() ? 'Yes' : 'No'}
-      </Text>
-      <Text style={styles.subtitle}>
+      </BodyText>
+      <BodyText style={styles.subtitle}>
         Glass Effect API Available: {isGlassEffectAPIAvailable() ? 'Yes' : 'No'}
-      </Text>
+      </BodyText>
 
       <View style={styles.backgroundContainer}>
         <Image

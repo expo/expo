@@ -18,6 +18,24 @@ export const NETWORK_RESPONSE_STORAGE = new Map<
   DebuggerResponse<NetworkGetResponseBody>['result']
 >();
 
+// Bounded so an unauthenticated client on `/inspector/network` cannot grow this
+// map without limit. `Map` preserves insertion order, so the first key is the
+// oldest entry — drop it on overflow (FIFO).
+const MAX_NETWORK_RESPONSES = 512;
+
+export function recordNetworkResponse(
+  requestId: string,
+  info: DebuggerResponse<NetworkGetResponseBody>['result']
+) {
+  NETWORK_RESPONSE_STORAGE.set(requestId, info);
+  if (NETWORK_RESPONSE_STORAGE.size > MAX_NETWORK_RESPONSES) {
+    const oldestKey = NETWORK_RESPONSE_STORAGE.keys().next().value;
+    if (oldestKey !== undefined) {
+      NETWORK_RESPONSE_STORAGE.delete(oldestKey);
+    }
+  }
+}
+
 export class NetworkResponseHandler extends MessageHandler {
   /** All known responses, mapped by request id */
   storage = NETWORK_RESPONSE_STORAGE;
@@ -25,7 +43,7 @@ export class NetworkResponseHandler extends MessageHandler {
   handleDeviceMessage(message: DeviceRequest<NetworkReceivedResponseBody>) {
     if (message.method === 'Expo(Network.receivedResponseBody)') {
       const { requestId, ...requestInfo } = message.params;
-      this.storage.set(requestId, requestInfo);
+      recordNetworkResponse(requestId, requestInfo);
       return true;
     }
 

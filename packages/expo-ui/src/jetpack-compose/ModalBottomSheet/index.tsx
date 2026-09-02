@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { Ref, ReactNode, ComponentType } from 'react';
 import type { ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -42,7 +43,7 @@ export type ModalBottomSheetProperties = {
   shouldDismissOnClickOutside?: boolean;
 };
 
-export type ModalBottomSheetProps = {
+export interface ModalBottomSheetProps {
   /**
    * The children of the `ModalBottomSheet` component.
    * Can include a `ModalBottomSheet.DragHandle` slot for a custom drag handle.
@@ -62,6 +63,12 @@ export type ModalBottomSheetProps = {
    * @default false
    */
   skipPartiallyExpanded?: boolean;
+  /**
+   * Opens the sheet fully expanded on first composition. Ignored when `skipPartiallyExpanded` is `true`.
+   * @default false
+   * @platform android
+   */
+  initialFullyExpanded?: boolean;
   /**
    * The background color of the bottom sheet.
    */
@@ -93,7 +100,7 @@ export type ModalBottomSheetProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onDismissRequest'> & {
   onDismissRequest: () => void;
@@ -111,6 +118,7 @@ function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetPro
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     skipPartiallyExpanded: props.skipPartiallyExpanded ?? false,
+    initialFullyExpanded: props.initialFullyExpanded ?? false,
     onDismissRequest: () => {
       onDismissRequest?.();
     },
@@ -131,7 +139,13 @@ function DragHandle(props: { children: ReactNode }) {
  * A Material Design modal bottom sheet.
  */
 function ModalBottomSheetComponent(props: ModalBottomSheetProps) {
-  return <ModalBottomSheetNativeView {...transformProps(props)} />;
+  const { children, ...rest } = props;
+  // The whole sheet, drag handle included, is presented in its own window, so all of it is marked.
+  return (
+    <ModalBottomSheetNativeView {...transformProps(rest as ModalBottomSheetProps)}>
+      <PresentedContent>{children}</PresentedContent>
+    </ModalBottomSheetNativeView>
+  );
 }
 
 ModalBottomSheetComponent.DragHandle = DragHandle;

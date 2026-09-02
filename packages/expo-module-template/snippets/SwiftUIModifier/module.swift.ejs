@@ -1,0 +1,9 @@
+    OnCreate {
+      ViewModifierRegistry.register("<%= project.swiftUIModifierName.charAt(0).toLowerCase() + project.swiftUIModifierName.slice(1) %>") { params, appContext, _ in
+        return try <%- project.swiftUIModifierName %>(from: params, appContext: appContext)
+      }
+    }
+
+    OnDestroy {
+      ViewModifierRegistry.unregister("<%= project.swiftUIModifierName.charAt(0).toLowerCase() + project.swiftUIModifierName.slice(1) %>")
+    }

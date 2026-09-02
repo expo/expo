@@ -1,4 +1,4 @@
-appId: dev.expo.Payments
+appId: dev.expo.payments
 jsEngine: graaljs
 ---
 - openLink: bareexpo://components/video/video-view-surface-type

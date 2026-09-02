@@ -4,8 +4,8 @@
 
 import { useEffect, useState, useMemo } from 'react';
 
-import decode from './decode';
 import { isBlurhashString } from '../resolveSources';
+import decode from './decode';
 
 const DEFAULT_SIZE = {
   width: 32,

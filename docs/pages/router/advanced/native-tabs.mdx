@@ -10,7 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
-import { DiffBlock } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { TabsGroup, Tabs, Tab } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
@@ -51,7 +51,7 @@ The above file structure produces a layout with a tab bar at the bottom of the s
 
 <ContentSpotlight
   alt="A screenshot of a tab bar with two tabs: Home and Settings."
-  src="/static/images/expo-router/native-tabs.png"
+  src="/static/images/expo-router/native-tabs.webp"
   className="max-w-[540px]"
 />
 
@@ -149,11 +149,37 @@ When you want to customize the tab bar item, we recommend using the components A
 
 You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `md` prop for Android material symbols, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
-Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` or `src` prop to specify different icons for the default and selected states (currently not supported on Android).
+Alternatively, you can pass `{default: ..., selected: ...}` to the `sf`, `xcasset`, `drawable`, `md`, or `src` prop to specify different icons for the default and selected states.
+
+> **info** On Android, distinct selected icons require SDK 56 or later (powered by `react-native-screens` 4.25+). On SDK 55, `src` accepts the object form but the selected variant is ignored and the default icon is used in both states. The `drawable` and `md` props accept only a string on SDK 55, so pass a single icon name that is used for both states.
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 56 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'house', selected: 'house.fill' }}
+          md={{ default: 'home', selected: 'home_filled' }}
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -393,6 +419,64 @@ export default function TabLayout() {
 
 > **info** Asset catalog icons support the `renderingMode` prop, just like `src` icons. When `iconColor` is set, icons default to `template` rendering. Otherwise, they default to `original`.
 
+#### Vector icons
+
+You can render icons from an icon font, such as the ones provided by [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons), by passing an image source to the `src` prop. Each icon set exposes a `getImageSourceSync` method that rasterizes a glyph to an image source you can pass directly to `src`.
+
+This is useful on Android, where the built-in `md` prop only renders outlined Material Symbols. An icon font like Material Design Icons provides both outlined and filled glyphs (for example, `home-outline` and `home`), so you can show distinct default and selected icons.
+
+To start, install the icon set you want to use along with `@react-native-vector-icons/get-image`, which provides the native module that `getImageSourceSync` relies on. The example below uses the `@react-native-vector-icons/material-design-icons` icon set:
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image',
+    ],
+    yarn: [
+      '$ yarn expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image',
+    ],
+    pnpm: [
+      '$ pnpm expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image',
+    ],
+    bun: [
+      '$ bun expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image',
+    ],
+  }}
+/>
+
+> **info** `getImageSourceSync` requires a development build. Rebuild your app after installing the packages so the native module and icon font are bundled.
+
+`getImageSourceSync` is synchronous, so compute the image sources once at module scope rather than on each render. Combine `src` with `sf` to use the vector icon on Android and SF Symbols on iOS. On iOS, `sf` takes precedence over `src`; on Android, the icon falls back to `src`.
+
+```tsx src/app/_layout.tsx
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+const homeIcon = MaterialDesignIcons.getImageSourceSync('home', 24, 'black');
+const starOutlineIcon = MaterialDesignIcons.getImageSourceSync('star-outline', 24, 'black');
+const starIcon = MaterialDesignIcons.getImageSourceSync('star', 24, 'black');
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        {/* `sf` is used on iOS, `src` (the vector icon) on Android. */}
+        <NativeTabs.Trigger.Icon sf="house" src={homeIcon} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="explore">
+        {/* Outlined when unselected, filled when selected. */}
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'star', selected: 'star.fill' }}
+          src={{ default: starOutlineIcon, selected: starIcon }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+> **info** Distinct selected icons for `src` on Android require SDK 56 or later. See the note at the [start of this section](#icon).
+
 ### Label
 
 You can use the `Label` component to customize the label displayed in the tab bar item. The `Label` component accepts a string label passed as a child. If no label is provided, the tab bar item will use the route name as the label.
@@ -497,7 +581,7 @@ export default function TabLayout() {
 
 <ContentSpotlight
   alt="A screenshot of a tab bar with badges on the Messages and Settings tabs."
-  src="/static/images/expo-router/native-tabs-badges.png"
+  src="/static/images/expo-router/native-tabs-badges.webp"
   className="max-w-[540px]"
 />
 
@@ -741,7 +825,7 @@ export default function CheckoutScreen() {
 
 <ContentSpotlight
   alt="A screenshot of a tab bar with separate search tab."
-  src="/static/images/expo-router/ios-26-search-tab.png"
+  src="/static/images/expo-router/ios-26-search-tab.webp"
   className="max-w-[540px]"
 />
 
@@ -797,7 +881,7 @@ export default function TabLayout() {
 
 <ContentSpotlight
   alt="A screenshot of a tab bar search."
-  src="/static/images/expo-router/ios-26-search-bar.png"
+  src="/static/images/expo-router/ios-26-search-bar.webp"
   className="max-w-[540px]"
 />
 
@@ -986,6 +1070,8 @@ const styles = StyleSheet.create({
 ```
 
 ### Keyboard avoidance on Android
+
+> **info** This feature is available in SDK 56 and later.
 
 By default on Android, the keyboard overlays the native tab bar. To have the tab bar lift above the keyboard instead, pass the `tabBarRespectsIMEInsets` prop on `NativeTabs`:
 
@@ -1197,11 +1283,12 @@ Extract the tab UI into a component with platform-specific extensions. A single 
 />
 
 ```tsx app/_layout.tsx
+import { ThemeProvider, DefaultTheme } from 'expo-router';
 import AppTabs from '@/components/app-tabs';
 
 export default function Layout() {
   return (
-    <ThemeProvider>
+    <ThemeProvider value={DefaultTheme}>
       <AppTabs />
     </ThemeProvider>
   );
@@ -1338,12 +1425,14 @@ export default function HomeScreen() {
 
 <Collapsible summary="White background flashes when switching tabs on iOS 26">
 
-This happens because React Navigation's default theme uses a white background color. To fix this, wrap your app in React Navigation's `ThemeProvider` with the appropriate theme.
+This happens because the default theme uses a white background color. To fix this, wrap your app in Expo Router's `ThemeProvider` with the appropriate theme.
+
+> **info** `ThemeProvider`, `DarkTheme`, and `DefaultTheme` are exported from `expo-router` in SDK 56 and later. For SDK 55, import them from `@react-navigation/native` instead.
 
 **For apps supporting both light and dark modes:**
 
 ```tsx src/app/_layout.tsx
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useColorScheme } from 'react-native';
 
@@ -1368,7 +1457,7 @@ export default function TabLayout() {
 **For dark-mode-only apps:**
 
 ```tsx src/app/_layout.tsx
-import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -1387,6 +1476,16 @@ If you need a specific background color that doesn't match the default themes, y
 ```tsx
 <NativeTabs.Trigger name="index" contentStyle={{ backgroundColor: '#1a1a2e' }}>
 ```
+
+</Collapsible>
+
+<Collapsible summary="The tab bar background props have no effect on iOS 26">
+
+On iOS 26 and later, the system draws the tab bar with Liquid Glass and derives its background from the content behind it. The `backgroundColor`, `blurEffect`, `shadowColor`, and `disableTransparentOnScrollEdge` props affect the iOS tab bar only on iOS 18 and earlier.
+
+This also means the tab bar does not follow a color scheme that exists only in JavaScript. Setting the color scheme with [`Appearance.setColorScheme`](https://reactnative.dev/docs/appearance#setcolorscheme) changes the interface style that other native views resolve against, but it does not change the tab bar background either.
+
+To make the tab bar match a dark UI on iOS 26, make the content behind the tab bar dark, as described in [White background flashes when switching tabs on iOS 26](#white-background-flashes-when-switching-tabs-on).
 
 </Collapsible>
 
@@ -1412,14 +1511,16 @@ export default function HomeScreen() {
 
 <Collapsible summary="Liquid glass header buttons flicker in dark mode on iOS 26">
 
-Header buttons with liquid glass styling may flicker or flash their background when switching tabs in dark mode on iOS 26. This happens because React Navigation's default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
+Header buttons with liquid glass styling may flicker or flash their background when switching tabs in dark mode on iOS 26. This happens because the default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
 
-The fix is the same as for the white background flash issue: wrap your layout with `<ThemeProvider>` from `@react-navigation/native` using the appropriate theme.
+The fix is the same as for the white background flash issue: wrap your layout with `<ThemeProvider>` from `expo-router` using the appropriate theme.
+
+> **info** `ThemeProvider`, `DarkTheme`, and `DefaultTheme` are exported from `expo-router` in SDK 56 and later. For SDK 55, import them from `@react-navigation/native` instead.
 
 **For apps supporting both light and dark modes:**
 
 ```tsx app/_layout.tsx
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useColorScheme } from 'react-native';
 
@@ -1444,7 +1545,7 @@ export default function TabLayout() {
 **For dark-mode-only apps:**
 
 ```tsx app/_layout.tsx
-import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -1459,6 +1560,38 @@ export default function TabLayout() {
 </Collapsible>
 
 ## Known limitations
+
+<Collapsible summary="The default and selected icons share one rendering mode on iOS">
+
+On iOS, a tab's default and selected image icons must use the same [rendering mode](#icon-rendering-mode). When they resolve to different modes, both icons use the default icon's mode and Expo Router logs a warning in development.
+
+The modes disagree when an icon color applies to only one of the states. This happens when you set `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop without also setting a color for the default state. A color implies `'template'` rendering, while an uncolored icon defaults to `'original'`. Setting `renderingMode` for only one state has the same effect.
+
+To render both icons the same way, set a color for both states, or set `renderingMode` on the `Icon`:
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    // `iconColor` applies to both states, so both icons render as templates
+    <NativeTabs iconColor={{ default: 'gray', selected: 'black' }}>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon
+          src={{
+            default: require('../assets/setting_icon.png'),
+            selected: require('../assets/selected_setting_icon.png'),
+          }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+This limitation doesn't apply to SF Symbols, which the system always tints.
+
+</Collapsible>
 
 <Collapsible summary="A limit of 5 tabs on Android">
 

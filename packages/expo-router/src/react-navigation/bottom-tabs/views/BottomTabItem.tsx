@@ -11,11 +11,11 @@ import {
   View,
 } from 'react-native';
 
-import { TabBarIcon } from './TabBarIcon';
 import { Color } from '../../../utils/color';
 import { getLabel, Label, PlatformPressable } from '../../elements';
 import { type Route, useTheme } from '../../native';
 import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
+import { TabBarIcon } from './TabBarIcon';
 
 type Props = {
   /**
@@ -105,11 +105,11 @@ type Props = {
    */
   inactiveTintColor?: ColorValue;
   /**
-   * Background color for item when its active.
+   * Background color for item when it's active.
    */
   activeBackgroundColor?: ColorValue;
   /**
-   * Background color for item when its inactive.
+   * Background color for item when it's inactive.
    */
   inactiveBackgroundColor?: ColorValue;
   /**

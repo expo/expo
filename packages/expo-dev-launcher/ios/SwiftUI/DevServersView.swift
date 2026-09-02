@@ -23,6 +23,7 @@ private func sanitizeUrlString(_ urlString: String) -> String? {
 }
 
 private let urlInputAnimation = Animation.easeInOut(duration: 0.3)
+private let keyboardShortcuts = ["http://", "https://", "127.0.0.1", ":", "/"]
 
 struct DevServersView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
@@ -49,11 +50,18 @@ struct DevServersView: View {
 
       LazyVStack(alignment: .leading, spacing: 6) {
         if viewModel.devServers.isEmpty {
-          Text("No development servers found")
-            .foregroundColor(.primary)
-            .multilineTextAlignment(.leading)
+          // Nothing left to search for when discovery found servers and the filters hid them all.
+          if viewModel.hiddenDevServerCount == 0 && viewModel.permissionStatus != .denied {
+            HStack {
+              Text("Searching for development servers...")
+                .foregroundColor(.secondary)
+              Spacer()
+              ProgressView()
+                .controlSize(.small)
+            }
             .padding()
-          Divider()
+            Divider()
+          }
         } else {
           ForEach(viewModel.devServers, id: \.self) { server in
             DevServerRow(server: server) {
@@ -61,17 +69,16 @@ struct DevServersView: View {
             }
           }
         }
+
+        if viewModel.hiddenDevServerCount > 0 {
+          HiddenDevServersNotice(count: viewModel.hiddenDevServerCount)
+        }
+
         if viewModel.hasEmbeddedBundle {
           embeddedBundleRow
         }
         enterUrl
       }
-    }
-    .onAppear {
-      viewModel.startServerDiscovery()
-    }
-    .onDisappear {
-      viewModel.stopServerDiscovery()
     }
   }
 
@@ -100,15 +107,39 @@ struct DevServersView: View {
       }
 
       if showingURLInput {
-        TextField("exp://", text: $urlText)
+        TextField("http://", text: $urlText)
           .onSubmit {
             connectToURL()
           }
           .submitLabel(.go)
         #if !os(macOS)
+          .keyboardType(.URL)
           .autocapitalization(.none)
         #endif
           .disableAutocorrection(true)
+          .toolbar {
+            #if os(tvOS)
+            ToolbarItemGroup(placement: .automatic) {
+              ForEach(keyboardShortcuts, id: \.self) { shortcut in
+                Button {
+                  urlText += shortcut
+                } label: {
+                  Text(shortcut)
+                }
+              }
+            }
+            #else
+            ToolbarItemGroup(placement: .keyboard) {
+              ForEach(keyboardShortcuts, id: \.self) { shortcut in
+                Button {
+                  urlText += shortcut
+                } label: {
+                  Text(shortcut)
+                }
+              }
+            }
+            #endif
+          }
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
           .foregroundColor(.primary)
@@ -142,13 +173,17 @@ struct DevServersView: View {
         Text("Load embedded bundle")
           .foregroundColor(.primary)
         Spacer()
-        if viewModel.isLoadingLocalBundle {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.isLoadingLocalBundle {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
@@ -197,6 +232,28 @@ struct DevServersView: View {
   }
 }
 
+struct HiddenDevServersNotice: View {
+  let count: Int
+
+  private var message: String {
+    let servers = count == 1 ? "1 server" : "\(count) servers"
+    return "\(servers) hidden by your discovery filters. Change them in Settings."
+  }
+
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: "line.3.horizontal.decrease.circle")
+        .foregroundColor(.secondary)
+      Text(message)
+        .font(.system(size: 13))
+        .foregroundColor(.secondary)
+      Spacer()
+    }
+    .padding(.horizontal)
+    .padding(.vertical, 8)
+  }
+}
+
 struct DevServerRow: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   let server: DevServer
@@ -231,13 +288,17 @@ struct DevServerRow: View {
 
         Spacer()
 
-        if viewModel.isLoadingServer {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.isLoadingServer {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

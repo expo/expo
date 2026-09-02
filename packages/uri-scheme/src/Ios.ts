@@ -9,6 +9,7 @@ import * as path from 'path';
 
 import type { Options } from './Options';
 import { CommandError } from './Options';
+import { escapeUriParams } from './URIScheme';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 
@@ -145,16 +146,12 @@ function writeConfig(path: string, plistObject: any) {
  *
  * @example
  * - `myapp://(tabs)/explore` -> `myapp://(tabs)/explore`
- * - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://(tabs)/explore?test=a%257Cb%257Cc`
+ * - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://(tabs)/explore?test=a%7Cb%7Cc`
  */
 export function escapeUri(uri: string) {
   if (!uri.includes('?')) return uri;
 
-  const [uriWithoutParams, uriParams] = uri.split('?', 2);
-  const escapedUriParams = new URLSearchParams(uriParams);
-  for (const [key, value] of escapedUriParams.entries()) {
-    escapedUriParams.set(key, encodeURIComponent(decodeURIComponent(value)));
-  }
+  const [uriWithoutParams, uriParams = ''] = uri.split('?', 2);
 
-  return `${uriWithoutParams}?${escapedUriParams.toString()}`;
+  return `${uriWithoutParams}?${escapeUriParams(uriParams)}`;
 }

@@ -1,37 +1,15 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #include "FabricComponentsRegistry.h"
+#include "ExpoComponentDescriptorFactory.h"
 #include "../types/FrontendConverterProvider.h"
+#include <CoreComponentsRegistry.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo {
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wextern-initializer"
-// Clang think that we don't need to initialize the extern variable here, but we do.
-extern StatePropMapType statePropMap = {};
-#pragma clang diagnostic pop
-
-AndroidExpoViewComponentDescriptor::Unique concreteExpoComponentDescriptorConstructor(
-  const react::ComponentDescriptorParameters &parameters
-) {
-  auto descriptor = std::make_unique<AndroidExpoViewComponentDescriptor>(
-    parameters,
-    react::RawPropsParser(/*useRawPropsJsiValue=*/true)
-  );
-
-  if (statePropMap.contains(std::static_pointer_cast<std::string const>(parameters.flavor))) {
-    descriptor->setStateProps(
-      statePropMap.at(
-        std::static_pointer_cast<std::string const>(parameters.flavor)
-      )
-    );
-  }
-
-  return descriptor;
-}
 
 // static
 void FabricComponentsRegistry::registerNatives() {

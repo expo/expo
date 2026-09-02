@@ -4,9 +4,29 @@ import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { isIgnoredEnvKey, isLocalEnvKey, isUnsafeAllowedEnvKey } from './constants';
 import { parse, expand, type EnvOutput } from './parse';
 
 const debug = require('debug')('expo:env') as typeof console.log;
+
+type EnvBackupStore = WeakMap<EnvOutput, Map<string, string | undefined>>;
+
+const ORIGINAL_ENV_BACKUP_KEY = Symbol.for('@expo/env.originalEnvBackup.v1');
+const globalStore = globalThis as Record<symbol, EnvBackupStore | undefined>;
+const originalEnvBackup: EnvBackupStore =
+  globalStore[ORIGINAL_ENV_BACKUP_KEY] ?? (globalStore[ORIGINAL_ENV_BACKUP_KEY] = new WeakMap());
+
+function rememberOriginal(systemEnv: EnvOutput, key: string): void {
+  if (isUnsafeAllowedEnvKey(key)) return;
+  let backup = originalEnvBackup.get(systemEnv);
+  if (!backup) {
+    backup = new Map();
+    originalEnvBackup.set(systemEnv, backup);
+  }
+  if (!backup.has(key)) {
+    backup.set(key, systemEnv[key]);
+  }
+}
 
 /** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
 export function isEnabled() {
@@ -18,6 +38,56 @@ export const KNOWN_MODES = ['development', 'test', 'production'];
 
 /** The environment variable name to use when marking the environment as loaded */
 export const LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
+
+function getLoadedEnvKeys(loadedEnvMarker: string | undefined): string[] {
+  if (!loadedEnvMarker) {
+    return [];
+  }
+
+  try {
+    const loadedKeys = JSON.parse(loadedEnvMarker);
+    return Array.isArray(loadedKeys)
+      ? loadedKeys.filter((key): key is string => typeof key === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Modes used by Expo commands and tools. */
+export type EnvMode = 'development' | 'production';
+
+/**
+ * Set `NODE_ENV` for an Expo command or tool.
+ * Existing values are replaced.
+ *
+ * Pass a custom `systemEnv` to set the value without changing `process.env`.
+ */
+export function setNodeEnv(
+  mode: EnvMode,
+  { systemEnv = process.env }: { systemEnv?: EnvOutput } = {}
+) {
+  systemEnv.NODE_ENV = mode;
+  return systemEnv;
+}
+
+/** @internal Read and remove the config mode passed by a parent Expo tool. */
+export function consumeConfigEnvMode({ systemEnv = process.env }: { systemEnv?: EnvOutput } = {}):
+  | EnvMode
+  | undefined {
+  const mode = systemEnv.__EXPO_CONFIG_MODE;
+  delete systemEnv.__EXPO_CONFIG_MODE;
+
+  if (!mode) {
+    return undefined;
+  }
+  if (mode !== 'development' && mode !== 'production') {
+    throw new Error(
+      `Invalid __EXPO_CONFIG_MODE value: "${mode}". Use "development" or "production".`
+    );
+  }
+  return mode;
+}
 
 /**
  * Get a list of all `.env*` files based on the `NODE_ENV` mode.
@@ -82,7 +152,7 @@ export function parseEnvFiles(
 ) {
   if (!isEnabled()) {
     debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
-    return { env: {}, files: [] };
+    return { env: {}, files: [], sensitiveLoadedKeys: [] as string[] };
   }
 
   // Load environment variables from .env* files. Suppress warnings using silent
@@ -93,6 +163,9 @@ export function parseEnvFiles(
   // https://github.com/motdotla/dotenv-expand
   const loadedEnvVars: EnvOutput = {};
   const loadedEnvFiles: string[] = [];
+  const blockedByFile: Record<string, string[]> = {};
+  const localOnlyByFile: Record<string, string[]> = {};
+  const sensitive = new Set<string>();
 
   // Iterate over each dotenv file in lowest prio to highest prio order.
   // This step won't write to the process.env, but will overwrite the parsed envs.
@@ -100,11 +173,25 @@ export function parseEnvFiles(
     try {
       const envFileContent = fs.readFileSync(envFile, 'utf8');
       const envFileParsed = parse(envFileContent);
+      const isLocalFile = path.basename(envFile).endsWith('.local');
 
       loadedEnvFiles.push(envFile);
       debug(`Loaded environment variables from: ${envFile}`);
 
       for (const key of Object.keys(envFileParsed)) {
+        if (isIgnoredEnvKey(key)) {
+          (blockedByFile[envFile] ||= []).push(key);
+          debug(`"${key}" is blocked from dotenv files, skipping in: ${envFile}`);
+          continue;
+        }
+        if (!isLocalFile && isLocalEnvKey(key)) {
+          (localOnlyByFile[envFile] ||= []).push(key);
+          debug(`"${key}" is only allowed in .local env files, skipping in: ${envFile}`);
+          continue;
+        }
+        if (isLocalFile && isLocalEnvKey(key)) {
+          sensitive.add(key);
+        }
         if (typeof loadedEnvVars[key] !== 'undefined') {
           debug(`"${key}" is already defined and overwritten by: ${envFile}`);
         }
@@ -126,16 +213,57 @@ export function parseEnvFiles(
     }
   });
 
+  const violations: string[] = [];
+  if (Object.keys(blockedByFile).length > 0) {
+    violations.push(formatBlockedViolation(blockedByFile));
+  }
+  if (Object.keys(localOnlyByFile).length > 0) {
+    violations.push(formatLocalOnlyViolation(localOnlyByFile));
+  }
+  if (violations.length > 0) {
+    throw new Error(violations.join('\n\n'));
+  }
+
+  const env = expand(loadedEnvVars, systemEnv);
+  for (const key in env) {
+    rememberOriginal(systemEnv, key);
+  }
+
   return {
-    env: expand(loadedEnvVars, systemEnv),
+    env,
     files: loadedEnvFiles.reverse(),
+    sensitiveLoadedKeys: [...sensitive],
   };
+}
+
+function formatViolationFiles(byFile: Record<string, string[]>): string {
+  return Object.entries(byFile)
+    .map(([file, keys]) => `  ${path.basename(file)}: ${keys.join(', ')}`)
+    .join('\n');
+}
+
+function formatBlockedViolation(byFile: Record<string, string[]>): string {
+  return [
+    'Refused to load dangerous environment variables from .env files.',
+    'Use EXPO_UNSAFE_DOTENV_KEYS in your shell environment to allow a non-internal key.',
+    '',
+    formatViolationFiles(byFile),
+  ].join('\n');
+}
+
+function formatLocalOnlyViolation(byFile: Record<string, string[]>): string {
+  return [
+    'Refused to load personal environment variables from a non-.local env file.',
+    'Move them to a .local env file.',
+    '',
+    formatViolationFiles(byFile),
+  ].join('\n');
 }
 
 /**
  * Parse all environment variables using the list of `.env*` files, and mutate the system environment with these variables.
  * This won't override existing environment variables defined in the system environment.
- * Once the mutations are done, this will also set a propert `__EXPO_ENV=true` on the system env to avoid multiple mutations.
+ * Once the mutations are done, this will also set a property `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
 export function loadEnvFiles(
@@ -162,12 +290,14 @@ export function loadEnvFiles(
     if (typeof systemEnv[key] !== 'undefined') {
       debug(`"${key}" is already defined and IS NOT overwritten`);
     } else {
+      rememberOriginal(systemEnv, key);
       systemEnv[key] = parsed.env[key];
       loadedEnvKeys.push(key);
     }
   }
 
   // Mark the environment as loaded
+  rememberOriginal(systemEnv, LOADED_ENV_NAME);
   systemEnv[LOADED_ENV_NAME] = JSON.stringify(loadedEnvKeys);
 
   return { result: 'loaded' as const, ...parsed, loaded: loadedEnvKeys };
@@ -190,17 +320,96 @@ export function parseProjectEnv(
 /**
  * Parse all environment variables using the detected list of `.env*` files from a project.
  * This won't override existing environment variables defined in the system environment.
- * Once the mutations are done, this will also set a propert `__EXPO_ENV=true` on the system env to avoid multiple mutations.
+ * A development or production mode also sets `NODE_ENV` before loading.
+ * Once the mutations are done, this will also set a property `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
 export function loadProjectEnv(
   projectRoot: string,
   options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof loadEnvFiles>[1]
 ) {
+  if (options?.mode === 'development' || options?.mode === 'production') {
+    setNodeEnv(options.mode, { systemEnv: options.systemEnv });
+  }
+
   return loadEnvFiles(
     getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
     options
   );
+}
+
+/**
+ * Get a fresh clone of the system environment with dotenv changes reverted to their pre-load
+ * values. Values set by `setNodeEnv` are not reverted. The result is intended to be
+ * passed as the `env` option of `child_process.spawn` / `@expo/spawn-async`
+ * when a subprocess should observe the environment as it was before any
+ * `.env*` files were loaded — for example, when resolving SDK tooling paths
+ * that should not be influenced by project-controlled `.env` values.
+ *
+ * An inherited `__EXPO_ENV_LOADED` marker identifies dotenv values loaded by a parent process.
+ *
+ * Each call returns a new object so callers may mutate it freely.
+ *
+ * @param systemEnv The env to revert against; defaults to `process.env`.
+ */
+export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
+  const result: EnvOutput = { ...systemEnv };
+  const backup = originalEnvBackup.get(systemEnv);
+  if (backup) {
+    for (const [key, original] of backup) {
+      if (original === undefined) {
+        delete result[key];
+      } else {
+        result[key] = original;
+      }
+    }
+  }
+
+  // A new process cannot access its parent's in-memory backup, so use the inherited marker to
+  // remove the parent's dotenv values.
+  for (const key of getLoadedEnvKeys(result[LOADED_ENV_NAME])) {
+    if (!isUnsafeAllowedEnvKey(key)) {
+      delete result[key];
+    }
+  }
+  delete result[LOADED_ENV_NAME];
+
+  return result;
+}
+
+/**
+ * Get the pre-load value of a single environment variable as recorded by
+ * `@expo/env`. Falls through to the value in `systemEnv` for keys that
+ * `@expo/env` never touched. Intended for read-sites that resolve filesystem
+ * paths or executables from a single env var.
+ *
+ * An inherited `__EXPO_ENV_LOADED` marker identifies dotenv values loaded by a parent process.
+ *
+ * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into
+ * via the escape hatch return their currently loaded value, not the original.
+ *
+ * @param key The environment variable to read.
+ * @param systemEnv The env to read against; defaults to `process.env`.
+ */
+export function getOriginalEnvValue(
+  key: string,
+  systemEnv: EnvOutput = process.env
+): string | undefined {
+  const backup = originalEnvBackup.get(systemEnv);
+  const marker = backup?.has(LOADED_ENV_NAME)
+    ? backup.get(LOADED_ENV_NAME)
+    : systemEnv[LOADED_ENV_NAME];
+
+  if (
+    key === LOADED_ENV_NAME ||
+    (!isUnsafeAllowedEnvKey(key) && getLoadedEnvKeys(marker).includes(key))
+  ) {
+    return undefined;
+  }
+  if (backup && backup.has(key)) {
+    return backup.get(key);
+  }
+  return systemEnv[key];
 }
 
 /** Log the loaded environment info from the loaded results */
@@ -220,6 +429,13 @@ export function logLoadedEnv(
 
   // Log the loaded environment variables
   console.log(chalk.gray('env: export', envInfo.loaded.join(' ')));
+
+  // Highlight developer-tool roots / secrets that were loaded from a .local file —
+  // the same keys would be refused from any non-.local file. Surfacing them here
+  // tells the user which "sensitive" values are influencing the build.
+  if (envInfo.result === 'loaded' && envInfo.sensitiveLoadedKeys?.length) {
+    console.log(chalk.yellow('env: export (sensitive)', envInfo.sensitiveLoadedKeys.join(' ')));
+  }
 
   return envInfo;
 }
@@ -246,7 +462,7 @@ export function get(
 ) {
   if (!isEnabled()) {
     debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
-    return { env: {}, files: [] };
+    return { env: {}, files: [], sensitiveLoadedKeys: [] as string[] };
   }
   if (force || !memo) {
     memo = parseProjectEnv(projectRoot, { silent });
@@ -279,6 +495,7 @@ export function load(
       debug(`"${key}" is already defined and IS NOT overwritten`);
     } else {
       // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      rememberOriginal(process.env, key);
       process.env[key] = envInfo.env[key];
       loadedEnvKeys.push(key);
     }
@@ -312,6 +529,11 @@ export function getFiles(mode: string | undefined, { silent = false }: { silent?
 export function parseEnv(contents: string, sourceEnv?: EnvOutput): EnvOutput {
   try {
     const env = parse(contents);
+    for (const key in env) {
+      if (isIgnoredEnvKey(key)) {
+        delete env[key];
+      }
+    }
     return expand(env, sourceEnv || {});
   } catch {
     return {};

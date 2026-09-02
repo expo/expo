@@ -1,5 +1,5 @@
+import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { CommandError } from '../utils/errors';
 
@@ -9,29 +9,23 @@ export function findUpProjectRootOrAssert(cwd: string): string {
   if (!projectRoot) {
     throw new CommandError(`Project root directory not found (working directory: ${cwd})`);
   }
-  return projectRoot;
+  return path.dirname(projectRoot);
 }
 
-function findUpProjectRoot(cwd: string): string | null {
-  const found = resolveFrom.silent(cwd, './package.json');
-  if (found) return path.dirname(found);
-
-  const parent = path.dirname(cwd);
-  if (parent === cwd) return null;
-
-  return findUpProjectRoot(parent);
+function findUpProjectRoot(root: string): string | null {
+  return findFileInParents(root, 'package.json');
 }
 
 /**
  * Find a file in the (closest) parent directories.
  * This will recursively look for the file, until the root directory is reached.
  */
-export function findFileInParents(cwd: string, fileName: string): string | null {
-  const found = resolveFrom.silent(cwd, `./${fileName}`);
-  if (found) return found;
-
-  const parent = path.dirname(cwd);
-  if (parent === cwd) return null;
-
-  return findFileInParents(parent, fileName);
+export function findFileInParents(root: string, fileName: string): string | null {
+  for (let dir = root; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    const file = path.resolve(dir, fileName);
+    if (fs.existsSync(file)) {
+      return file;
+    }
+  }
+  return null;
 }

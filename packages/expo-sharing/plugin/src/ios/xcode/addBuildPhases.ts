@@ -51,6 +51,7 @@ export function addBuildPhases(
     buildPath
   );
 
+  // @ts-expect-error: TODO(@kitten): This was untyped before and is now failing
   xcodeProject
     .buildPhaseObject('PBXCopyFilesBuildPhase', groupName, productFile.target)
     .files.push({
@@ -58,6 +59,7 @@ export function addBuildPhases(
       comment: `${productFile.basename} in ${productFile.group}`,
     });
 
+  // @ts-expect-error: TODO(@kitten): This was untyped before and is now failing
   xcodeProject.addToPbxBuildFileSection(productFile);
 
   xcodeProject.addBuildPhase(

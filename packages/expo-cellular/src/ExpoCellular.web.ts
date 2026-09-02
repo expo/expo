@@ -1,9 +1,6 @@
 import { CellularGeneration } from './Cellular.types';
 
 export default {
-  get allowsVoip(): null {
-    return null;
-  },
   get carrier(): null {
     return null;
   },
@@ -37,9 +34,6 @@ export default {
     }
   },
 
-  async allowsVoipAsync(): Promise<boolean | null> {
-    return null;
-  },
   async getIsoCountryCodeAsync(): Promise<string | null> {
     return null;
   },

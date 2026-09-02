@@ -2,13 +2,18 @@ import Photos
 import ExpoModulesCore
 
 class Query: SharedObject {
+  private let assetMapper: AssetMapper
   private var predicates: [NSPredicate] = []
   private var sortDescriptors: [NSSortDescriptor] = []
   private var album: Album?
   private var limit: Int?
   private var offset: Int?
 
-  func eq(_ assetField: AssetField, _ value: Either<MediaTypeNext, Int>) throws -> Query {
+  init(assetMapper: AssetMapper) {
+    self.assetMapper = assetMapper
+  }
+
+  func eq(_ assetField: AssetField, _ value: EitherOfThree<MediaTypeNext, Int, Bool>) throws -> Query {
     let predicate = try AssetFieldPredicateBuilder.buildPredicate(
       assetField: assetField,
       value: value,
@@ -18,7 +23,7 @@ class Query: SharedObject {
     return self
   }
 
-  func within(_ assetField: AssetField, _ values: Either<[MediaTypeNext], [Int]>) throws -> Query {
+  func within(_ assetField: AssetField, _ values: EitherOfThree<[MediaTypeNext], [Int], [Bool]>) throws -> Query {
     let predicate = try AssetFieldPredicateBuilder.buildPredicate(
       assetField: assetField,
       values: values,
@@ -95,14 +100,24 @@ class Query: SharedObject {
   }
 
   func exe() async throws -> [Asset] {
-    if let result = try await resolveZeroLimitResult() {
-      return result
+    return try await fetchMatchingPHAssets().map {
+      Asset(localIdentifier: $0.localIdentifier, assetMapper: assetMapper)
     }
+  }
 
+  func exeForMetadata() async throws -> [AssetMetadata] {
+    return try await fetchMatchingPHAssets().map {
+      assetMapper.toMetadata($0)
+    }
+  }
+
+  private func fetchMatchingPHAssets() async throws -> [PHAsset] {
+    if try await shouldReturnEmpty() {
+      return []
+    }
     let fetchOptions = constructFetchOptions()
     let phFetchResult = try await fetch(fetchOptions)
     return sliceFetchedAssets(from: phFetchResult)
-      .map { Asset(localIdentifier: $0.localIdentifier) }
   }
 
   private func constructFetchOptions() -> PHFetchOptions {
@@ -125,15 +140,15 @@ class Query: SharedObject {
 
   // fetchLimit set to 0 in the Photo Library returns all assets.
   // The API should return empty array in this scenario.
-  private func resolveZeroLimitResult() async throws -> [Asset]? {
+  private func shouldReturnEmpty() async throws -> Bool {
     guard limit == 0 else {
-      return nil
+      return false
     }
     // Validates the album and throws if it doesn't exist.
     if let album {
       _ = try await album.getCollection()
     }
-    return []
+    return true
   }
 
   private func sliceFetchedAssets(

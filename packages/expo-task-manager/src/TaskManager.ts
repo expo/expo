@@ -1,4 +1,5 @@
-import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo';
+import { LegacyEventEmitter } from 'expo-modules-core';
 import { AppRegistry } from 'react-native';
 
 import ExpoTaskManager from './ExpoTaskManager';
@@ -72,7 +73,12 @@ export interface TaskManagerTask {
   taskName: string;
 
   /**
-   * Type of the task which depends on how the task was registered.
+   * Type of the task which depends on how the task was registered. Standard
+   * values emitted by Expo SDK libraries are `'location'` and `'geofencing'`
+   * (`expo-location`), `'backgroundFetch'` (`expo-background-fetch`),
+   * `'expo-background-task'` on Android or `'backgroundTask'` on iOS
+   * (`expo-background-task`), and `'remote-notification'`
+   * (`expo-notifications`). User-registered tasks may have any string value.
    */
   taskType: string;
 
@@ -105,13 +111,23 @@ function _validate(taskName: unknown) {
   }
 }
 
+// The hasFinishedInitPhase variable tracks whether the initial, synchronous evaluation of the JavaScript bundle has finished:
+// Its value is:
+// - false - when accessing it from the global scope in synchronous functions
+// - true - when accessing it from React components, effects, event handlers, timers.
+// It may be either value, when:
+// - accessing it in an async function called from the global scope.
+let hasFinishedInitPhase = false;
+Promise.resolve().then(() => {
+  hasFinishedInitPhase = true;
+});
+
 // @needsAudit
 /**
- * Defines task function. It must be called in the global scope of your JavaScript bundle.
- * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.
- * This limitation is due to the fact that when the application is launched in the background,
- * we need to spin up your JavaScript app, run your task and then shut down — no views are mounted
- * in this scenario.
+ * Defines task function. It must be called in the global scope of your JavaScript bundle,
+ * not inside a React component. When the application is launched in
+ * the background, no components are mounted, so the task must already be registered at
+ * module load time.
  *
  * @param taskName Name of the task. It must be the same as the name you provided when registering the task.
  * @param taskExecutor A function that will be invoked when the task with given `taskName` is executed.
@@ -127,6 +143,13 @@ export function defineTask<T = unknown>(
   if (!taskExecutor || typeof taskExecutor !== 'function') {
     console.warn(`TaskManager.defineTask: 'task' argument must be a function.`);
     return;
+  }
+  if (!tasks.has(taskName) && hasFinishedInitPhase) {
+    console.warn(
+      `TaskManager.defineTask: the task "${taskName}" was defined after the JavaScript bundle finished loading.
+The call was most likely inside a React component. Components are not mounted when the app is launched in the background. In that case this task will not be defined.
+Call \`TaskManager.defineTask\` synchronously in the global scope of a module imported at startup.`
+    );
   }
   tasks.set(taskName, taskExecutor);
 }
@@ -214,7 +237,7 @@ export async function getRegisteredTasksAsync(): Promise<TaskManagerTask[]> {
 /**
  * Unregisters task from the app, so the app will not be receiving updates for that task anymore.
  * _It is recommended to use methods specialized by modules that registered the task, eg.
- * [`Location.stopLocationUpdatesAsync`](./location/#expolocationstoplocationupdatesasynctaskname)._
+ * [`Location.stopLocationUpdatesAsync`](./location/#locationstoplocationupdatesasynctaskname)._
  *
  * @param taskName Name of the task to unregister.
  * @return A promise which fulfills as soon as the task is unregistered.

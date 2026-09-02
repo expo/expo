@@ -2,8 +2,6 @@ import * as Application from 'expo-application';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
-import type { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { AuthRequest } from '../AuthRequest';
 import type { AuthRequestConfig, AuthRequestPromptOptions } from '../AuthRequest.types';
 import { Prompt, ResponseType } from '../AuthRequest.types';
@@ -13,6 +11,8 @@ import type { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSe
 import type { DiscoveryDocument } from '../Discovery';
 import { generateHexStringAsync } from '../PKCE';
 import { AccessTokenRequest } from '../TokenRequest';
+import type { ProviderAuthRequestConfig } from './Provider.types';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 515, height: 680 },
@@ -50,11 +50,11 @@ export type GoogleAuthRequestConfig = ProviderAuthRequestConfig & {
    */
   webClientId?: string;
   /**
-   * iOS native client ID for use in standalone, bare workflow, and custom clients.
+   * iOS native client ID for use in production builds, existing React Native projects, and development builds.
    */
   iosClientId?: string;
   /**
-   * Android native client ID for use in standalone, and bare workflow.
+   * Android native client ID for use in production builds and existing React Native projects.
    */
   androidClientId?: string;
   /**

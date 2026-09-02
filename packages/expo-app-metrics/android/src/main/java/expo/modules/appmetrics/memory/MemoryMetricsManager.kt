@@ -9,6 +9,7 @@ import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.serialization.Serializable
 
 class MemoryMetricsManager(
@@ -42,6 +43,7 @@ class MemoryMetricsManager(
 }
 
 @Serializable
+@OptimizedRecord
 data class MemoryUsageSnapshot(
   /**
    * Physical memory in bytes pages currently in use (resident size).

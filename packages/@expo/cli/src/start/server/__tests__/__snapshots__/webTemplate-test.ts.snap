@@ -7,7 +7,7 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using an override project
 `;
 
 exports[`createTemplateHtmlFromExpoConfigAsync creates using the default template 1`] = `
-"<!DOCTYPE html>
+"<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -38,9 +38,7 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
 
   <body>
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
+    <noscript> You need to enable JavaScript to run this app. </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
   <script src="/script.js" defer></script></body>

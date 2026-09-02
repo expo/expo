@@ -32,6 +32,11 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   public var launchAssetUrl: URL?
   public var assetFilesMap: [String: String]?
 
+  /// Set when the launched update is served directly from the embedded app binary. Tracked
+  /// explicitly because `assetFilesMap` is now populated with the bundle-resolved embedded assets,
+  /// so it can no longer double as the "using embedded assets" signal.
+  private var launchedFromEmbeddedBundle = false
+
   private let launcherQueue: DispatchQueue
   private var completedAssets: Int
   private let config: UpdatesConfig
@@ -54,7 +59,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   }
 
   public func isUsingEmbeddedAssets() -> Bool {
-    return assetFilesMap == nil
+    return launchedFromEmbeddedBundle
   }
 
   public static func launchableUpdate(
@@ -178,14 +183,21 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
 
     if launchedUpdate.status == UpdateStatus.StatusEmbedded {
-      precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
+      launchedFromEmbeddedBundle = true
+      // The embedded update's assets aren't copied into the cache, so resolve them from the app
+      // binary. Populating the map here keeps `Updates.localAssets` available instead of empty.
+      assetFilesMap = UpdatesUtils.embeddedAssetsMap(withConfig: config, database: database, logger: logger)
       launchAssetUrl = updatesBundle.url(
         forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
         withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
       )
 
       completionQueue.async {
-        self.completion!(self.launchAssetError, self.launchAssetUrl != nil)
+        var error = self.launchAssetError
+        if error == nil && self.launchAssetUrl == nil {
+          error = UpdatesError.appLauncherLaunchAssetNotFound(updateId: launchedUpdate.updateId)
+        }
+        self.completion!(error, self.launchAssetUrl != nil)
         self.completion = nil
       }
       return
@@ -203,6 +215,16 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     self.assetFilesMap = UpdatesUtils.embeddedAssetsMap(withConfig: config, database: database, logger: logger)
 
     let assets = launchedUpdate.assets()!
+    if assets.isEmpty {
+      // a ready update with no assets cannot launch, and an empty loop below would never
+      // invoke the completion
+      completionQueue.async {
+        self.completion!(UpdatesError.appLauncherLaunchAssetNotFound(updateId: launchedUpdate.updateId), false)
+        self.completion = nil
+      }
+      return
+    }
+
     let totalAssetCount = assets.count
     for asset in assets {
       let assetLocalUrl = directory.appendingPathComponent(asset.filename)
@@ -222,7 +244,12 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
         if self.completedAssets == totalAssetCount {
           self.completionQueue.async {
-            self.completion!(self.launchAssetError, self.launchAssetUrl != nil)
+            var error = self.launchAssetError
+            if error == nil && self.launchAssetUrl == nil {
+              // completing without an error and without a launch asset would fail the launch silently
+              error = UpdatesError.appLauncherLaunchAssetNotFound(updateId: launchedUpdate.updateId)
+            }
+            self.completion!(error, self.launchAssetUrl != nil)
             self.completion = nil
           }
         }

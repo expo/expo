@@ -6,14 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import plist from '@expo/plist';
-import Debug from 'debug';
 import type { Socket } from 'net';
 
 import { CommandError } from '../../../../utils/errors';
 import { parsePlistBuffer } from '../../../../utils/plist';
 
 const BPLIST_MAGIC = Buffer.from('bplist00');
-const debug = Debug('expo:apple-device:protocol');
 
 export class ProtocolClientError extends CommandError {
   constructor(
@@ -125,7 +123,6 @@ export abstract class ProtocolClient<MessageType = any> {
     callback?: (response: ResponseType, resolve: any, reject: any) => void
   ): Promise<CallbackType | ResponseType> {
     const onError = (error: Error) => {
-      debug('Unexpected protocol socket error encountered: %s', error);
       throw new ProtocolClientError(
         `Unexpected protocol error encountered: ${error.message}`,
         error,

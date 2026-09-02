@@ -1,14 +1,14 @@
 /* eslint-env browser */
 import * as React from 'react';
 
-import * as Utils from './WebCameraUtils';
-import { FacingModeToCameraType } from './WebConstants';
 import type {
   CameraReadyListener,
   CameraType,
   MountErrorListener,
   WebCameraSettings,
 } from '../Camera.types';
+import * as Utils from './WebCameraUtils';
+import { FacingModeToCameraType } from './WebConstants';
 
 const VALID_SETTINGS_KEYS = [
   'autoFocus',

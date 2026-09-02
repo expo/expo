@@ -6,13 +6,13 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { resolveRouterModule, type RouterModule } from '@expo/router-server/build/rsc/router';
 import type { EntriesDev } from '@expo/router-server/build/rsc/server';
 import assert from 'assert';
 import { getRscMiddleware } from 'expo-server/private';
 import path from 'node:path';
 import url from 'node:url';
 
-import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
 import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 import type { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
@@ -25,8 +25,8 @@ import {
   type ExpoMetroOptions,
   getMetroOptionsFromUrl,
 } from '../middleware/metroOptions';
-
-const debug = require('debug')('expo:rsc') as typeof console.log;
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
+import { event } from './rscEvents';
 
 type SSRLoadModuleArtifactsFunc = (
   filePath: string,
@@ -65,9 +65,7 @@ export function createServerComponentsMiddleware(
     routerOptions: Record<string, any>;
   }
 ) {
-  const routerModule = useClientRouter
-    ? require.resolve('@expo/router-server/build/rsc/router/noopRouter')
-    : require.resolve('@expo/router-server/build/rsc/router/expo-definedRouter');
+  const routerModule = resolveRouterModule(useClientRouter);
 
   const rscMiddleware = getRscMiddleware({
     config: {},
@@ -227,7 +225,7 @@ export function createServerComponentsMiddleware(
         (value) => !processedEntryPoints.has(value)
       );
       if (uniqueNestedServerBoundaries.length) {
-        debug('bundling nested server action boundaries', uniqueNestedServerBoundaries);
+        event('nested_server_boundaries', { paths: uniqueNestedServerBoundaries });
         return processEntryPoints(uniqueNestedServerBoundaries, recursions + 1);
       }
     }
@@ -271,8 +269,6 @@ export function createServerComponentsMiddleware(
         'Static server action references were not returned from the Metro SSR bundle for definedRouter'
       );
     }
-    debug('React client boundaries:', reactServerReferences);
-
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
       ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
@@ -282,7 +278,6 @@ export function createServerComponentsMiddleware(
         'Static client references were not returned from the Metro SSR bundle for definedRouter'
       );
     }
-    debug('React client boundaries:', reactClientReferences);
 
     // While we're here, export the router for the server to dynamically render RSC.
     files.set(`_expo/rsc/${platform}/router.js`, {
@@ -308,9 +303,7 @@ export function createServerComponentsMiddleware(
       return routerCache.get(platform)!;
     }
 
-    const router = await ssrLoadModule<
-      typeof import('@expo/router-server/build/rsc/router/expo-definedRouter')
-    >(
+    const router = await ssrLoadModule<RouterModule>(
       routerModule,
       {
         environment: 'react-server',
@@ -478,20 +471,6 @@ export function createServerComponentsMiddleware(
     return renderer;
   }
 
-  const rscRenderContext = new Map<string, any>();
-
-  function getRscRenderContext(platform: string) {
-    // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
-    if (rscRenderContext.has(platform)) {
-      return rscRenderContext.get(platform)!;
-    }
-
-    const context = {};
-
-    rscRenderContext.set(platform, context);
-    return context;
-  }
-
   async function renderRscToReadableStream(
     {
       input,
@@ -527,10 +506,7 @@ export function createServerComponentsMiddleware(
       assert(body, 'Server request must be provided when method is POST (server actions)');
     }
 
-    const context = getRscRenderContext(platform);
-
-    context['__expo_requestHeaders'] = headers;
-
+    const context = { __expo_requestHeaders: headers };
     const { renderRsc } = await getRscRendererAsync(platform);
 
     return renderRsc(
@@ -540,6 +516,8 @@ export function createServerComponentsMiddleware(
         context,
         config: {},
         input,
+        method,
+        headers: Object.fromEntries(headers.entries()),
         contentType,
       },
       {
@@ -549,7 +527,7 @@ export function createServerComponentsMiddleware(
         async loadServerModuleRsc(urlFragment) {
           const serverRoot = getMetroServerRootMemo(projectRoot);
 
-          debug('[SSR] loadServerModuleRsc:', urlFragment);
+          event('load_server_module', { urlFragment });
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
@@ -592,16 +570,17 @@ export function createServerComponentsMiddleware(
       ).default;
 
       // Get all the routes to render.
-      const buildConfig = await getBuildConfig!(async () =>
-        // TODO: Rework prefetching code to use Metro runtime.
-        []
+      const buildConfig = await getBuildConfig!(
+        async () =>
+          // TODO: Rework prefetching code to use Metro runtime.
+          []
       );
 
       await Promise.all(
         Array.from(buildConfig).map(async ({ entries }) => {
           for (const { input, isStatic } of entries || []) {
             if (!isStatic) {
-              debug('Skipping static export for route', { input });
+              event('skip_static_export', { input });
               continue;
             }
             const destRscFile = path.join('_flight', platform, encodeInput(input));
@@ -619,7 +598,7 @@ export function createServerComponentsMiddleware(
             );
 
             const rsc = await streamToStringAsync(pipe);
-            debug('RSC Payload', { platform, input, rsc });
+            event('payload', { platform, input, rsc });
 
             files.set(destRscFile, {
               contents: rsc,
