@@ -10,6 +10,12 @@ type StateAction = {
   payload?: object & { state?: RouteState | null };
 };
 
+/**
+ * Attaches trusted nested state from a navigation action to a route and removes Expo Router's
+ * internal state markers. State from actions not created by Expo Router is ignored.
+ *
+ * @experimental
+ */
 export function attachRouteState<T extends Route<string> & { state?: RouteState }>(
   route: T,
   action: StateAction
