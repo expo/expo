@@ -399,7 +399,7 @@ async function preparePackageJson(
       delete packageJson.dependencies[dependencyName];
     }
   }
-  // Add dependencies and resolutions to package.json
+  // Add dependencies and pnpm overrides
   packageJson = {
     ...packageJson,
     scripts: {
@@ -418,11 +418,6 @@ async function preparePackageJson(
       typescript: '~5.9.3',
       'ts-node': '~10.9.2',
     },
-    resolutions: {
-      ...packageJson.resolutions,
-      ...expoResolutions,
-      typescript: '~5.9.3',
-    },
   };
 
   if (isTV) {
@@ -439,6 +434,13 @@ async function preparePackageJson(
 
   const packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
+  const overrides = { ...expoResolutions, typescript: '~5.9.3' };
+  await fs.writeFile(
+    path.join(projectRoot, 'pnpm-workspace.yaml'),
+    `overrides:\n${Object.entries(overrides)
+      .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
+      .join('\n')}\n`
+  );
 }
 
 /**
@@ -827,10 +829,6 @@ export async function initAsync(
     }
   );
 
-  // Remove default `pnpm-workspace.yaml` if the template still ships one. Newer template versions
-  // omit it; `force: true` keeps both cases working.
-  await fs.rm(path.join(projectRoot, 'pnpm-workspace.yaml'), { force: true });
-
   // We are done with template tarball
   await fs.rm(localTSTemplatePathName);
 
@@ -891,7 +889,7 @@ export async function initAsync(
   const packageJsonPath = path.resolve(projectRoot, 'package.json');
   let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
   const packageJson = JSON.parse(packageJsonString);
-  packageJson.dependencies.expo = packageJson.resolutions.expo;
+  packageJson.dependencies.expo = expoResolutions.expo;
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
