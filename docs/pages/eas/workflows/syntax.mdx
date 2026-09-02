@@ -466,7 +466,7 @@ The expression must fit in one `${{ }}` block and can be at most 250 characters.
 
 When the condition evaluates to false, no workflow run starts for that trigger event. A retry of an existing run skips this check. It only applies when a new run is created.
 
-The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), `inputs`, [`workflow`](#workflow), `app`, and `account` context. It supports all [Context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run, but a trigger's `if` condition evaluates before any job starts.
+The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), `inputs`, [`workflow`](#workflow), `app`, and `account` contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run, but a trigger's `if` condition evaluates before any job starts.
 
 ```yaml
 on:
