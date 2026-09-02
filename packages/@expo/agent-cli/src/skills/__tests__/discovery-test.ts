@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import path from 'path';
 
 import { requireAutolinking } from '../../utils/autolinking';
 import { discoverSkillsAsync, parseSkillFrontmatter } from '../discovery';
@@ -43,7 +44,7 @@ describe('discoverSkillsAsync', () => {
     await expect(discoverSkillsAsync('/project')).resolves.toEqual([
       {
         name: 'my-skill',
-        path: '/project/node_modules/foo/skills/my-skill',
+        path: path.resolve('/project/node_modules/foo/skills/my-skill'),
         packageName: 'foo',
         linkName: 'my-skill',
         title: 'My Skill',
@@ -179,7 +180,7 @@ describe('discoverSkillsAsync', () => {
     await expect(discoverSkillsAsync('/project')).resolves.toEqual([
       {
         name: 'my-skill',
-        path: '/project/node_modules/foo/skills/my-skill',
+        path: path.resolve('/project/node_modules/foo/skills/my-skill'),
         packageName: 'foo',
         linkName: 'my-skill',
       },
