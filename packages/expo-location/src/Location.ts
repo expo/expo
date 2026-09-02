@@ -462,6 +462,75 @@ export async function watchMotionActivityAsync(
   };
 }
 
+// --- Background motion activity
+
+/**
+ * Registers for receiving motion activity updates that can also come when the app is in the
+ * background or killed, as long as the OS keeps the app process alive.
+ *
+ * On Android, this is delivered the same way as background location and geofencing updates are:
+ * the OS can wake the app process specifically to deliver an activity change, even if it was
+ * killed. On iOS, `CMMotionActivityManager` has no equivalent wake mechanism - updates are only
+ * delivered while the app process happens to be running (for example, kept alive by another
+ * background mode). Use this API in addition to, not instead of, `watchMotionActivityAsync` if
+ * you need updates while the app is in the foreground.
+ *
+ * # Task parameters
+ *
+ * Background motion activity task will be receiving the following data:
+ * - `activity` - An object of type [`MotionActivityObject`](#motionactivityobject).
+ *
+ * @example
+ * ```ts
+ * import * as TaskManager from 'expo-task-manager';
+ *
+ * TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { activity }, error }) => {
+ *   if (error) {
+ *     // check `error.message` for more details.
+ *     return;
+ *   }
+ *   console.log('Received motion activity update', activity);
+ * });
+ * ```
+ *
+ * @param taskName Name of the task receiving motion activity updates.
+ *
+ * @return A promise resolving once the task with motion activity updates is registered.
+ *
+ * @platform android
+ * @platform ios
+ */
+export async function startMotionActivityUpdatesAsync(taskName: string): Promise<void> {
+  _validate(taskName);
+  await ExpoLocation.startMotionActivityUpdatesAsync(taskName);
+}
+
+/**
+ * Stops motion activity updates for specified task.
+ * @param taskName Name of the background motion activity task to stop.
+ * @return A promise resolving as soon as the task is unregistered.
+ *
+ * @platform android
+ * @platform ios
+ */
+export async function stopMotionActivityUpdatesAsync(taskName: string): Promise<void> {
+  _validate(taskName);
+  await ExpoLocation.stopMotionActivityUpdatesAsync(taskName);
+}
+
+/**
+ * @param taskName Name of the motion activity task to check.
+ * @return A promise which fulfills with boolean value indicating whether the motion activity
+ * task is started or not.
+ *
+ * @platform android
+ * @platform ios
+ */
+export async function hasStartedMotionActivityUpdatesAsync(taskName: string): Promise<boolean> {
+  _validate(taskName);
+  return ExpoLocation.hasStartedMotionActivityUpdatesAsync(taskName);
+}
+
 // --- Background location updates
 
 function _validate(taskName: string) {

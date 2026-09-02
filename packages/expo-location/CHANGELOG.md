@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [Android, iOS] Add `startMotionActivityUpdatesAsync`, `stopMotionActivityUpdatesAsync` and `hasStartedMotionActivityUpdatesAsync` for receiving motion activity updates via a background task. ([#XXXX](https://github.com/expo/expo/pull/XXXX) by [@Guccio163](https://github.com/Guccio163))
+
 ### 🐛 Bug fixes
 
 - [iOS] Add `scope` and `accuracy` under `ios` to the responses from `getBackgroundPermissionsAsync` and `requestBackgroundPermissionsAsync`, matching the `LocationPermissionResponse` type. ([#48926](https://github.com/expo/expo/pull/48926) by [@vonovak](https://github.com/vonovak))
