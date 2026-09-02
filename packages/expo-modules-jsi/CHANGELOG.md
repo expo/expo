@@ -22,6 +22,7 @@
 - [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed the xcframework prebuild failing under Xcode 27 due to new foreign reference ownership warnings emitted for `RuntimeScheduler` constructors. ([#49120](https://github.com/expo/expo/pull/49120) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed the prebuilt `ExpoModulesJSI.xcframework` shipping with code coverage instrumentation: building through the auto-generated SwiftPM scheme made Xcode pass `-profile-generate -profile-coverage-mapping` to swiftc even for a plain Release `build`, adding a counter increment to every function on the host function call path and about 40% to the binary size. The benchmark target had the same instrumentation and now runs without it. ([#49637](https://github.com/expo/expo/pull/49637) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed property names with non-ASCII characters being mangled when accessed by name from Swift, such as `getProperty`, `setProperty`, `hasProperty`, the array string subscript and dictionary conversions. ([#49679](https://github.com/expo/expo/pull/49679) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
