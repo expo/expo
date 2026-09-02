@@ -110,7 +110,7 @@ export function sweepSuggestedCommands(root: string): Sweep {
   const foreignFlags: ForeignFlagUse[] = [];
 
   for (const file of files) {
-    const reported = path.join(label, file);
+    const reported = path.join(label, file).split(path.sep).join('/');
     const source = fs.readFileSync(path.join(root, file), 'utf8');
     mentions.push(...extractCommandMentions(reported, source));
     suggestions.push(...extractSuggestions(reported, source));

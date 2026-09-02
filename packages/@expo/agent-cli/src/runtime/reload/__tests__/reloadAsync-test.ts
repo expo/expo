@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import fs from 'fs';
 import { vol } from 'memfs';
+import path from 'path';
 
 import { detachedLogPath } from '../../../dev/logFile';
 import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../../devLock';
@@ -27,6 +28,8 @@ jest.mock('../../messageSocket', () => ({
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
+const RUNNER_DIR = (process.env.PATH ?? '/usr/bin').split(path.delimiter)[0]!;
+const NPX_ON_PATH = path.join(RUNNER_DIR, process.platform === 'win32' ? 'npx.cmd' : 'npx');
 
 const EXPO_GO_TARGET = {
   id: 'device-1',
@@ -1090,7 +1093,7 @@ describe('reloading an app on a cloud simulator session', () => {
     writeProject({
       // A package runner has to be findable for any `eas` to be spawned at all
       // (`src/utils/easCli.ts` — one rung, and it is the runner).
-      '/usr/bin/npx': '#!/bin/sh\n',
+      [NPX_ON_PATH]: '#!/bin/sh\n',
       [detachedLogPath(projectRoot)]: log.join('\n') + '\n',
     });
     resetPackageRunnerCache();
@@ -1406,7 +1409,7 @@ describe('the rung the ladder picks', () => {
   });
 
   it(`broadcasts on --cloud when the command socket does hold a client`, async () => {
-    writeProject({ '/usr/bin/npx': '#!/bin/sh\n' });
+    writeProject({ [NPX_ON_PATH]: '#!/bin/sh\n' });
     resetPackageRunnerCache();
     const server = mockDevServer([EXPO_GO_TARGET]);
     mockConnect(

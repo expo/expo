@@ -317,7 +317,10 @@ describe(handleUncaughtException, () => {
   it('prints the message and the stack on stderr', () => {
     handleUncaughtException(undiciCrash());
 
-    const printed = jest.mocked(logError).mock.calls.map((call) => call.join(' ')).join('\n');
+    const printed = jest
+      .mocked(logError)
+      .mock.calls.map((call) => call.join(' '))
+      .join('\n');
     expect(printed).toContain('setTypeOfService EINVAL');
     // The stack is the whole report of a crash: an agent that cannot see where it happened has
     // nothing to hand a person.
@@ -358,9 +361,12 @@ describe(handleUncaughtException, () => {
     expect(jest.mocked(log)).not.toHaveBeenCalled();
     // Said out loud on stderr, where the crash report already is: an agent that expected an envelope
     // has to be told why there is none, rather than left to notice.
-    expect(jest.mocked(logError).mock.calls.map((call) => call.join(' ')).join('\n')).toContain(
-      'not added to stdout'
-    );
+    expect(
+      jest
+        .mocked(logError)
+        .mock.calls.map((call) => call.join(' '))
+        .join('\n')
+    ).toContain('not added to stdout');
     expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
   });
 
@@ -368,9 +374,12 @@ describe(handleUncaughtException, () => {
     handleUncaughtException('a string nobody expected' as unknown as Error);
 
     expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
-    expect(jest.mocked(logError).mock.calls.map((call) => call.join(' ')).join('\n')).toContain(
-      'a string nobody expected'
-    );
+    expect(
+      jest
+        .mocked(logError)
+        .mock.calls.map((call) => call.join(' '))
+        .join('\n')
+    ).toContain('a string nobody expected');
   });
 
   // The EMFILE special case is the reason this handler exists, and it keeps its own path: the two
@@ -383,7 +392,12 @@ describe(handleUncaughtException, () => {
     handleUncaughtException(emfile);
 
     expect(execSyncCalls).toEqual(['watchman shutdown-server', 'watchman watch-del-all']);
-    expect(jest.mocked(warn).mock.calls.map(([line]) => line).join('\n')).toContain('Watchman');
+    expect(
+      jest
+        .mocked(warn)
+        .mock.calls.map(([line]) => line)
+        .join('\n')
+    ).toContain('Watchman');
     expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
   });
 

@@ -13,7 +13,7 @@ import {
   resolveFingerprintCli,
 } from '../fingerprint';
 
-const projectRoot = '/project';
+const projectRoot = path.resolve('/project');
 const realPlatform = process.platform;
 
 /**
@@ -44,7 +44,7 @@ function mockSpawn(): FakeChild {
 
 /** Install the fingerprint bin the project would get from `@expo/fingerprint`. */
 function writeFingerprintBin(name = 'fingerprint') {
-  vol.fromJSON({ [`${projectRoot}/node_modules/.bin/${name}`]: '' });
+  vol.fromJSON({ [path.join(projectRoot, 'node_modules', '.bin', name)]: '' });
 }
 
 beforeEach(() => {

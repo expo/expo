@@ -22,7 +22,9 @@ function ids(followups: { id: string }[]): string[] {
 /** A resolved backend, as `impactAsync` hands one to the builder. */
 function backend(runsOn: 'local' | 'eas') {
   const because =
-    runsOn === 'eas' ? 'this host runs linux and an ios build needs Xcode.' : 'this machine has Xcode.';
+    runsOn === 'eas'
+      ? 'this host runs linux and an ios build needs Xcode.'
+      : 'this machine has Xcode.';
   return {
     runsOn,
     source: runsOn === 'eas' ? ('host' as const) : ('default' as const),

@@ -42,7 +42,7 @@ const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[
 function withPinnedEasCli(files: Record<string, string> = {}) {
   vol.fromJSON({
     [`${projectRoot}/package.json`]: JSON.stringify({ devDependencies: { 'eas-cli': '22.4.0' } }),
-    [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh',
+    [path.join(RUNNER_DIR, process.platform === 'win32' ? 'npx.cmd' : 'npx')]: '#!/bin/sh',
     ...files,
   });
 }
@@ -130,7 +130,7 @@ describe(readAuthPreflightAsync, () => {
   it('never spends a package install to read a local session file', async () => {
     vol.fromJSON({
       [`${projectRoot}/package.json`]: JSON.stringify({ dependencies: { expo: '~54.0.0' } }),
-      [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh',
+      [path.join(RUNNER_DIR, process.platform === 'win32' ? 'npx.cmd' : 'npx')]: '#!/bin/sh',
     });
     const spawned = mockWhoami({ exitCode: 0, stdout: 'alice\n' });
 

@@ -104,7 +104,10 @@ export function platformOfTarget(
   }
 
   if (target.appId === EXPO_GO_IOS_APP_ID) {
-    return { platform: 'ios', evidence: `its app id is Expo Go's iOS bundle id (${EXPO_GO_IOS_APP_ID})` };
+    return {
+      platform: 'ios',
+      evidence: `its app id is Expo Go's iOS bundle id (${EXPO_GO_IOS_APP_ID})`,
+    };
   }
   if (target.appId === EXPO_GO_ANDROID_APP_ID) {
     return {
@@ -200,8 +203,10 @@ export async function buildDeviceNameIndexIfNeededAsync(
  */
 export async function buildDeviceNameIndexAsync(): Promise<DeviceNameIndex> {
   const { runAdbAsync } = require('../device/adb') as typeof import('../device/adb');
-  const { parseAndroidDevices } = require('../navigate/device') as typeof import('../navigate/device');
-  const { spawnCaptureAsync } = require('../utils/spawnCapture') as typeof import('../utils/spawnCapture');
+  const { parseAndroidDevices } =
+    require('../navigate/device') as typeof import('../navigate/device');
+  const { spawnCaptureAsync } =
+    require('../utils/spawnCapture') as typeof import('../utils/spawnCapture');
 
   const [simctl, adb] = await Promise.all([
     spawnCaptureAsync('xcrun', ['simctl', 'list', 'devices', 'booted', '-j']).catch(() => null),

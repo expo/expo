@@ -16,15 +16,15 @@ The conventions every `@expo/agent-cli` command shares. Three of them: what the 
 
 A driving agent reads the exit code before it reads a word of the output [confirmed, Kudo, 2026-08-23]. The code answers two questions: did the tool work, and did the thing the tool was asked about work.
 
-| Code | Meaning | The agent's next move |
-| --- | --- | --- |
-| `0` | The tool worked, the outcome was success | Continue |
-| `1` | The tool did not work: usage error, missing dependency, bug | Read the error and the `Try:` line. Fix the call |
-| `7` | The tool worked. A person must finish the step | Hand the printed URL or instruction to the human |
-| `20` | The tool worked. The operation failed | Read the payload. Act on the subject's failure |
-| `21` | The tool worked. The operation was canceled. Reserved, emitted by no v1 command | Nothing branches on it in this release |
-| `22` | The tool worked. The operation timed out (inconclusive) | Wait longer, or look again |
-| `23-29` | Reserved for further outcome classes |  |
+| Code    | Meaning                                                                         | The agent's next move                            |
+| ------- | ------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `0`     | The tool worked, the outcome was success                                        | Continue                                         |
+| `1`     | The tool did not work: usage error, missing dependency, bug                     | Read the error and the `Try:` line. Fix the call |
+| `7`     | The tool worked. A person must finish the step                                  | Hand the printed URL or instruction to the human |
+| `20`    | The tool worked. The operation failed                                           | Read the payload. Act on the subject's failure   |
+| `21`    | The tool worked. The operation was canceled. Reserved, emitted by no v1 command | Nothing branches on it in this release           |
+| `22`    | The tool worked. The operation timed out (inconclusive)                         | Wait longer, or look again                       |
+| `23-29` | Reserved for further outcome classes                                            |                                                  |
 
 The codes sit in bands. `20-29` is one band an agent can test with a range, so a command that grows a new outcome class does not break a caller that only knew the old ones. `1` is the whole "the tool did not work" band: an agent that gets `1` reads the error. `7` sits away from both. A step only a person can complete (signing in through a browser, approving a device, finishing a launch in a web page) is its own class. The recovery is a person, so a retry of the same command cannot finish it. Timeout sits apart from failure. Retrying is the next action after `22` and a waste of minutes after `20`. Shell-safe: nothing above `125`, which POSIX shells and `npx` use for their own conditions.
 
@@ -54,11 +54,11 @@ No `eas --json` payload can contain a `null`. `printJsonOnlyOutput` deletes ever
 
 `@expo/agent-cli typecheck` is the fourth command in the outcome band. The other gates parse and watch for throws. This one type-checks.
 
-| Code | The project |
-| --- | --- |
-| `0` | type-checks, or has no TypeScript in it at all |
-| `20` | does not type-check. The diagnostics are the payload |
-| `1` | a TypeScript project with no compiler, or one that failed saying nothing |
+| Code | The project                                                              |
+| ---- | ------------------------------------------------------------------------ |
+| `0`  | type-checks, or has no TypeScript in it at all                           |
+| `20` | does not type-check. The diagnostics are the payload                     |
+| `1`  | a TypeScript project with no compiler, or one that failed saying nothing |
 
 A project with no TypeScript exits `0`, with `checked: false`. `reason` is present exactly when `checked` is false. The follow-up says so in a command as well as in a field, so "nothing was checked" cannot read as "everything passed".
 
@@ -103,13 +103,13 @@ Four layers, in priority order:
 1. Preflight. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer. A preflight that cannot run answers `null`. Three things count as cannot run: no `eas` on this machine, a run that passed the deadline, and a binary under that name that is not the EAS CLI (`looksLikeWrapperCrash`). `src/needsHuman/assertAuth.ts` is the same answer raised.
 2. By construction. Rows with no signature (`ios-credentials`, `device-register`, `eas-env-list`) are raised before the tool runs, because those eas-cli commands have no `--non-interactive` flag.
 3. Stderr classify. Match the captured output against the registry. Load-bearing patterns: eas-cli's `Either log in with … EXPO_TOKEN`, `@expo/cli`'s `is in non-interactive mode`, and the `in non-interactive mode` fragment eas-cli's prompt sites share.
-4. Generic prompt fallback. For a captured child only, and only when the caller opts in. If it writes nothing for `AGENT_CLI_PROMPT_TIMEOUT_MS` (default 20 s) *and* its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Never in `inherit` mode.
+4. Generic prompt fallback. For a captured child only, and only when the caller opts in. If it writes nothing for `AGENT_CLI_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Never in `inherit` mode.
 
 Every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead. The exception is the one that starts a dev server (`spawnDevServerAsync`: `expo start`, `expo run:ios`, `expo run:android`). `CI` turns Metro's file watcher off (`isWatchEnabled` returns `!env.CI`). A captured `expo start` inherits the caller's environment instead. Nothing is set, rather than `CI=0`: a machine whose own environment says `CI` is a machine where a frozen bundler is the right behaviour. A captured child's stdout is a pipe, never a TTY, so `isInteractive()` already knows nobody can answer. `expo prebuild` and every other captured step keep `CI=1`. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin is never attached.
 
 A busy port is a `PORT_IN_USE` failure (exit 20 when the caller named `--port`), or a retry on a free port this CLI picked (`src/dev/portCollision.ts`). It is recognised before the classifier runs. It is not needs-human ([[0004-smart-start-and-project-state]] §A busy port is not a step only a person can complete). The recovery is another command, and one this CLI can run itself. The carve-out is not a negative signature in the registry. `expo-prompt` still catches every other prompt.
 
-`src/utils/wrapperCrash.ts` treats a failure as "not the CLI" only when the output holds nothing that looks like that CLI's *and* the process died the way a wrapper dies (exit `101`, `126`, `127`, `134`, `139`, or a panic signature). The preflight then answers `null` instead of `false`.
+`src/utils/wrapperCrash.ts` treats a failure as "not the CLI" only when the output holds nothing that looks like that CLI's _and_ the process died the way a wrapper dies (exit `101`, `126`, `127`, `134`, `139`, or a panic signature). The preflight then answers `null` instead of `false`.
 
 A failed `@expo/agent-cli dev` plan step raises. The plan object prints only when every step of it worked. `--json` gets the error envelope (`PLAN_STEP_FAILED`), with the tail of what the step printed. A genuine stop carries `error.needsHuman`. A coincidence (Node leaving with `7` after an unhandled rejection) carries `null` under that envelope. Forwarded passthrough commands inherit the terminal and are not classified. `src/passthrough/` is unchanged on purpose.
 
@@ -179,19 +179,19 @@ Every call to `assertWithOptionsArgs` states `positionalArgs: 'none' | 'own'`, w
 
 `help workflow` must say all three ([[0024-cli-ui]] §The on-ramp):
 
-| Band | Where the recovery is | Under `--json` |
-| --- | --- | --- |
-| `1`, and any failure a command raises itself | `Try: <command>` | `error.suggestedCommand` |
-| `7` | `Ask the user <…>`, under `Needs a human <scenario>` | `error.needsHuman` |
-| `20`, `22` | the report's `Suggested next:` list | the report's `followups` |
+| Band                                         | Where the recovery is                                | Under `--json`           |
+| -------------------------------------------- | ---------------------------------------------------- | ------------------------ |
+| `1`, and any failure a command raises itself | `Try: <command>`                                     | `error.suggestedCommand` |
+| `7`                                          | `Ask the user <…>`, under `Needs a human <scenario>` | `error.needsHuman`       |
+| `20`, `22`                                   | the report's `Suggested next:` list                  | the report's `followups` |
 
-`logCmdError` prints the needs-human block instead of `Try:`. An outcome failure is not an error: it prints its report and calls `exitWithCodeAsync`. A `20`-band failure a command *raises* still carries a `Try:` (`stillBuildingError`).
+`logCmdError` prints the needs-human block instead of `Try:`. An outcome failure is not an error: it prints its report and calls `exitWithCodeAsync`. A `20`-band failure a command _raises_ still carries a `Try:` (`stillBuildingError`).
 
 ## Suggestions are pasted, so they have to be runnable
 
 Every suggestion is written `npx @expo/agent-cli …` and printed in the spelling of the runner the caller actually used [confirmed, Kudo, 2026-08-25]. `src/utils/invoker.ts` rewrites the line as it goes out. Detection is `npm_config_user_agent` / `npm_execpath`. `process.versions.bun` is usually unset under `bunx` because this package's bin has a `#!/usr/bin/env node` shebang. `BUN_INSTALL` is not consulted. Only `npx @expo/agent-cli` is rewritten. `--json` payloads and events keep the written form.
 
-The runner this CLI *spawns* with is a different question [confirmed, Kudo, 2026-08-26]. `src/utils/packageRunner.ts` resolves `bunx` when Bun started the process *and* `bunx` is on `PATH`. Five call sites use it: the `eas-cli` auth fallback, `expo-doctor`, `create-launch`, `create-expo`, and the `npx expo` fallback. `eas simulator:exec npx <agent-device>` is exempt: that `npx` runs in a datacenter.
+The runner this CLI _spawns_ with is a different question [confirmed, Kudo, 2026-08-26]. `src/utils/packageRunner.ts` resolves `bunx` when Bun started the process _and_ `bunx` is on `PATH`. Five call sites use it: the `eas-cli` auth fallback, `expo-doctor`, `create-launch`, `create-expo`, and the `npx expo` fallback. `eas simulator:exec npx <agent-device>` is exempt: that `npx` runs in a datacenter.
 
 ## `inspect:build-log`
 

@@ -88,22 +88,22 @@ A native edit is invisible to the key. Edit `ios/AppDelegate.swift` and the next
 
 ## What invalidates an answer
 
-| Change | Outcome |
-| --- | --- |
-| A pinned file's size or modification time moves | recompute |
-| A pinned file appears or disappears | recompute |
-| A pinned file is touched without being changed (`git checkout`) | recompute, the safe direction |
-| `@expo/fingerprint` version differs | recompute |
-| A different platform or preset is asked for | recompute (its own entry) |
-| The record is older than `FINGERPRINT_CACHE_TTL_MS` | recompute |
-| The record is missing, corrupt, or from another schema version | recompute |
-| A completed `@expo/agent-cli dev` plan step | recompute. The record is dropped outright |
-| A completed `@expo/agent-cli install` | recompute. The record is left in place and the key misses by itself |
-| A file no sentinel names (`src/**`, `index.js`) changes | hit |
-| Anything under `ios/` or `android/` changes | hit, bounded by the TTL only |
-| A prebuild run outside `@expo/agent-cli dev` | hit, bounded by the TTL only |
-| An edit that preserved a pinned file's size and timestamp | hit, bounded by the TTL only |
-| `--no-fingerprint-cache` or `AGENT_CLI_NO_FINGERPRINT_CACHE` | not read (still written) |
+| Change                                                          | Outcome                                                             |
+| --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| A pinned file's size or modification time moves                 | recompute                                                           |
+| A pinned file appears or disappears                             | recompute                                                           |
+| A pinned file is touched without being changed (`git checkout`) | recompute, the safe direction                                       |
+| `@expo/fingerprint` version differs                             | recompute                                                           |
+| A different platform or preset is asked for                     | recompute (its own entry)                                           |
+| The record is older than `FINGERPRINT_CACHE_TTL_MS`             | recompute                                                           |
+| The record is missing, corrupt, or from another schema version  | recompute                                                           |
+| A completed `@expo/agent-cli dev` plan step                     | recompute. The record is dropped outright                           |
+| A completed `@expo/agent-cli install`                           | recompute. The record is left in place and the key misses by itself |
+| A file no sentinel names (`src/**`, `index.js`) changes         | hit                                                                 |
+| Anything under `ios/` or `android/` changes                     | hit, bounded by the TTL only                                        |
+| A prebuild run outside `@expo/agent-cli dev`                    | hit, bounded by the TTL only                                        |
+| An edit that preserved a pinned file's size and timestamp       | hit, bounded by the TTL only                                        |
+| `--no-fingerprint-cache` or `AGENT_CLI_NO_FINGERPRINT_CACHE`    | not read (still written)                                            |
 
 Two mechanical hazards:
 

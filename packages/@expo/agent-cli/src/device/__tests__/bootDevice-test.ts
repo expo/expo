@@ -4,6 +4,8 @@
 // costs a minute of a real run and then fails against the device it picked — so they are pinned
 // here, with no Xcode and no Android SDK involved.
 
+import path from 'path';
+
 import {
   EMULATOR_SERIAL,
   parseAvds,
@@ -246,13 +248,16 @@ describe(resolveEmulator, () => {
   };
 
   it(`takes the emulator beside the resolved adb when the SDK has one`, () => {
+    const executable = process.platform === 'win32' ? 'emulator.exe' : 'emulator';
     expect(resolveEmulator(adb, { exists: () => true })).toBe(
-      '/Users/dev/Library/Android/sdk/emulator/emulator'
+      path.join('/Users/dev/Library/Android/sdk', 'emulator', executable)
     );
   });
 
   it(`falls back to the bare name, so PATH can still supply one`, () => {
-    expect(resolveEmulator(adb, { exists: () => false })).toBe('emulator');
+    expect(resolveEmulator(adb, { exists: () => false })).toBe(
+      process.platform === 'win32' ? 'emulator.exe' : 'emulator'
+    );
   });
 });
 

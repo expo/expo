@@ -94,9 +94,7 @@ describe('the template', () => {
     '%s documents the followups key when it has the flag',
     async (name) => {
       const help = await helpOf(name);
-      const suppressible = help.options.some((option) =>
-        option.startsWith('--no-followups')
-      );
+      const suppressible = help.options.some((option) => option.startsWith('--no-followups'));
 
       if (suppressible && help.json) {
         expect(help.json.keys).toContain('followups');

@@ -100,10 +100,7 @@ async function probeAsync(projectRoot: string, timeoutMs: number): Promise<AuthP
  * where the runner resolves it out of `node_modules` in about a third of a second. It is the same
  * judgement `askProjectExpoAsync` below already makes for `expo`.
  */
-async function askEasAsync(
-  projectRoot: string,
-  timeoutMs: number
-): Promise<AuthPreflight | null> {
+async function askEasAsync(projectRoot: string, timeoutMs: number): Promise<AuthPreflight | null> {
   const easCli = resolveEasCli(projectRoot);
   if (!easCli || mayDownloadEasCli(easCli)) {
     return null;

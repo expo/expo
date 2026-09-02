@@ -37,7 +37,9 @@ describe(consentRerunCommand, () => {
   it('adds no second flag when the caller already typed one', () => {
     // Unreachable from the guardrails themselves, which only ask when the flag is absent. It is
     // pinned because a duplicated flag would be the first sign that some later caller asks anyway.
-    expect(consentRerunCommand(['dev'], argv('dev', '--yes'))).toBe('npx @expo/agent-cli dev --yes');
+    expect(consentRerunCommand(['dev'], argv('dev', '--yes'))).toBe(
+      'npx @expo/agent-cli dev --yes'
+    );
     expect(consentRerunCommand(['doctor:fix'], argv('doctor:fix', '-y'))).toBe(
       'npx @expo/agent-cli doctor:fix -y'
     );

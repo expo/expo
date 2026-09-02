@@ -58,13 +58,26 @@ export interface AdbResolution {
   fromPathOnly: boolean;
 }
 
+/** Path helpers for the platform being searched, not the host running the test. */
+function pathFor(platform: string): path.PlatformPath {
+  return platform === 'win32' ? path.win32 : path.posix;
+}
+
 /** The default Android SDK install locations, per platform. */
-const DEFAULT_SDK_LOCATIONS: Record<string, (homedir: string) => string[]> = {
-  darwin: (home) => [path.join(home, 'Library', 'Android', 'sdk')],
+function defaultSdkLocations(platform: string, homedir: string): string[] {
+  const join = pathFor(platform).join;
+  if (platform === 'darwin') {
+    return [join(homedir, 'Library', 'Android', 'sdk')];
+  }
   // Both capitalisations exist in the wild; Android Studio writes the first one.
-  linux: (home) => [path.join(home, 'Android', 'Sdk'), path.join(home, 'Android', 'sdk')],
-  win32: (home) => [path.join(home, 'AppData', 'Local', 'Android', 'Sdk')],
-};
+  if (platform === 'linux') {
+    return [join(homedir, 'Android', 'Sdk'), join(homedir, 'Android', 'sdk')];
+  }
+  if (platform === 'win32') {
+    return [join(homedir, 'AppData', 'Local', 'Android', 'Sdk')];
+  }
+  return [];
+}
 
 export interface ResolveAdbOptions {
   env?: NodeJS.ProcessEnv;
@@ -87,10 +100,11 @@ export function resolveAdb({
   exists = fs.existsSync,
 }: ResolveAdbOptions = {}): AdbResolution {
   const searched: string[] = [];
+  const join = pathFor(platform).join;
   const executable = platform === 'win32' ? 'adb.exe' : 'adb';
 
   const fromRoot = (root: string, source: AdbSource): AdbResolution | null => {
-    const candidate = path.join(root, 'platform-tools', executable);
+    const candidate = join(root, 'platform-tools', executable);
     if (exists(candidate)) {
       return { bin: candidate, source, searched, fromPathOnly: false };
     }
@@ -118,7 +132,7 @@ export function resolveAdb({
     return { bin: onPath, source: 'PATH', searched, fromPathOnly: false };
   }
 
-  for (const location of DEFAULT_SDK_LOCATIONS[platform]?.(homedir) ?? []) {
+  for (const location of defaultSdkLocations(platform, homedir)) {
     const found = fromRoot(location, 'default-sdk-location');
     if (found) {
       return found;
@@ -148,7 +162,7 @@ function findOnPath(
     if (!entry) {
       continue;
     }
-    const candidate = path.join(entry, executable);
+    const candidate = pathFor(platform).join(entry, executable);
     if (exists(candidate)) {
       return candidate;
     }

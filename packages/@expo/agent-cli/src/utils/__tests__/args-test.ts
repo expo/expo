@@ -22,7 +22,9 @@ describe(strayArgumentError, () => {
     expect(error).toBeInstanceOf(CommandError);
     expect(error.code).toBe('BAD_ARGS');
     expect(error.message).toContain('Unexpected argument: abc123');
-    expect(error.message).toContain('"@expo/agent-cli checkpoint:undo" reads no positional arguments');
+    expect(error.message).toContain(
+      '"@expo/agent-cli checkpoint:undo" reads no positional arguments'
+    );
     expect(error.message).toContain('dropped');
     expect(error.suggestedCommand).toBe('npx @expo/agent-cli checkpoint:undo --help');
   });

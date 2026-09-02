@@ -183,9 +183,7 @@ describe('@expo/agent-cli dev --plan', () => {
       ]);
 
       const plan: StartPlan = JSON.parse(result.stdout);
-      expect(plan.steps.map((step) => step.argv)).toEqual([
-        ['expo', 'start', '--go', '--tunnel'],
-      ]);
+      expect(plan.steps.map((step) => step.argv)).toEqual([['expo', 'start', '--go', '--tunnel']]);
     });
 
     it('admits that a plain start opens nothing, and names what does', async () => {
@@ -201,7 +199,7 @@ describe('@expo/agent-cli dev --plan', () => {
 
   describe('dev-client-app — a dev client project without a recorded build', () => {
     it('plans a prebuild and a native build for iOS', async () => {
-      const output = await planTextAsync('dev-client-app', ['--ios']);
+      const output = await planTextAsync('dev-client-app', ['--ios', '--local']);
 
       expect(output).toContain('dev-client-stale');
       expect(output).toContain('target: dev-client');
@@ -226,7 +224,7 @@ describe('@expo/agent-cli dev --plan', () => {
 
   describe('bare-app — committed native directories', () => {
     it('plans a native build without a prebuild', async () => {
-      const output = await planTextAsync('bare-app', ['--ios']);
+      const output = await planTextAsync('bare-app', ['--ios', '--local']);
 
       expect(output).toContain('bare-stale');
       expect(output).toContain('target: bare');
@@ -252,7 +250,7 @@ describe('@expo/agent-cli dev --plan', () => {
     it('plans a rebuild once the fingerprint no longer matches', async () => {
       // The stub fingerprint CLI prints whatever hash it is told to, which is how a changed
       // native surface is simulated without changing any real input.
-      const output = await planTextAsync('dev-client-fresh-app', ['--ios'], {
+      const output = await planTextAsync('dev-client-fresh-app', ['--ios', '--local'], {
         STUB_FINGERPRINT_HASH: 'a-hash-that-no-build-was-made-from',
       });
 
@@ -297,7 +295,13 @@ describe('@expo/agent-cli dev --plan', () => {
   describe('the machine readable plan', () => {
     it('prints the StartPlan as JSON with `--plan --json`', async () => {
       const projectRoot = await setupFixtureAsync('dev-client-app');
-      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, [
+        'dev',
+        '--plan',
+        '--json',
+        '--ios',
+        '--local',
+      ]);
 
       expect(result.exitCode).toBe(0);
 
@@ -602,7 +606,12 @@ describe('@expo/agent-cli dev --plan', () => {
 
     it('changes nothing for a project that names no config', async () => {
       const withoutConfig = await setupAsync('go-app');
-      const result = await executeAgentCliAsync(withoutConfig, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(withoutConfig, [
+        'dev',
+        '--plan',
+        '--json',
+        '--ios',
+      ]);
 
       const plan: StartPlan = JSON.parse(result.stdout);
       expect(plan.rule).toBe('expo-go');
@@ -620,7 +629,7 @@ describe('@expo/agent-cli dev --plan', () => {
     });
 
     it('explains the build a stale plan includes', async () => {
-      const output = await planTextAsync('dev-client-app', ['--ios']);
+      const output = await planTextAsync('dev-client-app', ['--ios', '--local']);
 
       expect(output).toContain('npx @expo/agent-cli status');
       // Expo Go is out for this fixture, so the reasons in the probe are worth reading in full.

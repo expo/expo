@@ -4,12 +4,12 @@
 // except the probe and two file reads, and it is the only module that knows the order they go in.
 
 import { easJsonExistsSync } from '../followups/projectFiles';
+import type { ProjectState, StartPlan } from '../project/types';
 import { readAgentCliSettings, settingsBuildBackend } from '../settings';
 import type { BuildBackend, RunTarget } from '../settings/types';
 import { applyToolchainProbe, detectToolchainAsync } from '../toolchain';
 import { selectBuildBackend } from '../toolchain/selectBackend';
 import type { ToolchainProbe } from '../toolchain/types';
-import type { ProjectState, StartPlan } from '../project/types';
 import { decideStartPlan } from './decide';
 import { selectRunTarget } from './runTarget';
 import type { DecideStartPlanOptions } from './types';
@@ -77,7 +77,5 @@ export async function resolveStartPlanAsync(
 
   // The probe's caveats — an SDK the tooling finds and a tool of it the shell does not — belong to
   // a plan that still builds here. A plan that moved to the cloud has no use for them.
-  return plan.buildLocation?.runsOn === 'local' && probe
-    ? applyToolchainProbe(plan, probe)
-    : plan;
+  return plan.buildLocation?.runsOn === 'local' && probe ? applyToolchainProbe(plan, probe) : plan;
 }

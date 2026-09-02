@@ -24,7 +24,9 @@ describe(extractCommandMentions, () => {
   });
 
   it(`stops at the quote a sentence wraps the command in`, () => {
-    const [mention] = at(`const x = 'Run "npx @expo/agent-cli dev:stop" first, then start it again.';`);
+    const [mention] = at(
+      `const x = 'Run "npx @expo/agent-cli dev:stop" first, then start it again.';`
+    );
     expect(mention?.text).toBe('npx @expo/agent-cli dev:stop');
     expect(mention?.args).toEqual([]);
   });
@@ -35,13 +37,17 @@ describe(extractCommandMentions, () => {
   });
 
   it(`stops at the em dash that separates a command from its gloss`, () => {
-    const [mention] = at("const x = 'npx @expo/agent-cli status — where the project is right now';");
+    const [mention] = at(
+      "const x = 'npx @expo/agent-cli status — where the project is right now';"
+    );
     expect(mention?.text).toBe('npx @expo/agent-cli status');
   });
 
   it(`reads two commands out of one shell line joined with &&`, () => {
     expect(
-      at("const x = 'npx @expo/agent-cli dev:stop && npx @expo/agent-cli dev --detach';").map((m) => m.text)
+      at("const x = 'npx @expo/agent-cli dev:stop && npx @expo/agent-cli dev --detach';").map(
+        (m) => m.text
+      )
     ).toEqual(['npx @expo/agent-cli dev:stop', 'npx @expo/agent-cli dev --detach']);
   });
 
@@ -77,9 +83,9 @@ describe(extractCommandMentions, () => {
       expect(at(`const rule = { suggestedCommand: 'npx @expo/agent-cli doctor' };`)[0]?.role).toBe(
         'suggested-command'
       );
-      expect(at(`const rule = { suggestedCommand: () => 'npx @expo/agent-cli doctor' };`)[0]?.role).toBe(
-        'suggested-command'
-      );
+      expect(
+        at(`const rule = { suggestedCommand: () => 'npx @expo/agent-cli doctor' };`)[0]?.role
+      ).toBe('suggested-command');
     });
 
     it(`reads a command beside a why as a follow-up rung`, () => {
@@ -123,14 +129,19 @@ describe(extractSuggestions, () => {
   });
 
   it(`ignores a command in prose, which is not a suggestion`, () => {
-    expect(extractSuggestions('src/example.ts', `const x = 'run npx @expo/agent-cli status';`)).toEqual([]);
+    expect(
+      extractSuggestions('src/example.ts', `const x = 'run npx @expo/agent-cli status';`)
+    ).toEqual([]);
   });
 });
 
 describe(extractTextMentions, () => {
   it(`reads a markdown file a line at a time`, () => {
     expect(
-      extractTextMentions('README.md', '# Title\n\nRun `npx @expo/agent-cli dev --detach` to start.\n')
+      extractTextMentions(
+        'README.md',
+        '# Title\n\nRun `npx @expo/agent-cli dev --detach` to start.\n'
+      )
     ).toEqual([
       {
         file: 'README.md',

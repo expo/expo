@@ -40,9 +40,9 @@ describe(platformOfTarget, () => {
 
   it('matches an attached Android device by its model, with or without the API suffix', () => {
     const index = { iosNames: [], androidModels: ['Pixel 7'] };
-    expect(platformOfTarget({ appId: 'com.example.app', deviceName: 'Pixel 7' }, index).platform).toBe(
-      'android'
-    );
+    expect(
+      platformOfTarget({ appId: 'com.example.app', deviceName: 'Pixel 7' }, index).platform
+    ).toBe('android');
     expect(
       platformOfTarget({ appId: 'com.example.app', deviceName: 'Pixel 7 - 15 - API 35' }, index)
         .platform
@@ -80,7 +80,9 @@ describe(platformsOfTargets, () => {
   });
 
   it('counts the targets it could not place', () => {
-    expect(platformsOfTargets([{ appId: 'com.example.app', deviceName: 'x' } as CdpTarget])).toEqual({
+    expect(
+      platformsOfTargets([{ appId: 'com.example.app', deviceName: 'x' } as CdpTarget])
+    ).toEqual({
       platforms: [],
       undetermined: 1,
     });

@@ -77,11 +77,12 @@ describe(buildScreenshotCommand, () => {
 describe(defaultScreenshotPath, () => {
   it(`writes under .expo, which is already gitignored`, () => {
     const filePath = defaultScreenshotPath('/project', new Date('2026-08-24T09:41:02.500Z'));
+    const dir = path.join('/project', '.expo', 'agent-cli') + path.sep;
 
-    expect(filePath).toContain('/project/.expo/agent-cli/');
+    expect(filePath).toContain(path.join('/project', '.expo', 'agent-cli'));
     expect(filePath.endsWith('.png')).toBe(true);
     // No colons: they are legal in a path on POSIX and not on Windows, and this is one path.
-    expect(filePath.slice('/project/.expo/agent-cli/'.length)).not.toContain(':');
+    expect(filePath.slice(dir.length)).not.toContain(':');
   });
 
   it(`never answers the same path twice, so a sweep keeps every picture`, () => {
@@ -273,7 +274,10 @@ describe(`${captureScreenshotAsync.name} on a cloud simulator`, () => {
    * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
    * used to be what made this hermetic; there is no rung that reads one any more.
    */
-  const RUNNER = path.join((process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!, 'npx');
+  const RUNNER = path.join(
+    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
+    process.platform === 'win32' ? 'npx.cmd' : 'npx'
+  );
 
   beforeEach(() =>
     vol.fromJSON({

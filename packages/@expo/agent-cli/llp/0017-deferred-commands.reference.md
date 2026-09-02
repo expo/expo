@@ -20,13 +20,13 @@ Anywhere else in the corpus, a thing that is not v1 gets a one-line pointer here
 
 **This document is not verified.** Nothing type-checks the shelf and nothing runs its tests ([[0016-v1-scope]]). Both the code and the prose here rot at the rate the tree around them moves. Read a path as where a thing was on 2026-08-26, not as where it is.
 
-| Section | The command | Code | Why it left v1 |
-| --- | --- | --- | --- |
-| §dev:wait | `@expo/agent-cli dev:wait` | `src/deferred/dev-wait/` | `smoke` asks its questions and three more |
-| §The checkpoint system | `@expo/agent-cli checkpoint[:list\|:undo]` | `src/deferred/checkpoint/` | agents manage git themselves |
-| §build:wait | `@expo/agent-cli build:wait <id>` | `src/deferred/build-wait/` | wants to be `build --wait`, not a command |
-| §runtime:network | `@expo/agent-cli runtime:network` | `src/deferred/runtime-network/` | the CDP Network domain is unstable and absent on Expo Go |
-| §doctor:fix | `@expo/agent-cli doctor:fix` | `src/deferred/doctor-fix/` | the check half is the v1 answer |
+| Section                | The command                                | Code                            | Why it left v1                                           |
+| ---------------------- | ------------------------------------------ | ------------------------------- | -------------------------------------------------------- |
+| §dev:wait              | `@expo/agent-cli dev:wait`                 | `src/deferred/dev-wait/`        | `smoke` asks its questions and three more                |
+| §The checkpoint system | `@expo/agent-cli checkpoint[:list\|:undo]` | `src/deferred/checkpoint/`      | agents manage git themselves                             |
+| §build:wait            | `@expo/agent-cli build:wait <id>`          | `src/deferred/build-wait/`      | wants to be `build --wait`, not a command                |
+| §runtime:network       | `@expo/agent-cli runtime:network`          | `src/deferred/runtime-network/` | the CDP Network domain is unstable and absent on Expo Go |
+| §doctor:fix            | `@expo/agent-cli doctor:fix`               | `src/deferred/doctor-fix/`      | the check half is the v1 answer                          |
 
 A deferred area's findings that still govern live code stayed in the LLP that made them. Each section below names which and where.
 
@@ -72,14 +72,14 @@ What stayed in [[0010-agent-conventions]]: the `20`–`29` outcome band itself, 
 
 The exit-code mapping, now `src/deferred/build-wait/status.ts`:
 
-| Code | The build |
-| --- | --- |
-| `0` | `FINISHED` |
-| `20` | `ERRORED` |
-| `21` | `CANCELED`, or this wait was interrupted |
-| `22` | still running when `--timeout` elapsed |
-| `7` | nobody is signed in, so no build is visible |
-| `1` | not readable: bad id, no `eas`, three failed polls |
+| Code | The build                                          |
+| ---- | -------------------------------------------------- |
+| `0`  | `FINISHED`                                         |
+| `20` | `ERRORED`                                          |
+| `21` | `CANCELED`, or this wait was interrupted           |
+| `22` | still running when `--timeout` elapsed             |
+| `7`  | nobody is signed in, so no build is visible        |
+| `1`  | not readable: bad id, no `eas`, three failed polls |
 
 The service spells it `CANCELED`, with one `l`. `CANCELLED` stays in the table as a spelling that costs nothing to accept. Four details:
 

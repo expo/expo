@@ -262,21 +262,21 @@ Cell vocabulary:
 
 This table is abbreviated. The source of truth is the tests under `e2e-live/`.
 
-| Command | project | local | android | eas | cloud | devclient |
-| --- | --- | --- | --- | --- | --- | --- |
-| `login` / `logout` / `register` | unreachable (mutates the machine session) | unreachable | unreachable | unreachable | n/a | unreachable |
-| `inspect:build-log <build-id>` | n/a | n/a | n/a | unreachable (eas-cli has no `build:logs`) | n/a | n/a |
-| native EAS build creation | n/a | n/a | n/a | unreachable in v1 | n/a | n/a |
-| `deploy --native` | n/a | n/a | n/a | open (bills a worker) | n/a | n/a |
-| `dev --tunnel` | n/a | unreachable (`@expo/ngrok` exits 1 here) | n/a (emulator uses `adb reverse`) | n/a | n/a (uses a proxy origin) | n/a |
-| `runtime:eval` | n/a | filled (returns `2`) | filled (exit 1, no debugger) | n/a | unreachable (no `--cloud` on `eval`) | filled (exit 0, `value: 2`) |
-| `runtime:tap --verify` | n/a | filled | unreachable (no debugger) | n/a | unreachable | filled |
-| `smoke` (pass) | n/a | filled (8 phases) | unreachable (22 on a working Expo Go app) | n/a | n/a | filled (0, all eight phases `ok`) |
-| `smoke --cloud` | n/a | n/a | n/a | n/a | filled | n/a |
-| `navigate --cloud` | n/a | n/a | n/a | n/a | filled | n/a |
-| `runtime:stop --cloud` | n/a | n/a | n/a | n/a | runnable | n/a |
-| `navigate --print-url` | n/a | open | open | n/a | runnable | open |
-| iOS development build | n/a | n/a | n/a | n/a | n/a | by hand |
+| Command                         | project                                   | local                                    | android                                   | eas                                       | cloud                                | devclient                         |
+| ------------------------------- | ----------------------------------------- | ---------------------------------------- | ----------------------------------------- | ----------------------------------------- | ------------------------------------ | --------------------------------- |
+| `login` / `logout` / `register` | unreachable (mutates the machine session) | unreachable                              | unreachable                               | unreachable                               | n/a                                  | unreachable                       |
+| `inspect:build-log <build-id>`  | n/a                                       | n/a                                      | n/a                                       | unreachable (eas-cli has no `build:logs`) | n/a                                  | n/a                               |
+| native EAS build creation       | n/a                                       | n/a                                      | n/a                                       | unreachable in v1                         | n/a                                  | n/a                               |
+| `deploy --native`               | n/a                                       | n/a                                      | n/a                                       | open (bills a worker)                     | n/a                                  | n/a                               |
+| `dev --tunnel`                  | n/a                                       | unreachable (`@expo/ngrok` exits 1 here) | n/a (emulator uses `adb reverse`)         | n/a                                       | n/a (uses a proxy origin)            | n/a                               |
+| `runtime:eval`                  | n/a                                       | filled (returns `2`)                     | filled (exit 1, no debugger)              | n/a                                       | unreachable (no `--cloud` on `eval`) | filled (exit 0, `value: 2`)       |
+| `runtime:tap --verify`          | n/a                                       | filled                                   | unreachable (no debugger)                 | n/a                                       | unreachable                          | filled                            |
+| `smoke` (pass)                  | n/a                                       | filled (8 phases)                        | unreachable (22 on a working Expo Go app) | n/a                                       | n/a                                  | filled (0, all eight phases `ok`) |
+| `smoke --cloud`                 | n/a                                       | n/a                                      | n/a                                       | n/a                                       | filled                               | n/a                               |
+| `navigate --cloud`              | n/a                                       | n/a                                      | n/a                                       | n/a                                       | filled                               | n/a                               |
+| `runtime:stop --cloud`          | n/a                                       | n/a                                      | n/a                                       | n/a                                       | runnable                             | n/a                               |
+| `navigate --print-url`          | n/a                                       | open                                     | open                                      | n/a                                       | runnable                             | open                              |
+| iOS development build           | n/a                                       | n/a                                      | n/a                                       | n/a                                       | n/a                                  | by hand                           |
 
 `live-android` is Expo Go. `live-devclient` is the app that has a debugger. Every
 `unreachable` (no debugger) cell in the android column has a `filled` cell in the

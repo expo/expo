@@ -53,7 +53,9 @@ describe(argParseError, () => {
       'ARG_MISSING_REQUIRED_LONGARG'
     );
 
-    expect(error.message).toContain('was passed to "@expo/agent-cli dev:stop" with nothing after it');
+    expect(error.message).toContain(
+      'was passed to "@expo/agent-cli dev:stop" with nothing after it'
+    );
     expect(error.message).toContain('npx @expo/agent-cli dev:stop --timeout <value>');
   });
 });
@@ -62,7 +64,8 @@ describe('OPTION_OWNERS', () => {
   // The table is only useful while it is true, and it is hand-kept — so the one property worth
   // pinning is that every name in it resolves to a real command.
   it('names only commands the registry resolves', () => {
-    const { resolveCommand } = require('../../commandRegistry') as typeof import('../../commandRegistry');
+    const { resolveCommand } =
+      require('../../commandRegistry') as typeof import('../../commandRegistry');
     for (const owners of Object.values(OPTION_OWNERS)) {
       for (const owner of owners) {
         expect(resolveCommand(owner, []).kind).toBe('command');

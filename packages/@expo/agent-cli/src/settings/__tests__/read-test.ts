@@ -2,11 +2,12 @@
 // @ref llp/0015-backend-selection-and-config.rfc.md §Where the config lives
 // The one read: `package.json` › `expo` › `@expo/agent-cli`, and what happens when it is not there.
 import { vol } from 'memfs';
+import path from 'path';
 
 import { readAgentCliSettings, resetSettingsCache, CONFIG_KEY_PATH } from '../read';
 import { EMPTY_SETTINGS } from '../types';
 
-const projectRoot = '/project';
+const projectRoot = path.resolve('/project');
 
 beforeEach(() => {
   resetSettingsCache();
@@ -19,7 +20,7 @@ afterEach(() => {
 
 function writePackageJson(contents: unknown): void {
   vol.writeFileSync(
-    `${projectRoot}/package.json`,
+    path.join(projectRoot, 'package.json'),
     typeof contents === 'string' ? contents : JSON.stringify(contents, null, 2)
   );
 }
@@ -49,7 +50,7 @@ describe('a project that configures something', () => {
     writePackageJson({ name: 'app', expo: { agentCli: { buildBackend: 'eas' } } });
     const loaded = readAgentCliSettings(projectRoot);
     expect(loaded.settings.buildBackend).toBe('eas');
-    expect(loaded.file).toBe(`${projectRoot}/package.json`);
+    expect(loaded.file).toBe(path.join(projectRoot, 'package.json'));
     expect(loaded.keyPath).toBe(CONFIG_KEY_PATH);
   });
 

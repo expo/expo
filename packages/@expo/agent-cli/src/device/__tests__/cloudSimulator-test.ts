@@ -68,7 +68,7 @@ const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[
 function project(files: Record<string, string> = {}): void {
   vol.fromJSON({
     '/project/package.json': '{}',
-    [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh\n',
+    [path.join(RUNNER_DIR, process.platform === 'win32' ? 'npx.cmd' : 'npx')]: '#!/bin/sh\n',
     ...files,
   });
 }

@@ -65,7 +65,11 @@ describe('rule 1 — the command resolves', () => {
   });
 
   it(`passes the launcher's own options`, () => {
-    expect(check(`const x = ['npx @expo/agent-cli --help', 'npx @expo/agent-cli -v', 'npx @expo/agent-cli'];`)).toEqual([]);
+    expect(
+      check(
+        `const x = ['npx @expo/agent-cli --help', 'npx @expo/agent-cli -v', 'npx @expo/agent-cli'];`
+      )
+    ).toEqual([]);
   });
 
   it(`catches a command that no longer exists`, () => {
@@ -129,13 +133,17 @@ describe('rule 2 — the options exist on the command', () => {
 
 describe('rule 3 — the arguments have somewhere to go', () => {
   it(`catches a positional argument on a command that reads none`, () => {
-    const [problem] = check(`error.suggestedCommand = 'npx @expo/agent-cli typecheck src/app.tsx';`);
+    const [problem] = check(
+      `error.suggestedCommand = 'npx @expo/agent-cli typecheck src/app.tsx';`
+    );
     expect(problem?.rule).toBe('stray-argument');
     expect(problem?.why).toContain('reads no positional arguments');
   });
 
   it(`does not mistake an option's value for a positional argument`, () => {
-    expect(check(`const x = 'npx @expo/agent-cli typecheck --project tsconfig.json --json';`)).toEqual([]);
+    expect(
+      check(`const x = 'npx @expo/agent-cli typecheck --project tsconfig.json --json';`)
+    ).toEqual([]);
     expect(check(`const x = 'npx @expo/agent-cli typecheck --project=tsconfig.json';`)).toEqual([]);
   });
 
@@ -170,12 +178,16 @@ describe('rule 4 — a suggestion is runnable as printed', () => {
   });
 
   it(`allows a placeholder in prose and in a usage line, which are not commands to run`, () => {
-    expect(check("const x = 'Usage: npx @expo/agent-cli inspect:build-log --file <path>';")).toEqual([]);
+    expect(
+      check("const x = 'Usage: npx @expo/agent-cli inspect:build-log --file <path>';")
+    ).toEqual([]);
   });
 
   it(`allows the documented suggestions that genuinely cannot be filled in`, () => {
     expect(
-      check(`const f = { id: 'x', command: 'npx @expo/agent-cli inspect:build-log --file <path>', why: 'w' };`)
+      check(
+        `const f = { id: 'x', command: 'npx @expo/agent-cli inspect:build-log --file <path>', why: 'w' };`
+      )
     ).toEqual([]);
   });
 
@@ -202,9 +214,13 @@ describe(formatMentionProblems, () => {
 
   it(`quotes the whole string a command was cut out of, flattened onto one line`, () => {
     const message = formatMentionProblems(
-      check('const x = \'Something failed.\\nHow: run "npx @expo/agent-cli context" for the report.\';')
+      check(
+        'const x = \'Something failed.\\nHow: run "npx @expo/agent-cli context" for the report.\';'
+      )
     );
-    expect(message).toContain('In:      Something failed. ⏎ How: run "npx @expo/agent-cli context"');
+    expect(message).toContain(
+      'In:      Something failed. ⏎ How: run "npx @expo/agent-cli context"'
+    );
   });
 });
 

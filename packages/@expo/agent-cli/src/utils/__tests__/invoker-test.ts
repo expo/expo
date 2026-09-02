@@ -62,9 +62,9 @@ describe(renderForInvoker, () => {
   });
 
   it(`rewrites every occurrence in one line`, () => {
-    expect(renderForInvoker('Run npx @expo/agent-cli dev, then npx @expo/agent-cli smoke.', 'bunx')).toBe(
-      'Run bunx @expo/agent-cli dev, then bunx @expo/agent-cli smoke.'
-    );
+    expect(
+      renderForInvoker('Run npx @expo/agent-cli dev, then npx @expo/agent-cli smoke.', 'bunx')
+    ).toBe('Run bunx @expo/agent-cli dev, then bunx @expo/agent-cli smoke.');
   });
 
   // `npx eas-cli` is a different package name under Bun and `npx expo` may be too, so a blanket

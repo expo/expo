@@ -203,7 +203,11 @@ export async function waitForAppConnectionAsync(
     platform == null
       ? null
       : (deviceIndex ??
-        (await buildDeviceNameIndexIfNeededAsync((await probeDevServerAsync(devServerUrl)).targets)));
+        (await buildDeviceNameIndexIfNeededAsync(
+          (
+            await probeDevServerAsync(devServerUrl)
+          ).targets
+        )));
 
   for (;;) {
     const probe = await probeDevServerAsync(devServerUrl);
@@ -217,7 +221,12 @@ export async function waitForAppConnectionAsync(
       : {};
 
     if (counted > 0) {
-      return { appsConnected: counted, timedOut: false, waitedMs: Date.now() - startedAt, ...extra };
+      return {
+        appsConnected: counted,
+        timedOut: false,
+        waitedMs: Date.now() - startedAt,
+        ...extra,
+      };
     }
     if (Date.now() + intervalMs >= deadline) {
       return { appsConnected: 0, timedOut: true, waitedMs: Date.now() - startedAt, ...extra };

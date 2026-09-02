@@ -7,12 +7,14 @@
 // worth asking about is shut — that is why the run is about to boot one — so the only question the
 // tools can answer is the one nobody needs.
 
+import path from 'path';
+
 import { appBundleDirs, readInstalledAppIdsAsync, simulatorDeviceDir } from '../installedApps';
 
 describe(simulatorDeviceDir, () => {
   it(`points at the device's own directory under CoreSimulator`, () => {
     expect(simulatorDeviceDir('ABC-123', { homedir: '/Users/dev' })).toBe(
-      '/Users/dev/Library/Developer/CoreSimulator/Devices/ABC-123'
+      path.join('/Users/dev', 'Library', 'Developer', 'CoreSimulator', 'Devices', 'ABC-123')
     );
   });
 });
@@ -40,8 +42,16 @@ describe(appBundleDirs, () => {
     });
 
     expect(listed).toEqual([
-      '/dev/ABC/data/Containers/Bundle/Application/40DA8569/dcapp.app',
-      '/dev/ABC/data/Containers/Bundle/Application/991142D5/ExpoGo.app',
+      path.join('/dev/ABC', 'data', 'Containers', 'Bundle', 'Application', '40DA8569', 'dcapp.app'),
+      path.join(
+        '/dev/ABC',
+        'data',
+        'Containers',
+        'Bundle',
+        'Application',
+        '991142D5',
+        'ExpoGo.app'
+      ),
     ]);
   });
 

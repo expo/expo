@@ -9,7 +9,11 @@ jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 
 const followups: FollowUp[] = [
-  { id: 'runtime-errors', command: 'npx @expo/agent-cli runtime:errors', why: 'Reads the app errors.' },
+  {
+    id: 'runtime-errors',
+    command: 'npx @expo/agent-cli runtime:errors',
+    why: 'Reads the app errors.',
+  },
   { id: 'eas-build', command: 'npx eas build', why: 'Ships the app.' },
 ];
 

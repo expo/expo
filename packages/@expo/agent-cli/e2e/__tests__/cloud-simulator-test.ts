@@ -636,7 +636,7 @@ describe('@expo/agent-cli smoke --cloud', () => {
     try {
       const result = await executeAgentCliAsync(
         projectRoot,
-        ['smoke', '--cloud', '--json', '--timeout', '4s', '--no-followups'],
+        ['smoke', '--cloud', '--ios', '--json', '--timeout', '4s', '--no-followups'],
         { reject: false }
       );
 

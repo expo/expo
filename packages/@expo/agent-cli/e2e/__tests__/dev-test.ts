@@ -97,7 +97,7 @@ describe('@expo/agent-cli dev', () => {
     // and sets `CI=1`, and `isInteractive()` needs all three the other way). Its own contract is
     // pinned in `src/dev/__tests__/planConsent-test.ts`.
     const projectRoot = await setupAsync('dev-client-app');
-    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local']);
 
     expect(result.all).not.toContain('Run this plan?');
     expect(result.all).not.toContain('Nothing ran');
@@ -108,7 +108,7 @@ describe('@expo/agent-cli dev', () => {
   describe('dev-client-app — a plan of two steps', () => {
     it('runs prebuild and the native build, in that order', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local']);
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
@@ -124,7 +124,9 @@ describe('@expo/agent-cli dev', () => {
       const projectRoot = await setupAsync('dev-client-app');
 
       // `CI` unset for this run only, so what the wrapper sets is told apart from what it inherits.
-      await executeAgentCliAsync(projectRoot, ['dev', '--ios'], { env: { CI: undefined } });
+      await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local'], {
+        env: { CI: undefined },
+      });
 
       const [prebuild, run] = readStubExpoInvocations(projectRoot);
       expect(prebuild!.args).toEqual(['prebuild', '--platform', 'ios']);
@@ -139,7 +141,7 @@ describe('@expo/agent-cli dev', () => {
 
     it('emits the plan before the first step runs', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local']);
 
       // The stub `expo` bin announces itself on stdout, and the plan shares that stream, so the
       // plan-first contract is observable in the output order.
@@ -151,7 +153,7 @@ describe('@expo/agent-cli dev', () => {
 
     it('stops at the first failing step and forwards its exit code', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local'], {
         env: { STUB_EXPO_EXIT_CODE: '3' },
         reject: false,
       });
@@ -172,7 +174,13 @@ describe('@expo/agent-cli dev', () => {
     // the wrong half is the dangerous half.
     it('names the port the plan will really serve on, not one it dropped', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--port', '8901']);
+      const result = await executeAgentCliAsync(projectRoot, [
+        'dev',
+        '--ios',
+        '--local',
+        '--port',
+        '8901',
+      ]);
 
       // The flag reached nothing: the last step is `expo run:ios`, which this plan does not forward
       // to. That warning is correct and stays.
@@ -189,7 +197,7 @@ describe('@expo/agent-cli dev', () => {
 
     it('records no build when the fingerprint is unavailable', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
+      await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local']);
 
       // This fixture ships no fingerprint CLI, so there is no hash to record the build against,
       // and an unrecorded build is planned again next time.
@@ -200,7 +208,7 @@ describe('@expo/agent-cli dev', () => {
   describe('dev-client-fresh-app — a rebuild after the native surface changed', () => {
     it('records the built fingerprint, keeping the other platform', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local'], {
         env: { STUB_FINGERPRINT_HASH: CHANGED_HASH },
       });
 
@@ -227,7 +235,7 @@ describe('@expo/agent-cli dev', () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
       const env = { STUB_FINGERPRINT_HASH: CHANGED_HASH, STUB_EXPO_RUN_LAUNCH_FAILS: '1' };
 
-      const built = await executeAgentCliAsync(projectRoot, ['dev', '--ios'], {
+      const built = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local'], {
         env,
         reject: false,
       });
@@ -253,7 +261,7 @@ describe('@expo/agent-cli dev', () => {
 
     it('runs only the dev server when the recorded build still matches', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--local']);
 
       expect(result.exitCode).toBe(0);
       // Exactly once, not twice: the flag is in the plan's own argv now, and the passthrough that

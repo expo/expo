@@ -1,3 +1,4 @@
+import recordedView from '../../../__fixtures__/eas/build-view.json';
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
 //
 import {
@@ -6,7 +7,6 @@ import {
   EXIT_OUTCOME_FAILED,
   EXIT_OUTCOME_TIMEOUT,
 } from '../../../exitCodes';
-import recordedView from '../../../__fixtures__/eas/build-view.json';
 import { exitCodeForOutcome, normalizeStatus, resolveTerminalStatus } from '../status';
 
 describe(normalizeStatus, () => {

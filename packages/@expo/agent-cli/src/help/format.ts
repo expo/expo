@@ -47,7 +47,10 @@ export function renderCommandHelp(name: string, help: CommandHelp): string {
     `${HEAD_INDENT}${color.command(name)} — ${commandSummary(name)}`,
     '',
     ...section('Usage', [`${color.muted('$')} ${help.usage}`]),
-    ...section('Options', help.options.flatMap((option) => option.split('\n'))),
+    ...section(
+      'Options',
+      help.options.flatMap((option) => option.split('\n'))
+    ),
     ...section(
       'Examples',
       help.examples.flatMap((example) => [
@@ -67,7 +70,12 @@ export function renderCommandHelp(name: string, help: CommandHelp): string {
           ...wrapKeys(help.json.keys),
         ])
       : []),
-    ...(help.notes?.length ? section('Notes', help.notes.flatMap((note) => note.split('\n'))) : []),
+    ...(help.notes?.length
+      ? section(
+          'Notes',
+          help.notes.flatMap((note) => note.split('\n'))
+        )
+      : []),
     `${HEAD_INDENT}${ON_RAMP_FOOTER}`,
     '',
   ];

@@ -144,7 +144,10 @@ describe('a binary under the name `eas` that was never the EAS CLI', () => {
     const report = JSON.parse(result.stdout);
     // And the answer is EAS's — `none` is the service saying there is no such build, where before
     // wave 18 every platform was `unknown` with the wrapper named in the reason.
-    expect(report.builds.platforms.map((p: { state: string }) => p.state)).toEqual(['none', 'none']);
+    expect(report.builds.platforms.map((p: { state: string }) => p.state)).toEqual([
+      'none',
+      'none',
+    ]);
     expect(everything(result.stdout)).not.toContain('rust_begin_unwind');
   });
 
@@ -217,7 +220,9 @@ process.stdout.write('e2e-user\\n');
     await installStubBinAsync(binDir, 'npx', npxStub);
 
     const result = await executeAgentCliAsync(directory, ['whoami'], {
-      env: { PATH: [binDir, path.dirname(process.execPath), '/usr/bin', '/bin'].join(path.delimiter) },
+      env: {
+        PATH: [binDir, path.dirname(process.execPath), '/usr/bin', '/bin'].join(path.delimiter),
+      },
       reject: false,
     });
 

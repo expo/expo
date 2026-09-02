@@ -2,6 +2,7 @@
 // compiler is run with, what its diagnostics amount to, and which of its failures are the tool's
 // rather than the project's.
 import { vol } from 'memfs';
+import path from 'path';
 
 import { spawnSubprocessAsync } from '../../utils/subprocess';
 import {
@@ -14,17 +15,22 @@ import {
 jest.mock('../../utils/subprocess', () => ({ spawnSubprocessAsync: jest.fn() }));
 
 const spawn = spawnSubprocessAsync as jest.MockedFunction<typeof spawnSubprocessAsync>;
-const projectRoot = '/project';
+const projectRoot = path.resolve('/project');
 /** A hoisted npm workspace: the app has no `node_modules` of its own (F113). */
-const workspaceRoot = '/workspace';
-const hoistedProjectRoot = `${workspaceRoot}/apps/mobile`;
+const workspaceRoot = path.resolve('/workspace');
+const hoistedProjectRoot = path.join(workspaceRoot, 'apps', 'mobile');
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value });
+}
 
 /** A project with a compiler and a config, i.e. one there is something to check in. */
 function typeScriptProject(): void {
   vol.fromJSON({
-    [`${projectRoot}/package.json`]: '{"name":"app"}',
-    [`${projectRoot}/tsconfig.json`]: '{}',
-    [`${projectRoot}/node_modules/.bin/tsc`]: '',
+    [path.join(projectRoot, 'package.json')]: '{"name":"app"}',
+    [path.join(projectRoot, 'tsconfig.json')]: '{}',
+    [path.join(projectRoot, 'node_modules', '.bin', 'tsc')]: '',
   });
 }
 
@@ -32,7 +38,12 @@ function answers(output: { stdout?: string; stderr?: string; exitCode: number | 
   spawn.mockResolvedValue({ stdout: '', stderr: '', ...output });
 }
 
+beforeEach(() => {
+  mockPlatform('darwin');
+});
+
 afterEach(() => {
+  mockPlatform(realPlatform);
   vol.reset();
 });
 
@@ -41,7 +52,7 @@ describe(resolveTypeScriptCli, () => {
     typeScriptProject();
 
     expect(resolveTypeScriptCli(projectRoot)).toEqual({
-      command: `${projectRoot}/node_modules/.bin/tsc`,
+      command: path.join(projectRoot, 'node_modules', '.bin', 'tsc'),
     });
   });
 
@@ -57,7 +68,7 @@ describe(resolveTypeScriptCli, () => {
     });
 
     expect(resolveTypeScriptCli(hoistedProjectRoot)).toEqual({
-      command: `${workspaceRoot}/node_modules/.bin/tsc`,
+      command: path.join(workspaceRoot, 'node_modules', '.bin', 'tsc'),
     });
   });
 
@@ -74,7 +85,7 @@ describe(resolveTsConfigPath, () => {
   it(`should find the config the compiler would use`, () => {
     typeScriptProject();
 
-    expect(resolveTsConfigPath(projectRoot)).toBe(`${projectRoot}/tsconfig.json`);
+    expect(resolveTsConfigPath(projectRoot)).toBe(path.join(projectRoot, 'tsconfig.json'));
   });
 
   it(`should answer null for a project with none`, () => {
@@ -91,10 +102,14 @@ describe(runTypeCheckAsync, () => {
 
     const report = await runTypeCheckAsync(projectRoot);
 
-    expect(spawn).toHaveBeenCalledWith(`${projectRoot}/node_modules/.bin/tsc`, TSC_ARGS, {
-      cwd: projectRoot,
-      output: 'capture',
-    });
+    expect(spawn).toHaveBeenCalledWith(
+      path.join(projectRoot, 'node_modules', '.bin', 'tsc'),
+      TSC_ARGS,
+      {
+        cwd: projectRoot,
+        output: 'capture',
+      }
+    );
     expect(TSC_ARGS).toEqual(['--noEmit', '--pretty', 'false']);
     expect(report).toMatchObject({ checked: true, reason: null, errorCount: 0, errors: [] });
   });

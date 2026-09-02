@@ -37,7 +37,10 @@ import {
   type CdpTarget,
 } from '../../runtime/cdpClient';
 import { debugEvent } from '../../runtime/events';
-import { readNoCdpAnnouncement, type RuntimeDebuggerCapability } from '../../runtime/runtimeErrorCollector';
+import {
+  readNoCdpAnnouncement,
+  type RuntimeDebuggerCapability,
+} from '../../runtime/runtimeErrorCollector';
 
 /** A single HTTP request the running app made, with the answer it got. */
 export interface NetworkRequestRecord {
@@ -472,7 +475,10 @@ export function classifyNetworkDomainRefusal(
   }
   // The code is the reliable half; the wording of a missing handler differs per runtime, so the
   // text is only consulted when no code came back.
-  if (error.rpcCode === RPC_METHOD_NOT_FOUND || /\bwasn't found\b|\bnot found\b/i.test(error.reason)) {
+  if (
+    error.rpcCode === RPC_METHOD_NOT_FOUND ||
+    /\bwasn't found\b|\bnot found\b/i.test(error.reason)
+  ) {
     return 'not-implemented';
   }
   return 'unknown';

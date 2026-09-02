@@ -10,7 +10,11 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { resetInvokerCache } from '../invoker';
-import { packageRunnerLabel, resetPackageRunnerCache, resolvePackageRunner } from '../packageRunner';
+import {
+  packageRunnerLabel,
+  resetPackageRunnerCache,
+  resolvePackageRunner,
+} from '../packageRunner';
 
 const BUNX_ENV = {
   npm_config_user_agent: 'bun/1.3.14 npm/? node/v24.3.0 darwin arm64',
@@ -24,6 +28,7 @@ const NPX_ENV = {
 
 const binDir = path.resolve('/opt/homebrew/bin');
 const bunxPath = path.join(binDir, 'bunx');
+const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 
 beforeEach(() => {
   vol.reset();
@@ -46,7 +51,7 @@ describe(resolvePackageRunner, () => {
 
     expect(resolvePackageRunner({ env: NPX_ENV, pathEnv: binDir })).toEqual({
       runner: 'npx',
-      command: 'npx',
+      command: npxCommand,
     });
   });
 
@@ -55,7 +60,7 @@ describe(resolvePackageRunner, () => {
   it(`should fall back to npx when bun started this process but bunx is not on PATH`, () => {
     expect(resolvePackageRunner({ env: BUNX_ENV, pathEnv: binDir })).toEqual({
       runner: 'npx',
-      command: 'npx',
+      command: npxCommand,
     });
   });
 

@@ -117,7 +117,8 @@ describe(looksLikeRunnerNoise, () => {
         tool: 'eas',
         exitCode: 1,
         stdout: '',
-        stderr: 'npm warn exec The following package was not found and will be installed: eas-cli@latest\n',
+        stderr:
+          'npm warn exec The following package was not found and will be installed: eas-cli@latest\n',
       })
     ).toBe(true);
   });

@@ -5,7 +5,7 @@ import path from 'path';
 
 import { resolveExpoCli, runExpoAsync, spawnExpoAsync } from '../expoCli';
 
-const projectRoot = '/project';
+const projectRoot = path.resolve('/project');
 const realPlatform = process.platform;
 
 /**
@@ -49,7 +49,7 @@ afterEach(() => {
 
 describe(resolveExpoCli, () => {
   it(`should use the project's local expo bin when it exists`, () => {
-    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo`]: '#!/usr/bin/env node' });
+    vol.fromJSON({ [projectBin('expo')]: '#!/usr/bin/env node' });
 
     expect(resolveExpoCli(projectRoot, ['start', '--web'])).toEqual({
       command: projectBin('expo'),
@@ -59,7 +59,7 @@ describe(resolveExpoCli, () => {
 
   it(`should use the .cmd shim on Windows`, () => {
     mockPlatform('win32');
-    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo.cmd`]: '' });
+    vol.fromJSON({ [projectBin('expo.cmd')]: '' });
 
     expect(resolveExpoCli(projectRoot, ['start']).command).toBe(projectBin('expo.cmd'));
   });

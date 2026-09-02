@@ -687,7 +687,9 @@ async function runTier1Scenario(scenario) {
       timeoutMs: DEFAULT_TIMEOUT_MS,
     });
     lastResult = result;
-    console.log(`    turn ${turn}: @expo/agent-cli ${action.run.join(' ')} (exit ${result.exitCode})`);
+    console.log(
+      `    turn ${turn}: @expo/agent-cli ${action.run.join(' ')} (exit ${result.exitCode})`
+    );
     messages.push({
       role: 'user',
       content: JSON.stringify({

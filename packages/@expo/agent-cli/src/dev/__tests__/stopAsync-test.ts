@@ -13,6 +13,11 @@ jest.mock('../portListener', () => ({
 }));
 
 const projectRoot = '/project';
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value });
+}
 
 function lock(overrides: Record<string, unknown> = {}) {
   return {
@@ -73,6 +78,7 @@ let livePids = new Set<number>();
 let signalKills = true;
 
 beforeEach(() => {
+  mockPlatform('darwin');
   originalFetch = globalThis.fetch;
   killed = [];
   livePids = new Set();
@@ -101,6 +107,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  mockPlatform(realPlatform);
   if (originalFetch) {
     globalThis.fetch = originalFetch;
   }

@@ -70,7 +70,9 @@ describe(checkpointBeforeAsync, () => {
     const result = await checkpointBeforeAsync(projectRoot, { label: '@expo/agent-cli install' });
 
     expect(result.record?.id).toBe('c0ffee1234567890');
-    expect(createCheckpointAsync).toHaveBeenCalledWith(projectRoot, { label: '@expo/agent-cli install' });
+    expect(createCheckpointAsync).toHaveBeenCalledWith(projectRoot, {
+      label: '@expo/agent-cli install',
+    });
     expect(printed()).toContain('c0ffee1');
     expect(printed()).toContain('npx @expo/agent-cli checkpoint:undo');
   });

@@ -89,7 +89,9 @@ describe(createCheckpointAsync, () => {
   it(`should skip a project where git tracks no file`, async () => {
     jest.mocked(writeSnapshotTreeAsync).mockResolvedValue({ tree: 'empty-tree', files: 0 });
 
-    const result = await createCheckpointAsync(projectRoot, { label: '@expo/agent-cli agents:setup' });
+    const result = await createCheckpointAsync(projectRoot, {
+      label: '@expo/agent-cli agents:setup',
+    });
 
     expect(result.skipped).toBe('no-files');
     expect(commitSnapshotTreeAsync).not.toHaveBeenCalled();

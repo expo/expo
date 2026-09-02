@@ -82,9 +82,7 @@ async function runAsync(
     child.stdout.on('data', (chunk) => (all += chunk));
     child.stderr.on('data', (chunk) => (all += chunk));
     child.on('error', reject);
-    child.on('close', (exitCode) =>
-      resolve({ exitCode, all: stripVTControlCharacters(all) })
-    );
+    child.on('close', (exitCode) => resolve({ exitCode, all: stripVTControlCharacters(all) }));
   });
 }
 

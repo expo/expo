@@ -126,7 +126,7 @@ describe('what an Android stop can establish about the app it stopped', () => {
       wasAlreadyStopped: false,
     });
     expect(calls[0]).toEqual([
-      'adb',
+      process.platform === 'win32' ? 'adb.exe' : 'adb',
       '-s',
       'emulator-5554',
       'shell',
@@ -174,7 +174,10 @@ describe('stopping the app on a cloud simulator session', () => {
    * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
    * used to be what made this hermetic; there is no rung that reads one any more.
    */
-  const RUNNER = path.join((process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!, 'npx');
+  const RUNNER = path.join(
+    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
+    process.platform === 'win32' ? 'npx.cmd' : 'npx'
+  );
 
   /** A project the cloud verbs can be resolved in. */
   function cloudProject(): void {

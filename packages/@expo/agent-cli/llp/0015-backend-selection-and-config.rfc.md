@@ -27,13 +27,13 @@ The probe answered `present`, `missing`, or `unknown`. `missing` covered two sta
 
 `selectBuildBackend` (`src/toolchain/selectBackend.ts`) is a pure function of four facts. The precedence is the contract:
 
-| Rank | Input | Wins because |
-| --- | --- | --- |
-| 1 | A flag on this command line (`--eas`, `--local`) | It is the most recent thing anyone said. |
-| 2 | The project's `@expo/agent-cli` config | The developer wrote it down on purpose. |
-| 3 | The host cannot have the toolchain (`impossible`) | No install here would change it. |
-| 4 | The probe found the toolchain missing | This machine cannot, and could. |
-| 5 | Nothing | Builds run here. |
+| Rank | Input                                             | Wins because                             |
+| ---- | ------------------------------------------------- | ---------------------------------------- |
+| 1    | A flag on this command line (`--eas`, `--local`)  | It is the most recent thing anyone said. |
+| 2    | The project's `@expo/agent-cli` config            | The developer wrote it down on purpose.  |
+| 3    | The host cannot have the toolchain (`impossible`) | No install here would change it.         |
+| 4    | The probe found the toolchain missing             | This machine cannot, and could.          |
+| 5    | Nothing                                           | Builds run here.                         |
 
 Three properties of that table are load-bearing.
 

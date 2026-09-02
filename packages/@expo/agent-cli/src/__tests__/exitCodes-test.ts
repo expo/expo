@@ -78,7 +78,6 @@ describe('exit codes', () => {
         fs.readFileSync(path.join(root, file), 'utf8').includes('EXIT_OUTCOME_CANCELED')
     );
 
-
     expect(users).toEqual([]);
   });
 

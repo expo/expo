@@ -14,8 +14,8 @@ and the real EAS service on staging.
 
 Nothing here is stubbed. The other two tiers are `pnpm test` (unit) and `pnpm test:e2e`, which runs
 whole `@expo/agent-cli` processes against a **stub** `expo`, `eas` and dev server. This tier exists because a
-stub answers whatever it was written to answer. So the stub tier proves the *shape* of an invocation
-and never its *availability* (`llp/0002` §A flag is not shipped until it has run against the published
+stub answers whatever it was written to answer. So the stub tier proves the _shape_ of an invocation
+and never its _availability_ (`llp/0002` §A flag is not shipped until it has run against the published
 binary), and it carries no CDP inspector, so every `runtime:*` success is unreachable there
 (`llp/0002` §Tier 0 doubles the dev server, not the app).
 
@@ -30,14 +30,14 @@ with no simulator reporting red would teach everyone to ignore it.
 
 Everything needs the bundle built first: **`pnpm build`**.
 
-| suite | needs |
-| --- | --- |
-| `live-project` | network to the npm registry. **Nothing else** — see below |
-| `live-local` | macOS; a **booted** iOS simulator with **Expo Go** installed; network (npm, for the scaffold's install) |
+| suite            | needs                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `live-project`   | network to the npm registry. **Nothing else** — see below                                                                                                                                                                                                                                                                                                                                  |
+| `live-local`     | macOS; a **booted** iOS simulator with **Expo Go** installed; network (npm, for the scaffold's install)                                                                                                                                                                                                                                                                                    |
 | `live-devclient` | everything `live-android`'s `adb`/device half needs, **plus** `AGENT_CLI_LIVE_DEVCLIENT_PROJECT` naming a project that (a) depends on `expo-dev-client`, (b) declares an `expo.scheme`, (c) has its `android.package` **installed** on the attached device, and (d) has an android entry in its `.expo/agent-cli-last-build.json`. It **does not boot** and **does not build** — see below |
-| `live-android` | a runnable `adb` (`ANDROID_HOME`, `ANDROID_SDK_ROOT`, `PATH`, or the SDK's default location); an **attached device or a bootable AVD**; **Expo Go** on it; network. A booted iOS simulator with Expo Go is an *optional* extra that adds three tests — see below |
-| `live-eas` | `EXPO_STAGING=1`; a staging session in `~/.expo-staging/state.json`; `bunx` or `npx`; network to `staging.expo.dev`; an EAS-linked project on disk with finished builds and at least one ERRORED build (`AGENT_CLI_LIVE_EAS_PROJECT`). Optional: `AGENT_CLI_LIVE_EAS_OWNER` and `AGENT_CLI_LIVE_EAS_PROJECT_ID` override the livecheck fixture's hosting project |
-| `live-cloud` | everything `live-eas` needs, **plus** `AGENT_CLI_LIVE_CLOUD=1` and a way to publish a local port — `tuft host`, or an origin of your own in `AGENT_CLI_LIVE_PUBLIC_ORIGIN` |
+| `live-android`   | a runnable `adb` (`ANDROID_HOME`, `ANDROID_SDK_ROOT`, `PATH`, or the SDK's default location); an **attached device or a bootable AVD**; **Expo Go** on it; network. A booted iOS simulator with Expo Go is an _optional_ extra that adds three tests — see below                                                                                                                           |
+| `live-eas`       | `EXPO_STAGING=1`; a staging session in `~/.expo-staging/state.json`; `bunx` or `npx`; network to `staging.expo.dev`; an EAS-linked project on disk with finished builds and at least one ERRORED build (`AGENT_CLI_LIVE_EAS_PROJECT`). Optional: `AGENT_CLI_LIVE_EAS_OWNER` and `AGENT_CLI_LIVE_EAS_PROJECT_ID` override the livecheck fixture's hosting project                           |
+| `live-cloud`     | everything `live-eas` needs, **plus** `AGENT_CLI_LIVE_CLOUD=1` and a way to publish a local port — `tuft host`, or an origin of your own in `AGENT_CLI_LIVE_PUBLIC_ORIGIN`                                                                                                                                                                                                                 |
 
 ### Three things about `live-project`
 
@@ -48,7 +48,7 @@ project's own `expo`: `install` adding a package, `agents:setup`, `skills:sync/l
 `live-local`'s gate demands a **booted iOS simulator with Expo Go on it**, so folding these rows in
 there would have made them unrunnable on every machine without a simulator. That is most machines, and
 it includes exactly the ones where "does the real registry still serve this" is the question being
-asked. `registryGate()` in `prereq.ts` is the gate, and it is deliberately *not* `networkGate()`.
+asked. `registryGate()` in `prereq.ts` is the gate, and it is deliberately _not_ `networkGate()`.
 Reaching `staging.expo.dev` is a fact about an EAS account's environment, and reaching
 `registry.npmjs.org` is a fact about being online.
 
@@ -62,7 +62,7 @@ codes here.** Assert on the status code and the package name. The suite's own co
 one assertion that had to learn it.
 
 **`install --check` compares `node_modules`, not `package.json`.** A mismatch made by editing the
-manifest alone leaves the check honestly green; the version has to be *installed*. The suite pins an
+manifest alone leaves the check honestly green; the version has to be _installed_. The suite pins an
 old `expo-haptics` with `install expo-haptics@14.0.1` for this, and `install --fix` puts it back.
 
 ### Three things about `live-android`
@@ -76,7 +76,7 @@ listed AVD is enough to pass the gate, `beforeAll` boots it (~40 s, printed), an
 Two consequences worth knowing before you read a run:
 
 - **A boot always uses `-ports 5554,5555`.** Without it the emulator binds ephemeral ports and
-  `adb devices` does not list it *at all*. Not `offline`: absent [F62, and again on 2026-08-27]. If you
+  `adb devices` does not list it _at all_. Not `offline`: absent [F62, and again on 2026-08-27]. If you
   boot one by hand before running this suite, use the same flags.
 - **An AVD that boots without Expo Go on it fails the suite rather than skipping it.** By then the boot
   has been spent, and jest cannot turn a running suite into a skipped one. The message names the fix:
@@ -99,7 +99,7 @@ The block terminates Expo Go on the simulator when it ends, which is worth knowi
 break-and-fix block reports `NO_APP_CONNECTED` at exit 1 if it starts inside that window. Run it twice
 or wait. It is not a finding.
 
-**`smoke --android` exits 22 on a working app *in Expo Go*, and the suite asserts that.** It is not a
+**`smoke --android` exits 22 on a working app _in Expo Go_, and the suite asserts that.** It is not a
 defect and not a flake. The `runtime` phase cannot read a runtime with no debugger, and `llp/0010` §The
 sixth forbids a gate that cannot measure from passing. Four phases `ok`, two `inconclusive`. A green
 `live-android` therefore does **not** mean `smoke --android` passes anywhere. It means it refuses
@@ -113,8 +113,8 @@ reads the dev server's log.
 costs about fifteen minutes of Gradle, and no suite here may spend that. So somebody runs
 `npx @expo/agent-cli dev --android --yes` in a project once. Since wave 30 that is enough on its own. The
 build record is written when the app reaches the device, so a launch that then fails, or a run you
-stop with Ctrl-C, still leaves a recorded build (F121). Before it you had to let the step *exit*,
-which meant `npx @expo/agent-cli dev:stop` as well. The gate checks the installed package *and* the record,
+stop with Ctrl-C, still leaves a recorded build (F121). Before it you had to let the step _exit_,
+which meant `npx @expo/agent-cli dev:stop` as well. The gate checks the installed package _and_ the record,
 and a missing record is the difference between a 25-second suite and a fifteen-minute one.
 
 **It drives somebody else's project, in place.** It makes no EAS call, so the scratch-outside-git
@@ -164,7 +164,7 @@ up with nothing installed. `apps --platform ios` lists only the controller's own
 `wave19-live/08-open-plain.json`]. The command is also `eas simulator`, not `eas simulator:start`. That
 is the name in the CLI's own manifest and the one carrying the flag.
 
-**And `--expo-go` alone is not enough, so always `--open-url` too.** It installs and *launches* Expo Go,
+**And `--expo-go` alone is not enough, so always `--open-url` too.** It installs and _launches_ Expo Go,
 and nothing has opened the **project** in it. So the first `exp://` URL goes to the system, iOS asks
 "Open in 'Expo Go'?", and on a device nobody is watching that modal is the whole story: `navigate
 --cloud` exit 22 after 60.9 s with the `open` verb having exited 0, then two 180 s reloads that served
@@ -187,19 +187,19 @@ was dropped somewhere between the gate and the spawn has.
 
 ### Environment variables
 
-| variable | effect |
-| --- | --- |
-| `EXPO_STAGING=1` | required by `live-eas` and `live-cloud`. Nothing here ever talks to production |
-| `AGENT_CLI_LIVE_CLOUD=1` | the second opt-in for `live-cloud`, because its prerequisites can all hold on a machine whose owner did not mean to start a billing session |
-| `AGENT_CLI_LIVE_UDID` | which booted simulator to use, when several are |
-| `AGENT_CLI_LIVE_AVD` | which AVD `live-android` boots, when several are listed and none is attached |
-| `AGENT_CLI_LIVE_EAS_PROJECT` | the EAS-linked project `live-eas` copies and reads builds from. Required for that suite |
-| `AGENT_CLI_LIVE_EAS_OWNER` | Expo account that owns the livecheck hosting project. Overrides `e2e-live/fixtures/livecheck/app.json` |
-| `AGENT_CLI_LIVE_EAS_PROJECT_ID` | EAS project id for that hosting project. Overrides the same fixture |
-| `AGENT_CLI_LIVE_PUBLIC_ORIGIN` | an origin that already forwards to the dev-server port, for `live-cloud` on a machine without `tuft host`. Supplied origins are not torn down by the cleanup |
-| `AGENT_CLI_LIVE_PORT` | first dev-server port to *try* (default `8500`); each run binds the first free one upward from there |
-| `AGENT_CLI_LIVE_TEMP_DIR` | root of the scratch area (default `os.tmpdir()`). **Must be outside every git checkout** — asserted at startup, because EAS uploads walk up to the git root |
-| `AGENT_CLI_LIVE_KEEP=1` | keep the scratch project after the run, for debugging |
+| variable                        | effect                                                                                                                                                       |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `EXPO_STAGING=1`                | required by `live-eas` and `live-cloud`. Nothing here ever talks to production                                                                               |
+| `AGENT_CLI_LIVE_CLOUD=1`        | the second opt-in for `live-cloud`, because its prerequisites can all hold on a machine whose owner did not mean to start a billing session                  |
+| `AGENT_CLI_LIVE_UDID`           | which booted simulator to use, when several are                                                                                                              |
+| `AGENT_CLI_LIVE_AVD`            | which AVD `live-android` boots, when several are listed and none is attached                                                                                 |
+| `AGENT_CLI_LIVE_EAS_PROJECT`    | the EAS-linked project `live-eas` copies and reads builds from. Required for that suite                                                                      |
+| `AGENT_CLI_LIVE_EAS_OWNER`      | Expo account that owns the livecheck hosting project. Overrides `e2e-live/fixtures/livecheck/app.json`                                                       |
+| `AGENT_CLI_LIVE_EAS_PROJECT_ID` | EAS project id for that hosting project. Overrides the same fixture                                                                                          |
+| `AGENT_CLI_LIVE_PUBLIC_ORIGIN`  | an origin that already forwards to the dev-server port, for `live-cloud` on a machine without `tuft host`. Supplied origins are not torn down by the cleanup |
+| `AGENT_CLI_LIVE_PORT`           | first dev-server port to _try_ (default `8500`); each run binds the first free one upward from there                                                         |
+| `AGENT_CLI_LIVE_TEMP_DIR`       | root of the scratch area (default `os.tmpdir()`). **Must be outside every git checkout** — asserted at startup, because EAS uploads walk up to the git root  |
+| `AGENT_CLI_LIVE_KEEP=1`         | keep the scratch project after the run, for debugging                                                                                                        |
 
 ## Running one
 
@@ -226,14 +226,14 @@ Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
 
 ## What each suite costs
 
-| suite | wall time | money | what it leaves behind |
-| --- | --- | --- | --- |
-| `live-project` | **~44 s measured** (32 tests, 49 `@expo/agent-cli` runs, 1 scaffold) | none | nothing: the dev server is stopped and the scratch project deleted. It writes into its own scratch `node_modules` (a `SKILL.md`, because no published module ships one) and nowhere else |
-| `live-local` | ~60 s (measured 58 s, 30 tests, 38 `@expo/agent-cli` runs) | none | nothing: the dev server is stopped, the app terminated, the scratch project deleted |
-| `live-android` | **~103 s measured** (24 tests, 36 `@expo/agent-cli` runs) — of which ~40 s is the emulator boot; ~80 s against an emulator that was already up | none | nothing, **unless the emulator was already booted**: an emulator this run started is killed, one it found is left as it was. The dev server is stopped, Expo Go force-stopped on the emulator and terminated on the simulator, the scratch project deleted |
-| `live-devclient` | **~25 s measured** (15 tests, 26 `@expo/agent-cli` runs) against an emulator that is already up and an app that is already built | none | the named project's dev server is stopped and its development build is force-stopped; the project itself, its `.expo/` and the installed app are left as they were |
-| `live-eas` | ~50 s (measured, 9 tests) | one EAS Hosting preview deployment per run | one deployment of the `livecheck` fixture. Idempotent: EAS Hosting gives each deploy its own preview URL, so a re-run adds one and changes nothing that existed. No native build — no v1 command creates one |
-| `live-cloud` | **~4 min measured** (237 s, 7 tests) — and variable: one cloud reload took 18.5 s, another 48 s, and an unproved one spent its whole 180 s `--timeout` | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
+| suite            | wall time                                                                                                                                              | money                                                                          | what it leaves behind                                                                                                                                                                                                                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `live-project`   | **~44 s measured** (32 tests, 49 `@expo/agent-cli` runs, 1 scaffold)                                                                                   | none                                                                           | nothing: the dev server is stopped and the scratch project deleted. It writes into its own scratch `node_modules` (a `SKILL.md`, because no published module ships one) and nowhere else                                                                      |
+| `live-local`     | ~60 s (measured 58 s, 30 tests, 38 `@expo/agent-cli` runs)                                                                                             | none                                                                           | nothing: the dev server is stopped, the app terminated, the scratch project deleted                                                                                                                                                                           |
+| `live-android`   | **~103 s measured** (24 tests, 36 `@expo/agent-cli` runs) — of which ~40 s is the emulator boot; ~80 s against an emulator that was already up         | none                                                                           | nothing, **unless the emulator was already booted**: an emulator this run started is killed, one it found is left as it was. The dev server is stopped, Expo Go force-stopped on the emulator and terminated on the simulator, the scratch project deleted    |
+| `live-devclient` | **~25 s measured** (15 tests, 26 `@expo/agent-cli` runs) against an emulator that is already up and an app that is already built                       | none                                                                           | the named project's dev server is stopped and its development build is force-stopped; the project itself, its `.expo/` and the installed app are left as they were                                                                                            |
+| `live-eas`       | ~50 s (measured, 9 tests)                                                                                                                              | one EAS Hosting preview deployment per run                                     | one deployment of the `livecheck` fixture. Idempotent: EAS Hosting gives each deploy its own preview URL, so a re-run adds one and changes nothing that existed. No native build — no v1 command creates one                                                  |
+| `live-cloud`     | **~4 min measured** (237 s, 7 tests) — and variable: one cloud reload took 18.5 s, another 48 s, and an unproved one spent its whole 180 s `--timeout` | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
 
 ## Evidence
 
@@ -257,33 +257,33 @@ export produced, a log line that appeared inside a generous bound.
   and a **development build**. Not run anywhere: a development build on **iOS** inside a suite (a
   wall rather than a gap, see §Three things about `live-devclient`), a **physical device**, and Windows
   (`tier0-windows` covers the `.cmd` shim half at the stub tier).
-- **That any Android runtime read works *in Expo Go*.** It cannot. `runtime:eval`, `runtime:tree`,
+- **That any Android runtime read works _in Expo Go_.** It cannot. `runtime:eval`, `runtime:tree`,
   `runtime:tap` and `runtime:type` are asserted by `live-android` to **refuse**, `smoke --android` to
   be **22** on a working app, and a green `live-android` run is a run in which none of those five
   ever answered. **`live-devclient` is where all five answer** [wave 29]: `runtime:eval "1+1"
-  --android` returns 2 and `smoke --android` exits 0 with eight phases `ok`, on the same emulator.
+--android` returns 2 and `smoke --android` exits 0 with eight phases `ok`, on the same emulator.
   The two suites together are what make the refusal a fact about Expo Go's engine rather than about
   Android.
 - **Native builds.** No v1 command creates an EAS build [observed — staging-live, 2026-08-26], so
-  every claim about build *creation* is untested here and cannot be tested here.
+  every claim about build _creation_ is untested here and cannot be tested here.
 - **That an Android stop had taken effect when the command returned.** `am force-stop` is
   asynchronous. It exits as soon as ActivityManager takes the request, and `pidof` still answers for a
   beat. `runtime:stop --android` claims the stop ran and that the app was running before it, and the
   suite checks the effect inside a bound.
 - **The reload broadcast on a cloud simulator.** This is narrower than S11, which said a cloud simulator
-  registers zero CDP targets. It registers a debugger target *and* a command-socket client once the
+  registers zero CDP targets. It registers a debugger target _and_ a command-socket client once the
   project is loaded, and `navigate --cloud` confirms the attach in ~200 ms [observed — 2026-08-27]. What
   does not work is the `/message` reload broadcast: it does not reload Expo Go there, and it takes the
   app's command-socket client with it. That is upstream. `runtime:reload --cloud` climbs to the
   relaunch, which does work, and `live-cloud` asserts that rather than a rung.
-- **That the registry serves this.** This tier runs the ncc bundle from *this working tree*. It is the
-  published *surface*, not a published *version*. `llp/0002`'s rule is one run of `npx <pkg>@latest` in
+- **That the registry serves this.** This tier runs the ncc bundle from _this working tree_. It is the
+  published _surface_, not a published _version_. `llp/0002`'s rule is one run of `npx <pkg>@latest` in
   a project outside this repository, before shipping. That is still a manual step, and this tier narrows
   what that step has to discover rather than replacing it.
 - **Anything about a suite that skipped.** A skip is not a pass. `test:live` printing
   `5 skipped, 1 passed` means one sixth of this tier ran.
-- **That an installed package works.** `live-project` asserts what an install *changed* and what the
-  CLI *said about it*: the manifest, the classification, the follow-up, the config the Expo CLI
+- **That an installed package works.** `live-project` asserts what an install _changed_ and what the
+  CLI _said about it_: the manifest, the classification, the follow-up, the config the Expo CLI
   rewrote. Nothing there loads the package into a runtime. `live-local` and `live-devclient` are the
   suites that run code.
 
@@ -293,7 +293,7 @@ export produced, a log line that appeared inside a generous bound.
 stub tier. Every one of them was in the half of the work the stub could not double:
 
 - **F130** — `install --check --json` dropped the Expo CLI's report on the only run that has an
-  answer in it. The CLI prints the *passing* report on one line and the *failing* one
+  answer in it. The CLI prints the _passing_ report on one line and the _failing_ one
   pretty-printed, and the parse read one line at a time. The stub had been handed a single-line
   report for both cases, so it doubled what the code accepted rather than what the CLI writes.
 - **F131** — `skills:sync --json` reported `linked: []`, `removed: []` and nothing else for a run
@@ -301,7 +301,7 @@ stub tier. Every one of them was in the half of the work the stub could not doub
 - **F132** — `inspect:config-plugins` said `10 (1 declared, 9 auto)` for a config declaring three,
   and named neither of the two `pluginHistory` has no entry for. `declaredNotApplied` now does.
 - **F133** — a config with an unresolvable plugin was reported with a `Why:` line of pure stack
-  frames. A thrown Node error puts its message *first*, and `outputTail` took the last ten lines.
+  frames. A thrown Node error puts its message _first_, and `outputTail` took the last ten lines.
 - **F134** — `install expo-haptics` answered `impact: "native-module"` and "Only JavaScript
   changed" in one object. The reload rung now says which of the two reasons applies.
 
@@ -320,10 +320,10 @@ Two things this suite found that are **not** defects and are worth knowing:
 `live-android` arrived with seven of its own, six fixed in the same wave and one left open:
 
 - **Fixed and now asserted** — **F100** (`runtime:errors` and `smoke`'s error window read the runtime
-  that *answers*, which on a mixed machine is iOS), **F101** (`runtime:stop --android` force-stopped the
+  that _answers_, which on a mixed machine is iOS), **F101** (`runtime:stop --android` force-stopped the
   iOS application id and reported success), **F102** (`wasRunning: true` on every Android stop, on no
   evidence), **F103** (three follow-up builders dropped the platform flag), **F104** (`navigate
-  --android` told the caller to wait on `runtime:tree`, which cannot answer there) and **F105** (the
+--android` told the caller to wait on `runtime:tree`, which cannot answer there) and **F105** (the
   dev-server-log fallback called the records "this app's errors" when either app writes to that log).
   `llp/0005-runtime-loop-tools.rfc.md` §Android.
 - **F107, open and not skipped.** `smoke`'s `errors` phase has no dev-server-log fallback, so on Android
@@ -354,7 +354,7 @@ Two of them left something in place worth knowing before you read a run:
   `adb shell` exits as soon as ActivityManager has taken the request, so `pidof` still answers a pid for
   a beat afterwards. The first version of the two `runtime:stop --android` tests read the device
   immediately and went red under a CLI that was behaving correctly. They wait inside a bound now. It is
-  the same lesson as F95's, from the other end: a live assertion about an *effect* is a bound, never a
+  the same lesson as F95's, from the other end: a live assertion about an _effect_ is a bound, never a
   read.
 - **A live assertion has to name the signal's own count.** F95's test used to assert `appsReconnected > 0`
   under `verifiedBy: 'message-socket-peers'`, and those are two different signals. The reload ladder

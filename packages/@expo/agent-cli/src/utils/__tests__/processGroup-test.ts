@@ -33,17 +33,26 @@ describe(killProcessTree, () => {
 
     killProcessTree(child as any, 'SIGKILL');
 
-    // The negative pid is the group. Signalling the pid alone is what left a grandchild running.
-    expect(kill).toHaveBeenCalledWith(-4321, 'SIGKILL');
-    expect(child.kill).not.toHaveBeenCalled();
+    if (USE_PROCESS_GROUP) {
+      // The negative pid is the group. Signalling the pid alone is what left a grandchild running.
+      expect(kill).toHaveBeenCalledWith(-4321, 'SIGKILL');
+      expect(child.kill).not.toHaveBeenCalled();
+    } else {
+      expect(child.kill).toHaveBeenCalledWith('SIGKILL');
+    }
   });
 
   it(`defaults to SIGTERM, which is what a deadline and the prompt guard send`, () => {
     const kill = jest.spyOn(process, 'kill').mockImplementation(() => true);
+    const child = fakeChild({ pid: 77 });
 
-    killProcessTree(fakeChild({ pid: 77 }) as any);
+    killProcessTree(child as any);
 
-    expect(kill).toHaveBeenCalledWith(-77, 'SIGTERM');
+    if (USE_PROCESS_GROUP) {
+      expect(kill).toHaveBeenCalledWith(-77, 'SIGTERM');
+    } else {
+      expect(child.kill).toHaveBeenCalledWith('SIGTERM');
+    }
   });
 
   it(`falls back to the direct kill when there is no group to signal`, () => {

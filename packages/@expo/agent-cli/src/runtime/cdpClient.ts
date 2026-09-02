@@ -9,12 +9,6 @@ import type { NavigatePlatform } from '../navigate/device';
 import { formatCdpExceptionDetails, stringifyCdpValue } from './cdpFormat';
 import { debugEvent } from './events';
 import {
-  buildDeviceNameIndexIfNeededAsync,
-  scopeTargets,
-  type DeviceNameIndex,
-  type ScopedTargets,
-} from './targetPlatform';
-import {
   buildPromisePollExpression,
   buildPromiseReleaseExpression,
   createPromiseNonce,
@@ -23,6 +17,12 @@ import {
   parseSettledPromiseSlot,
   wrapExpressionForPromises,
 } from './promiseSettling';
+import {
+  buildDeviceNameIndexIfNeededAsync,
+  scopeTargets,
+  type DeviceNameIndex,
+  type ScopedTargets,
+} from './targetPlatform';
 
 /**
  * Metro's inspector proxy rejects WebSocket handshakes without a same-origin `Origin`
@@ -318,7 +318,10 @@ export class CdpClient {
   private async openSessionAsync(): Promise<CdpSession> {
     const ws = await this.createWebSocketAsync();
     const url = this.getWebSocketDebuggerUrl();
-    const pending = new Map<number, { resolve: (result: unknown) => void; reject: (e: any) => void }>();
+    const pending = new Map<
+      number,
+      { resolve: (result: unknown) => void; reject: (e: any) => void }
+    >();
     let nextId = 1;
     let closedWith: Error | null = null;
 

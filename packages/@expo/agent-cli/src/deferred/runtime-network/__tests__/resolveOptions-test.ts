@@ -52,5 +52,4 @@ describe(resolveRuntimeCommand, () => {
   it(`should reject an argument after network`, () => {
     expect(() => resolveRuntimeCommand(['network', 'GET'])).toThrow(/Unexpected argument: GET/);
   });
-
 });

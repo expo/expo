@@ -33,7 +33,8 @@ const SAMPLES = {
    */
   osascriptRefused:
     'Error: osascript -e tell app "System Events" to count processes whose name is "Simulator" or name is "DeviceHub" exited with non-zero code: 1\n    at isSimulatorAppRunningAsync (/app/node_modules/@expo/cli/build/src/start/platforms/ios/ensureSimulatorAppRunning.js:98:58)',
-  appleEventsRefused: 'execution error: Not authorized to send Apple events to System Events. (-1743)',
+  appleEventsRefused:
+    'execution error: Not authorized to send Apple events to System Events. (-1743)',
 } as const;
 
 /** A failed run of one tool, with the sample it printed on stderr. */

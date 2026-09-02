@@ -264,17 +264,14 @@ async function detectJvmAsync(): Promise<{ status: ToolchainStatus; detail: stri
 /** Where the Android Studio installer puts the SDK, per host. */
 function defaultAndroidSdkDir(): string {
   const home = os.homedir();
+  const join = (process.platform === 'win32' ? path.win32 : path.posix).join;
   if (process.platform === 'darwin') {
-    return path.join(home, 'Library', 'Android', 'sdk');
+    return join(home, 'Library', 'Android', 'sdk');
   }
   if (process.platform === 'win32') {
-    return path.join(
-      process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local'),
-      'Android',
-      'Sdk'
-    );
+    return join(process.env.LOCALAPPDATA || join(home, 'AppData', 'Local'), 'Android', 'Sdk');
   }
-  return path.join(home, 'Android', 'Sdk');
+  return join(home, 'Android', 'Sdk');
 }
 
 /** An environment variable that is set to something, treating an empty value as unset. */

@@ -132,7 +132,7 @@ describe('@expo/agent-cli dev --detach', () => {
     try {
       const result = await executeAgentCliAsync(
         projectRoot,
-        ['dev', '--detach', '--yes', '--ios', '--json'],
+        ['dev', '--detach', '--yes', '--ios', '--local', '--json'],
         {
           env: {
             ...stubExpoEnv(projectRoot),

@@ -50,7 +50,6 @@ beforeEach(() => {
 });
 
 describe(installAsync, () => {
-
   it(`should run expo install with the forwarded arguments`, async () => {
     await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--dev']));
 
@@ -267,9 +266,9 @@ describe(installAsync, () => {
         result: { exitCode: 4, stdout: '', stderr: 'no such package\n' },
       });
 
-      await expect(
-        installAsync(projectRoot, resolveInstallPlan(['nope', '--json']))
-      ).resolves.toBe(4);
+      await expect(installAsync(projectRoot, resolveInstallPlan(['nope', '--json']))).resolves.toBe(
+        4
+      );
       expect(payload()).toMatchObject({ installed: false, exitCode: 4, impact: [] });
     });
 
@@ -371,7 +370,7 @@ describe(installAsync, () => {
       const check = payload().check;
       expect(check.ok).toBe(false);
       expect(check.report).toBeNull();
-      expect(check.output).toContain('doesn\'t seem to be installed');
+      expect(check.output).toContain("doesn't seem to be installed");
       // And the Expo CLI's claim about package.json is corrected, because this command read it.
       expect(check.notes).toHaveLength(1);
       expect(check.notes[0]).toContain(
@@ -380,7 +379,7 @@ describe(installAsync, () => {
       expect(check.notes[0]).toContain('npx @expo/agent-cli install');
       // The verdict is never only in a key the caller might not read.
       expect(jest.mocked(Log.error).mock.calls.flat().join('\n')).toContain(
-        'doesn\'t seem to be installed'
+        "doesn't seem to be installed"
       );
     });
   });

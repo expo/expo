@@ -6,20 +6,20 @@ Design documents: `llp/0001-agentic-cli-on-expo-cli.rfc.md` and its child LLPs i
 
 ## Start here
 
-| Step | Command | Gets you |
-| --- | --- | --- |
-| 1. Check the project | `npx @expo/agent-cli status` | what this project is, and what to run next |
-| 2. Start the app | `npx @expo/agent-cli dev --detach` | the dev server starts, the terminal comes back |
-| | `npx @expo/agent-cli navigate /` | the app opens a route, on a device |
-| 3. Edit and reload | `npx @expo/agent-cli runtime:reload` | after your edit, the app runs the code on disk |
-| | `npx @expo/agent-cli runtime:errors` | what it threw, over a time window |
-| | `npx @expo/agent-cli runtime:tree` | what is on screen, and its testIDs |
-| 4. Verify before you're done | `npx @expo/agent-cli smoke` | bundle, boot, and error window, one exit code |
-| | `npx @expo/agent-cli typecheck` | the type errors neither of those can see |
-| 5. Release | `npx @expo/agent-cli deploy` | the web app to EAS Hosting |
-| One-time setup | `npx @expo/agent-cli new my-app` | create a project |
-| | `npx @expo/agent-cli install expo-sqlite` | add a package at the version this SDK wants |
-| | `npx @expo/agent-cli agents:setup` | write AGENTS.md, link the agent skills |
+| Step                         | Command                                   | Gets you                                       |
+| ---------------------------- | ----------------------------------------- | ---------------------------------------------- |
+| 1. Check the project         | `npx @expo/agent-cli status`              | what this project is, and what to run next     |
+| 2. Start the app             | `npx @expo/agent-cli dev --detach`        | the dev server starts, the terminal comes back |
+|                              | `npx @expo/agent-cli navigate /`          | the app opens a route, on a device             |
+| 3. Edit and reload           | `npx @expo/agent-cli runtime:reload`      | after your edit, the app runs the code on disk |
+|                              | `npx @expo/agent-cli runtime:errors`      | what it threw, over a time window              |
+|                              | `npx @expo/agent-cli runtime:tree`        | what is on screen, and its testIDs             |
+| 4. Verify before you're done | `npx @expo/agent-cli smoke`               | bundle, boot, and error window, one exit code  |
+|                              | `npx @expo/agent-cli typecheck`           | the type errors neither of those can see       |
+| 5. Release                   | `npx @expo/agent-cli deploy`              | the web app to EAS Hosting                     |
+| One-time setup               | `npx @expo/agent-cli new my-app`          | create a project                               |
+|                              | `npx @expo/agent-cli install expo-sqlite` | add a package at the version this SDK wants    |
+|                              | `npx @expo/agent-cli agents:setup`        | write AGENTS.md, link the agent skills         |
 
 `npx @expo/agent-cli help workflow` is this loop in one screen, plus exit codes, `--json`, and what to do when a command fails.
 
@@ -27,27 +27,27 @@ Design documents: `llp/0001-agentic-cli-on-expo-cli.rfc.md` and its child LLPs i
 
 ## Commands
 
-| Command | What it does |
-| --- | --- |
-| `new` | Create a project without prompts |
-| `install` / `add` | Run `expo install`, then sync that package's skills |
-| `status` | What this project is, whether a rebuild is needed, what to run next |
-| `dev` | Plan how to get the app on a device, then do it |
-| `start` | `expo start` and nothing else, then sync skills |
-| `dev:logs` / `dev:stop` | Read or stop a detached dev server |
-| `navigate` | Open a route on a simulator, a device, or EAS Simulator (`--cloud`) |
-| `runtime:reload` | Put the running app back on the code on disk |
-| `runtime:errors` / `runtime:eval` | Read runtime errors, or evaluate JS in the running app |
-| `runtime:tree` / `runtime:tap` / `runtime:type` | Drive the app by `testID` |
-| `runtime:stop` | Stop the app on the device |
-| `smoke` | Bundle, boot, open a route, check for errors. One exit code |
-| `typecheck` | The project's own `tsc --noEmit` |
-| `doctor` | `expo-doctor`, normalized |
-| `deploy` | Ship the web app to EAS Hosting, or the native app with `--native` |
-| `inspect:build-log` | Find the line in a native build log that says why it failed |
-| `inspect:config-plugins` | What the config plugins produced. Experimental |
-| `agents:setup` | Write `AGENTS.md` and link agent skills |
-| `skills:sync` / `skills:list` / `skills:show` / `skills:clean` | Discover and link skills shipped by installed modules |
+| Command                                                        | What it does                                                        |
+| -------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `new`                                                          | Create a project without prompts                                    |
+| `install` / `add`                                              | Run `expo install`, then sync that package's skills                 |
+| `status`                                                       | What this project is, whether a rebuild is needed, what to run next |
+| `dev`                                                          | Plan how to get the app on a device, then do it                     |
+| `start`                                                        | `expo start` and nothing else, then sync skills                     |
+| `dev:logs` / `dev:stop`                                        | Read or stop a detached dev server                                  |
+| `navigate`                                                     | Open a route on a simulator, a device, or EAS Simulator (`--cloud`) |
+| `runtime:reload`                                               | Put the running app back on the code on disk                        |
+| `runtime:errors` / `runtime:eval`                              | Read runtime errors, or evaluate JS in the running app              |
+| `runtime:tree` / `runtime:tap` / `runtime:type`                | Drive the app by `testID`                                           |
+| `runtime:stop`                                                 | Stop the app on the device                                          |
+| `smoke`                                                        | Bundle, boot, open a route, check for errors. One exit code         |
+| `typecheck`                                                    | The project's own `tsc --noEmit`                                    |
+| `doctor`                                                       | `expo-doctor`, normalized                                           |
+| `deploy`                                                       | Ship the web app to EAS Hosting, or the native app with `--native`  |
+| `inspect:build-log`                                            | Find the line in a native build log that says why it failed         |
+| `inspect:config-plugins`                                       | What the config plugins produced. Experimental                      |
+| `agents:setup`                                                 | Write `AGENTS.md` and link agent skills                             |
+| `skills:sync` / `skills:list` / `skills:show` / `skills:clean` | Discover and link skills shipped by installed modules               |
 
 Grouped commands use `group:action`, the way `eas-cli` does. The space form is the same command: `skills list` is `skills:list`. Bare `skills` syncs, bare `doctor` checks, bare `dev` runs the plan.
 

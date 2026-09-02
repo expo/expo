@@ -8,7 +8,12 @@
 // built copy and runs it.
 import { vol } from 'memfs';
 
-import { FALLBACK_PROGRAM_NAME, PROGRAM_NAME, PROGRAM_PREFIX, readProgramNameFrom } from '../programName';
+import {
+  FALLBACK_PROGRAM_NAME,
+  PROGRAM_NAME,
+  PROGRAM_PREFIX,
+  readProgramNameFrom,
+} from '../programName';
 
 jest.mock('fs');
 

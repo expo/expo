@@ -33,15 +33,15 @@ The project-state probe reads:
 
 ## Decision table
 
-| State | Plan |
-| --- | --- |
-| Not an Expo app (no `expo` dependency) | nothing. no steps |
-| Expo Go compatible, Go installed | start Metro, then open in Expo Go |
-| Dev client installed, fingerprint matches last build | start Metro, then open the dev client |
-| Fingerprint changed (new native module or config plugin) | prebuild (CNG), native build, install, start |
-| Build cache hit for the current fingerprint | download and install the cached build, then start Metro |
-| Bare project, native dirs dirty | pod install / gradle sync, build, start |
-| Web | start Metro for web |
+| State                                                    | Plan                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------- |
+| Not an Expo app (no `expo` dependency)                   | nothing. no steps                                       |
+| Expo Go compatible, Go installed                         | start Metro, then open in Expo Go                       |
+| Dev client installed, fingerprint matches last build     | start Metro, then open the dev client                   |
+| Fingerprint changed (new native module or config plugin) | prebuild (CNG), native build, install, start            |
+| Build cache hit for the current fingerprint              | download and install the cached build, then start Metro |
+| Bare project, native dirs dirty                          | pod install / gradle sync, build, start                 |
+| Web                                                      | start Metro for web                                     |
 
 The first row sits above the others and above the web short-circuit. It is the fact that
 there is no app. Without it, "no `expo` dependency" reads as "lacks a dev client", and
@@ -57,7 +57,7 @@ engine cannot disagree.
 A directory whose `package.json` declares no `expo` dependency is not an Expo app. No
 command may plan work that would change it without that fact being surfaced first.
 
-The guard reads the *declaration* of `expo` in `package.json`. It does not look in
+The guard reads the _declaration_ of `expo` in `package.json`. It does not look in
 `node_modules`. A fresh clone with no `node_modules` is still an Expo app.
 `ProjectState.sdkVersion` is the installed half and stays what it was. The two fields
 answer two different questions, and `status` reports both.
@@ -65,16 +65,16 @@ answer two different questions, and `status` reports both.
 `react-native` present with `expo` absent gets the same answer. v1 has no "bootstrap a
 bare React Native app" flow.
 
-| Command | In a directory that is not an Expo app |
-| --- | --- |
-| `dev`, `start`, `smoke`, `navigate`, `deploy`, `doctor` | stop with `NOT_EXPO_APP`, exit 1, before planning or spawning |
-| `agents:setup`, `skills:sync` / `:list` / `:show` | stop the same way. they read what the installed Expo packages ship |
-| `status` | reports. `project.isExpoApp: false`. a `next` that says so. does not refuse |
-| `typecheck` | unchanged. `checked: false`, "no TypeScript", exit 0 |
-| `install`, `new` | unchanged. these are the two ways out of this state, and they are never gated |
-| `dev:stop`, `dev:logs`, `skills:clean` | unchanged. they clean up what is here |
-| `runtime:*` | unchanged. they need a live dev server, which the rows above deny |
-| `login` / `logout` / `whoami` / `register` | unchanged. they act on `~/.expo` |
+| Command                                                 | In a directory that is not an Expo app                                        |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `dev`, `start`, `smoke`, `navigate`, `deploy`, `doctor` | stop with `NOT_EXPO_APP`, exit 1, before planning or spawning                 |
+| `agents:setup`, `skills:sync` / `:list` / `:show`       | stop the same way. they read what the installed Expo packages ship            |
+| `status`                                                | reports. `project.isExpoApp: false`. a `next` that says so. does not refuse   |
+| `typecheck`                                             | unchanged. `checked: false`, "no TypeScript", exit 0                          |
+| `install`, `new`                                        | unchanged. these are the two ways out of this state, and they are never gated |
+| `dev:stop`, `dev:logs`, `skills:clean`                  | unchanged. they clean up what is here                                         |
+| `runtime:*`                                             | unchanged. they need a live dev server, which the rows above deny             |
+| `login` / `logout` / `whoami` / `register`              | unchanged. they act on `~/.expo`                                              |
 
 `status` is how a caller finds out it is in the wrong place. Refusing it would take away
 the report that diagnoses the refusal.
@@ -209,13 +209,13 @@ Sections:
 Five steps, in order, in `discoverDevServerAsync` (`src/runtime/devServer.ts`). Every
 step probes. None trusts. The step is reported as `source`.
 
-| # | Step | Reports | Proves |
-| - | ---- | ------- | ------ |
-| 0 | An explicit `--dev-server-url` or `--port` | `flag` | the caller named it. nothing else is tried |
-| 1 | The project's dev-server lock | `lock` | an `@expo/agent-cli`-started wrapper is alive, and its URL answered |
-| 2 | The port `.expo/dev/logs/start.log` last named | `log` | this project started a server there once, and it answered now |
-| 3 | 8081 | `default` | Metro's default answered |
-| 4 | 8082-8085, in parallel | `scan` | a Metro answered. not that it is this project's |
+| #   | Step                                           | Reports   | Proves                                                              |
+| --- | ---------------------------------------------- | --------- | ------------------------------------------------------------------- |
+| 0   | An explicit `--dev-server-url` or `--port`     | `flag`    | the caller named it. nothing else is tried                          |
+| 1   | The project's dev-server lock                  | `lock`    | an `@expo/agent-cli`-started wrapper is alive, and its URL answered |
+| 2   | The port `.expo/dev/logs/start.log` last named | `log`     | this project started a server there once, and it answered now       |
+| 3   | 8081                                           | `default` | Metro's default answered                                            |
+| 4   | 8082-8085, in parallel                         | `scan`    | a Metro answered. not that it is this project's                     |
 
 Nothing may be skipped on the strength of a fast path. An `expo start` a developer ran
 by hand holds no lock. A project whose `.expo` was cleaned names no port. The scan is

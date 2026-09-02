@@ -18,9 +18,9 @@ describe(appReachedDevice, () => {
   it(`should be false for a build that succeeded and installed nothing`, () => {
     // The compiler finished and the step died before the install. The record is a claim about the
     // app **on a device**, so a binary that never left the build directory is not one.
-    expect(appReachedDevice(['› Build Succeeded', '› 0 error(s), and 1 warning(s)'].join('\n'))).toBe(
-      false
-    );
+    expect(
+      appReachedDevice(['› Build Succeeded', '› 0 error(s), and 1 warning(s)'].join('\n'))
+    ).toBe(false);
   });
 
   // @ref `wave29-devclient/evidence/07-dev-build-ios-2.log` — F121's own log, verbatim from
@@ -56,9 +56,9 @@ describe(appReachedDevice, () => {
 
   // The fallback path of `installAppAsync`, for a build whose APK this CLI could not name.
   it(`should be true for the Gradle install fallback`, () => {
-    expect(
-      appReachedDevice('› Failed to locate binary file, installing with Gradle...\n')
-    ).toBe(true);
+    expect(appReachedDevice('› Failed to locate binary file, installing with Gradle...\n')).toBe(
+      true
+    );
   });
 
   it(`should be false for output that was never captured`, () => {
@@ -70,7 +70,9 @@ describe(appReachedDevice, () => {
   it(`should not read a package installer's line as an app reaching a device`, () => {
     expect(
       appReachedDevice(
-        ['Installing NDK (Side by side) 27.1.12297006 in /Users/me/Library/Android/sdk/ndk'].join('\n')
+        ['Installing NDK (Side by side) 27.1.12297006 in /Users/me/Library/Android/sdk/ndk'].join(
+          '\n'
+        )
       )
     ).toBe(false);
   });

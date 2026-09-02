@@ -349,9 +349,13 @@ describe('checkpoints of a mutating command', () => {
   it('are not taken for an invocation that is rejected', async () => {
     await initGitRepoAsync(projectRoot);
 
-    const result = await executeAgentCliAsync(projectRoot, ['install', 'expo-camera', '--verbose'], {
-      reject: false,
-    });
+    const result = await executeAgentCliAsync(
+      projectRoot,
+      ['install', 'expo-camera', '--verbose'],
+      {
+        reject: false,
+      }
+    );
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('is not an option');

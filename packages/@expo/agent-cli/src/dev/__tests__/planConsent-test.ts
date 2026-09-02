@@ -51,7 +51,9 @@ afterEach(() => {
 
 describe(hasPlanConsent, () => {
   it(`stops a plan that builds, and asks nothing`, () => {
-    expect(hasPlanConsent(mockPlan('a-minute', 'many-minutes'), options(), argv('dev'))).toBe(false);
+    expect(hasPlanConsent(mockPlan('a-minute', 'many-minutes'), options(), argv('dev'))).toBe(
+      false
+    );
 
     // The wave in one assertion: no question, so nothing is waiting on an answer.
     expect(printed()).not.toContain('?');

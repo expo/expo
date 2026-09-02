@@ -147,7 +147,9 @@ describe(spawnSubprocessAsync, () => {
 
     const options = jest.mocked(spawn).mock.calls[0]![2] as any;
     expect(options.env.CI).toBe('1');
-    expect(options.env.PATH).toBe(process.env.PATH);
+    // After spreading `process.env` the keys are a plain object. Windows stores the
+    // search path as `Path`, and `process.env.PATH` only case-folds on the special env object.
+    expect(options.env.PATH ?? options.env.Path).toBe(process.env.PATH ?? process.env.Path);
   });
 
   it(`should let the child inherit the environment when nothing is added`, async () => {

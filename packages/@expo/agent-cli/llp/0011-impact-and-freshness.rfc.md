@@ -107,14 +107,14 @@ This section is the normative one. `ota.safe` comes from the resolved `runtimeVe
 
 A fingerprint answers "does the native binary differ". OTA safety answers "would an update published now reach builds that can run it". The two coincide under exactly one policy:
 
-| policy | fingerprint changed | `ota.safe` |
-| --- | --- | --- |
-| `fingerprint` | anything, including undecidable | `true` |
-| `appVersion` / `sdkVersion` / `nativeVersion` / a literal | `true` | `false` |
-| `appVersion` / `sdkVersion` / `nativeVersion` / a literal | `false` | `true` |
-| `appVersion` / `sdkVersion` / `nativeVersion` / a literal | undecidable | `null` |
-| a policy this CLI does not know | anything | `null` |
-| nothing resolved | anything | `null` |
+| policy                                                    | fingerprint changed             | `ota.safe` |
+| --------------------------------------------------------- | ------------------------------- | ---------- |
+| `fingerprint`                                             | anything, including undecidable | `true`     |
+| `appVersion` / `sdkVersion` / `nativeVersion` / a literal | `true`                          | `false`    |
+| `appVersion` / `sdkVersion` / `nativeVersion` / a literal | `false`                         | `true`     |
+| `appVersion` / `sdkVersion` / `nativeVersion` / a literal | undecidable                     | `null`     |
+| a policy this CLI does not know                           | anything                        | `null`     |
+| nothing resolved                                          | anything                        | `null`     |
 
 Under `fingerprint` the runtime version moves with the native surface, so EAS Update will not serve a build a bundle it cannot run. Under every other policy it does not move. A native module added without an app-version bump keeps the same runtime version, the update is offered to installed builds that lack the native code, and the app crashes. A tool that derived `safe` from `class` would report it backwards: it would say "unsafe" for a `needs-native-build` under `fingerprint`, which is the one policy where a native change is safest.
 
@@ -141,12 +141,12 @@ Every one of these is a string in `caveats` on the payload.
 
 There is no `@expo/agent-cli impact`. Every rule below describes `@expo/agent-cli status`, which absorbed it. The status UI lives in [[0004-smart-start-and-project-state]].
 
-| Code | Meaning |
-| --- | --- |
-| `0` | a report was produced, and the assertion held if one was made |
-| `20` | `--assert` was given and the real class is stronger than it |
-| `22` | `--assert` was given and no class could be established. Nothing to gate on |
-| `1` | the tool could not do its job: bad flag, no fingerprint CLI, an unreadable build |
+| Code | Meaning                                                                          |
+| ---- | -------------------------------------------------------------------------------- |
+| `0`  | a report was produced, and the assertion held if one was made                    |
+| `20` | `--assert` was given and the real class is stronger than it                      |
+| `22` | `--assert` was given and no class could be established. Nothing to gate on       |
+| `1`  | the tool could not do its job: bad flag, no fingerprint CLI, an unreadable build |
 
 A failed `--assert` is `20`, not `1`. [[0010-agent-conventions]] §Exit codes reserves `20`–`29` for "the tool worked and the operation failed". The classification ran, the report is complete, and the gate the caller opted into did not pass. Without `--assert` the command is `0` always, because it is information rather than judgment. The whole report still prints on the run that exits `20`.
 

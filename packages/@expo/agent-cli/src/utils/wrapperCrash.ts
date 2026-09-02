@@ -200,11 +200,7 @@ const RUNNER_NOISE = [
  *     left alone and quoted, which is the conservative direction: a vaguer reason costs a reader a
  *     re-run, and a wrong attribution costs them the truth.
  */
-export function looksLikeRunnerNoise({
-  exitCode,
-  stdout,
-  stderr,
-}: WrapperCrashInput): boolean {
+export function looksLikeRunnerNoise({ exitCode, stdout, stderr }: WrapperCrashInput): boolean {
   if (exitCode === 0 || exitCode == null) {
     return false;
   }

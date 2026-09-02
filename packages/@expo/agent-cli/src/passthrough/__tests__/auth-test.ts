@@ -2,12 +2,12 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { agentCliPassthrough } from '..';
-import { AUTH_COMMANDS, authCliLabel, resolveAuthCliAsync, resolveRegisterCli } from '../auth';
 import * as Log from '../../log';
-import * as subprocess from '../../utils/subprocess';
 import { runExpoAsync } from '../../utils/expoCli';
 import { runInheritedAsync } from '../../utils/inheritedRun';
 import { resetPackageRunnerCache } from '../../utils/packageRunner';
+import * as subprocess from '../../utils/subprocess';
+import { AUTH_COMMANDS, authCliLabel, resolveAuthCliAsync, resolveRegisterCli } from '../auth';
 
 jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
@@ -19,6 +19,11 @@ const expoBin = path.join(projectRoot, 'node_modules', '.bin', 'expo');
 const easBin = path.join(projectRoot, 'node_modules', '.bin', 'eas');
 const pathDir = path.resolve('/usr/local/bin');
 const pathEas = path.join(pathDir, 'eas');
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value });
+}
 
 /** Answer the one `eas --version` probe the PATH candidate gets. */
 function mockProbe(result: Partial<subprocess.SubprocessResult>) {
@@ -28,6 +33,7 @@ function mockProbe(result: Partial<subprocess.SubprocessResult>) {
 }
 
 beforeEach(() => {
+  mockPlatform('darwin');
   vol.reset();
   // The runner is resolved once per process, so a test that resolved it must not decide for the
   // next one.
@@ -35,6 +41,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  mockPlatform(realPlatform);
   jest.restoreAllMocks();
 });
 

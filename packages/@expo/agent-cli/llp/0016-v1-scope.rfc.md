@@ -14,26 +14,26 @@ The first release is the commands a first user should try. Everything else lives
 
 ## Commands
 
-| Command | Why it is here |
-| --- | --- |
-| `new` | headless creation |
-| `install` / `add` | `expo install` plus skill sync and impact |
-| `status` (`--explain` / `--assert` / `--build`) | the cheap read-only brief |
-| `typecheck` | the gate no other command is |
-| `doctor` / `doctor:check` | expo-doctor, normalized |
-| `dev` / `dev:stop` / `dev:logs` | the plan engine, plus `--detach`, `--port`, `--wait-ready` |
-| `start` | `expo start` and nothing else |
-| `navigate` | open a route. On a development build with nothing loaded, also load the app |
-| `runtime:eval` / `:errors` / `:reload` / `:stop` | the runtime loop, including `--cloud` |
-| `runtime:tree` / `:tap` / `:type` | drive the app by testID |
-| `smoke` | the whole gate in one command |
-| `deploy` | web and native |
-| `login` / `logout` / `whoami` / `register` | forwarded, with the EAS fallback of [[0006-agent-native-cli-surface]] |
-| `skills:*`, `agents:setup` | agent setup |
-| `inspect:build-log` | triage a native build log |
-| `inspect:config-plugins` | what the config plugins produced. The only `[experimental]` command |
-| `help` | the workflow on-ramp |
-| forwarded `expo` set | the fixed list in [[0006-agent-native-cli-surface]] |
+| Command                                          | Why it is here                                                              |
+| ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `new`                                            | headless creation                                                           |
+| `install` / `add`                                | `expo install` plus skill sync and impact                                   |
+| `status` (`--explain` / `--assert` / `--build`)  | the cheap read-only brief                                                   |
+| `typecheck`                                      | the gate no other command is                                                |
+| `doctor` / `doctor:check`                        | expo-doctor, normalized                                                     |
+| `dev` / `dev:stop` / `dev:logs`                  | the plan engine, plus `--detach`, `--port`, `--wait-ready`                  |
+| `start`                                          | `expo start` and nothing else                                               |
+| `navigate`                                       | open a route. On a development build with nothing loaded, also load the app |
+| `runtime:eval` / `:errors` / `:reload` / `:stop` | the runtime loop, including `--cloud`                                       |
+| `runtime:tree` / `:tap` / `:type`                | drive the app by testID                                                     |
+| `smoke`                                          | the whole gate in one command                                               |
+| `deploy`                                         | web and native                                                              |
+| `login` / `logout` / `whoami` / `register`       | forwarded, with the EAS fallback of [[0006-agent-native-cli-surface]]       |
+| `skills:*`, `agents:setup`                       | agent setup                                                                 |
+| `inspect:build-log`                              | triage a native build log                                                   |
+| `inspect:config-plugins`                         | what the config plugins produced. The only `[experimental]` command         |
+| `help`                                           | the workflow on-ramp                                                        |
+| forwarded `expo` set                             | the fixed list in [[0006-agent-native-cli-surface]]                         |
 
 Names that used to exist and now wait: `dev:wait`, `checkpoint`, `build:wait`, `runtime:network`, `doctor:fix`. See [[0017-deferred-commands]].
 

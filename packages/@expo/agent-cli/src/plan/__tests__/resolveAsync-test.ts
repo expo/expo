@@ -214,7 +214,9 @@ describe('the project config', () => {
   });
 
   it(`refuses a config it cannot read, rather than planning as though it were absent`, async () => {
-    writeProject({ 'package.json': { name: 'app', expo: { agentCli: { buildBackend: 'cloud' } } } });
+    writeProject({
+      'package.json': { name: 'app', expo: { agentCli: { buildBackend: 'cloud' } } },
+    });
 
     await expect(
       resolveStartPlanAsync(projectRoot, devClientState(), { platform: 'ios' })

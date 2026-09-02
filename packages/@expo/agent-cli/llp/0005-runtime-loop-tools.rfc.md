@@ -148,11 +148,11 @@ On the launcher-first path the reverse reads the dev server's origin. The launch
 
 Kudo's directive: if there is no connected app, exit early [confirmed, Kudo, 2026-08-27]. `src/runtime/preflight.ts` is the one place that asks, and the one refusal they all print.
 
-| Command | Needs |
-| --- | --- |
+| Command                                                                         | Needs             |
+| ------------------------------------------------------------------------------- | ----------------- |
 | `runtime:eval`, `runtime:errors`, `runtime:tree`, `runtime:tap`, `runtime:type` | a debugger target |
-| `runtime:reload` | a dev server |
-| `runtime:stop` | a device |
+| `runtime:reload`                                                                | a dev server      |
+| `runtime:stop`                                                                  | a device          |
 
 `runtime:stop` requires a device. An app that was already stopped is success ([[0010-agent-conventions]]). Refusing there would fail the run that convention exists to make boring. `stop` reads the connection with `need: 'optional'` and requires only what it acts on. A machine with no device is told so by `resolveDeviceAsync`, with `xcrun simctl list devices booted` or `adb devices` to look with.
 
@@ -195,10 +195,10 @@ This is preferred over the device path. It needs no platform tooling, no applica
 
 `--method auto` is one ladder, keyed on whether the command socket holds a client [confirmed, Kudo's delegate, 2026-08-27]:
 
-| rung | mechanism | reached when |
-| --- | --- | --- |
-| 1 | broadcast on `/message` | the socket holds a client |
-| 2 | relaunch the app | the socket holds none, or the broadcast was delivered and proved nothing |
+| rung | mechanism               | reached when                                                             |
+| ---- | ----------------------- | ------------------------------------------------------------------------ |
+| 1    | broadcast on `/message` | the socket holds a client                                                |
+| 2    | relaunch the app        | the socket holds none, or the broadcast was delivered and proved nothing |
 
 On `--cloud`, rung 2 is the two controller verbs in §Cloud simulator. Otherwise it is `simctl terminate` / `am force-stop`, then the deep link. A `terminate` that reports the app was not running is success: that is the state the step was reaching for. The application id comes from the debugger target (`appId`) and falls back to Expo Go per platform.
 
@@ -218,8 +218,8 @@ A broadcast has no reply. Trusting the send would ship the same false green this
 
 Three observations, watched on one budget. The first to answer ends both watches:
 
-1. Message-socket peers. Socket ids never repeat (`createSocketMap.ts` `createSocketIdFactory`). A peer under a new id is a new connection. This proves the app *acted*. On its own it is `reloaded: true` with exit 22. A churn wait that returns as soon as `peersChanged` is true reads a list that changes in two directions. An app that had dropped its connection would satisfy it. It waits for an id the dev server had not listed before, and reports `commandSocketChurn.reconnected`.
-2. A debugger target the dev server had not listed before the reload (`waitForFreshAppConnectionAsync`). Metro's page ids come from a counter it does not rewind. This proves the app *came back*. The old wait returned on the first non-empty list, which was the pre-reload target on its way out.
+1. Message-socket peers. Socket ids never repeat (`createSocketMap.ts` `createSocketIdFactory`). A peer under a new id is a new connection. This proves the app _acted_. On its own it is `reloaded: true` with exit 22. A churn wait that returns as soon as `peersChanged` is true reads a list that changes in two directions. An app that had dropped its connection would satisfy it. It waits for an id the dev server had not listed before, and reports `commandSocketChurn.reconnected`.
+2. A debugger target the dev server had not listed before the reload (`waitForFreshAppConnectionAsync`). Metro's page ids come from a counter it does not rewind. This proves the app _came back_. The old wait returned on the first non-empty list, which was the pre-reload target on its way out.
 3. A `Bundled` line in the dev server's captured output that was not there before (`src/runtime/reload/bundleSignal.ts`). Fast Refresh produces no `Bundled` line. A relaunched app re-registers under the same debugger page id, because Metro's per-device counter restarts with the app. This is how a cloud reload can exit 0. `verifiedBy: dev-server-bundle` says the dev server served a bundle after this command acted. It does not say which client asked for it.
 
 Known ids are read after the bundle gate and immediately before the broadcast. Never reused from discovery. A save the watcher picked up in between would otherwise be credited to this command.
@@ -236,12 +236,12 @@ A proved reload whose last target read was zero asks once more for the reconnect
 
 On a project with no captured dev server log, rung 2 has nothing left to observe when the page id repeats, and exits 22 after `--timeout`. The fix is the first rung of the preflight's own ladder: `npx @expo/agent-cli dev --detach` captures the output that makes the second observation possible.
 
-| Code | Meaning |
-| --- | --- |
-| `0` | happened, and was observed |
-| `20` | did not happen: broken bundle, or no rung reached the app |
+| Code | Meaning                                                                                                           |
+| ---- | ----------------------------------------------------------------------------------------------------------------- |
+| `0`  | happened, and was observed                                                                                        |
+| `20` | did not happen: broken bundle, or no rung reached the app                                                         |
 | `22` | a mechanism ran and neither observation was made when `--timeout` expired, or the entry bundle was still building |
-| `1` | not attempted: no dev server, or a bad argument |
+| `1`  | not attempted: no dev server, or a bad argument                                                                   |
 
 Nothing connected plus `--method auto` starts the app on the device and can exit 0. `--method dev-server` in that state exits 20. No dev server is 1. A reload makes the app fetch its bundle again. With no dev server that fetch has nowhere to go. Stopping the app would replace a stale screen with no screen.
 
@@ -277,27 +277,27 @@ Two consequences the code cites here:
 
 Eight phases:
 
-| phase | the function |
-| --- | --- |
-| `dev-server` | `discoverDevServerAsync` |
-| `bundler-ready` | `waitForBundlerReadyAsync` |
-| `bundle` | `checkEntryBundleAsync` |
-| `app` | `waitForAppConnectionAsync`, then `openRouteAsync` |
-| `route` | `openRouteAsync` (route-checked) |
-| `runtime` | `CdpClient.evaluateAsync('1')` |
-| `errors` | `CdpRuntimeErrorCollector` |
-| `screenshot` | `captureScreenshotAsync` |
+| phase           | the function                                       |
+| --------------- | -------------------------------------------------- |
+| `dev-server`    | `discoverDevServerAsync`                           |
+| `bundler-ready` | `waitForBundlerReadyAsync`                         |
+| `bundle`        | `checkEntryBundleAsync`                            |
+| `app`           | `waitForAppConnectionAsync`, then `openRouteAsync` |
+| `route`         | `openRouteAsync` (route-checked)                   |
+| `runtime`       | `CdpClient.evaluateAsync('1')`                     |
+| `errors`        | `CdpRuntimeErrorCollector`                         |
+| `screenshot`    | `captureScreenshotAsync`                           |
 
 The URL the first phase settled on is threaded into every phase after it. A gate whose phases talk to two dev servers is a gate whose phases are about two different things.
 
 `--start` must not name a platform. `expo start --ios` drives Simulator.app through AppleScript. On a Mac that has granted no Automation grant the Expo CLI does not catch the refusal and the dev server exits with it. The recovery is the one this command performs: start the dev server without opening anything, then open the app with `navigate`. `START_DEV_SERVER_ARGV` is pinned by a test. `--start` also carries `--port` through when the caller named a loopback one.
 
-| Code | Outcome | Meaning |
-| --- | --- | --- |
-| `0` | `passed` | every deciding phase answered yes, and the runtime answered at all |
-| `20` | `failed` | an error in the window, a broken bundle, another project's dev server, a device that refused the link, or no dev server with `--no-start` |
-| `22` | `inconclusive` | a wait expired, no app could be opened, or the runtime cannot be read |
-| `1` |  | a route the project has not got, or a bad flag |
+| Code | Outcome        | Meaning                                                                                                                                   |
+| ---- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `0`  | `passed`       | every deciding phase answered yes, and the runtime answered at all                                                                        |
+| `20` | `failed`       | an error in the window, a broken bundle, another project's dev server, a device that refused the link, or no dev server with `--no-start` |
+| `22` | `inconclusive` | a wait expired, no app could be opened, or the runtime cannot be read                                                                     |
+| `1`  |                | a route the project has not got, or a bad flag                                                                                            |
 
 `passed` requires the runtime to evaluate `1`. A `-32601` there means the window that follows proves nothing. Expo Go for Android cannot, so `smoke --android` against Expo Go exits 22 on a working app. `dev-server`, `bundler-ready`, `bundle` (for android), `app`, and `screenshot` can still be `ok`. `runtime` and `errors` are `inconclusive` with the reason naming the engine. A broken Android bundle is still exit 20 with the later phases skipped.
 
@@ -398,13 +398,13 @@ A cloud simulator requires a tunnel. `exp://127.0.0.1:<port>` names the loopback
 
 The ways there is no session are separate errors. `unknown` is a tool that did not answer and has said nothing about the world.
 
-| State | Error |
-| --- | --- |
-| `inactive` | `NO_CLOUD_SIMULATOR_SESSION`, saying the dotenv's id is not among the live sessions |
-| `none`, live sessions of the wrong type | `NO_CLOUD_SIMULATOR_SESSION`, naming the types that are up |
-| `none`, feature available | `NO_CLOUD_SIMULATOR_SESSION`, naming `simulator:start` and that it bills until stopped |
-| `none`, feature off | `CLOUD_SIMULATOR_UNAVAILABLE`, with the waitlist URL, plus the local device and `--print-url` |
-| `unknown` | `CLOUD_SIMULATOR_SESSION_UNKNOWN`, naming `simulator:list` and never `simulator:start` |
+| State                                   | Error                                                                                         |
+| --------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `inactive`                              | `NO_CLOUD_SIMULATOR_SESSION`, saying the dotenv's id is not among the live sessions           |
+| `none`, live sessions of the wrong type | `NO_CLOUD_SIMULATOR_SESSION`, naming the types that are up                                    |
+| `none`, feature available               | `NO_CLOUD_SIMULATOR_SESSION`, naming `simulator:start` and that it bills until stopped        |
+| `none`, feature off                     | `CLOUD_SIMULATOR_UNAVAILABLE`, with the waitlist URL, plus the local device and `--print-url` |
+| `unknown`                               | `CLOUD_SIMULATOR_SESSION_UNKNOWN`, naming `simulator:list` and never `simulator:start`        |
 
 Availability is asked only when the listing came back empty of usable sessions. "Start one" for a session that could not be ruled out starts a second billed session.
 

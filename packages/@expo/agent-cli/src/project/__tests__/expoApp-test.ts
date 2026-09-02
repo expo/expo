@@ -1,9 +1,10 @@
 import { vol } from 'memfs';
+import path from 'path';
 
 import { CommandError } from '../../utils/errors';
 import { assertExpoAppSync, declaresExpoSync, findUpExpoAppRootOrAssert } from '../expoApp';
 
-const projectRoot = '/project';
+const projectRoot = path.resolve('/project');
 
 afterEach(() => {
   vol.reset();
@@ -11,7 +12,7 @@ afterEach(() => {
 
 function writePackageJson(contents: object | string) {
   vol.fromJSON({
-    [`${projectRoot}/package.json`]:
+    [path.join(projectRoot, 'package.json')]:
       typeof contents === 'string' ? contents : JSON.stringify(contents),
   });
 }
@@ -99,22 +100,24 @@ describe(assertExpoAppSync, () => {
 describe(findUpExpoAppRootOrAssert, () => {
   it(`should answer the app root for a directory inside an Expo app`, () => {
     vol.fromJSON({
-      [`${projectRoot}/package.json`]: JSON.stringify({
+      [path.join(projectRoot, 'package.json')]: JSON.stringify({
         name: 'app',
         dependencies: { expo: '~54.0.0' },
       }),
-      [`${projectRoot}/src/components/Button.tsx`]: '',
+      [path.join(projectRoot, 'src', 'components', 'Button.tsx')]: '',
     });
 
-    expect(findUpExpoAppRootOrAssert(`${projectRoot}/src/components`)).toBe(projectRoot);
+    expect(findUpExpoAppRootOrAssert(path.join(projectRoot, 'src', 'components'))).toBe(
+      projectRoot
+    );
   });
 
   // The two failures are told apart: "there is no project here" and "the project here is not an
   // app" are different mistakes with different recoveries.
   it(`should say NO_PROJECT when the walk finds nothing at all`, () => {
-    vol.fromJSON({ '/nowhere/readme.md': '' });
+    vol.fromJSON({ [path.join(path.resolve('/nowhere'), 'readme.md')]: '' });
 
-    expect(() => findUpExpoAppRootOrAssert('/nowhere')).toThrow(
+    expect(() => findUpExpoAppRootOrAssert(path.resolve('/nowhere'))).toThrow(
       expect.objectContaining({ code: 'NO_PROJECT' })
     );
   });

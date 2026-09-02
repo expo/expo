@@ -102,7 +102,7 @@ async function installStubXcrunAsync(
  * This is the fixture the whole Android screenshot path rests on: the bytes go through a real pipe
  * into a real file descriptor, which is the one thing a mocked `spawn` cannot show.
  */
-async function installStubAdbAsync(projectRoot: string): Promise<void> {
+async function installStubAdbAsync(projectRoot: string): Promise<Record<string, string>> {
   const scriptPath = path.join(projectRoot, '.stub-bin', 'adb-stub.js');
   await fs.promises.mkdir(path.dirname(scriptPath), { recursive: true });
   await fs.promises.writeFile(
@@ -122,6 +122,11 @@ async function installStubAdbAsync(projectRoot: string): Promise<void> {
     ].join('\n')
   );
   await installStubBinAsync(path.join(projectRoot, '.stub-bin'), 'adb', scriptPath);
+  // ANDROID_HOME beats PATH, and a runner that already has an SDK would otherwise photograph
+  // a real emulator (or none) instead of this stub.
+  const sdk = path.join(projectRoot, '.stub-android-sdk');
+  await installStubBinAsync(path.join(sdk, 'platform-tools'), 'adb', scriptPath);
+  return { ANDROID_HOME: sdk };
 }
 
 /**
@@ -204,6 +209,27 @@ async function installStubXcrunForBootAsync(
       : [];
 }
 
+/**
+ * `plutil` ships with macOS. Linux CI has none, so a fixture that plants real Info.plist files
+ * still cannot be read unless a stub answers the same extract.
+ */
+async function installStubPlutilAsync(projectRoot: string): Promise<void> {
+  const scriptPath = path.join(projectRoot, '.stub-bin', 'plutil-stub.js');
+  await fs.promises.mkdir(path.dirname(scriptPath), { recursive: true });
+  await fs.promises.writeFile(
+    scriptPath,
+    [
+      `const fs = require('fs');`,
+      `const plist = process.argv[process.argv.length - 1];`,
+      `const xml = fs.readFileSync(plist, 'utf8');`,
+      `const match = xml.match(/<key>CFBundleIdentifier<\\/key>\\s*<string>([^<]*)<\\/string>/);`,
+      `if (!match) process.exit(1);`,
+      `process.stdout.write(match[1] + '\\n');`,
+    ].join('\n')
+  );
+  await installStubBinAsync(path.join(projectRoot, '.stub-bin'), 'plutil', scriptPath);
+}
+
 /** Give the fixture an Expo Router `app/` directory with the named route files. */
 async function writeRoutesAsync(projectRoot: string, files: string[]): Promise<void> {
   for (const file of files) {
@@ -228,6 +254,7 @@ async function writeSimulatorHomeAsync(
   projectRoot: string,
   installed: Record<string, string[]>
 ): Promise<string> {
+  await installStubPlutilAsync(projectRoot);
   const home = path.join(projectRoot, '.sim-home');
   for (const [udid, appIds] of Object.entries(installed)) {
     for (const [index, appId] of appIds.entries()) {
@@ -970,7 +997,7 @@ describe('@expo/agent-cli smoke', () => {
     // would rewrite, which is why `exec-out` is used rather than `shell`.
     it('redirects adb exec-out screencap into the file, byte for byte', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
-      await installStubAdbAsync(projectRoot);
+      const adbEnv = await installStubAdbAsync(projectRoot);
       const stub = await startStubDevServerAsync({ projectRoot, targets: [] });
       const release = await holdLockForAsync(projectRoot, stub);
       const shotPath = path.join(projectRoot, 'android.png');
@@ -979,7 +1006,7 @@ describe('@expo/agent-cli smoke', () => {
         await executeAgentCliAsync(
           projectRoot,
           ['smoke', '--android', '--json', '--timeout', '4s', '--screenshot', shotPath],
-          { env: stubExpoEnv(projectRoot), reject: false }
+          { env: { ...stubExpoEnv(projectRoot), ...adbEnv }, reject: false }
         );
 
         expect(fs.existsSync(shotPath)).toBe(true);

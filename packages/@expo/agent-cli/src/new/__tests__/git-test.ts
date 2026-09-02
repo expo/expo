@@ -56,7 +56,8 @@ describe(resolveGitStateAsync, () => {
       resolveGitStateAsync(projectRoot, { git: false, createdProjectDirectory: true })
     ).resolves.toEqual({
       initialized: false,
-      detail: 'skipped (--no-git); create-expo initializes git itself, so its repository was removed',
+      detail:
+        'skipped (--no-git); create-expo initializes git itself, so its repository was removed',
     });
     expect(vol.existsSync(`${projectRoot}/.git`)).toBe(false);
     // Only the repository. The project it wrapped is the whole point of the command.
@@ -84,7 +85,9 @@ describe(resolveGitStateAsync, () => {
     vol.fromJSON({ [`${projectRoot}/.git/HEAD`]: 'ref: refs/heads/main' });
     const mock = mockGit([]);
 
-    await expect(resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })).resolves.toEqual({
+    await expect(
+      resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })
+    ).resolves.toEqual({
       initialized: true,
       detail: 'initialized by create-expo',
     });
@@ -94,7 +97,9 @@ describe(resolveGitStateAsync, () => {
   it(`should skip a project created inside an existing repository`, async () => {
     const mock = mockGit([{ stdout: 'true\n', exitCode: 0 }]);
 
-    await expect(resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })).resolves.toEqual({
+    await expect(
+      resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })
+    ).resolves.toEqual({
       initialized: false,
       detail: 'skipped (inside an existing git repository)',
     });
@@ -107,7 +112,9 @@ describe(resolveGitStateAsync, () => {
   it(`should initialize a repository when the project is not in one`, async () => {
     const mock = mockGit([{ stdout: 'false\n', exitCode: 128 }, { exitCode: 0 }]);
 
-    await expect(resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })).resolves.toEqual({
+    await expect(
+      resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })
+    ).resolves.toEqual({
       initialized: true,
       detail: 'initialized',
     });
@@ -118,7 +125,9 @@ describe(resolveGitStateAsync, () => {
     const enoent = Object.assign(new Error('spawn git ENOENT'), { code: 'ENOENT' });
     mockGit([{ exitCode: null, spawnError: enoent }]);
 
-    await expect(resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })).resolves.toEqual({
+    await expect(
+      resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })
+    ).resolves.toEqual({
       initialized: false,
       detail: 'skipped (git is not available)',
     });
@@ -127,7 +136,9 @@ describe(resolveGitStateAsync, () => {
   it(`should report a failed git init instead of throwing`, async () => {
     mockGit([{ stdout: 'false\n', exitCode: 128 }, { exitCode: 1 }]);
 
-    await expect(resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })).resolves.toEqual({
+    await expect(
+      resolveGitStateAsync(projectRoot, { git: true, createdProjectDirectory: true })
+    ).resolves.toEqual({
       initialized: false,
       detail: 'skipped (git init failed)',
     });

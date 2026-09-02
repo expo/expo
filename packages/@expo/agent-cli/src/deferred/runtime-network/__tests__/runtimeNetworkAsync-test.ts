@@ -3,12 +3,12 @@
 // The `runtime:network` half of `src/runtime/__tests__/runtimeAsync-test.ts`, moved with the code
 // it covers. Not run: `jest.config.js` ignores this directory.
 
-import { runtimeNetworkAsync } from '../runtimeNetworkAsync';
 import {
   CdpNetworkCollector,
   NetworkDomainUnavailableError,
   targetAdvertisesNetworkPanel,
 } from '../networkCollector';
+import { runtimeNetworkAsync } from '../runtimeNetworkAsync';
 
 // The real error class and the real flag reader are kept: the command branches on both.
 jest.mock('../networkCollector', () => ({

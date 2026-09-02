@@ -6,7 +6,7 @@ import { CommandError } from '../../utils/errors';
 import * as subprocess from '../../utils/subprocess';
 import { buildCreateLaunchArgs, resolveCreateLaunchCli, runCreateLaunchAsync } from '../launchCli';
 
-const projectRoot = '/project';
+const projectRoot = path.resolve('/project');
 const realPlatform = process.platform;
 
 function mockPlatform(value: typeof process.platform) {
@@ -49,7 +49,7 @@ describe(buildCreateLaunchArgs, () => {
 describe(resolveCreateLaunchCli, () => {
   it(`should prefer the create-launch installed in the project`, () => {
     vol.fromJSON({
-      [`${projectRoot}/node_modules/.bin/create-launch`]: '#!/bin/sh',
+      [path.join(projectRoot, 'node_modules', '.bin', 'create-launch')]: '#!/bin/sh',
       '/usr/local/bin/create-launch': '#!/bin/sh',
     });
 
@@ -61,7 +61,9 @@ describe(resolveCreateLaunchCli, () => {
 
   it(`should use the .cmd shim of the project on Windows`, () => {
     mockPlatform('win32');
-    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/create-launch.cmd`]: '' });
+    vol.fromJSON({
+      [path.join(projectRoot, 'node_modules', '.bin', 'create-launch.cmd')]: '',
+    });
 
     expect(resolveCreateLaunchCli(projectRoot, { pathEnv: '/usr/local/bin' })).toEqual({
       command: path.join(projectRoot, 'node_modules', '.bin', 'create-launch.cmd'),

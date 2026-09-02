@@ -3,24 +3,28 @@
 // The resolver is pure — argv and two facts about the environment in, options out — so every
 // combination a caller can type is asserted here, without a log and without a process.
 
+import path from 'node:path';
+
 import { DEFAULT_CONTEXT_AFTER, DEFAULT_CONTEXT_BEFORE } from '../extract';
 import { resolveExplainOptions } from '../resolveOptions';
 
-const PIPED = { stdinIsTTY: false, cwd: '/project' };
-const TERMINAL = { stdinIsTTY: true, cwd: '/project' };
+const cwd = path.resolve('/project');
+const PIPED = { stdinIsTTY: false, cwd };
+const TERMINAL = { stdinIsTTY: true, cwd };
 
 describe('the input source', () => {
   it('reads the file the caller named, resolved against the working directory', () => {
     expect(resolveExplainOptions(['--file', 'logs/build.log'], TERMINAL).source).toEqual({
       kind: 'file',
-      path: '/project/logs/build.log',
+      path: path.resolve(cwd, 'logs/build.log'),
     });
   });
 
   it('leaves an absolute path alone', () => {
-    expect(resolveExplainOptions(['--file', '/tmp/build.log'], TERMINAL).source).toEqual({
+    const absolute = path.resolve('/tmp/build.log');
+    expect(resolveExplainOptions(['--file', absolute], TERMINAL).source).toEqual({
       kind: 'file',
-      path: '/tmp/build.log',
+      path: absolute,
     });
   });
 

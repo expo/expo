@@ -52,21 +52,21 @@ Anti-rule: no detection-based shape switching. `agent-cli-detector` may gate ext
 
 The package ships as a model-free CLI.
 
-| Command | What it does |
-| --- | --- |
-| `agents:setup` | install Expo skills, and write the AGENTS.md managed block |
-| `skills:sync\|list\|show\|clean` | [[0003-knowledge-tools-and-skills]] |
-| `install`, `start` | wrap the `expo` equivalents as subprocesses, with skill sync |
-| `dev` / `dev:stop` / `dev:logs` | the smart-start engine of [[0004-smart-start-and-project-state]] |
-| `status` | where the project is right now. Under `--json`, the machine-readable project brief |
-| `runtime:eval\|errors\|reload\|stop\|tree\|tap\|type` | [[0005-runtime-loop-tools]], [[0018-interaction-commands]] |
-| `navigate` | deep-link a route |
-| `typecheck` | run the project's own TypeScript compiler as a gate ([[0010-agent-conventions]]) |
-| `new`, `deploy` | headless creation and shipping ([[0007-deploy-and-headless]]) |
-| `inspect:build-log`, `inspect:config-plugins` | read what the project produced, without running it |
-| `doctor` / `doctor:check` | expo-doctor, normalized |
-| `smoke` | the whole gate in one command |
-| `help` | the workflow on-ramp ([[0024-cli-ui]]) |
+| Command                                               | What it does                                                                       |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `agents:setup`                                        | install Expo skills, and write the AGENTS.md managed block                         |
+| `skills:sync\|list\|show\|clean`                      | [[0003-knowledge-tools-and-skills]]                                                |
+| `install`, `start`                                    | wrap the `expo` equivalents as subprocesses, with skill sync                       |
+| `dev` / `dev:stop` / `dev:logs`                       | the smart-start engine of [[0004-smart-start-and-project-state]]                   |
+| `status`                                              | where the project is right now. Under `--json`, the machine-readable project brief |
+| `runtime:eval\|errors\|reload\|stop\|tree\|tap\|type` | [[0005-runtime-loop-tools]], [[0018-interaction-commands]]                         |
+| `navigate`                                            | deep-link a route                                                                  |
+| `typecheck`                                           | run the project's own TypeScript compiler as a gate ([[0010-agent-conventions]])   |
+| `new`, `deploy`                                       | headless creation and shipping ([[0007-deploy-and-headless]])                      |
+| `inspect:build-log`, `inspect:config-plugins`         | read what the project produced, without running it                                 |
+| `doctor` / `doctor:check`                             | expo-doctor, normalized                                                            |
+| `smoke`                                               | the whole gate in one command                                                      |
+| `help`                                                | the workflow on-ramp ([[0024-cli-ui]])                                             |
 
 Names that are not in this table are not in v1. See [[0017-deferred-commands]].
 
