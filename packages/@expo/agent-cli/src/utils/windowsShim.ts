@@ -85,6 +85,16 @@ function resolveBareCommandOnPath(command: string): string {
 }
 
 /**
+ * Absolute path of `taskkill.exe`.
+ *
+ * A stubbed `PATH` (e2e fixtures plant only their own bins) would otherwise make `taskkill` ENOENT,
+ * and the process the command needed to stop would keep running.
+ */
+export function windowsTaskkillCommand(): string {
+  return path.win32.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'taskkill.exe');
+}
+
+/**
  * Characters `cmd.exe` reads as syntax rather than as text.
  *
  * The space and the comma are in the list because escaping them is what keeps an unquoted token in

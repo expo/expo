@@ -193,17 +193,22 @@ export async function installStubFingerprintAsync(projectRoot: string): Promise<
   return true;
 }
 
-/**
- * Environment that makes any bare `expo` spawn resolve to the fixture's stub bin.
- *
- * Windows spells the variable `Path`, and a child that inherits both spellings resolves a bin
- * through whichever one the platform happens to pick, so both carry the stub directory there. One
- * spelling with the stub and one without is a test that passes or fails by luck.
- */
+/** Environment that makes any bare `expo` spawn resolve to the fixture's stub bin. */
 export function stubExpoEnv(projectRoot: string): Record<string, string> {
   const inherited = process.env.PATH ?? process.env.Path ?? '';
   const withStub = `${path.join(projectRoot, '.stub-bin')}${path.delimiter}${inherited}`;
-  return process.platform === 'win32' ? { PATH: withStub, Path: withStub } : { PATH: withStub };
+  return pathEnvVars(withStub);
+}
+
+/**
+ * `PATH`, and on Windows `Path` too, set to the same value.
+ *
+ * A child that inherits both spellings resolves a bin through whichever one the platform happens
+ * to pick. Setting only `PATH` leaves `Path` as the parent's, and a spawn that reads the other
+ * spelling misses the stubs.
+ */
+export function pathEnvVars(value: string): Record<string, string> {
+  return process.platform === 'win32' ? { PATH: value, Path: value } : { PATH: value };
 }
 
 /** One recorded invocation of the stub `expo` bin. */

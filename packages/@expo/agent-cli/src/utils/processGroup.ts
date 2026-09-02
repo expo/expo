@@ -14,6 +14,8 @@
 
 import { spawnSync, type ChildProcess } from 'child_process';
 
+import { windowsTaskkillCommand } from './windowsShim';
+
 /**
  * Whether a spawn should be put in a process group of its own.
  *
@@ -46,7 +48,7 @@ export function killProcessTree(child: ChildProcess, signal?: NodeJS.Signals): v
   if (process.platform === 'win32' && child.pid != null) {
     // `child.kill()` signals cmd.exe when the spawn went through a shell; `/T` takes the tree.
     try {
-      const killed = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], {
+      const killed = spawnSync(windowsTaskkillCommand(), ['/PID', String(child.pid), '/T', '/F'], {
         stdio: 'ignore',
         windowsHide: true,
       });

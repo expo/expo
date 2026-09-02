@@ -20,6 +20,7 @@ import {
   executeAgentCliAsync,
   holdDevLockAsync,
   installStubBinAsync,
+  pathEnvVars,
   readDevLockAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
@@ -292,7 +293,7 @@ async function writeSimulatorHomeAsync(
  * these cases nothing and keeps them tests of the code rather than of the machine.
  */
 function devServerOnlyEnv(projectRoot: string): Record<string, string> {
-  return { PATH: path.join(projectRoot, '.no-bin') };
+  return pathEnvVars(path.join(projectRoot, '.no-bin'));
 }
 
 /** Point the project's dev-server lock at the stub, the way an `@expo/agent-cli`-started server does. */
@@ -515,7 +516,7 @@ describe('@expo/agent-cli smoke', () => {
         const result = await executeAgentCliAsync(
           projectRoot,
           ['smoke', '--json', '--no-screenshot', '--timeout', '4s'],
-          { env: { PATH: path.join(projectRoot, '.no-bin') }, reject: false }
+          { env: pathEnvVars(path.join(projectRoot, '.no-bin')), reject: false }
         );
 
         const report = JSON.parse(result.stdout);
@@ -557,7 +558,7 @@ describe('@expo/agent-cli smoke', () => {
           // An empty `PATH`, so neither a stub nor this machine's own `xcrun` and `adb` can be
           // found. Inheriting the real one made this pass against a simulator that happened to be
           // booted on the developer's Mac, which is a test of the machine rather than of the code.
-          env: { PATH: path.join(projectRoot, '.no-bin') },
+          env: pathEnvVars(path.join(projectRoot, '.no-bin')),
           reject: false,
         }
       );
@@ -709,7 +710,15 @@ describe('@expo/agent-cli smoke', () => {
         const result = await executeAgentCliAsync(
           projectRoot,
           ['smoke', '--ios', '--json', '--no-screenshot', '--timeout', '4s'],
-          { env: { ...stubExpoEnv(projectRoot), HOME: home }, reject: false }
+          {
+            env: {
+              ...stubExpoEnv(projectRoot),
+              HOME: home,
+              // `os.homedir()` on Windows reads USERPROFILE, not HOME.
+              ...(process.platform === 'win32' ? { USERPROFILE: home } : {}),
+            },
+            reject: false,
+          }
         );
         return JSON.parse(result.stdout);
       } finally {

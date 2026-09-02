@@ -43,7 +43,17 @@ export function findUpProjectRootOrCwd(cwd: string): string {
 }
 
 function findUpProjectRoot(root: string): string | null {
-  return findFileInParents(root, 'package.json');
+  const file = findFileInParents(root, 'package.json');
+  if (!file) {
+    return null;
+  }
+  // Windows temp dirs are often the 8.3 form (`C:\Users\RUNNER~1\...`). Commands report this
+  // path, so it has to be the same spelling `realpath` would give a caller.
+  try {
+    return fs.realpathSync(file);
+  } catch {
+    return file;
+  }
 }
 
 /**

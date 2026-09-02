@@ -37,6 +37,7 @@ import * as Log from '../log';
 import { PROGRAM_PREFIX } from '../programName';
 import { PACKAGER_STATUS_READY } from '../runtime/waitReady';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
+import { windowsTaskkillCommand } from '../utils/windowsShim';
 import { debugEvent, event } from './events';
 import { findPortListenerAsync, isPortInUseAsync, type PortListener } from './portListener';
 import { isProcessAlive } from './processLiveness';
@@ -421,9 +422,13 @@ export async function signalProcessAsync(
   signal: NodeJS.Signals
 ): Promise<{ delivered: boolean; error?: string }> {
   if (process.platform === 'win32') {
-    const result = await spawnCaptureAsync('taskkill', ['/PID', String(pid), '/T', '/F'], {
-      timeoutMs: 5000,
-    });
+    const result = await spawnCaptureAsync(
+      windowsTaskkillCommand(),
+      ['/PID', String(pid), '/T', '/F'],
+      {
+        timeoutMs: 5000,
+      }
+    );
     return result.spawnError
       ? { delivered: false, error: result.spawnError.message }
       : { delivered: result.exitCode === 0, error: result.stderr.trim() || undefined };

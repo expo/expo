@@ -12,6 +12,7 @@ import { EventEmitter } from 'events';
 
 import { killProcessTree, USE_PROCESS_GROUP } from '../processGroup';
 import { spawnSubprocessAsync } from '../subprocess';
+import { windowsTaskkillCommand } from '../windowsShim';
 
 const childProcess = require('child_process') as { spawnSync?: jest.Mock };
 
@@ -57,7 +58,7 @@ describe(killProcessTree, () => {
       expect(child.kill).not.toHaveBeenCalled();
     } else {
       expect(taskkill).toHaveBeenCalledWith(
-        'taskkill',
+        windowsTaskkillCommand(),
         ['/PID', '4321', '/T', '/F'],
         expect.objectContaining({ stdio: 'ignore', windowsHide: true })
       );
@@ -76,7 +77,7 @@ describe(killProcessTree, () => {
       expect(kill).toHaveBeenCalledWith(-77, 'SIGTERM');
     } else {
       expect(taskkill).toHaveBeenCalledWith(
-        'taskkill',
+        windowsTaskkillCommand(),
         ['/PID', '77', '/T', '/F'],
         expect.objectContaining({ stdio: 'ignore', windowsHide: true })
       );
@@ -114,7 +115,7 @@ describe(killProcessTree, () => {
     killProcessTree(child as any, 'SIGKILL');
 
     expect(taskkill).toHaveBeenCalledWith(
-      'taskkill',
+      windowsTaskkillCommand(),
       ['/PID', '4321', '/T', '/F'],
       expect.objectContaining({ stdio: 'ignore', windowsHide: true })
     );

@@ -1,4 +1,6 @@
-import { resolveSpawnTarget } from '../windowsShim';
+import path from 'path';
+
+import { resolveSpawnTarget, windowsTaskkillCommand } from '../windowsShim';
 
 const realPlatform = process.platform;
 
@@ -110,6 +112,12 @@ describe(resolveSpawnTarget, () => {
         args: ['rev-parse'],
         shell: false,
       });
+    });
+
+    it(`should resolve taskkill under System32, so a stubbed PATH cannot hide it`, () => {
+      expect(windowsTaskkillCommand()).toBe(
+        path.win32.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'taskkill.exe')
+      );
     });
 
     it(`should not quote a bare .cmd name, so cmd.exe still searches PATH`, () => {

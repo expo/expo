@@ -13,6 +13,7 @@ import {
   executeAgentCliAsync,
   getTemporaryPath,
   installStubBinAsync,
+  pathEnvVars,
   setupFixtureAsync,
 } from '../utils';
 
@@ -122,8 +123,10 @@ function readInvocations(dir: string): StubInvocation[] {
 function isolatedEnv(dir: string): Record<string, string> {
   return {
     AUTH_LOG_DIR: dir,
-    PATH: [path.join(dir, 'path-bin'), path.dirname(process.execPath), '/usr/bin', '/bin'].join(
-      ':'
+    ...pathEnvVars(
+      [path.join(dir, 'path-bin'), path.dirname(process.execPath), '/usr/bin', '/bin'].join(
+        path.delimiter
+      )
     ),
   };
 }
@@ -310,14 +313,14 @@ describe('the runner that downloads a CLI this machine does not have', () => {
     const script = path.join(dir, 'bunx-stub.js');
     await fs.promises.writeFile(script, stubScriptFor('eas'));
     await installStubBinAsync(pathDir, 'bunx', script);
-    return { dir, pathEnv: `${pathDir}:${isolatedEnv(dir).PATH}` };
+    return { dir, pathEnv: [pathDir, isolatedEnv(dir).PATH].join(path.delimiter) };
   }
 
   it(`should hand the package to bunx when bun started this CLI`, async () => {
     const { dir, pathEnv } = await setupWithStubBunxAsync();
 
     const result = await executeAgentCliAsync(dir, ['whoami'], {
-      env: { ...isolatedEnv(dir), ...BUN_AGENT, PATH: pathEnv },
+      env: { ...isolatedEnv(dir), ...BUN_AGENT, ...pathEnvVars(pathEnv) },
     });
 
     // The package spec and the command, in that order, on bun's runner rather than npm's.
@@ -331,7 +334,7 @@ describe('the runner that downloads a CLI this machine does not have', () => {
 
     const result = await executeAgentCliAsync(dir, ['whoami'], {
       // No bun user agent: this is the npm case, and the stub bunx must not be reached for it.
-      env: { ...isolatedEnv(dir), PATH: pathEnv },
+      env: { ...isolatedEnv(dir), ...pathEnvVars(pathEnv) },
       reject: false,
     });
 
