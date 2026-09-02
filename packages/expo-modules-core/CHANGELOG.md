@@ -22,6 +22,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix Expo module views not receiving props with React Native 0.87.
 - [iOS][Android] Fixed a `matchContents` `RNHostView` and the `matchContents` host around it feeding each other's size back and forth, which grew the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed SwiftUI view props re-decoding every field on every props update. Fabric sends the whole props map rather than a delta, so an unrelated prop change replaced each decoded value with an equal but distinct one, which cost a decode per field and stopped SwiftUI from pruning the view tree that reads it. A field whose raw value is unchanged now keeps the value decoded before, the same way `ExpoFabricView.updateProps` already worked for UIKit views. ([#48426](https://github.com/expo/expo/pull/48426) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed `matchContents` hosts sometimes being laid out at a stale size. Regression from [#48059](https://github.com/expo/expo/pull/48059). ([#49211](https://github.com/expo/expo/pull/49211) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))

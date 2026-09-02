@@ -3,7 +3,6 @@ import * as React from 'react';
 import { use } from 'react';
 
 import useLatestCallback from '../../utils/useLatestCallback';
-import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationStateContext } from './NavigationStateContext';
 import { useIsRouteFocused } from './useIsFocused';
 
@@ -18,22 +17,12 @@ export function useOptionsGetters({ key, options }: Options) {
     {}
   );
 
-  const { onOptionsChange } = use(NavigationBuilderContext);
   const { addOptionsGetter: parentAddOptionsGetter } = use(NavigationStateContext);
   const isFocused = useIsRouteFocused(key);
 
-  const optionsChangeListener = React.useCallback(() => {
-    const hasChildren = Object.keys(optionsGettersFromChildRef.current).length;
-
-    if (isFocused && !hasChildren) {
-      onOptionsChange(optionsRef.current ?? {}, key);
-    }
-  }, [isFocused, key, onOptionsChange]);
-
   React.useEffect(() => {
     optionsRef.current = options;
-    optionsChangeListener();
-  }, [options, optionsChangeListener]);
+  }, [options]);
 
   const getOptionsFromListener = React.useCallback(() => {
     for (const key in optionsGettersFromChildRef.current) {
@@ -71,15 +60,13 @@ export function useOptionsGetters({ key, options }: Options) {
   const addOptionsGetter = React.useCallback(
     (key: string, getter: () => object | undefined | null) => {
       optionsGettersFromChildRef.current[key] = getter;
-      optionsChangeListener();
 
       return () => {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete optionsGettersFromChildRef.current[key];
-        optionsChangeListener();
       };
     },
-    [optionsChangeListener]
+    []
   );
 
   return {

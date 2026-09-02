@@ -400,10 +400,6 @@ export type NavigationContainerProps = {
    */
   initialState?: InitialState;
   /**
-   * Callback which is called with the latest navigation state when it changes.
-   */
-  onStateChange?: (state: Readonly<NavigationState> | undefined) => void;
-  /**
    * Callback which is called after the navigation tree mounts.
    */
   onReady?: () => void;
@@ -751,10 +747,6 @@ export type NavigationContainerEventMap = {
       state: NavigationState | PartialState<NavigationState> | undefined;
     };
   };
-  /**
-   * Event that fires when current options changes.
-   */
-  options: { data: { options: object } };
 };
 
 export type ParamListRoute<ParamList extends ParamListBase> = {

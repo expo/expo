@@ -646,6 +646,7 @@ export const eas = [
     ]),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
+      makePage('eas/observe/reference/client-id.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
   ]),
@@ -753,6 +754,7 @@ const preview = [
         makePage('preview/eas-simulator/introduction.mdx'),
         makePage('preview/eas-simulator/get-started.mdx'),
         makePage('preview/eas-simulator/run-and-control.mdx'),
+        makePage('preview/eas-simulator/create-session-links.mdx'),
         makePage('preview/eas-simulator/cli-reference.mdx'),
         makePage('preview/eas-simulator/rest-api.mdx'),
         makePage('preview/eas-simulator/troubleshooting.mdx'),

@@ -78,6 +78,8 @@ With the `paths` list, you can trigger the workflow only when changes are made t
 
 When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers on push events to all branches and does not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
 
+With the [`if:`](#ontriggerif) condition, you can decide whether a workflow run starts.
+
 ```yaml
 on:
   # @info #
@@ -111,6 +113,8 @@ With the `branches` list, you can trigger the workflow only when those specified
 With the `tags` list, you can trigger the workflow only when those specified tags are deleted. Supports globs and `!` negation with the same rules as branches.
 
 When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers when any branch is deleted and does not trigger on tag deletions. If only one of the two lists is provided the other defaults to `[]`.
+
+With the [`if:`](#ontriggerif) condition, you can decide whether a workflow run starts.
 
 > **info** Workflow files are read from the default branch HEAD at the time of deletion, not from the deleted ref.
 
@@ -156,6 +160,8 @@ The `branches` filter matches the pull request's current base branch, so retarge
 
 With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
 
+You can add an [`if:`](#ontriggerif) condition to decide whether a workflow run starts.
+
 ```yaml
 on:
   # @info #
@@ -184,6 +190,8 @@ Runs your workflow when a pull request is labeled with a matching label.
 
 With the `labels` list, you can specify which labels, when assigned to your pull request, trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label triggers the workflow. Defaults to `[]` when not provided, which means no labels trigger the workflow.
 
+To decide whether a workflow run starts, add an [`if:`](#ontriggerif) condition.
+
 You can also provide a list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
 
 ```yaml
@@ -209,6 +217,33 @@ on:
     # other labels
 ```
 
+### `on.pull_request_comment`
+
+Runs your workflow when someone creates, edits, or deletes a comment on a pull request.
+
+> **info** Only open, unmerged pull requests trigger `pull_request_comment` workflow runs. Pull requests opened from a fork of the connected repository do not trigger workflow runs.
+
+With the `types` list, you can specify which events trigger the workflow. Defaults to `['created']` when not provided. Supported event types:
+
+- `created`
+- `edited`
+- `deleted`
+
+Unlike `on.pull_request`, this trigger has no `branches` or `paths` filter.
+
+With the [`if:`](#ontriggerif) condition, you can decide whether a workflow run starts.
+
+```yaml
+on:
+  # @info #
+  pull_request_comment:
+    # @end #
+    types:
+      - created
+      - edited
+      # other event types
+```
+
 ### `on.app_store_connect`
 
 Runs your workflow when one of the selected App Store Connect events occurs.
@@ -216,6 +251,8 @@ Runs your workflow when one of the selected App Store Connect events occurs.
 > **info** To use this trigger, configure your App Store Connect connection in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/settings). For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
 
 When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`). Within a configured event domain, you can specify which states should trigger your workflow.
+
+Each event domain also accepts an [`if:`](#ontriggerif) condition, so you can decide whether a workflow run starts.
 
 #### `on.app_store_connect.app_version.states`
 
@@ -407,6 +444,36 @@ jobs:
           # Note: you can use `||` to provide a default value
           #       for non-eas-workflow:run-run workflows.
           echo "Hello, ${{ inputs.name || 'World' }}!"
+```
+
+### `on.<trigger>.if`
+
+The `if` condition on a trigger decides whether a workflow run starts.
+
+You can add `if:` under `push`, `ref_delete`, `pull_request`, `pull_request_labeled`, `pull_request_comment`, and each `app_store_connect` event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`).
+
+The value is a boolean or an expression string. You can write it with or without the `${{ }}` wrapper.
+
+```yaml
+on:
+  pull_request:
+    # @info #
+    if: ${{ !github.event.pull_request.draft }}
+    # @end #
+```
+
+The expression must fit in one `${{ }}` block and can be at most 250 characters.
+
+When the condition evaluates to false, no workflow run starts for that trigger event. A retry of an existing run skips this check. It only applies when a new run is created.
+
+The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), `inputs`, [`workflow`](#workflow), `app`, and `account` contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run, but a trigger's `if` condition evaluates before any job starts.
+
+```yaml
+on:
+  push:
+    if: ${{ github.ref_name == 'main' }}
+  pull_request_comment:
+    if: ${{ startsWith(github.event.comment.body, '/deploy') }}
 ```
 
 ## `jobs`
@@ -825,6 +892,10 @@ type GitHubContext = {
       merged: boolean | null;
       // ... Other fields from the GitHub Pull Request webhook payload
     };
+    comment?: {
+      body: string;
+      // ... Other fields from the GitHub issue_comment webhook payload
+    };
     changes?: {
       base?: {
         ref?: {
@@ -839,7 +910,7 @@ type GitHubContext = {
 };
 ```
 
-> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. For `pull_request_comment` events, `event.comment.body` contains the comment text, and `event.pull_request.number` and `event.number` contain the pull request number. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 

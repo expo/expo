@@ -26,23 +26,21 @@ export function Dropdown({
     <Root modal={false}>
       <Trigger asChild>{trigger}</Trigger>
       <Portal>
-        <div className="bg-danger">
-          <Content
-            className={mergeClasses(
-              'flex min-w-45 flex-col gap-0.5 rounded-md border border-default bg-default p-1 shadow-md',
-              'will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFadeIn',
-              className
-            )}
-            side={side}
-            sideOffset={sideOffset}
-            collisionPadding={collisionPadding}
-            {...rest}>
-            <Arrow asChild>
-              <div className="relative -top-1 size-2.5 rotate-45 border-r border-b border-default bg-default" />
-            </Arrow>
-            {children}
-          </Content>
-        </div>
+        <Content
+          className={mergeClasses(
+            'flex min-w-45 flex-col gap-1 rounded-xl border border-default bg-default p-2 shadow-md',
+            'will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFadeIn',
+            className
+          )}
+          side={side}
+          sideOffset={sideOffset}
+          collisionPadding={collisionPadding}
+          {...rest}>
+          <Arrow asChild>
+            <div className="relative -top-1 size-2.5 rotate-45 border-r border-b border-default bg-default" />
+          </Arrow>
+          {children}
+        </Content>
       </Portal>
     </Root>
   );

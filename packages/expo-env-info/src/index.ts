@@ -4,7 +4,13 @@ import path from 'path';
 
 import { actionAsync } from './diagnosticsAsync';
 
-const packageJson = () => require('../package.json');
+const packageJson = () => {
+  try {
+    return require('expo-env-info/package.json');
+  } catch {
+    return null;
+  }
+};
 
 async function run() {
   const args = process.argv.slice(2);
@@ -30,7 +36,7 @@ async function run() {
 }
 
 function logVersionAndExit() {
-  console.log(packageJson().version);
+  console.log(packageJson()?.version ?? '0.0.0');
   process.exit(0);
 }
 
