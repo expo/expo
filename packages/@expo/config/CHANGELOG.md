@@ -8,10 +8,9 @@
 
 ### 🐛 Bug fixes
 
-- Use the same mode for env loading and bundling with custom Xcode configurations. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
-
 ### 💡 Others
 
+- Allow custom Xcode configuration names in the build cache provider types. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Add experimental `tvos` and `macos` platforms gated by `expriments.outOfTreePlatforms` in config ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 57.0.6 - 2026-07-22
