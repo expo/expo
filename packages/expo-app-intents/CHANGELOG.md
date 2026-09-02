@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `AppEntityView`, a UIKit wrapper for associating React Native content with an App Entity.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
