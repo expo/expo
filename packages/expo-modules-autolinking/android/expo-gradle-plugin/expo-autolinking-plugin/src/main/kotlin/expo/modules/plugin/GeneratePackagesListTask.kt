@@ -65,7 +65,7 @@ abstract class GeneratePackagesListTask : DefaultTask() {
 
     return """package ${namespace.get()}
 
-import expo.modules.kotlin.v2.ExpoModulesV2Provider
+import expo.modules.v2.ExpoModulesV2Provider
 import io.github.expo.modules.v2.modules.Module
 
 class ExpoModulesV2ModuleList : ExpoModulesV2Provider {

@@ -1,4 +1,4 @@
-package expo.modules.kotlin.v2
+package expo.modules.v2
 
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.kotlin.logger
@@ -9,7 +9,6 @@ import java.lang.reflect.Modifier
 
 object ExpoModulesV2Host {
   private const val GENERATED_PROVIDER_CLASS = "expo.modules.ExpoModulesV2ModuleList"
-
 
   private var runtime: ReactRuntime? = null
 

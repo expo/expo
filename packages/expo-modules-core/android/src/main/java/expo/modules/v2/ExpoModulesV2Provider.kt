@@ -1,4 +1,4 @@
-package expo.modules.kotlin.v2
+package expo.modules.v2
 
 import io.github.expo.modules.v2.modules.Module
 

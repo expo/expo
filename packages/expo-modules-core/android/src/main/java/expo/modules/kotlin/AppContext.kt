@@ -32,7 +32,7 @@ import expo.modules.kotlin.services.Service
 import expo.modules.kotlin.services.ServicesRegistry
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.types.ConverterContext
-import expo.modules.kotlin.v2.ExpoModulesV2Host
+import expo.modules.v2.ExpoModulesV2Host
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
