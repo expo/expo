@@ -112,4 +112,12 @@ struct JavaScriptPropNameIDTests {
     #expect(array["café"].getInt() == 42)
     #expect(array["🎉"].getString() == "party")
   }
+
+  @Test
+  func `array string subscript writes a non-ASCII custom property`() throws {
+    let array = try runtime.eval("[1, 2]").getArray()
+    array["café"] = JavaScriptValue(runtime, "party")
+    runtime.global().setProperty("arr", value: array.asValue())
+    #expect(try runtime.eval("arr['café'] === 'party'").getBool() == true)
+  }
 }
