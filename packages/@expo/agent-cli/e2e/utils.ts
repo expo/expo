@@ -459,8 +459,10 @@ export type DevLockInfo = {
  * test could not notice the address changing. If the two disagree, these tests fail.
  */
 export function devLockAddress(projectRoot: string): string {
-  // Symlinks resolved, so the test and the CLI spell one project one way.
-  const canonical = fs.realpathSync(path.resolve(projectRoot));
+  // Must match `canonicalizeExistingPath` in `src/utils/dir.ts`: Node's JS `realpathSync` does
+  // not expand Windows 8.3 names, and the CLI's native realpath does. A test that hashed the
+  // short form never found the lock the CLI published.
+  const canonical = canonicalLockRoot(projectRoot);
   const digest = crypto
     .createHash('sha1')
     .update(canonical.toLowerCase())
@@ -475,6 +477,31 @@ export function devLockAddress(projectRoot: string): string {
   return inProject.length <= 100
     ? inProject
     : path.join(os.tmpdir(), `agent-cli-dev-server-${digest}.sock`);
+}
+
+function canonicalLockRoot(projectRoot: string): string {
+  const resolved = path.resolve(projectRoot);
+  try {
+    const native = fs.realpathSync.native;
+    const real = typeof native === 'function' ? native(resolved) : fs.realpathSync(resolved);
+    return normalizeLockPath(path.resolve(real));
+  } catch {
+    return resolved;
+  }
+}
+
+function normalizeLockPath(value: string): string {
+  let result = value;
+  if (result.startsWith('\\\\?\\UNC\\')) {
+    result = `\\\\${result.slice('\\\\?\\UNC\\'.length)}`;
+  } else if (result.startsWith('\\\\?\\')) {
+    result = result.slice('\\\\?\\'.length);
+  }
+  const { root } = path.parse(result);
+  while (result.length > root.length && (result.endsWith('\\') || result.endsWith('/'))) {
+    result = result.slice(0, -1);
+  }
+  return result;
 }
 
 /**

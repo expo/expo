@@ -87,12 +87,30 @@ function realpathExistingSync(target: string): string {
   const native = fs.realpathSync.native;
   if (typeof native === 'function') {
     try {
-      return path.resolve(native(target));
+      return normalizeCanonicalPath(path.resolve(native(target)));
     } catch {
       // memfs has no native implementation.
     }
   }
-  return path.resolve(fs.realpathSync(target));
+  return normalizeCanonicalPath(path.resolve(fs.realpathSync(target)));
+}
+
+/**
+ * Strip Windows `\\?\` prefixes and trailing separators so two spellings of one directory
+ * (8.3 vs long, file vs dir) hash to the same lock address.
+ */
+function normalizeCanonicalPath(value: string): string {
+  let result = value;
+  if (result.startsWith('\\\\?\\UNC\\')) {
+    result = `\\\\${result.slice('\\\\?\\UNC\\'.length)}`;
+  } else if (result.startsWith('\\\\?\\')) {
+    result = result.slice('\\\\?\\'.length);
+  }
+  const { root } = path.parse(result);
+  while (result.length > root.length && (result.endsWith('\\') || result.endsWith('/'))) {
+    result = result.slice(0, -1);
+  }
+  return result;
 }
 
 export function isPathInside(child: string, parent: string): boolean {
