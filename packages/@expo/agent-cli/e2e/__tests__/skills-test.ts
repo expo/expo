@@ -114,8 +114,9 @@ describe('@expo/agent-cli skills', () => {
       expect(fs.readFileSync(path.join(link, 'SKILL.md'), 'utf8')).toContain(
         'Body of usage skill.'
       );
-      expect(fs.realpathSync(link)).toBe(
-        fs.realpathSync(
+      const realpath = fs.realpathSync.native ?? fs.realpathSync;
+      expect(realpath(link)).toBe(
+        realpath(
           path.join(projectRoot, 'node_modules', 'fake-module-with-skills', 'skills', 'usage')
         )
       );

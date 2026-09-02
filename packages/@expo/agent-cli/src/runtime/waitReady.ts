@@ -13,10 +13,8 @@
 // that the dev server that answered belongs to this project — the caveat `discoverDevServerAsync`
 // documents but cannot close.
 
-import fs from 'fs';
-import path from 'path';
-
 import type { NavigatePlatform } from '../navigate/device';
+import { canonicalizeExistingPath } from '../utils/dir';
 import { normalizeDevServerUrl, probeDevServerAsync } from './devServer';
 import {
   buildDeviceNameIndexIfNeededAsync,
@@ -343,12 +341,7 @@ function matchProjectRoot(reported: string | null, projectRoot?: string | null):
 }
 
 function canonicalPath(value: string): string {
-  let resolved = path.resolve(value);
-  try {
-    resolved = fs.realpathSync(resolved);
-  } catch {
-    // A path that does not exist here — the dev server may be on another host — compares as typed.
-  }
+  const resolved = canonicalizeExistingPath(value);
   return process.platform === 'win32' ? resolved.toLowerCase() : resolved;
 }
 

@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { PROGRAM_PREFIX } from '../programName';
+import { canonicalizeExistingPath } from './dir';
 import { CommandError } from './errors';
 
 /**
@@ -62,27 +63,4 @@ export function findFileInParents(root: string, fileName: string): string | null
     }
   }
   return null;
-}
-
-/**
- * The long path for a file that exists.
- *
- * `fs.realpathSync` is Node's own walk and does not expand Windows 8.3 names (`RUNNER~1`).
- * `realpathSync.native` is the OS call that does. memfs has no native; it also answers with a
- * POSIX spelling on Windows, so `path.resolve` puts the result back on this platform's path.
- */
-function canonicalizeExistingPath(file: string): string {
-  try {
-    const native = fs.realpathSync.native;
-    if (typeof native === 'function') {
-      try {
-        return path.resolve(native(file));
-      } catch {
-        // memfs, or a path the OS would not resolve. The JS realpath below still runs.
-      }
-    }
-    return path.resolve(fs.realpathSync(file));
-  } catch {
-    return file;
-  }
 }

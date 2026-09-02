@@ -60,12 +60,39 @@ export const removeAsync = (path: string): Promise<void> => {
   });
 };
 
+/**
+ * The long path for a file or directory that exists.
+ *
+ * `fs.realpathSync` is Node's own walk and does not expand Windows 8.3 names (`RUNNER~1`).
+ * `realpathSync.native` is the OS call that does. memfs has no native; it also answers with a
+ * POSIX spelling on Windows, so `path.resolve` puts the result back on this platform's path.
+ */
+export function canonicalizeExistingPath(target: string): string {
+  try {
+    return realpathExistingSync(target);
+  } catch {
+    return path.resolve(target);
+  }
+}
+
 export function maybeRealpathSync(target: string): string | null {
   try {
-    return fs.realpathSync(target);
+    return realpathExistingSync(target);
   } catch {
     return null;
   }
+}
+
+function realpathExistingSync(target: string): string {
+  const native = fs.realpathSync.native;
+  if (typeof native === 'function') {
+    try {
+      return path.resolve(native(target));
+    } catch {
+      // memfs has no native implementation.
+    }
+  }
+  return path.resolve(fs.realpathSync(target));
 }
 
 export function isPathInside(child: string, parent: string): boolean {

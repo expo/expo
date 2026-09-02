@@ -7,9 +7,10 @@
 // root, and both sides call this one.
 
 import crypto from 'crypto';
-import fs from 'fs';
 import os from 'os';
 import path from 'path';
+
+import { canonicalizeExistingPath } from '../utils/dir';
 
 /** Name of the socket file the lock listens on inside a project's `.expo`. */
 export const DEV_LOCK_SOCKET_NAME = 'agent-cli-dev-server.sock';
@@ -103,12 +104,5 @@ function digestOf(canonicalPath: string): string {
  * other.
  */
 function canonicalProjectRoot(projectRoot: string): string {
-  const resolved = path.resolve(projectRoot);
-  try {
-    return fs.realpathSync(resolved);
-  } catch {
-    // A project that is not on disk (yet, or any more) still has to name an address, and the
-    // resolved path is the best canonical form there is. Both sides fall back the same way.
-    return resolved;
-  }
+  return canonicalizeExistingPath(projectRoot);
 }
