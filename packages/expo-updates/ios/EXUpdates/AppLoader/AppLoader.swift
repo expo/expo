@@ -49,6 +49,12 @@ open class AppLoader: NSObject {
   private let arrayLock: NSLock = NSLock()
   private let completionQueue: DispatchQueue
 
+  /// Overridable for testing, where the bundle has no `app.manifest`.
+  internal lazy var embeddedUpdate: Update? = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+
+  /// Overridable for testing, where fixtures live in the test bundle rather than in `updatesBundle`.
+  internal var embeddedAssetsBundle: Bundle = updatesBundle
+
   public init(
     config: UpdatesConfig,
     logger: UpdatesLogger,
@@ -208,7 +214,14 @@ open class AppLoader: NSObject {
       if let assets = updateManifest.assets(),
         !assets.isEmpty {
         self.assetsToLoad = assets
-        let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+        let embeddedUpdate = self.embeddedUpdate
+        // Indexed once: `assets()` hits the database when the update came from there.
+        let embeddedAssetsByKey = Dictionary(
+          (embeddedUpdate?.assets() ?? []).compactMap { embeddedAsset in
+            embeddedAsset.key.map { ($0, embeddedAsset) }
+          },
+          uniquingKeysWith: { first, _ in first }
+        )
         let requestedUpdate: Update? = {
           if let launchedUpdate = self.launchedUpdate,
             launchedUpdate.updateId == updateManifest.updateId {
@@ -251,13 +264,71 @@ open class AppLoader: NSObject {
               }
             }
           } else {
-            self.downloadAsset(asset, extraHeaders: extraHeaders)
+            // Not on `assetFilesQueue`: it is serial, and a copy is heavier than an exists check.
+            DispatchQueue.global().async {
+              if self.copyAssetFromEmbeddedBundleIfPresent(asset, embeddedAssetsByKey: embeddedAssetsByKey) {
+                return
+              }
+              self.downloadAsset(asset, extraHeaders: extraHeaders)
+            }
           }
         }
       } else {
         self.finish()
       }
     }
+  }
+
+  /**
+   * Satisfies an asset from the embedded update in the app binary rather than downloading it.
+   *
+   * Embedded assets have no database row when `EX_UPDATES_COPY_EMBEDDED_ASSETS` is off, so the
+   * lookup above misses them and a remote update would re-download bytes that already ship in the
+   * app. Android instead registers rows pointing into the APK; iOS asset paths are always relative
+   * to the updates directory, so we copy.
+   *
+   * Returns true when it handled the asset, false when the caller should download it. Every failure
+   * falls through to the download.
+   */
+  internal func copyAssetFromEmbeddedBundleIfPresent(
+    _ asset: UpdateAsset,
+    embeddedAssetsByKey: [String: UpdateAsset]
+  ) -> Bool {
+    // `filename` ends in a manifest-supplied extension, so it is checked before any write.
+    // `downloadAsset` reports the rejection, keeping one error path for unsafe filenames.
+    guard let key = asset.key,
+      UpdatesUtils.isSafeFilename(asset.filename),
+      let embeddedAsset = embeddedAssetsByKey[key],
+      embeddedAsset.mainBundleFilename != nil,
+      let bundlePath = UpdatesUtils.path(forBundledAsset: embeddedAsset, in: embeddedAssetsBundle) else {
+      return false
+    }
+
+    guard let data = try? Data(contentsOf: URL(fileURLWithPath: bundlePath)) else {
+      logger.warn(message: "AppLoader: could not read embedded asset \(key), downloading it instead")
+      return false
+    }
+
+    // Keys are content-addressed, so a mismatch means the manifest is wrong about what we shipped.
+    if let expectedHash = asset.expectedHash {
+      let actualHash = UpdatesUtils.base64UrlEncodedSHA256WithData(data)
+      if expectedHash != actualHash {
+        logger.warn(
+          message: "AppLoader: embedded asset \(key) hashed to \(actualHash) but the update expects \(expectedHash), downloading it instead"
+        )
+        return false
+      }
+    }
+
+    do {
+      try data.write(to: directory.appendingPathComponent(asset.filename), options: .atomic)
+    } catch {
+      logger.warn(message: "AppLoader: could not copy embedded asset \(key) into the updates directory, downloading it instead")
+      return false
+    }
+
+    handleAssetDownload(withData: data, response: nil, asset: asset)
+    return true
   }
 
   public func handleAssetDownloadAlreadyExists(_ asset: UpdateAsset) {
