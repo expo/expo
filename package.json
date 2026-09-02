@@ -7,7 +7,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "10.33.0"
+      "version": "12.2.1"
     }
   },
   "workspaces": {
@@ -68,6 +68,6 @@
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0",
-    "pnpm": "^10.33.0"
+    "pnpm": "^12.2.1"
   }
 }

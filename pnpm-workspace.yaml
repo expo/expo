@@ -8,17 +8,10 @@ packages:
   - packages/expo-sqlite/dev-plugin-webui
 
 ignoreWorkspaceCycles: true
-
-ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - '@swc/core'
-  - core-js
-  - esbuild
-  - fmerge
-  - protobufjs
-  - unrs-resolver
-
+verifyDepsBeforeRun: warn
 linkWorkspacePackages: deep
+preferWorkspacePackages: true
+shellEmulator: true
 
 loglevel: info
 
@@ -28,31 +21,9 @@ minimumReleaseAgeExclude:
   - '@expo/*'
   - '@noxcturnal/*'
   - '@react-native/*'
-  - '@turbo/*'
   - 'react-native'
   - multitars
   - noxcturnal
-  - 'react-native-gesture-handler'
-  - 'react-native-reanimated'
-  - 'react-native-screens'
-  - turbo
-  - 'whatwg-url-minimum'
-  - 'expo'
-  - 'expo-asset'
-  - 'expo-constants'
-  - 'expo-modules-autolinking'
-  - 'expo-modules-core'
-  - 'expo-modules-jsi'
-  - 'babel-preset-expo'
-  - 'jest-expo'
-  - '2g'
-
-onlyBuiltDependencies:
-  - '@shopify/react-native-skia'
-  - better-sqlite3
-  - fsevents
-  - sharp
-  - workerd
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
@@ -63,6 +34,11 @@ patchedDependencies:
   react-native-worklets: patches/react-native-worklets.patch
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 
-preferWorkspacePackages: true
-
-shellEmulator: true
+allowBuilds:
+  '@parcel/watcher': false
+  '@shopify/react-native-skia': true
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: false
+  workerd: true
