@@ -1,0 +1,13 @@
+{
+  "name": "agent-cli-live-livecheck",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "expo": "~57.0.17",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-native": "0.83.1",
+    "react-native-web": "^0.21.0"
+  }
+}

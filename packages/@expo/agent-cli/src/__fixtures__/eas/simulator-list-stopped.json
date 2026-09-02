@@ -1,0 +1,21 @@
+{
+  "sessions": [
+    {
+      "id": "01a03d80-0556-7d22-98df-f415d9392b98",
+      "name": "@expo/agent-cli wave11 discovery check",
+      "type": "agent-device",
+      "status": "STOPPED",
+      "platform": "IOS",
+      "createdAt": "2026-08-26T09:56:35.286Z",
+      "startedAt": "2026-08-26T09:57:40.868Z",
+      "finishedAt": "2026-08-26T09:58:58.071Z",
+      "deviceRunSessionUrl": "https://expo.dev/accounts/expo-ci/projects/expo-workflow-testing/simulator-sessions/01a03d80-0556-7d22-98df-f415d9392b98"
+    }
+  ],
+  "pageInfo": {
+    "hasNextPage": false,
+    "hasPreviousPage": false,
+    "startCursor": "eyJpZCI6IjAxYTAzZDgwLTA1NTYtN2QyMi05OGRmLWY0MTVkOTM5MmI5OCJ9",
+    "endCursor": "eyJpZCI6IjAxYTAzZDgwLTA1NTYtN2QyMi05OGRmLWY0MTVkOTM5MmI5OCJ9"
+  }
+}

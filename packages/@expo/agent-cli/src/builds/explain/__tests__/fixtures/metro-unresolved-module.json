@@ -1,0 +1,27 @@
+{
+  "phases": [
+    {
+      "name": "unknown",
+      "status": "succeeded",
+      "startLine": 1,
+      "endLine": 2
+    },
+    {
+      "name": "bundle-js",
+      "status": "failed",
+      "startLine": 3,
+      "endLine": 25
+    }
+  ],
+  "failure": {
+    "phase": "bundle-js",
+    "signature": "bundle.unresolved-module",
+    "line": 7,
+    "matchedLine": "Error: Unable to resolve module ../utils/note-formatter from /private/tmp/wave6-explain-scratch/metro-unresolved/src/app/index.tsx:",
+    "confidence": "high",
+    "suggestedCommand": null
+  },
+  "otherSignatures": [
+    "5:bundle.failed"
+  ]
+}

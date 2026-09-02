@@ -1,0 +1,7 @@
+# Local state a command may create in the temporary copy of this fixture. Unlike the other
+# fixtures, `.expo/agent-cli-last-build.json` is committed test data rather than local state: it is
+# the recorded build that makes this fixture look freshly built.
+.expo/*
+!.expo/agent-cli-last-build.json
+.stub-bin/
+stub-expo-invocations.jsonl

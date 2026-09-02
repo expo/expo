@@ -1,0 +1,18 @@
+> Task :app:compileReleaseJavaWithJavac FAILED
+/home/expo/workingdir/build/android/app/src/main/java/com/example/notes/NoteModule.java:5: error: package com.facebook.react.bridge does not exist
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+                                ^
+/home/expo/workingdir/build/android/app/src/main/java/com/example/notes/NoteModule.java:9: error: cannot find symbol
+  public String describe() {
+         ^
+  symbol:   class NoteFormatter
+  location: class NoteModule
+2 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileReleaseJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.
+
+BUILD FAILED in 55s

@@ -1,0 +1,15 @@
+[96msrc/app/notes.tsx[0m:[93m12[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType '(value: number) => void' is not assignable to type '(value: string) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string' is not assignable to type 'number'.
+
+[7m12[0m const F34_PROBE: (value: string) => void = (value: number) => {
+[7m  [0m [91m      ~~~~~~~~~[0m
+
+[96msrc/app/notes.tsx[0m:[93m71[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'md' does not exist on type '{ readonly half: 2; readonly one: 4; readonly two: 8; readonly three: 16; readonly four: 24; readonly five: 32; readonly six: 64; }'.
+
+[7m71[0m     padding: Spacing.md,
+[7m  [0m [91m                     ~~[0m
+
+
+Found 2 errors in the same file, starting at: src/app/notes.tsx[90m:12[0m
+

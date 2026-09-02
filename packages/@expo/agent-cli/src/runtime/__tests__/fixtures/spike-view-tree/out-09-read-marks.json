@@ -1,0 +1,18 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-09-read-marks.js",
+  "exprBytes": 795,
+  "cdpResponseBytes": 245,
+  "roundTripMs": 3,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "marks": [
+        "marks:touchable,gh-touchable,gh-rectbutton",
+        "marks:touchable,gh-touchable,gh-rectbutton",
+        "marks:touchable,gh-touchable,gh-rectbutton"
+      ]
+    }
+  }
+}

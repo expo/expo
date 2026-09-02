@@ -1,0 +1,21 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-10-tap-template.js",
+  "exprBytes": 4425,
+  "cdpResponseBytes": 248,
+  "roundTripMs": 9,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "component": "Link",
+      "handler": "onPress",
+      "handlerOn": "Text",
+      "handlerOutsideMatch": false,
+      "matched": 1,
+      "ok": true,
+      "testID": "spike-home-link",
+      "threw": null
+    }
+  }
+}

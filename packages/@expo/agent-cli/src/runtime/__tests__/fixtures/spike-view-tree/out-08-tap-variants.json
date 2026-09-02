@@ -1,0 +1,115 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-08-tap-variants.js",
+  "exprBytes": 4259,
+  "cdpResponseBytes": 1373,
+  "roundTripMs": 7,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "taps": [
+        {
+          "calledOn": "TouchableOpacity",
+          "calledOnTag": 0,
+          "group": [
+            "TouchableOpacity",
+            "TouchableOpacity",
+            "Animated(View)",
+            "View",
+            "RCTView"
+          ],
+          "ok": true,
+          "onPressCarriers": [
+            {
+              "component": "TouchableOpacity",
+              "depthInGroup": 0,
+              "tag": 0
+            },
+            {
+              "component": "TouchableOpacity",
+              "depthInGroup": 1,
+              "tag": 1
+            }
+          ],
+          "testID": "spike-touchable",
+          "threw": null
+        },
+        {
+          "calledOn": "TouchableOpacity",
+          "calledOnTag": 1,
+          "group": [
+            "TouchableOpacity",
+            "GenericTouchable",
+            "Anonymous",
+            "InnerBaseButton",
+            "RNGestureHandlerButton",
+            "RNGestureHandlerButton"
+          ],
+          "ok": true,
+          "onPressCarriers": [
+            {
+              "component": "TouchableOpacity",
+              "depthInGroup": 0,
+              "tag": 1
+            },
+            {
+              "component": "GenericTouchable",
+              "depthInGroup": 1,
+              "tag": 1
+            }
+          ],
+          "testID": "spike-gh-touchable",
+          "threw": null
+        },
+        {
+          "calledOn": "Anonymous",
+          "calledOnTag": 11,
+          "group": [
+            "Anonymous",
+            "InnerRectButton",
+            "Anonymous",
+            "InnerBaseButton",
+            "RNGestureHandlerButton",
+            "RNGestureHandlerButton"
+          ],
+          "ok": true,
+          "onPressCarriers": [
+            {
+              "component": "Anonymous",
+              "depthInGroup": 0,
+              "tag": 11
+            },
+            {
+              "component": "InnerRectButton",
+              "depthInGroup": 1,
+              "tag": 1
+            },
+            {
+              "component": "Anonymous",
+              "depthInGroup": 2,
+              "tag": 11
+            },
+            {
+              "component": "InnerBaseButton",
+              "depthInGroup": 3,
+              "tag": 1
+            },
+            {
+              "component": "RNGestureHandlerButton",
+              "depthInGroup": 4,
+              "tag": 11
+            },
+            {
+              "component": "RNGestureHandlerButton",
+              "depthInGroup": 6,
+              "tag": 5
+            }
+          ],
+          "testID": "spike-gh-rectbutton",
+          "threw": null
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "phases": [
+    {
+      "name": "unknown",
+      "status": "succeeded",
+      "startLine": 1,
+      "endLine": 2
+    },
+    {
+      "name": "bundle-js",
+      "status": "failed",
+      "startLine": 3,
+      "endLine": 15
+    }
+  ],
+  "failure": {
+    "phase": "bundle-js",
+    "signature": "bundle.syntax-error",
+    "line": 7,
+    "matchedLine": "SyntaxError: SyntaxError: /private/tmp/wave6-explain-scratch/metro-syntax/src/app/index.tsx: Unexpected token, expected \",\" (4:29)",
+    "confidence": "high",
+    "suggestedCommand": "npx @expo/agent-cli typecheck"
+  },
+  "otherSignatures": [
+    "5:bundle.failed"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "phases": [
+    {
+      "name": "gradle",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 17
+    }
+  ],
+  "failure": {
+    "phase": "gradle",
+    "signature": "android.aapt.resource-error",
+    "line": 10,
+    "matchedLine": "     ERROR:/home/expo/workingdir/build/android/app/src/main/res/values/strings.xml:4:5-58: AAPT: error: duplicate value for resource 'string/app_name' with config ''.",
+    "confidence": "high",
+    "suggestedCommand": null
+  },
+  "otherSignatures": [
+    "4:android.gradle.build-failed",
+    "6:android.gradle.build-failed",
+    "7:android.gradle.task-failed",
+    "12:android.aapt.resource-error"
+  ]
+}

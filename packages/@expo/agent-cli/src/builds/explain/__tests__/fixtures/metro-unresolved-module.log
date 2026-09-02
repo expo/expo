@@ -1,0 +1,25 @@
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Starting Metro Bundler
+
+iOS Bundling failed 3949ms node_modules/expo-router/entry.js (1522 modules)
+
+Error: Unable to resolve module ../utils/note-formatter from /private/tmp/wave6-explain-scratch/metro-unresolved/src/app/index.tsx: 
+
+None of these files exist:
+  * src/utils/note-formatter(.ios.ts|.native.ts|.ts|.ios.tsx|.native.tsx|.tsx|.ios.mjs|.native.mjs|.mjs|.ios.js|.native.js|.js|.ios.jsx|.native.jsx|.jsx|.ios.json|.native.json|.json|.ios.cjs|.native.cjs|.cjs|.ios.scss|.native.scss|.scss|.ios.sass|.native.sass|.sass|.ios.css|.native.css|.css)
+  * src/utils/note-formatter
+[0m [90m 1 |[39m [36mimport[39m { [33mView[39m[33m,[39m [33mText[39m } [36mfrom[39m [32m'react-native'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m { formatNote } [36mfrom[39m [32m'../utils/note-formatter'[39m[33m;[39m
+ [90m   |[39m                             [31m[1m^[22m[39m
+ [90m 3 |[39m
+ [90m 4 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mIndex[39m() {
+ [90m 5 |[39m   [36mreturn[39m ([0m
+
+Import stack:
+
+ src/app/index.tsx
+ | import "../utils/note-formatter"
+
+ src/app (require.context)
+

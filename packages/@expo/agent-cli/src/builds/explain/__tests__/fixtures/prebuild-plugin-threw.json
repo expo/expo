@@ -1,0 +1,25 @@
+{
+  "phases": [
+    {
+      "name": "unknown",
+      "status": "succeeded",
+      "startLine": 1,
+      "endLine": 2
+    },
+    {
+      "name": "prebuild",
+      "status": "failed",
+      "startLine": 3,
+      "endLine": 12
+    }
+  ],
+  "failure": {
+    "phase": "prebuild",
+    "signature": "prebuild.plugin-threw",
+    "line": 3,
+    "matchedLine": "    at brokenPlugin (/private/tmp/wave6-explain-scratch/prebuild-throw/plugins/broken-plugin.js:2:9)",
+    "confidence": "high",
+    "suggestedCommand": "npx @expo/agent-cli inspect:config-plugins"
+  },
+  "otherSignatures": []
+}

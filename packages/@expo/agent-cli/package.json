@@ -1,0 +1,64 @@
+{
+  "name": "@expo/agent-cli",
+  "version": "0.0.2",
+  "description": "Agent-native CLI on top of the Expo CLI family",
+  "keywords": [
+    "agent",
+    "expo",
+    "mcp",
+    "skills"
+  ],
+  "homepage": "https://docs.expo.dev",
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/agent-cli"
+  },
+  "bin": {
+    "expo-agent-cli": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "build"
+  ],
+  "main": "build/cli/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "ncc build ./src/cli.ts -o build/cli/",
+    "build:prod": "ncc build ./src/cli.ts -o build/cli/ --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "typecheck": "tsc -p tsconfig.json && tsc -p e2e/tsconfig.json && tsc -p e2e-live/tsconfig.json",
+    "test": "jest",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "test:live": "jest --config e2e-live/jest.config.js --runInBand",
+    "test:live:local": "jest --config e2e-live/jest.config.js --runInBand live-local",
+    "test:live:project": "jest --config e2e-live/jest.config.js --runInBand live-project",
+    "test:live:android": "jest --config e2e-live/jest.config.js --runInBand live-android",
+    "test:live:devclient": "jest --config e2e-live/jest.config.js --runInBand live-devclient",
+    "test:live:eas": "jest --config e2e-live/jest.config.js --runInBand live-eas",
+    "test:live:cloud": "jest --config e2e-live/jest.config.js --runInBand live-cloud",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+  },
+  "devDependencies": {
+    "2g": "^0.4.3",
+    "@types/getenv": "^1.0.0",
+    "@types/node": "^22.14.0",
+    "@types/ws": "^8.5.4",
+    "@vercel/ncc": "^0.38.3",
+    "agent-cli-detector": "0.1.6",
+    "arg": "^5.0.2",
+    "chalk": "^4.0.0",
+    "devtools-protocol": "^0.0.1113120",
+    "expo-module-scripts": "workspace:*",
+    "getenv": "^2.0.0",
+    "memfs": "^3.2.0",
+    "typescript": "~6.0.3",
+    "ws": "^8.12.1"
+  }
+}

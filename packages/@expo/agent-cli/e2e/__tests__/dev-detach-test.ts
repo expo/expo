@@ -1,0 +1,601 @@
+/* eslint-env jest */
+// @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization
+// @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization
+//
+// `@expo/agent-cli dev --detach` through the published bin. Everything worth pinning here is what a unit
+// test cannot see: the parent process **returns** while a dev server it started is still running,
+// that server survives the parent's exit, its output lands in a file, and `dev:stop` takes the
+// whole tree down again.
+//
+// The dev server is the stub `expo` bin, which holds the lock exactly as the real one does — the
+// wrapper is what takes the lock, and the wrapper is real here.
+import fs from 'node:fs';
+import path from 'node:path';
+
+import {
+  executeAgentCliAsync,
+  installStubFingerprintAsync,
+  readDevLockAsync,
+  setupFixtureAsync,
+  stubExpoEnv,
+  waitForAsync,
+} from '../utils';
+
+/** Where a detached dev server writes, per `src/dev/logFile.ts`. Spelled out, as a wire contract. */
+const LOG_PATH = path.join('.expo', 'dev', 'logs', 'dev-detached.log');
+
+/** Long enough for a test to do its work against a running dev server, short enough to end. */
+const STUB_ALIVE_MS = '20000';
+
+/** Environment for a detached run whose stub dev server stays up and publishes a port. */
+function detachEnv(projectRoot: string, port: number): Record<string, string> {
+  return {
+    ...stubExpoEnv(projectRoot),
+    STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
+    STUB_EXPO_DEV_SERVER_PORT: String(port),
+  };
+}
+
+/** Whether a pid is still alive, without signalling it. */
+function isAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Stop whatever the test started, so a failed assertion never leaves a process behind. */
+async function cleanUpAsync(projectRoot: string): Promise<void> {
+  await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
+    env: stubExpoEnv(projectRoot),
+    reject: false,
+  });
+}
+
+describe('@expo/agent-cli dev --detach', () => {
+  // The whole finding, in one assertion: the command returns, and a dev server is running.
+  it('returns while the dev server it started keeps running', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        { env: detachEnv(projectRoot, 8399) }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(report).toMatchObject({
+        url: 'http://127.0.0.1:8399',
+        port: 8399,
+        alreadyRunning: false,
+        // `--wait-ready` was not asked for, so readiness is unknown rather than false.
+        ready: null,
+      });
+      expect(report.pid).toBeGreaterThan(0);
+      expect(report.logFile).toContain(LOG_PATH);
+
+      // The parent has exited — this test is running — and the child has not.
+      expect(isAlive(report.pid)).toBe(true);
+      expect(await readDevLockAsync(projectRoot)).toMatchObject({ port: 8399, pid: report.pid });
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('prints one JSON object with a stable set of keys', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        { env: detachEnv(projectRoot, 8398) }
+      );
+
+      expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
+        'alreadyRunning',
+        'followups',
+        'logFile',
+        'phase',
+        'pid',
+        'port',
+        'portMoved',
+        'projectRootMatched',
+        'ready',
+        'tunnelUrl',
+        'url',
+        'waitedMs',
+      ]);
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization
+  // F125. The dev-server lock is taken at the *start* of the dev-server step, and for `expo run:*`
+  // that step builds the app before it serves anything — so a plan whose compiler is still running
+  // publishes a port nothing listens on, and this command used to report it as a dev server that
+  // had started [observed — wave 29, `evidence/10-dev-detach-android.json`].
+  //
+  // `bare-app`, whose plan is the single step `expo run:ios` (`plan-test.ts`), and a stub that
+  // stays alive without ever logging a port — which is what a compiler looks like from here. The
+  // lock lands on its fallback port `PORT_WATCH_TIMEOUT_MS` in, and that wait is why this test is
+  // the slow one in this file: it is the wait the finding is about.
+  it('says the plan is building rather than that a dev server started', async () => {
+    const projectRoot = await setupFixtureAsync('bare-app');
+    await installStubFingerprintAsync(projectRoot);
+
+    try {
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--ios', '--json'],
+        {
+          env: {
+            ...stubExpoEnv(projectRoot),
+            // Longer than the port watch, so the step is still running when the lock is published:
+            // a build holds the lock for minutes after it appears.
+            STUB_EXPO_DELAY_MS: '45000',
+          },
+        }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(report.phase).toBe('building');
+      // The port is still reported — it is where the dev server will be — and it is not claimed to
+      // be one: `ready` was never asked for, and nothing here says a dev server started.
+      expect(report.ready).toBeNull();
+      expect(report.url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('says a plain dev-server plan is serving', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        { env: detachEnv(projectRoot, 8397) }
+      );
+
+      expect(JSON.parse(result.stdout).phase).toBe('serving');
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §A busy port
+  // can complete — friction run 5, F48-4. The retry happens in the child, whose stderr goes to a
+  // log file, so the move was announced on a stream nobody was watching: the parent printed the
+  // port it landed on and never said it was not the port that was asked for.
+  it('says on stdout when a busy port moved the dev server', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        {
+          env: {
+            ...stubExpoEnv(projectRoot),
+            STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
+            STUB_EXPO_PORT_BUSY: '8180',
+          },
+          reject: false,
+        }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      // The port that was busy, and the one the dev server is actually on — which is the port the
+      // lock names, so the report agrees with what every other command will find.
+      expect(report.portMoved).toEqual({ from: 8180, to: report.port });
+      expect(report.port).not.toBe(8180);
+      expect(await readDevLockAsync(projectRoot)).toMatchObject({ port: report.port });
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('prints the move in the human report too', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes'], {
+        env: {
+          ...stubExpoEnv(projectRoot),
+          STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
+          STUB_EXPO_PORT_BUSY: '8180',
+        },
+        reject: false,
+      });
+
+      expect(result.stdout).toContain('8180 was busy');
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('reports no move when the dev server took the port it was asked for', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        { env: detachEnv(projectRoot, 8393) }
+      );
+
+      expect(JSON.parse(result.stdout)).toMatchObject({ port: 8393, portMoved: null });
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  // The plan's rule: one detached dev server per project. A second one could not hold the lock, so
+  // nothing would be able to find it or stop it — which is worse than a second foreground one.
+  it('reports the running server and starts nothing on a second --detach', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const first = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        {
+          env: detachEnv(projectRoot, 8397),
+        }
+      );
+      const firstPid = JSON.parse(first.stdout).pid;
+
+      const second = await executeAgentCliAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        { env: detachEnv(projectRoot, 8396) }
+      );
+
+      // Idempotent: exit 0, and the report is of the server that is there.
+      expect(second.exitCode).toBe(0);
+      expect(JSON.parse(second.stdout)).toMatchObject({
+        alreadyRunning: true,
+        pid: firstPid,
+        port: 8397,
+      });
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  // The counterpart of the finding: `dev:stop` has to reach a process this shell never owned.
+  it('is stopped by dev:stop, which takes the whole tree with it', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const started = await executeAgentCliAsync(
+      projectRoot,
+      ['dev', '--detach', '--yes', '--json'],
+      {
+        env: detachEnv(projectRoot, 8395),
+      }
+    );
+    const { pid } = JSON.parse(started.stdout);
+
+    const result = await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
+      env: stubExpoEnv(projectRoot),
+    });
+
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      stopped: true,
+      pid,
+      port: 8395,
+      lockHeld: true,
+      signal: 'SIGTERM',
+    });
+    // The wrapper is gone, and so is the lock it held — the two halves of "no orphan".
+    expect(await waitForAsync(() => !isAlive(pid), 5000)).toBe(true);
+    expect(await readDevLockAsync(projectRoot)).toBeNull();
+  });
+
+  // @ref llp/0021-honest-reports.rfc.md §The rules
+  //
+  // Friction run 7's F61 and live staging's S4, which are one finding: the child had already
+  // classified the stop, written the scenario and the what/why/how into its log, and exited — while
+  // the parent, the only process the caller is reading, printed `Bundler ready` and exit 0. The
+  // verdict was never missing. It was in the wrong process.
+  it('hands on the child’s own verdict instead of reporting a dev server that has gone', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        // `--tunnel`, because that is the wait the child died inside of: the parent is still
+        // waiting for a tunnel host when the process that would print one exits.
+        ['dev', '--detach', '--yes', '--tunnel', '--json'],
+        {
+          env: {
+            ...stubExpoEnv(projectRoot),
+            STUB_EXPO_DEV_SERVER_PORT: '8397',
+            // Long enough for the lock to be published and read, short enough that the death
+            // lands inside the parent's tunnel wait rather than after it.
+            STUB_EXPO_DELAY_MS: '2500',
+            STUB_EXPO_EXIT_CODE: '1',
+            STUB_EXPO_STDERR: "Input is required, but 'npx expo' is in non-interactive mode.",
+          },
+          reject: false,
+        }
+      );
+
+      // 7, not 0 and not 1: the CLI worked, and what is left is a step only a person can finish.
+      expect(result.exitCode).toBe(7);
+      const { error } = JSON.parse(result.stdout);
+      expect(error.needsHuman).toMatchObject({
+        scenario: 'expo-prompt',
+        // Relayed rather than seen: this parent never ran the Expo CLI.
+        detectedBy: 'detached-child-log',
+      });
+      // The two words the finding is about, on neither stream.
+      expect(result.stdout).not.toContain('"ready": true');
+      expect(result.all).not.toContain('Bundler      ready');
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  // @ref llp/0021-honest-reports.rfc.md §The rules — **F140**, the hole the
+  // section above left open and this wave closes.
+  //
+  // The acceptance walk ran `dev --detach --wait-ready --ios` and was told `Bundler ready`, exit 0,
+  // for a dev server that was already on its way out — three times in a row, and then honestly on a
+  // fourth identical run, because it is a race. Both halves of it are true at once: the bundler
+  // *did* answer, and `expo start --ios` was *about* to be refused permission to drive
+  // Simulator.app. The rejection is an un-awaited promise inside the same process, so it lands after
+  // the dev server is up and after every check the parent makes [measured 215–263ms later].
+  //
+  // The stub reproduces exactly that ordering without a simulator, an AppleScript or a race: it
+  // binds the port, answers `/status` — which is the readiness probe itself — and dies a fixed time
+  // after that answer.
+  describe('a dev server that dies just after its bundler answered', () => {
+    /** Environment for a stub that comes up, answers `/status`, and then dies the way `--ios` does. */
+    function diesAfterReadyEnv(projectRoot: string, port: number): Record<string, string> {
+      return {
+        ...stubExpoEnv(projectRoot),
+        STUB_EXPO_DEV_SERVER_PORT: String(port),
+        STUB_EXPO_LISTEN: '1',
+        STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
+        // Comfortably inside the grace window, and after the readiness claim rather than racing it:
+        // the answer that starts this clock is the claim.
+        STUB_EXPO_DIE_AFTER_STATUS_MS: '400',
+      };
+    }
+
+    it('refuses to report ready for a child that is about to be gone', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['dev', '--detach', '--wait-ready', '--ios', '--yes', '--json'],
+          { env: diesAfterReadyEnv(projectRoot, 8393), reject: false }
+        );
+
+        // 7, not 0: the CLI worked, and the macOS Automation grant the stub's stderr names is a
+        // step only a person can complete. The child classified it and this parent relayed it.
+        expect(result.exitCode).toBe(7);
+        const { error } = JSON.parse(result.stdout);
+        expect(error.needsHuman).toMatchObject({
+          scenario: 'macos-automation',
+          detectedBy: 'detached-child-log',
+        });
+        // The two words the finding is about, on neither stream.
+        expect(result.stdout).not.toContain('"ready": true');
+        expect(result.all).not.toContain('Bundler      ready');
+      } finally {
+        await cleanUpAsync(projectRoot);
+      }
+    });
+
+    // The other half, and the one that keeps the grace honest: a `--ios` run whose dev server stays
+    // up still reports ready and still exits 0. A check that failed both would only have moved the
+    // dishonesty to the other side.
+    it('still reports ready for a child that stays up', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['dev', '--detach', '--wait-ready', '--ios', '--yes', '--json'],
+          {
+            env: {
+              ...diesAfterReadyEnv(projectRoot, 8392),
+              STUB_EXPO_DIE_AFTER_STATUS_MS: '0',
+            },
+          }
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout)).toMatchObject({
+          port: 8392,
+          ready: true,
+          phase: 'serving',
+        });
+      } finally {
+        await cleanUpAsync(projectRoot);
+      }
+    });
+  });
+
+  it('rejects --wait-ready on its own, which would wait for nothing', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--wait-ready', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).error.message).toContain('only means something with --detach');
+  });
+
+  it('says in --help that the plain command blocks and --detach does not', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeAgentCliAsync(projectRoot, ['dev:run', '--help']);
+
+    expect(result.all).toContain('This command blocks');
+    expect(result.all).toContain('--detach');
+  });
+});
+
+describe('@expo/agent-cli dev:logs', () => {
+  it('reads what the detached dev server printed', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+        env: detachEnv(projectRoot, 8394),
+      });
+      // The stub prints its start line as soon as it runs; the file is written by the child.
+      await waitForAsync(
+        () =>
+          (fs.readFileSync(path.join(projectRoot, LOG_PATH), 'utf8') || '').includes(
+            'stub_expo_start'
+          ),
+        5000
+      );
+
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json'], {
+        env: stubExpoEnv(projectRoot),
+      });
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(report.logFile).toContain(LOG_PATH);
+      expect(report.lines.join('\n')).toContain('stub_expo_start');
+      expect(report.devServer).toMatchObject({ port: 8394 });
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('fences the log as untrusted content in the human report', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+        env: detachEnv(projectRoot, 8393),
+      });
+      await waitForAsync(() => fs.existsSync(path.join(projectRoot, LOG_PATH)), 5000);
+
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs'], {
+        env: stubExpoEnv(projectRoot),
+      });
+
+      expect(result.stdout).toContain('BEGIN UNTRUSTED APP OUTPUT');
+      expect(result.stdout).toContain('END UNTRUSTED APP OUTPUT');
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('caps the read at --tail lines and says how many there are', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const logPath = path.join(projectRoot, LOG_PATH);
+    await fs.promises.mkdir(path.dirname(logPath), { recursive: true });
+    await fs.promises.writeFile(
+      logPath,
+      Array.from({ length: 40 }, (_, index) => `line ${index + 1}`).join('\n') + '\n'
+    );
+
+    const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--tail', '3', '--json']);
+
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      lines: ['line 38', 'line 39', 'line 40'],
+      totalLines: 40,
+      truncated: true,
+      // Nothing is running, so the log is what the last detached run left.
+      devServer: null,
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
+  //
+  // The lines are the real ones: `Waiting on <tunnel>` is what `expo start` prints for a tunnelled
+  // run [observed — live, 2026-08-25], and that URL is the only address a device off this machine
+  // can use — `devServer.url` is where it listens here.
+  describe('the address a device reaches', () => {
+    async function writeLogAsync(projectRoot: string, lines: string[]): Promise<void> {
+      const logPath = path.join(projectRoot, LOG_PATH);
+      await fs.promises.mkdir(path.dirname(logPath), { recursive: true });
+      await fs.promises.writeFile(logPath, lines.join('\n') + '\n');
+    }
+
+    it('names the tunnel a device would use', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      await writeLogAsync(projectRoot, [
+        'Using src/app as the root directory for Expo Router.',
+        'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev',
+      ]);
+
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json']);
+
+      expect(JSON.parse(result.stdout).advertised).toEqual({
+        url: 'http://znakdiwe5j2n5o0.boltexpo.dev',
+        hostType: 'tunnel',
+      });
+    });
+
+    // The reason the reading is over the whole file and not the tail that was asked for: the line
+    // is near the top, and a `--tail` that hid it would hide the one address that is useful.
+    it('finds the URL even when the requested tail does not include it', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      await writeLogAsync(projectRoot, [
+        'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev',
+        ...Array.from({ length: 30 }, (_, index) => `line ${index + 1}`),
+      ]);
+
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--tail', '3', '--json']);
+
+      const report = JSON.parse(result.stdout);
+      expect(report.lines).toEqual(['line 28', 'line 29', 'line 30']);
+      expect(report.advertised?.hostType).toBe('tunnel');
+    });
+
+    it('reports a local run as local, so nothing claims a tunnel that is not there', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      await writeLogAsync(projectRoot, ['Waiting on http://localhost:8081']);
+
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json']);
+
+      expect(JSON.parse(result.stdout).advertised).toEqual({
+        url: 'http://localhost:8081',
+        hostType: 'localhost',
+      });
+    });
+  });
+
+  it('exits 1 and says how to get one when the project has no log', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    const { error } = JSON.parse(result.stdout);
+    expect(error.code).toBe('NO_DEV_LOG');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli dev --detach --wait-ready');
+  });
+
+  it('appears in the top-level help, next to the command that writes it', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
+
+    expect(result.all).toContain('dev:logs');
+    expect(result.all).toContain('dev blocks this terminal');
+  });
+});

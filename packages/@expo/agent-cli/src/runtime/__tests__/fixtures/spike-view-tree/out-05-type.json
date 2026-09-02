@@ -1,0 +1,38 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-05-type.js",
+  "exprBytes": 2341,
+  "cdpResponseBytes": 457,
+  "roundTripMs": 3,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "carriers": [
+        {
+          "component": "TextInput",
+          "sameFunctionAsFirst": true,
+          "tag": 0,
+          "valueBefore": ""
+        },
+        {
+          "component": "InternalTextInput",
+          "sameFunctionAsFirst": true,
+          "tag": 0,
+          "valueBefore": ""
+        },
+        {
+          "component": "RCTSinglelineTextInputView",
+          "sameFunctionAsFirst": true,
+          "tag": 5,
+          "valueBefore": ""
+        }
+      ],
+      "groupSize": 3,
+      "ok": true,
+      "testID": "note-input",
+      "text": "spike-typed-note",
+      "threw": null
+    }
+  }
+}

@@ -1,0 +1,12 @@
+Error: Missing required property "apiKey" in the broken-plugin options.
+Error: Missing required property "apiKey" in the broken-plugin options.
+    at brokenPlugin (/private/tmp/wave6-explain-scratch/prebuild-throw/plugins/broken-plugin.js:2:9)
+    at withStaticPlugin (/private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/@expo/config-plugins/build/plugins/withStaticPlugin.js:144:12)
+    at /private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/@expo/config-plugins/build/plugins/withPlugins.js:28:84
+    at Array.reduce (<anonymous>)
+    at withPlugins (/private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/@expo/config-plugins/build/plugins/withPlugins.js:28:18)
+    at withConfigPlugins (/private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/@expo/config/build/plugins/withConfigPlugins.js:33:47)
+    at fillAndReturnConfig (/private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/@expo/config/build/Config.js:247:78)
+    at getConfig (/private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/@expo/config/build/Config.js:304:10)
+    at prebuildAsync (/private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/expo/node_modules/@expo/cli/build/src/prebuild/prebuildAsync.js:96:51)
+    at /private/tmp/wave6-explain-scratch/prebuild-throw/node_modules/expo/node_modules/@expo/cli/build/src/prebuild/index.js:110:16
