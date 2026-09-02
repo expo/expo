@@ -367,8 +367,7 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
 /// A view's `body` is re-evaluated on every render, so logging from there unconditionally would repeat
 /// the same line for as long as the view is on screen.
 internal enum AppEntityIdentifierDiagnostics {
-  private static let lock = NSLock()
-  private static var reportedKeys: Set<String> = []
+  private static let reportedKeys = Mutex<Set<String>>([])
 
   /// Logs `message` the first time `key` is reported, and returns whether it logged.
   ///
@@ -379,9 +378,9 @@ internal enum AppEntityIdentifierDiagnostics {
   /// that has no `AppContext` at hand.
   @discardableResult
   internal static func reportOnce(key: String, to logger: Logger = log, _ message: String) -> Bool {
-    lock.lock()
-    let isFirstReport = reportedKeys.insert(key).inserted
-    lock.unlock()
+    let isFirstReport = reportedKeys.withLock {
+      $0.insert(key).inserted
+    }
 
     guard isFirstReport else {
       return false
@@ -473,7 +472,7 @@ struct AppEntityIdentifierModifier: ViewModifier, Record {
 
   init() {}
 
-  init(from params: Dict, appContext: AppContext, jsLogger: Logger) throws {
+  nonisolated init(from params: Dict, appContext: AppContext, jsLogger: Logger) throws {
     try self = .init(from: params, appContext: appContext)
     self.jsLogger = jsLogger
   }
