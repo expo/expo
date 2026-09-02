@@ -124,6 +124,12 @@ async function setupProjectPackageJsonAsync(
   // resolve to local source.
   const relativePrefix = path.relative(projectRoot, expoRepoPath);
   const workspaceGlobs = [`${relativePrefix}/packages/*`, `${relativePrefix}/packages/@expo/*`];
+  const { stdout: allowBuildsJson } = await runAsync(
+    'pnpm',
+    ['config', 'get', 'allowBuilds', '--json'],
+    { cwd: expoRepoPath }
+  );
+  const allowBuilds = JSON.parse(allowBuildsJson) as Record<string, boolean>;
 
   await fs.promises.writeFile(
     path.join(projectRoot, 'pnpm-workspace.yaml'),
@@ -134,6 +140,11 @@ async function setupProjectPackageJsonAsync(
       'overrides:',
       ...Object.entries(overrides).map(
         ([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`
+      ),
+      '',
+      'allowBuilds:',
+      ...Object.entries(allowBuilds).map(
+        ([name, allowed]) => `  ${JSON.stringify(name)}: ${allowed}`
       ),
       '',
     ].join('\n')
