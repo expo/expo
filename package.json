@@ -11,14 +11,6 @@
       "onFail": "warn"
     }
   },
-  "workspaces": {
-    "packages": [
-      "apps/*",
-      "apps/brownfield-tester/*",
-      "packages/*",
-      "packages/@expo/*"
-    ]
-  },
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh --docs",
     "setup:native": "./scripts/download-dependencies.sh --native && ./scripts/setup-react-android.sh",
