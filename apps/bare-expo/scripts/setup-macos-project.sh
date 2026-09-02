@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export PNPM_CONFIG_FROZEN_LOCKFILE=false
+
 remove_dependencies() {
   local packages=("$@")
   local filter=""
@@ -122,4 +124,4 @@ fi
 
 echo " Running pnpm from root..."
 cd ../../
-pnpm install --ignore-scripts --frozen-lockfile=false
+pnpm install --ignore-scripts
