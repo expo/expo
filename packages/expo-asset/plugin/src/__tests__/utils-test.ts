@@ -55,6 +55,20 @@ describe(validateAssets, () => {
     );
   });
 
+  it.each(['android', 'ios'] as const)(
+    'drops fonts with an uppercase extension (%s)',
+    (platform) => {
+      const font = path.join('/project', 'assets', 'inter.TTF');
+
+      expect(validateAssets([font], platform)).toEqual([]);
+      expect(addWarningForPlatform).toHaveBeenCalledWith(
+        platform,
+        'expo-asset',
+        expect.stringContaining('expo-font')
+      );
+    }
+  );
+
   it('drops assets with an invalid Android resource name', () => {
     const asset = path.join('/project', 'assets', 'My-Model.onnx');
 

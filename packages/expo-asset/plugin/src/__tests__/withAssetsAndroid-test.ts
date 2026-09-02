@@ -74,6 +74,18 @@ describe(withAssetsAndroid, () => {
     await expect(fs.readFile(path.join(res, 'raw', 'clip.mp4'), 'utf8')).resolves.toBe('mp4');
   });
 
+  it('routes an uppercase extension like its lowercase form', async () => {
+    await fs.writeFile(path.join(projectRoot, 'assets', 'photo.JPG'), 'jpg');
+
+    const platformProjectRoot = await runAndroidMod(['./assets/photo.JPG'], projectRoot);
+
+    const main = path.join(platformProjectRoot, 'app', 'src', 'main');
+    await expect(fs.readFile(path.join(main, 'res', 'drawable', 'photo.JPG'), 'utf8')).resolves.toBe(
+      'jpg'
+    );
+    await expect(fs.readdir(path.join(main, 'assets'))).rejects.toThrow();
+  });
+
   it('copies the files of a directory without failing on nested directories', async () => {
     const assetsDir = path.join(projectRoot, 'assets');
     await fs.mkdir(path.join(assetsDir, 'nested'), { recursive: true });
