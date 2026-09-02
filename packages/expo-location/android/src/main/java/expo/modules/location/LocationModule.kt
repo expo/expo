@@ -258,7 +258,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         throw ForegroundServiceStartNotAllowedException()
       }
 
-      if (!hasForegroundServicePermissions()) {
+      if (shouldUseForegroundService && !hasForegroundServicePermissions()) {
         throw ForegroundServicePermissionsException()
       }
 
