@@ -189,6 +189,21 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   dispatchEvents(): Promise<void>;
   /**
+   * Starts a trace span measuring an operation that is underway. See `startSpan` in
+   * `expo-app-metrics` for the full contract.
+   */
+  startSpan: typeof import('expo-app-metrics').startSpan;
+  /**
+   * Runs a callback inside a span that ends automatically. See `withSpan` in
+   * `expo-app-metrics` for the full contract.
+   */
+  withSpan: typeof import('expo-app-metrics').withSpan;
+  /**
+   * Records a span for an already-measured operation. See `recordSpan` in `expo-app-metrics`
+   * for the full contract.
+   */
+  recordSpan: typeof import('expo-app-metrics').recordSpan;
+  /**
    * Configures how observability events are collected and dispatched at runtime, such as
    * the environment label, dispatching behavior, sampling, and integrations.
    *

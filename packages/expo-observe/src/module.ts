@@ -1,5 +1,10 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
+import AppMetrics, {
+  recordSpan,
+  setErrorHandlerEnabled,
+  startSpan,
+  withSpan,
+} from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
@@ -72,6 +77,19 @@ const Observe: ObserveModule = new Proxy(native, {
 
     if (prop === 'reportError') {
       return (error: unknown) => reportCaughtError(error);
+    }
+
+    // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
+    // `withSpan`'s auto-end), so forward them explicitly instead of letting the fallback below
+    // reach the native members with the same names.
+    if (prop === 'startSpan') {
+      return startSpan;
+    }
+    if (prop === 'withSpan') {
+      return withSpan;
+    }
+    if (prop === 'recordSpan') {
+      return recordSpan;
     }
 
     if (prop === 'registerIntegration') {

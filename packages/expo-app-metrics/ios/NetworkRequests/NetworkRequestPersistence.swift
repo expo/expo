@@ -13,22 +13,21 @@ import Foundation
 /// `persist` synchronously on `AppMetricsActor` for every completion it records.
 @AppMetricsActor
 final class NetworkRequestPersistence: Sendable {
-  private let database: MetricsDatabase?
+  private let writer: SpanWriter
   private let sessionId: @Sendable () -> String
 
   /// Capture-time recording policy. Checked before each insert so disabling (or filtering)
   /// takes effect for future requests immediately; rows persisted earlier are untouched.
   private var configuration: NetworkSpansConfiguration
 
-  /// `database` is optional so a failed database open degrades to dropped rows instead of
-  /// blocking monitor start. `sessionId` is a closure so constructing the persistence doesn't
-  /// force the session machinery into existence before the app delegate finished wiring it.
+  /// `sessionId` is a closure so constructing the persistence doesn't force the session
+  /// machinery into existence before the app delegate finished wiring it.
   init(
-    database: MetricsDatabase?,
+    writer: SpanWriter,
     configuration: NetworkSpansConfiguration = NetworkSpansConfiguration(),
     sessionId: @escaping @Sendable () -> String
   ) {
-    self.database = database
+    self.writer = writer
     self.configuration = configuration
     self.sessionId = sessionId
   }
@@ -39,20 +38,16 @@ final class NetworkRequestPersistence: Sendable {
     self.configuration = configuration
   }
 
-  /// Persists one completed request as a span. Failures are logged and swallowed — persistence
-  /// must never break the monitor's fan-out to its delegates.
+  /// Persists one completed request as a span: applies the recording policy, maps the snapshot
+  /// onto the generic row shape, and hands it to the shared writer.
   func persist(_ request: NetworkRequest) {
     guard configuration.allows(url: request.url, method: request.method) else {
       return
     }
-    guard let database, let row = SpanRow.from(request: request, sessionId: sessionId()) else {
+    guard let row = SpanRow.from(request: request, sessionId: sessionId()) else {
       return
     }
-    do {
-      try database.insert(span: row)
-    } catch {
-      logger.warn("[AppMetrics] Failed to persist a network request span: \(error.localizedDescription)")
-    }
+    writer.write(row)
   }
 }
 
