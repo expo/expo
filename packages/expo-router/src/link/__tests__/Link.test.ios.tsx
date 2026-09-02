@@ -1121,7 +1121,12 @@ describe('Preview', () => {
       // Initial render, onWillPreviewOpen, setTimeout from prefetch
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       const props = NativeLinkPreview.mock.calls[2][0];
-      expect(props.previewActivationPath?.path.at(-1)?.key).toMatch(/slotB:[-\w]+/);
+      expect(props.previewActivationPath?.path.map(({ name }) => name)).toEqual([
+        '__root',
+        'slotB',
+        'test',
+      ]);
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB:[-\w]+/);
       expect(props).not.toHaveProperty('nextScreenId');
       expect(props).not.toHaveProperty('tabPath');
       expect(warn).not.toHaveBeenCalled();
@@ -1169,7 +1174,12 @@ describe('Preview', () => {
       // Initial render, onWillPreviewOpen, setTimeout from prefetch
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
-      expect(props.previewActivationPath?.path.at(-1)?.key).toMatch(/slotB\/\[xyz\]:[-\w]+/);
+      expect(props.previewActivationPath?.path.map(({ name }) => name)).toEqual([
+        '__root',
+        'slotB/[xyz]',
+        'test',
+      ]);
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB\/\[xyz\]:[-\w]+/);
       expect(props).not.toHaveProperty('nextScreenId');
       expect(props).not.toHaveProperty('tabPath');
       expect(warn).not.toHaveBeenCalled();

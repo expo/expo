@@ -4,7 +4,7 @@ import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import type { ReactNavigationState } from '../../global-state/types';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { useRouter } from '../../hooks';
-import { NavigationContainerRefContext } from '../../react-navigation/native';
+import { NavigationContainerRefContext, type NavigationState } from '../../react-navigation/native';
 import type { Href } from '../../types';
 import { useLinkPreviewContext } from './LinkPreviewContext';
 import type { PreviewActivationRoute } from './native';
@@ -33,22 +33,20 @@ export function useNextScreenId(): [
       if (currentHref.current && state) {
         const nextActivationPath = getPreviewActivationPathByHref(
           currentHref.current,
-          state,
+          // Prefetched navigation states are fully keyed even when represented as partial states.
+          state as NavigationState,
           routeInfo,
           routerConfig?.linking
         );
-        const terminalRoute = nextActivationPath?.at(-1);
-        const terminalParentState = terminalRoute
-          ? findParentState(state, terminalRoute.key)
-          : undefined;
-        // `history` is only created by TabRouter-family states, whose routes are tabs rather than screens.
-        const routeKey =
-          terminalRoute &&
-          terminalParentState &&
-          !Array.isArray(terminalParentState.history) &&
-          terminalParentState.routes[terminalParentState.index ?? 0]?.key !== terminalRoute.key
-            ? terminalRoute.key
-            : undefined;
+        const routeKey = nextActivationPath?.findLast((route) => {
+          const parentState = findParentState(state, route.key);
+          // `history` is only created by TabRouter-family states, whose routes are tabs rather than screens.
+          return (
+            parentState !== undefined &&
+            !Array.isArray(parentState.history) &&
+            parentState.routes[parentState.index ?? 0]?.key !== route.key
+          );
+        })?.key;
         // Without this timeout react-native does not have enough time to mount the new screen
         // and thus it will not be found on the native side
         if (nextActivationPath) {
