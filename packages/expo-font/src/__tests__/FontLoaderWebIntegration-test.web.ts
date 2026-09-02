@@ -111,6 +111,29 @@ if (typeof window === 'undefined') {
     expect(ExpoFontLoader.isLoaded!('Wix Madefor Text')).toBe(true);
   });
 
+  it('warns in dev when two faces resolve to the same effective descriptors, and only then', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      // No style on either face and 'normal' = 400, so CSS resolves both to the same descriptors.
+      await FontLoader.loadFontFamilyAsync('Colliding Family', [
+        { path: 'a.ttf', weight: 400 },
+        { path: 'b.ttf', weight: 'normal' },
+      ]);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0]![0]).toContain('Colliding Family');
+
+      warn.mockClear();
+      await FontLoader.loadFontFamilyAsync('Distinct Family', [
+        { path: 'a.ttf', weight: 400 },
+        { path: 'b.ttf', weight: 400, style: 'italic' },
+        { path: 'c.ttf', weight: '100 900' },
+      ]);
+      expect(warn).not.toHaveBeenCalled();
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   it('returns each family once, unquoted, from getLoadedFonts for a multi-face family with a space in its name', async () => {
     await FontLoader.loadFontFamilyAsync('Wix Madefor Text', [
       { path: 'regular.ttf', weight: 400 },

@@ -3,6 +3,7 @@ import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
 import type { FontDisplay, FontFaceDefinition, FontResource, FontSource } from './Font.types';
+import { normalizeWeight, resolveFaceStyle, resolveFaceWeight } from './fontFaceValidation';
 import { fontSourceFromFace } from './fontSourceFromFace';
 
 function uriFromFontSource(asset: FontSource): string | number | null {
@@ -79,10 +80,37 @@ function throwInvalidSourceError(source: any): never {
   );
 }
 
+// The shared declared-value check skips faces with an undeclared weight or style. On web an
+// undeclared descriptor is not read from the font file — CSS defaults it to 'normal'/400 — so
+// two faces can resolve to the same effective descriptors and the last one registered silently
+// shadows the rest. Warn about that; ranges only collide when they are identical.
+function warnOnCollidingFaces(fontFamily: string, fontDefinitions: FontFaceDefinition[]): void {
+  const seenFaces = new Set<string>();
+  for (const face of fontDefinitions) {
+    const weight = resolveFaceWeight(face);
+    const weightKey =
+      normalizeWeight(weight) ?? (typeof weight === 'string' ? weight.trim().toLowerCase() : 400);
+    const styleKey = (resolveFaceStyle(face) ?? 'normal').trim().toLowerCase();
+    const key = `${weightKey}/${styleKey}`;
+    if (seenFaces.has(key)) {
+      console.warn(
+        `Font family "${fontFamily}" declares two faces that both resolve to font-weight ` +
+          `${weightKey} and font-style "${styleKey}" on web. The browser renders the last one ` +
+          `registered and silently ignores the rest. Give each face a distinct weight or style.`
+      );
+      return;
+    }
+    seenFaces.add(key);
+  }
+}
+
 export async function loadFontFamilyAsync(
   fontFamily: string,
   fontDefinitions: FontFaceDefinition[]
 ): Promise<void> {
+  if (__DEV__) {
+    warnOnCollidingFaces(fontFamily, fontDefinitions);
+  }
   await Promise.all(
     fontDefinitions.map((face) => {
       const asset = getAssetForSource(fontSourceFromFace(face));
