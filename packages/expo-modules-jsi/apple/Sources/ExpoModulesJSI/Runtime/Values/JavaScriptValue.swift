@@ -31,21 +31,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// Creates a string JS value.
   public init(_ runtime: JavaScriptRuntime, _ string: String) {
     self.runtime = runtime
-    // Hand JSI the Swift string's own UTF-8 storage instead of going through `std::string`: the engine
-    // copies the bytes into its heap right away, so the intermediate `std::string` was one extra
-    // allocation, copy and free per string. `withUTF8` is mutating (it makes a bridged string
-    // contiguous first), hence the local copy; native strings are already contiguous and pay nothing.
-    // The value is moved out through a local because `withUTF8` needs a `Copyable` closure result.
-    var string = string
-    var value = facebook.jsi.Value.undefined()
-    string.withUTF8 { utf8 in
-      guard let base = utf8.baseAddress else {
-        value = facebook.jsi.Value(runtime.pointee, facebook.jsi.String.createFromAscii(runtime.pointee, "", 0))
-        return
-      }
-      value = facebook.jsi.Value(runtime.pointee, facebook.jsi.String.createFromUtf8(runtime.pointee, base, utf8.count))
-    }
-    self.pointee = value
+    self.pointee = string.toJSIValue(in: runtime.pointee)
   }
 
   /// Creates a BigInt JS value from an Int64.
