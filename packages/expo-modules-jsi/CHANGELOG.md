@@ -30,6 +30,7 @@
 - [iOS] `JavaScriptValue.undefined` and `JavaScriptValue.null` now return shared immortal instances instead of allocating a new value on each access, removing one allocation from every void-returning host call. ([#49545](https://github.com/expo/expo/pull/49545) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added an opt-in benchmark target that measures value access, host function calls, and JS function calls; run it with `pnpm benchmark`. ([#49579](https://github.com/expo/expo/pull/49579) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Reduced the native overhead of synchronous host function calls and host object property accessors by removing the per-call weak and unowned runtime reference traffic on the call path. ([#49631](https://github.com/expo/expo/pull/49631) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Made passing strings between JavaScript and Swift faster, up to ~3.8× for long strings. ([#49678](https://github.com/expo/expo/pull/49678) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.4 — 2026-07-22
 
