@@ -87,7 +87,7 @@
 
 ### 💡 Others
 
-- Remove the root `options` event, `DocumentTitleOptions`, and the `documentTitle` prop from `expo-router/react-navigation`.
+- Remove the root `options` event, `DocumentTitleOptions`, and the `documentTitle` prop from `expo-router/react-navigation`. ([#49590](https://github.com/expo/expo/pull/49590) by [@Ubax](https://github.com/Ubax))
 - Remove `onStateChange` from `BaseNavigationContainer` and `NavigationContainerProps` in `expo-router/react-navigation` ([#49588](https://github.com/expo/expo/pull/49588) by [@Ubax](https://github.com/Ubax))
 - Pass toolbar menu icons straight to react-navigation instead of converting them to react-native-screens icons. (by [@Ubax](https://github.com/Ubax)) ([#49584](https://github.com/expo/expo/pull/49584) by [@Ubax](https://github.com/Ubax))
 - Remove module-level mutable navigation state from Expo Router. ([#49403](https://github.com/expo/expo/pull/49403) by [@Ubax](https://github.com/Ubax))
