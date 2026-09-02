@@ -44,15 +44,17 @@ export function killProcessTree(child: ChildProcess, signal?: NodeJS.Signals): v
     }
   }
   if (process.platform === 'win32' && child.pid != null) {
-    // `child.kill()` signals cmd.exe when the spawn went through a shell, and the tool it started
-    // keeps the pipes open. `/T` takes the tree. A fake pid in a unit test fails this and falls
-    // through to `child.kill`.
-    const killed = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], {
-      stdio: 'ignore',
-      windowsHide: true,
-    });
-    if (killed.status === 0) {
-      return;
+    // `child.kill()` signals cmd.exe when the spawn went through a shell; `/T` takes the tree.
+    try {
+      const killed = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], {
+        stdio: 'ignore',
+        windowsHide: true,
+      });
+      if (killed?.status === 0) {
+        return;
+      }
+    } catch {
+      // taskkill missing, or spawnSync could not run. Direct kill is the fallback.
     }
   }
   try {

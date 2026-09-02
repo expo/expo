@@ -140,7 +140,13 @@ describe('@expo/agent-cli dev:stop', () => {
         forced: false,
         reason: null,
       });
-      expect(recorder.signalled()).toBe('SIGTERM');
+      if (process.platform === 'win32') {
+        // taskkill /F is TerminateProcess. POSIX signal handlers never run.
+        expect(recorder.signalled()).toBeNull();
+        expect(() => process.kill(recorder.pid, 0)).toThrow();
+      } else {
+        expect(recorder.signalled()).toBe('SIGTERM');
+      }
     } finally {
       releaseLock();
       recorder.stop();

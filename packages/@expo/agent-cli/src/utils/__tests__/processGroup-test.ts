@@ -13,6 +13,8 @@ import { EventEmitter } from 'events';
 import { killProcessTree, USE_PROCESS_GROUP } from '../processGroup';
 import { spawnSubprocessAsync } from '../subprocess';
 
+const childProcess = require('child_process') as { spawnSync?: jest.Mock };
+
 function fakeChild({ pid }: { pid?: number } = {}) {
   return Object.assign(new EventEmitter(), {
     pid,
@@ -22,14 +24,30 @@ function fakeChild({ pid }: { pid?: number } = {}) {
   });
 }
 
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value, configurable: true });
+}
+
+/** Jest's automock of `child_process` does not always include `spawnSync`. */
+function mockSpawnSync(status: number | null): jest.Mock {
+  const fn = jest.fn().mockReturnValue({ status });
+  childProcess.spawnSync = fn;
+  return fn;
+}
+
 afterEach(() => {
   jest.restoreAllMocks();
+  delete childProcess.spawnSync;
+  mockPlatform(realPlatform);
 });
 
 describe(killProcessTree, () => {
   it(`signals the whole group, so the runner's child dies with it`, () => {
     const kill = jest.spyOn(process, 'kill').mockImplementation(() => true);
     const child = fakeChild({ pid: 4321 });
+    const taskkill = mockSpawnSync(0);
 
     killProcessTree(child as any, 'SIGKILL');
 
@@ -38,20 +56,31 @@ describe(killProcessTree, () => {
       expect(kill).toHaveBeenCalledWith(-4321, 'SIGKILL');
       expect(child.kill).not.toHaveBeenCalled();
     } else {
-      expect(child.kill).toHaveBeenCalledWith('SIGKILL');
+      expect(taskkill).toHaveBeenCalledWith(
+        'taskkill',
+        ['/PID', '4321', '/T', '/F'],
+        expect.objectContaining({ stdio: 'ignore', windowsHide: true })
+      );
+      expect(child.kill).not.toHaveBeenCalled();
     }
   });
 
   it(`defaults to SIGTERM, which is what a deadline and the prompt guard send`, () => {
     const kill = jest.spyOn(process, 'kill').mockImplementation(() => true);
     const child = fakeChild({ pid: 77 });
+    const taskkill = mockSpawnSync(0);
 
     killProcessTree(child as any);
 
     if (USE_PROCESS_GROUP) {
       expect(kill).toHaveBeenCalledWith(-77, 'SIGTERM');
     } else {
-      expect(child.kill).toHaveBeenCalledWith('SIGTERM');
+      expect(taskkill).toHaveBeenCalledWith(
+        'taskkill',
+        ['/PID', '77', '/T', '/F'],
+        expect.objectContaining({ stdio: 'ignore', windowsHide: true })
+      );
+      expect(child.kill).not.toHaveBeenCalled();
     }
   });
 
@@ -61,12 +90,47 @@ describe(killProcessTree, () => {
     killProcessTree(child as any);
     expect(child.kill).toHaveBeenCalled();
 
-    jest.spyOn(process, 'kill').mockImplementation(() => {
-      throw Object.assign(new Error('no such process'), { code: 'ESRCH' });
-    });
+    if (USE_PROCESS_GROUP) {
+      jest.spyOn(process, 'kill').mockImplementation(() => {
+        throw Object.assign(new Error('no such process'), { code: 'ESRCH' });
+      });
+    } else {
+      mockSpawnSync(1);
+    }
     const gone = fakeChild({ pid: 999 });
     killProcessTree(gone as any);
     expect(gone.kill).toHaveBeenCalled();
+  });
+
+  it(`uses taskkill /T so a Windows shell's grandchild dies with it`, () => {
+    // Force the Windows branch on any host: a group signal that fails, then taskkill.
+    jest.spyOn(process, 'kill').mockImplementation(() => {
+      throw Object.assign(new Error('no group'), { code: 'ESRCH' });
+    });
+    mockPlatform('win32');
+    const taskkill = mockSpawnSync(0);
+    const child = fakeChild({ pid: 4321 });
+
+    killProcessTree(child as any, 'SIGKILL');
+
+    expect(taskkill).toHaveBeenCalledWith(
+      'taskkill',
+      ['/PID', '4321', '/T', '/F'],
+      expect.objectContaining({ stdio: 'ignore', windowsHide: true })
+    );
+    expect(child.kill).not.toHaveBeenCalled();
+  });
+
+  it(`falls back to the direct kill when taskkill cannot run`, () => {
+    jest.spyOn(process, 'kill').mockImplementation(() => {
+      throw Object.assign(new Error('no group'), { code: 'ESRCH' });
+    });
+    mockPlatform('win32');
+    const child = fakeChild({ pid: 4321 });
+    childProcess.spawnSync = undefined;
+
+    expect(() => killProcessTree(child as any, 'SIGKILL')).not.toThrow();
+    expect(child.kill).toHaveBeenCalledWith('SIGKILL');
   });
 
   it(`never throws for a child that cannot be signalled at all`, () => {

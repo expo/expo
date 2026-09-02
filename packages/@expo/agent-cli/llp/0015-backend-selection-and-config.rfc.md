@@ -92,7 +92,7 @@ Load-bearing rules of the rung:
 
 `EAS_CLI_MISSING` now means no `npx` and no `bunx` on `PATH`. `npm install -g eas-cli` is gone from its advice.
 
-Subprocesses are spawned in a process group of their own and signalled as a group (`src/utils/processGroup.ts`). Killing the runner otherwise leaves the CLI it started alive, inheriting the pipes, so `'close'` never fires. Stdin is never attached. Windows has no equivalent (`taskkill /T`). That is a known gap.
+Subprocesses are spawned in a process group of their own and signalled as a group (`src/utils/processGroup.ts`). Killing the runner otherwise leaves the CLI it started alive, inheriting the pipes, so `'close'` never fires. Stdin is never attached. Windows has no process-group equivalent; `killProcessTree` uses `taskkill /T /F` there.
 
 Who pays the first-run cost, when the project does not declare `eas-cli`:
 
