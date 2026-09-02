@@ -106,12 +106,16 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       // Metadata fetched with the video
       let assetMetadata = try? await loadMetadata(for: currentItem)
 
-      let title = assetMetadata?.first(where: {
+      let assetTitle = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyTitle
       })
 
-      let artist = assetMetadata?.first(where: {
+      let assetArtist = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyArtist
+      })
+
+      let assetAlbum = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyAlbumName
       })
 
       let artwork = assetMetadata?.first(where: {
@@ -120,8 +124,18 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
       var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
 
-      nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title
-      nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
+      nowPlayingInfo[MPMediaItemPropertyTitle] = await resolveNowPlayingMetadataValue(
+        userValue: userMetadata?.title,
+        assetValue: assetTitle
+      )
+      nowPlayingInfo[MPMediaItemPropertyArtist] = await resolveNowPlayingMetadataValue(
+        userValue: userMetadata?.artist,
+        assetValue: assetArtist
+      )
+      nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = await resolveNowPlayingMetadataValue(
+        userValue: userMetadata?.album,
+        assetValue: assetAlbum
+      )
       nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
