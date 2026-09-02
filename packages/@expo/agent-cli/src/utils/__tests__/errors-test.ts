@@ -55,24 +55,24 @@ function needsHuman(overrides: Partial<NeedsHuman> = {}): NeedsHuman {
 }
 
 describe(logCmdError, () => {
-  let exitSpy: jest.SpyInstance;
+  let originalExitCode: typeof process.exitCode;
 
   beforeEach(() => {
     emitted.length = 0;
     jest.clearAllMocks();
-    exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {}) as never);
+    originalExitCode = process.exitCode;
+    process.exitCode = undefined;
   });
 
   afterEach(() => {
-    exitSpy.mockRestore();
+    process.exitCode = originalExitCode;
   });
 
   /** Run the error path and wait for the flush the exit is chained onto. */
   async function exitCodeOfAsync(error: Error): Promise<unknown> {
     logCmdError(error);
     await new Promise((resolve) => setImmediate(resolve));
-    await new Promise((resolve) => setImmediate(resolve));
-    return exitSpy.mock.calls[0]?.[0];
+    return process.exitCode;
   }
 
   it('exits 1 for an error that names no code', async () => {

@@ -95,17 +95,21 @@ describe('exit codes', () => {
 });
 
 describe(exitWithCodeAsync, () => {
+  let originalExitCode: typeof process.exitCode;
   let exitSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    originalExitCode = process.exitCode;
+    process.exitCode = undefined;
     exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {}) as never);
   });
 
   afterEach(() => {
+    process.exitCode = originalExitCode;
     exitSpy.mockRestore();
   });
 
-  it('flushes the event stream before it exits', async () => {
+  it('flushes the event stream before leaving the event loop with the requested code', async () => {
     let flushed = false;
     jest.mocked(flushEventLogger).mockImplementation(async () => {
       flushed = true;
@@ -115,7 +119,8 @@ describe(exitWithCodeAsync, () => {
     await waitForExitAsync();
 
     expect(flushed).toBe(true);
-    expect(exitSpy).toHaveBeenCalledWith(20);
+    expect(process.exitCode).toBe(20);
+    expect(exitSpy).not.toHaveBeenCalled();
   });
 
   // A flush that fails must not turn an outcome into a hung process: the code still leaves.
@@ -125,7 +130,8 @@ describe(exitWithCodeAsync, () => {
     exitWithCodeAsync(EXIT_NEEDS_HUMAN);
     await waitForExitAsync();
 
-    expect(exitSpy).toHaveBeenCalledWith(7);
+    expect(process.exitCode).toBe(7);
+    expect(exitSpy).not.toHaveBeenCalled();
   });
 
   it('never settles, so a caller has nothing left to run', async () => {
@@ -139,8 +145,7 @@ describe(exitWithCodeAsync, () => {
   });
 });
 
-/** Flush is async, then exit is a `setImmediate`, so one tick is not enough. */
+/** Let the async flush and its cleanup finish. */
 async function waitForExitAsync(): Promise<void> {
-  await new Promise((resolve) => setImmediate(resolve));
   await new Promise((resolve) => setImmediate(resolve));
 }

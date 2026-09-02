@@ -83,9 +83,11 @@ export const EXIT_OUTCOME_TIMEOUT = 22;
  * Leave the process with one of the codes above, without losing the events of the run.
  *
  * `process.exit` drops whatever the event logger has buffered, so an agent reading `LOG_EVENTS`
- * would lose the very events that explain the code it just read. The returned promise never
- * settles: it keeps the process alive until the exit fires, and gives the caller nothing further
- * to run, the same way `logCmdError` ends a failing command.
+ * would lose the very events that explain the code it just read. It also aborts Node on Windows
+ * when an Undici socket is still closing. Set `process.exitCode`, flush, and let the event loop
+ * finish naturally instead. The returned promise never settles, so the caller has nothing further
+ * to run, the same way `logCmdError` ends a failing command; a pending promise alone does not keep
+ * the event loop alive.
  *
  * A command reporting a *tool* error throws a `CommandError` instead — with an `exitCode` when it
  * is not {@link EXIT_ERROR} — so the error is printed and put on the event stream first.
@@ -95,10 +97,10 @@ export function exitWithCodeAsync(code: number): Promise<never> {
   flushEventLogger()
     .catch(() => {})
     .finally(() => {
-      // Drop fetch keep-alive first. process.exit in the same turn as a live socket is
-      // STATUS_STACK_BUFFER_OVERRUN (3221226505) on Windows.
+      // A fetch keep-alive socket would keep the process around after the report is complete.
+      // Close sockets, then let Node leave naturally with process.exitCode. Calling process.exit
+      // while Undici is closing one of these aborts with STATUS_STACK_BUFFER_OVERRUN on Windows.
       destroyActiveSockets();
-      setImmediate(() => process.exit(code));
     });
   return new Promise<never>(() => {});
 }
@@ -116,7 +118,6 @@ function destroyActiveSockets(): void {
       _getActiveHandles?: () => {
         constructor?: { name?: string };
         destroy?: () => void;
-        close?: () => void;
         fd?: number;
       }[];
     }
@@ -125,22 +126,18 @@ function destroyActiveSockets(): void {
     return;
   }
   for (const handle of handles) {
-    const fd = handle.fd;
-    if (fd === 0 || fd === 1 || fd === 2) {
+    const name = handle.constructor?.name ?? '';
+    if (name !== 'Socket' && name !== 'TLSSocket') {
       continue;
     }
-    const name = handle.constructor?.name ?? '';
-    if (name === 'TTYWrap' || name === 'WriteStream' || name === 'ReadStream') {
+    const fd = handle.fd;
+    if (fd === 0 || fd === 1 || fd === 2) {
       continue;
     }
     try {
       handle.destroy?.();
     } catch {
-      try {
-        handle.close?.();
-      } catch {
-        // Already closed.
-      }
+      // Already closed.
     }
   }
 }
