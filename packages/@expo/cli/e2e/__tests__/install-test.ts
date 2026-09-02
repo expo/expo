@@ -60,7 +60,6 @@ it('installs a local package tarball without network access', async () => {
   const offlineEnv = {
     EXPO_OFFLINE: '1',
     EXPO_NO_NEW_ARCH_COMPAT_CHECK: '1',
-    pnpm_config_offline: 'true',
     HTTP_PROXY: 'http://127.0.0.1:9',
     HTTPS_PROXY: 'http://127.0.0.1:9',
     NO_PROXY: '',
@@ -68,8 +67,6 @@ it('installs a local package tarball without network access', async () => {
   const originalEnv = Object.fromEntries(
     Object.keys(offlineEnv).map((key) => [key, process.env[key]])
   );
-  Object.assign(process.env, offlineEnv);
-
   try {
     const projectRoot = await setupTestProjectWithOptionsAsync(
       'local-package-install',
@@ -82,11 +79,16 @@ it('installs a local package tarball without network access', async () => {
       projectRoot,
       'packages/@expo/cli/e2e/fixtures/install-smoke-package'
     );
+    Object.assign(process.env, offlineEnv);
 
     await expect(
-      executeExpoAsync(projectRoot, ['install', tarball.packageReference, '--', '--offline'], {
-        env: offlineEnv,
-      })
+      executeExpoAsync(
+        projectRoot,
+        ['install', `${tarball.name}@${tarball.packageReference}`, '--', '--config.offline=true'],
+        {
+          env: offlineEnv,
+        }
+      )
     ).resolves.toMatchObject({ exitCode: 0 });
 
     const pkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
