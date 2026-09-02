@@ -34,6 +34,11 @@ patchedDependencies:
   react-native-worklets: patches/react-native-worklets.patch
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 
+packageExtensions:
+  'debug@*':
+    dependencies:
+      supports-color: ^8.1.1
+
 allowBuilds:
   '@parcel/watcher': false
   '@shopify/react-native-skia': true
