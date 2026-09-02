@@ -41,7 +41,6 @@ import expo.modules.devlauncher.launcher.loaders.createAppLoader
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
-import expo.modules.devmenu.DevMenuSessionOverrides
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
@@ -142,8 +141,14 @@ class DevLauncherController private constructor(
         DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
       }
 
-      DevMenuSessionOverrides.isFabDisabled = hasEnabledFlag(url, "disableFab")
-      DevMenuSessionOverrides.isAutoLaunchDisabled = hasEnabledFlag(url, "disableAutoLaunch")
+      if (hasEnabledFlag(url, "disableFab")) {
+        DependencyInjection.devMenuPreferences?.showFab = false
+      }
+
+      if (hasEnabledFlag(url, "disableAutoLaunch")) {
+        DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
+        DependencyInjection.devMenuPreferences?.showsAtLaunch = false
+      }
 
       if (launchAppLoader(result.appLoader)) {
         latestLoadedApp = result.resolvedUrl

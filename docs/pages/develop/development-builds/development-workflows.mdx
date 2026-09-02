@@ -63,7 +63,7 @@ When launching a development build with automation, such as in a CI/CD workflow 
 | `disableFab=1`        | Hides the Tools button (the floating button that opens the dev menu).                                   |
 | `disableAutoLaunch=1` | Prevents the dev menu from opening when the app starts.                                                 |
 
-`disableFab` and `disableAutoLaunch` have to be on the deep link itself, next to `url`, rather than inside the encoded `url` value. They apply only to the launch they are passed on and leave your saved dev menu settings unchanged, which is useful on a physical device where automation cannot change those settings from the host.
+`disableFab` and `disableAutoLaunch` have to be on the deep link itself, next to `url`, rather than inside the encoded `url` value. They update the saved dev menu settings, which is useful on a physical device where automation cannot change those settings from the host. You can re-enable either setting from the dev menu.
 
 #### App-specific deep links
 

@@ -10,11 +10,6 @@ fun hasUrlQueryParam(uri: Uri): Boolean {
   return uri.getQueryParameter("url") != null
 }
 
-/**
- * Checks if the `<name>=1` flag was passed on the provided url. The flag has to be on the url that
- * the app is opened with, not inside its `url` param - that one is remembered as the recently
- * opened app and is reused on the next cold start.
- */
 fun hasEnabledFlag(uri: Uri, name: String): Boolean {
   return uri.isHierarchical && uri.getQueryParameter(name) == "1"
 }

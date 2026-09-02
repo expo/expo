@@ -44,9 +44,6 @@ public class EXDevLauncherURLHelper: NSObject {
     return queryItems.contains { $0.name == "url" && $0.value != nil }
   }
 
-  /**
-   Checks if the `<name>=1` flag was passed on the provided url.
-   */
   static func hasEnabledFlag(_ name: String, in url: URL) -> Bool {
     guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
     let queryItems = components.queryItems else {
@@ -63,18 +60,16 @@ public class EXDevLauncherURLHelper: NSObject {
     }
   }
 
-  /**
-   Applies the dev menu overrides passed on the url that the app is opened with. `disableFab=1`
-   hides the floating action button and `disableAutoLaunch=1` prevents the dev menu from opening
-   at launch. They apply to this load only and aren't persisted, so a url can't change the
-   preferences saved by the user.
-   The flags have to be on the url itself and not inside its `url` param, because that one is
-   remembered as the recently opened app and is reused on the next cold start.
-   */
   @objc
-  public static func applyDevMenuOverridesIfNeeded(_ url: URL) {
-    DevMenuManager.shared.setFloatingActionButtonDisabledForSession(hasEnabledFlag("disableFab", in: url))
-    DevMenuManager.shared.setAutoLaunchDisabledForSession(hasEnabledFlag("disableAutoLaunch", in: url))
+  public static func applyDevMenuPreferencesIfNeeded(_ url: URL) {
+    if hasEnabledFlag("disableFab", in: url) {
+      DevMenuManager.shared.setShowFloatingActionButton(false)
+    }
+
+    if hasEnabledFlag("disableAutoLaunch", in: url) {
+      DevMenuPreferences.isOnboardingFinished = true
+      DevMenuManager.shared.setShowsAtLaunch(false)
+    }
   }
 
   @objc

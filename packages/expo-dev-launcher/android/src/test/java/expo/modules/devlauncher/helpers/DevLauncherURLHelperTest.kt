@@ -56,7 +56,6 @@ internal class DevLauncherURLHelperTest {
     Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableFab=0"), "disableFab")).isFalse()
     Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableFab"), "disableFab")).isFalse()
 
-    // the flag is not read from the app url, only from the url the app is opened with
     val urlWithFlagInAppUrl = "exp://expo-development-client/?url=" +
       Uri.encode("http://localhost:8081?disableFab=1")
     Truth.assertThat(hasEnabledFlag(Uri.parse(urlWithFlagInAppUrl), "disableFab")).isFalse()

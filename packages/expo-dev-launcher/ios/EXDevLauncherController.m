@@ -423,9 +423,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   // Disable onboarding popup if "&disableOnboarding=1" is a param
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
 
-  // Hide the dev menu floating action button and/or stop it from opening at launch if
-  // "&disableFab=1" / "&disableAutoLaunch=1" are params
-  [EXDevLauncherURLHelper applyDevMenuOverridesIfNeeded:url];
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {

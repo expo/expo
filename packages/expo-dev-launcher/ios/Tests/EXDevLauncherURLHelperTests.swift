@@ -54,7 +54,6 @@ class EXDevLauncherURLHelperTests: XCTestCase {
     XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: URL(string: "http://localhost:8081?disableFab=0")!))
     XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: URL(string: "http://localhost:8081?disableFab")!))
 
-    // the flag is not read from the app url, only from the url the app is opened with
     let urlWithFlagInAppUrl = URL(string: "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%3FdisableFab%3D1")!
     XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: urlWithFlagInAppUrl))
   }

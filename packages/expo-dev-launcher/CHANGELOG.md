@@ -8,7 +8,7 @@
 
 - Resolve asset URLs and `bundleUrl` from base request URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
 - [iOS] Filter discovered development servers by bundle identifier, Expo account, or slug. ([#48697](https://github.com/expo/expo/pull/48697) by [@alanjhughes](https://github.com/alanjhughes))
-- Add `disableFab=1` and `disableAutoLaunch=1` URL params that hide the dev menu floating action button and prevent the dev menu from opening at launch, for the app load they are passed on only. ([#49651](https://github.com/expo/expo/pull/49651) by [@janicduplessis](https://github.com/janicduplessis))
+- Add `disableFab=1` and `disableAutoLaunch=1` URL params that update the dev menu preferences to hide the floating action button and prevent the dev menu from opening at launch. ([#49651](https://github.com/expo/expo/pull/49651) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 🐛 Bug fixes
 

@@ -72,8 +72,6 @@ open class DevMenuManager: NSObject {
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
-  var isFloatingActionButtonDisabledForSession = false
-  var isAutoLaunchDisabledForSession = false
   @objc public var isReactAppRunning = false
 
   /**
@@ -179,24 +177,6 @@ open class DevMenuManager: NSObject {
     DevMenuPreferences.showFloatingActionButton = enabled
   }
 
-  /**
-   Hides the floating action button without overwriting the preference saved by the user.
-   The button visibility is refreshed once the app context of the loaded app is set.
-   */
-  @objc
-  public func setFloatingActionButtonDisabledForSession(_ disabled: Bool) {
-    isFloatingActionButtonDisabledForSession = disabled
-  }
-
-  /**
-   Prevents the dev menu from opening at launch without overwriting the preference saved by the user.
-   */
-  @objc
-  public func setAutoLaunchDisabledForSession(_ disabled: Bool) {
-    isAutoLaunchDisabledForSession = disabled
-    updateAutoLaunchObserver()
-  }
-
   @objc
   public func setAppContext(_ appContext: AppContext?) {
     currentAppContext = appContext
@@ -252,7 +232,7 @@ open class DevMenuManager: NSObject {
     // swiftlint:enable notification_center_detachment
 
     // swiftlint:disable legacy_objc_type
-    if canLaunchDevMenuOnStart && !isAutoLaunchDisabledForSession && isReactAppRunning && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
+    if canLaunchDevMenuOnStart && isReactAppRunning && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
       NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
     }
     // swiftlint:enable legacy_objc_type
@@ -600,7 +580,6 @@ open class DevMenuManager: NSObject {
       }
 
       let shouldShow = DevMenuPreferences.showFloatingActionButton
-        && !self.isFloatingActionButtonDisabledForSession
         && !self.isVisible
         && self.isReactAppRunning
         && !self.isNavigatingHome
