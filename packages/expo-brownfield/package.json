@@ -54,13 +54,13 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@expo/env": "workspace:~2.3.0",
+    "@expo/env": "workspace:~",
     "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "diff": "^5.2.0",
-    "expo-build-properties": "workspace:~56.0.15",
-    "expo-manifests": "workspace:~56.0.4",
+    "expo-build-properties": "workspace:~",
+    "expo-manifests": "workspace:~",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },

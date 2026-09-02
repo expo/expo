@@ -39,7 +39,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^0.10.1"
+    "@expo/image-utils": "workspace:^"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

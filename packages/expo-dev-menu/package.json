@@ -35,7 +35,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "expo-dev-menu-interface": "workspace:~56.0.0"
+    "expo-dev-menu-interface": "workspace:~"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",

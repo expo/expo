@@ -100,7 +100,7 @@
     "@types/jest": "^29.2.1",
     "commander": "^12.1.0",
     "glob": "^13.0.0",
-    "jest-expo": "workspace:~56.0.4",
+    "jest-expo": "workspace:~",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "oxlint-config-universe": "^0.2.0",
