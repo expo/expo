@@ -29,6 +29,16 @@ minimumReleaseAgeExclude:
   - multitars
   - noxcturnal
 
+overrides:
+  '@types/babel__code-frame': ^7.27.0
+  '@types/babel__core': ^7.20.5
+  '@types/babel__generator': ^7.27.0
+  '@types/babel__template': ^7.4.4
+  '@types/babel__traverse': ^7.20.7
+  react-native: 0.87.0
+  react-native-reanimated: 4.5.1
+  react-native-worklets: 0.10.1
+
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
