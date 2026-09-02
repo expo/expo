@@ -494,6 +494,23 @@ export type DebugSession = {
   crashReport?: CrashReport | null;
 };
 
+/**
+ * Controls whether completed network requests are recorded as trace spans, with an optional
+ * capture filter. Consumed by `Observe.configure({ traces: { network } })`; the value persists
+ * across launches so early-startup requests follow the last-applied setting.
+ * @hidden
+ */
+export type NetworkSpansConfig = {
+  /**
+   * Whether completed network requests are written to the local `spans` table.
+   */
+  enabled: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted filter records every request.
+   */
+  filter?: NetworkRequestFilter | null;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
@@ -508,6 +525,12 @@ export interface ExpoAppMetricsModuleType {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Applies and persists the network spans recording setting. Affects future captures only;
+   * spans already written keep dispatching.
+   * @hidden
+   */
+  setNetworkSpansConfig(config: NetworkSpansConfig): void;
   /**
    * Sets attributes merged into every subsequent metric and log event.
    * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
