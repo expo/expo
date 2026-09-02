@@ -73,6 +73,7 @@ open class DevMenuManager: NSObject {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
   var isFloatingActionButtonDisabledForSession = false
+  var isAutoLaunchDisabledForSession = false
   @objc public var isReactAppRunning = false
 
   /**
@@ -179,22 +180,20 @@ open class DevMenuManager: NSObject {
   }
 
   /**
-   Hides the floating action button until the app is restarted. Unlike `setShowFloatingActionButton`,
-   it doesn't overwrite the preference saved by the user.
+   Hides the floating action button without overwriting the preference saved by the user.
+   The button visibility is refreshed once the app context of the loaded app is set.
    */
   @objc
-  public func disableFloatingActionButtonForSession() {
-    isFloatingActionButtonDisabledForSession = true
-    updateFABVisibility()
+  public func setFloatingActionButtonDisabledForSession(_ disabled: Bool) {
+    isFloatingActionButtonDisabledForSession = disabled
   }
 
   /**
-   Prevents the dev menu from opening at launch until the app is restarted. Unlike `setShowsAtLaunch`,
-   it doesn't overwrite the preference saved by the user.
+   Prevents the dev menu from opening at launch without overwriting the preference saved by the user.
    */
   @objc
-  public func disableAutoLaunchForSession() {
-    canLaunchDevMenuOnStart = false
+  public func setAutoLaunchDisabledForSession(_ disabled: Bool) {
+    isAutoLaunchDisabledForSession = disabled
     updateAutoLaunchObserver()
   }
 
@@ -253,7 +252,7 @@ open class DevMenuManager: NSObject {
     // swiftlint:enable notification_center_detachment
 
     // swiftlint:disable legacy_objc_type
-    if canLaunchDevMenuOnStart && isReactAppRunning && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
+    if canLaunchDevMenuOnStart && !isAutoLaunchDisabledForSession && isReactAppRunning && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
       NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
     }
     // swiftlint:enable legacy_objc_type

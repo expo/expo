@@ -46,17 +46,17 @@ class EXDevLauncherURLHelperTests: XCTestCase {
 
   func testHasEnabledFlag() {
     let devLauncherUrl = URL(string: "scheme://expo-development-client/?url=\(encodedUrlString)&disableFab=1")!
-    let appUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios&disableAutoLaunch=1")!
-    let plainUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios")!
 
-    // the flags are accepted both on the dev launcher url and on the app url
-    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [devLauncherUrl, plainUrl]))
-    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableAutoLaunch", in: [plainUrl, appUrl]))
+    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: devLauncherUrl))
+    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableAutoLaunch", in: URL(string: "http://localhost:8081?disableAutoLaunch=1")!))
 
-    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [plainUrl, appUrl]))
-    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: []))
-    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [URL(string: "http://localhost:8081?disableFab=0")!]))
-    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [URL(string: "http://localhost:8081?disableFab")!]))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableAutoLaunch", in: devLauncherUrl))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: URL(string: "http://localhost:8081?disableFab=0")!))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: URL(string: "http://localhost:8081?disableFab")!))
+
+    // the flag is not read from the app url, only from the url the app is opened with
+    let urlWithFlagInAppUrl = URL(string: "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%3FdisableFab%3D1")!
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: urlWithFlagInAppUrl))
   }
 
   //  HELPER

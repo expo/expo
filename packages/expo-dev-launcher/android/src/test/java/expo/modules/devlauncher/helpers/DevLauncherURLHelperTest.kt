@@ -48,15 +48,17 @@ internal class DevLauncherURLHelperTest {
   @Test
   fun `tests hasEnabledFlag`() {
     val devLauncherUrl = "exp://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&disableFab=1"
-    val appUrl = "http://localhost:8081/index.bundle?platform=android&disableAutoLaunch=1"
-    val plainUrl = "http://localhost:8081/index.bundle?platform=android"
 
-    // the flags are accepted both on the dev launcher url and on the app url
-    Truth.assertThat(hasEnabledFlag("disableFab", devLauncherUrl, null)).isTrue()
-    Truth.assertThat(hasEnabledFlag("disableAutoLaunch", plainUrl, appUrl)).isTrue()
+    Truth.assertThat(hasEnabledFlag(Uri.parse(devLauncherUrl), "disableFab")).isTrue()
+    Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableAutoLaunch=1"), "disableAutoLaunch")).isTrue()
 
-    Truth.assertThat(hasEnabledFlag("disableFab", plainUrl, appUrl)).isFalse()
-    Truth.assertThat(hasEnabledFlag("disableFab", null, null)).isFalse()
-    Truth.assertThat(hasEnabledFlag("disableFab", "$plainUrl&disableFab=0")).isFalse()
+    Truth.assertThat(hasEnabledFlag(Uri.parse(devLauncherUrl), "disableAutoLaunch")).isFalse()
+    Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableFab=0"), "disableFab")).isFalse()
+    Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableFab"), "disableFab")).isFalse()
+
+    // the flag is not read from the app url, only from the url the app is opened with
+    val urlWithFlagInAppUrl = "exp://expo-development-client/?url=" +
+      Uri.encode("http://localhost:8081?disableFab=1")
+    Truth.assertThat(hasEnabledFlag(Uri.parse(urlWithFlagInAppUrl), "disableFab")).isFalse()
   }
 }

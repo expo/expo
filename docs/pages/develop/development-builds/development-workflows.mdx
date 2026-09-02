@@ -57,13 +57,13 @@ In the example above, the `scheme` is `exp+app-slug`, and the `manifestUrl` is a
 
 When launching a development build with automation, such as in a CI/CD workflow or an end-to-end test, you can add the following query parameters to the URL:
 
-| parameter             | description                                                                                             |
+| parameter             | value                                                                                                   |
 | --------------------- | ------------------------------------------------------------------------------------------------------- |
 | `disableOnboarding=1` | Skips the onboarding screen that appears on the first launch of a development build after installation. |
-| `disableFab=1`        | Hides the floating action button that opens the dev menu.                                               |
+| `disableFab=1`        | Hides the Tools button (the floating button that opens the dev menu).                                   |
 | `disableAutoLaunch=1` | Prevents the dev menu from opening when the app starts.                                                 |
 
-`disableFab` and `disableAutoLaunch` apply only to the current launch and leave your saved dev menu settings unchanged. They are useful on a physical device, where automation cannot change those settings from the host.
+`disableFab` and `disableAutoLaunch` have to be on the deep link itself, next to `url`, rather than inside the encoded `url` value. They apply only to the launch they are passed on and leave your saved dev menu settings unchanged, which is useful on a physical device where automation cannot change those settings from the host.
 
 #### App-specific deep links
 

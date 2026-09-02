@@ -138,21 +138,12 @@ class DevLauncherController private constructor(
       manifest = result.manifest
       manifestURL = result.manifestURL
 
-      val launchUrls = arrayOf(url.toString(), manifestURL?.toString())
-
-      if (hasEnabledFlag("disableOnboarding", *launchUrls)) {
+      if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
         DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
       }
 
-      // Unlike the onboarding flag, these two aren't persisted - a url shouldn't be able to
-      // permanently change the preferences saved by the user.
-      if (hasEnabledFlag("disableFab", *launchUrls)) {
-        DevMenuSessionOverrides.isFabDisabled = true
-      }
-
-      if (hasEnabledFlag("disableAutoLaunch", *launchUrls)) {
-        DevMenuSessionOverrides.isAutoLaunchDisabled = true
-      }
+      DevMenuSessionOverrides.isFabDisabled = hasEnabledFlag(url, "disableFab")
+      DevMenuSessionOverrides.isAutoLaunchDisabled = hasEnabledFlag(url, "disableAutoLaunch")
 
       if (launchAppLoader(result.appLoader)) {
         latestLoadedApp = result.resolvedUrl

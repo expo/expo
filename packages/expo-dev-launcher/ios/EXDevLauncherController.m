@@ -425,7 +425,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   // Hide the dev menu floating action button and/or stop it from opening at launch if
   // "&disableFab=1" / "&disableAutoLaunch=1" are params
-  [EXDevLauncherURLHelper applyDevMenuOverridesIfNeeded:url appUrl:expoUrl];
+  [EXDevLauncherURLHelper applyDevMenuOverridesIfNeeded:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {

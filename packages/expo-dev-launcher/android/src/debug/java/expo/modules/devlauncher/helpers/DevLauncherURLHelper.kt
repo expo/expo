@@ -11,11 +11,12 @@ fun hasUrlQueryParam(uri: Uri): Boolean {
 }
 
 /**
- * Checks if the `<name>=1` flag was passed in any of the provided urls. The flags are accepted
- * both on the dev launcher url and on the url of the app that it opens.
+ * Checks if the `<name>=1` flag was passed on the provided url. The flag has to be on the url that
+ * the app is opened with, not inside its `url` param - that one is remembered as the recently
+ * opened app and is reused on the next cold start.
  */
-fun hasEnabledFlag(name: String, vararg urls: String?): Boolean {
-  return urls.any { it?.contains("$name=1") == true }
+fun hasEnabledFlag(uri: Uri, name: String): Boolean {
+  return uri.isHierarchical && uri.getQueryParameter(name) == "1"
 }
 
 class DevLauncherUrl(var url: Uri) {

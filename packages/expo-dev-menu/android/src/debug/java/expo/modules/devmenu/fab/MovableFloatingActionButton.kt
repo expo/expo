@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import expo.modules.devmenu.DevMenuSessionOverrides
 import expo.modules.devmenu.compose.DevMenuState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -96,6 +97,7 @@ fun MovableFloatingActionButton(
     val fab = rememberFabState(bounds)
 
     val isFabDisplayable = state.showFab &&
+      !DevMenuSessionOverrides.isFabDisabled &&
       !state.isInPictureInPictureMode &&
       bounds.x >= 0f &&
       bounds.y >= 0f
