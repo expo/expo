@@ -8,6 +8,7 @@
 
 - Add a JavaScript API to show or hide the floating Tools button at runtime. ([#47746](https://github.com/expo/expo/pull/47746) by [@KevinvdBurg](https://github.com/KevinvdBurg))
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add process-scoped overrides that let `expo-dev-launcher` hide the floating action button and prevent the dev menu from opening at launch without changing the preferences saved by the user. ([#PRNUMBER](https://github.com/expo/expo/pull/PRNUMBER) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 🐛 Bug fixes
 

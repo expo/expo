@@ -44,19 +44,44 @@ public class EXDevLauncherURLHelper: NSObject {
     return queryItems.contains { $0.name == "url" && $0.value != nil }
   }
 
+  /**
+   Checks if the `<name>=1` flag was passed in any of the provided urls. The flags are accepted
+   both on the dev launcher url and on the url of the app that it opens.
+   */
+  static func hasEnabledFlag(_ name: String, in urls: [URL]) -> Bool {
+    return urls.contains { url in
+      guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+      let queryItems = components.queryItems else {
+        return false
+      }
+
+      return queryItems.contains { $0.name == name && ($0.value ?? "") == "1" }
+    }
+  }
+
   @objc
   public static func disableOnboardingPopupIfNeeded(_ url: URL) {
-    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-    let queryItems = components.queryItems else {
-      return
-    }
-
-    let shouldDisable = queryItems.contains {
-      $0.name == "disableOnboarding" && ($0.value ?? "") == "1"
-    }
-
-    if shouldDisable {
+    if hasEnabledFlag("disableOnboarding", in: [url]) {
       DevMenuPreferences.isOnboardingFinished = true
+    }
+  }
+
+  /**
+   Applies the dev menu overrides passed in the launch url. `disableFab=1` hides the floating action
+   button and `disableAutoLaunch=1` prevents the dev menu from opening at launch. Unlike the
+   onboarding flag, they last only until the app is restarted - a url shouldn't be able to
+   permanently change the preferences saved by the user.
+   */
+  @objc
+  public static func applyDevMenuOverridesIfNeeded(_ url: URL, appUrl: URL) {
+    let urls = [url, appUrl]
+
+    if hasEnabledFlag("disableFab", in: urls) {
+      DevMenuManager.shared.disableFloatingActionButtonForSession()
+    }
+
+    if hasEnabledFlag("disableAutoLaunch", in: urls) {
+      DevMenuManager.shared.disableAutoLaunchForSession()
     }
   }
 

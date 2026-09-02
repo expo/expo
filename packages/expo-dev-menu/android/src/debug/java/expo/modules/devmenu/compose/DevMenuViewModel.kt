@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
 import expo.modules.devmenu.DevMenuPreferences
+import expo.modules.devmenu.DevMenuSessionOverrides
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.SwitchToComponentAction
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
@@ -30,10 +31,13 @@ class DevMenuViewModel(
     DevMenuDevToolsDelegate(devSupportManager.weak())
   }
 
+  private val shouldShowFab
+    get() = menuPreferences.showFab && !DevMenuSessionOverrides.isFabDisabled
+
   private val _state = mutableStateOf(
     DevMenuState(
       devToolsSettings = devSettings,
-      showFab = menuPreferences.showFab,
+      showFab = shouldShowFab,
       hasGoHomeAction = goHomeAction != null
     )
   )
@@ -43,7 +47,7 @@ class DevMenuViewModel(
 
   private val listener = {
     _state.value = state.copy(
-      showFab = menuPreferences.showFab
+      showFab = shouldShowFab
     )
   }
 

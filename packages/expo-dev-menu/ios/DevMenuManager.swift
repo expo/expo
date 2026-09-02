@@ -72,6 +72,7 @@ open class DevMenuManager: NSObject {
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
+  var isFloatingActionButtonDisabledForSession = false
   @objc public var isReactAppRunning = false
 
   /**
@@ -175,6 +176,26 @@ open class DevMenuManager: NSObject {
   @objc
   public func setShowFloatingActionButton(_ enabled: Bool) {
     DevMenuPreferences.showFloatingActionButton = enabled
+  }
+
+  /**
+   Hides the floating action button until the app is restarted. Unlike `setShowFloatingActionButton`,
+   it doesn't overwrite the preference saved by the user.
+   */
+  @objc
+  public func disableFloatingActionButtonForSession() {
+    isFloatingActionButtonDisabledForSession = true
+    updateFABVisibility()
+  }
+
+  /**
+   Prevents the dev menu from opening at launch until the app is restarted. Unlike `setShowsAtLaunch`,
+   it doesn't overwrite the preference saved by the user.
+   */
+  @objc
+  public func disableAutoLaunchForSession() {
+    canLaunchDevMenuOnStart = false
+    updateAutoLaunchObserver()
   }
 
   @objc
@@ -580,6 +601,7 @@ open class DevMenuManager: NSObject {
       }
 
       let shouldShow = DevMenuPreferences.showFloatingActionButton
+        && !self.isFloatingActionButtonDisabledForSession
         && !self.isVisible
         && self.isReactAppRunning
         && !self.isNavigatingHome

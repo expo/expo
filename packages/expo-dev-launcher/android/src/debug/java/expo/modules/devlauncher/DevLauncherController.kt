@@ -20,6 +20,7 @@ import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
+import expo.modules.devlauncher.helpers.hasEnabledFlag
 import expo.modules.devlauncher.helpers.hasUrlQueryParam
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
@@ -40,6 +41,7 @@ import expo.modules.devlauncher.launcher.loaders.createAppLoader
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
+import expo.modules.devmenu.DevMenuSessionOverrides
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
@@ -136,8 +138,20 @@ class DevLauncherController private constructor(
       manifest = result.manifest
       manifestURL = result.manifestURL
 
-      if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
+      val launchUrls = arrayOf(url.toString(), manifestURL?.toString())
+
+      if (hasEnabledFlag("disableOnboarding", *launchUrls)) {
         DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
+      }
+
+      // Unlike the onboarding flag, these two aren't persisted - a url shouldn't be able to
+      // permanently change the preferences saved by the user.
+      if (hasEnabledFlag("disableFab", *launchUrls)) {
+        DevMenuSessionOverrides.isFabDisabled = true
+      }
+
+      if (hasEnabledFlag("disableAutoLaunch", *launchUrls)) {
+        DevMenuSessionOverrides.isAutoLaunchDisabled = true
       }
 
       if (launchAppLoader(result.appLoader)) {

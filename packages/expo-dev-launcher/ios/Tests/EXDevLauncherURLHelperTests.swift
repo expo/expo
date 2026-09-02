@@ -44,6 +44,21 @@ class EXDevLauncherURLHelperTests: XCTestCase {
     XCTAssertEqual(queryParams["url"], "http://localhost:8081")
   }
 
+  func testHasEnabledFlag() {
+    let devLauncherUrl = URL(string: "scheme://expo-development-client/?url=\(encodedUrlString)&disableFab=1")!
+    let appUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios&disableAutoLaunch=1")!
+    let plainUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios")!
+
+    // the flags are accepted both on the dev launcher url and on the app url
+    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [devLauncherUrl, plainUrl]))
+    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableAutoLaunch", in: [plainUrl, appUrl]))
+
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [plainUrl, appUrl]))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: []))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [URL(string: "http://localhost:8081?disableFab=0")!]))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: [URL(string: "http://localhost:8081?disableFab")!]))
+  }
+
   //  HELPER
   func expectDevLauncherUrlToEqual(input: String, expected: String) {
     let devLauncherUrl = EXDevLauncherUrl(URL(string: input)!)
