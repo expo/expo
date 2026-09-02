@@ -55,16 +55,12 @@ export async function resolveOptionsAsync(
     projectRoot
   );
 
-  const isDevelopment = mode === 'development';
-  // React Native only recognizes case-sensitive `Debug` configurations. Skip native bundling for
-  // other development configurations so the build keeps using Metro.
-  const shouldSkipInitialBundling =
-    isDevelopment && (!isSimulator || !configuration.includes('Debug'));
+  // Skip native bundling for Debug device builds to avoid resetting Metro's cache.
+  const shouldSkipInitialBundling = configuration === 'Debug' && !isSimulator;
 
   return {
     ...bundlerProps,
-    shouldStartBundler:
-      (!!options.configuration && isDevelopment) || bundlerProps.shouldStartBundler,
+    shouldStartBundler: options.configuration === 'Debug' || bundlerProps.shouldStartBundler,
     projectRoot,
     isSimulator,
     xcodeProject,

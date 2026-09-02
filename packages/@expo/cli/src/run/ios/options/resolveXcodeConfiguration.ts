@@ -1,6 +1,6 @@
 import type { EnvironmentMode } from '../../../utils/nodeEnv';
 
-/** Use development mode for Xcode configurations that include `Debug` and production mode for every other configuration. */
+/** Match the case-sensitive `*Debug*` check in `react-native-xcode.sh`. */
 export function resolveXcodeConfigurationMode(configuration = 'Debug'): EnvironmentMode {
-  return configuration.toLowerCase().includes('debug') ? 'development' : 'production';
+  return configuration.includes('Debug') ? 'development' : 'production';
 }
