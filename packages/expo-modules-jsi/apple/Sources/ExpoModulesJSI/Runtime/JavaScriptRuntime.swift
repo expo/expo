@@ -178,19 +178,21 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     getPropertyNames: @escaping @JavaScriptActor () -> [String] = { [] },
     dealloc: @escaping @JavaScriptActor () -> Void = {}
   ) -> JavaScriptObject {
-    func getter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>) -> facebook.jsi.Value {
+    func getter(
+      context: UnsafeMutableRawPointer,
+      propertyName: UnsafePointer<CChar>,
+      resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
+    ) {
       let propertyName = String(cString: propertyName)
+      nonisolated(unsafe) let resultPtr = resultPtr
 
-      // The result leaves through a captured local because `jsi::Value` is not `Copyable`.
-      var result = facebook.jsi.Value.undefined()
       withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
-        result = JavaScriptActor.assumeIsolated {
+        resultPtr.pointee = JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
             return try context.get(propertyName).asJSIValue()
           }
         }
       }
-      return result
     }
 
     func setter(
