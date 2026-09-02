@@ -60,7 +60,7 @@ it('installs a local package tarball without network access', async () => {
   const offlineEnv = {
     EXPO_OFFLINE: '1',
     EXPO_NO_NEW_ARCH_COMPAT_CHECK: '1',
-    npm_config_offline: 'true',
+    pnpm_config_offline: 'true',
     HTTP_PROXY: 'http://127.0.0.1:9',
     HTTPS_PROXY: 'http://127.0.0.1:9',
     NO_PROXY: '',

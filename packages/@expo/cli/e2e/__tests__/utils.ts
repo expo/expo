@@ -168,7 +168,7 @@ export async function createFromFixtureAsync(
     await executePnpmAsync(projectRoot, ['install', '--prefer-offline'], {
       env: {
         NODE_ENV: 'development',
-        npm_config_enable_global_virtual_store: 'true',
+        pnpm_config_enable_global_virtual_store: 'true',
       },
     });
   } catch (error) {
