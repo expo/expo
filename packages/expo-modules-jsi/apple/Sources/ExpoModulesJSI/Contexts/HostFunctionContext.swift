@@ -1,5 +1,5 @@
 /// Context that captures Swift values to pass them to JSI host function as an unmanaged pointer for interoperability with C++.
-internal final class HostFunctionContext: Sendable {
+internal final class HostFunctionContext: HostCallbackContext, Sendable {
   // Stored as `Unmanaged` rather than `weak`, for the same reason as in
   // ``UnownedThisHostFunctionContext`` below: the JSI host function owns the context and cannot
   // outlive its runtime, and the per-call weak load plus strong release measured at about 10 ns
@@ -17,7 +17,7 @@ internal final class HostFunctionContext: Sendable {
 
 /// Counterpart to ``HostFunctionContext`` for host functions whose closure receives `this` as a
 /// borrowed ``JavaScriptUnownedValue`` (see ``JavaScriptRuntime/UnownedThisSyncFunctionClosure``).
-internal final class UnownedThisHostFunctionContext: Sendable {
+internal final class UnownedThisHostFunctionContext: HostCallbackContext, Sendable {
   // Stored as `Unmanaged` rather than `weak`: the context lives exactly as long as the JSI host
   // function that owns it (freed from the `deallocate` callback), and the host function cannot
   // outlive the runtime it was installed in. A `weak` reference here cost a `swift_weakLoadStrong`

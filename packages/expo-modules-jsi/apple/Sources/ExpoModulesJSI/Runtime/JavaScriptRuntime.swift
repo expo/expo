@@ -181,15 +181,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     func getter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>) -> facebook.jsi.Value {
       let propertyName = String(cString: propertyName)
 
-      // Same shape as the host function entry points: guaranteed references to the context and
-      // the runtime, and a captured local because `jsi::Value` is not `Copyable`.
+      // The result leaves through a captured local because `jsi::Value` is not `Copyable`.
       var result = facebook.jsi.Value.undefined()
-      Unmanaged<HostObjectContext>.fromOpaque(context)._withUnsafeGuaranteedRef { context in
-        context.runtime._withUnsafeGuaranteedRef { runtime in
-          result = JavaScriptActor.assumeIsolated {
-            return forwardingSwiftErrorsToJS(runtime: runtime) {
-              return try context.get(propertyName).asJSIValue()
-            }
+      withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
+        result = JavaScriptActor.assumeIsolated {
+          return forwardingSwiftErrorsToJS(runtime: runtime) {
+            return try context.get(propertyName).asJSIValue()
           }
         }
       }
@@ -203,7 +200,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     ) {
       let propertyName = String(cString: propertyName)
 
-      Unmanaged<HostObjectContext>.fromOpaque(context)._withUnsafeGuaranteedRef { context in
+      withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
         guard let set = context.set else {
           // Unreachable in practice: when the user passed `nil` for `set`, the call site
           // below at `expo.HostObjectCallbacks(...)` also passes `nil` to C++, and
@@ -212,13 +209,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
           // swallow assignments.
           FatalError.readOnlyHostObjectSetterInvoked()
         }
-        context.runtime._withUnsafeGuaranteedRef { runtime in
-          let value = JavaScriptValue(runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
+        let value = JavaScriptValue(runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
 
-          JavaScriptActor.assumeIsolated {
-            forwardingSwiftErrorsToJS(runtime: runtime) {
-              try set(propertyName, value)
-            }
+        JavaScriptActor.assumeIsolated {
+          forwardingSwiftErrorsToJS(runtime: runtime) {
+            try set(propertyName, value)
           }
         }
       }
@@ -814,17 +809,15 @@ private func createFunctionClosure(
     nonisolated(unsafe) let argumentsPtr = argumentsPtr
     nonisolated(unsafe) let resultPtr = resultPtr
 
-    // See the unowned-`this` overload below for why the context and runtime are read through
-    // `_withUnsafeGuaranteedRef`.
-    Unmanaged<HostFunctionContext>.fromOpaque(context)._withUnsafeGuaranteedRef { context in
-      context.runtime._withUnsafeGuaranteedRef { runtime in
-        resultPtr.pointee = JavaScriptActor.assumeIsolated {
-          return forwardingSwiftErrorsToJS(runtime: runtime) {
-            let this = UnsafeMutablePointer(mutating: thisPtr).move()
-            let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
-            let thisValue = JavaScriptValue(runtime, this)
-            return try context.call(thisValue, consume arguments).asJSIValue()
-          }
+    // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
+    // why the result is written to the caller's slot instead of being returned.
+    withGuaranteedContext(context) { (context: HostFunctionContext, runtime) in
+      resultPtr.pointee = JavaScriptActor.assumeIsolated {
+        return forwardingSwiftErrorsToJS(runtime: runtime) {
+          let this = UnsafeMutablePointer(mutating: thisPtr).move()
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
+          let thisValue = JavaScriptValue(runtime, this)
+          return try context.call(thisValue, consume arguments).asJSIValue()
         }
       }
     }
@@ -860,20 +853,14 @@ private func createFunctionClosure(
     nonisolated(unsafe) let argumentsPtr = argumentsPtr
     nonisolated(unsafe) let resultPtr = resultPtr
 
-    // `_withUnsafeGuaranteedRef` promises the compiler that the referenced object stays alive for the
-    // duration of the closure, so no retain/release is emitted for it. Both promises hold: the context
-    // is owned by the JSI host function that is calling us, and a sync host call runs while the runtime
-    // is executing JS, with the wrapper owned for the runtime's whole lifetime. The closure result must
-    // be `Copyable`, and `jsi::Value` is not, so the value is written to the caller's result slot
-    // instead of being returned.
-    Unmanaged<UnownedThisHostFunctionContext>.fromOpaque(context)._withUnsafeGuaranteedRef { context in
-      context.runtime._withUnsafeGuaranteedRef { runtime in
-        resultPtr.pointee = JavaScriptActor.assumeIsolated {
-          return forwardingSwiftErrorsToJS(runtime: runtime) {
-            let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
-            let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
-            return try context.call(thisValue, consume arguments).asJSIValue()
-          }
+    // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
+    // why the result is written to the caller's slot instead of being returned.
+    withGuaranteedContext(context) { (context: UnownedThisHostFunctionContext, runtime) in
+      resultPtr.pointee = JavaScriptActor.assumeIsolated {
+        return forwardingSwiftErrorsToJS(runtime: runtime) {
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
+          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
+          return try context.call(thisValue, consume arguments).asJSIValue()
         }
       }
     }
