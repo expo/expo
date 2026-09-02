@@ -37,7 +37,6 @@
 - [Android] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49505](https://github.com/expo/expo/pull/49505) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Pick up `rootProject.ext.ndkVersion` so the module's `android.ndkVersion` matches the host project's NDK; otherwise AGP falls back to its own preferred version and reports `[CXX1104] NDK ... disagrees with android.ndkVersion`. ([#45759](https://github.com/expo/expo/pull/45759) by [@xxih](https://github.com/xxih))
 
-
 ### 💡 Others
 
 - [Android] Replace the "this should never happen" wording in the missing launch asset error with the likely cause and how the state resolves. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
