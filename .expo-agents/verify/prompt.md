@@ -73,11 +73,11 @@ Two shapes deserve their own treatment:
    mkdir expo && cd expo && git init -q
    git remote add origin https://github.com/expo/expo.git
    git fetch --depth=1 -q origin <CHECKOUT_SHA> && git checkout -q FETCH_HEAD   #  11s, 561MB
-   corepack prepare pnpm@10.33.0 --activate                                     #   2s, REQUIRED
+   corepack prepare pnpm@12.2.1 --activate
    pnpm install                                                                 # 4m06s, 2.8GB
    ```
 
-   Three things that will waste your time if you improvise instead. **Fetch shallow, do not clone**: `git clone --filter=blob:none` took **110s** against **11s** for the fetch above, for a byte-identical tree. **Activate pnpm 10 yourself**: the root `package.json` sets `engines.pnpm: ^10.33.0` with no `packageManager` field, so corepack serves 11.x and pnpm then refuses to run *at all* — install, typecheck and test each die before doing any work, with an error that says nothing about your change. **Run the full `pnpm install`, with scripts**: the tempting `--filter <pkg>... --ignore-scripts` finishes in 31s but is a false economy — it skips the root `prepare` that builds the workspace, so `pnpm test` dies on `Cannot find module '…/babel-preset-expo/build/index.js'` and `typecheck` fills with pre-existing `TS2307` noise from unbuilt siblings. Three and a half saved minutes buys a check you cannot trust.
+   Three things that will waste your time if you improvise instead. **Fetch shallow, do not clone**: `git clone --filter=blob:none` took **110s** against **11s** for the fetch above, for a byte-identical tree. **Activate the repository's pnpm version yourself**: the root `package.json` declares pnpm 12.2.1 in `devEngines.packageManager`; activating it explicitly avoids relying on whichever package-manager version happens to be installed in the sandbox. **Run the full `pnpm install`, with scripts**: the tempting `--filter <pkg>... --ignore-scripts` finishes in 31s but is a false economy — it skips the root `prepare` that builds the workspace, so `pnpm test` dies on `Cannot find module '…/babel-preset-expo/build/index.js'` and `typecheck` fills with pre-existing `TS2307` noise from unbuilt siblings. Three and a half saved minutes buys a check you cannot trust.
 
 2. **Write the fix in that tree, and iterate there.** This is where the change takes shape — not in the checkout, and not as a patch you only validate afterwards. Once installed, the repository's own tooling answers in seconds:
 
