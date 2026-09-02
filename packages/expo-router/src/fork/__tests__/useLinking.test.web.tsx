@@ -348,7 +348,6 @@ test('does not add browser history when preloading a stack route', async () => {
       <NavigationContainer
         ref={ref}
         documentTitle={{ enabled: false }}
-        onStateChange={onStateChange}
         linking={{
           prefixes: [],
           config: { screens: { home: 'home', details: 'details' } },
@@ -364,6 +363,7 @@ test('does not add browser history when preloading a stack route', async () => {
   );
 
   await waitFor(() => expect(ref.current).not.toBeNull());
+  ref.current?.addListener('state', onStateChange);
   history.push.mockClear();
   history.replace.mockClear();
 

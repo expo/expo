@@ -4,14 +4,19 @@ import { nanoid } from 'nanoid/non-secure';
 import { RemovalPreventionProvider } from '../../../../global-state/removalPrevention';
 import { RouterRegistryProvider } from '../../../../global-state/routerRegistry';
 import { RoutingQueueProvider } from '../../../../global-state/routingQueueContext';
+import useLatestCallback from '../../../../utils/useLatestCallback';
 import type { NavigationState, ParamListBase, PartialState } from '../../../routers';
 import type { NavigationContainerRef } from '../../types';
 import { BaseNavigationContainer as BaseNavigationContainerImpl } from '../../BaseNavigationContainer';
 import { MockRouterKey } from './MockRouter';
 
 type TestInitialState = NavigationState | PartialState<NavigationState>;
-type Props = Omit<React.ComponentProps<typeof BaseNavigationContainerImpl>, 'initialState'> & {
+type Props = Omit<
+  React.ComponentProps<typeof BaseNavigationContainerImpl>,
+  'initialState' | 'onStateChange'
+> & {
   initialState?: TestInitialState;
+  onStateChange?: (state: NavigationState | undefined) => void;
 };
 
 function getInitialState(children: React.ReactNode): NavigationState {
@@ -127,8 +132,16 @@ function completeState(
 }
 
 export function BaseNavigationContainer(props: Props) {
-  const { ref, ...rest } = props;
+  const { onStateChange, ref, ...rest } = props;
   const navigationRef = React.useRef<NavigationContainerRef<ParamListBase> | null>(null);
+  const notifyStateChange = useLatestCallback(() => {
+    onStateChange?.(navigationRef.current?.getRootState());
+  });
+
+  React.useEffect(() => {
+    // Subscribe after mount so the container's initial state event is ignored.
+    return navigationRef.current?.addListener('state', notifyStateChange);
+  }, []);
 
   const setRef = React.useCallback(
     (navigation: NavigationContainerRef<ParamListBase> | null) => {

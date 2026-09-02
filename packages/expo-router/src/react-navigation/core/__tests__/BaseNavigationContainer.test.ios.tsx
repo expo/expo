@@ -243,10 +243,7 @@ test('handle dispatching with ref', () => {
     <RoutingQueueProvider>
       <RouterRegistryProvider>
         <RemovalPreventionProvider>
-          <RawBaseNavigationContainer
-            ref={ref}
-            initialState={initialState}
-            onStateChange={onStateChange}>
+          <RawBaseNavigationContainer ref={ref} initialState={initialState}>
             <RootNavigator>
               <Screen name="foo">{() => null}</Screen>
               <Screen name="foo2">{() => null}</Screen>
@@ -260,6 +257,7 @@ test('handle dispatching with ref', () => {
   );
 
   render(element).update(element);
+  ref.current?.addListener('state', () => onStateChange(ref.current!.getRootState()));
 
   act(() => {
     ref.current?.dispatch({ type: 'REVERSE' });
