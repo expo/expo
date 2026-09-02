@@ -70,6 +70,13 @@ export interface SliderProps {
      */
     children?: React.ReactNode;
 }
+export interface VerticalSliderProps extends SliderProps {
+    /**
+     * Whether the direction of the slider is reversed. By default, values increase from top to bottom.
+     * @default false
+     */
+    reverseDirection?: boolean;
+}
 /**
  * A slider component that wraps Material3's `Slider`.
  *
@@ -77,6 +84,20 @@ export interface SliderProps {
  */
 declare function SliderComponent(props: SliderProps): import("react/jsx-runtime").JSX.Element;
 declare namespace SliderComponent {
+    var Thumb: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+    var Track: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+}
+/**
+ * A vertical slider component that wraps Material3's `VerticalSlider`.
+ *
+ * @platform android
+ */
+export declare function VerticalSlider(props: VerticalSliderProps): import("react/jsx-runtime").JSX.Element;
+export declare namespace VerticalSlider {
     var Thumb: (props: {
         children: React.ReactNode;
     }) => import("react/jsx-runtime").JSX.Element;

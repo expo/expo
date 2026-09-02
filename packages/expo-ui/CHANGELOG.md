@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Taught the `background` modifier to paint with any `ShapeStyle`, so a view can be filled with a material, a gradient or a hierarchical style instead of only a color, and added the `ignoresSafeAreaEdges` option from SwiftUI's signature. Deprecated `backgroundOverlay` in favor of the `background` modifier and the `Background` component. ([#49621](https://github.com/expo/expo/pull/49621) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [android] Added the Jetpack Compose `VerticalSlider` component with support for reversed direction and custom thumb and track slots. ([#49612](https://github.com/expo/expo/pull/49612) by [@felipe-software](https://github.com/felipe-software))
 
 ### 🐛 Bug fixes
 
