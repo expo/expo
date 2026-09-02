@@ -80,9 +80,9 @@ describe(withAssetsAndroid, () => {
     const platformProjectRoot = await runAndroidMod(['./assets/photo.JPG'], projectRoot);
 
     const main = path.join(platformProjectRoot, 'app', 'src', 'main');
-    await expect(fs.readFile(path.join(main, 'res', 'drawable', 'photo.JPG'), 'utf8')).resolves.toBe(
-      'jpg'
-    );
+    await expect(
+      fs.readFile(path.join(main, 'res', 'drawable', 'photo.JPG'), 'utf8')
+    ).resolves.toBe('jpg');
     await expect(fs.readdir(path.join(main, 'assets'))).rejects.toThrow();
   });
 
