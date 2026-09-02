@@ -5,6 +5,7 @@ import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { TabRouterOptions } from '../../native';
 import type {
   MaterialTopTabDescriptorMap,
   MaterialTopTabNavigationConfig,
@@ -19,13 +20,17 @@ export interface MaterialTopTabNavigatorCreateProps {
   navigateToTabSync: (name: string, params: object | undefined) => void;
 }
 
-export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig &
+export interface MaterialTopTabNavigatorProps extends MaterialTopTabNavigationConfig {
+  backBehavior?: TabRouterOptions['backBehavior'];
+}
+
+export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigatorProps &
   MaterialTopTabNavigatorCreateProps;
 
 type ContentArgs = NavigatorContentProps<
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
-  MaterialTopTabNavigationConfig,
+  MaterialTopTabNavigatorProps,
   MaterialTopTabNavigatorCreateProps
 >;
 
@@ -37,9 +42,9 @@ function MaterialTopTabNavigatorContent({
   routeNames,
   preload,
   navigateToTabSync,
-  ...rest
+  backBehavior,
+  ...viewProps
 }: ContentArgs) {
-  const { backBehavior, ...viewProps } = rest as typeof rest & { backBehavior?: string };
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,

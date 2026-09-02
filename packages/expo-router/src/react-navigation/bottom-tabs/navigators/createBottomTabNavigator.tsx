@@ -5,6 +5,7 @@ import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { TabRouterOptions } from '../../native';
 import type {
   BottomTabDescriptorMap,
   BottomTabNavigationConfig,
@@ -19,13 +20,17 @@ export interface BottomTabNavigatorCreateProps {
   preload: (name: string) => void;
 }
 
-export type BottomTabNavigatorContentProps = BottomTabNavigationConfig &
+export interface BottomTabNavigatorProps extends BottomTabNavigationConfig {
+  backBehavior?: TabRouterOptions['backBehavior'];
+}
+
+export type BottomTabNavigatorContentProps = BottomTabNavigatorProps &
   BottomTabNavigatorCreateProps;
 
 type ContentArgs = NavigatorContentProps<
   BottomTabNavigationOptions,
   BottomTabNavigationEventMap,
-  BottomTabNavigationConfig,
+  BottomTabNavigatorProps,
   BottomTabNavigatorCreateProps
 >;
 
@@ -37,9 +42,9 @@ function BottomTabNavigatorContent({
   routeNames,
   popNestedStackToTop,
   preload,
-  ...rest
+  backBehavior,
+  ...viewProps
 }: ContentArgs) {
-  const { backBehavior, ...viewProps } = rest as typeof rest & { backBehavior?: string };
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
