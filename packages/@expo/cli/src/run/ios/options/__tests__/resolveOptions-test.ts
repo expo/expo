@@ -78,24 +78,35 @@ describe(resolveOptionsAsync, () => {
     });
   });
 
-  it('skips native bundling for a lowercase custom Debug configuration', async () => {
+  describe.each([
+    { target: 'simulator', isSimulator: true },
+    { target: 'device', isSimulator: false },
+  ])('on a $target', ({ isSimulator }) => {
+    it.each([
+      { configuration: 'DebugStaging', mode: 'development' as const },
+      { configuration: 'debugStaging', mode: 'production' as const },
+    ])(
+      'respects --no-bundler without forcing SKIP_BUNDLING for $configuration',
+      async ({ configuration, mode }) => {
+        vol.fromJSON(fixture, '/');
+        jest.mocked(isSimulatorDevice).mockReturnValueOnce(isSimulator);
+
+        expect(await resolveOptionsAsync('/', { bundler: false, configuration }, mode)).toEqual(
+          expect.objectContaining({
+            configuration,
+            shouldSkipInitialBundling: false,
+            shouldStartBundler: false,
+          })
+        );
+      }
+    );
+  });
+
+  it('respects --no-bundler without an explicit configuration', async () => {
     vol.fromJSON(fixture, '/');
 
-    expect(
-      await resolveOptionsAsync(
-        '/',
-        {
-          bundler: false,
-          configuration: 'debugStaging',
-        },
-        'development'
-      )
-    ).toEqual(
-      expect.objectContaining({
-        configuration: 'debugStaging',
-        shouldSkipInitialBundling: true,
-        shouldStartBundler: true,
-      })
+    expect(await resolveOptionsAsync('/', { bundler: false }, 'development')).toEqual(
+      expect.objectContaining({ shouldStartBundler: false })
     );
   });
 });

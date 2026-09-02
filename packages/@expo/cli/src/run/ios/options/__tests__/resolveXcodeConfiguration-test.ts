@@ -5,17 +5,22 @@ describe(resolveXcodeConfigurationMode, () => {
     expect(resolveXcodeConfigurationMode()).toBe('development');
   });
 
-  it.each(['Debug', 'debug', 'DebugStaging', 'StagingDebug'])(
+  it.each(['Debug', 'DebugStaging', 'StagingDebug'])(
     'uses development mode for %s',
     (configuration) => {
       expect(resolveXcodeConfigurationMode(configuration)).toBe('development');
     }
   );
 
-  it.each(['Release', 'StagingRelease', 'ReleaseStaging', 'Staging'])(
-    'uses production mode for %s',
-    (configuration) => {
-      expect(resolveXcodeConfigurationMode(configuration)).toBe('production');
-    }
-  );
+  it.each([
+    'Release',
+    'StagingRelease',
+    'ReleaseStaging',
+    'Staging',
+    'debug',
+    'DEBUG',
+    'debugStaging',
+  ])('uses production mode for %s', (configuration) => {
+    expect(resolveXcodeConfigurationMode(configuration)).toBe('production');
+  });
 });
