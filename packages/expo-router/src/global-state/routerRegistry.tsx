@@ -23,41 +23,42 @@ export type RouterRegistryEntry = {
 // Entries appear after the first commit and state keys can change when navigation state is reset.
 export type RouterRegistry = ReadonlyMap<string, RouterRegistryEntry>;
 
+export type RouterRegistryChange = (
+  stateKey: string,
+  entry: RouterRegistryEntry,
+  registered: boolean
+) => void;
+
 type RouterRegistrySetters = {
-  register: (stateKey: string, entry: RouterRegistryEntry) => void;
-  unregister: (stateKey: string, entry: RouterRegistryEntry) => void;
+  register: (stateKey: string, entry: RouterRegistryEntry) => boolean;
+  unregister: (stateKey: string, entry: RouterRegistryEntry) => boolean;
 };
 
-// React components read this map during render, so React state is intentional.
+// One Map for the life of the provider, mutated in place. A new context value here during the
+// hydration commit makes React drop every streamed Suspense boundary that is still pending.
 export const RouterRegistryContext = createContext<RouterRegistry | undefined>(undefined);
 const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(undefined);
 
 export function RouterRegistryProvider({ children }: PropsWithChildren) {
-  const [registry, setRegistry] = useState<RouterRegistry>(() => new Map());
+  const [registry] = useState(() => new Map<string, RouterRegistryEntry>());
   const setters = useMemo<RouterRegistrySetters>(
     () => ({
       register(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) === entry) {
-            return previous;
-          }
-
-          return new Map(previous).set(stateKey, entry);
-        });
+        if (registry.get(stateKey) === entry) {
+          return false;
+        }
+        registry.set(stateKey, entry);
+        return true;
       },
       unregister(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) !== entry) {
-            return previous;
-          }
-
-          const next = new Map(previous);
-          next.delete(stateKey);
-          return next;
-        });
+        if (registry.get(stateKey) !== entry) {
+          return false;
+        }
+        registry.delete(stateKey);
+        return true;
       },
     }),
-    []
+    [registry]
   );
 
   return (
@@ -67,7 +68,15 @@ export function RouterRegistryProvider({ children }: PropsWithChildren) {
   );
 }
 
-export function useRegisterRouter(stateKey: string, entry: RouterRegistryEntry): void {
+/**
+ * Registers a navigator's router from a layout effect. `onChange` is the only signal consumers get,
+ * because the map identity never changes; pass a stable callback.
+ */
+export function useRegisterRouter(
+  stateKey: string,
+  entry: RouterRegistryEntry,
+  onChange?: RouterRegistryChange
+): void {
   const setters = use(RouterRegistrySettersContext);
 
   useClientLayoutEffect(() => {
@@ -80,7 +89,13 @@ export function useRegisterRouter(stateKey: string, entry: RouterRegistryEntry):
       return;
     }
 
-    setters.register(stateKey, entry);
-    return () => setters.unregister(stateKey, entry);
-  }, [entry, setters, stateKey]);
+    if (setters.register(stateKey, entry)) {
+      onChange?.(stateKey, entry, true);
+    }
+    return () => {
+      if (setters.unregister(stateKey, entry)) {
+        onChange?.(stateKey, entry, false);
+      }
+    };
+  }, [entry, onChange, setters, stateKey]);
 }
