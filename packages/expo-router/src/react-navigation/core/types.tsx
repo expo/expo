@@ -747,10 +747,6 @@ export type NavigationContainerEventMap = {
       state: NavigationState | PartialState<NavigationState> | undefined;
     };
   };
-  /**
-   * Event that fires when current options changes.
-   */
-  options: { data: { options: object } };
 };
 
 export type ParamListRoute<ParamList extends ParamListBase> = {

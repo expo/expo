@@ -1,5 +1,4 @@
 'use client';
-import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 
@@ -190,37 +189,13 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
 
-  const lastEmittedOptionsRef = React.useRef<
-    { options: object; routeKey: string | undefined } | undefined
-  >(undefined);
-
-  // TODO(@ubax): investigate if there is better way to implemnet this and wether this is really needed,
-  const onOptionsChange = useLatestCallback((options: object, routeKey?: string) => {
-    const lastEmittedOptions = lastEmittedOptionsRef.current;
-    if (
-      lastEmittedOptions?.routeKey === routeKey &&
-      lastEmittedOptions !== undefined &&
-      isEqual(lastEmittedOptions.options, options)
-    ) {
-      return;
-    }
-
-    lastEmittedOptionsRef.current = { options, routeKey };
-
-    emitter.emit({
-      type: 'options',
-      data: { options },
-    });
-  });
-
   const builderContext = React.useMemo(
     () => ({
       addListener,
       handleAction,
       resetNavigator,
-      onOptionsChange,
     }),
-    [addListener, handleAction, onOptionsChange, resetNavigator]
+    [addListener, handleAction, resetNavigator]
   );
 
   const context = React.useMemo(
