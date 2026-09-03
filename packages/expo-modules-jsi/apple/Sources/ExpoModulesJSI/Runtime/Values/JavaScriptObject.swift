@@ -163,7 +163,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     let count = propertyNames.size(jsiRuntime)
 
     return (0..<count).map { i in
-      return String(propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime).utf8(jsiRuntime))
+      return String(jsiString: propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime), in: jsiRuntime)
     }
   }
 
