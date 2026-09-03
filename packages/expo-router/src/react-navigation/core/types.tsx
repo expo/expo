@@ -405,7 +405,6 @@ export type NavigationContainerProps = {
   onReady?: () => void;
   /**
    * Callback which is called when an action is not handled.
-   * TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
    */
   onUnhandledAction?: (action: Readonly<NavigationAction>) => void;
   /**

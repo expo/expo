@@ -151,8 +151,7 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
   expect(onUnhandledAction).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("doesn't let a child handle an untargeted navigate action", () => {
+test("doesn't let a child handle an untargeted navigate action", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -535,8 +534,7 @@ test("action doesn't bubble if target is specified", () => {
   expect(onStateChange).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip('logs error if no navigator handled the action', () => {
+test('logs error if no navigator handled the action', () => {
   const TestRouter = MockRouter;
 
   const TestNavigator = (props: any) => {

@@ -832,8 +832,7 @@ test('fires onReady after navigator is rendered', () => {
   expect(ref.current?.isReady()).toBe(true);
 });
 
-// TODO(@ubax): restore when unhandled actions are wired to the reducer. https://linear.app/expo/issue/ENG-26123
-test.skip('invokes the unhandled action listener with the unhandled action', () => {
+test('invokes the unhandled action listener with the unhandled action', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   const fn = jest.fn();
 

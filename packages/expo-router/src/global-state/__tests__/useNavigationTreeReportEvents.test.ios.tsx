@@ -24,6 +24,7 @@ function wrapper({ children }: PropsWithChildren) {
 test('emits and consumes only new report events', () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
+  const onUnhandledAction = jest.fn();
   const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
     actions.push(event.actionType)
   );
@@ -36,7 +37,7 @@ test('emits and consumes only new report events', () => {
   const report: NavigationTreeReport = { events: [firstEvent] };
   const result = renderHook(
     ({ report }: { report: NavigationTreeReport }) =>
-      useNavigationTreeReportEvents(report, consumeReportEvents),
+      useNavigationTreeReportEvents(report, consumeReportEvents, onUnhandledAction),
     { wrapper, initialProps: { report } }
   );
 
@@ -52,9 +53,26 @@ test('emits and consumes only new report events', () => {
   unsubscribe();
 });
 
+test('calls the unhandled action callback and consumes the report event', () => {
+  const onUnhandledAction = jest.fn();
+  const consumeReportEvents = jest.fn();
+  const action = { type: 'UNKNOWN' };
+  const report: NavigationTreeReport = {
+    events: [{ id: 0, type: 'unhandled-action', action }],
+  };
+
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, onUnhandledAction), {
+    wrapper,
+  });
+
+  expect(onUnhandledAction).toHaveBeenCalledWith(action);
+  expect(consumeReportEvents).toHaveBeenCalledWith([0]);
+});
+
 test('emits removePrevented and removed to the registered route emitters', () => {
   const emitRemovalEvent = jest.fn();
   const consumeReportEvents = jest.fn();
+  const onUnhandledAction = jest.fn();
   const action = { type: 'POP' };
   const report: NavigationTreeReport = {
     events: [
@@ -65,7 +83,7 @@ test('emits removePrevented and removed to the registered route emitters', () =>
 
   const result = renderHook(
     ({ report }: { report: NavigationTreeReport | undefined }) =>
-      useNavigationTreeReportEvents(report, consumeReportEvents),
+      useNavigationTreeReportEvents(report, consumeReportEvents, onUnhandledAction),
     {
       initialProps: { report: undefined },
       wrapper: ({ children }: PropsWithChildren) => (
@@ -84,17 +102,15 @@ test('emits removePrevented and removed to the registered route emitters', () =>
   expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
 });
 
-test('does not emit twice in StrictMode', () => {
-  const actions: string[] = [];
+test('does not call the unhandled action callback twice in StrictMode', () => {
+  const onUnhandledAction = jest.fn();
   const consumeReportEvents = jest.fn();
-  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
-    actions.push(event.actionType)
-  );
+  const action = { type: 'UNKNOWN' };
   const report: NavigationTreeReport = {
-    events: [{ id: 0, type: 'action-dispatched', action: { type: 'FIRST' }, state }],
+    events: [{ id: 0, type: 'unhandled-action', action }],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), {
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, onUnhandledAction), {
     wrapper: ({ children }: PropsWithChildren) => (
       <React.StrictMode>
         <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
@@ -102,31 +118,34 @@ test('does not emit twice in StrictMode', () => {
     ),
   });
 
-  expect(actions).toEqual(['FIRST']);
+  expect(onUnhandledAction).toHaveBeenCalledWith(action);
+  expect(onUnhandledAction).toHaveBeenCalledTimes(1);
   expect(consumeReportEvents).toHaveBeenCalledTimes(1);
-  unsubscribe();
 });
 
-test('keeps emitting the remaining events when a listener throws', () => {
+test('keeps emitting the remaining events when the unhandled action callback throws', () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const onUnhandledAction = jest.fn(() => {
+    throw new Error('listener failed');
+  });
   const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) => {
     actions.push(event.actionType);
-    if (event.actionType === 'FIRST') {
-      throw new Error('listener failed');
-    }
   });
   const report: NavigationTreeReport = {
     events: [
-      { id: 0, type: 'action-dispatched', action: { type: 'FIRST' }, state },
+      { id: 0, type: 'unhandled-action', action: { type: 'UNKNOWN' } },
       { id: 1, type: 'action-dispatched', action: { type: 'SECOND' }, state },
     ],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, onUnhandledAction), {
+    wrapper,
+  });
 
-  expect(actions).toEqual(['FIRST', 'SECOND']);
+  expect(onUnhandledAction).toHaveBeenCalledWith({ type: 'UNKNOWN' });
+  expect(actions).toEqual(['SECOND']);
   expect(warn).toHaveBeenCalledTimes(1);
   expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
   unsubscribe();

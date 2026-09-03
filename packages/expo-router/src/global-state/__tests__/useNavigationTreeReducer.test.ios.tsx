@@ -385,19 +385,31 @@ it('warns for direct navigation actions carrying a screen param', () => {
   warn.mockRestore();
 });
 
-it('logs an error when an action is dispatched before its router registers', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+it('reports an unhandled action when its origin cannot be resolved', () => {
+  const action = { type: 'TEST' };
   const result = renderReducer({ registry: new Map() });
 
-  act(() => result.result.current.handleAction({ type: 'TEST' }));
+  act(() => result.result.current.handleAction(action));
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'TEST'"));
   expect(result.result.current.state).toBe(initialState);
-  error.mockRestore();
+  expect(result.result.current.report?.events).toEqual([
+    { id: 0, type: 'unhandled-action', action },
+  ]);
 });
 
-it('logs an error for a later action after a same-batch reset changes the registered state key', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+it('reports an unhandled action when no router handles it', () => {
+  const action = { type: 'TEST' };
+  const result = renderReducer({ registry: new Map([['root', entry(() => null)]]) });
+
+  act(() => result.result.current.handleAction(action));
+
+  expect(result.result.current.state).toBe(initialState);
+  expect(result.result.current.report?.events).toEqual([
+    { id: 0, type: 'unhandled-action', action },
+  ]);
+});
+
+it('assigns increasing ids to unhandled actions across origin resolution changes', () => {
   const registryEntry = entry((state, action) =>
     action.type === 'RESET_KEY'
       ? {
@@ -413,11 +425,15 @@ it('logs an error for a later action after a same-batch reset changes the regist
   act(() => {
     result.result.current.handleAction({ type: 'RESET_KEY' });
     result.result.current.handleAction({ type: 'NEXT' });
+    result.result.current.handleAction({ type: 'AFTER_NEXT' });
   });
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'NEXT'"));
   expect(result.result.current.state.key).toBe('next-root');
-  error.mockRestore();
+  expect(result.result.current.report?.events).toEqual([
+    expect.objectContaining({ id: 0, type: 'action-dispatched', action: { type: 'RESET_KEY' } }),
+    { id: 1, type: 'unhandled-action', action: { type: 'NEXT' } },
+    { id: 2, type: 'unhandled-action', action: { type: 'AFTER_NEXT' } },
+  ]);
 });
 
 it('resets a state slice when its router unregisters', () => {

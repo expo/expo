@@ -4,12 +4,14 @@ import * as React from 'react';
 
 import { unstable_navigationEvents } from '../navigationEvents';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
+import type { NavigationAction } from '../react-navigation/routers';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 
 export function useNavigationTreeReportEvents(
   report: NavigationTreeReport | undefined,
-  consumeReportEvents: (eventIds: readonly number[]) => void
+  consumeReportEvents: (eventIds: readonly number[]) => void,
+  onUnhandledAction: (action: NavigationAction) => void
 ) {
   const emitterRegistry = React.use(GlobalRemovalEventEmitterRegistryContext)!;
   const consumedIds = React.useRef(new Set<number>());
@@ -35,6 +37,9 @@ export function useNavigationTreeReportEvents(
       // A listener that throws must not stop the remaining events from being delivered.
       try {
         switch (event.type) {
+          case 'unhandled-action':
+            onUnhandledAction(event.action);
+            break;
           case 'prevented-routes':
             for (const routeKey of event.routeKeys) {
               emitterRegistry.emitRemovalEvent(routeKey, 'removePrevented', event.action);
@@ -65,5 +70,5 @@ export function useNavigationTreeReportEvents(
     if (ids.length > 0) {
       consumeReportEvents(ids);
     }
-  }, [consumeReportEvents, emitterRegistry, report]);
+  }, [consumeReportEvents, emitterRegistry, onUnhandledAction, report]);
 }

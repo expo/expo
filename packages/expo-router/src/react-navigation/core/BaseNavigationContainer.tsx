@@ -58,13 +58,14 @@ const duplicateNameWarnings: string[] = [];
  *
  * @param props.initialState Initial state object for the navigation tree.
  * @param props.onReady Callback which is called after the navigation tree mounts.
- * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
+ * @param props.onUnhandledAction Callback which is called when an action is not handled.
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
-  const { ref, initialState, onReady, UNSTABLE_routeNode, theme, children } = props;
+  const { ref, initialState, onReady, onUnhandledAction, UNSTABLE_routeNode, theme, children } =
+    props;
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
@@ -90,6 +91,50 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
 
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
+  const handleUnhandledAction = useLatestCallback((action: NavigationAction) => {
+    if (onUnhandledAction) {
+      onUnhandledAction(action);
+      return;
+    }
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+
+    const payload =
+      typeof action.payload === 'object' && action.payload !== null ? action.payload : undefined;
+    let message = `The action '${action.type}'${
+      payload ? ` with payload ${JSON.stringify(payload)}` : ''
+    } was not handled by any navigator.`;
+
+    switch (action.type) {
+      case 'NAVIGATE':
+      case 'PUSH':
+      case 'REPLACE':
+      case 'JUMP_TO':
+        if (payload && 'name' in payload && typeof payload.name === 'string') {
+          message += `\n\nDo you have a route named '${payload.name}'?`;
+        } else {
+          message +=
+            '\n\nYou need to pass the name of the screen to navigate to. This may be a bug.';
+        }
+        break;
+      case 'GO_BACK':
+      case 'POP':
+      case 'POP_TO_TOP':
+        message += '\n\nIs there any screen to go back to?';
+        break;
+      case 'OPEN_DRAWER':
+      case 'CLOSE_DRAWER':
+      case 'TOGGLE_DRAWER':
+        message += '\n\nIs your screen inside a Drawer navigator?';
+        break;
+    }
+
+    console.error(
+      `${message}\n\nThis is a development-only warning and won't be shown in production.`
+    );
+  });
+
   // TODO(@ubax): consider moving this state to ExpoRoot.
   const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
     useNavigationTreeReducer({
@@ -100,7 +145,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       linking: routerConfig?.linking,
       redirects: routerConfig?.redirects,
     });
-  useNavigationTreeReportEvents(report, consumeReportEvents);
+  useNavigationTreeReportEvents(report, consumeReportEvents, handleUnhandledAction);
 
   const { listeners, addListener } = useChildListeners();
 
