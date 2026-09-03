@@ -33,7 +33,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme.
+- [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme. ([#49697](https://github.com/expo/expo/pull/49697) by [@expo-bot](https://github.com/expo-bot))
 - [iOS][Android] Fixed a `matchContents` `RNHostView` inside a `matchContents` `Host` growing the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix modifier application rebuilding a fresh `AnyViewModifier` every body evaluation, which defeated AttributeGraph subtree pruning during scroll. ([#48426](https://github.com/expo/expo/pull/48426) by [@wielski](https://github.com/wielski))
 - [Android] Fix a drag that starts on a hosted `TextInput` not scrolling the `ScrollView` around it. React Native's text input asks its ancestors not to intercept the gesture, then releases them one move later, and Jetpack Compose read that release as "Compose claimed the gesture" and cancelled the hosted subtree. `RNHostView` no longer passes such a release on to Compose.
