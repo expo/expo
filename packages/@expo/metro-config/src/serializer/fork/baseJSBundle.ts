@@ -160,6 +160,8 @@ export function baseJSBundleWithDependencies(
     asyncRequireModulePath: options.asyncRequireModulePath,
     createModuleId: options.createModuleId,
     getRunModuleStatement: options.getRunModuleStatement,
+    // Match previous behaviour where this was omitted. We may want to pass it through.
+    getSourceUrl: undefined,
     globalPrefix: options.globalPrefix,
     inlineSourceMap: options.inlineSourceMap,
     runBeforeMainModule: options.runBeforeMainModule,

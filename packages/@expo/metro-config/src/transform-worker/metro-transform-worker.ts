@@ -30,6 +30,7 @@ import {
 } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
+import type { ExpoBabelTransformer as ExpoBabelTransformerWithCacheKey } from '../babel-transformer';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
   countLinesAndTerminateSourceMap,
@@ -65,6 +66,7 @@ import {
 } from './noxcturnal/metro-transform-worker';
 import { type NoxcturnalMetroTransformAttempt } from './noxcturnal/noxcturnal-transformer';
 import { shouldMinify } from './resolveOptions';
+import type { ExpoBabelFileMetadata, ExpoJsTransformerConfig } from './types';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
 export { JsTransformOptions };
@@ -104,7 +106,7 @@ interface JSONFile extends BaseFile {
 }
 
 interface TransformationContext {
-  readonly config: JsTransformerConfig;
+  readonly config: ExpoJsTransformerConfig;
   readonly projectRoot: string;
   readonly options: JsTransformOptions;
 }
@@ -909,6 +911,7 @@ async function transformJSWithBabelFallback(
       importLocationsPlugin,
     ])
   );
+  const metadata = transformResult.metadata as ExpoBabelFileMetadata | undefined;
 
   const jsFile: JSFile = {
     ...file,
@@ -920,12 +923,12 @@ async function transformJSWithBabelFallback(
       null,
     unstable_importDeclarationLocs:
       transformResult?.metadata?.metro?.unstable_importDeclarationLocs,
-    hasCjsExports: transformResult.metadata?.hasCjsExports,
-    reactServerReference: transformResult.metadata?.reactServerReference,
-    reactClientReference: transformResult.metadata?.reactClientReference,
-    expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
-    loaderReference: transformResult.metadata?.loaderReference,
-    performConstantFolding: transformResult.metadata?.performConstantFolding,
+    hasCjsExports: metadata?.hasCjsExports,
+    reactServerReference: metadata?.reactServerReference,
+    reactClientReference: metadata?.reactClientReference,
+    expoDomComponentReference: metadata?.expoDomComponentReference,
+    loaderReference: metadata?.loaderReference,
+    performConstantFolding: metadata?.performConstantFolding,
   };
 
   return await transformJS(jsFile, context);
@@ -1002,7 +1005,7 @@ function getBabelTransformArgs(
 }
 
 export async function transform(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
@@ -1066,7 +1069,7 @@ export async function transform(
 const CACHE_VERSION = '2';
 
 export function getCacheKey(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   opts?: Readonly<{ projectRoot: string }>
 ): string {
   const {
@@ -1091,7 +1094,7 @@ export function getCacheKey(
     ...getNoxcturnalCacheKeyFiles(),
   ]);
 
-  let babelTransformer: BabelTransformer = require(babelTransformerPath);
+  let babelTransformer: ExpoBabelTransformerWithCacheKey = require(babelTransformerPath);
 
   // NOTE(@kitten): Many custom Babel transformers won't have `getCacheKey` yet and won't
   // pass ours through. We should still try to derive a cache key though, since the default
