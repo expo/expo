@@ -165,6 +165,7 @@ export function baseJSBundleWithDependencies(
     runBeforeMainModule: options.runBeforeMainModule,
     runModule: options.runModule,
     shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+    getSourceUrl: options.getSourceUrl,
     sourceMapUrl,
     // This directive doesn't make a lot of sense in the context of a large single bundle that represent
     // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
