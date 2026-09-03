@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Added `CLAUDE.md` and `CONTRIBUTING.md` to `.npmignore` template. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
+- [Internal] Remove Expo Metro type augmentations that are now declared explicitly. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
 - Updated `oxlint-config-universe` to 0.2.0, which requires `oxlint` 1.79.0. ([#49241](https://github.com/expo/expo/pull/49241) by [@tsapeta](https://github.com/tsapeta))
 - Enabled the `react/use-memo`, `react/void-use-memo`, `react/purity`, `react/preserve-manual-memoization`, and `react/static-components` rules in the shared oxlint config. ([#49242](https://github.com/expo/expo/pull/49242) by [@tsapeta](https://github.com/tsapeta))
 
