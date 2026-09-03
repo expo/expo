@@ -146,6 +146,10 @@ export interface DailyNotificationTrigger {
   type: 'daily';
   hour: number;
   minute: number;
+  /**
+   * Whether the notification was scheduled with the `alarmClock` option.
+   */
+  alarmClock?: boolean;
 }
 
 /**
@@ -158,6 +162,10 @@ export interface WeeklyNotificationTrigger {
   weekday: number;
   hour: number;
   minute: number;
+  /**
+   * Whether the notification was scheduled with the `alarmClock` option.
+   */
+  alarmClock?: boolean;
 }
 
 /**
@@ -170,6 +178,10 @@ export interface MonthlyNotificationTrigger {
   day: number;
   hour: number;
   minute: number;
+  /**
+   * Whether the notification was scheduled with the `alarmClock` option.
+   */
+  alarmClock?: boolean;
 }
 
 /**
@@ -183,6 +195,10 @@ export interface YearlyNotificationTrigger {
   month: number;
   hour: number;
   minute: number;
+  /**
+   * Whether the notification was scheduled with the `alarmClock` option.
+   */
+  alarmClock?: boolean;
 }
 
 // @docsMissing
@@ -306,9 +322,12 @@ export type DailyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
-   * Use for time-critical, user-facing alarms that must not be deferred by OEM
-   * battery policies. Ignored on other platforms.
+   * Schedules the notification with `AlarmManager.setAlarmClock()`. The system delivers these alarms
+   * at the requested time and does not defer them for battery optimization, which some OEM Android
+   * builds do for other exact alarms. Use only for time-critical alarms, such as alarm clocks or
+   * medication reminders. The status bar shows an alarm icon until the notification is delivered.
+   * Requires the `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM` permission on Android 12 and higher.
+   * Without the permission, the notification is scheduled as if this option was not set.
    * @platform android
    */
   alarmClock?: boolean;
@@ -326,9 +345,12 @@ export type WeeklyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
-   * Use for time-critical, user-facing alarms that must not be deferred by OEM
-   * battery policies. Ignored on other platforms.
+   * Schedules the notification with `AlarmManager.setAlarmClock()`. The system delivers these alarms
+   * at the requested time and does not defer them for battery optimization, which some OEM Android
+   * builds do for other exact alarms. Use only for time-critical alarms, such as alarm clocks or
+   * medication reminders. The status bar shows an alarm icon until the notification is delivered.
+   * Requires the `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM` permission on Android 12 and higher.
+   * Without the permission, the notification is scheduled as if this option was not set.
    * @platform android
    */
   alarmClock?: boolean;
@@ -346,9 +368,12 @@ export type MonthlyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
-   * Use for time-critical, user-facing alarms that must not be deferred by OEM
-   * battery policies. Ignored on other platforms.
+   * Schedules the notification with `AlarmManager.setAlarmClock()`. The system delivers these alarms
+   * at the requested time and does not defer them for battery optimization, which some OEM Android
+   * builds do for other exact alarms. Use only for time-critical alarms, such as alarm clocks or
+   * medication reminders. The status bar shows an alarm icon until the notification is delivered.
+   * Requires the `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM` permission on Android 12 and higher.
+   * Without the permission, the notification is scheduled as if this option was not set.
    * @platform android
    */
   alarmClock?: boolean;
@@ -367,9 +392,12 @@ export type YearlyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
-   * Use for time-critical, user-facing alarms that must not be deferred by OEM
-   * battery policies. Ignored on other platforms.
+   * Schedules the notification with `AlarmManager.setAlarmClock()`. The system delivers these alarms
+   * at the requested time and does not defer them for battery optimization, which some OEM Android
+   * builds do for other exact alarms. Use only for time-critical alarms, such as alarm clocks or
+   * medication reminders. The status bar shows an alarm icon until the notification is delivered.
+   * Requires the `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM` permission on Android 12 and higher.
+   * Without the permission, the notification is scheduled as if this option was not set.
    * @platform android
    */
   alarmClock?: boolean;
@@ -385,12 +413,12 @@ export type DateTriggerInput = {
   date: Date | number;
   channelId?: string;
   /**
-   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
-   * Use for time-critical, user-facing alarms (prayer/adhan times, alarm clocks,
-   * medication reminders) that must not be deferred by OEM battery policies.
-   * The system will show the alarm indicator in the status bar and may briefly
-   * exit low-power modes to deliver the notification on time.
-   * Ignored on other platforms.
+   * Schedules the notification with `AlarmManager.setAlarmClock()`. The system delivers these alarms
+   * at the requested time and does not defer them for battery optimization, which some OEM Android
+   * builds do for other exact alarms. Use only for time-critical alarms, such as alarm clocks or
+   * medication reminders. The status bar shows an alarm icon until the notification is delivered.
+   * Requires the `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM` permission on Android 12 and higher.
+   * Without the permission, the notification is scheduled as if this option was not set.
    * @platform android
    */
   alarmClock?: boolean;

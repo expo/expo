@@ -130,6 +130,10 @@ export default class NotificationScreen extends React.Component<
           title="Schedule notification for 10 seconds from now"
         />
         <ListButton
+          onPress={this._scheduleAlarmClockNotificationAsync}
+          title="Schedule alarm-clock notification for 60 seconds from now (Android)"
+        />
+        <ListButton
           onPress={this._scheduleLocalNotificationWithCustomSoundAsync}
           title="Schedule notification with custom sound in 1 second (not supported in Expo Go)"
         />
@@ -318,6 +322,22 @@ export default class NotificationScreen extends React.Component<
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 10,
+      },
+    });
+  };
+
+  _scheduleAlarmClockNotificationAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Alarm-clock notification',
+        body: 'Scheduled with alarmClock: true',
+        sound: true,
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: Date.now() + 60_000,
+        alarmClock: true,
       },
     });
   };

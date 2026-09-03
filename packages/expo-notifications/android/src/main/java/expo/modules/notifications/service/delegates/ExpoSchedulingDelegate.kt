@@ -107,38 +107,37 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
     }
   }
 
-  private fun setupAlarm(triggerAtMillis: Long, operation: PendingIntent, alarmClock: Boolean = false) {
-    if (alarmClock && (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms())) {
-      // setAlarmClock() is the strongest delivery guarantee AlarmManager offers: per the
-      // Android docs "the system never adjusts their delivery time" and it "leaves low-power
-      // modes if necessary to deliver". Unlike setExactAndAllowWhileIdle(), OEM battery
-      // policies do not convert these alarms to windowed/inexact delivery.
-      val showIntent = PendingIntent.getActivity(
-        context,
-        0,
-        context.packageManager.getLaunchIntentForPackage(context.packageName),
-        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-      )
-      AlarmManagerCompat.setAlarmClock(
-        alarmManager,
-        triggerAtMillis,
-        showIntent,
-        operation
-      )
-    } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
-      AlarmManagerCompat.setExactAndAllowWhileIdle(
+  private fun setupAlarm(triggerAtMillis: Long, operation: PendingIntent, alarmClock: Boolean) {
+    val canScheduleExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
+    when {
+      !canScheduleExact -> AlarmManagerCompat.setAndAllowWhileIdle(
         alarmManager,
         AlarmManager.RTC_WAKEUP,
         triggerAtMillis,
         operation
       )
-    } else {
-      AlarmManagerCompat.setAndAllowWhileIdle(
+      // setAlarmClock() alarms are never adjusted by the system. OEM battery policies defer
+      // setExactAndAllowWhileIdle() alarms by minutes on some devices but leave these alone.
+      alarmClock -> alarmManager.setAlarmClock(
+        AlarmManager.AlarmClockInfo(triggerAtMillis, launchAppIntent()),
+        operation
+      )
+      else -> AlarmManagerCompat.setExactAndAllowWhileIdle(
         alarmManager,
         AlarmManager.RTC_WAKEUP,
         triggerAtMillis,
         operation
       )
     }
+  }
+
+  private fun launchAppIntent(): PendingIntent? {
+    val intent = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return null
+    return PendingIntent.getActivity(
+      context,
+      0,
+      intent,
+      PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
   }
 }
