@@ -43,6 +43,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
+@property (nonatomic, assign) BOOL isLoadingApp;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
@@ -54,6 +55,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 @end
 
+
+NSNotificationName const EXDevLauncherAppLoadingDidStartNotification = @"EXDevLauncherAppLoadingDidStart";
 
 @implementation EXDevLauncherController
 
@@ -406,6 +409,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
   NSURL *expoUrl = devLauncherUrl.url;
   _possibleManifestURL = expoUrl;
+  _isLoadingApp = YES;
+  [[NSNotificationCenter defaultCenter] postNotificationName:EXDevLauncherAppLoadingDidStartNotification object:self];
   BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
 
   // an update url requires a matching projectUrl
@@ -507,6 +512,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   __block BOOL shouldRetry = YES;
   [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:^(NSError * _Nonnull error) {
+    self->_isLoadingApp = NO;
     // Try to retry if the network connection was rejected because of the lack of the lan network permission.
     NSString *host = expoUrl.host;
 
@@ -534,6 +540,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   self.manifest = manifest;
   self.manifestURL = appUrl;
   _possibleManifestURL = nil;
+  _isLoadingApp = NO;
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
 
   __weak __typeof(self) weakSelf = self;
@@ -610,6 +617,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (BOOL)isAppRunning
 {
   return [self.delegate isReactInstanceValid];
+}
+
+- (BOOL)isLoadingApp
+{
+  return _isLoadingApp;
 }
 
 #if !TARGET_OS_OSX
