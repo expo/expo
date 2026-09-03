@@ -49,6 +49,36 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
+  func `creating and settling a deferred promise installs no then handlers until awaited`() async throws {
+    let runtime = JavaScriptRuntime()
+    try runtime.eval(
+      """
+      globalThis.thenCalls = 0;
+      const originalThen = Promise.prototype.then;
+      Promise.prototype.then = function (...args) {
+        globalThis.thenCalls++;
+        return originalThen.apply(this, args);
+      };
+      """
+    )
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(42.0)
+    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 0)
+    #expect(try await promise.await().getInt() == 42)
+    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 1)
+  }
+
+  @Test
+  func `awaiting a deferred promise that settled long before delivers the value`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve("late")
+    // Let the settle run and the engine drain its reactions before anything is awaited.
+    try runtime.eval("for (let i = 0; i < 10; i++) {}")
+    #expect(try await promise.await().getString() == "late")
+  }
+
+  @Test
   func `deferred promise construction throws when Promise constructor is unavailable`() throws {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Promise = undefined")
