@@ -97,6 +97,7 @@
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))
 - Re-export the vendored JavaScript stack API from `expo-router/js-stack`. ([#49657](https://github.com/expo/expo/pull/49657) by [@davidmokos](https://github.com/davidmokos))
+- Ignore the reserved `__expo_*` launch URL params on Expo Go and development build launch URLs, so they no longer become route search params.
 - Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
 - Make layouts with explicitly declared screens honor `unstable_settings.initialRouteName` instead of declaration order, which can change deep-link back stacks. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))
 - Prevent unfocused nested native tab navigators from redirecting global router state. ([#48257](https://github.com/expo/expo/pull/48257) by [@Ubax](https://github.com/Ubax))
@@ -123,6 +124,7 @@
 - Propagate prevent-remove guards to ancestors. ([#49829](https://github.com/expo/expo/pull/49829) by [@Ubax](https://github.com/Ubax))
 - Mark preloaded routes with `isPreloaded: true` on the route object. ([#49826](https://github.com/expo/expo/pull/49826) by [@Ubax](https://github.com/Ubax))
 - Replace latest-value refs with `useLatestCallback` and `useEffectEvent`. ([#49643](https://github.com/expo/expo/pull/49643) by [@Ubax](https://github.com/Ubax))
+- Use `unwrapDevLaunchURL` from `expo-linking` instead of a private copy of the `expo-development-client` URL handling.
 - Remove the root `options` event, `DocumentTitleOptions`, and the `documentTitle` prop from `expo-router/react-navigation`. ([#49590](https://github.com/expo/expo/pull/49590) by [@Ubax](https://github.com/Ubax))
 - Remove `onStateChange` from `BaseNavigationContainer` and `NavigationContainerProps` in `expo-router/react-navigation` ([#49588](https://github.com/expo/expo/pull/49588) by [@Ubax](https://github.com/Ubax))
 - Pass toolbar menu icons straight to react-navigation instead of converting them to react-native-screens icons. (by [@Ubax](https://github.com/Ubax)) ([#49584](https://github.com/expo/expo/pull/49584) by [@Ubax](https://github.com/Ubax))
