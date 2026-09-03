@@ -137,6 +137,21 @@ export function isEnvBoolean(graph: ReadOnlyGraph, name: string): boolean {
 }
 
 // This is the insane step which reconciles the second half of the transformation process but it does it uncached at the end of the bundling process when we have tree shaking completed.
+/**
+ * CSS modules emitted by Expo's own CSS pipeline are synthesized by `transformShim`, which already
+ * wraps them and attaches no reconcile settings, so they must not be transformed again.
+ *
+ * A third-party transformer may instead replace a `.css` file's contents with a regular JS module
+ * (e.g. `uniwind`). Those carry reconcile settings and are not wrapped yet, so skipping them by
+ * file extension alone leaves `require` unbound at the top level of the bundle.
+ */
+export function shouldSkipReconcile(path: string, outputItem: ExpoJsOutput): boolean {
+  if (outputItem.type !== 'js/module' || path.endsWith('.json')) {
+    return true;
+  }
+  return /\.(s?css|sass)$/.test(path) && outputItem.data.reconcile == null;
+}
+
 export async function reconcileTransformSerializerPlugin(
   entryPoint: string,
   preModules: readonly Module<MixedOutput>[],
@@ -167,11 +182,7 @@ export async function reconcileTransformSerializerPlugin(
     value: Module<MixedOutput>,
     outputItem: ExpoJsOutput
   ): Promise<ExpoJsOutput> {
-    if (
-      outputItem.type !== 'js/module' ||
-      value.path.endsWith('.json') ||
-      value.path.match(/\.(s?css|sass)$/)
-    ) {
+    if (shouldSkipReconcile(value.path, outputItem)) {
       return outputItem;
     }
 
