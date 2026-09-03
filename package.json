@@ -48,6 +48,7 @@
     "typescript": "^6.0.2"
   },
   "resolutions": {
+    "@expo/metro": "file:./expo-metro-56.0.3.tgz",
     "@types/babel__code-frame": "^7.27.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
