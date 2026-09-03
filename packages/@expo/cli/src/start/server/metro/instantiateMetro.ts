@@ -552,8 +552,9 @@ export async function instantiateMetroAsync(
     const ctx = {
       // TODO(@kitten): Increase type-safety here
       platform: graph.transformOptions.platform!,
-      environment: (graph.transformOptions.customTransformOptions as ExpoCustomTransformOptions | undefined)
-        ?.environment,
+      environment: (
+        graph.transformOptions.customTransformOptions as ExpoCustomTransformOptions | undefined
+      )?.environment,
     };
     // Assign IDs to modules in a consistent order
     for (const module of modules) {
