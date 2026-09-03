@@ -80,19 +80,15 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   public init(_ runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
 
-    // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
-    let setup = runtime.createFunction { [weak longLivedState] this, arguments in
-      longLivedState?.resolveFunction.reset(arguments[0])
-      longLivedState?.rejectFunction.reset(arguments[1])
-      return .undefined
-    }
-
-    let object =
-      try runtime
-      .global()
-      .getPropertyAsFunction(.cached(runtime, "Promise"))
-      .callAsConstructor(setup.asValue())
-    longLivedState.object.reset(object)
+    // The promise and its two settle functions come from a JavaScript closure that returns all three
+    // at once, rather than from `new Promise(executor)` with a host function as the executor. The
+    // host function route costs a native function and a Swift context object per promise, a re-entry
+    // from the engine into Swift while the constructor runs, and an owning copy of each settle
+    // function on the way back. The closure route is one JS call and three array reads.
+    let triple = try runtime.deferredPromiseFactory().getFunction().call().getArray()
+    longLivedState.object.reset(try triple.getValue(at: 0))
+    longLivedState.resolveFunction.reset(try triple.getValue(at: 1))
+    longLivedState.rejectFunction.reset(try triple.getValue(at: 2))
     try setUpCallbacks()
     // Register only after setup succeeds, so a failed initializer (e.g. `then` unavailable) doesn't
     // leave the state pinned in the collection until teardown. Owns the promise's JSI values from
@@ -253,5 +249,31 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         onRejected.asValue()
       )
     }
+  }
+}
+
+// MARK: - Deferred promise factory
+
+extension JavaScriptRuntime {
+  /// Returns the cached `() => [promise, resolve, reject]` function as a value, creating it on first use.
+  /// Evaluated from source so it captures nothing native; it is plain JavaScript the engine can
+  /// optimize like any other closure.
+  @JavaScriptActor
+  fileprivate func deferredPromiseFactory() throws -> JavaScriptValue {
+    if let factory = cachedDeferredPromiseFactory {
+      return factory
+    }
+    let factory = try eval(
+      label: "expo-modules-jsi/deferred-promise.js",
+      """
+      (function () {
+        let resolve, reject;
+        const promise = new Promise(function (a, b) { resolve = a; reject = b; });
+        return [promise, resolve, reject];
+      })
+      """
+    )
+    cachedDeferredPromiseFactory = factory
+    return factory
   }
 }

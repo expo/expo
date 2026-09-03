@@ -133,6 +133,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // when the last reference is gone. `deinit` is `nonisolated`, so it can touch the actor-isolated
     // registry directly given that exclusive access.
     propNameIdsRegistry.removeAll()
+    cachedDeferredPromiseFactory = nil
     expo.destroyRuntime(runtimePointee)
   }
 
@@ -733,6 +734,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @JavaScriptActor
   internal var propNameIdsRegistry: [String: JavaScriptPropNameID] = [:]
 
+  // MARK: - Deferred promise factory
+
+  /// The JavaScript function ``JavaScriptPromise`` uses to create deferred promises, built on first
+  /// use and released with the runtime. See `JavaScriptPromise.init(_:)` for why it exists.
+  @JavaScriptActor
+  internal var cachedDeferredPromiseFactory: JavaScriptValue?
+
   // MARK: - Long-lived objects
 
   /// Registry of JSI objects (such as in-flight promises) that must outlive the native call that
@@ -763,11 +771,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         // hop back to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
-          // Also flush the cached `jsi::PropNameID`s: a non-owning wrapper can outlive its runtime
-          // (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
-          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't
-          // retain the wrapper; the owning wrapper clears its own registry in `deinit`.
+          // Also flush the cached `jsi::PropNameID`s and the deferred-promise factory: a non-owning
+          // wrapper can outlive its runtime (e.g. captured by a task abandoned on reload) and would
+          // otherwise destroy them against the freed runtime when it deallocates. `self` is weak so
+          // the teardown object doesn't retain the wrapper; the owning wrapper clears both in `deinit`.
           self?.propNameIdsRegistry.removeAll()
+          self?.cachedDeferredPromiseFactory = nil
         }
       }
       let object = createObject()
