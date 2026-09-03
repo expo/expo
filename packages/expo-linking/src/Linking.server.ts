@@ -68,3 +68,4 @@ export function resolveScheme() {
 }
 
 export { parse, createURL } from './createURL';
+export { unwrapDevLaunchURL } from './devLaunchURL';
