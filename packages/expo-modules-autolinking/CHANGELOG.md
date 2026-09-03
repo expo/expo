@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add an SPM prebuild config for `react-native-gesture-handler`, so it can ship as a prebuilt XCFramework instead of always building from source. ([#49171](https://github.com/expo/expo/pull/49171) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Detect React Native versions that ship self-contained XCFrameworks (no VFS overlay) during precompile and pod install, falling back to the legacy VFS overlay integration on pre-0.87 versions. ([#47256](https://github.com/expo/expo/pull/47256) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
 - [Android] Support linking published Gradle plugins. ([#48334](https://github.com/expo/expo/pull/48334) by [@jakex7](https://github.com/jakex7))
