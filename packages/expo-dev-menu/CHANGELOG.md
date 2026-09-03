@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add the shared `ExpoLaunchURL` parser for the reserved `__expo_*` launch URL params (`__expo_url`, `__expo_launch_token`, `__expo_disable_onboarding`, `__expo_disable_fab`, `__expo_disable_auto_launch`).
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

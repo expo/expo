@@ -13,15 +13,11 @@ public class EXDevLauncherUrl: NSObject {
 
   @objc
   public init(_ url: URL) {
-    self.queryParams = EXDevLauncherURLHelper.getQueryParamsForUrl(url)
-
-    if EXDevLauncherURLHelper.isDevLauncherURL(url),
-      let urlParam = queryParams["url"],
-      let urlFromParam = URL(string: urlParam) {
-      self.url = EXDevLauncherURLHelper.replaceEXPScheme(urlFromParam, to: "http")
-    } else {
-      self.url = EXDevLauncherURLHelper.replaceEXPScheme(url, to: "http")
-    }
+    let launch = ExpoLaunchURL(url)
+    // Query params the launcher passes on, for example `updateMessage`. Never contains reserved params.
+    self.queryParams = launch.passthroughParams
+    // The project URL to load, with `exp` rewritten to `http`.
+    self.url = EXDevLauncherURLHelper.replaceEXPScheme(launch.targetURL ?? launch.strippedURL, to: "http")
 
     super.init()
   }
@@ -29,19 +25,31 @@ public class EXDevLauncherUrl: NSObject {
 
 @objc
 public class EXDevLauncherURLHelper: NSObject {
+  /// A launcher command: any `__expo_*` query param, or the legacy `expo-development-client` host.
   @objc
   public static func isDevLauncherURL(_ url: URL?) -> Bool {
-    return url?.host == "expo-development-client"
-  }
-
-  @objc
-  public static func hasUrlQueryParam(_ url: URL) -> Bool {
-    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-    let queryItems = components.queryItems else {
+    guard let url else {
       return false
     }
+    return ExpoLaunchURL(url).isLauncherCommand
+  }
 
-    return queryItems.contains { $0.name == "url" && $0.value != nil }
+  /// Whether the launcher URL names a project to load, through `__expo_url` or the legacy `url`.
+  @objc
+  public static func hasUrlQueryParam(_ url: URL) -> Bool {
+    return ExpoLaunchURL(url).targetURL != nil
+  }
+
+  /// For a launcher command without a target, e.g. `myapp://login?__expo_launch_token=...`, the deep
+  /// link the app receives once the launcher consumed the reserved params. `nil` when the remainder
+  /// has no destination of its own.
+  @objc
+  public static func externalDeepLink(fromLauncherURL url: URL) -> URL? {
+    let launch = ExpoLaunchURL(url)
+    guard launch.isLauncherCommand, !launch.isLegacyHost, launch.targetURL == nil, launch.remainderHasDestination else {
+      return nil
+    }
+    return launch.strippedURL
   }
 
   static func hasEnabledFlag(_ name: String, in url: URL) -> Bool {
@@ -60,13 +68,18 @@ public class EXDevLauncherURLHelper: NSObject {
     }
   }
 
+  /// Applies the dev menu params of a launch URL to the saved preferences: `__expo_disable_onboarding=1`,
+  /// `__expo_disable_fab=1` and `__expo_disable_auto_launch=1`, or their legacy names next to `url`.
   @objc
   public static func applyDevMenuPreferencesIfNeeded(_ url: URL) {
-    if hasEnabledFlag("disableFab", in: url) {
+    let launch = ExpoLaunchURL(url)
+    if launch.disablesOnboarding {
+      DevMenuPreferences.isOnboardingFinished = true
+    }
+    if launch.disablesFab {
       DevMenuManager.shared.setShowFloatingActionButton(false)
     }
-
-    if hasEnabledFlag("disableAutoLaunch", in: url) {
+    if launch.disablesAutoLaunch {
       DevMenuPreferences.isOnboardingFinished = true
       DevMenuManager.shared.setShowsAtLaunch(false)
     }

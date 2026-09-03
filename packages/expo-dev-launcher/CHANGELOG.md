@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Accept launcher commands as reserved `__expo_*` query params on any host: `__expo_url`, `__expo_disable_onboarding`, `__expo_disable_fab` and `__expo_disable_auto_launch`. The `expo-development-client` host and its `url`, `disableOnboarding`, `disableFab` and `disableAutoLaunch` params remain supported. Reserved params are removed before the app receives the URL.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

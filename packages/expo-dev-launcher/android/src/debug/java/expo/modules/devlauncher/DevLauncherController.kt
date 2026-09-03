@@ -20,9 +20,6 @@ import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
-import expo.modules.devlauncher.helpers.hasEnabledFlag
-import expo.modules.devlauncher.helpers.hasUrlQueryParam
-import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
@@ -41,6 +38,8 @@ import expo.modules.devlauncher.launcher.loaders.createAppLoader
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
+import expo.modules.devmenu.launch.ExpoLaunchUrl
+import expo.modules.devmenu.launch.applyDevMenuPreferences
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
@@ -137,17 +136,11 @@ class DevLauncherController private constructor(
       manifest = result.manifest
       manifestURL = result.manifestURL
 
+      // `__expo_disable_onboarding=1`, `__expo_disable_fab=1`, `__expo_disable_auto_launch=1`, or their
+      // legacy names next to `url`, update the saved dev menu preferences.
+      DependencyInjection.devMenuPreferences?.let { result.devLauncherUrl?.launch?.applyDevMenuPreferences(it) }
       if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
         DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
-      }
-
-      if (hasEnabledFlag(url, "disableFab")) {
-        DependencyInjection.devMenuPreferences?.showFab = false
-      }
-
-      if (hasEnabledFlag(url, "disableAutoLaunch")) {
-        DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
-        DependencyInjection.devMenuPreferences?.showsAtLaunch = false
       }
 
       if (launchAppLoader(result.appLoader)) {
@@ -289,17 +282,30 @@ class DevLauncherController private constructor(
     intent
       ?.data
       ?.let { uri ->
+        val launch = ExpoLaunchUrl(uri)
+
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
           DependencyInjection.devMenuPreferences?.showsAtLaunch = false
           DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
         }
 
-        if (!isDevLauncherUrl(uri)) {
+        if (!launch.isLauncherCommand) {
           return handleExternalIntent(intent)
         }
 
-        if (!hasUrlQueryParam(uri)) {
+        if (launch.launchToken != null) {
+          // TODO: exchange the token for a session. Never log its value.
+          Log.d("DevLauncher", "Ignoring __expo_launch_token: not supported by this version")
+        }
+
+        if (launch.targetUrl == null) {
+          if (!launch.isLegacyHost && launch.remainderHasDestination) {
+            // e.g. `myapp://login?__expo_launch_token=...`: the launcher consumed the reserved
+            // params, the app receives the rest as a regular deep link.
+            intent.data = launch.strippedUrl
+            return handleExternalIntent(intent)
+          }
           // edge case: this is a dev launcher url, but it does not specify what url to open
           // fallback to navigating to the launcher home screen
           if (useDefaultLaunchUrlFallback) {
@@ -312,7 +318,8 @@ class DevLauncherController private constructor(
 
         coroutineScope.launch {
           try {
-            pendingIntentRegistry.intent = intent
+            // The app must not see the reserved params, for example the launch token.
+            pendingIntentRegistry.intent = Intent(intent).setData(launch.strippedUrl)
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
