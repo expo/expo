@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix opening a browser on Windows (`expo login --browser`, `expo start`, etc.) crashing or opening a truncated URL when the target contains `&`, such as OAuth login URLs with multiple query parameters. `cmd.exe /c start` re-tokenizes its joined argument list as a single command line regardless of how the target is quoted, so any `&` in the URL is treated as a command separator; `spawnWindowsStartAsync` and the WSL browser-open path now use `powershell.exe`'s `Start-Process` instead, which isn't subject to the same class of bug.
 - Stop writing DOM component source maps into the app binary during `expo export:embed`, so Android release builds no longer ship `www.bundle` source maps with the original app source. ([#49480](https://github.com/expo/expo/pull/49480) by [@expo-bot](https://github.com/expo-bot))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
