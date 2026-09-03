@@ -58,6 +58,17 @@ describe(sortRoutes, () => {
     // Index tied with group
     expect(sortRoutes(asRouteNode('index'), asRouteNode('(z)'))).toBe(2);
   });
+  it(`sorts nested index routes by priority`, () => {
+    expect(getSortedRoutes('sessions/main', 'sessions/index')).toEqual([
+      'sessions/index',
+      'sessions/main',
+    ]);
+    expect(getSortedRoutes('a/b/main', 'a/b/index')).toEqual(['a/b/index', 'a/b/main']);
+    expect(getSortedRoutes('sessions/index', 'index')).toEqual(['index', 'sessions/index']);
+  });
+  it(`ties equal-length named segments`, () => {
+    expect(sortRoutes(asRouteNode('zebra'), asRouteNode('apple'))).toBe(0);
+  });
   it(`sorts group routes by priority`, () => {
     expect(sortRoutes(asRouteNode('(zzz)'), asRouteNode('[...a]'))).toBe(-1);
     expect(sortRoutes(asRouteNode('(zzz)'), asRouteNode('[a]'))).toBe(-1);

@@ -1,7 +1,13 @@
 import { screen, fireEvent } from '@testing-library/react-native';
 import { act, useState } from 'react';
-import { View } from 'react-native';
-import { Tabs } from 'react-native-screens';
+import { View, type NativeSyntheticEvent } from 'react-native';
+import {
+  Tabs,
+  type TabSelectedEvent,
+  type TabsHostProps,
+  // @ts-expect-error: method is declared in mock below
+  __triggerTabSelected,
+} from 'react-native-screens';
 
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/StackClient';
@@ -14,19 +20,39 @@ jest.mock('react-native-screens', () => {
   const actualModule = jest.requireActual(
     'react-native-screens'
   ) as typeof import('react-native-screens');
+  let triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = () => {};
   return {
     ...actualModule,
     ScreenStackItem: jest.fn(({ children }) => <View>{children}</View>),
     Tabs: {
       ...actualModule.Tabs,
-      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Host: jest.fn(({ children, onTabSelected }) => {
+        triggerTabSelected = onTabSelected || (() => {});
+        return <View testID="TabsHost">{children}</View>;
+      }),
       Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
     },
+    __triggerTabSelected: (event: Parameters<NonNullable<TabsHostProps['onTabSelected']>>[0]) =>
+      triggerTabSelected(event),
   };
 });
 
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+
+function selectTab(screenKey: string) {
+  act(() => {
+    __triggerTabSelected({
+      nativeEvent: {
+        selectedScreenKey: screenKey,
+        provenance: 0,
+        isRepeated: false,
+        hasTriggeredSpecialEffect: false,
+        actionOrigin: 'user',
+      },
+    } as NativeSyntheticEvent<TabSelectedEvent>);
+  });
+}
 
 describe('Native Bottom Tabs Navigation', () => {
   function expectOneRender() {
@@ -161,6 +187,50 @@ describe('Native Bottom Tabs Navigation', () => {
     act(() => router.push('/notSpecified'));
     expect(lastHostSelectedKey()).toBe('index');
     expect(screen).toHavePathname('/');
+  });
+});
+
+describe('Native Bottom Tabs nested initial routes', () => {
+  it('opens a nested index route when selecting a group tab', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="(metrics)" />
+          <NativeTabs.Trigger name="(sessions)" />
+        </NativeTabs>
+      ),
+      '(metrics)/_layout': () => <Stack />,
+      '(metrics)/index': () => <View testID="metrics" />,
+      '(sessions)/_layout': () => <Stack />,
+      '(sessions)/sessions/index': () => <View testID="sessions" />,
+      '(sessions)/sessions/main': () => <View testID="sessions-main" />,
+    });
+
+    selectTab(TabsScreen.mock.calls[TabsScreen.mock.calls.length - 1][0].screenKey);
+
+    expect(screen).toHavePathname('/sessions');
+    expect(screen.getByTestId('sessions')).toBeVisible();
+  });
+
+  it('opens a nested index route whose directory differs from the group name', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="(metrics)" />
+          <NativeTabs.Trigger name="(sessions)" />
+        </NativeTabs>
+      ),
+      '(metrics)/_layout': () => <Stack />,
+      '(metrics)/index': () => <View testID="metrics" />,
+      '(sessions)/_layout': () => <Stack />,
+      '(sessions)/session/index': () => <View testID="session" />,
+      '(sessions)/session/main': () => <View testID="session-main" />,
+    });
+
+    selectTab(TabsScreen.mock.calls[TabsScreen.mock.calls.length - 1][0].screenKey);
+
+    expect(screen).toHavePathname('/session');
+    expect(screen.getByTestId('session')).toBeVisible();
   });
 });
 

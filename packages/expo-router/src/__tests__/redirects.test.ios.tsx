@@ -522,7 +522,7 @@ it('not existing nested route redirects correctly', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          routeNames: ['index', 'explore', 'test/1234', '[id]'],
+          routeNames: ['index', 'test/1234', 'explore', '[id]'],
           routes: [
             {
               key: expect.any(String),
