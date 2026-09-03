@@ -84,11 +84,25 @@ extension CGFloat: JSIRepresentableNumber {}
 
 extension String: JSIRepresentable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> String {
-    return String(value.getString(runtime).utf8(runtime))
+    return String(jsiString: value.getString(runtime), in: runtime)
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
-    return facebook.jsi.Value(runtime, facebook.jsi.String.createFromUtf8(runtime, std.string(self)))
+    // Hand JSI the Swift string's own UTF-8 storage instead of going through `std::string`: the engine
+    // copies the bytes into its heap right away, so the intermediate `std::string` was one extra
+    // allocation, copy and free per string. `withUTF8` is mutating (it makes a bridged string
+    // contiguous first), hence the local copy; native strings are already contiguous and pay nothing.
+    // The value is moved out through a local because `withUTF8` needs a `Copyable` closure result.
+    var string = self
+    var value = facebook.jsi.Value.undefined()
+    string.withUTF8 { utf8 in
+      guard let base = utf8.baseAddress else {
+        value = facebook.jsi.Value(runtime, facebook.jsi.String.createFromAscii(runtime, "", 0))
+        return
+      }
+      value = facebook.jsi.Value(runtime, facebook.jsi.String.createFromUtf8(runtime, base, utf8.count))
+    }
+    return value
   }
 }
 

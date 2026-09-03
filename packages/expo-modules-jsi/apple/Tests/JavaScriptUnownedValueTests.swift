@@ -27,6 +27,15 @@ struct JavaScriptUnownedValueTests {
   }
 
   @Test
+  func `getString preserves non-ASCII, empty and long strings`() {
+    let long = String(repeating: "ą", count: 2000)
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: "żółć 世界 🎉", "", long)
+    #expect(buffer.unownedValue(at: 0).getString() == "żółć 世界 🎉")
+    #expect(buffer.unownedValue(at: 1).getString() == "")
+    #expect(buffer.unownedValue(at: 2).getString() == long)
+  }
+
+  @Test
   func `recognizes null and undefined`() {
     let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: JavaScriptValue.null, JavaScriptValue.undefined)
 

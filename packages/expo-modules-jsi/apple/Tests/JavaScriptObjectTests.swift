@@ -32,6 +32,12 @@ struct JavaScriptObjectTests {
     #expect(object.getProperty("score").getInt() == 100)
   }
 
+  @Test
+  func `get property names preserves non-ASCII and empty keys`() throws {
+    let object = try runtime.eval("({ 'café': 1, '日本語': 2, '🎉': 3, '': 4 })").getObject()
+    #expect(object.getPropertyNames() == ["café", "日本語", "🎉", ""])
+  }
+
   // MARK: - Property Access Tests
 
   @Suite("Property Access")
@@ -197,6 +203,20 @@ struct JavaScriptObjectTests {
       let object = JavaScriptObject(runtime)
       object.setProperty("pi", value: 3.14159)
       #expect(object.getProperty("pi").getDouble() == 3.14159)
+    }
+
+    @Test
+    func `set property with non-ASCII string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("greeting", value: "żółć 世界 🎉")
+      #expect(object.getProperty("greeting").getString() == "żółć 世界 🎉")
+    }
+
+    @Test
+    func `set property with empty string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("empty", value: "")
+      #expect(object.getProperty("empty").getString() == "")
     }
 
     @Test
