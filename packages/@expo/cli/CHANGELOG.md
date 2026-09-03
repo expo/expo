@@ -65,6 +65,7 @@
 - Discover `.ts`, `.mts`, and `.cts` ESLint configs as well when checking for prerequisites for ESLint ([#46225](https://github.com/expo/expo/pull/46225) by [@claritystorm](https://github.com/claritystorm))
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
 - [Internal] Align local annotations in the Metro integration with Metro's own types. ([#49669](https://github.com/expo/expo/pull/49669) by [@robhogan](https://github.com/robhogan))
+- [Internal] Import Expo's Metro type extensions from `@expo/metro-config` instead of relying on global type augmentations. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.11 - 2026-07-29
 
