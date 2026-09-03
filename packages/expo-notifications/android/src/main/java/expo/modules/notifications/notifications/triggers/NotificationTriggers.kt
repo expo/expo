@@ -59,6 +59,12 @@ class DateTrigger(
   val alarmClock: Boolean = false
 ) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
 
+  companion object {
+    // Pinned to the value computed for the pre-alarmClock class shape so records serialized
+    // by older versions of the library keep loading (they deserialize with alarmClock = false).
+    private const val serialVersionUID: Long = -4200735944844450465L
+  }
+
   override fun toBundle() = bundleWithChannelId(
     "type" to "date",
     "repeats" to false,

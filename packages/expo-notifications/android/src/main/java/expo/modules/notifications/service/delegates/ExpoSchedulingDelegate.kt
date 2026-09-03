@@ -108,15 +108,21 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
   }
 
   private fun setupAlarm(triggerAtMillis: Long, operation: PendingIntent, alarmClock: Boolean = false) {
-    if (alarmClock && alarmManager.canScheduleExactAlarms()) {
+    if (alarmClock && (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms())) {
       // setAlarmClock() is the strongest delivery guarantee AlarmManager offers: per the
       // Android docs "the system never adjusts their delivery time" and it "leaves low-power
       // modes if necessary to deliver". Unlike setExactAndAllowWhileIdle(), OEM battery
       // policies do not convert these alarms to windowed/inexact delivery.
+      val showIntent = PendingIntent.getActivity(
+        context,
+        0,
+        context.packageManager.getLaunchIntentForPackage(context.packageName),
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+      )
       AlarmManagerCompat.setAlarmClock(
         alarmManager,
         triggerAtMillis,
-        null,
+        showIntent,
         operation
       )
     } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
