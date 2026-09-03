@@ -37,6 +37,7 @@ export default function ImageManipulatorScreen() {
     return (
       <View style={styles.imageContainer}>
         <Image source={{ uri: image.uri }} style={[styles.image, { height, width }]} />
+        <Text>{`size = ${image.width} x ${image.height}`}</Text>
       </View>
     );
   };
