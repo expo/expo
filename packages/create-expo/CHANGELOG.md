@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Detect the coding agent running `create-expo-app` and print how to install the Expo plugin (Claude Code, Codex) or Expo Skills (Cursor and others) for it; inside Claude Code, emit the plugin-install hint and always generate `CLAUDE.md` and `.claude/settings.json`. ([#49696](https://github.com/expo/expo/pull/49696) by [@zvadaadam](https://github.com/zvadaadam))
 - Detect and support the nub package manager ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
 - Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
 - Improved monorepo support ([#46434](https://github.com/expo/expo/pull/46434) by [@douglowder](https://github.com/douglowder))
