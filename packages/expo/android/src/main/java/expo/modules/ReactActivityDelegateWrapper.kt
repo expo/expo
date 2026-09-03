@@ -143,7 +143,6 @@ class ReactActivityDelegateWrapper(
 
       launchLifecycleScopeWithLock(start = CoroutineStart.UNDISPATCHED) {
         awaitDelayLoadAppWhenReady(delayLoadAppHandler)
-        loadAppReady.complete(Unit)
 
         if (VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled) {
           activity.window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
@@ -160,6 +159,7 @@ class ReactActivityDelegateWrapper(
         val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
         mReactDelegate.isAccessible = true
         mReactDelegate.set(delegate, reactDelegate)
+        loadAppReady.complete(Unit)
         if (mainComponentName != null) {
           loadAppImpl(mainComponentName, supportsDelayLoad = false)
         }

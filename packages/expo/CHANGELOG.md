@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix crashes (e.g. `NullPointerException` in `onResume`, `onPause`, or `onWindowFocusChanged`) caused by `loadAppReady` being completed before the wrapped delegate's private `mReactDelegate` field was installed — lifecycle callbacks awaiting `loadAppReady` could run against a delegate whose react delegate was not set yet. ([#37825](https://github.com/expo/expo/issues/37825), [#37819](https://github.com/expo/expo/issues/37819), [#35676](https://github.com/expo/expo/issues/35676))
 - [iOS] Fix a Hermes JSI crash during reloads where two overlapping `RCTHost` runtime callbacks shared `EXReactNativeFactory`'s app context ivar, letting one callback decorate objects against the other callback's runtime. ([#48576](https://github.com/expo/expo/issues/48576) by [@LizunovSergey](https://github.com/LizunovSergey))
 - [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
 - Fix `expo/fetch` body-stream teardown races: aborting via an `AbortSignal` now rejects the in-flight read with an `AbortError` instead of hanging forever, and late native events no longer throw `The stream is not in a state that permits enqueue`/`close` from outside any consumer `try`/`catch`. ([#47573](https://github.com/expo/expo/pull/47573) by [@idoyana](https://github.com/idoyana))
