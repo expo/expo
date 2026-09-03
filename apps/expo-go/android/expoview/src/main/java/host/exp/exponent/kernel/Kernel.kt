@@ -24,6 +24,8 @@ import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
+import expo.modules.devmenu.DevMenuLaunchOverrides
+import expo.modules.devmenu.launch.ExpoLaunchUrl
 import expo.modules.jsonutils.require
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
@@ -41,6 +43,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
 import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity
+import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.experience.ErrorActivity
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.HomeActivity
@@ -453,8 +456,15 @@ class Kernel : KernelInterface() {
       }
     }
     if (uri != null && shouldOpenUrl(uri)) {
-      // We got an "exp://", "exps://", "http://", or "https://" app link
-      openExperience(ExperienceOptions(uri.toString(), uri.toString(), null))
+      // We got an "exp://", "exps://", "http://", or "https://" app link.
+      // Reserved `__expo_*` params are launcher commands: apply them and hand the app the rest.
+      val launch = ExpoLaunchUrl(uri)
+      DevMenuLaunchOverrides.apply(
+        launch,
+        DevMenuSharedPreferencesAdapter(context.applicationContext as Application, exponentSharedPreferences)
+      )
+      val projectUri = (launch.targetUrl ?: launch.strippedUrl).toString()
+      openExperience(ExperienceOptions(projectUri, projectUri, null))
       return
     }
     openDefaultUrl()

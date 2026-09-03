@@ -131,6 +131,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
 {
+  // Reserved `__expo_*` params are launcher commands. Apply them and strip them here, the funnel for
+  // every app open, so they never reach the manifest URL or the scope key.
+  url = [[DevMenuManager shared] applyLaunchOverridesFromURL:url];
   NSString *recordId = [_appRegistry registerAppWithManifestUrl:url initialProps:initialProps];
   EXKernelAppRecord *record = [_appRegistry recordForId:recordId];
   [self _moveAppToVisible:record];

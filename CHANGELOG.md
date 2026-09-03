@@ -11,6 +11,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
+- Expo Go accepts launcher commands as reserved `__expo_*` query params on launch URLs (`__expo_url`, `__expo_disable_onboarding`, `__expo_show_menu_at_launch`, `__expo_tools_button`) and removes them before the URL becomes the project URL.
+
 ### 🐛 Bug fixes
 
 ## 57.0.0 — 2026-07-08

@@ -40,6 +40,10 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   EXKernelAppRecord *destinationApp = nil;
   NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
 
+  // Consume the reserved `__expo_*` launch params first. The pending device login below is keyed by
+  // this URL, and the app loader expects its manifest URL to match that key.
+  urlToRoute = [[DevMenuManager shared] applyLaunchOverridesFromURL:urlToRoute];
+
   // Strip on any change, so stray or invalid device auth params are cleared too.
   BOOL promptRequested = [EXDeviceLoginLink promptRequestedInURL:urlToRoute];
   NSURL *verificationURI = [EXDeviceLoginLink verificationURIFromURL:urlToRoute];

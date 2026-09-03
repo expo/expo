@@ -33,6 +33,32 @@ public class DevMenuManager: NSObject {
   /// Forces the FAB to stay visible even if the user disabled the preference.
   @objc var isLessonLikeSession: Bool = false
 
+  /// Session-only switches from the launch URL (`__expo_show_menu_at_launch=0`, `__expo_tools_button=0`).
+  /// Sticky for the process on purpose, like the packaged dev menu's `canLaunchDevMenuOnStart`.
+  @objc var canLaunchDevMenuOnStart = true
+  @objc var canShowFloatingActionButton = true
+
+  /**
+   Applies the session-only overrides carried by a launch URL: `__expo_show_menu_at_launch=0`,
+   `__expo_tools_button=0` and `__expo_disable_onboarding=1`. Returns the URL without its reserved params,
+   so they never reach the manifest URL or the scope key.
+   */
+  @objc(applyLaunchOverridesFromURL:)
+  @discardableResult
+  func applyLaunchOverrides(from url: URL) -> URL {
+    let launch = ExpoLaunchURL(url)
+    if launch.suppressesMenuAtLaunch {
+      canLaunchDevMenuOnStart = false
+    }
+    if launch.hidesToolsButton {
+      canShowFloatingActionButton = false
+    }
+    if launch.disablesOnboarding {
+      DevMenuPreferences.isOnboardingFinished = true
+    }
+    return launch.strippedURL
+  }
+
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
@@ -238,6 +264,7 @@ public class DevMenuManager: NSObject {
       }
 
       let shouldShow = (DevMenuPreferences.showFloatingActionButton || self.isLessonLikeSession)
+        && self.canShowFloatingActionButton
         && !self.isVisible
         && self.hasActiveApp
         && !self.isNavigatingHome
@@ -309,7 +336,7 @@ public class DevMenuManager: NSObject {
     // (e.g. switching between lessons).
     if !didHandleInitialContentAppear {
       didHandleInitialContentAppear = true
-      if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
+      if canLaunchDevMenuOnStart && (shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch) {
         openMenu()
         return
       }
