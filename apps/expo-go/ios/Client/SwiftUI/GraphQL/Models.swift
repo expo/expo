@@ -42,7 +42,6 @@ struct AccountQuery: Codable {
 struct AccountByName: Codable {
   let id: String
   let name: String
-  let ownerUserActor: UserActor
   let apps: [App]
   let snacks: [Snack]
   let appCount: Int

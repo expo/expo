@@ -136,28 +136,6 @@ struct Queries {
         byName(accountName: $accountName) {
           id
           name
-          ownerUserActor {
-            __typename
-            id
-            username
-            firstName
-            lastName
-            profilePhoto
-            bestContactEmail
-            accounts {
-              id
-              name
-              profileImageUrl
-              ownerUserActor {
-                id
-                username
-                profilePhoto
-                firstName
-                fullName
-                lastName
-              }
-            }
-          }
           apps(limit: 5, offset: 0, includeUnpublished: true) {
             id
             name
