@@ -33,6 +33,28 @@ public class DevMenuManager: NSObject {
   /// Forces the FAB to stay visible even if the user disabled the preference.
   @objc var isLessonLikeSession: Bool = false
 
+  /**
+   Applies the dev menu params of a launch URL to the saved preferences: `__expo_disable_onboarding=1`,
+   `__expo_disable_fab=1` and `__expo_disable_auto_launch=1`. Returns the URL without its reserved params,
+   so they never reach the manifest URL or the scope key.
+   */
+  @objc(applyLaunchParamsFromURL:)
+  @discardableResult
+  func applyLaunchParams(from url: URL) -> URL {
+    let launch = ExpoLaunchURL(url)
+    if launch.disablesOnboarding {
+      DevMenuPreferences.isOnboardingFinished = true
+    }
+    if launch.disablesFab {
+      DevMenuPreferences.showFloatingActionButton = false
+    }
+    if launch.disablesAutoLaunch {
+      DevMenuPreferences.isOnboardingFinished = true
+      DevMenuPreferences.showsAtLaunch = false
+    }
+    return launch.strippedURL
+  }
+
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
