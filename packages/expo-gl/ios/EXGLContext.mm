@@ -2,8 +2,8 @@
 
 #import <ExpoGL/EXGLContext.h>
 #import <ExpoGL/EXGLObjectManager.h>
-
 #import <ExpoModulesCore/EXUtilities.h>
+
 
 #import <React/RCTLog.h>
 
@@ -184,6 +184,16 @@
 {
   [self flush];
 
+  // The drawable is sized with the view's scale, so the snapshot must convert pixels to points with
+  // the same value. Read it on the main thread before handing off to the GL queue.
+  __block CGFloat scale = 1;
+  id<EXGLContextDelegate> delegate = self.delegate;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    if (delegate) {
+      scale = [delegate glContextGetScale];
+    }
+  }];
+
   [self runAsync:^{
     NSDictionary *rect = options[@"rect"] ?: [self currentViewport];
     BOOL flip = options[@"flip"] != nil && [options[@"flip"] boolValue];
@@ -242,7 +252,6 @@
                                         providerRef, NULL, true, kCGRenderingIntentDefault);
 
     // Begin image context
-    CGFloat scale = [EXUtilities screenScale];
     NSInteger widthInPoints = width / scale;
     NSInteger heightInPoints = height / scale;
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);

@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI provides [`HorizontalDivider`](<https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#HorizontalDivider(androidx.compose.ui.Modifier,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Color)>) and [`VerticalDivider`](<https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#VerticalDivider(androidx.compose.ui.Modifier,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Color)>) matching the official Jetpack Compose Divider API.
@@ -30,70 +31,141 @@ Expo UI provides [`HorizontalDivider`](<https://developer.android.com/reference/
 
 A thin horizontal line to visually separate content in lists and layouts.
 
-```tsx HorizontalDividerExample.tsx
-import { Host, HorizontalDivider, Column, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="HorizontalDividerExample.tsx"
+  src="/static/images/expo-ui/examples/divider-horizontal-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/divider-horizontal-android-dark.webp"
+  alt="A full width line separating the labels First section and Second section">
+
+```tsx
+import {
+  Host,
+  HorizontalDivider,
+  Column,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 
 export default function HorizontalDividerExample() {
+  const colors = useMaterialColors();
+
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Column>
-        <Text>First section</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          First section
+        </Text>
         <HorizontalDivider />
-        <Text>Second section</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Second section
+        </Text>
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Custom thickness and color
 
 Both `HorizontalDivider` and `VerticalDivider` accept `thickness` and `color` props. Use `StyleSheet.hairlineWidth` for a single-pixel line, or set a custom thickness and color.
 
-```tsx CustomDividerExample.tsx
-import { Host, HorizontalDivider, Column, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="CustomDividerExample.tsx"
+  src="/static/images/expo-ui/examples/divider-custom-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/divider-custom-android-dark.webp"
+  alt="A faint hairline divider above a thick pink divider, each separating a label">
+
+```tsx
+import {
+  Host,
+  HorizontalDivider,
+  Column,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { StyleSheet } from 'react-native';
 
 export default function CustomDividerExample() {
+  const colors = useMaterialColors();
+
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Column>
-        <Text>Hairline divider (1 pixel)</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Hairline divider (1 pixel)
+        </Text>
         <HorizontalDivider thickness={StyleSheet.hairlineWidth} />
-        <Text>Thick colored divider</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Thick colored divider
+        </Text>
         <HorizontalDivider thickness={4} color="#E91E63" />
-        <Text>Below</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Below
+        </Text>
       </Column>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Vertical divider
 
 A vertical line to separate items side by side in a row layout.
 
-```tsx VerticalDividerExample.tsx
-import { Host, VerticalDivider, Row, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="VerticalDividerExample.tsx"
+  src="/static/images/expo-ui/examples/divider-vertical-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/divider-vertical-android-dark.webp"
+  alt="A short vertical line separating the labels Left and Right">
+
+```tsx
+import {
+  Host,
+  VerticalDivider,
+  Row,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { height } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function VerticalDividerExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
-      <Row verticalAlignment="center" modifiers={[height(48)]}>
-        <Text>Left</Text>
+      <Row
+        verticalAlignment="center"
+        horizontalArrangement={{ spacedBy: 16 }}
+        modifiers={[height(48)]}>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Left
+        </Text>
         <VerticalDivider />
-        <Text>Right</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Right
+        </Text>
       </Row>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
-import { HorizontalDivider, VerticalDivider } from '@expo/ui/jetpack-compose';
+import {
+  HorizontalDivider,
+  VerticalDivider,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/divider" apiName="Divider" />
+<APISection
+  packageName="expo-ui/jetpack-compose/divider"
+  apiName="Divider"
+/>

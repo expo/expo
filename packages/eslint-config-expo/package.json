@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-expo",
-  "version": "56.0.4",
+  "version": "57.0.1",
   "description": "ESLint config for Expo apps",
   "main": "default.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
     "eslint-import-resolver-typescript": "^3.6.3",
-    "eslint-plugin-expo": "workspace:^1.0.1",
+    "eslint-plugin-expo": "workspace:^",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-react-hooks": "^7.0.0",
@@ -53,7 +53,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.8.3",
     "react": "19.2.3",
-    "react-native": "0.86.0"
+    "react-native": "0.87.0"
   },
   "peerDependencies": {
     "eslint": ">=8.10"

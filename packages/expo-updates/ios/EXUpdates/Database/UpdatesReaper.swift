@@ -71,6 +71,10 @@ public final class UpdatesReaper: NSObject {
 
         let beginDeleteAssets = Date()
         for asset in assetsForDeletion {
+          guard UpdatesUtils.isSafeFilename(asset.filename) else {
+            logger.warn(message: "Refusing to delete asset at unsafe path \(asset.filename)")
+            continue
+          }
           let localUrl = directory.appendingPathComponent(asset.filename)
           if FileManager.default.fileExists(atPath: localUrl.path) {
             do {

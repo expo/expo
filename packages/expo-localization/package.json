@@ -1,6 +1,6 @@
 {
   "name": "expo-localization",
-  "version": "56.0.6",
+  "version": "57.0.1",
   "description": "Provides an interface for native user localization information.",
   "keywords": [
     "expo",

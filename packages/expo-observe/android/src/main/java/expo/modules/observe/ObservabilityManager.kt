@@ -3,11 +3,11 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.easclient.EASClientID
-import expo.modules.observe.storage.PendingLogsManager
-import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -32,25 +32,13 @@ class ObservabilityManager(
     }
     val baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL
 
-    val pendingMetricsManager = PendingMetricsManager(context)
-    val pendingLogsManager = PendingLogsManager(context)
-
     baseManager = BaseObservabilityManager(
       context = context,
       sessionManager = sessionManager,
-      pendingMetricsManager = pendingMetricsManager,
-      pendingLogsManager = pendingLogsManager,
       projectId = projectId,
       baseUrl = baseUrl,
       isDebugBuild = BuildConfig.DEBUG
     )
-
-    sessionManager.addMetricsInsertListener { metricIds ->
-      pendingMetricsManager.addPendingMetrics(metricIds)
-    }
-    sessionManager.addLogsInsertListener { logIds ->
-      pendingLogsManager.addPendingLogs(logIds)
-    }
   }
 
   suspend fun dispatchUnsentMetrics() {
@@ -73,15 +61,14 @@ class ObservabilityManager(
 class BaseObservabilityManager(
   private val context: Context,
   private val sessionManager: SessionManager,
-  private val pendingMetricsManager: PendingMetricsManager,
-  private val pendingLogsManager: PendingLogsManager,
   val projectId: String,
   val baseUrl: String,
   private val isDebugBuild: Boolean = false,
   private val deterministicUniformValueProvider: () -> Double = {
     EASClientID.deterministicUniformValue(EASClientID(context).uuid)
   },
-  private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() }
+  private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() },
+  private val dispatchChunkSize: Int = DISPATCH_CHUNK_SIZE
 ) {
   private val eventDispatcher = EventDispatcher(
     context = context,
@@ -104,20 +91,6 @@ class BaseObservabilityManager(
    */
   private var metricsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
   private var logsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
-
-  /**
-   * Per-signal mutexes that serialize same-signal dispatch calls. Two `dispatchEvents`
-   * invocations from JS can otherwise land on the same `BaseObservabilityManager` instance
-   * concurrently and race on the gate's read-modify-write (and double-POST the same pending
-   * rows). The metrics and logs paths take separate mutexes so they can still run in
-   * parallel — only same-signal calls serialize.
-   *
-   * Worst case without these would be benign (a dropped gate update or a duplicate dispatch),
-   * since the pending-ID stores are already DB-backed and telemetry is best-effort — but the
-   * gate is in-memory state with no other synchronization, so close the race explicitly.
-   */
-  private val metricsDispatchMutex = Mutex()
-  private val logsDispatchMutex = Mutex()
 
   /**
    * Returns true and logs when an active retry gate suppresses this dispatch round. Called
@@ -149,124 +122,157 @@ class BaseObservabilityManager(
   )
 
   suspend fun dispatchUnsentMetrics(): Unit = metricsDispatchMutex.withLock {
-    val pendingIds = pendingMetricsManager.getAllPendingMetricIds()
-    if (pendingIds.isEmpty()) {
-      return
-    }
-
     if (retryGateBlocks(metricsRetryGate, "metrics")) {
       return
     }
 
+    repairMetricCursorIfStale(context, sessionManager)
     if (!shouldDispatch()) {
-      pendingMetricsManager.removePendingMetrics(pendingIds)
+      val maxId = sessionManager.getMaxMetricId() ?: -1
+      if (ObservePreferences.getLastDispatchedMetricId(context) != maxId) {
+        ObservePreferences.setLastDispatchedMetricId(context, maxId)
+      }
       return
     }
 
-    val sessionsWithPendingMetrics = sessionManager.getSessionsWithMetrics(pendingIds)
+    var cursor = ObservePreferences.getLastDispatchedMetricId(context)
+    var chunkSize = dispatchChunkSize
+    while (currentCoroutineContext().isActive) {
+      val metrics = sessionManager.getMetrics(cursor, chunkSize)
+      chunkSize = dispatchChunkSize
+      if (metrics.isEmpty()) {
+        break
+      }
 
-    // Clean up orphaned pending IDs (metrics deleted from MetricsDatabase but still in pending table)
-    val resolvedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }.toSet()
-    val orphanedIds = pendingIds.filter { it !in resolvedMetricIds }
-    if (orphanedIds.isNotEmpty()) {
-      pendingMetricsManager.removePendingMetrics(orphanedIds)
-    }
+      val highestId = metrics.last().id
+      val metricsBySessionId = metrics.groupBy { it.sessionId }
+      val sessions = sessionManager.getSessions(metricsBySessionId.keys).associateBy { it.id }
+      val events = metricsBySessionId.mapNotNull { (sessionId, sessionMetrics) ->
+        sessions[sessionId]?.let { session ->
+          Event(
+            metadata = Metadata.fromSessionMetadata(session),
+            metrics = sessionMetrics.map(EASMetric::fromMetric)
+          )
+        }
+      }
+      if (events.isEmpty()) {
+        cursor = highestId
+        ObservePreferences.setLastDispatchedMetricId(context, cursor)
+        continue
+      }
 
-    if (sessionsWithPendingMetrics.isEmpty()) {
-      return
-    }
-
-    val events = sessionsWithPendingMetrics.map { sessionWithMetrics ->
-      Event(
-        metadata = Metadata.fromSessionMetadata(sessionWithMetrics.session),
-        metrics = sessionWithMetrics.metrics.map { EASMetric.fromMetric(it) }
-      )
-    }
-
-    val result = eventDispatcher.dispatch(events)
-    metricsRetryGate = nextGate(metricsRetryGate, result)
-    val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
-    if (DispatchUtils.shouldRemovePending(result)) {
-      pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
-    }
-    when (result) {
-      is DispatchResult.PartialSuccess ->
-        Log.w(
-          OBSERVE_TAG,
-          "Partial success on batch of ${dispatchedMetricIds.size} metric event(s): " +
-            "server rejected ${result.partial.rejectedCount} " +
-            "(${result.partial.errorMessage ?: "no error message"})"
-        )
-      is DispatchResult.NonRetryableFailure ->
-        Log.w(
-          OBSERVE_TAG,
-          "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
-        )
-      is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+      val result = eventDispatcher.dispatch(events)
+      metricsRetryGate = nextGate(metricsRetryGate, result)
+      when (result) {
+        is DispatchResult.PartialSuccess ->
+          Log.w(
+            OBSERVE_TAG,
+            "Partial success on batch of ${metrics.size} metric event(s): " +
+              "server rejected ${result.partial.rejectedCount} " +
+              "(${result.partial.errorMessage ?: "no error message"})"
+          )
+        is DispatchResult.NonRetryableFailure ->
+          Log.w(OBSERVE_TAG, "Dropping batch of ${metrics.size} metric event(s): ${result.reason}")
+        DispatchResult.PayloadTooLarge -> if (metrics.size == 1) {
+          Log.w(OBSERVE_TAG, "Dropping metric event that exceeds the server's payload limit")
+        }
+        DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+      }
+      if (result is DispatchResult.PayloadTooLarge && metrics.size > 1) {
+        chunkSize = metrics.size / 2
+        continue
+      }
+      when (result) {
+        DispatchResult.Success, is DispatchResult.PartialSuccess -> {
+          cursor = highestId
+          ObservePreferences.setLastDispatchedMetricId(context, cursor)
+        }
+        is DispatchResult.NonRetryableFailure, DispatchResult.PayloadTooLarge -> {
+          ObservePreferences.setLastDispatchedMetricId(context, highestId)
+          break
+        }
+        is DispatchResult.RetryableFailure -> break
+      }
     }
   }
 
   /**
    * Dispatches log events to `/v1/logs`. Independent from the metrics path —
-   * a logs failure doesn't affect the metrics pending table and vice versa.
+   * a logs failure doesn't affect the metrics cursor and vice versa.
    */
   suspend fun dispatchUnsentLogs(): Unit = logsDispatchMutex.withLock {
-    val pendingIds = pendingLogsManager.getAllPendingLogIds()
-    if (pendingIds.isEmpty()) {
-      return
-    }
-
     if (retryGateBlocks(logsRetryGate, "logs")) {
       return
     }
 
+    repairLogCursorIfStale(context, sessionManager)
     if (!shouldDispatch()) {
-      pendingLogsManager.removePendingLogs(pendingIds)
+      val maxId = sessionManager.getMaxLogId() ?: -1
+      if (ObservePreferences.getLastDispatchedLogId(context) != maxId) {
+        ObservePreferences.setLastDispatchedLogId(context, maxId)
+      }
       return
     }
 
-    val sessionsWithPendingLogs = sessionManager.getSessionsWithLogs(pendingIds)
+    var cursor = ObservePreferences.getLastDispatchedLogId(context)
+    var chunkSize = dispatchChunkSize
+    while (currentCoroutineContext().isActive) {
+      val logs = sessionManager.getLogs(cursor, chunkSize)
+      chunkSize = dispatchChunkSize
+      if (logs.isEmpty()) {
+        break
+      }
 
-    // Clean up orphaned pending IDs (logs deleted from the `logs` table but
-    // still tracked in `pending_logs`).
-    val resolvedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }.toSet()
-    val orphanedIds = pendingIds.filter { it !in resolvedLogIds }
-    if (orphanedIds.isNotEmpty()) {
-      pendingLogsManager.removePendingLogs(orphanedIds)
-    }
+      val highestId = logs.last().id
+      val logsBySessionId = logs.groupBy { it.sessionId }
+      val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }
+      val events = logsBySessionId.mapNotNull { (sessionId, sessionLogs) ->
+        sessions[sessionId]?.let { session ->
+          Event(
+            metadata = Metadata.fromSessionMetadata(session),
+            metrics = emptyList(),
+            logs = sessionLogs.map(LogEvent::fromLogRecord)
+          )
+        }
+      }
+      if (events.isEmpty()) {
+        cursor = highestId
+        ObservePreferences.setLastDispatchedLogId(context, cursor)
+        continue
+      }
 
-    if (sessionsWithPendingLogs.isEmpty()) {
-      return
-    }
-
-    val events = sessionsWithPendingLogs.map { sessionWithLogs ->
-      Event(
-        metadata = Metadata.fromSessionMetadata(sessionWithLogs.session),
-        metrics = emptyList(),
-        logs = sessionWithLogs.logs.map { LogEvent.fromLogRecord(it) }
-      )
-    }
-
-    val result = eventDispatcher.dispatchLogs(events)
-    logsRetryGate = nextGate(logsRetryGate, result)
-    val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
-    if (DispatchUtils.shouldRemovePending(result)) {
-      pendingLogsManager.removePendingLogs(dispatchedLogIds)
-    }
-    when (result) {
-      is DispatchResult.PartialSuccess ->
-        Log.w(
-          OBSERVE_TAG,
-          "Partial success on batch of ${dispatchedLogIds.size} log event(s): " +
-            "server rejected ${result.partial.rejectedCount} " +
-            "(${result.partial.errorMessage ?: "no error message"})"
-        )
-      is DispatchResult.NonRetryableFailure ->
-        Log.w(
-          OBSERVE_TAG,
-          "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
-        )
-      is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+      val result = eventDispatcher.dispatchLogs(events)
+      logsRetryGate = nextGate(logsRetryGate, result)
+      when (result) {
+        is DispatchResult.PartialSuccess ->
+          Log.w(
+            OBSERVE_TAG,
+            "Partial success on batch of ${logs.size} log event(s): " +
+              "server rejected ${result.partial.rejectedCount} " +
+              "(${result.partial.errorMessage ?: "no error message"})"
+          )
+        is DispatchResult.NonRetryableFailure ->
+          Log.w(OBSERVE_TAG, "Dropping batch of ${logs.size} log event(s): ${result.reason}")
+        DispatchResult.PayloadTooLarge -> if (logs.size == 1) {
+          Log.w(OBSERVE_TAG, "Dropping log event that exceeds the server's payload limit")
+        }
+        DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+      }
+      if (result is DispatchResult.PayloadTooLarge && logs.size > 1) {
+        chunkSize = logs.size / 2
+        continue
+      }
+      when (result) {
+        DispatchResult.Success, is DispatchResult.PartialSuccess -> {
+          cursor = highestId
+          ObservePreferences.setLastDispatchedLogId(context, cursor)
+        }
+        is DispatchResult.NonRetryableFailure, DispatchResult.PayloadTooLarge -> {
+          ObservePreferences.setLastDispatchedLogId(context, highestId)
+          break
+        }
+        is DispatchResult.RetryableFailure -> break
+      }
     }
   }
 
@@ -289,10 +295,16 @@ class BaseObservabilityManager(
   }
 
   suspend fun cleanup() {
-    pendingMetricsManager.cleanupOldPendingMetrics()
-    pendingLogsManager.cleanupOldPendingLogs()
     // TODO(@ubax): Move sessionManager.cleanupOldSessions out of eas observe
     sessionManager.cleanupOldSessions()
+    // Remove the database used by the old pending telemetry queues.
+    context.deleteDatabase("eas_observe")
     sessionManager.cleanupOldLogs()
+  }
+
+  companion object {
+    // Serialize foreground and background dispatches without blocking the other signal.
+    private val metricsDispatchMutex = Mutex()
+    private val logsDispatchMutex = Mutex()
   }
 }

@@ -49,8 +49,15 @@
       "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
     },
     "plugins": [
+      "expo-router",
       "expo-video",
       "expo-background-fetch",
+      [
+        "expo-app-intents",
+        {
+          "directory": "../native-component-list/app-intents"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -82,6 +89,14 @@
         }
       ],
       [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
         "expo-tracking-transparency",
         {
           "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"
@@ -110,8 +125,10 @@
       "inlineModules": {
         "watchedDirectories": [
           "../native-component-list/src/screens/inlineModules/inlineModulesExamples",
-          "../native-component-list/src/screens/ModulesCore"
-        ]
+          "../native-component-list/src/screens/ModulesCore",
+          "../native-component-list/app-intents"
+        ],
+        "xcodeProjectTargets": ["BareExpo"]
       }
     }
   }

@@ -68,6 +68,7 @@ public final class ImageView: ExpoView {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
         placeholderImage = nil
+        sourceImage = nil
       }
     }
   }
@@ -286,7 +287,7 @@ public final class ImageView: ExpoView {
       let imageIdealSize = imageLayoutSize.rounded(.up)
       let image = processImage(image, idealSize: imageIdealSize, scale: scale)
       applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-      renderSourceImage(image)
+      renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
     } else {
       displayPlaceholderIfNecessary()
     }
@@ -359,7 +360,9 @@ public final class ImageView: ExpoView {
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
     if let local = localAssetImage(from: source) {
-      renderSourceImage(local)
+      // `UIImage(named:)` serves bundled assets from the system's in-memory cache, so report a
+      // memory hit — this lets `transition.skipOnCacheHit` treat them as instantly available.
+      renderSourceImage(local, cacheType: .memory)
       return true
     }
 
@@ -508,14 +511,17 @@ public final class ImageView: ExpoView {
     }
   }
 
-  internal func renderSourceImage(_ image: UIImage?) {
+  internal func renderSourceImage(_ image: UIImage?, cacheType: ImageCacheType = .none) {
+    let isInitialDisplay = sourceImage == nil
+
     // Update the source image before it gets rendered or transitioned to.
     sourceImage = image
 
     // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
     let isSFReplaceEffect = transition?.effect.isSFReplaceEffect == true && isSFSymbolSource
 
-    if let transition = transition, transition.duration > 0, !isSFReplaceEffect {
+    if let transition = transition, transition.duration > 0, !isSFReplaceEffect,
+      transition.shouldPlay(forCacheType: cacheType, isInitialDisplay: isInitialDisplay) {
       let options = transition.toAnimationOptions()
       let seconds = transition.duration / 1000
 

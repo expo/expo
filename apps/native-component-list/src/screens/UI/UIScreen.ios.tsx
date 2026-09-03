@@ -307,6 +307,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Geometry Group',
+    route: 'ui/geometry-group',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GeometryGroupScreen'));
+    },
+  },
+  {
     name: 'LazyVStack / LazyHStack',
     route: 'ui/lazy-stack',
     options: {},
@@ -376,6 +384,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./OverlayScreen'));
+    },
+  },
+  {
+    name: 'Background component',
+    route: 'ui/background',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BackgroundScreen'));
     },
   },
   {

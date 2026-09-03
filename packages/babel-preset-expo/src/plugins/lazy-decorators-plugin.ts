@@ -1,4 +1,4 @@
-import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
+import type { BabelFile, ConfigAPI, PluginItem, PluginObj, PluginPass } from '@babel/core';
 
 // Matches `@` followed by a word character — the minimal syntactic
 // requirement for any decorator. False positives (JSDoc @tags, email
@@ -11,19 +11,17 @@ interface LazyDecoratorsState extends PluginPass {
 }
 
 /**
- * Wraps `@babel/plugin-proposal-decorators` so that its transform visitors
- * only run when the source contains a potential decorator pattern (`@word`).
+ * Wraps a plugin so that its transform visitors only run when `detect`
+ * returns true for the file being transformed.
  *
- * The decorator syntax plugin is always inherited so that files parse
- * correctly regardless of the heuristic result.
+ * Any syntax plugin is always inherited so that files parse correctly
+ * regardless of the detection result.
  */
-export function lazyDecoratorsPlugin(
-  api: ConfigAPI & typeof import('@babel/core'),
-  options: Record<string, unknown>
+function wrapPluginLazy(
+  realPlugin: PluginObj,
+  name: string,
+  detect: (file: BabelFile) => boolean
 ): PluginObj<LazyDecoratorsState> {
-  const decoratorsFactory = require('@babel/plugin-proposal-decorators');
-  const realPlugin: PluginObj = (decoratorsFactory.default ?? decoratorsFactory)(api, options);
-
   // Wrap every visitor method to bail out when no decorators are detected.
   const visitor: PluginObj<LazyDecoratorsState>['visitor'] = {};
   for (const [key, value] of Object.entries(realPlugin.visitor as Record<string, any>)) {
@@ -54,10 +52,10 @@ export function lazyDecoratorsPlugin(
   }
 
   return {
-    name: 'expo-lazy-decorators',
+    name,
     inherits: realPlugin.inherits,
     pre(file) {
-      this.decoratorsDetected = DECORATOR_PATTERN.test(file.code);
+      this.decoratorsDetected = detect(file);
       if (this.decoratorsDetected && realPlugin.pre) {
         realPlugin.pre.call(this, file);
       }
@@ -69,4 +67,84 @@ export function lazyDecoratorsPlugin(
       }
     },
   };
+}
+
+function containsDecoratorLikeSource(file: BabelFile): boolean {
+  return DECORATOR_PATTERN.test(file.code);
+}
+
+const _decoratedClassFieldsCache = new WeakMap<BabelFile, boolean>();
+
+function hasDecoratedClassFields(file: BabelFile): boolean {
+  const cached = _decoratedClassFieldsCache.get(file);
+  if (cached !== undefined) {
+    return cached;
+  }
+  let detected = false;
+  if (containsDecoratorLikeSource(file)) {
+    file.path.traverse({
+      'ClassProperty|ClassPrivateProperty'(path: any) {
+        if (path.node.decorators?.length) {
+          detected = true;
+          path.stop();
+        }
+      },
+    });
+  }
+  _decoratedClassFieldsCache.set(file, detected);
+  return detected;
+}
+
+export function _lazyDecoratorsPlugin(
+  api: ConfigAPI & typeof import('@babel/core'),
+  options: Record<string, unknown>
+): PluginObj<LazyDecoratorsState> {
+  const decoratorsFactory = require('@babel/plugin-proposal-decorators');
+  const realPlugin: PluginObj = (decoratorsFactory.default ?? decoratorsFactory)(api, options);
+  return wrapPluginLazy(realPlugin, 'expo-lazy-decorators', containsDecoratorLikeSource);
+}
+
+const createLazyDecoratedClassFeaturePlugin = (mod: any, name: string) =>
+  function (
+    api: ConfigAPI & typeof import('@babel/core'),
+    options: Record<string, unknown>
+  ): PluginObj<LazyDecoratorsState> {
+    const realPlugin: PluginObj = (mod.default ?? mod)(api, options);
+    return wrapPluginLazy(realPlugin, name, hasDecoratedClassFields);
+  };
+
+const lazyClassPropertiesPlugin = createLazyDecoratedClassFeaturePlugin(
+  require('@babel/plugin-transform-class-properties'),
+  'expo-lazy-class-properties'
+);
+
+const lazyPrivateMethodsPlugin = createLazyDecoratedClassFeaturePlugin(
+  require('@babel/plugin-transform-private-methods'),
+  'expo-lazy-private-methods'
+);
+
+const lazyPrivatePropertyInObjectPlugin = createLazyDecoratedClassFeaturePlugin(
+  require('@babel/plugin-transform-private-property-in-object'),
+  'expo-lazy-private-property-in-object'
+);
+
+export interface LazyDecoratorsOptions {
+  presetOptions: { legacy?: boolean; version?: number } | false | undefined;
+  transformClassProperties: boolean;
+  transformPrivateMethods: boolean;
+  transformPrivateProperties: boolean;
+}
+
+export function lazyDecoratorsPlugins(options: LazyDecoratorsOptions): PluginItem[] {
+  if (options.presetOptions === false) {
+    return [];
+  }
+  const plugins: PluginItem[] = [
+    [_lazyDecoratorsPlugin, options.presetOptions ?? { legacy: true }],
+  ];
+  if (options.transformClassProperties) plugins.push([lazyClassPropertiesPlugin, { loose: true }]);
+  if (options.transformPrivateMethods) plugins.push([lazyPrivateMethodsPlugin, { loose: true }]);
+  if (options.transformPrivateProperties)
+    plugins.push([lazyPrivatePropertyInObjectPlugin, { loose: true }]);
+  return plugins;
 }

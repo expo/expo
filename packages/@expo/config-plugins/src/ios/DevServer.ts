@@ -1,7 +1,7 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import type { InfoPlist } from './IosConfig.types';
 import { createInfoPlistPlugin } from '../plugins/ios-plugins';
+import type { InfoPlist } from './IosConfig.types';
 
 /**
  * Info.plist key read by expo's native runtime (`ExpoReactNativeFactory`) to resolve the Metro

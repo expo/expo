@@ -1,6 +1,6 @@
 {
   "name": "expo-age-range",
-  "version": "56.0.5",
+  "version": "57.0.2",
   "description": "A native module for age range functionality",
   "keywords": [
     "age-range",
@@ -28,6 +28,8 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",

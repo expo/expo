@@ -347,7 +347,8 @@ struct MetricsDatabaseTests {
           routeName: "/home",
           updateId: "update-1",
           params: "{\"k\":1}"
-        ))
+        )
+      )
 
       let row = try #require(try database.getMetrics(sessionId: "s").first)
       #expect(row.id != nil)
@@ -393,6 +394,21 @@ struct MetricsDatabaseTests {
     }
   }
 
+  @Test
+  func `getMetrics after id limits the oldest remaining rows`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let ids = try ["a", "b", "c", "d"].map {
+        try database.insert(metric: makeMetricRow(sessionId: "s", name: $0))
+      }
+
+      #expect(try database.getMetrics(afterId: ids[0], limit: 2).map(\.name) == ["b", "c"])
+      #expect(try database.getMetrics(afterId: ids[1], limit: 10).map(\.name) == ["c", "d"])
+      #expect(try database.getMetrics(afterId: ids[0], limit: nil).map(\.name) == ["b", "c", "d"])
+      #expect(try database.getMetrics(afterId: ids[0]).map(\.name) == ["b", "c", "d"])
+    }
+  }
+
   // MARK: - Logs
 
   @Test
@@ -433,7 +449,8 @@ struct MetricsDatabaseTests {
           body: "something exploded",
           attributes: "{\"key\":\"value\"}",
           droppedAttributesCount: 3
-        ))
+        )
+      )
 
       let row = try #require(try database.getLogs(sessionId: "s").first)
       #expect(row.id != nil)
@@ -477,6 +494,21 @@ struct MetricsDatabaseTests {
     }
   }
 
+  @Test
+  func `getLogs after id limits the oldest remaining rows`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let ids = try ["a", "b", "c", "d"].map {
+        try database.insert(log: makeLogRow(sessionId: "s", name: $0))
+      }
+
+      #expect(try database.getLogs(afterId: ids[0], limit: 2).map(\.name) == ["b", "c"])
+      #expect(try database.getLogs(afterId: ids[1], limit: 10).map(\.name) == ["c", "d"])
+      #expect(try database.getLogs(afterId: ids[0], limit: nil).map(\.name) == ["b", "c", "d"])
+      #expect(try database.getLogs(afterId: ids[0]).map(\.name) == ["b", "c", "d"])
+    }
+  }
+
   // MARK: - Crash reports
 
   @Test
@@ -513,6 +545,32 @@ struct MetricsDatabaseTests {
 
       let payload = try database.getCrashReport(sessionId: "s")
       #expect(payload == "{\"v\":2}")
+    }
+  }
+
+  @Test
+  func `stores a crash report and log only once`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let log = makeLogRow(sessionId: "s", severity: "fatal", name: "exception")
+
+      try database.storeCrashReportIfNew(sessionId: "s", payload: "{\"v\":1}", log: log)
+      try database.storeCrashReportIfNew(sessionId: "s", payload: "{\"v\":2}", log: log)
+
+      #expect(try database.getCrashReport(sessionId: "s") == "{\"v\":1}")
+      #expect(try database.getLogs(sessionId: "s").map(\.name) == ["exception"])
+    }
+  }
+
+  @Test
+  func `stores the crash report without a log when the session does not exist`() throws {
+    try withTemporaryDatabase { database in
+      let log = makeLogRow(sessionId: "missing", severity: "fatal", name: "exception")
+
+      try database.storeCrashReportIfNew(sessionId: "missing", payload: "{}", log: log)
+
+      #expect(try database.getCrashReport(sessionId: "missing") == "{}")
+      #expect(try database.getLogs(sessionId: "missing").isEmpty)
     }
   }
 

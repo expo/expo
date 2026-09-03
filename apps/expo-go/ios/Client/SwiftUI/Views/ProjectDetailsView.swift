@@ -1,6 +1,7 @@
 //  Copyright © 2025 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 struct ProjectDetailsView: View {
   let projectId: String
@@ -125,8 +126,7 @@ struct ProjectDetailsView: View {
     let host = APIClient.shared.apiOrigin.replacingOccurrences(of: "https://", with: "")
     let expUrl = "exp://\(host)/\(project.fullName)"
     let activityView = UIActivityViewController(activityItems: [expUrl], applicationActivities: nil)
-    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-       let root = scene.windows.first?.rootViewController {
+    if let root = SceneGeometry.keyWindow()?.rootViewController {
       root.present(activityView, animated: true)
     }
   }

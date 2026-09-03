@@ -164,8 +164,13 @@ export async function createFromFixtureAsync(
       await JsonFile.writeAsync(staticConfigPath, modifiedConfig as any);
     }
 
-    // Install the packages for e2e experience.
-    await executePnpmAsync(projectRoot, ['install']);
+    // Reuse virtual store installs and prefer offline artifacts to speed up repeated installs
+    await executePnpmAsync(projectRoot, ['install', '--prefer-offline'], {
+      env: {
+        NODE_ENV: 'development',
+        npm_config_enable_global_virtual_store: 'true',
+      },
+    });
   } catch (error) {
     log.error(error);
     throw error;

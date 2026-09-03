@@ -17,6 +17,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -79,7 +80,8 @@ export type NativeStackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = NativeStackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<NativeStackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -813,12 +815,9 @@ export type NativeStackNavigationOptions = {
    * Only supported on iOS and Android.
    */
   orientation?: ScreenProps['screenOrientation'];
+  // TODO(@ubax): Remove this prop
   /**
-   * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-   * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-   * Requires `react-native-screens` version >=3.16.0.
-   *
-   * Only supported on iOS and Android.
+   * @deprecated This option has no effect in Expo Router.
    */
   freezeOnBlur?: boolean;
   /**
@@ -1214,6 +1213,30 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemMenu
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
+
+export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
+
+export type NativeStackViewEmit = (
+  event:
+    | {
+        type: 'transitionStart' | 'transitionEnd';
+        target?: string;
+        data: { closing: boolean };
+      }
+    | { type: 'gestureCancel'; target?: string; data?: undefined }
+    | {
+        type: 'sheetDetentChange';
+        target?: string;
+        data: { index: number; stable: boolean };
+      }
+) => void;
+
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = Pick<StackNavigationState<ParamListBase>, 'index' | 'routes'>;
 
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,

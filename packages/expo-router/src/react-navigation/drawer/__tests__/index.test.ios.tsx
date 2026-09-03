@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler/jestSetup';
 import { userEvent } from '@testing-library/react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 import { Drawer as DrawerLayout } from 'react-native-drawer-layout';
 
@@ -32,6 +32,16 @@ jest.mock('react-native-drawer-layout', () => {
 const drawerOpen = () =>
   (DrawerLayout as unknown as jest.Mock).mock.calls.at(-1)![0].open as boolean;
 
+let warnSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  warnSpy.mockRestore();
+});
+
 test('renders a drawer navigator and navigates between screens', () => {
   renderRouter({
     _layout: () => (
@@ -51,6 +61,72 @@ test('renders a drawer navigator and navigates between screens', () => {
 
   expect(screen.getByTestId('second')).toBeVisible();
   expect(screen).toHavePathname('/second');
+});
+
+test('renders only declared drawer items and redirects from unavailable routes', () => {
+  renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="index" />
+        <Drawer.Screen name="hidden" options={{ hidden: true }} />
+      </Drawer>
+    ),
+    index: () => <View testID="index" />,
+    hidden: () => <View testID="hidden" />,
+    undeclared: () => <View testID="undeclared" />,
+  });
+
+  expect(screen.getAllByText('index')).toHaveLength(2);
+  expect(screen.queryByText('hidden')).toBeNull();
+  expect(screen.queryByText('undeclared')).toBeNull();
+
+  act(() => router.push('/undeclared'));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
+test('renders no drawer UI when no screens are declared in the layout', () => {
+  renderRouter({
+    _layout: () => <Drawer />,
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.queryByTestId('Drawer')).toBeNull();
+  expect(screen.queryByTestId('index')).toBeNull();
+  expect(warnSpy.mock.calls).toMatchSnapshot();
+});
+
+test('renders drawer items in route names order while preserving focus', () => {
+  let reverse!: () => void;
+
+  function Layout() {
+    const [reversed, setReversed] = useState(false);
+    reverse = () => setReversed(true);
+    const screens = [
+      <Drawer.Screen key="index" name="index" options={{ drawerLabel: 'Index item' }} />,
+      <Drawer.Screen key="second" name="second" options={{ drawerLabel: 'Second item' }} />,
+    ];
+    return <Drawer>{reversed ? screens.reverse() : screens}</Drawer>;
+  }
+
+  renderRouter(
+    {
+      _layout: Layout,
+      index: () => null,
+      second: () => <View testID="second" />,
+    },
+    { initialUrl: '/second' }
+  );
+
+  act(reverse);
+
+  const items = screen.getAllByRole('button', { name: /item/ });
+  expect(items[0]!.props.accessibilityState).toEqual({ selected: true });
+  expect(items[0]).toHaveTextContent('Second item');
+  expect(items[1]!.props.accessibilityState).toEqual({ selected: false });
+  expect(items[1]).toHaveTextContent('Index item');
+  expect(screen.getByTestId('second')).toBeVisible();
 });
 
 test('handles drawer actions and preventable item presses', async () => {
@@ -116,6 +192,39 @@ test('preloads screens', async () => {
   await userEvent.press(screen.getByTestId('preload'));
 
   expect(screen.queryByText('Second screen', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('preloads a non-lazy screen after mount', () => {
+  renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="index" />
+        <Drawer.Screen name="second" options={{ lazy: false }} />
+      </Drawer>
+    ),
+    index: () => null,
+    second: () => <Text>Second screen</Text>,
+  });
+
+  expect(screen.queryByText('Second screen', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('renders drawer items for unvisited routes and navigates on press', async () => {
+  renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="index" />
+        <Drawer.Screen name="second" options={{ drawerLabel: 'Second item' }} />
+      </Drawer>
+    ),
+    index: () => null,
+    second: () => <Text>Second screen</Text>,
+  });
+
+  await userEvent.press(screen.getByRole('button', { name: 'Second item' }));
+
+  expect(screen.getByText('Second screen')).toBeVisible();
+  expect(screen).toHavePathname('/second');
 });
 
 test('resets a nested stack when its drawer screen loses focus with popToTopOnBlur', async () => {

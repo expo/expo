@@ -24,7 +24,8 @@ internal func repairCursorIfStale(
     maxId = try readMaxId()
   } catch {
     observeLogger.warn(
-      "[Observe] Failed to read max \(signalName) id while repairing cursor: \(error.localizedDescription)")
+      "[Observe] Failed to read max \(signalName) id while repairing cursor: \(error.localizedDescription)"
+    )
     return
   }
   if cursor > (maxId ?? -1) {

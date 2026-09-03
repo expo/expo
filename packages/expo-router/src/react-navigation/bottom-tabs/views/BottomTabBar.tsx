@@ -12,16 +12,8 @@ import {
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
-import {
-  CommonActions,
-  NavigationProvider,
-  type ParamListBase,
-  type TabNavigationState,
-  useLinkBuilder,
-  useLocale,
-  useTheme,
-} from '../../native';
-import type { BottomTabBarProps, BottomTabDescriptorMap } from '../types';
+import { NavigationProvider, useLinkBuilder, useLocale, useTheme } from '../../native';
+import type { BottomTabBarProps, BottomTabDescriptorMap, BottomTabViewState } from '../types';
 import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
 import { useIsKeyboardShown } from '../utils/useIsKeyboardShown';
 import { BottomTabItem } from './BottomTabItem';
@@ -39,7 +31,7 @@ const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
 const useNativeDriver = process.env.EXPO_OS !== 'web';
 
 type Options = {
-  state: TabNavigationState<ParamListBase>;
+  state: BottomTabViewState;
   descriptors: BottomTabDescriptorMap;
   dimensions: { height: number; width: number };
 };
@@ -129,7 +121,7 @@ export const getTabBarHeight = ({
   return TABBAR_HEIGHT_UIKIT + inset;
 };
 
-export function BottomTabBar({ state, navigation, descriptors, insets, style }: Props) {
+export function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets, style }: Props) {
   const { colors } = useTheme();
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
@@ -341,25 +333,23 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
       <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
           const focused = index === state.index;
-          const { options } = descriptors[route.key]!;
+          const descriptor = descriptors[route.key]!;
+          const { options } = descriptor;
 
           const onPress = () => {
-            const event = navigation.emit({
+            const event = emitter.emit({
               type: 'tabPress',
               target: route.key,
               canPreventDefault: true,
             });
 
             if (!focused && !event.defaultPrevented) {
-              navigation.dispatch({
-                ...CommonActions.navigate(route),
-                target: state.key,
-              });
+              navigateToTab(route.key);
             }
           };
 
           const onLongPress = () => {
-            navigation.emit({
+            emitter.emit({
               type: 'tabLongPress',
               target: route.key,
             });
@@ -378,14 +368,11 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
                 : undefined;
 
           return (
-            <NavigationProvider
-              key={route.key}
-              route={route}
-              navigation={descriptors[route.key]!.navigation}>
+            <NavigationProvider key={route.name} route={route} navigation={descriptor.navigation}>
               <BottomTabItem
                 href={buildHref(route.name, route.params)}
                 route={route}
-                descriptor={descriptors[route.key]!}
+                descriptor={descriptor}
                 focused={focused}
                 horizontal={hasHorizontalLabels}
                 compact={compact}

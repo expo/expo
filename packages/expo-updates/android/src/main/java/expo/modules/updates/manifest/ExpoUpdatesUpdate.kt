@@ -14,6 +14,8 @@ import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
+import java.net.URI
 import java.text.ParseException
 import java.util.*
 
@@ -95,27 +97,83 @@ class ExpoUpdatesUpdate private constructor(
   companion object {
     private val TAG = Update::class.java.simpleName
 
-    @Throws(JSONException::class)
+    @Throws(Exception::class)
     fun fromExpoUpdatesManifest(
       manifest: ExpoUpdatesManifest,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
-    ): ExpoUpdatesUpdate = ExpoUpdatesUpdate(
-      manifest,
-      id = UUID.fromString(manifest.getID()),
-      configuration.scopeKey,
-      commitTime = try {
-        UpdatesUtils.parseDateString(manifest.getCreatedAt())
-      } catch (e: ParseException) {
-        Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
-        Date()
-      },
-      runtimeVersion = manifest.getRuntimeVersion(),
-      launchAsset = manifest.getLaunchAsset(),
-      assets = manifest.getAssets(),
-      extensions = extensions,
-      url = configuration.updateUrl,
-      requestHeaders = configuration.requestHeaders
-    )
+    ): ExpoUpdatesUpdate {
+      val resolvedManifest = ExpoUpdatesManifest(
+        resolveManifestAssetUrls(manifest.getRawJson(), configuration.updateUrl)
+      )
+      val update = ExpoUpdatesUpdate(
+        resolvedManifest,
+        id = UUID.fromString(resolvedManifest.getID()),
+        configuration.scopeKey,
+        commitTime = try {
+          UpdatesUtils.parseDateString(resolvedManifest.getCreatedAt())
+        } catch (e: ParseException) {
+          Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
+          Date()
+        },
+        runtimeVersion = resolvedManifest.getRuntimeVersion(),
+        launchAsset = resolvedManifest.getLaunchAsset(),
+        assets = resolvedManifest.getAssets(),
+        extensions = extensions,
+        url = configuration.updateUrl,
+        requestHeaders = configuration.requestHeaders
+      )
+
+      update.assetEntityList.forEach { asset ->
+        val filename = UpdatesUtils.createFilenameForAsset(asset)
+        if (!UpdatesUtils.isSafeFilename(filename)) {
+          throw IOException(
+            "Update ${resolvedManifest.getID()} could not be loaded because the asset filename " +
+              "\"$filename\" is not a valid filename. Assets are stored under their key and file " +
+              "extension, so neither may contain a path separator. Check the server that produced " +
+              "this manifest."
+          )
+        }
+      }
+
+      return update
+    }
+
+    private fun resolveManifestAssetUrls(manifestJson: JSONObject, baseUrl: Uri): JSONObject {
+      val resolvedManifestJson = JSONObject(manifestJson.toString())
+      val launchAsset = resolvedManifestJson.getJSONObject("launchAsset")
+      launchAsset.put("url", resolveUrl(launchAsset.getString("url"), baseUrl))
+
+      val assets = resolvedManifestJson.getNullable<JSONArray>("assets")
+      if (assets != null) {
+        for (i in 0 until assets.length()) {
+          val asset = assets.getJSONObject(i)
+          asset.put("url", resolveUrl(asset.getString("url"), baseUrl))
+        }
+      }
+      return resolvedManifestJson
+    }
+
+    private fun resolveUrl(url: String, baseUrl: Uri): String {
+      return try {
+        URI(baseUrl.toString()).withRootPath().resolve(url).toString()
+      } catch (e: Exception) {
+        url
+      }
+    }
+
+    /**
+     * Works around Android's [URI.resolve] dropping the separator between the authority and a
+     * path-relative reference when the base path is empty, which splices the reference's first
+     * segment onto the port. Only the base is adjusted, so non-HTTP bases such as `exp://` still
+     * resolve.
+     */
+    private fun URI.withRootPath(): URI {
+      if (rawAuthority == null || !rawPath.isNullOrEmpty()) {
+        return this
+      }
+      // A base query or fragment is dropped during resolution anyway, so it doesn't need carrying.
+      return URI("$scheme://$rawAuthority/")
+    }
   }
 }

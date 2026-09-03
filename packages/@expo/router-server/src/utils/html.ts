@@ -115,6 +115,68 @@ export function createLoaderDataScriptAsString(data: Record<string, unknown>): s
   return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
 }
 
+export type StaticContentCssAsset =
+  | { type: 'css'; href: string }
+  | { type: 'inline'; source: string; hmrId?: string }
+  | { type: 'external'; source: string };
+
+export type StaticContentAssets = {
+  /**
+   * NOTE(@hassankhan): We still need to support SDK 55 deployments, where CSS assets are
+   * exported as plain hrefs
+   */
+  css: (StaticContentCssAsset | string)[];
+  js: string[];
+  favicon?: string;
+};
+
+/**
+ * Injects favicon, hydration flag, and CSS (in that order) before `</head>`, and deferred scripts
+ * before `</body>`.
+ */
+export function injectAssetsIntoHtml(
+  html: string,
+  { assets, hydrate }: { assets?: StaticContentAssets; hydrate?: boolean }
+): string {
+  if (assets?.favicon) {
+    html = html.replace('</head>', `${createFaviconAsString(assets.favicon)}</head>`);
+  }
+
+  if (hydrate) {
+    html = html.replace('</head>', `${getHydrationFlagScriptAsString()}</head>`);
+  }
+
+  if (assets) {
+    const styleString = assets.css
+      .map((entry) => {
+        // NOTE(@hassankhan): We still need to support SDK 55 deployments, where CSS assets are
+        // exported as plain hrefs
+        if (typeof entry === 'string') {
+          return createInjectedCssAsString([entry]);
+        }
+        switch (entry.type) {
+          case 'css':
+            return createInjectedCssAsString([entry.href]);
+          case 'inline':
+            return `<style data-expo-css-hmr="${entry.hmrId}">${entry.source}\n</style>`;
+          case 'external':
+            return entry.source;
+        }
+      })
+      .join('');
+    if (styleString) {
+      html = html.replace('</head>', `${styleString}</head>`);
+    }
+
+    const scripts = assets.js.map((src) => createInjectedScriptsAsString([src])).join('');
+    if (scripts) {
+      html = html.replace('</body>', `${scripts}\n</body>`);
+    }
+  }
+
+  return html;
+}
+
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;
 
 /**

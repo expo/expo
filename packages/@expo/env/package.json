@@ -1,6 +1,6 @@
 {
   "name": "@expo/env",
-  "version": "2.3.0",
+  "version": "2.4.2",
   "description": "hydrate environment variables from .env files into process.env",
   "keywords": [],
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/env#readme",

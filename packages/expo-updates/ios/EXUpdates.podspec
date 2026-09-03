@@ -19,7 +19,8 @@ begin
   if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
     project_root = ENV['PROJECT_ROOT'] || Pod::Config.instance.installation_root.to_s
     dev_client_package = podfile_properties['expo.updates.devClientPackage'] || 'expo-dev-client'
-    use_dev_client = File.dirname(`node --print "require.resolve('#{dev_client_package}/package.json', { paths: ['#{__dir__}', '#{project_root}'] })"`).length > 0
+    dev_client_package_json_path = `node --print "require.resolve('#{dev_client_package}/package.json', { paths: ['#{__dir__}', '#{project_root}'] })" 2>/dev/null`.strip
+    use_dev_client = !dev_client_package_json_path.empty?
   end
 rescue
   use_dev_client = false
@@ -122,13 +123,22 @@ Pod::Spec.new do |s|
   end
 
   if $expo_updates_create_updates_resources != false
-    project_root_env_var = ENV['PROJECT_ROOT'] ? "export PROJECT_ROOT=#{ENV['PROJECT_ROOT']}\n" : ""
+    # `bash -l -c` re-parses its argument as a fresh command line, so the script path has to stay
+    # quoted through that second round of parsing - otherwise a project path containing a space is
+    # word-split and the phase fails.
+    project_root_env_var = ENV['PROJECT_ROOT'] ? "export PROJECT_ROOT=\"#{ENV['PROJECT_ROOT']}\"\n" : ""
     force_bundling_flag = ex_updates_native_debug ? "export FORCE_BUNDLING=1\n" : ""
-    s.script_phase = {
+    script_phase = {
       :name => 'Generate updates resources for expo-updates',
-      :script => project_root_env_var + force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh"',
+      :script => project_root_env_var + force_bundling_flag + 'bash -l -c "\"$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh\""',
       :execution_position => :before_compile
     }
+    # :always_out_of_date is only available in CocoaPods 1.13.0 and later
+    if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
+      # always run the script without warning
+      script_phase[:always_out_of_date] = "1"
+    end
+    s.script_phase = script_phase
 
     # Generate EXUpdates.bundle without existing resources
     # `create-updates-resources-ios.sh` will generate updates resources in EXUpdates.bundle
@@ -146,6 +156,7 @@ Pod::Spec.new do |s|
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
       'USER_HEADER_SEARCH_PATHS' => '"${CONFIGURATION_TEMP_DIR}/EXUpdates.build/DerivedSources"',
       'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
       'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',

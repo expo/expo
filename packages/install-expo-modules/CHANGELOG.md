@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 0.16.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 0.15.0 — 2026-05-20
 

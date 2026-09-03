@@ -35,6 +35,14 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// Number of bytes received on the wire for the response (headers + body).
   public let responseBytesReceived: Int64?
 
+  /// Whether the response came off the network rather than out of a cache.
+  ///
+  /// `true` only for a fetch the OS identified as a network load. `URLSession` timestamps a cache
+  /// hit like any other response, so this is the only way to tell a disk read from a download, and
+  /// an unclassified fetch is treated as unusable rather than assumed. Android needs no equivalent,
+  /// since OkHttp skips the response-body callbacks for a cached response.
+  public let cameFromNetwork: Bool?
+
   /// Phase-by-phase timings pulled from the most recent (post-redirect) transaction.
   public let timings: Timings
 
@@ -82,10 +90,47 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
     public let responseStart: Date?
     public let responseEnd: Date?
 
+    /// When the last response byte arrived, or `nil` if the OS never reported one.
+    ///
+    /// Unlike `responseEnd`, this is never synthesized. `responseEnd` falls back to a wall-clock
+    /// timestamp taken when the snapshot was recorded, which is right for a duration but wrong for
+    /// a transfer window: a request that got headers and then died reports an end long after its
+    /// last byte, and dividing its bytes by that window describes the recording delay rather than
+    /// the connection.
+    public let measuredResponseEnd: Date?
+
     /// Total wall-clock duration of the task. Convenience: callers don't have to subtract
     /// `fetchStart` from `responseEnd` themselves, and we can populate this even when the
     /// individual phases are `nil` (cache hits, errors before headers).
     public let totalDuration: TimeInterval
+
+    /// Time from the start of the fetch until the first response byte arrived.
+    ///
+    /// This is not a measurement of network latency: it also covers DNS, the TCP and TLS
+    /// handshakes, sending the request, and the server's own processing time. A slow backend
+    /// inflates it the same way a slow network does. On a reused connection (the common case under
+    /// keep-alive) the handshakes are already done, so it sits much closer to one round trip plus
+    /// server time.
+    ///
+    /// `nil` when the response never produced headers, so callers can tell "not measured" from a
+    /// genuinely fast response.
+    public var timeToFirstByte: TimeInterval? {
+      return positiveInterval(from: fetchStart, to: responseStart)
+    }
+
+    /// Returns the interval between two optional timestamps, or `nil` if either is missing or the
+    /// result isn't strictly positive.
+    ///
+    /// Negative results are discarded because these are wall-clock dates and a clock adjustment
+    /// mid-request can invert them. Exactly zero is discarded too: a phase that completes inside one
+    /// clock tick was too fast to measure, and reporting `0` would claim it took no time at all.
+    private func positiveInterval(from start: Date?, to end: Date?) -> TimeInterval? {
+      guard let start, let end else {
+        return nil
+      }
+      let interval = end.timeIntervalSince(start)
+      return interval > 0 ? interval : nil
+    }
   }
 }
 
@@ -126,6 +171,13 @@ extension NetworkRequest {
     // future need arises to surface per-hop timing, expose `metrics.transactionMetrics` here.
     let transaction = metrics?.transactionMetrics.last
 
+    // Only a fetch the OS positively identified as a network load counts. `.unknown` is excluded
+    // too: a cache hit reports byte counts and timestamps like any other response, so an
+    // unclassified fetch that was really a disk read would otherwise divide megabytes by the
+    // milliseconds it took to read them. Costs the rate for tasks an `NSURLProtocol` subclass
+    // intercepted, which also report `.unknown`, and a missing rate beats an impossible one.
+    let cameFromNetwork = transaction.map { $0.resourceFetchType == .networkLoad }
+
     let timings = NetworkRequest.Timings(
       fetchStart: transaction?.fetchStartDate ?? fallbackStart,
       domainLookupStart: transaction?.domainLookupStartDate,
@@ -138,6 +190,7 @@ extension NetworkRequest {
       requestEnd: transaction?.requestEndDate,
       responseStart: transaction?.responseStartDate,
       responseEnd: transaction?.responseEndDate ?? fallbackEnd,
+      measuredResponseEnd: transaction?.responseEndDate,
       totalDuration: metrics?.taskInterval.duration ?? fallbackEnd.timeIntervalSince(fallbackStart)
     )
 
@@ -149,7 +202,10 @@ extension NetworkRequest {
     //     Received` is wall-clock accurate in both environments.
     let requestBytesSent: Int64? = {
       if let transaction {
-        let fromTransaction = transaction.countOfRequestHeaderBytesSent + transaction.countOfRequestBodyBytesSent
+        // Clamped: these come from the OS and Swift traps on overflow, which must never take a host
+        // app down from inside an observability library.
+        let fromTransaction = transaction.countOfRequestHeaderBytesSent
+          .addingClamped(transaction.countOfRequestBodyBytesSent)
         if fromTransaction > 0 {
           return fromTransaction
         }
@@ -159,7 +215,8 @@ extension NetworkRequest {
     let responseBytesReceived: Int64? = {
       if let transaction {
         let fromTransaction =
-          transaction.countOfResponseHeaderBytesReceived + transaction.countOfResponseBodyBytesReceived
+          transaction.countOfResponseHeaderBytesReceived
+          .addingClamped(transaction.countOfResponseBodyBytesReceived)
         if fromTransaction > 0 {
           return fromTransaction
         }
@@ -203,6 +260,7 @@ extension NetworkRequest {
       networkProtocol: transaction?.networkProtocolName,
       requestBytesSent: requestBytesSent,
       responseBytesReceived: responseBytesReceived,
+      cameFromNetwork: cameFromNetwork,
       timings: timings,
       errorDescription: error.map { ($0 as NSError).localizedDescription },
       redirects: redirects

@@ -17,7 +17,7 @@ internal fun Project.applyAarProject(aarProject: GradleAarProject) {
 }
 
 internal fun Project.linkBuildDependence(plugin: GradlePlugin) {
-  buildscript.dependencies.add("classpath", "${plugin.group}:${plugin.id}")
+  buildscript.dependencies.add("classpath", plugin.classpathCoordinate)
 }
 
 internal fun Project.linkLocalMavenRepository(path: String, publications: List<Publication>) {

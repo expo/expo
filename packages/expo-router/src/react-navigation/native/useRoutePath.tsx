@@ -2,7 +2,8 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { getPathFromState, useStateForPath } from '../core';
+import { getPathFromState } from '../../fork/getPathFromState';
+import { useStateForPath } from '../core';
 import { LinkingContext } from './LinkingContext';
 
 /**
@@ -23,14 +24,10 @@ export function useRoutePath() {
   const getPathFromStateHelper = options?.getPathFromState ?? getPathFromState;
 
   const path = React.useMemo(() => {
-    if (options?.enabled === false) {
-      return undefined;
-    }
-
     const path = getPathFromStateHelper(state, options?.config);
 
     return path;
-  }, [options?.enabled, options?.config, state, getPathFromStateHelper]);
+  }, [options?.config, state, getPathFromStateHelper]);
 
   return path;
 }

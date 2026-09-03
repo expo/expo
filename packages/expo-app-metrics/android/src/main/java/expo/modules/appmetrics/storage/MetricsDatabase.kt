@@ -3,20 +3,20 @@ package expo.modules.appmetrics.storage
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
+import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
-import androidx.room.ForeignKey
+import androidx.room.Relation
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.Embedded
-import androidx.room.Relation
 import androidx.room.Transaction
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 object MetricsConstants {
   const val SECONDS_TO_REMOVE_OLD_METRICS: Long = 7 * 24 * 60 * 60 // 7 days in seconds
@@ -24,7 +24,7 @@ object MetricsConstants {
 
 @Database(
   entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class],
-  version = 16,
+  version = 17,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -105,7 +105,7 @@ data class Session(
 )
 @Serializable
 data class Metric(
-  @PrimaryKey val metricId: String = UUID.randomUUID().toString(),
+  @PrimaryKey(autoGenerate = true) val id: Long = 0,
   val sessionId: String,
   // ISO 8601 date string
   val timestamp: String,
@@ -125,6 +125,7 @@ data class SessionWithMetrics(
     entityColumn = "sessionId"
   )
   val metrics: List<Metric>,
+  /** Only populated by relation-backed `SessionDao` queries. */
   @Relation(
     parentColumn = "id",
     entityColumn = "sessionId"
@@ -146,7 +147,7 @@ data class SessionWithMetrics(
 )
 @Serializable
 data class LogRecord(
-  @PrimaryKey val logId: String = UUID.randomUUID().toString(),
+  @PrimaryKey(autoGenerate = true) val id: Long = 0,
   val sessionId: String,
   // ISO 8601 date string
   val timestamp: String,
@@ -157,15 +158,6 @@ data class LogRecord(
   // JSON string. Typed encoding happens at OTel time, not at storage time.
   val attributes: String? = null,
   val droppedAttributesCount: Int = 0
-)
-
-data class SessionWithLogs(
-  @Embedded val session: Session,
-  @Relation(
-    parentColumn = "id",
-    entityColumn = "sessionId"
-  )
-  val logs: List<LogRecord>
 )
 
 @Entity(
@@ -219,6 +211,12 @@ interface MetricDao {
   @Delete
   suspend fun delete(metrics: List<Metric>)
 
+  @Query("SELECT * FROM metrics WHERE id > :afterId ORDER BY id ASC LIMIT :limit")
+  suspend fun getAfterId(afterId: Long, limit: Int): List<Metric>
+
+  @Query("SELECT MAX(id) FROM metrics")
+  suspend fun getMaxId(): Long?
+
   @Query("SELECT * FROM metrics WHERE sessionId = :sessionId ORDER BY timestamp ASC")
   suspend fun getMetricsForSession(sessionId: String): List<Metric>
 }
@@ -230,6 +228,12 @@ interface LogDao {
 
   @Delete
   suspend fun delete(logs: List<LogRecord>)
+
+  @Query("SELECT * FROM logs WHERE id > :afterId ORDER BY id ASC LIMIT :limit")
+  suspend fun getAfterId(afterId: Long, limit: Int): List<LogRecord>
+
+  @Query("SELECT MAX(id) FROM logs")
+  suspend fun getMaxId(): Long?
 
   @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
   suspend fun deleteLogsOlderThan(cutoffTimestamp: String)
@@ -268,6 +272,9 @@ interface SessionDao {
 
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getById(id: String): Session?
+
+  @Query("SELECT * FROM sessions WHERE id IN (:ids)")
+  suspend fun getByIds(ids: List<String>): List<Session>
 
   // The most recent session other than `:currentSessionId` (null matches all
   // rows, so it returns the latest of any).
@@ -316,12 +323,4 @@ interface SessionDao {
   @Transaction
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getSessionWithMetricsBySessionId(id: String): SessionWithMetrics?
-
-  @Transaction
-  @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN metrics m ON s.id = m.sessionId WHERE m.metricId IN (:metricIds)")
-  suspend fun getSessionsWithMetricsByMetricIds(metricIds: List<String>): List<SessionWithMetrics>
-
-  @Transaction
-  @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN logs l ON s.id = l.sessionId WHERE l.logId IN (:logIds)")
-  suspend fun getSessionsWithLogsByLogIds(logIds: List<String>): List<SessionWithLogs>
 }

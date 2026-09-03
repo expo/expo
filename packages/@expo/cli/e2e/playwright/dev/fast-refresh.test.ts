@@ -17,14 +17,16 @@ const inputDir = 'fast-refresh';
 
 const appDir = path.join(projectRoot, '__e2e__', inputDir, 'app');
 const tempRoute = '/temp-route.tsx';
+const renamedRoute = '/renamed.tsx';
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
       EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
       E2E_ROUTER_ASYNC: 'development',
 
@@ -33,8 +35,13 @@ test.describe(inputDir, () => {
     },
   });
 
+  test.beforeAll(async () => {
+    console.time('expo start');
+    await expoStart.startAsync();
+    console.timeEnd('expo start');
+  });
   test.beforeEach(async () => {
-    // Ensure `const ROUTE_VALUE = 'ROUTE_VALUE_1';` -> `const ROUTE_VALUE = 'ROUTE_VALUE';` before starting
+    // Restore fixture state while keeping Metro's process and graph alive.
     await mutateFile(indexFile, (contents) => {
       return contents.replace(/ROUTE_VALUE_[\d\w]+/g, 'ROUTE_VALUE');
     });
@@ -43,18 +50,12 @@ test.describe(inputDir, () => {
       return contents.replace(/LAYOUT_VALUE_[\d\w]+/g, 'LAYOUT_VALUE');
     });
 
-    console.time('expo start');
-    await expoStart.startAsync();
-    console.timeEnd('expo start');
-
     console.time('Eagerly bundled JS');
     await expoStart.fetchBundleAsync('/').then((response) => response.text());
     console.timeEnd('Eagerly bundled JS');
   });
   test.afterEach(async () => {
-    await expoStart.stopAsync();
-
-    // Ensure `const ROUTE_VALUE = 'ROUTE_VALUE_1';` -> `const ROUTE_VALUE = 'ROUTE_VALUE';` before starting
+    // Ensure mutations never leak into the next test or the worktree.
     await mutateFile(indexFile, (contents) => {
       return contents.replace(/ROUTE_VALUE_[\d\w]+/g, 'ROUTE_VALUE');
     });
@@ -65,6 +66,12 @@ test.describe(inputDir, () => {
     if (fs.existsSync(appDir + tempRoute)) {
       await fsPromise.unlink(appDir + tempRoute);
     }
+    if (fs.existsSync(appDir + renamedRoute)) {
+      await fsPromise.unlink(appDir + renamedRoute);
+    }
+  });
+  test.afterAll(async () => {
+    await expoStart.stopAsync();
   });
 
   const targetDirectory = path.join(projectRoot, '__e2e__/fast-refresh/app');
@@ -165,11 +172,27 @@ test.describe(inputDir, () => {
     // Ensure the React Navigation Tabs component is visible
     await expect(page.getByRole('tab', { name: '⏷ ⏷ index' })).toBeVisible();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "temp-route" is extraneous')
+      )
+    ).toBe(true);
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     // If the file is added, a new tab should be visible
+    pageErrors.warnings.length = 0;
     await fsPromise.copyFile(appDir + '/index.tsx', appDir + tempRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -189,18 +212,38 @@ test.describe(inputDir, () => {
     // Ensure the React Navigation Tabs component is visible
     await expect(page.getByRole('tab', { name: '⏷ ⏷ index' })).toBeVisible();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "temp-route" is extraneous')
+      )
+    ).toBe(true);
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     // If the file is added, a new tab should be visible
+    pageErrors.warnings.length = 0;
     await fsPromise.copyFile(appDir + '/index.tsx', appDir + tempRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
-    await fsPromise.rename(appDir + tempRoute, appDir + '/renamed.tsx');
+    pageErrors.warnings.length = 0;
+    await fsPromise.rename(appDir + tempRoute, appDir + renamedRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ renamed' })).toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) => warning.text().includes('No route named "temp-route"'))
+    ).toBe(true);
 
-    await fsPromise.rename(appDir + '/renamed.tsx', appDir + tempRoute);
+    await fsPromise.rename(appDir + renamedRoute, appDir + tempRoute);
     expect(pageErrors.all).toEqual([]);
   });
 
@@ -223,9 +266,20 @@ test.describe(inputDir, () => {
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
 
     // If a file is deleted, the tab should be removed
+    pageErrors.warnings.length = 0;
     await fsPromise.unlink(appDir + tempRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "temp-route" is extraneous')
+      )
+    ).toBe(true);
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     expect(pageErrors.all).toEqual([]);
   });

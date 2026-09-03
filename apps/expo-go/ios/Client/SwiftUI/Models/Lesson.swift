@@ -24,19 +24,19 @@ struct Lesson: Identifiable {
   }
 
   /// Generate the Snack files dictionary for this lesson
-  var snackFiles: [String: SnackSessionClient.SnackFile] {
+  var snackFiles: [String: SnackFile] {
     [
-      "App.js": SnackSessionClient.SnackFile(
+      "App.js": SnackFile(
         path: "App.js",
         contents: appCode,
         isAsset: false
       ),
-      "lesson-files/Lesson.js": SnackSessionClient.SnackFile(
+      "lesson-files/Lesson.js": SnackFile(
         path: "lesson-files/Lesson.js",
         contents: Lesson.sharedLessonComponent,
         isAsset: false
       ),
-      "lesson-files/data.js": SnackSessionClient.SnackFile(
+      "lesson-files/data.js": SnackFile(
         path: "lesson-files/data.js",
         contents: dataCode,
         isAsset: false

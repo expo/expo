@@ -1,19 +1,17 @@
 package expo.modules.appmetrics.storage
 
 import android.content.Context
-import android.util.Log
+import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
-import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
-import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.GlobalAttributes
+import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import java.util.UUID
-import java.util.concurrent.CopyOnWriteArrayList
 
 class SessionManager(
   context: Context,
@@ -21,33 +19,6 @@ class SessionManager(
 ) {
   private val context: Context = context
   private val database: MetricsDatabase = database ?: MetricsDatabase.getDatabase(context)
-
-  fun interface MetricsInsertListener {
-    suspend fun onMetricsInserted(metricIds: List<String>)
-  }
-
-  fun interface LogsInsertListener {
-    suspend fun onLogsInserted(logIds: List<String>)
-  }
-
-  private val metricsInsertListeners = CopyOnWriteArrayList<MetricsInsertListener>()
-  private val logsInsertListeners = CopyOnWriteArrayList<LogsInsertListener>()
-
-  fun addMetricsInsertListener(listener: MetricsInsertListener) {
-    metricsInsertListeners.add(listener)
-  }
-
-  fun removeMetricsInsertListener(listener: MetricsInsertListener) {
-    metricsInsertListeners.remove(listener)
-  }
-
-  fun addLogsInsertListener(listener: LogsInsertListener) {
-    logsInsertListeners.add(listener)
-  }
-
-  fun removeLogsInsertListener(listener: LogsInsertListener) {
-    logsInsertListeners.remove(listener)
-  }
 
   fun createSessionId(): String = UUID.randomUUID().toString()
 
@@ -103,14 +74,6 @@ class SessionManager(
       )
     }
     database.metricDao().insertAll(metricsWithSession)
-    val metricIds = metricsWithSession.map { it.metricId }
-    metricsInsertListeners.forEach { listener ->
-      try {
-        listener.onMetricsInserted(metricIds)
-      } catch (e: Exception) {
-        Log.e(TAG, "MetricsInsertListener failed", e)
-      }
-    }
   }
 
   /**
@@ -135,6 +98,25 @@ class SessionManager(
     database.crashReportDao().upsert(
       CrashReportEntity(sessionId = sessionId, payload = payload, createdAt = createdAt)
     )
+  }
+
+  /**
+   * Stores a crash report and its log for `sessionId`, but only when the session
+   * has no report yet. Reprocessing the same crash must not add a second log.
+   */
+  suspend fun storeCrashReportIfNew(sessionId: String, payload: String, log: LogRecord) {
+    database.withTransaction {
+      if (database.crashReportDao().getBySessionId(sessionId) == null) {
+        database.crashReportDao().upsert(
+          CrashReportEntity(
+            sessionId = sessionId,
+            payload = payload,
+            createdAt = TimeUtils.getCurrentTimestampInISOFormat()
+          )
+        )
+        database.logDao().insertAll(logsWithSession(listOf(log), sessionId))
+      }
+    }
   }
 
   suspend fun getCrashReport(sessionId: String): String? =
@@ -166,8 +148,18 @@ class SessionManager(
   suspend fun getMetricsForSession(sessionId: String): List<Metric> =
     database.metricDao().getMetricsForSession(sessionId)
 
+  suspend fun getMetrics(afterId: Long, limit: Int): List<Metric> =
+    database.metricDao().getAfterId(afterId, limit)
+
+  suspend fun getMaxMetricId(): Long? = database.metricDao().getMaxId()
+
   suspend fun getLogsForSession(sessionId: String): List<LogRecord> =
     database.logDao().getLogsForSession(sessionId)
+
+  suspend fun getLogs(afterId: Long, limit: Int): List<LogRecord> =
+    database.logDao().getAfterId(afterId, limit)
+
+  suspend fun getMaxLogId(): Long? = database.logDao().getMaxId()
 
   suspend fun clearAllData() {
     database.sessionDao().deleteAll()
@@ -196,22 +188,16 @@ class SessionManager(
     logs: List<LogRecord>,
     sessionId: String
   ) {
-    val logsWithSession = logs.map { log ->
+    database.logDao().insertAll(logsWithSession(logs, sessionId))
+  }
+
+  private fun logsWithSession(logs: List<LogRecord>, sessionId: String): List<LogRecord> =
+    logs.map { log ->
       log.copy(
         sessionId = sessionId,
         attributes = mergeGlobalAttributesIntoJsonString(log.attributes)
       )
     }
-    database.logDao().insertAll(logsWithSession)
-    val logIds = logsWithSession.map { it.logId }
-    logsInsertListeners.forEach { listener ->
-      try {
-        listener.onLogsInserted(logIds)
-      } catch (e: Exception) {
-        Log.e(TAG, "LogsInsertListener failed", e)
-      }
-    }
-  }
 
   suspend fun cleanupOldLogs() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
@@ -222,53 +208,8 @@ class SessionManager(
     database.sessionDao().updateEnvironmentForActiveSessions(environment)
   }
 
-  suspend fun getSessionsWithMetrics(metricIds: List<String>): List<SessionWithMetrics> {
-    val metricIdSet = metricIds.toSet()
-    if (metricIds.size <= SQLITE_MAX_BIND_VARIABLES) {
-      return database.sessionDao().getSessionsWithMetricsByMetricIds(metricIds).map { sessionWithMetrics ->
-        sessionWithMetrics.copy(metrics = sessionWithMetrics.metrics.filter { it.metricId in metricIdSet })
-      }
-    }
-
-    val allResults = metricIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
-      database.sessionDao().getSessionsWithMetricsByMetricIds(chunk)
-    }
-    return allResults
-      .groupBy { it.session.id }
-      .map { (_, sessions) ->
-        SessionWithMetrics(
-          session = sessions.first().session,
-          metrics = sessions
-            .flatMap { it.metrics }
-            .distinctBy { it.metricId }
-            .filter { it.metricId in metricIdSet }
-        )
-      }
-  }
-
-  suspend fun getSessionsWithLogs(logIds: List<String>): List<SessionWithLogs> {
-    val logIdSet = logIds.toSet()
-    if (logIds.size <= SQLITE_MAX_BIND_VARIABLES) {
-      return database.sessionDao().getSessionsWithLogsByLogIds(logIds).map { sessionWithLogs ->
-        sessionWithLogs.copy(logs = sessionWithLogs.logs.filter { it.logId in logIdSet })
-      }
-    }
-
-    val allResults = logIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
-      database.sessionDao().getSessionsWithLogsByLogIds(chunk)
-    }
-    return allResults
-      .groupBy { it.session.id }
-      .map { (_, sessions) ->
-        SessionWithLogs(
-          session = sessions.first().session,
-          logs = sessions
-            .flatMap { it.logs }
-            .distinctBy { it.logId }
-            .filter { it.logId in logIdSet }
-        )
-      }
-  }
+  suspend fun getSessions(sessionIds: Collection<String>): List<Session> =
+    sessionIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { database.sessionDao().getByIds(it) }
 
   /**
    * Decodes a JSON-encoded `params` / `attributes` column, folds the current

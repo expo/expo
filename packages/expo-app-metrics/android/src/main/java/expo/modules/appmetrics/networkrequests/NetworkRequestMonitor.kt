@@ -64,11 +64,20 @@ class NetworkRequestMonitor internal constructor() {
     return NetworkRequestSummary.from(inWindow)
   }
 
-  /** Adds a delegate. Held weakly - drop the reference to unsubscribe. */
+  /** Adds a delegate once. Held weakly - drop the reference to unsubscribe. */
   fun addDelegate(delegate: NetworkRequestObserverDelegate) = synchronized(lock) {
-    delegates.removeAll { it.get() == null }
+    delegates.removeAll {
+      val strongRef = it.get()
+      strongRef === delegate || strongRef == null
+    }
     delegates.add(WeakReference(delegate))
   }
+
+  internal val delegateCount: Int
+    get() = synchronized(lock) {
+      delegates.removeAll { it.get() == null }
+      delegates.size
+    }
 
   fun removeDelegate(delegate: NetworkRequestObserverDelegate) = synchronized(lock) {
     delegates.removeAll {

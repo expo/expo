@@ -10,6 +10,7 @@ export * from './Chip';
 export * from './Button';
 export * from './colors';
 export * from './Icon';
+export * from './Image';
 export * from './IconButton';
 export * from './DropdownMenu';
 export * from './ExposedDropdownMenuBox';

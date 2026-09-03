@@ -16,7 +16,9 @@ import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.Update
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
+import kotlin.test.assertFailsWith
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -88,6 +90,7 @@ class EmbeddedLoaderTest {
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+    Assert.assertNotNull(db.updateDao().loadLaunchAssetForUpdate(updates[0].id))
 
     val assets = db.assetDao().loadAllAssets()
     Assert.assertEquals(2, assets.size.toLong())
@@ -146,22 +149,46 @@ class EmbeddedLoaderTest {
   fun testEmbeddedLoaderWithCopyAssets_FailureToCopyAssets() = runTest {
     every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } throws IOException("mock failed to copy asset")
 
-    try {
+    val error = assertFailsWith<IOException> {
       loaderWithCopyAssets.load { _ ->
         Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
       }
-    } catch (e: Exception) {
-      Assert.assertEquals("mock failed to copy asset", e.message)
     }
+    Assert.assertEquals("mock failed to copy asset", error.message)
 
     verify(atLeast = 1) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
-    val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
+    Assert.assertEquals(0, db.updateDao().loadAllUpdates().size.toLong())
+    Assert.assertEquals(0, db.assetDao().loadAllAssets().size.toLong())
+  }
 
-    val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(0, assets.size.toLong())
+  @Test
+  @Throws(IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoader_RollsBackWhenMarkFinishedFails() = runTest {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val spyUpdateDao = spyk(db.updateDao())
+    val spyDb = spyk(db)
+    every { spyDb.updateDao() } returns spyUpdateDao
+    every { spyUpdateDao.markUpdateFinished(any<UpdateEntity>()) } throws IOException("mock failed to mark finished")
+
+    val spyLoader = EmbeddedLoader(
+      context,
+      configuration,
+      logger,
+      spyDb,
+      File("testDirectory"),
+      mockLoaderFiles,
+      shouldCopyEmbeddedAssets = false
+    )
+
+    assertFailsWith<IOException> {
+      spyLoader.load { _ ->
+        Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+      }
+    }
+
+    Assert.assertEquals(0, db.updateDao().loadAllUpdates().size.toLong())
+    Assert.assertEquals(0, db.assetDao().loadAllAssets().size.toLong())
   }
 
   @Test
@@ -265,6 +292,11 @@ class EmbeddedLoaderTest {
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
 
+    val launchAsset = AssetEntity("bundle-1234", "js")
+    launchAsset.relativePath = "bundle-1234"
+    launchAsset.isLaunchAsset = true
+    db.assetDao().insertAssets(listOf(launchAsset), update)
+
     val result = loader.load { _ ->
       Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
     }
@@ -275,6 +307,80 @@ class EmbeddedLoaderTest {
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+
+    // short-circuited, so the manifest's assets were never registered
+    Assert.assertEquals(1, db.assetDao().loadAllAssets().size.toLong())
+  }
+
+  @Test
+  @Throws(IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoader_UpdateExists_ReadyButMissingLaunchAsset() = runTest {
+    val update = UpdateEntity(
+      manifest.updateEntity!!.id,
+      manifest.updateEntity!!.commitTime,
+      manifest.updateEntity!!.runtimeVersion,
+      manifest.updateEntity!!.scopeKey,
+      manifest.updateEntity!!.manifest,
+      null,
+      null
+    )
+    update.status = UpdateStatus.READY
+    db.updateDao().insertUpdate(update)
+
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
+
+    Assert.assertNotNull(result.updateEntity)
+
+    val updates = db.updateDao().loadAllUpdates()
+    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+
+    // the incomplete row is repaired rather than short-circuited
+    Assert.assertNotNull(db.updateDao().loadLaunchAssetForUpdate(update.id))
+    Assert.assertEquals(2, db.assetDao().loadAllAssets().size.toLong())
+  }
+
+  @Test
+  @Throws(IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoader_UpdateExists_ReadyWithOrphanedLaunchAssetRow() = runTest {
+    val update = UpdateEntity(
+      manifest.updateEntity!!.id,
+      manifest.updateEntity!!.commitTime,
+      manifest.updateEntity!!.runtimeVersion,
+      manifest.updateEntity!!.scopeKey,
+      manifest.updateEntity!!.manifest,
+      null,
+      null
+    )
+    update.status = UpdateStatus.READY
+    db.updateDao().insertUpdate(update)
+
+    // the launch asset row and join row exist on disk and in the database, but the registration
+    // was interrupted before launch_asset_id was set on the update
+    val orphanedLaunchAsset = AssetEntity("bundle-${update.id}", "js")
+    orphanedLaunchAsset.relativePath = "bundle-1234"
+    db.assetDao().insertAssets(listOf(orphanedLaunchAsset), update)
+    Assert.assertNull(db.updateDao().loadLaunchAssetForUpdate(update.id))
+
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
+      thirdArg<String>().contains("bundle-1234")
+    }
+
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
+
+    Assert.assertNotNull(result.updateEntity)
+
+    val updates = db.updateDao().loadAllUpdates()
+    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+
+    // repaired through the existing-asset branch: the orphaned row is reused, not re-registered
+    Assert.assertNotNull(db.updateDao().loadLaunchAssetForUpdate(update.id))
+    Assert.assertEquals(2, db.assetDao().loadAllAssets().size.toLong())
   }
 
   @Test

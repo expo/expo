@@ -5,14 +5,15 @@ import type { View, PressableProps } from 'react-native';
 import { StyleSheet, Pressable } from 'react-native';
 
 import { appendBaseUrl } from '../fork/getPathFromState';
+import { RouterRegistryContext } from '../global-state/routerRegistry';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
-import { TabTriggerMapContext } from './TabContext';
-import type { TriggerMap } from './common';
+import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
+import { buildTabAction, type TriggerMap } from './common';
 
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
   children?: ReactNode | undefined;
@@ -75,6 +76,10 @@ export function TabTrigger({ asChild, name, href, resetOnFocus, ...props }: TabT
     ...props,
   });
 
+  if (trigger?.hidden) {
+    return null;
+  }
+
   // Pressable doesn't accept the extra props, so only pass them if we are using asChild
   if (asChild) {
     return (
@@ -118,9 +123,10 @@ export type SwitchToOptions = {
 };
 
 export type Trigger = TriggerMap[string] & {
+  hidden: boolean;
   isFocused: boolean;
   resolvedHref: string;
-  route: TabNavigationState<any>['routes'][number];
+  route?: TabNavigationState<any>['routes'][number];
 };
 
 export type UseTabTriggerResult = {
@@ -140,9 +146,11 @@ export type TriggerProps = {
  * Utility hook creating custom `TabTrigger`.
  */
 export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
-  const { state, navigation } = useNavigatorContext();
+  const { state, navigation, contextKey, descriptors } = useNavigatorContext();
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
+  const navigatorStates = use(TabNavigatorStatesContext);
+  const registry = use(RouterRegistryContext);
 
   const getTrigger = useCallback(
     (name: string) => {
@@ -152,14 +160,34 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         return;
       }
 
+      const route =
+        config.type === 'internal'
+          ? state.routes.find((route) => route.name === config.routeNode.route)
+          : undefined;
+      const routeOptions =
+        config.type === 'internal'
+          ? descriptors[route?.key ?? config.routeNode.route]?.options
+          : undefined;
+      const hidden =
+        routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
+
+      // Parent triggers are inherited, so read the state of the navigator that registered them.
+      const owningState =
+        config.type === 'internal' ? navigatorStates[config.contextKey] : undefined;
+      const routeIndex =
+        config.type === 'internal'
+          ? (owningState?.routes.findIndex((route) => route.name === config.routeNode.route) ?? -1)
+          : -1;
+
       return {
-        isFocused: state.index === config.index,
-        route: state.routes[config.index]!,
+        hidden,
+        isFocused: owningState?.index === routeIndex,
+        route: owningState?.routes[routeIndex],
         resolvedHref: stripGroupSegmentsFromPath(appendBaseUrl(config.href)),
         ...config,
       };
     },
-    [triggerMap]
+    [descriptors, navigatorStates, state, triggerMap]
   );
 
   const trigger = name !== undefined ? getTrigger(name) : undefined;
@@ -172,17 +200,22 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         if (config.type === 'external') {
           return router.navigate(config.href);
         } else {
-          return navigation?.dispatch({
-            ...config.action,
-            type: 'JUMP_TO',
-            payload: {
-              ...config.action.payload,
-              ...options,
-            },
-          });
+          if (!registry) {
+            throw new Error('Router registry is unavailable. This is likely a bug in expo-router.');
+          }
+          const owningState = navigatorStates[config.contextKey];
+          if (!owningState) {
+            return;
+          }
+          const action = buildTabAction(config, owningState, registry, options?.resetOnFocus);
+          return navigation?.dispatchSync(
+            config.contextKey !== contextKey
+              ? { ...action, target: action.target ?? owningState.key }
+              : action
+          );
         }
       } else {
-        return navigation?.dispatch({
+        return navigation?.dispatchSync({
           type: 'JUMP_TO',
           payload: {
             name,
@@ -190,7 +223,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         });
       }
     },
-    [navigation, triggerMap]
+    [contextKey, navigation, navigatorStates, registry, triggerMap]
   );
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
@@ -201,13 +234,13 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       navigation?.emit({
         type: 'tabPress',
-        target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
+        target: trigger.route?.key ?? trigger.href,
         canPreventDefault: true,
       });
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      if (!trigger.isFocused) {
+      if (!trigger.isFocused || (trigger.type === 'internal' && trigger.deep)) {
         switchTab(name, { resetOnFocus });
       }
     },
@@ -222,7 +255,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       navigation?.emit({
         type: 'tabLongPress',
-        target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
+        target: trigger.route?.key ?? trigger.href,
       });
 
       if (!shouldHandleMouseEvent(event)) return;

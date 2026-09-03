@@ -35,6 +35,14 @@ internal fun Context.isSystemInDarkTheme(): Boolean {
 }
 
 /**
+ * Allows `expo-widgets` to back `getMaterialColors` inside the widgets JS runtime.
+ */
+fun getMaterialColorTokens(context: Context, isDark: Boolean): Map<String, String> {
+  val scheme = if (isDark) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+  return scheme.toColorScheme(context).toTokenMap()
+}
+
+/**
  * Build a Material 3 `ColorScheme` from a single seed color, matching the
  * `SchemeTonalSpot` variant used by Material You. Works on every Android API
  * level (no wallpaper required).

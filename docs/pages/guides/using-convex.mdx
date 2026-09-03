@@ -4,6 +4,7 @@ description: Add a database to your app with Convex.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -160,3 +161,23 @@ Use these commands to inspect or manage the Convex integration later:
 />
 
 If you remove the link with `eas integrations:convex:project:delete` or `eas integrations:convex:team:delete`, EAS removes its integration metadata. These commands do not destroy resources on Convex.
+
+## Troubleshooting
+
+### Accept a team invite sent to a different email
+
+The Convex team invitation goes to the verified email on your Expo account, but Convex only supports signing in with Google or GitHub. If your Google or GitHub email is different, the invitation page says the invited email address has not been added to your Convex account. Navigating away from that page leaves you in a separate Convex account that does not contain your project.
+
+<ContentSpotlight
+  alt="Convex invitation page showing that the email address associated with the team invitation has not been added to your account"
+  src="/static/images/guides/convex-invite-email-mismatch.webp"
+/>
+
+To accept the invite from your existing Convex account:
+
+1. On the invitation page (or in the Convex dashboard's profile settings), click **Add email** and enter the invited email address.
+2. Open the verification email that Convex sends to that address and verify it.
+3. Return to the invitation link and reload the page, or sign out and open the invitation link again.
+4. Accept the invite. The team and project now appear in your Convex account.
+
+> **info** The flow can look like it failed after verifying the email. The invitation page does not update until you reload or reopen it.

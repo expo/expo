@@ -24,25 +24,27 @@ public final class FontLoaderModule: Module {
     AsyncFunction("loadAsync") { (fontFamilyAlias: String, localUri: URL) in
       let fontUrl = localUri as CFURL
       // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterFontsForURL
-      // would fail because of a duplicated font name when the app reloads or someone wants to override a font.
-      if FontFamilyAliasManager.familyName(forAlias: fontFamilyAlias) != nil {
+      // would fail because of a duplicated font name when the app reloads. Note that re-registering
+      // under an existing alias is skipped in the JS layer.
+      if FontFamilyAliasManager.hasAlias(fontFamilyAlias) {
         guard try unregisterFont(url: fontUrl) else {
           return
         }
       }
 
-      // Register the font
       try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
 
-      // Create a font object from the given URL
-      let font = try loadFont(fromUrl: fontUrl, alias: fontFamilyAlias)
+      // Alias every name the file provides to `fontFamilyAlias` — one per named instance for a
+      // variable font — that makes its weights reachable through the `fontWeight` style prop.
+      let aliasedNames = try postScriptNames(inFileAt: fontUrl, alias: fontFamilyAlias)
 
-      if let postScriptName = font.postScriptName as? String {
-        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFont: postScriptName)
-        registeredFonts = Array(Set(registeredFonts).union([postScriptName, fontFamilyAlias]))
-      } else {
-        throw FontNoPostScriptException(fontFamilyAlias)
-      }
+      FontFamilyAliasManager.setAlias(fontFamilyAlias, forPostScriptNames: aliasedNames)
+
+      // Only report names the app supplied. This list is what `Font.isLoaded` answers from, and
+      // what `loadAsync` skips on, so every entry takes a name the app can no longer load under.
+      // The names read out of the file stay in the alias registry above, where `fontWeight`
+      // resolution needs them.
+      registeredFonts = Array(Set(registeredFonts).union([fontFamilyAlias]))
     }
   }
 }

@@ -78,7 +78,8 @@ object ReactHostFactory {
     jsRuntimeFactory: JSRuntimeFactory? = null,
     useDevSupport: Boolean = ReactBuildConfig.DEBUG,
     bindingsInstaller: BindingsInstaller? = null,
-    devBundleDownloadListener: DevBundleDownloadListener? = null
+    devBundleDownloadListener: DevBundleDownloadListener? = null,
+    devServerBundleUrl: String? = null
   ): ReactHostImpl {
     val hostHandlers = ExpoModulesPackage.packageList
       .flatMap { it.createReactNativeHostHandlers(context) }
@@ -109,7 +110,7 @@ object ReactHostFactory {
         Task.UI_THREAD_EXECUTOR,
         true,
         useDevSupport,
-        ExpoGoDevSupportFactory(devBundleDownloadListener)
+        ExpoGoDevSupportFactory(devBundleDownloadListener, devServerBundleUrl = devServerBundleUrl)
       )
 
     hostHandlers.forEach { handler ->

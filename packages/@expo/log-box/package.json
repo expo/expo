@@ -1,10 +1,15 @@
 {
   "name": "@expo/log-box",
-  "version": "56.0.12",
+  "version": "57.0.2",
   "description": "Error overlay for universal Expo apps.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
   "license": "MIT",
   "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/log-box"
+  },
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -69,10 +74,10 @@
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
-    "@expo/dom-webview": "workspace:^56.0.5",
-    "@expo/log-box-utils": "workspace:^56.0.0",
+    "@expo/dom-webview": "workspace:^",
+    "@expo/log-box-utils": "workspace:^",
     "anser": "^1.4.9",
-    "expo-modules-core": "workspace:~56.0.13",
+    "expo-modules-core": "workspace:~",
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
@@ -84,12 +89,12 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.86.0",
+    "react-native": "0.87.0",
     "react-native-web": "^0.21.0",
     "rimraf": "^6.1.2"
   },
   "peerDependencies": {
-    "@expo/dom-webview": "workspace:^56.0.5",
+    "@expo/dom-webview": "workspace:^",
     "expo": "*",
     "react": "*",
     "react-native": "*"

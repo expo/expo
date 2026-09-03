@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
+import { getAffectedPackagesAsync } from '../AffectedPackages';
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 
@@ -177,6 +178,23 @@ async function isXcbeautifyAvailableAsync(): Promise<boolean> {
 
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
 
+// Changes to any of these paths affect how the tests themselves build and run, so
+// affected-packages detection must fall back to testing everything — the infrastructure
+// must not be able to skip its own validation. For `tools/`, only the modules this command
+// is built from are listed (not the whole directory, which changes far too often).
+const INFRA_PATH_PATTERNS = [
+  /^tools\/src\/commands\/(IosNativeUnitTests|NativeUnitTests)\.ts$/,
+  /^tools\/src\/(AffectedPackages|Packages|Directories|CocoaPods)\.ts$/,
+  /^apps\/bare-expo\/ios\//,
+  /^\.github\/workflows\/ios-unit-tests\.yml$/,
+  /^packages\/expo-modules-autolinking\//,
+  /^packages\/expo-module-scripts\//,
+  /^packages\/expo-modules-test-core\//,
+  /^pnpm-lock\.yaml$/,
+  // CocoaPods and xcodeproj come from the bundle, so gem bumps change how pods install.
+  /^Gemfile(\.lock)?$/,
+];
+
 async function runTestsAsync(scheme: string, destination: string, useXcbeautify: boolean) {
   const args = [
     'test',
@@ -220,9 +238,44 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
   }
 }
 
-export async function iosNativeUnitTests({ packages }: { packages?: string }) {
+export async function iosNativeUnitTests({
+  packages,
+  affected,
+  since = 'main',
+}: {
+  packages?: string;
+  affected?: boolean;
+  since?: string;
+}) {
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
+
+  // An explicit `--packages` list takes precedence over affected-packages detection.
+  let affectedFilter: Set<string> | null = null;
+  if (affected && !packageNamesFilter.length) {
+    try {
+      const result = await getAffectedPackagesAsync({
+        scmBase: since,
+        infraPathPatterns: INFRA_PATH_PATTERNS,
+      });
+      if (result.type === 'infra-changed') {
+        console.log(
+          `Test infrastructure changed (${chalk.bold(result.changedFile)}) — running all iOS unit tests.\n`
+        );
+      } else {
+        affectedFilter = result.packageNames;
+        console.log(`Testing only packages affected since ${chalk.bold(since)}.\n`);
+      }
+    } catch (error: any) {
+      // Fail open: when the detection itself breaks (e.g. the merge base is unreachable in
+      // a shallow clone), running everything is always correct — just slower.
+      console.log(
+        chalk.yellow(
+          `Couldn't determine affected packages (${error.message?.trim()}) — running all iOS unit tests.\n`
+        )
+      );
+    }
+  }
 
   const targetsToTest: string[] = [];
   const packagesToTest: string[] = [];
@@ -235,6 +288,9 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
     }
 
     if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
+      continue;
+    }
+    if (affectedFilter && !affectedFilter.has(pkg.packageName)) {
       continue;
     }
 
@@ -254,6 +310,10 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       throw new Error(
         `No packages were found with the specified names: ${packageNamesFilter.join(', ')}`
       );
+    }
+    if (affectedFilter) {
+      console.log('✅ No affected packages provide iOS unit tests — nothing to run.');
+      return;
     }
     // Without this guard, an empty target list would generate a scheme with no testables and
     // `xcodebuild` would exit 0 — a vacuous success masking a broken package/test discovery.
@@ -299,6 +359,16 @@ export default (program: any) => {
     .option(
       '--packages <string>',
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
+    )
+    .option(
+      '--affected',
+      '[optional] Only test packages affected by changes since `--since` (including their dependents). Ignored when `--packages` is passed.',
+      false
+    )
+    .option(
+      '-s, --since <ref>',
+      '[optional] Git ref to diff against for `--affected`. Defaults to `main`.',
+      'main'
     )
     .description('Runs iOS native unit tests for each package that provides them.')
     .asyncAction(iosNativeUnitTests);

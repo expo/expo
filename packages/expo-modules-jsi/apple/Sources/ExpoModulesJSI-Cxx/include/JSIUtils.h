@@ -5,6 +5,9 @@
 
 #include <TargetConditionals.h>
 
+// `jsi.h` only forward-declares `jsi::Instrumentation`.
+#include <jsi/instrumentation.h>
+
 #include "HostFunctionClosure.h"
 #include "CppError.h"
 #include "IRuntimeCompat.h"
@@ -36,11 +39,13 @@ inline jsi::Value valueFromFunction(jsi::IRuntime &runtime, const jsi::Function 
 }
 
 // `jsi::Object::setProperty` is a template function that Swift does not support. We need to provide specialized versions.
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const char *name, const jsi::Value value) {
+// They take a `jsi::PropNameID` rather than a `const char *`: JSI treats a `const char *` name as ASCII,
+// which mangles non-ASCII property names coming from Swift strings.
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const jsi::PropNameID &name, const jsi::Value &value) {
   object.setProperty(runtime, name, value);
 }
 
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const char *name, const jsi::Value &value) {
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const jsi::PropNameID &name, const jsi::Value &value) {
   array.setProperty(runtime, name, value);
 }
 
@@ -97,7 +102,8 @@ inline std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::stri
 inline jsi::Function createHostFunction(jsi::IRuntime &runtime, const jsi::PropNameID &propName, HostFunctionClosure *closure) {
   auto closurePtr = std::shared_ptr<HostFunctionClosure>(closure);
   return jsi::Function::createFromHostFunction(runtime, propName, 0, [closurePtr](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
-    auto result = closurePtr->call(thisValue, args, count);
+    jsi::Value result;
+    closurePtr->call(thisValue, args, count, result);
 
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
@@ -136,25 +142,30 @@ inline void destroyRuntime(jsi::Runtime &runtime) {
 }
 
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
   });
 }
 
+// `jsi::Instrumentation` is not imported into Swift, so reach it from here.
+inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
+  runtime.instrumentation().collectGarbage(cause);
+}
+
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
   });
 }
 
 inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callWithThis(runtime, jsThis, args, count);
   });
 }
 
 inline jsi::Value callAsConstructor(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callAsConstructor(runtime, args, count);
   });
 }

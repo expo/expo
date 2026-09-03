@@ -233,8 +233,6 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
-  '/guides/publishing/': '/archive/classic-updates/publishing/',
-  '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/up-and-running/': '/get-started/create-a-project/',
   '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
@@ -278,7 +276,6 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirects based on Sentry reports
   '/next-steps/installation/': '/get-started/create-a-project/',
-  '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/push-notifications/': '/push-notifications/overview/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
@@ -299,9 +296,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/linking/': '/linking/overview/',
   '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
-
-  // Archive unused pages
-  '/guides/notification-channels/': '/archive/push-notifications/notification-channels/',
 
   // Permissions API is moved to guide
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
@@ -350,14 +344,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
   '/guides/configuring-updates/': '/archive/classic-updates/getting-started/',
-  '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
-  '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
-  '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
-  '/guides/offline-support/': '/archive/classic-updates/offline-support/',
-  '/guides/preloading-and-caching-assets/':
-    '/archive/classic-updates/preloading-and-caching-assets/',
   '/eas-update/bare-react-native/': '/eas-update/getting-started/',
-  '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/build/setup/',
   '/classic/turtle-cli/': '/build/setup/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
@@ -664,4 +651,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/module-config/': '/modules/module-config/',
   '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
   '/router/advance/router-setttings/': '/router/advanced/router-settings/',
+
+  // After removing the Vexo guide
+  '/guides/using-vexo/': '/guides/using-analytics/',
 };

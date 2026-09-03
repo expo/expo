@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { CameraCapturedPicture } from 'expo-camera';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library/legacy';
@@ -130,7 +130,7 @@ function LoadedGalleryScreen(
     <View style={styles.container}>
       <View style={styles.navbar}>
         <TouchableOpacity style={styles.button} onPress={props.onPress}>
-          <MaterialIcons name="arrow-back" size={25} color="white" />
+          <Ionicons name="arrow-back" size={25} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={saveToGallery}>
           <Text style={styles.whiteText}>Save selected to gallery</Text>

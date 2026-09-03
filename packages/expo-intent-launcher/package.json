@@ -1,6 +1,6 @@
 {
   "name": "expo-intent-launcher",
-  "version": "56.0.4",
+  "version": "57.0.1",
   "description": "Provides a way to launch Android intents, e.g. opening a specific activity.",
   "keywords": [
     "expo",

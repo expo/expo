@@ -29,7 +29,7 @@ struct DispatchUtilsRetryGateTests {
       backoff: stubbedBackoff
     )
     #expect(next.consecutiveRetryableFailures == 0)
-    #expect(next.dispatchAfterDate == state.dispatchAfterDate)  // untouched
+    #expect(next.dispatchAfterDate == state.dispatchAfterDate) // untouched
   }
 
   /// `.partialSuccess` is treated the same as success for gate purposes: the bytes landed on
@@ -62,6 +62,22 @@ struct DispatchUtilsRetryGateTests {
     )
     let next = DispatchUtils.nextRetryGateState(
       result: .nonRetryableFailure(reason: "HTTP 400"),
+      currentState: state,
+      now: now,
+      backoff: stubbedBackoff
+    )
+    #expect(next.consecutiveRetryableFailures == 0)
+    #expect(next.dispatchAfterDate == state.dispatchAfterDate)
+  }
+
+  @Test
+  func `payloadTooLarge resets the counter and leaves the gate alone`() {
+    let state = DispatchUtils.RetryGateState(
+      dispatchAfterDate: now.addingTimeInterval(60),
+      consecutiveRetryableFailures: 2
+    )
+    let next = DispatchUtils.nextRetryGateState(
+      result: .payloadTooLarge,
       currentState: state,
       now: now,
       backoff: stubbedBackoff

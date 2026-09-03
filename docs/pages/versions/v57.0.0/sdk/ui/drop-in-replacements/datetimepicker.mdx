@@ -8,6 +8,8 @@ platforms: ['android', 'ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `DateTimePicker` component with an API compatible with `@react-native-community/datetimepicker`. It uses Jetpack Compose on Android and SwiftUI on iOS, providing a modern Material 3 and SwiftUI appearance by default (the community module defaults to the older look on Android).
 
@@ -19,6 +21,21 @@ Under the hood this component wraps the platform-specific `@expo/ui` primitives:
 - **iOS**: [SwiftUI DatePicker](../swift-ui/datepicker)
 
 If you need lower-level control (custom modifiers, styles, or layouts), use those primitives directly.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-datetimepicker/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-datetimepicker/android-dark.webp',
+    alt: 'A Material 3 date picker dialog',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-datetimepicker/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-datetimepicker/ios-dark.webp',
+    alt: 'A compact date field showing 21 Aug 2026',
+  }}
+/>
 
 ## Installation
 
@@ -35,7 +52,20 @@ If you need lower-level control (custom modifiers, styles, or layouts), use thos
 
 ## Basic usage
 
-```tsx DateTimePickerExample.tsx
+<ComponentExample
+  title="DateTimePickerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-basic-android-dark.webp',
+    alt: 'A Material 3 date picker dialog for August 2026',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-basic-ios-dark.webp',
+    alt: 'A compact date field showing 21 Aug 2026',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import DateTimePicker from '@expo/ui/community/datetime-picker';
 
@@ -54,9 +84,24 @@ export default function DateTimePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Time picker
 
-```tsx TimePickerExample.tsx
+<ComponentExample
+  title="TimePickerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-time-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-time-android-dark.webp',
+    alt: 'A Material 3 time picker dialog with a clock face',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-time-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-time-ios-dark.webp',
+    alt: 'A compact time field',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import DateTimePicker from '@expo/ui/community/datetime-picker';
 
@@ -75,9 +120,24 @@ export default function TimePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## With date constraints
 
-```tsx ConstrainedDatePickerExample.tsx
+<ComponentExample
+  title="ConstrainedDatePickerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-constrained-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-constrained-android-dark.webp',
+    alt: 'A date picker dialog with the dates before today greyed out',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-constrained-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-constrained-ios-dark.webp',
+    alt: 'An open calendar with the dates outside the allowed range greyed out',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import DateTimePicker from '@expo/ui/community/datetime-picker';
 
@@ -101,11 +161,26 @@ export default function ConstrainedDatePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Dialog presentation
 
 On Android, you can use `presentation="dialog"` to show the picker as a modal dialog. The dialog opens when the component mounts. Unmount it in response to `onValueChange` or `onDismiss`. On iOS, this prop is ignored and the picker always renders inline.
 
-```tsx AndroidDialogExample.tsx
+<ComponentExample
+  title="AndroidDialogExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-dialog-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-dialog-android-dark.webp',
+    alt: 'A date picker dialog opened by the Pick a date button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-datetimepicker-dialog-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-datetimepicker-dialog-ios-dark.webp',
+    alt: 'A Pick a date button above a compact date field',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Button, View } from 'react-native';
 import DateTimePicker from '@expo/ui/community/datetime-picker';
@@ -136,6 +211,8 @@ export default function AndroidDialogExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -143,3 +220,5 @@ import DateTimePicker from '@expo/ui/community/datetime-picker';
 ```
 
 <APISection packageName="expo-ui/community/datetime-picker" apiName="DateTimePicker" />
+
+</PlatformTabsGroup>

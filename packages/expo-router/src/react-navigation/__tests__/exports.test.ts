@@ -2,6 +2,15 @@
 import * as Index from '../';
 
 describe('react-navigation/index re-exports', () => {
+  it('does not export removed APIs', () => {
+    expect(Index).not.toHaveProperty('createStaticNavigation');
+    expect(Index).not.toHaveProperty('createComponentForStaticNavigation');
+    expect(Index).not.toHaveProperty('createPathConfigForStaticNavigation');
+    expect(Index).not.toHaveProperty('NavigationContainer');
+    expect(Index).not.toHaveProperty('BaseNavigationContainer');
+    expect(Index).not.toHaveProperty('UNSTABLE_UnhandledLinkingContext');
+  });
+
   it.each([
     { name: 'core', code: require('../core') },
     { name: 'native', code: require('../native') },

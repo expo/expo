@@ -8,9 +8,9 @@
 import type { Socket } from 'net';
 import * as tls from 'tls';
 
+import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
 import { ResponseError, ServiceClient } from './ServiceClient';
 import type { UsbmuxdPairRecord } from './UsbmuxdClient';
-import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
 
 export interface DeviceValues {
   BasebandCertId: number;

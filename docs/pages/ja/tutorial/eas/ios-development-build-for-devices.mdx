@@ -1,0 +1,246 @@
+---
+title: iOS 実機向けのクラウドビルドを作成して実行する
+sidebar_title: iOS 実機向け開発ビルド
+description: EAS Build を使って iOS の実機向けに開発ビルドを設定する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、EAS Build を使って iOS の実機で動作する開発ビルドを作成します。
+
+iOS 実機向けの開発ビルドは、iOS アプリのインストールで標準的な **.ipa** 形式で生成されます。
+
+<VideoBoxLink
+  videoId="HbfWU7_o4cU"
+  title="視聴：iOS 実機向けの開発ビルドを作成する"
+  description="コード署名の設定を含め、EAS Build を使って iOS 実機で開発ビルドをビルド・実行する方法を学びます。"
+/>
+
+---
+
+<Prerequisites>
+  <Requirement title="Apple Developer アカウント">
+    アプリの署名に必要な [認証情報](/app-signing/app-credentials/#ios)
+    にアクセスするために必要です。アプリが信頼できる提供元から来たことを検証するため、各ビルドには署名が必要です。EAS
+    Build はこれらの認証情報の管理を助けてくれます。
+  </Requirement>
+  <Requirement title="iOS 16 以降ではデベロッパモードを有効化">
+    デバイスに開発ビルドをインストールするには、デベロッパモードを有効にする必要があります。初めての場合や現在無効になっている場合は、[デベロッパモードを有効にする](/guides/ios-developer-mode/)
+    を参照してください。
+  </Requirement>
+</Prerequisites>
+
+## プロビジョニングプロファイル
+
+iOS 実機で開発を始めるには、次のことが必要です。
+
+- 新しい [プロビジョニングプロファイル](/app-signing/app-credentials/#provisioning-profiles) を作成してデバイスを登録する。
+- そのプロファイルをダウンロードしてデバイスにインストールする。
+
+<Step label="1">
+
+### iOS デバイスを登録する
+
+EAS CLI で、新しい Apple デバイスを登録するコマンドを実行します。
+
+<Terminal cmd={['$ eas device:create']} />
+
+このコマンドは次の質問を表示します。
+
+- **You're inside the project directory. Would you like to use the** **your-account-name** **account?**（プロジェクトディレクトリ内にいます。your-account-name アカウントを使いますか？）<kbd>Y</kbd> を押します。
+- **Apple ID.** ここでは自分の Apple ID を入力します。すると Apple Developer アカウントにログインします。ターミナルウィンドウの手順に従ってください。
+- **How would you like to register your devices?**（デバイスをどの方法で登録しますか？）**Website** を選ぶと、iOS デバイスで開ける登録用の URL が生成されます。
+
+> **info** **ヒント**: 自分やチームが複数のデバイスを持っている場合は、プロビジョニングプロファイルのリンクを共有して、各デバイスでダウンロード・インストールできます。
+
+</Step>
+
+<Step label="2">
+
+### プロファイルをダウンロードしてインストールする
+
+デバイスの web ブラウザーで前のステップのリンクを開き、**Download Profile** ボタンをタップします。
+
+<ContentSpotlight
+  alt="Download the provisioning profile"
+  src="/static/images/tutorial/eas/ios-ad-hoc-01.jpg"
+  className="max-w-[240px]"
+/>
+
+**設定** アプリを開くと、デバイスの登録を促されます。
+
+<ContentSpotlight
+  alt="Install the provisioning profile"
+  src="/static/images/tutorial/eas/ios-ad-hoc-02.jpg"
+  className="max-w-[240px]"
+/>
+
+**インストール** をタップして iOS デバイスを登録します。
+
+<ContentSpotlight
+  alt="Provisioning profile installed successfully"
+  src="/static/images/tutorial/eas/ios-ad-hoc-03.jpg"
+  className="max-w-[240px]"
+/>
+
+プロビジョニングプロファイルがインストールされると、デバイスは web ブラウザーに戻り、処理の完了を示す成功メッセージが表示されます。
+
+</Step>
+
+## iOS 実機向けの開発ビルド
+
+<Step label="1">
+
+### 作成する
+
+iOS 実機向けの開発ビルドを作成するには、`build.development` プロファイルで次を確認します。
+
+- **eas.json** の `developmentClient` が `true` になっていること。デフォルト設定でそうなっています。
+- 続いて、プラットフォームに `ios`、ビルドプロファイルに `development` を指定して `eas build` コマンドを実行します。
+
+<Terminal cmd={['$ eas build --platform ios --profile development']} />
+
+> **info** **ヒント**: 次に `eas build` コマンドを実行するときは、プラットフォームの指定に `-p` も使えます。`--platform` の短縮形です。
+
+初めてビルドを作成するとき、このコマンドは次の質問を表示します。
+
+- **What would you like your iOS bundle identifier to be?**（iOS のバンドル識別子を何にしますか？）<kbd>Return</kbd> を押して、表示されるデフォルト値を選びます。まだ定義されていなければ、**app.json** に [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) が追加されます。
+- **Do you want to log in to your Apple account?**（Apple アカウントにログインしますか？）開発ビルドを作るのは初めてなので、**Generate a new Apple Distribution Certificate**（新しい Apple Distribution Certificate を生成しますか？）も尋ねられます。どちらも <kbd>Y</kbd> を押します。
+- **Select a device for ad hoc build**.（ad hoc ビルド用のデバイスを選んでください）ここが重要な部分で、事前にプロビジョニングプロファイルを登録しておいたのはこのためです。登録済みのデバイスから 1 台または全部を選び、return を押せば、後でそれらのデバイスにビルドをインストールできます。
+
+> **warning** **新規または更新直後の Apple Developer Program メンバーシップでは、登録したばかりのデバイスにすぐにはインストールできないことがあります。** Expo にデバイスを登録しても、Apple には登録されません。デバイスが Apple に追加されるのは、そのデバイスを含むビルドを初めて作成したときです。そうしたメンバーシップの場合、Apple がデバイスの処理を終えてプロビジョニングプロファイルに追加できるようになるまで [最大 24〜72 時間](https://developer.apple.com/help/account/reference/device-registration-updates/) かかることがあり、登録したばかりのデバイスを含めた最初のビルドは失敗することがあります。その場合は Apple の処理が終わるのを待ってから、もう一度ビルドを実行してください。
+
+> **info** **[iOS Simulator の章](/ja/tutorial/eas/ios-development-build-for-simulators/) を飛ばした場合のみ:** **iOS app only uses standard/exempt encryption?**（この iOS アプリは標準的な、または適用除外の暗号化のみを使いますか？）と尋ねられます。<kbd>Y</kbd> を押してデフォルト値を選びます。このアプリは暗号化を使っていないため、**Info.plist** ファイルの `ITSAppUsesNonExemptEncryption` が `NO` に設定され、TestFlight や Apple App Store にリリースする際のコンプライアンスチェックが処理されます。自分のアプリをリリースする際に暗号化を使っている場合は、`N` を選べば次回からこの質問を省略できます。
+
+回答するとビルドがキューに入り、EAS CLI が表示するリンクから EAS ダッシュボードで進捗を確認できます。
+
+<ContentSpotlight
+  alt="iOS preview build details and progress in EAS dashboard"
+  src="/static/images/tutorial/eas/ios-build.png"
+  className="max-w-[800px]"
+/>
+
+<Collapsible summary="ビルド詳細ページには何が載っている？">
+
+ビルド詳細ページには、ビルドの種類、プロファイル、Expo SDK バージョン、アプリバージョン、ビルド番号、最後のコミットハッシュ、そしてビルドを開始した開発者またはアカウント所有者が表示されます。
+
+上の画像では、**Build artifact** の現在のステータスがビルド進行中であることを示しています。完了すると、このセクションからビルドをダウンロードできるようになります。**Logs** には、EAS Build 上での iOS ビルドプロセスの各ステップが並びます。ここでは簡潔にするため、各ステップの詳細には触れません。詳しくは [iOS のビルドプロセス](/build-reference/ios-builds/) を参照してください。
+
+</Collapsible>
+
+<Collapsible summary="iOS bundle identifier とは？">
+
+`ios.bundleIdentifier` はアプリの一意な名前です。いまアプリを公開すると、Apple App Store はこのプロパティの値でストア上のアプリを識別します。
+
+この表記は `host.owner.app-name` の形式で定義されます。たとえばサンプルアプリでは `com.owner.stickersmash` となり、`com.owner` がドメイン、`stickersmash` がアプリ名です。
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### インストールする
+
+ビルドが完了すると Build artifact セクションが更新され、ビルドの完了が示されます。
+
+<ContentSpotlight
+  alt="Build artifact gives the option to download development build for iOS devices and emulators"
+  src="/static/images/tutorial/eas/ios-build-artifact.png"
+/>
+
+このセクションには、iOS 実機で開発ビルドを実行するための手段として、Expo Orbit と Install ボタンが用意されています。
+
+[Expo Orbit](https://expo.dev/orbit) を使うと、iOS 実機に開発ビルドをスムーズにインストールできます。この方法を使うには次のようにします。
+
+- iOS 実機を USB で開発マシンに接続します。
+- Orbit のメニューバーアプリを開きます。
+- Orbit アプリで **Device** を選択します。
+
+<ContentSpotlight
+  alt="Open with Orbit button on EAS dashboard in Build artifact"
+  src="/static/images/tutorial/eas/ios-orbit.png"
+  className="max-w-[300px]"
+/>
+
+- EAS ダッシュボードの **Build artifact** で **Open with Orbit** をクリックします。
+
+ビルドがインストールされると、Orbit アプリが実機上で開発ビルドを起動します。
+
+<Collapsible summary="別の方法：Install ボタンと QR コードを使う">
+
+**Build artifact** セクションの **Install** ボタンは、手軽にインストールするための QR コードを生成します。
+
+- **Install** をクリックすると、QR コードを含むポップアップが表示されます。
+
+<ContentSpotlight
+  alt="Install button generates a QR code for easy installation on iOS devices and emulators"
+  src="/static/images/tutorial/eas/ios-qr-code.png"
+  className="max-w-[480px]"
+/>
+
+- iOS 実機のカメラで QR コードをスキャンし、開いたリンクをタップして開発ビルドをデバイスにダウンロードします。
+
+</Collapsible>
+
+</Step>
+
+<Step label="3">
+
+### 実行する
+
+プロジェクトディレクトリで `npx expo start` コマンドを実行して開発サーバーを起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+- デバイスでアプリアイコンをタップして開発ビルドを開きます。
+
+<ContentSpotlight
+  alt="Development build's launcher UI on iOS device"
+  src="/static/images/tutorial/eas/ios-dev-build-01.jpg"
+  className="max-w-[240px]"
+/>
+
+- EAS CLI と開発ビルドの両方にログインした状態にして、アカウント同期機能を使います。EAS CLI にはすでにログイン済みなので、次は開発ビルドの UI からログインします。
+
+<ContentSpotlight
+  alt="Modal to login to Expo account on iOS device"
+  src="/static/images/tutorial/eas/ios-dev-build-02.jpg"
+  className="max-w-[240px]"
+/>
+
+- **Fetch development servers** をタップし、Development servers の一覧から実行中のサーバーを選びます。
+
+<ContentSpotlight
+  alt="Fetching development servers to connect"
+  src="/static/images/tutorial/eas/ios-dev-build-03.jpg"
+  className="max-w-[240px]"
+/>
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/ios-development-build-for-devices"
+  chapterTitle="第 4 章：iOS 実機向けのクラウドビルドを作成して実行する"
+  summary="EAS Build を使って iOS の実機で開発ビルドを作成・実行しました。"
+  nextChapterDescription="次の章では、1 台のデバイスに複数のアプリバリアントをインストールできるよう、app config を設定する方法を学びます。"
+  nextChapterTitle="複数のアプリバリアントを設定する"
+  nextChapterLink="/ja/tutorial/eas/multiple-app-variants/"
+/>

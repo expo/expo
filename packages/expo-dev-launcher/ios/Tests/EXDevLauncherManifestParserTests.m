@@ -190,6 +190,120 @@
   [self waitForExpectationsWithTimeout:5 handler:nil];
 }
 
+- (void)testIsManifestURL_RequestOptsOutOfNetworkObservation
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/skip-metrics"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    XCTAssertEqualObjects(@"1", request.allHTTPHeaderFields[@"Expo-AppMetrics-Skip"]);
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:nil];
+  }];
+
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc]
+                                         initWithURL:[NSURL URLWithString:@"http://ohhttpstubs/skip-metrics"]
+                                         installationID:nil
+                                         session:NSURLSession.sharedSession
+                                         requestTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"request should include the app-metrics opt-out header"];
+
+  [parser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testParseManifest_RequestOptsOutOfNetworkObservation
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/skip-metrics"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    XCTAssertEqualObjects(@"1", request.allHTTPHeaderFields[@"Expo-AppMetrics-Skip"]);
+    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"http://test.io/bundle.js\"}";
+    NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
+  }];
+
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc]
+                                         initWithURL:[NSURL URLWithString:@"http://ohhttpstubs/skip-metrics"]
+                                         installationID:nil
+                                         session:NSURLSession.sharedSession
+                                         requestTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"manifest download should include the app-metrics opt-out header"];
+
+  [parser tryToParseManifest:^(EXManifestsManifest * _Nonnull manifest) {
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testIsManifestURL_RequestIncludesForwardingHeaders
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/dev/manifest"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    XCTAssertEqualObjects(@"host=\"ohhttpstubs\";proto=http", request.allHTTPHeaderFields[@"Forwarded"]);
+    XCTAssertEqualObjects(@"ohhttpstubs", request.allHTTPHeaderFields[@"X-Forwarded-Host"]);
+    XCTAssertEqualObjects(@"http", request.allHTTPHeaderFields[@"X-Forwarded-Proto"]);
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:nil];
+  }];
+
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc]
+                                         initWithURL:[NSURL URLWithString:@"http://ohhttpstubs/dev/manifest"]
+                                         installationID:nil
+                                         session:NSURLSession.sharedSession
+                                         requestTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"request should include forwarding headers"];
+
+  [parser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testParseManifest_ResolvesRelativeBundleURL
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/dev/manifest"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"index.bundle?platform=ios\"}";
+    NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
+  }];
+
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc]
+                                         initWithURL:[NSURL URLWithString:@"http://ohhttpstubs/dev/manifest"]
+                                         installationID:nil
+                                         session:NSURLSession.sharedSession
+                                         requestTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"should resolve relative bundle URL"];
+
+  [parser tryToParseManifest:^(EXManifestsManifest * _Nonnull manifest) {
+    XCTAssertEqualObjects(@"http://ohhttpstubs/dev/index.bundle?platform=ios", manifest.bundleUrl);
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
 - (void)testParseManifest
 {
   [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {

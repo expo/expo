@@ -4,6 +4,7 @@ import type { PanGesture } from 'react-native-gesture-handler';
 import type { HeaderOptions } from '../elements';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   DrawerActionHelpers,
   DrawerNavigationState,
   NavigationHelpers,
@@ -37,6 +38,13 @@ export type DrawerNavigationConfig = {
 };
 
 export type DrawerNavigationOptions = HeaderOptions & {
+  /**
+   * Hides the drawer item. If the screen is focused, the navigator redirects to its initial
+   * visible screen.
+   * @default false
+   */
+  hidden?: boolean;
+
   /**
    * Title text for the screen.
    */
@@ -200,12 +208,9 @@ export type DrawerNavigationOptions = HeaderOptions & {
    */
   popToTopOnBlur?: boolean;
 
+  // TODO(@ubax): Remove this prop
   /**
-   * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-   * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-   * Requires `react-native-screens` version >=3.16.0.
-   *
-   * Only supported on iOS and Android.
+   * @deprecated This option has no effect in Expo Router.
    */
   freezeOnBlur?: boolean;
 };
@@ -292,7 +297,8 @@ export type DrawerOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = DrawerScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<DrawerScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 

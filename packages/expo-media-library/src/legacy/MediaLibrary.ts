@@ -121,6 +121,11 @@ export type Asset = {
    * @platform android
    */
   albumId?: string;
+  /**
+   * GPS location if available. On Android, `getAssetsAsync` includes this field for image
+   * assets only when you pass `resolveWithFullInfo: true`.
+   */
+  location?: Location;
 };
 
 // @needsAudit
@@ -322,8 +327,12 @@ export type AssetsOptions = {
    */
   createdBefore?: Date | number;
   /**
-   * Whether to resolve full info for the assets during the query.
-   * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+   * Whether to resolve full EXIF metadata for image assets during the query.
+   * When enabled, Android resolves EXIF data (including orientation) and GPS location for image assets.
+   *
+   * > **Note:** On Android, enabling this option significantly increases request time (~5×),
+   * > because the library fetches EXIF and location data per image.
+   *
    * @default false
    * @platform android
    */
@@ -690,7 +699,8 @@ export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promise<
 
 // @needsAudit
 /**
- * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
+ * Provides more information about an asset, including GPS location, local URI, and EXIF metadata.
+ * On Android, the library resolves location and EXIF data for image assets only.
  * For better performance, prefer using individual getters such as `asset.getLocation()` or `asset.getExif()` to fetch only the data you need.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
@@ -850,8 +860,14 @@ export async function deleteAlbumsAsync(
 // @needsAudit
 /**
  * Fetches a page of assets matching the provided criteria.
+ * Returned assets may include a `location` field when GPS metadata is available.
+ * On Android, pass `resolveWithFullInfo: true` to resolve location and full EXIF data for image assets only.
+ *
+ * > **Note:** On Android, `resolveWithFullInfo: true` significantly increases request time (~5×),
+ * > because the library fetches EXIF and location data per image.
+ *
  * @param assetsOptions
- * @return A promise that fulfils with to [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with array of [`Asset`](#asset)s.
+ * @return A promise that fulfils with a [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with an array of [`Asset`](#asset)s.
  */
 export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise<PagedInfo<Asset>> {
   if (!MediaLibrary.getAssetsAsync) {

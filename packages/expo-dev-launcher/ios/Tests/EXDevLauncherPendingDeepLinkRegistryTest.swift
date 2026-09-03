@@ -1,9 +1,9 @@
-import Quick
-import Nimble
+import Testing
 
 @testable import EXDevLauncher
 
-class EXDevLauncherPendingDeepLinkRegistryTest: QuickSpec {
+@Suite("EXDevLauncherPendingDeepLinkRegistry")
+struct EXDevLauncherPendingDeepLinkRegistryTest {
   class Listener: NSObject, EXDevLauncherPendingDeepLinkListener {
     var lastDeepLink: URL?
 
@@ -12,39 +12,40 @@ class EXDevLauncherPendingDeepLinkRegistryTest: QuickSpec {
     }
   }
 
-  override class func spec() {
-    it("registry should inform all subscribers about new value") {
-      let listener = Listener()
-      let registry = EXDevLauncherPendingDeepLinkRegistry()
+  @Test
+  func `registry should inform all subscribers about new value`() {
+    let listener = Listener()
+    let registry = EXDevLauncherPendingDeepLinkRegistry()
 
-      registry.subscribe(listener)
-      registry.pendingDeepLink = URL.init(string: "http://localhost:1234")
+    registry.subscribe(listener)
+    registry.pendingDeepLink = URL.init(string: "http://localhost:1234")
 
-      expect(listener.lastDeepLink?.absoluteString).to(equal("http://localhost:1234"))
-    }
+    #expect(listener.lastDeepLink?.absoluteString == "http://localhost:1234")
+  }
 
-    it("unsubscribe should work") {
-      let listener = Listener()
-      let registry = EXDevLauncherPendingDeepLinkRegistry()
+  @Test
+  func `unsubscribe should work`() {
+    let listener = Listener()
+    let registry = EXDevLauncherPendingDeepLinkRegistry()
 
-      registry.subscribe(listener)
-      registry.unsubscribe(listener)
-      registry.pendingDeepLink = URL.init(string: "http://localhost:1234")
+    registry.subscribe(listener)
+    registry.unsubscribe(listener)
+    registry.pendingDeepLink = URL.init(string: "http://localhost:1234")
 
-      expect(listener.lastDeepLink).to(beNil())
-    }
+    #expect(listener.lastDeepLink == nil)
+  }
 
-    it("consumePendingDeepLink should reset the inner value") {
-      let listener = Listener()
-      let registry = EXDevLauncherPendingDeepLinkRegistry()
+  @Test
+  func `consumePendingDeepLink should reset the inner value`() {
+    let listener = Listener()
+    let registry = EXDevLauncherPendingDeepLinkRegistry()
 
-      registry.subscribe(listener)
-      registry.pendingDeepLink = URL.init(string: "http://localhost:1234")
-      let consumedURL = registry.consumePendingDeepLink()
+    registry.subscribe(listener)
+    registry.pendingDeepLink = URL.init(string: "http://localhost:1234")
+    let consumedURL = registry.consumePendingDeepLink()
 
-      expect(registry.pendingDeepLink).to(beNil())
-      expect(listener.lastDeepLink?.absoluteString).to(equal("http://localhost:1234"))
-      expect(listener.lastDeepLink! as NSURL) === (consumedURL! as NSURL)
-    }
+    #expect(registry.pendingDeepLink == nil)
+    #expect(listener.lastDeepLink?.absoluteString == "http://localhost:1234")
+    #expect((listener.lastDeepLink! as NSURL) === (consumedURL! as NSURL))
   }
 }

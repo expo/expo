@@ -9,10 +9,27 @@ platforms: ['android', 'ios']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `PagerView` component with an API compatible with `react-native-pager-view`. It wraps the platform-specific `@expo/ui` primitives: Jetpack Compose `HorizontalPager` on Android and a paged SwiftUI `ScrollView` on iOS. Each child becomes a separate page and stretches to fill the pager.
 
 If you need lower-level control over platform-specific paging behavior or modifiers, use the native primitives directly. On iOS, [`TabView`](../swift-ui/tabview/#page-indicator-dots) with the `page` style also renders a horizontal pager and may fit better when you want SwiftUI's built-in page indicators.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-pagerview/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-pagerview/android-dark.webp',
+    alt: 'The first page of a pager',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-pagerview/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-pagerview/ios-dark.webp',
+    alt: 'The first page of a pager',
+  }}
+/>
 
 ## Installation
 
@@ -43,7 +60,20 @@ See [Platform behavior](#platform-behavior) for the full list.
 
 ## Basic usage
 
-```tsx PagerViewExample.tsx
+<ComponentExample
+  title="PagerViewExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-pagerview-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-pagerview-basic-android-dark.webp',
+    alt: 'The first page of a pager above a Go to page 2 button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-pagerview-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-pagerview-basic-ios-dark.webp',
+    alt: 'The first page of a pager above a Go to page 2 button',
+  }}>
+
+```tsx
 import { useRef } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import PagerView, { type PagerViewRef } from '@expo/ui/community/pager-view';
@@ -81,6 +111,8 @@ const styles = StyleSheet.create({
 });
 ```
 
+</ComponentExample>
+
 ## Platform behavior
 
 Web is not supported and rendering `PagerView` on web throws at runtime.
@@ -108,3 +140,5 @@ import PagerView from '@expo/ui/community/pager-view';
 ```
 
 <APISection packageName="expo-ui/community/pager-view" apiName="PagerView" />
+
+</PlatformTabsGroup>

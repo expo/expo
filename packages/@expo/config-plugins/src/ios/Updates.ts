@@ -1,7 +1,5 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
-import type { ExpoPlist } from './IosConfig.types';
 import type { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
 import { withPlugins } from '../plugins/withPlugins';
@@ -17,10 +15,13 @@ import {
   getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdatesBsdiffPatchSupportEnabled,
+  getUpdatesExcludeFromBackup,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
 } from '../utils/Updates';
 import { addWarningIOS } from '../utils/warnings';
+import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
+import type { ExpoPlist } from './IosConfig.types';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',
@@ -34,6 +35,7 @@ export enum Config {
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
   DISABLE_ANTI_BRICKING_MEASURES = 'EXUpdatesDisableAntiBrickingMeasures',
   ENABLE_BSDIFF_PATCH_SUPPORT = 'EXUpdatesEnableBsdiffPatchSupport',
+  EXCLUDE_FROM_BACKUP = 'EXUpdatesExcludeFromBackup',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -138,6 +140,13 @@ export async function setUpdatesConfigAsync(
     newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES] = disableAntiBrickingMeasures;
   } else {
     delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
+  }
+
+  const excludeFromBackup = getUpdatesExcludeFromBackup(config);
+  if (excludeFromBackup) {
+    newExpoPlist[Config.EXCLUDE_FROM_BACKUP] = true;
+  } else {
+    delete newExpoPlist[Config.EXCLUDE_FROM_BACKUP];
   }
 
   newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = getUpdatesBsdiffPatchSupportEnabled(config);

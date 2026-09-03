@@ -1,6 +1,6 @@
 {
   "name": "@expo/router-server",
-  "version": "56.0.12",
+  "version": "57.0.4",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",
@@ -53,12 +53,12 @@
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
-    "@expo/metro-runtime": "workspace:^56.0.13",
+    "@expo/metro-runtime": "workspace:^",
     "expo": "*",
-    "expo-constants": "workspace:^56.0.16",
-    "expo-font": "workspace:^56.0.5",
+    "expo-constants": "workspace:^",
+    "expo-font": "workspace:^",
     "expo-router": "*",
-    "expo-server": "workspace:^56.0.4",
+    "expo-server": "workspace:^",
     "react": "*",
     "react-dom": "*",
     "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"

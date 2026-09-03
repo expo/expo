@@ -1,8 +1,8 @@
 import { ConfigPlugin } from 'expo/config-plugins';
 
+import { WidgetConfig } from '../types/WidgetConfig.type';
 import withAndroidWidgetFiles from './withAndroidWidgetFiles';
 import withAndroidWidgetManifest from './withAndroidWidgetManifest';
-import { WidgetConfig } from '../types/WidgetConfig.type';
 
 const withAndroidWidgets: ConfigPlugin<{ widgets: WidgetConfig[] }> = (config, { widgets }) => {
   if (widgets.length === 0) {

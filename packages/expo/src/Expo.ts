@@ -29,6 +29,7 @@ export {
   uuid,
   createSnapshotFriendlyRef,
   useReleasingSharedObject,
+  useReleasingSharedObjectWithLifecycle,
 } from 'expo-modules-core';
 
 export type {

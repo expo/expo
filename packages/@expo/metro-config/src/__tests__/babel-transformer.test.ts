@@ -1,5 +1,5 @@
 import generate from '@babel/generator';
-import type { BabelTransformer } from '@expo/metro/metro-babel-transformer';
+import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import { vol } from 'memfs';
 
 import * as babel from '../babel-core';
@@ -232,5 +232,64 @@ describe('getCacheKey', () => {
     const { transformer: t } = setupTransformerForCacheKey(files, 'babel.config.js');
     t.getCacheKey!({ projectRoot: '/' });
     expect(mockGetFileCacheKey).toHaveBeenCalledWith(['/.babelrc', '/babel.config.js']);
+  });
+});
+
+describe('isDefaultConfig', () => {
+  const args: BabelTransformerArgs = {
+    filename: '/app/node_modules/example/index.jsx',
+    src: 'module.exports = <View />;',
+    plugins: [],
+    options: {
+      dev: true,
+      enableBabelRCLookup: true,
+      enableBabelRuntime: '7.29.2',
+      extendsBabelConfigPath: 'babel.config.js',
+      globalPrefix: '',
+      inlineRequires: false as any,
+      minify: false,
+      platform: 'ios',
+      projectRoot: '/app',
+      publicPath: '/',
+      customTransformOptions: { engine: 'hermes' },
+    },
+  };
+
+  function setupConfigComparison(equivalent: boolean) {
+    jest.resetModules();
+    const configuredPreset = {};
+    const baselinePreset = equivalent ? configuredPreset : {};
+    const loadPartialConfigSync = jest.fn((options: { extends?: string }) => ({
+      files: new Set(['/app/babel.config.js']),
+      options: {
+        assumptions: {},
+        plugins: [],
+        presets: [
+          {
+            value: options.extends ? configuredPreset : baselinePreset,
+            options: undefined,
+          },
+        ],
+      },
+    }));
+    jest.doMock('../babel-core', () => ({
+      ...jest.requireActual('../babel-core'),
+      loadPartialConfigSync,
+    }));
+    const resolved = require('../babel-transformer') as BabelTransformer & {
+      isDefaultConfig(args: BabelTransformerArgs): boolean;
+    };
+    return { resolved, loadPartialConfigSync };
+  }
+
+  it('accepts a resolved config equivalent to the default Expo preset', () => {
+    const { resolved, loadPartialConfigSync } = setupConfigComparison(true);
+    expect(resolved.isDefaultConfig(args)).toBe(true);
+    expect(loadPartialConfigSync).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects a resolved config with a different preset descriptor', () => {
+    const { resolved } = setupConfigComparison(false);
+    expect(resolved.isDefaultConfig(args)).toBe(false);
   });
 });

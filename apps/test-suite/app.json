@@ -9,6 +9,10 @@
     "platforms": ["android", "ios", "web"],
     "ios": {
       "bundleIdentifier": "io.expo.testsuite"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "noxcturnalTransformWorker": true
     }
   }
 }

@@ -1,7 +1,5 @@
-// Forked from React Navigation in order to use a custom `useLinking` function.
+// Based on React Navigation's `createMemoryHistory`.
 // https://github.com/react-navigation/react-navigation/blob/main/packages/native/src/createMemoryHistory.tsx
-// Look for 'START OF FORK' comments
-// Currently no forked behaviour.
 import { nanoid } from 'nanoid/non-secure';
 
 import type { NavigationState } from '../react-navigation/core';

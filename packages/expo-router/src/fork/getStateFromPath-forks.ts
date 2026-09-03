@@ -30,7 +30,7 @@ export function populateParams(routes?: ParsedRoute[], params?: Record<string, a
   if (!routes || !params || Object.keys(params).length === 0) return;
 
   for (const route of routes) {
-    Object.assign(route, { params });
+    route.params = { ...params, ...route.params };
   }
 
   return routes;

@@ -64,4 +64,22 @@ export enum SourceSkips {
 
   /** The [extra](https://docs.expo.dev/versions/latest/config/app/#extra) section in app.json */
   ExpoConfigExtraSection = 1 << 12,
+
+  //#region - EAS Build source
+
+  /**
+   * Skip eas.json.
+   * Most of its content, such as build profiles and submit settings, does not affect the native
+   * project. Note that some fields do, e.g. `ios.buildConfiguration` or `android.gradleCommand`.
+   */
+  EasJson = 1 << 13,
+
+  /**
+   * Skip .easignore.
+   * The file only controls which files are uploaded to EAS Build.
+   * Note that excluding a file that does affect the native build will not change the fingerprint.
+   */
+  Easignore = 1 << 14,
+
+  //#endregion - EAS Build source
 }

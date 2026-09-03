@@ -42,10 +42,20 @@ open class NotificationsHandler : Module(), NotificationListener {
       "onHandleNotificationTimeout"
     )
 
-    OnCreate {
-      // Register the module as a listener in NotificationManager singleton.
-      // Deregistration happens in onDestroy callback.
+    // Listen in NotificationManager only while JS listens here. JS starts listening as soon as the
+    // app imports `expo-notifications`, which installs a default handler, so an app that never
+    // calls `setNotificationHandler` still has one. JS stops listening only when the app passes
+    // `null`, and a notification that arrives then is not presented while the app is in the
+    // foreground.
+    OnStartObserving("onHandleNotification") {
       NotificationManager.addListener(this@NotificationsHandler)
+    }
+
+    OnStopObserving("onHandleNotification") {
+      NotificationManager.removeListener(this@NotificationsHandler)
+    }
+
+    OnCreate {
       notificationsHandlerThread = HandlerThread("NotificationsHandlerThread - " + this.javaClass.toString())
       notificationsHandlerThread.start()
       handler = Handler(notificationsHandlerThread.looper)

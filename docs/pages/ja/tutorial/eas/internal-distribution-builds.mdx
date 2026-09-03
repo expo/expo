@@ -1,0 +1,221 @@
+---
+title: 内部配布ビルドを作成して共有する
+sidebar_title: 内部配布ビルド
+description: 内部配布ビルドとは何か、なぜ必要なのか、そしてどう作成するのかを学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、[内部配布ビルド](/build/internal-distribution/#using-internal-distribution) をセットアップする方法を学びます。
+
+<VideoBoxLink
+  videoId="1fQuGLHxWks"
+  title="視聴：内部配布ビルドを作成して共有する方法"
+  description="EAS で内部配布ビルドを作成し、テストのためにチームへ直接共有します。"
+/>
+
+---
+
+## 内部配布ビルド
+
+内部配布ビルドは、チームメンバーに更新を共有するのに最適です。技術者にも非技術者にも直接フィードバックをもらえます。開発ビルドとは違って開発サーバーを動かす必要がないため、テストの流れがシンプルになります。
+
+### アプリを内部で配布する方法
+
+Google と Apple はどちらも、アプリを内部で共有する仕組みを標準で提供しています。
+
+- **Android**: Google Play ベータを使う
+- **iOS**: TestFlight を使う
+
+ただし、これらの従来の方法にはそれぞれ制約があります。たとえば TestFlight では、一度にアクティブにできるビルドは 1 つだけです。
+
+### より速く配布するための EAS Build
+
+EAS Build はこのプロセスを高速化します。ビルドの共有リンクを作成し、その使い方も案内してくれます。内部配布をしやすくするデフォルト設定を備えており、従来の方法よりも効率的な選択肢になります。
+
+## 内部配布ビルドを作成する
+
+EAS Build でビルドを作成して配布するには、次の手順に従います。
+
+<Step label="1">
+
+### Preview ビルドプロファイルを設定する
+
+**eas.json** の初期セットアップの時点で、内部配布向けに設計された `preview` ビルドプロファイルを含むデフォルト設定がすでにあります。
+
+```json eas.json
+{
+  "build": {
+    "preview": {
+      /* @info `preview` プロファイルの `distribution` には `internal` が設定されています。 */
+      "distribution": "internal"
+      /* @end */
+    }
+  }
+}
+```
+
+最初の内部配布ビルドを作るのに必要なのはこれだけです。上のスニペットの `preview` ビルドプロファイルには `distribution` プロパティがあり、値が `internal` になっています。この値によって、ビルドの URL を誰にでも共有でき、相手は自分のデバイスにインストールできます。アプリを動かすのに開発サーバーは必要ありません。
+
+前の章で説明したとおり、アプリストア以外向けのビルドでは、Android は **.apk**、iOS は **.ipa** の形式が必要です。これは内部配布ビルドにも当てはまります。`distribution` を `internal` に設定すると、デバイス向けにこれらのファイル形式でアプリのバイナリが自動的に作成されます。
+
+</Step>
+
+<Step label="2">
+
+### 作成する
+
+内部配布ビルドの作成には [アプリの署名用認証情報](/app-signing/app-credentials/) が必要です。
+
+Android のアプリ署名は制約がゆるく、互換性のある **.apk** ファイルであればインストールできます。開発ビルドを作成したときに新しい Android Keystore が生成されているため、preview ビルド用に新しい keystore を生成する必要はありません。
+
+一方 Apple は、iOS デバイスへのアプリ配布に対してより厳しいルールを設けています。アプリの実行を許可するデバイスを明示的に列挙した ad hoc プロビジョニングプロファイルが必要です。アプリが特定の要件を満たす組織であれば、[Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/) を使って、より広い範囲に内部配布できる場合もあります。
+
+<Tabs>
+
+<Tab label="Android">
+
+- `preview` プロファイルを使って Android ビルドを開始します。
+
+<Terminal cmd={['$ eas build --platform android --profile preview']} />
+
+- このコマンドが EAS Build を起動し、EAS ダッシュボードでビルドの進捗を確認できます。
+
+<ContentSpotlight
+  alt="Android preview build details and progress in EAS dashboard"
+  src="/static/images/tutorial/eas/android-preview-build.png"
+  className="max-w-[800px]"
+/>
+
+</Tab>
+
+<Tab label="iOS">
+
+ad hoc プロビジョニングプロファイルで署名されたアプリは、その UDID がプロファイルに登録されている iOS デバイスにインストールできます。
+
+- デバイスを追加登録するには `eas device:create` を使います。このコマンドは iOS デバイスを登録し、デバイス登録用に共有できる URL または QR コードを表示します。
+
+<Terminal cmd={['$ eas device:create']} />
+
+- このコマンドはアプリをインストールするための iOS デバイスを登録し、デバイス登録用の共有可能な URL（または QR コード）を生成します。
+
+  > **info** **ヒント**: このコマンドはいつでもデバイスを登録できます。ただし、新しく追加したデバイスで動作するのは、登録後に作成したビルドだけです。
+
+  > **warning** **新規または更新直後の Apple Developer Program メンバーシップでは、登録したばかりのデバイスにすぐにはインストールできないことがあります。** Expo にデバイスを登録しても、Apple には登録されません。デバイスが Apple に追加されるのは、そのデバイスを含むビルドまたは再署名を初めて実行したときです。そうしたメンバーシップの場合、Apple がデバイスの処理を終えてプロビジョニングプロファイルに追加できるようになるまで [最大 24〜72 時間](https://developer.apple.com/help/account/reference/device-registration-updates/) かかることがあります。新しいデバイスを登録した直後にビルドが失敗した場合は、Apple の処理が終わるのを待ってからもう一度ビルドを実行してください。詳しくは [デバイスの管理](/build/internal-distribution/#managing-devices) を参照してください。
+
+- preview ビルドを作成するには、`eas build` コマンドで `preview` プロファイルを指定します。
+
+<Terminal cmd={['$ eas build --platform ios --profile preview']} />
+
+- このコマンドが EAS Build を起動し、EAS ダッシュボードでビルドの進捗を確認できます。
+
+<ContentSpotlight
+  alt="iOS preview build details and progress in EAS dashboard"
+  src="/static/images/tutorial/eas/ios-preview-build.png"
+  className="max-w-[800px]"
+/>
+
+<Collapsible summary={<><CODE>eas build:resign</CODE> を使ってデバイスを登録する別の方法</>}>
+
+[`eas build:resign`](/app-signing/app-credentials/#re-signing-new-credentials) コマンドを使うと、既存の iOS **.ipa** を新しい ad hoc プロビジョニングプロファイルで再署名でき、ビルドをやり直す必要がなくなります。
+
+</Collapsible>
+
+<Collapsible summary="エンタープライズプロビジョニングを設定しようとしていますか？">
+
+Apple Enterprise Program のメンバーシップは年間 299 米ドルで、[すべての組織が対象になるわけではありません](https://developer.apple.com/programs/enterprise/)。そのため、通常の有料 Apple Developer アカウントで使える ad hoc プロビジョニングを利用することが多いでしょう。
+
+[Apple Developer Enterprise Program のメンバーシップ](https://developer.apple.com/programs/enterprise/) があれば、ユーザーは UDID を事前登録しなくてもアプリを自分のデバイスにインストールできます。デバイスにプロファイルをインストールするだけで、既存のビルドにアクセスできるようになります。正しいプロビジョニングを設定するには、`eas build` の実行中に Apple Developer Enterprise アカウントでサインインする必要があります。
+
+エンタープライズプロビジョニングと App Store の両方でアプリを配布する場合は、それぞれに別のバンドル識別子が必要です。次のいずれかをおすすめします。
+
+- Expo CLI で生成したプロジェクトでは、[**app.config.js** で識別子を動的に切り替える](/ja/tutorial/eas/multiple-app-variants/)。
+- [既存の React Native プロジェクト](/bare/overview/) では、バンドル識別子ごとに個別の `scheme` を作成し、そのスキーム名をそれぞれのビルドプロファイルで指定する。
+
+</Collapsible>
+
+<Collapsible summary="ローカルの認証情報を手動で管理していますか？">
+
+その場合は、Apple Developer Portal で生成した ad hoc またはエンタープライズのプロビジョニングプロファイルを **credentials.json** が指すようにしてください（別の配布方法で使っていた既存の **credentials.json** を更新するか、適切なプロビジョニングプロファイルを指す新しいものに差し替えます）。EAS CLI はローカルの認証情報を限定的にしか検証しないため、デバイスの UDID 登録は自分で行う必要があります。詳しくは [ローカルの認証情報を使う](/app-signing/local-credentials) を参照してください。
+
+</Collapsible>
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+### インストールする
+
+ビルドが完了すると Build artifact セクションが更新され、ビルドの完了が示されます。このセクションには、iOS 実機で開発ビルドを実行するための手段として、Expo Orbit と Install ボタンが用意されています。
+
+- ビルドの詳細ページを開きます。ビルドを他の人と共有する場合は、そのリンクを送ります。相手はビルドの詳細ページや、Expo Orbit を含むビルド成果物の詳細を開けます。
+- Android または iOS のデバイスを USB でマシンに接続します。
+- Orbit のメニューバーアプリを開きます。
+- Orbit アプリで **Device** を選択します。
+- **Build artifact** で **Open with Orbit** をクリックします。
+
+<Collapsible summary="別の方法：Install ボタンと QR コードを使う">
+
+- ビルドの詳細ページを開きます。ビルドを他の人と共有する場合は、そのページのリンクを送ります。相手はページを開いて、Expo Orbit を含むビルド成果物の詳細を確認できます。
+- Build artifact セクションの **Install** をクリックすると、**Install on a test device** のポップアップが表示されます。
+- **Send a link to a device** セクションからリンクをコピーし、テスト用デバイスに送ります。
+
+<ContentSpotlight
+  alt="Internal distribution build details and install link in EAS dashboard"
+  src="/static/images/tutorial/eas/android-qr-code.png"
+  className="max-w-[450px]"
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+### 実行する
+
+デバイスでアプリアイコンをタップして preview ビルドを起動します。開発サーバーは必要ありません。
+
+すでに複数のアプリバリアントを設定してあるので、development と preview のバリアントが別々にインストールされているのが分かります。たとえば次のようになります。
+
+- Android の場合:
+
+<ContentSpotlight
+  alt="Internal distribution build details and install link in EAS dashboard for Android"
+  src="/static/images/tutorial/eas/android-multi-variants-installed.png"
+  className="max-w-[270px]"
+/>
+
+- iOS の場合:
+
+<ContentSpotlight
+  alt="Internal distribution build details and install link in EAS dashboard for iOS"
+  src="/static/images/tutorial/eas/ios-multi-variants-installed.webp"
+  className="max-w-[250px]"
+/>
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/internal-distribution-builds"
+  chapterTitle="第 6 章：内部配布ビルドを作成して共有する"
+  summary="Android と iOS 向けの内部配布ビルドを作成し、iOS では ad hoc プロビジョニングを使い、同じデバイスに複数のアプリバリアントをインストールしました。"
+  nextChapterDescription="次の章では、開発者向けとユーザー向けのアプリバージョンについて、そしてそれらを自動で管理する方法を学びます。"
+  nextChapterTitle="異なるアプリバージョンを管理する"
+  nextChapterLink="/ja/tutorial/eas/manage-app-versions/"
+/>

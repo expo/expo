@@ -2,13 +2,26 @@
 
 exports[`allows the constantFoldingPlugin to not remove used helpers when \`dev: false\` 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-  var _interopRequireWildcard = _$$_REQUIRE(_dependencyMap[0]).default;
-  Object.defineProperty(exports, "__esModule", {
-    value: true
+Object.defineProperty(exports, '__esModule', { value: true });
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    var d = Object.getOwnPropertyDescriptor(e, k);
+    Object.defineProperty(n, k, d.get ? d : {
+      enumerable: true,
+      get: function () { return e[k]; }
+    });
   });
-  exports.test = void 0;
-  var test = _interopRequireWildcard(_$$_REQUIRE(_dependencyMap[1]));
-  exports.test = test;
+  n.default = e;
+  return n;
+}
+Object.defineProperty(exports, "test", { enumerable: true, get: function () { return test; } });
+var _testModule = _$$_REQUIRE(_dependencyMap[0], "test-module");
+var test = _interopNamespace(_testModule);
+
+
+
 });"
 `;
 
@@ -43,19 +56,22 @@ exports[`transforms a simple script 1`] = `
 
 exports[`transforms an es module with asyncToGenerator 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault").default;
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.test = test;
-  var _asyncToGenerator2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "@babel/runtime/helpers/asyncToGenerator"));
-  function test() {
-    return _test.apply(this, arguments);
-  }
-  function _test() {
-    _test = (0, _asyncToGenerator2.default)(function* () {});
-    return _test.apply(this, arguments);
-  }
+Object.defineProperty(exports, '__esModule', { value: true });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : { default: e };
+}
+exports.test = test;
+var _babelRuntimeHelpersAsyncToGenerator = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/asyncToGenerator");
+var _asyncToGenerator = _interopDefault(_babelRuntimeHelpersAsyncToGenerator);
+
+function test() {
+	return _test.apply(this, arguments);
+}
+function _test() {
+	_test = (0, _asyncToGenerator.default)(function* () {});
+	return _test.apply(this, arguments);
+}
+
 });"
 `;
 
@@ -71,22 +87,24 @@ exports[`transforms an es module with asyncToGenerator 2`] = `
 
 exports[`transforms async generators 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault").default;
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.test = test;
-  var _awaitAsyncGenerator2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "@babel/runtime/helpers/awaitAsyncGenerator"));
-  var _wrapAsyncGenerator2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[2], "@babel/runtime/helpers/wrapAsyncGenerator"));
-  function test() {
-    return _test.apply(this, arguments);
-  }
-  function _test() {
-    _test = (0, _wrapAsyncGenerator2.default)(function* () {
-      yield "ok";
-    });
-    return _test.apply(this, arguments);
-  }
+Object.defineProperty(exports, '__esModule', { value: true });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : { default: e };
+}
+exports.test = test;
+var _babelRuntimeHelpersWrapAsyncGenerator = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/wrapAsyncGenerator");
+var _wrapAsyncGenerator = _interopDefault(_babelRuntimeHelpersWrapAsyncGenerator);
+
+function test() {
+	return _test.apply(this, arguments);
+}
+function _test() {
+	_test = (0, _wrapAsyncGenerator.default)(function* () {
+		yield "ok";
+	});
+	return _test.apply(this, arguments);
+}
+
 });"
 `;
 

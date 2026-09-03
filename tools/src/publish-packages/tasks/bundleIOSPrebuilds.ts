@@ -3,7 +3,6 @@ import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
 
-import { loadRequestedParcels } from './loadRequestedParcels';
 import { EXPO_DIR, PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
@@ -11,12 +10,13 @@ import { runWithSpinner, spawnAsync } from '../../Utils';
 import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
 import { IOS_PREBUILD_PACKAGES } from '../../prebuilds/Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { loadRequestedParcels } from './loadRequestedParcels';
 
 /**
  * Xcode version that prebuilds must be built with. Each Xcode bundles a specific Swift
  * compiler, and `.swiftinterface` files emitted by a newer Swift cannot be parsed by an
  * older one, which breaks consumers who haven't yet upgraded. Keep in sync with the CI
- * workflows that publish artifacts (see .github/workflows/publish-canaries.yml).
+ * workflows that publish artifacts (see .github/workflows/publish-packages.yml).
  */
 export const SUPPORTED_XCODE_VERSION = '26.4.1';
 

@@ -38,6 +38,11 @@ git submodule update --init
 # The react-native submodule uses yarn internally.
 yarn --cwd $ROOT_DIR/react-native-lab/react-native install --frozen-lockfile
 
+# Build the codegen CLI. Its output is no longer committed to the submodule, and yarn does not run
+# the package's own prepare script for a workspace package, so nothing else creates it. Every
+# module's generateCodegenSchemaFromJavaScript task reads react-native-codegen/lib directly.
+yarn --cwd $ROOT_DIR/react-native-lab/react-native/packages/react-native-codegen build
+
 if [ -n "${EAS_BUILD_NPM_CACHE_URL-}" ]; then
   sed -i -e "s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g" $ROOT_DIR/yarn.lock || true
 fi

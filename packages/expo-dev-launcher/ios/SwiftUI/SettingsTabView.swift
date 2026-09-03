@@ -41,27 +41,13 @@ struct SettingsTabView: View {
           .font(.system(size: 13))
           .foregroundStyle(.secondary)
 
+        DevServerFiltersView()
+
         #if !targetEnvironment(simulator)
         localNetworkDebugSettings
         #endif
 
-        VStack(alignment: .leading, spacing: 8) {
-          Text("system".uppercased())
-            .font(.caption)
-            .foregroundColor(.primary.opacity(0.6))
-
-          VStack(spacing: 0) {
-            version
-            if let expiration = viewModel.buildInfo["appExpirationDate"] as? String {
-              Divider()
-              expirationRow(expiration)
-            }
-            Divider()
-            copyToClipboardButton
-          }
-          .background(Color.expoSecondarySystemBackground)
-          .cornerRadius(12)
-        }
+        systemSection
 
         if isAdminUser {
           debugSettings
@@ -158,6 +144,26 @@ struct SettingsTabView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 12)
+      }
+      .background(Color.expoSecondarySystemBackground)
+      .cornerRadius(12)
+    }
+  }
+
+  private var systemSection: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("system".uppercased())
+        .font(.caption)
+        .foregroundColor(.primary.opacity(0.6))
+
+      VStack(spacing: 0) {
+        version
+        if let expiration = viewModel.buildInfo["appExpirationDate"] as? String {
+          Divider()
+          expirationRow(expiration)
+        }
+        Divider()
+        copyToClipboardButton
       }
       .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)

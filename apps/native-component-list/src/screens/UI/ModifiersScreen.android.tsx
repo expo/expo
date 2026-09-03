@@ -13,17 +13,17 @@ import {
   onGloballyPositioned,
   Shapes,
 } from '@expo/ui/jetpack-compose/modifiers';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
 import { useState } from 'react';
 import { ScrollView, Button, StyleSheet, View, TextInput, Text as RNText } from 'react-native';
 
 import { Section } from '../../components/Page';
+import useOptionalBottomTabBarHeight from '../../utilities/useOptionalBottomTabBarHeight';
 
 export default function ModifiersScreen() {
   const [showImePadding, setShowImePadding] = useState(false);
 
-  const tabbarHeight = useBottomTabBarHeight();
+  const tabbarHeight = useOptionalBottomTabBarHeight();
 
   return (
     <>

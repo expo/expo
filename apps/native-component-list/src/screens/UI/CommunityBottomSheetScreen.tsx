@@ -5,7 +5,7 @@ import BottomSheet, {
   useBottomSheet,
 } from '@expo/ui/community/bottom-sheet'; // can replace with `@gorhom/bottom-sheet` to check compatibility
 import { useRef, useState } from 'react';
-import { Button, Platform, StyleSheet, Text, View } from 'react-native';
+import { Button, Modal, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { BodyText } from '../../components/BodyText';
@@ -31,7 +31,9 @@ export default function CommunityBottomSheetScreen() {
   const sheetRef = useRef<BottomSheet>(null);
   const modalRef = useRef<BottomSheetModal>(null);
   const fitRef = useRef<BottomSheetModal>(null);
+  const modalFromDismissRef = useRef<BottomSheetModal>(null);
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [log, setLog] = useState<string[]>([]);
   const addLog = (msg: string) =>
     setLog((prev) => [`${new Date().toLocaleTimeString()} ${msg}`, ...prev].slice(0, 15));
@@ -66,6 +68,15 @@ export default function CommunityBottomSheetScreen() {
                 setTimeout(() => fitRef.current?.close(), 2000);
               }}
             />
+          </View>
+
+          {/* 4. Present a React Native Modal from onDismiss */}
+          <BodyText style={styles.heading}>Modal from onDismiss</BodyText>
+          <BodyText style={styles.hint}>
+            Close the sheet — onDismiss presents a React Native Modal
+          </BodyText>
+          <View style={styles.buttonRow}>
+            <Button title="Open" onPress={() => modalFromDismissRef.current?.present()} />
           </View>
 
           {/* Event log */}
@@ -127,6 +138,30 @@ export default function CommunityBottomSheetScreen() {
               <SheetControls />
             </BottomSheetView>
           </BottomSheetModal>
+
+          {/* Sheet 4: presents a React Native Modal once fully dismissed */}
+          <BottomSheetModal
+            ref={modalFromDismissRef}
+            snapPoints={['50%']}
+            onDismiss={() => {
+              addLog('dismiss-then-modal onDismiss');
+              setIsModalVisible(true);
+            }}
+            enablePanDownToClose>
+            <BottomSheetView style={styles.sheetView}>
+              <Text style={styles.sheetTitle}>Modal from onDismiss</Text>
+              <SheetControls />
+            </BottomSheetView>
+          </BottomSheetModal>
+
+          <Modal visible={isModalVisible} transparent animationType="fade">
+            <View style={styles.modalBackdrop}>
+              <View style={styles.modalCard}>
+                <Text style={styles.sheetTitle}>Modal presented</Text>
+                <Button title="Close" onPress={() => setIsModalVisible(false)} />
+              </View>
+            </View>
+          </Modal>
         </View>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
@@ -190,5 +225,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 8,
+  },
+  modalBackdrop: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    gap: 8,
   },
 });

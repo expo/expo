@@ -2,7 +2,6 @@
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
-import semver from 'semver';
 
 import { executeExpoAsync } from '../utils/expo';
 import { createPackageTarball } from '../utils/package';
@@ -16,9 +15,6 @@ import {
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
-
-// to avoid flaky fail when testing prebuild form github template
-jest.retryTimes(3, { logErrorsBeforeRetry: true });
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -34,9 +30,16 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/prebuild').expoPrebuild`);
   expect(modules).toStrictEqual([
+    expect.stringMatching(/\/2g\/dist\/2g\.js$/),
+    expect.stringMatching(/\/2g\/dist\/chunks\/pretty-chunk\.js$/),
+    expect.stringMatching(/\/2g\/dist\/chunks\/sessionSockets-chunk\.js$/),
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/prebuild/index.js',
     '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/env.js',
+    '@expo/cli/build/src/utils/errors.js',
+    '@expo/cli/build/src/utils/interactive.js',
+    '@expo/cli/build/src/utils/nodeEnv.js',
   ]);
 });
 
@@ -190,79 +193,6 @@ itNotWindows('runs `npx expo prebuild`', async () => {
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
-});
-
-// This tests contains assertions related to ios files, making it incompatible with Windows
-itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
-  const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
-  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank', {
-    reuseExisting: false,
-  });
-  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
-
-  await executeExpoAsync(projectRoot, [
-    'prebuild',
-    '--no-install',
-    '--template',
-    npmTemplatePackage,
-  ]);
-
-  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
-
-  // Added new packages
-  expect(pkg.read().dependencies).toMatchObject({
-    expo: expect.any(String),
-    react: expect.any(String),
-    'react-native': expect.any(String),
-  });
-
-  // If this changes then everything else probably changed as well.
-  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
-});
-
-// This tests contains assertions related to ios files, making it incompatible with Windows
-itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync(
-    'github-template-prebuild',
-    'with-blank',
-    { reuseExisting: false }
-  );
-
-  const expoPackage = require(
-    require.resolve('expo/package.json', {
-      paths: [path.join(projectRoot, 'package.json')],
-    })
-  );
-  const expoSdkVersion = semver.minVersion(expoPackage.version)?.major;
-  if (!expoSdkVersion) {
-    throw new Error('Could not determine Expo SDK major version from template');
-  }
-
-  const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/this-template-does-not-exist`;
-
-  let error: unknown = undefined;
-  try {
-    await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--template', templateUrl], {
-      // To avoid error log output in tests
-      verbose: false,
-    });
-  } catch (e) {
-    error = e;
-  }
-
-  expect(error).toBeDefined();
-  expect(error).toMatchObject({
-    message: expect.stringContaining(`Could not locate the repository for "${templateUrl}".`),
-  });
-  expect(error).toMatchObject({
-    message: expect.stringContaining(`Failed to create the native directories`),
-  });
-  expect(findProjectFiles(projectRoot)).toEqual(
-    expect.not.arrayContaining([
-      expect.stringMatching(/^ios\//),
-      expect.stringMatching(/^android\//),
-    ])
-  );
 });
 
 /*

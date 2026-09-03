@@ -943,7 +943,7 @@ Each `.from<T> { }` call registers a converter from type `T` to your custom type
 
 Some common iOS types from the `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
-| Native iOS Type         | TypeScript                                                                                                                                                                        |
+| Native iOS type         | TypeScript                                                                                                                                                                        |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `URL`                   | `string` with a URL. When a scheme is not provided, it's assumed to be a file URL.                                                                                                |
 | `CGFloat`               | `number`                                                                                                                                                                          |
@@ -960,7 +960,7 @@ Similarly, some common Android types from packages like `java.io`, `java.net`, o
 
 > **Note:** On Android, primitive arrays should be used whenever possible.
 
-| Native Android Type                                                                       | TypeScript                                                                                                                                                                        |
+| Native Android type                                                                       | TypeScript                                                                                                                                                                        |
 | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `java.net.URL`                                                                            | `string` with a URL. Note that the scheme has to be provided (URL should not contain any unencoded `%` character)                                                                 |
 | `android.net.Uri`<br/>`java.net.URI`                                                      | `string` with a URI. Note that the scheme has to be provided (URI should not contain any unencoded `%` character)                                                                 |

@@ -1,6 +1,6 @@
 {
   "name": "expo-device",
-  "version": "56.0.4",
+  "version": "57.0.1",
   "description": "A universal module that gets physical information about the device running the application",
   "keywords": [
     "expo",

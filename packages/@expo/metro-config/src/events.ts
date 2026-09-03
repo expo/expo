@@ -14,7 +14,7 @@ declare module '2g' {
     };
     'config:rewrite_url:redirected': { url: string };
     'config:rewrite_url:hermes_enabled': Record<string, never>;
-    'config:cache:skipped_css': { path: string };
+    'config:cache:skipped': Record<string, never>;
     'config:cache:rename_failed': { error: SerializedError };
     'config:cache:tombstone_remove_failed': { tombstone: string; error: SerializedError };
   }

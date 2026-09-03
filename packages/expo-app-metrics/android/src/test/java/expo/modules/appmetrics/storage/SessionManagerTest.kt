@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.BuildConfig
+import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -286,261 +287,59 @@ class SessionManagerTest {
 
   // endregion
 
-  // region MetricsInsertListener Tests
+  // region Cursor Reads
 
   @Test
-  fun `addMetrics notifies listeners with inserted metric IDs`() =
-    runTest {
-      // Arrange
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+  fun `getMetrics returns auto-generated IDs after cursor in ascending order with limit`() = runTest {
+    val sessionId = "session-1"
+    sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+    sessionManager.addMetrics(
+      listOf(createMetric("first", sessionId), createMetric("second", sessionId), createMetric("third", sessionId)),
+      sessionId
+    )
 
-      val receivedIds = mutableListOf<String>()
-      sessionManager.addMetricsInsertListener { metricIds ->
-        receivedIds.addAll(metricIds)
-      }
-
-      val metrics = listOf(
-        createMetric("metric-1", ""),
-        createMetric("metric-2", "")
-      )
-
-      // Act
-      sessionManager.addMetrics(metrics, sessionId)
-
-      // Assert
-      assertEquals(2, receivedIds.size)
-      assertTrue(receivedIds.contains("metric-1"))
-      assertTrue(receivedIds.contains("metric-2"))
-    }
+    val all = sessionManager.getMetrics(afterId = -1, limit = 10)
+    assertEquals(listOf("first", "second", "third"), all.map { it.name })
+    assertTrue(all.zipWithNext().all { (first, second) -> first.id < second.id })
+    assertEquals(listOf("second"), sessionManager.getMetrics(all.first().id, 1).map { it.name })
+    assertEquals(all.last().id, sessionManager.getMaxMetricId())
+  }
 
   @Test
-  fun `addMetrics notifies multiple listeners`() =
-    runTest {
-      // Arrange
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      val listener1Ids = mutableListOf<String>()
-      val listener2Ids = mutableListOf<String>()
-      sessionManager.addMetricsInsertListener { metricIds ->
-        listener1Ids.addAll(metricIds)
-      }
-      sessionManager.addMetricsInsertListener { metricIds ->
-        listener2Ids.addAll(metricIds)
-      }
-
-      val metrics = listOf(createMetric("metric-1", ""))
-
-      // Act
-      sessionManager.addMetrics(metrics, sessionId)
-
-      // Assert
-      assertEquals(1, listener1Ids.size)
-      assertEquals(1, listener2Ids.size)
-    }
+  fun `getMaxMetricId returns null when metrics are empty`() = runTest {
+    assertNull(sessionManager.getMaxMetricId())
+  }
 
   @Test
-  fun `removeMetricsInsertListener stops notifications`() =
-    runTest {
-      // Arrange
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+  fun `getLogs returns auto-generated IDs after cursor in ascending order with limit`() = runTest {
+    val sessionId = "session-1"
+    sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+    sessionManager.addLogs(
+      listOf(createLog("first", sessionId), createLog("second", sessionId), createLog("third", sessionId)),
+      sessionId
+    )
 
-      val receivedIds = mutableListOf<String>()
-      val listener = SessionManager.MetricsInsertListener { metricIds ->
-        receivedIds.addAll(metricIds)
-      }
-      sessionManager.addMetricsInsertListener(listener)
-
-      // Act - add metrics, then remove listener, then add more metrics
-      sessionManager.addMetrics(listOf(createMetric("metric-1", "")), sessionId)
-      sessionManager.removeMetricsInsertListener(listener)
-      sessionManager.addMetrics(listOf(createMetric("metric-2", "")), sessionId)
-
-      // Assert - only the first metric should have been received
-      assertEquals(1, receivedIds.size)
-      assertTrue(receivedIds.contains("metric-1"))
-    }
-
-  // endregion
-
-  // region getSessionsWithMetrics Tests
+    val all = sessionManager.getLogs(afterId = -1, limit = 10)
+    assertEquals(listOf("first", "second", "third"), all.map { it.name })
+    assertTrue(all.zipWithNext().all { (first, second) -> first.id < second.id })
+    assertEquals(listOf("second"), sessionManager.getLogs(all.first().id, 1).map { it.name })
+    assertEquals(all.last().id, sessionManager.getMaxLogId())
+  }
 
   @Test
-  fun `getSessionsWithMetrics returns sessions with only requested metrics`() =
-    runTest {
-      // Arrange
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      val metrics = listOf(
-        createMetric("metric-1", sessionId),
-        createMetric("metric-2", sessionId),
-        createMetric("metric-3", sessionId)
-      )
-      database.metricDao().insertAll(metrics)
-
-      // Act - only request metric-1 and metric-3
-      val result = sessionManager.getSessionsWithMetrics(listOf("metric-1", "metric-3"))
-
-      // Assert
-      assertEquals(1, result.size)
-      assertEquals(sessionId, result[0].session.id)
-      assertEquals(2, result[0].metrics.size)
-      assertTrue(result[0].metrics.any { it.metricId == "metric-1" })
-      assertTrue(result[0].metrics.any { it.metricId == "metric-3" })
-    }
+  fun `getMaxLogId returns null when logs are empty`() = runTest {
+    assertNull(sessionManager.getMaxLogId())
+  }
 
   @Test
-  fun `getSessionsWithMetrics returns empty when no metrics match`() =
-    runTest {
-      // Arrange
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-      database.metricDao().insertAll(listOf(createMetric("metric-1", sessionId)))
-
-      // Act
-      val result = sessionManager.getSessionsWithMetrics(listOf("nonexistent-metric"))
-
-      // Assert
-      assertEquals(0, result.size)
+  fun `getSessions reads IDs across SQLite bind chunks`() = runTest {
+    val ids = (0..SQLITE_MAX_BIND_VARIABLES).map { "session-$it" }
+    ids.forEachIndexed { index, id ->
+      sessionManager.startSessionWithIdAt(id, "2025-01-01T00:00:${index % 60}.000Z")
     }
 
-  @Test
-  fun `getSessionsWithMetrics returns multiple sessions`() =
-    runTest {
-      // Arrange
-      val session1Id = "session-1"
-      val session2Id = "session-2"
-      sessionManager.startSessionWithIdAt(session1Id, "2025-01-01T00:00:00.000Z")
-      sessionManager.startSessionWithIdAt(session2Id, "2025-01-01T01:00:00.000Z")
-
-      database.metricDao().insertAll(
-        listOf(
-          createMetric("metric-1", session1Id),
-          createMetric("metric-2", session2Id)
-        )
-      )
-
-      // Act
-      val result = sessionManager.getSessionsWithMetrics(listOf("metric-1", "metric-2"))
-
-      // Assert
-      assertEquals(2, result.size)
-      val sessionIds = result.map { it.session.id }
-      assertTrue(sessionIds.contains(session1Id))
-      assertTrue(sessionIds.contains(session2Id))
-    }
-
-  @Test
-  fun `getSessionsWithMetrics deduplicates sessions spanning multiple chunks`() =
-    runTest {
-      // Arrange - one session with metrics that will land in different chunks
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      // Insert 1100 metrics into the same session
-      val allMetricIds = (1..1100).map { "metric-$it" }
-      allMetricIds.chunked(500).forEach { chunk ->
-        val metrics = chunk.map { createMetric(it, sessionId) }
-        database.metricDao().insertAll(metrics)
-      }
-
-      // Act - query all 1100 metric IDs
-      val result = sessionManager.getSessionsWithMetrics(allMetricIds)
-
-      // Assert - session should appear exactly once with all 1100 metrics
-      assertEquals(1, result.size)
-      assertEquals(sessionId, result[0].session.id)
-      assertEquals(1100, result[0].metrics.size)
-    }
-
-  @Test
-  fun `getSessionsWithMetrics filters correctly across chunk boundaries`() =
-    runTest {
-      // Arrange - session has 1200 metrics, but we only request 1100 of them
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      val allMetricIds = (1..1200).map { "metric-$it" }
-      allMetricIds.chunked(500).forEach { chunk ->
-        val metrics = chunk.map { createMetric(it, sessionId) }
-        database.metricDao().insertAll(metrics)
-      }
-
-      // Request only the first 1100
-      val requestedIds = allMetricIds.take(1100)
-
-      // Act
-      val result = sessionManager.getSessionsWithMetrics(requestedIds)
-
-      // Assert - only the 1100 requested metrics should be returned, not all 1200
-      assertEquals(1, result.size)
-      assertEquals(1100, result[0].metrics.size)
-      val returnedIds = result[0].metrics.map { it.metricId }.toSet()
-      assertFalse(returnedIds.contains("metric-1101"))
-      assertFalse(returnedIds.contains("metric-1200"))
-    }
-
-  @Test
-  fun `getSessionsWithMetrics merges multiple sessions across chunks`() =
-    runTest {
-      // Arrange - two sessions, each with metrics spanning chunk boundaries
-      val session1Id = "session-1"
-      val session2Id = "session-2"
-      sessionManager.startSessionWithIdAt(session1Id, "2025-01-01T00:00:00.000Z")
-      sessionManager.startSessionWithIdAt(session2Id, "2025-01-01T01:00:00.000Z")
-
-      // Session 1 gets metrics 1-600, session 2 gets metrics 601-1200
-      val s1MetricIds = (1..600).map { "metric-$it" }
-      val s2MetricIds = (601..1200).map { "metric-$it" }
-
-      s1MetricIds.chunked(500).forEach { chunk ->
-        database.metricDao().insertAll(chunk.map { createMetric(it, session1Id) })
-      }
-      s2MetricIds.chunked(500).forEach { chunk ->
-        database.metricDao().insertAll(chunk.map { createMetric(it, session2Id) })
-      }
-
-      val allIds = s1MetricIds + s2MetricIds
-
-      // Act - query all 1200 IDs
-      val result = sessionManager.getSessionsWithMetrics(allIds)
-
-      // Assert - both sessions returned, each with correct metric count
-      assertEquals(2, result.size)
-      val s1 = result.find { it.session.id == session1Id }!!
-      val s2 = result.find { it.session.id == session2Id }!!
-      assertEquals(600, s1.metrics.size)
-      assertEquals(600, s2.metrics.size)
-    }
-
-  @Test
-  fun `getSessionsWithMetrics yields empty logs from the chunked merger path`() =
-    runTest {
-      // Arrange — the chunked-merger branch in `getSessionsWithMetrics`
-      // constructs `SessionWithMetrics(...)` without passing logs and relies on
-      // the `= emptyList()` default. The session DOES have logs in storage,
-      // but the merger projects metrics-only. This test fails loudly if the
-      // default is removed or the merger ever needs to surface logs too.
-      val sessionId = "session-with-logs"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      val metricIds = (1..1100).map { "metric-$it" }
-      metricIds.chunked(500).forEach { chunk ->
-        database.metricDao().insertAll(chunk.map { createMetric(it, sessionId) })
-      }
-      // Also insert logs so an accidental relation-load would surface them.
-      database.logDao().insertAll(listOf(createLog("log-a", sessionId)))
-
-      // Act — 1100 IDs forces the chunked path
-      val result = sessionManager.getSessionsWithMetrics(metricIds)
-
-      // Assert
-      assertEquals(1, result.size)
-      assertEquals(emptyList<LogRecord>(), result[0].logs)
-    }
+    assertEquals(ids.toSet(), sessionManager.getSessions(ids).map { it.id }.toSet())
+  }
 
   // endregion
 
@@ -651,7 +450,7 @@ class SessionManagerTest {
       // Assert
       assertEquals(2, session.metrics.size)
       assertEquals(3, session.logs.size)
-      assertEquals(setOf("log-a", "log-b", "log-c"), session.logs.map { it.logId }.toSet())
+      assertEquals(setOf("auth.login_failed", "user.signed_in", "cache.miss"), session.logs.map { it.name }.toSet())
     }
 
   @Test
@@ -723,7 +522,7 @@ class SessionManagerTest {
       val metrics = sessionManager.getMetricsForSession(sessionId)
 
       // Assert
-      assertEquals(setOf("metric-1", "metric-2"), metrics.map { it.metricId }.toSet())
+      assertEquals(setOf("metric-1", "metric-2"), metrics.map { it.name }.toSet())
       assertTrue(metrics.all { it.sessionId == sessionId })
     }
 
@@ -747,7 +546,7 @@ class SessionManagerTest {
       val logs = sessionManager.getLogsForSession(sessionId)
 
       // Assert
-      assertEquals(setOf("log-1", "log-2"), logs.map { it.logId }.toSet())
+      assertEquals(setOf("log-1", "log-2"), logs.map { it.name }.toSet())
       assertTrue(logs.all { it.sessionId == sessionId })
     }
 
@@ -756,16 +555,16 @@ class SessionManagerTest {
   // region Helper Methods
 
   private fun createMetric(
-    metricId: String,
+    metricName: String,
     sessionId: String,
-    name: String = "test-metric",
+    name: String = metricName,
     category: String = "test",
-    value: Double = 123.45
+    value: Double = 123.45,
+    timestamp: String = "2025-01-01T00:00:00.000Z"
   ): Metric =
     Metric(
-      metricId = metricId,
       sessionId = sessionId,
-      timestamp = "2025-01-01T00:00:00.000Z",
+      timestamp = timestamp,
       category = category,
       name = name,
       value = value,
@@ -774,16 +573,16 @@ class SessionManagerTest {
     )
 
   private fun createLog(
-    logId: String,
+    logName: String,
     sessionId: String,
-    name: String = "test.event",
+    name: String = logName,
     severity: String = "info",
-    attributes: String? = null
+    attributes: String? = null,
+    timestamp: String = "2025-01-01T00:00:00.000Z"
   ): LogRecord =
     LogRecord(
-      logId = logId,
       sessionId = sessionId,
-      timestamp = "2025-01-01T00:00:00.000Z",
+      timestamp = timestamp,
       name = name,
       body = null,
       severity = severity,

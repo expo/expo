@@ -117,7 +117,7 @@ For many web requests, the browser will make CORS requests with the `OPTIONS` me
 
 These requests are cacheable using the special `Access-Control-Max-Age` header. For example, `Access-Control-Max-Age: 3600` will cache the `OPTIONS` response for 3600 seconds, which applies to both browsers and the EAS Hosting cache. This prevents excessive requests made by browsers and prevents your API route from being called excessively often for CORS requests.
 
-## Asset Caching
+## Asset caching
 
 For any assets your deployment responds with, a default cache time of 3600 seconds will be applied for browser caches. To improve performance, per-deployment assets are cached indefinitely internally. Since deployments are immutable, this doesn't affect you.
 

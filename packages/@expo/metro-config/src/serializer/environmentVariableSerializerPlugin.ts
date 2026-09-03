@@ -13,6 +13,7 @@ import type {
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 
+import { installPackedMap } from './packedMap';
 import type { SerializerParameters } from './withExpoSerializers';
 
 export function getTransformEnvironment(url: string): string | null {
@@ -66,6 +67,7 @@ export function serverPreludeSerializerPlugin(
           /process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/,
           ''
         );
+      data.lineCount = countLines(data.code);
     }
   }
   return [entryPoint, preModules, graph, options];
@@ -96,6 +98,8 @@ export function environmentVariableSerializerPlugin(
     const data = prelude.output[0]?.data as any;
     // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
     data.code = code;
+    data.lineCount = countLines(data.code);
+    installPackedMap(data, []);
     return [entryPoint, preModules, graph, options];
   }
 
@@ -149,7 +153,7 @@ function getEnvPrelude(code: string): Module<MixedOutput> {
         type: 'js/script/virtual',
         data: {
           code,
-          lineCount: 1,
+          lineCount: countLines(code),
           map: [],
         },
       },

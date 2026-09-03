@@ -4,10 +4,10 @@ import path from 'path';
 import type { XcodeProject } from 'xcode';
 
 import type { ConfigPlugin } from '../Plugin.types';
-import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import type { LocaleJson, ResolvedLocalesJson } from '../utils/locales';
 import { getResolvedLocalesAsync } from '../utils/locales';
+import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 
 export const withLocales: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {
@@ -18,6 +18,10 @@ export const withLocales: ConfigPlugin = (config) => {
     return config;
   });
 };
+
+function escapeStringsLiteral(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+}
 
 export async function writeStringsFile({
   localesMap,
@@ -40,7 +44,9 @@ export async function writeStringsFile({
     const strings = path.join(dir, fileName);
     const buffer = [];
     for (const [plistKey, localVersion] of Object.entries(localizationObj)) {
-      buffer.push(`${plistKey} = "${localVersion}";`);
+      buffer.push(
+        `"${escapeStringsLiteral(plistKey)}" = "${escapeStringsLiteral(String(localVersion))}";`
+      );
     }
     // Write the file to the file system.
     await fs.promises.writeFile(strings, buffer.join('\n'));

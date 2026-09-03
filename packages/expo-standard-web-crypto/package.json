@@ -1,6 +1,6 @@
 {
   "name": "expo-standard-web-crypto",
-  "version": "56.0.3",
+  "version": "57.0.1",
   "description": "A partial implementation of the W3C Crypto API for Expo",
   "keywords": [
     "crypto",
@@ -33,7 +33,7 @@
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo-crypto": "workspace:^56.0.4"
+    "expo-crypto": "workspace:^"
   },
   "jest": {
     "preset": "expo-module-scripts"

@@ -1,5 +1,4 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { router, useFocusEffect } from 'expo-router';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -9,13 +8,7 @@ import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
-export default function TaskManagerScreen(props: {
-  navigation: StackNavigationProp<{
-    BackgroundLocation: undefined;
-    Geofencing: undefined;
-    BackgroundFetch: undefined;
-  }>;
-}) {
+export default function TaskManagerScreen() {
   const [tasks, setTasks] = React.useState<TaskManager.TaskManagerTask[]>([]);
 
   const updateRegisteredTasks = async () => {
@@ -82,19 +75,19 @@ export default function TaskManagerScreen(props: {
           style={styles.button}
           buttonStyle={{ backgroundColor: 'green' }}
           title="Go to background location screen"
-          onPress={() => props.navigation.navigate('BackgroundLocation')}
+          onPress={() => router.push('/apis/backgroundlocation')}
         />
         <Button
           style={styles.button}
           buttonStyle={{ backgroundColor: 'green' }}
           title="Go to geofencing screen"
-          onPress={() => props.navigation.navigate('Geofencing')}
+          onPress={() => router.push('/apis/geofencing')}
         />
         <Button
           style={styles.button}
           buttonStyle={{ backgroundColor: 'green' }}
           title="Go to background fetch screen"
-          onPress={() => props.navigation.navigate('BackgroundFetch')}
+          onPress={() => router.push('/apis/backgroundfetch')}
         />
       </View>
     );

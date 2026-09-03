@@ -1,6 +1,6 @@
 {
   "name": "@expo/inline-modules",
-  "version": "0.0.10",
+  "version": "0.1.4",
   "description": "The Expo inline modules",
   "keywords": [
     "expo",
@@ -34,7 +34,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/config-plugins": "workspace:~56.0.8"
+    "@expo/config-plugins": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

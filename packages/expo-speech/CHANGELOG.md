@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Resolve queued `getVoices`/`speak` calls when the TTS engine fails to initialize, instead of leaving their promises pending forever. ([#49228](https://github.com/expo/expo/pull/49228) by [@henryj](https://github.com/henryj))
+
 ### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.3 — 2026-05-06
 

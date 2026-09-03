@@ -29,7 +29,6 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
-import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -69,9 +68,6 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   if (env.CI && options.resetCache) {
     options.resetCache = false;
   }
-
-  setNodeEnv(options.dev ? 'development' : 'production');
-  loadEnvFiles(projectRoot);
 
   // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
   // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
@@ -258,7 +254,8 @@ export async function exportEmbedBundleAndAssetsAsync(
             dev: options.dev,
             devServer,
             isHermes,
-            includeSourceMaps: !!sourceMapUrl,
+            // don't ship sourcemap in the www.bundle
+            includeSourceMaps: false,
             exp,
             files,
           });

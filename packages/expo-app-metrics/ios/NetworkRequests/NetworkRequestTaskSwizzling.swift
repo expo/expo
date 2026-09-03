@@ -547,14 +547,10 @@ private final class ObservationContext: @unchecked Sendable {
 /// `NSObject` subclass that captures `didFinishCollectingMetrics` for our observation context while
 /// transparently forwarding every other selector to the caller's original delegate.
 ///
-/// **Why we don't declare `URLSessionTaskDelegate` conformance in Swift.** `URLSession` introspects
-/// its delegate via `conformsToProtocol:(URLSessionDataDelegate)`, `conformsToProtocol:(URLSessionDownloadDelegate)`,
-/// etc., to decide which optional callbacks it should emit. If we conformed to `URLSessionTaskDelegate`
-/// in Swift, the Obj-C runtime would advertise that conformance for the proxy unconditionally — even
-/// when the wrapped delegate is actually a `URLSessionDataDelegate`. That could change which callbacks
-/// fire and break the caller. We instead reflect the wrapped delegate's `responds(to:)` results, plus
-/// `true` for the metrics selector we intercept. This is the same pattern Bugsnag's
-/// `BSGURLSessionPerformanceProxy` uses.
+/// Every introspection method mirrors the wrapped delegate rather than declaring conformance, which
+/// would advertise callbacks it may not implement. `NSProxy` would forward all of it for free, but
+/// Swift can't subclass it usefully (no accessible initializer, no `NSInvocation`), so each method is
+/// enumerated by hand — and a missing one crashes someone else's library, as `isKind(of:)` describes.
 ///
 /// The metrics callback is implemented as an `@objc` method so the Obj-C runtime can dispatch it via
 /// `responds(to:)` without us declaring formal protocol conformance.
@@ -575,14 +571,33 @@ private final class DelegateProxy: NSObject {
     return wrapped?.responds(to: aSelector) ?? false
   }
 
+  /// GTMSessionFetcher detects its internal dispatcher with `![delegate isKindOfClass:[GTMSessionFetcher
+  /// class]]`; answering for the proxy made it send us a dispatcher-only selector and crash FirebaseAuth.
+  /// Obj-C senders only — Swift's `is`/`as?` compare class pointers and never reach this.
+  override func isKind(of aClass: AnyClass) -> Bool {
+    if let wrapped = wrapped as? NSObject, wrapped.isKind(of: aClass) {
+      return true
+    }
+    return super.isKind(of: aClass)
+  }
+
+  /// Same as `isKind(of:)` for protocol questions; unmirrored, the proxy conforms to nothing.
+  override func conforms(to aProtocol: Protocol) -> Bool {
+    if let wrapped = wrapped as? NSObject, wrapped.conforms(to: aProtocol) {
+      return true
+    }
+    return super.conforms(to: aProtocol)
+  }
+
+  /// Unimplemented selectors go to the wrapped delegate too, so the resulting `unrecognized selector`
+  /// names the caller's delegate and not `ExpoAppMetrics` — except for delegate-less sessions, where
+  /// there is nothing to forward to. Keep `wrapped` a `let` bound to an already-built object: a cycle
+  /// back here would tail-call forever instead of crashing.
   override func forwardingTarget(for aSelector: Selector!) -> Any? {
     if aSelector == Self.metricsSelector {
       return nil
     }
-    if let wrapped, wrapped.responds(to: aSelector) {
-      return wrapped
-    }
-    return nil
+    return wrapped
   }
 
   /// Canonical recording site. `didFinishCollectingMetrics:` is Apple's "task is fully done" signal

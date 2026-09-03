@@ -61,18 +61,16 @@
         "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
       }
     },
-    "assetBundlePatterns": [
-      "assets/**",
-      "node_modules/react-navigation/src/**/*.png",
-      "node_modules/@expo/vector-icons/fonts/*.ttf"
-    ],
+    "assetBundlePatterns": ["assets/**"],
     "plugins": [
+      "expo-router",
       [
         "expo-splash-screen",
         {
           "image": "./assets/icons/loadingIcon.png"
         }
-      ]
+      ],
+      "expo-app-intents"
     ],
     "extra": {
       "eas": {
@@ -80,8 +78,9 @@
       }
     },
     "experiments": {
+      "noxcturnalTransformWorker": true,
       "inlineModules": {
-        "watchedDirectories": ["src/screens/inlineModules/inlineModulesExamples/"]
+        "watchedDirectories": ["src/screens/inlineModules/inlineModulesExamples/", "app-intents"]
       }
     }
   }

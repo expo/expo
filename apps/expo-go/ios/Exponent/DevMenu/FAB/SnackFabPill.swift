@@ -40,12 +40,16 @@ struct SnackActionPanel: View {
   let isLesson: Bool
   let isLessonCompleted: Bool
   let hasBeenEdited: Bool
+  let canEdit: Bool
+  let onEditCode: () -> Void
   // let onSave: () -> Void  // TODO: Add back when save functionality is implemented
   let onComplete: () -> Void
   let onGoBack: () -> Void
 
   // Panel dimensions
-  private let panelHeight: CGFloat = 140
+  private var panelHeight: CGFloat {
+    canEdit ? 176 : 140
+  }
   private let screenEdgeMargin: CGFloat = 12
 
   // The gearPosition is the top-left of the FAB frame.
@@ -128,6 +132,12 @@ struct SnackActionPanel: View {
         .padding(.horizontal, descriptionPadding)
         .padding(.top, 7)
 
+      if canEdit {
+        editCodeButton
+          .frame(maxWidth: .infinity)
+          .padding(.top, 8)
+      }
+
       Spacer()
 
       // Action buttons at bottom - always show Go back, conditionally show Complete for lessons
@@ -161,6 +171,19 @@ struct SnackActionPanel: View {
       .background(.ultraThinMaterial, in: Capsule())
     }
     .buttonStyle(.plain)
+  }
+
+  private var editCodeButton: some View {
+    Button(action: onEditCode) {
+      Label("Edit code", systemImage: "curlybraces")
+        .font(.system(size: 14, weight: .semibold))
+        .foregroundColor(.white)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color.blue, in: Capsule())
+    }
+    .buttonStyle(.plain)
+    .accessibilityHint("Opens the source code editor")
   }
 
   private var isCompleteButtonEnabled: Bool {

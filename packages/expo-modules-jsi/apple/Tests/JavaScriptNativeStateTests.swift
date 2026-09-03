@@ -78,7 +78,7 @@ struct JavaScriptNativeStateTests {
     object1.unsetNativeState()
 
     // Force garbage collection so the previous C++ pointee is dropped.
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     // Reattaching transparently materializes a fresh pointee.
     object2.setNativeState(nativeState)
@@ -106,7 +106,7 @@ struct JavaScriptNativeStateTests {
     object.unsetNativeState()
 
     // Force garbage collection
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     #expect(deallocatorCalled == true)
   }
@@ -125,12 +125,12 @@ struct JavaScriptNativeStateTests {
 
     // Unset from the first object — deallocator should not fire yet.
     object1.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
     #expect(deallocatorCallCount == 0)
 
     // Unset from the second object — now the deallocator should fire exactly once.
     object2.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
     #expect(deallocatorCallCount == 1)
   }
 
@@ -141,7 +141,7 @@ struct JavaScriptNativeStateTests {
     object.setNativeState(nativeState)
 
     // GC shouldn't release the underlying C++ pointee while the JS object is reachable.
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     #expect(object.getNativeState() === nativeState)
   }
@@ -183,7 +183,7 @@ struct JavaScriptNativeStateTests {
 
     object1.setNativeState(nativeState)
     object1.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
     #expect(deallocatorCallCount == 1)
 
     // Re-attaching builds a new C++ pointee; the wrapper-level deallocator
@@ -192,7 +192,7 @@ struct JavaScriptNativeStateTests {
     #expect(object2.getNativeState() === nativeState)
 
     object2.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
     #expect(deallocatorCallCount == 2)
   }
 
@@ -209,7 +209,7 @@ struct JavaScriptNativeStateTests {
       // baked into the C++ pointee is the only Swift-side strong reference.
     }
 
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     // The wrapper is still alive because the C++ pointee (held by JSI's slot)
     // retains it via Unmanaged. `getNativeState` recovers it.
@@ -219,7 +219,7 @@ struct JavaScriptNativeStateTests {
     // Once detached and GC'd, the C++ pointee dies, releases the Unmanaged,
     // and the Swift wrapper finally deallocates.
     object.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
     #expect(weakWrapper == nil)
   }
 
@@ -232,7 +232,7 @@ struct JavaScriptNativeStateTests {
     object2.setNativeState(nativeState)
 
     object1.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     #expect(object1.hasNativeState() == false)
     #expect(object2.hasNativeState() == true)

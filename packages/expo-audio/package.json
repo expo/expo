@@ -1,6 +1,6 @@
 {
   "name": "expo-audio",
-  "version": "56.0.11",
+  "version": "57.0.3",
   "description": "A cross-platform audio library for React Native and Expo apps.",
   "keywords": [
     "android",

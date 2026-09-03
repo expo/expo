@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI ProgressView matches the official SwiftUI [ProgressView API](https://developer.apple.com/documentation/swiftui/progressview) and supports styling via the [`progressViewStyle`](modifiers/#progressviewstylestyle) modifier.
@@ -32,7 +33,13 @@ Expo UI ProgressView matches the official SwiftUI [ProgressView API](https://dev
 
 When no `value` is provided, the progress view displays an indeterminate indicator (spinner).
 
-```tsx IndeterminateExample.tsx
+<ComponentExample
+  title="IndeterminateExample.tsx"
+  src="/static/images/expo-ui/examples/progressview-indeterminate-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progressview-indeterminate-ios-dark.webp"
+  alt="An indeterminate spinner sized to its content at the leading edge">
+
+```tsx
 import { Host, ProgressView } from '@expo/ui/swift-ui';
 
 export default function IndeterminateExample() {
@@ -44,11 +51,19 @@ export default function IndeterminateExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Determinate progress
 
 Provide a `value` between `0` and `1` to show determinate progress.
 
-```tsx DeterminateExample.tsx
+<ComponentExample
+  title="DeterminateExample.tsx"
+  src="/static/images/expo-ui/examples/progressview-determinate-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progressview-determinate-ios-dark.webp"
+  alt="A linear progress bar filled to the halfway point">
+
+```tsx
 import { Host, ProgressView } from '@expo/ui/swift-ui';
 
 export default function DeterminateExample() {
@@ -60,28 +75,60 @@ export default function DeterminateExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Progress view styles
 
 Use the [`progressViewStyle`](modifiers/#progressviewstylestyle) modifier to change the progress view's appearance. Available styles are: `automatic`, `linear`, and `circular`.
 
-```tsx ProgressViewStylesExample.tsx
-import { Host, ProgressView, VStack } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="ProgressViewStylesExample.tsx"
+  src="/static/images/expo-ui/examples/progressview-styles-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progressview-styles-ios-dark.webp"
+  alt="A half-filled linear progress bar labelled Linear, above a circular spinner labelled Circular">
+
+```tsx
+import {
+  Host,
+  ProgressView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 import { progressViewStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function ProgressViewStylesExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <ProgressView value={0.5} modifiers={[progressViewStyle('linear')]} />
+      <VStack spacing={16}>
+        <Text>Linear</Text>
+        <ProgressView
+          value={0.5}
+          modifiers={[progressViewStyle('linear')]}
+        />
+        <Text>Circular</Text>
+        <ProgressView
+          value={0.5}
+          modifiers={[progressViewStyle('circular')]}
+        />
+      </VStack>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### With label
 
 You can pass custom components as `children` to provide a label for the progress view.
 
-```tsx LabelExample.tsx
+<ComponentExample
+  title="LabelExample.tsx"
+  src="/static/images/expo-ui/examples/progressview-label-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progressview-label-ios-dark.webp"
+  alt="A progress bar filled to one quarter, with the label Loading above it">
+
+```tsx
 import { Host, ProgressView, Text } from '@expo/ui/swift-ui';
 
 export default function LabelExample() {
@@ -95,11 +142,19 @@ export default function LabelExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Tinted progress view
 
 Use the `tint` modifier to change the progress view's color.
 
-```tsx TintedExample.tsx
+<ComponentExample
+  title="TintedExample.tsx"
+  src="/static/images/expo-ui/examples/progressview-tinted-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progressview-tinted-ios-dark.webp"
+  alt="A red progress bar filled to roughly seventy percent">
+
+```tsx
 import { Host, ProgressView } from '@expo/ui/swift-ui';
 import { tint } from '@expo/ui/swift-ui/modifiers';
 
@@ -112,14 +167,27 @@ export default function TintedExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Timer-based progress
 
 Use the `timerInterval` prop to create a progress view that automatically animates over a time range. This is useful for showing countdown timers or timed operations.
 
 > **Note:** Timer-based progress is only available on iOS 16+ and tvOS 16+.
 
-```tsx TimerExample.tsx
-import { Host, ProgressView, Text, VStack } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="TimerExample.tsx"
+  src="/static/images/expo-ui/examples/progressview-timer-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progressview-timer-ios-dark.webp"
+  alt="Two timer progress bars part way through a ten second range, one labeled Counting up">
+
+```tsx
+import {
+  Host,
+  ProgressView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 
 export default function TimerExample() {
   const startDate = new Date();
@@ -128,8 +196,12 @@ export default function TimerExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack spacing={16}>
-        <ProgressView timerInterval={{ lower: startDate, upper: endDate }} />
-        <ProgressView timerInterval={{ lower: startDate, upper: endDate }} countsDown={false}>
+        <ProgressView
+          timerInterval={{ lower: startDate, upper: endDate }}
+        />
+        <ProgressView
+          timerInterval={{ lower: startDate, upper: endDate }}
+          countsDown={false}>
           <Text>Counting up</Text>
         </ProgressView>
       </VStack>
@@ -138,10 +210,15 @@ export default function TimerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { ProgressView } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/progressview" apiName="ProgressView" />
+<APISection
+  packageName="expo-ui/swift-ui/progressview"
+  apiName="ProgressView"
+/>

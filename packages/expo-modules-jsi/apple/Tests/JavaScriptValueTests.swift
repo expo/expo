@@ -1,4 +1,5 @@
 import ExpoModulesJSI
+import Foundation
 import Testing
 
 @Suite
@@ -154,6 +155,90 @@ struct JavaScriptValueTests {
     let value = try runtime.eval("'\\uD800'")
     let result = value.getString()
     #expect(result == "\u{FFFD}")
+  }
+
+  @Test
+  func `getString handles long non-ASCII string`() throws {
+    let value = try runtime.eval("'ą'.repeat(2000)")
+    #expect(value.getString() == String(repeating: "ą", count: 2000))
+  }
+
+  @Test
+  func `getString handles string built by concatenation`() throws {
+    let value = try runtime.eval(
+      "(() => { let s = ''; for (let i = 0; i < 300; i++) s += i % 2 ? 'abc' : 'żółć🎉'; return s; })()"
+    )
+    let expected = (0..<300).map { $0 % 2 == 1 ? "abc" : "żółć🎉" }.joined()
+    #expect(value.getString() == expected)
+  }
+
+  @Test
+  func `String(runtime, ...) round-trips an empty string`() {
+    let value = JavaScriptValue(runtime, "")
+    #expect(value.isString() == true)
+    #expect(value.getString() == "")
+  }
+
+  @Test
+  func `String(runtime, ...) round-trips a bridged string`() {
+    let bridged = NSString(string: "café 世界 🎉") as String
+    let value = JavaScriptValue(runtime, bridged)
+    #expect(value.getString() == "café 世界 🎉")
+  }
+
+  @Test
+  func `String(runtime, ...) round-trips a long non-ASCII string`() {
+    let long = String(repeating: "ż", count: 5_000)
+    let value = JavaScriptValue(runtime, long)
+    #expect(value.getString() == long)
+  }
+
+  // MARK: - String as JavaScriptRepresentable
+
+  @Test
+  func `String.fromJavaScriptValue preserves non-ASCII`() throws {
+    let value = try runtime.eval("'żółć 世界 🎉'")
+    #expect(String.fromJavaScriptValue(value) == "żółć 世界 🎉")
+  }
+
+  @Test
+  func `String.toJavaScriptValue preserves non-ASCII`() {
+    let value = "żółć 世界 🎉".toJavaScriptValue(in: runtime)
+    #expect(value.getString() == "żółć 世界 🎉")
+  }
+
+  @Test
+  func `dictionary with ASCII keys and non-ASCII values round-trips through JavaScriptRepresentable`() throws {
+    let value = try runtime.eval("({ a: 'żółć', b: '🎉' })")
+    let dictionary = [String: String].fromJavaScriptValue(value)
+    #expect(dictionary == ["a": "żółć", "b": "🎉"])
+  }
+
+  @Test
+  func `dictionary with non-ASCII keys round-trips through JavaScriptRepresentable`() throws {
+    let value = try runtime.eval("({ 'café': 'one', '日本語': 'two' })")
+    let dictionary = [String: String].fromJavaScriptValue(value)
+    #expect(dictionary == ["café": "one", "日本語": "two"])
+  }
+
+  @Test
+  func `dictionary with non-ASCII keys encodes to JavaScript`() throws {
+    let value = ["café": "one", "": "empty"].toJavaScriptValue(in: runtime)
+    runtime.global().setProperty("dict", value: value)
+    #expect(try runtime.eval("dict['café'] === 'one' && dict[''] === 'empty'").getBool() == true)
+  }
+
+  @Test
+  func `array of non-ASCII strings round-trips through JavaScriptRepresentable`() throws {
+    let value = try runtime.eval("['café', '日本語', '']")
+    #expect([String].fromJavaScriptValue(value) == ["café", "日本語", ""])
+  }
+
+  @Test
+  func `dictionary with an empty key round-trips through JavaScriptRepresentable`() throws {
+    let value = try runtime.eval("({ '': 'empty' })")
+    let dictionary = [String: String].fromJavaScriptValue(value)
+    #expect(dictionary == ["": "empty"])
   }
 
   // MARK: - Type Checking Tests

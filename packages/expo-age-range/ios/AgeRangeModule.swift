@@ -1,5 +1,5 @@
-import ExpoModulesCore
 import DeclaredAgeRange
+import ExpoModulesCore
 
 public class AgeRangeModule: Module, @unchecked Sendable {
 
@@ -20,7 +20,12 @@ public class AgeRangeModule: Module, @unchecked Sendable {
       }
 
       do {
-        let response = try await AgeRangeService.shared.requestAgeRange(ageGates: opts.threshold1, opts.threshold2, opts.threshold3, in: currentVc)
+        let response = try await AgeRangeService.shared.requestAgeRange(
+          ageGates: opts.threshold1,
+          opts.threshold2,
+          opts.threshold3,
+          in: currentVc
+        )
         switch response {
         case .sharing(let range):
           return AgeRangeResponse(range)
@@ -61,7 +66,10 @@ public class AgeRangeModule: Module, @unchecked Sendable {
       }
 
       do {
-        try await AgeRangeService.shared.showSignificantUpdateAcknowledgment(in: windowScene, updateDescription: updateDescription)
+        try await AgeRangeService.shared.showSignificantUpdateAcknowledgment(
+          in: windowScene,
+          updateDescription: updateDescription
+        )
       } catch AgeRangeService.Error.notAvailable {
         throw AgeRangeNotAvailableException()
       }

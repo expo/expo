@@ -2,6 +2,7 @@
 
 import type { ComponentProps } from 'react';
 
+import { getValidInitialRouteName, useRouteNode } from '../Route';
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import type { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
 import { createStackNavigator } from '../react-navigation/stack';
@@ -11,6 +12,7 @@ import { withLayoutContext } from './withLayoutContext';
 
 const JSStackNavigator = createStackNavigator().Navigator;
 
+// TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
 const JSStack = withLayoutContext<
   StackNavigationOptions,
   typeof JSStackNavigator,
@@ -24,8 +26,9 @@ const JSStack = withLayoutContext<
  * @hideType
  */
 const Stack = Object.assign(
-  (props: ComponentProps<typeof JSStack>) => {
-    return <JSStack {...props} />;
+  (props: Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>) => {
+    const routeNode = useRouteNode();
+    return <JSStack {...props} initialRouteName={getValidInitialRouteName(routeNode)} />;
   },
   {
     Screen,

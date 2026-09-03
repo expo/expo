@@ -28,7 +28,7 @@ public final class FontUtilsModule: Module {
         // Adding baseline offset to vertically center the text within the specified line height
         attributes[.baselineOffset] = (lineHeight - font.lineHeight) / 2
       }
-      
+
       let attributedString = NSAttributedString(
         string: glyphs,
         attributes: attributes
@@ -52,7 +52,7 @@ public final class FontUtilsModule: Module {
           "uri": outputURL.absoluteString,
           "width": image.size.width,
           "height": image.size.height,
-          "scale": UIScreen.main.scale
+          "scale": image.scale
         ])
       } catch {
         promise.reject(SaveImageException(outputURL.absoluteString))

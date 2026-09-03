@@ -9,13 +9,13 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
+import { getPrecompileDir } from '../Directories';
+import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
-import { getPrecompileDir } from '../Directories';
-import { getPackageByName } from '../Packages';
 import {
   ObjcTarget,
   SwiftTarget,
@@ -64,6 +64,43 @@ function findXCFrameworkHeadersDir(xcframeworkPath: string): string | null {
     }
   }
   return null;
+}
+
+/**
+ * Finds the Headers directory of a headers-only xcframework (one whose slices contain a `Headers/`
+ * directory directly, with no `.framework` wrapper — e.g. ReactNativeHeaders.xcframework). The
+ * directory is identified by the presence of a `module.modulemap` and is architecture-independent,
+ * so the first matching slice is used.
+ * @param xcframeworkPath Absolute path to the .xcframework directory
+ * @returns Absolute path to the slice's Headers directory, or null if not found
+ */
+function findModularHeadersDir(xcframeworkPath: string): string | null {
+  if (!fs.existsSync(xcframeworkPath)) {
+    return null;
+  }
+  for (const entry of fs.readdirSync(xcframeworkPath, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const headersDir = path.join(xcframeworkPath, entry.name, 'Headers');
+    if (fs.existsSync(path.join(headersDir, 'module.modulemap'))) {
+      return headersDir;
+    }
+  }
+  return null;
+}
+
+/**
+ * Detects whether a React artifact still uses the legacy VFS overlay. The modern modular artifact
+ * ships ReactNativeHeaders.xcframework (and drops the React-VFS template that the overlay was
+ * generated from), so its absence means we should fall back to the VFS path.
+ * @param basePath Flavor-specific artifact base path (contains React.xcframework)
+ */
+function reactArtifactIsModular(basePath?: string): boolean {
+  if (!basePath) {
+    return false;
+  }
+  return fs.existsSync(path.join(basePath, 'ReactNativeHeaders.xcframework'));
 }
 
 /**
@@ -496,6 +533,13 @@ const ARTIFACT_RELATIVE_PATHS: Record<
     xcframeworkPath: string;
     includeDirectories: string[];
     vfsOverlayFile?: string;
+    /**
+     * Headers-only xcframework (e.g. ReactNativeHeaders.xcframework) shipping a flattened clang
+     * module map under <slice>/Headers/module.modulemap. When present in the artifact, this is the
+     * modern modular replacement for the VFS overlay: consumers get `-fmodule-map-file` + `-I` to
+     * the headers dir instead of `-ivfsoverlay`.
+     */
+    moduleMapXcframework?: string;
     /** Display name used in Package.swift */
     displayName: string;
     /** Key on ArtifactPaths for the flavor-specific base path */
@@ -518,6 +562,7 @@ const ARTIFACT_RELATIVE_PATHS: Record<
     xcframeworkPath: 'React.xcframework',
     includeDirectories: ['Headers', 'React_Core'],
     vfsOverlayFile: 'React-VFS.yaml',
+    moduleMapXcframework: 'ReactNativeHeaders.xcframework',
     displayName: 'React',
     artifactKey: 'react',
     cacheDirName: 'react',
@@ -893,6 +938,11 @@ export function buildSwiftSettings(
   // Define RCT_NEW_ARCH_ENABLED for Fabric support
   settings.push('.define("RCT_NEW_ARCH_ENABLED")');
 
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge) behind it, so the prebuild must match.
+  settings.push('.define("RCT_REMOVE_LEGACY_ARCH")');
+
   // Common C++ flags (not path-dependent)
   // Note: -fcxx-modules is intentionally omitted (see buildCSettings comment).
   const commonCxxFlags: string[] = ['-Xcc', '-fmodules'];
@@ -1021,6 +1071,12 @@ function buildCSettings(
   // Must define with value "1" for C/C++/ObjC targets
   cSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
   cxxSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
+
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge in react-native-skia) behind it, so the prebuild must match.
+  cSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
+  cxxSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
 
   // Enable Clang modules for ObjC/React module maps (VFS overlays).
   // Note: -fcxx-modules is intentionally omitted — it enforces strict C++ standard library
@@ -1238,6 +1294,47 @@ function collectVfsAndHeaderMapFlags(
       buildType
     );
     if (config) {
+      const lowerName = depName.toLowerCase();
+      const artifactConfig = ARTIFACT_RELATIVE_PATHS[lowerName];
+
+      // Modern modular React: when the artifact ships ReactNativeHeaders.xcframework, the lowercase
+      // `react/`, `yoga/`, … namespaces are served by its flattened clang module map instead of a
+      // VFS overlay. Activate the module map (so the includes are modular) and add the headers dir
+      // to the search path (so they resolve). `<React/X.h>` keeps resolving via the React.framework
+      // binary target. This replaces the entire -ivfsoverlay + -I roots dance below.
+      //
+      // The `continue` also skips `config.includeDirectories`, which on the legacy path contributes
+      // `-I React.xcframework/Headers` and `-I React.xcframework/React_Core`. Both are genuinely
+      // redundant here — verified by prebuilding ExpoModulesCore (C++ target, consumes the react/
+      // and yoga/ namespaces) and ExpoCrypto against 0.87.0-rc.3 artifacts: neither root is emitted
+      // and both flavors compose and verify. Keep them out when the VFS branch below is deleted;
+      // dropping the `continue` without replacing it would silently reintroduce them.
+      if (lowerName === 'react' && artifactConfig?.moduleMapXcframework) {
+        const isModular =
+          reactArtifactIsModular(config.debugBasePath) ||
+          reactArtifactIsModular(config.releaseBasePath);
+        if (isModular) {
+          const pushModularFlags = (flags: string[], basePath?: string) => {
+            if (!basePath) {
+              return;
+            }
+            const headersDir = findModularHeadersDir(
+              path.join(basePath, artifactConfig.moduleMapXcframework!)
+            );
+            if (headersDir) {
+              // clang requires the joined `-fmodule-map-file=<path>` form (unlike `-ivfsoverlay`,
+              // it rejects the space-separated variant). `-I` adds the headers dir to the search
+              // path so the `<react/…>`, `<yoga/…>` includes resolve.
+              flags.push(`-fmodule-map-file=${path.join(headersDir, 'module.modulemap')}`);
+              flags.push('-I', headersDir);
+            }
+          };
+          pushModularFlags(debug, config.debugBasePath);
+          pushModularFlags(release, config.releaseBasePath);
+          continue;
+        }
+      }
+
       // Add VFS overlay per configuration — each flavor has its own VFS YAML
       // with absolute paths pointing to its specific artifact directory.
       // Paths are emitted as absolute strings since Package.swift is a generated file.

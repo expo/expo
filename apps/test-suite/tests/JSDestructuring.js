@@ -8,6 +8,9 @@
 
 export const name = 'JS Destructuring';
 
+// Keep object rest in an exported declaration to cover the export-specific transform path.
+export const { exportedValue, ...exportedRest } = { exportedValue: 1, exportedOther: 2 };
+
 export function test({ describe, it, expect }) {
   describe('JS Destructuring', () => {
     describe('object patterns', () => {
@@ -79,6 +82,11 @@ export function test({ describe, it, expect }) {
         expect(rest).toEqual({});
       });
 
+      it('collects a rest-only object pattern', () => {
+        const { ...copy } = { a: 1, b: 2 };
+        expect(copy).toEqual({ a: 1, b: 2 });
+      });
+
       it('handles nested object patterns', () => {
         const {
           a: { b },
@@ -91,6 +99,33 @@ export function test({ describe, it, expect }) {
           a: { b = 99 },
         } = { a: {} };
         expect(b).toBe(99);
+      });
+
+      it('collects nested object rest at multiple levels', () => {
+        const {
+          outer: {
+            inner: { selected, ...innerRest },
+            ...outerRest
+          },
+          ...rootRest
+        } = {
+          outer: { inner: { selected: 1, kept: 2 }, sibling: 3 },
+          root: 4,
+        };
+        expect(selected).toBe(1);
+        expect(innerRest).toEqual({ kept: 2 });
+        expect(outerRest).toEqual({ sibling: 3 });
+        expect(rootRest).toEqual({ root: 4 });
+      });
+
+      it('collects object rest behind a computed nested object reference', () => {
+        let key = 0;
+        const {
+          [key++]: { selected, ...rest },
+        } = { 0: { selected: 1, kept: 2 } };
+        expect(key).toBe(1);
+        expect(selected).toBe(1);
+        expect(rest).toEqual({ kept: 2 });
       });
 
       it('handles shorthand for prototype properties', () => {
@@ -143,6 +178,76 @@ export function test({ describe, it, expect }) {
         expect(rest).toEqual({});
       });
 
+      // From: transform-object-rest-spread/object-rest/remove-unused-computed-key-loose/exec.js
+      // Regression test for https://github.com/babel/babel/pull/18197
+      it('object rest preserves an unused computed-key exclusion', () => {
+        function omit(obj, spec) {
+          const { [spec.key]: unused, ...rest } = obj;
+          return rest;
+        }
+
+        expect(omit({ a: 1, b: 2 }, { key: 'a' })).toEqual({ b: 2 });
+      });
+
+      it('object rest excludes unused computed element and call keys', () => {
+        const spec = { keys: ['b'] };
+        const getKey = () => 'c';
+        const {
+          [spec.keys[0]]: _element,
+          [getKey()]: _call,
+          ...rest
+        } = {
+          b: 2,
+          c: 3,
+          keep: 4,
+        };
+        expect(rest).toEqual({ keep: 4 });
+      });
+
+      it('object rest excludes computed symbol keys and retains other symbols', () => {
+        const excluded = Symbol('excluded');
+        const retained = Symbol('retained');
+        const { [excluded]: _excluded, ...rest } = { [excluded]: 1, [retained]: 2, kept: 3 };
+        expect(rest[excluded]).toBeUndefined();
+        expect(rest[retained]).toBe(2);
+        expect(rest.kept).toBe(3);
+      });
+
+      it('object rest coerces non-string computed exclusion keys', () => {
+        const keys = [null, undefined, true, false];
+        const source = { null: 1, undefined: 2, true: 3, false: 4, kept: 5 };
+        const {
+          [keys[0]]: nullValue,
+          [keys[1]]: undefinedValue,
+          [keys[2]]: trueValue,
+          [keys[3]]: falseValue,
+          ...rest
+        } = source;
+        expect([nullValue, undefinedValue, trueValue, falseValue]).toEqual([1, 2, 3, 4]);
+        expect(rest).toEqual({ kept: 5 });
+      });
+
+      it('object rest excludes template-literal computed keys', () => {
+        const prefix = 'user';
+        const { [`${prefix}_name`]: name, ...rest } = { user_name: 'Ada', role: 'admin' };
+        expect(name).toBe('Ada');
+        expect(rest).toEqual({ role: 'admin' });
+      });
+
+      it('evaluates an excluded getter even when its binding is unused', () => {
+        let called = 0;
+        const source = {
+          get excluded() {
+            called++;
+            return 1;
+          },
+          kept: 2,
+        };
+        const { excluded: unused, ...rest } = source;
+        expect(called).toBe(1);
+        expect(rest).toEqual({ kept: 2 });
+      });
+
       // From: destructuring/object-rest-impure-computed-keys/exec.js
       it('object rest with impure computed keys', () => {
         var key, x, y, z;
@@ -186,6 +291,95 @@ export function test({ describe, it, expect }) {
         expect(function () {
           var {} = null;
         }).toThrow();
+      });
+
+      it('rest-only object pattern throws on null and undefined', () => {
+        expect(() => {
+          const { ...rest } = null;
+        }).toThrow();
+        expect(() => {
+          const { ...rest } = undefined;
+        }).toThrow();
+      });
+    });
+
+    describe('object spread', () => {
+      it('copies properties and applies sources from left to right', () => {
+        const result = {
+          first: 1,
+          shared: 'initial',
+          ...{ second: 2, shared: 'middle' },
+          shared: 'last',
+        };
+        expect(result).toEqual({ first: 1, second: 2, shared: 'last' });
+      });
+
+      it('combines multiple spread sources', () => {
+        const result = { ...{ a: 1 }, b: 2, ...{ c: 3 }, ...{ d: 4 } };
+        expect(result).toEqual({ a: 1, b: 2, c: 3, d: 4 });
+      });
+
+      it('transforms object spread in assignment and nested expression contexts', () => {
+        let assigned;
+        assigned = { before: 1, ...{ middle: 2 }, after: 3 };
+        const nested = { value: { ...assigned, final: 4 } };
+        expect(assigned).toEqual({ before: 1, middle: 2, after: 3 });
+        expect(nested).toEqual({ value: { before: 1, middle: 2, after: 3, final: 4 } });
+      });
+
+      it('evaluates spread source expressions once from left to right', () => {
+        const calls = [];
+        const source = (name, value) => {
+          calls.push(name);
+          return value;
+        };
+        const result = { ...source('first', { a: 1 }), ...source('second', { b: 2 }) };
+        expect(result).toEqual({ a: 1, b: 2 });
+        expect(calls).toEqual(['first', 'second']);
+      });
+
+      it('ignores null and undefined spread sources', () => {
+        expect({ before: 1, ...null, ...undefined, after: 2 }).toEqual({ before: 1, after: 2 });
+      });
+
+      it('copies own enumerable properties but not inherited or non-enumerable properties', () => {
+        const source = Object.create({ inherited: 1 });
+        source.enumerable = 2;
+        Object.defineProperty(source, 'hidden', { enumerable: false, value: 3 });
+        const result = { ...source };
+        expect(result).toEqual({ enumerable: 2 });
+        expect(result.inherited).toBeUndefined();
+        expect(result.hidden).toBeUndefined();
+      });
+
+      it('copies enumerable symbol properties', () => {
+        const symbol = Symbol('spread');
+        const result = { ...{ visible: 1, [symbol]: 2 } };
+        expect(result.visible).toBe(1);
+        expect(result[symbol]).toBe(2);
+      });
+
+      it('evaluates spread getters once and in source order', () => {
+        const order = [];
+        const first = {
+          get a() {
+            order.push('first');
+            return 1;
+          },
+        };
+        const second = {
+          get b() {
+            order.push('second');
+            return 2;
+          },
+        };
+        expect({ ...first, ...second }).toEqual({ a: 1, b: 2 });
+        expect(order).toEqual(['first', 'second']);
+      });
+
+      it('spreads enumerable properties from primitive values', () => {
+        expect({ ...'abc' }).toEqual({ 0: 'a', 1: 'b', 2: 'c' });
+        expect({ ...42, ...true }).toEqual({});
       });
     });
 
@@ -439,6 +633,22 @@ export function test({ describe, it, expect }) {
         expect(tail).toEqual([2, 3]);
         expect(meta).toEqual({ type: 'test', version: 2 });
       });
+
+      it('object rest nested inside array declaration and assignment patterns', () => {
+        const [first, { selected, ...declaredRest }] = [1, { selected: 2, kept: 3 }];
+        let assignedFirst, assignedValue, assignedRest;
+        [assignedFirst, { selected: assignedValue, ...assignedRest }] = [
+          4,
+          { selected: 5, kept: 6 },
+        ];
+        expect([first, selected, declaredRest]).toEqual([1, 2, { kept: 3 }]);
+        expect([assignedFirst, assignedValue, assignedRest]).toEqual([4, 5, { kept: 6 }]);
+      });
+
+      it('supports object rest nested in an array rest target', () => {
+        const [...{ ...properties }] = ['a', 'b'];
+        expect(properties).toEqual({ 0: 'a', 1: 'b' });
+      });
     });
 
     describe('function parameters', () => {
@@ -505,6 +715,25 @@ export function test({ describe, it, expect }) {
         expect(f()).toBe(3);
         expect(f({})).toBe(3);
         expect(f({ x: 10 })).toBe(12);
+      });
+
+      it('makes object rest available to a later parameter default', () => {
+        function f({ selected, ...rest }, value = rest.kept) {
+          return [selected, rest, value];
+        }
+        expect(f({ selected: 1, kept: 2 })).toEqual([1, { kept: 2 }, 2]);
+        expect(f({ selected: 1, kept: 2 }, 3)).toEqual([1, { kept: 2 }, 3]);
+      });
+
+      it('supports nested object rest in function parameters', () => {
+        function f({ outer: { selected, ...innerRest }, ...outerRest } = { outer: {} }) {
+          return [selected, innerRest, outerRest];
+        }
+        expect(f({ outer: { selected: 1, kept: 2 }, root: 3 })).toEqual([
+          1,
+          { kept: 2 },
+          { root: 3 },
+        ]);
       });
 
       // From: destructuring/default-precedence/exec.js
@@ -584,6 +813,39 @@ export function test({ describe, it, expect }) {
         expect(result).toEqual({ x: 1, y: 2 });
       });
 
+      it('for-of supports object rest in declaration and assignment patterns', () => {
+        const declared = [];
+        for (const { selected, ...rest } of [{ selected: 1, kept: 2 }]) {
+          declared.push([selected, rest]);
+        }
+
+        let selected, rest;
+        for ({ selected, ...rest } of [{ selected: 3, kept: 4 }]) {
+          // Assignment happens in the loop head.
+        }
+        expect(declared).toEqual([[1, { kept: 2 }]]);
+        expect([selected, rest]).toEqual([3, { kept: 4 }]);
+      });
+
+      it('for-of supports object rest nested in an array pattern', () => {
+        const results = [];
+        for (const [index, { selected, ...rest }] of [[0, { selected: 1, kept: 2 }]]) {
+          results.push([index, selected, rest]);
+        }
+        expect(results).toEqual([[0, 1, { kept: 2 }]]);
+      });
+
+      it('for-await-of supports object rest', async () => {
+        async function* values() {
+          yield { selected: 1, kept: 2 };
+        }
+        const results = [];
+        for await (const { selected, ...rest } of values()) {
+          results.push([selected, rest]);
+        }
+        expect(results).toEqual([[1, { kept: 2 }]]);
+      });
+
       // NOTE(@kitten): Broken test case
       // From: destructuring/for-of-shadowed-block-scoped/exec.js
       // @babel/plugin-transform-block-scoping bug: when it renames the inner
@@ -646,6 +908,15 @@ export function test({ describe, it, expect }) {
         expect(rest).toEqual([2, 3, 4]);
       });
 
+      it('object-rest assignment returns the right-hand value', () => {
+        let selected, rest;
+        const source = { selected: 1, kept: 2 };
+        const result = ({ selected, ...rest } = source);
+        expect(result).toBe(source);
+        expect(selected).toBe(1);
+        expect(rest).toEqual({ kept: 2 });
+      });
+
       // From: destructuring/chained/exec.js
       it('chained destructuring assignment', () => {
         var a, b, c, d;
@@ -679,9 +950,36 @@ export function test({ describe, it, expect }) {
         }
         expect(msg).toBe('bad type');
       });
+
+      it('collects object rest from a catch binding', () => {
+        let code, details;
+        try {
+          throw { code: 'E_TEST', message: 'failed', retryable: true };
+        } catch ({ code: caughtCode, ...rest }) {
+          code = caughtCode;
+          details = rest;
+        }
+        expect(code).toBe('E_TEST');
+        expect(details).toEqual({ message: 'failed', retryable: true });
+      });
+
+      it('collects nested object rest from a catch binding', () => {
+        let details;
+        try {
+          throw { error: { message: 'failed', code: 42 } };
+        } catch ({ error: { message, ...rest } }) {
+          details = [message, rest];
+        }
+        expect(details).toEqual(['failed', { code: 42 }]);
+      });
     });
 
     describe('declaration variants', () => {
+      it('supports object rest in exported declarations', () => {
+        expect(exportedValue).toBe(1);
+        expect(exportedRest).toEqual({ exportedOther: 2 });
+      });
+
       it('const with object destructuring', () => {
         const { x, y } = { x: 1, y: 2 };
         expect(x).toBe(1);
@@ -710,6 +1008,105 @@ export function test({ describe, it, expect }) {
         const getState = () => ({});
         const { data: { courses: oldCourses = [] } = {} } = getState();
         expect(oldCourses).toEqual([]);
+      });
+    });
+
+    describe('object-rest-spread regressions', () => {
+      // Adapted from Babel regression fixture T7178.
+      it('does not collide with a shadowed outer binding', () => {
+        const props = { outer: true };
+        const inner = function () {
+          const { ...props } = this.props;
+          return props;
+        }.call({ props: { inner: true } });
+        expect(props).toEqual({ outer: true });
+        expect(inner).toEqual({ inner: true });
+      });
+
+      // Adapted from Babel regression fixture gh-17274.
+      it('preserves computed-key order through nested object rest', () => {
+        const order = [];
+        const key = (value) => {
+          order.push(value);
+          return 'x';
+        };
+        const {
+          [key(0)]: { [key(1)]: first, [key(2)]: second, ...rest },
+          [key(3)]: outer,
+        } = { x: { x: {} } };
+        expect(order).toEqual([0, 1, 2, 3]);
+        expect(rest).toEqual({});
+        expect(outer).toEqual({ x: {} });
+      });
+
+      // Adapted from Babel regression fixture gh-4904.
+      it('supports nested rest and rest inside a callback parameter', () => {
+        const receive = (value, callback) => callback(value);
+        const {
+          nested: { selected, ...nestedRest },
+          ...outerRest
+        } = { nested: { selected: 1, kept: 2 }, root: 3 };
+        const callbackResult = receive({ selected: 4, kept: 5 }, ({ selected, ...rest }) => [
+          selected,
+          rest,
+        ]);
+        expect([selected, nestedRest, outerRest]).toEqual([1, { kept: 2 }, { root: 3 }]);
+        expect(callbackResult).toEqual([4, { kept: 5 }]);
+      });
+
+      // Adapted from Babel regression fixture gh-5151.
+      it('makes rest bindings available to later declarators and preserves declarator order', () => {
+        const order = [];
+        const record = (name, value) => {
+          order.push(name);
+          return value;
+        };
+        const { selected, ...rest } = record('source', { selected: 1, kept: 2 }),
+          later = record('later', rest.kept);
+        var before = record('before', true),
+          {
+            nested: { value, ...nestedRest },
+            ...outerRest
+          } = record('nested', { nested: { value: 3, kept: 4 }, root: 5 }),
+          after = record('after', true);
+        expect([selected, rest, later]).toEqual([1, { kept: 2 }, 2]);
+        expect([value, nestedRest, outerRest]).toEqual([3, { kept: 4 }, { root: 5 }]);
+        expect([before, after]).toEqual([true, true]);
+        expect(order).toEqual(['source', 'later', 'before', 'nested', 'after']);
+      });
+
+      // Adapted from Babel regression fixture gh-7388.
+      it('transforms object rest inside deeply nested default arrow functions', () => {
+        function outer(value) {
+          const {
+            first = (firstValue = {}) => {
+              const {
+                second = (secondValue = {}) => {
+                  const { selected, ...rest } = secondValue;
+                  return [selected, rest];
+                },
+              } = firstValue;
+              return second;
+            },
+          } = value;
+          return first;
+        }
+        const first = outer({});
+        const second = first({});
+        expect(second({ selected: 1, kept: 2 })).toEqual([1, { kept: 2 }]);
+      });
+
+      // Adapted from Babel regression fixture gh-8323.
+      it('preserves defaults when an object parameter also contains rest', () => {
+        let defaults = 0;
+        const fallback = () => {
+          defaults++;
+          return 3;
+        };
+        const extract = ({ a = fallback(), b, c, ...rest }) => [a, b, c, rest];
+        expect(extract({ b: 2, c: 3, kept: 4 })).toEqual([3, 2, 3, { kept: 4 }]);
+        expect(extract({ a: 1, b: 2, c: 3, kept: 4 })).toEqual([1, 2, 3, { kept: 4 }]);
+        expect(defaults).toBe(1);
       });
     });
 

@@ -2,9 +2,9 @@
 import * as React from 'react';
 import { Animated } from 'react-native';
 
-import type { NavigationState } from '../../routers';
+import type { BottomTabViewState } from '../types';
 
-export function useAnimatedHashMap({ routes, index }: NavigationState) {
+export function useAnimatedHashMap({ routes, index }: BottomTabViewState) {
   const refs = React.useRef<Record<string, Animated.Value>>({});
   const previous = refs.current;
   const routeKeys = Object.keys(previous);

@@ -14,6 +14,7 @@ data class MediaStoreVideo(
   val dateModified: Long?,
   val width: Int?,
   val height: Int?,
+  val orientation: Int?,
   val duration: Long?,
   val data: String?,
   val isFavorite: Int?
@@ -30,6 +31,7 @@ data class MediaStoreVideo(
         dateModified = getNullableLong(columnIndexes.dateModified),
         width = getNullableInt(columnIndexes.width),
         height = getNullableInt(columnIndexes.height),
+        orientation = columnIndexes.orientation?.let { getNullableInt(it) },
         duration = getNullableLong(columnIndexes.duration),
         data = getNullableString(columnIndexes.data),
         isFavorite = columnIndexes.isFavorite?.let { getNullableInt(it) }
@@ -45,6 +47,9 @@ data class MediaStoreVideo(
       add(HEIGHT)
       add(DATA)
       add(DURATION)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        add(ORIENTATION)
+      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         add(IS_FAVORITE)
       }
@@ -59,6 +64,7 @@ data class MediaStoreVideoColumnIndexes(
   val dateModified: Int,
   val width: Int,
   val height: Int,
+  val orientation: Int?,
   val duration: Int,
   val data: Int,
   val isFavorite: Int?
@@ -72,6 +78,11 @@ data class MediaStoreVideoColumnIndexes(
         dateModified = getColumnIndexOrThrow(DATE_MODIFIED),
         width = getColumnIndexOrThrow(WIDTH),
         height = getColumnIndexOrThrow(HEIGHT),
+        orientation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          getColumnIndexOrThrow(ORIENTATION)
+        } else {
+          null
+        },
         duration = getColumnIndexOrThrow(DURATION),
         data = getColumnIndexOrThrow(DATA),
         isFavorite = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

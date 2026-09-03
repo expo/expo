@@ -219,7 +219,8 @@ struct JavaScriptErrorTests {
       let innerResult = try runtime.eval(
         """
           try { inner(); 'no error' } catch (e) { e.message }
-        """)
+        """
+      )
       #expect(innerResult.getString() == "inner boom")
 
       throw CodedError(message: "outer boom", code: "ERR_OUTER")

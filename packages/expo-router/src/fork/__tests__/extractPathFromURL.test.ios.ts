@@ -82,6 +82,12 @@ describe(extractExpoPathFromURL, () => {
     delete expo.modules.ExpoGo;
     expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
   });
+  it('preserves a URL used as a query parameter', () => {
+    delete expo.modules.ExpoGo;
+    expect(
+      extractExpoPathFromURL([], 'https://mysite.com/readPolicy?url=https://test.com?param=1')
+    ).toEqual('readPolicy?url=https://test.com?param=1');
+  });
   it(`decodes query params in Expo Go`, () => {
     expo.modules.ExpoGo = {};
     expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');

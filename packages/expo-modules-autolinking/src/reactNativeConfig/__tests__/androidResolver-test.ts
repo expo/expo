@@ -117,7 +117,7 @@ public class TestPackage implements ReactPackage {
       expect(result).toMatchInlineSnapshot(`
       {
         "buildTypes": [],
-        "cmakeListsPath": "/app/node_modules/react-native-test/cpp/build/generated/source/codegen/jni/CMakeLists.txt",
+        "cmakeListsPath": null,
         "componentDescriptors": [],
         "cxxModuleCMakeListsModuleName": "TestMod",
         "cxxModuleCMakeListsPath": "/app/node_modules/react-native-test/cpp/CMakeLists.txt",
@@ -130,6 +130,24 @@ public class TestPackage implements ReactPackage {
     `);
     }
   );
+
+  itWithMemoize('should preserve a custom CMake path for a C++-only config', async () => {
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      {
+        cmakeListsPath: 'generated/jni/CMakeLists.txt',
+        cxxModuleCMakeListsModuleName: 'TestMod',
+        cxxModuleCMakeListsPath: 'CMakeLists.txt',
+        cxxModuleHeaderName: 'TestModSpec',
+      }
+    );
+    expect(result?.cmakeListsPath).toBe(
+      '/app/node_modules/react-native-test/android/generated/jni/CMakeLists.txt'
+    );
+  });
 
   itWithMemoize(
     'should not misdetect an Expo module as a C++-only React Native module',

@@ -1,5 +1,5 @@
 import { Log } from '../../log';
-import { choosePortAsync, resolvePortAsync } from '../../utils/port';
+import { choosePortAsync, resolveMetroPortAsync } from '../../utils/port';
 import { getOptionalDevClientSchemeAsync } from '../../utils/scheme';
 import { canResolveDevClient, hasDirectDevClientDependency } from '../detectDevClient';
 import {
@@ -12,7 +12,7 @@ import {
 jest.mock('../../log');
 jest.mock('../../utils/port', () => {
   return {
-    resolvePortAsync: jest.fn(),
+    resolveMetroPortAsync: jest.fn(),
     choosePortAsync: jest.fn(),
   };
 });
@@ -212,7 +212,7 @@ describe(resolveHostType, () => {
 describe(resolvePortsAsync, () => {
   beforeEach(() => {
     jest
-      .mocked(resolvePortAsync)
+      .mocked(resolveMetroPortAsync)
       .mockImplementation(async (root, { defaultPort, fallbackPort } = {}) => {
         if (typeof defaultPort === 'string' && defaultPort) {
           return parseInt(defaultPort, 10);
@@ -245,7 +245,7 @@ describe(resolvePortsAsync, () => {
     );
   });
   it(`does not abort when port resolves to 0`, async () => {
-    jest.mocked(resolvePortAsync).mockResolvedValueOnce(0);
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(0);
     await expect(resolvePortsAsync('/noop', { port: 0 }, ['metro'])).resolves.toStrictEqual({
       metroPort: 0,
     });

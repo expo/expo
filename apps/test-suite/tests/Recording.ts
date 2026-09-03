@@ -12,10 +12,12 @@ import {
   RecordingOptions,
 } from 'expo-audio';
 import { File, Paths } from 'expo-file-system';
+import { PermissionStatus } from 'expo-modules-core';
 import { isMatch } from 'lodash';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import type { JasmineInterface } from '../types';
 import { waitFor } from './helpers';
 
 export const name = 'Recording';
@@ -51,7 +53,7 @@ const retryForStatus = (recorder: AudioRecorder, status: Partial<RecorderState>)
     { retries: 5, minTimeout: 100 }
   );
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
@@ -75,16 +77,16 @@ export async function test(t) {
     // According to the documentation pausing should be supported on Android API >= 24,
     // unfortunately such test fails on Android v24.
     const pausingIsSupported = Platform.OS !== 'android' || Platform.Version >= 25;
-    let recorder: AudioRecorder | null = null;
+    let recorder: AudioRecorder = null!;
 
     t.beforeEach(async () => {
       const { status } = await getRecordingPermissionsAsync();
-      t.expect(status).toEqual('granted');
+      t.expect(status).toEqual(PermissionStatus.GRANTED);
       recorder = new AudioModule.AudioRecorder({});
     });
 
     t.afterEach(() => {
-      recorder = null;
+      recorder = null!;
     });
 
     t.describe('Recorder.prepareToRecordAsync(preset)', () => {
@@ -253,7 +255,7 @@ export async function test(t) {
           options: RecordingOptions,
           expectedRootUri: string
         ) => {
-          const currentRecorder = recorder!;
+          const currentRecorder = recorder;
           let recordingUri: string | null = null;
 
           try {

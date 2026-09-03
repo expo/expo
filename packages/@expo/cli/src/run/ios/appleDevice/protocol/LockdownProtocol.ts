@@ -9,9 +9,9 @@
 import plist from '@expo/plist';
 import type { Socket } from 'net';
 
+import { CommandError } from '../../../../utils/errors';
 import type { ProtocolWriter } from './AbstractProtocol';
 import { PlistProtocolReader, ProtocolClient, ProtocolReaderFactory } from './AbstractProtocol';
-import { CommandError } from '../../../../utils/errors';
 
 export const LOCKDOWN_HEADER_SIZE = 4;
 

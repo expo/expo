@@ -63,6 +63,7 @@ export type CSSMetadata = {
 
 export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
   data: JsOutput['data'] & {
+    skipCache?: boolean;
     profiling?: {
       start: number;
       end: number;

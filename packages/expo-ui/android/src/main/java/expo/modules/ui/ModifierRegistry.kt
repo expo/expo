@@ -807,6 +807,21 @@ object ModifierRegistry {
       }
     }
 
+    // Carousel item scope-dependent modifier
+    register("maskClip") { map, scope, appContext, _ ->
+      val itemScope = scope?.carouselItemScope
+        ?: error("maskClip modifier can only be used inside a Carousel item")
+      val params = recordFromMap<ClipParams>(map, appContext)
+      val shape = params.shape?.let { resolveShape(it) }
+      if (shape != null) {
+        with(itemScope) {
+          Modifier.maskClip(shape)
+        }
+      } else {
+        Modifier
+      }
+    }
+
     register("verticalScroll") { _, _, _, _ ->
       Modifier.verticalScroll(rememberScrollState())
     }

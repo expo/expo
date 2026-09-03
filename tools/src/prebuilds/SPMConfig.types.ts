@@ -199,6 +199,7 @@ export type BuildPlatform =
 export type ProductPlatform =
   | 'iOS(.v15)'
   | 'iOS(.v16)'
+  | 'iOS("16.4")'
   | 'macOS(.v11)'
   | 'tvOS(.v15)'
   | 'macCatalyst(.v15)';

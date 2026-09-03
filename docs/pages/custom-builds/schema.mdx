@@ -919,6 +919,28 @@ build:
         run: ls assets
 ```
 
+For builds with Git-based project sources, the step uses the build's recorded commit by default. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml example.yml
+build:
+  name: Check out a specific ref
+  steps:
+    # @info #
+    - eas/checkout:
+        inputs:
+          ref: feature/add-icon
+    # @end #
+    - eas/build
+```
+
+`ref` accepts:
+
+- A branch, as a bare name such as `feature/add-icon` or a qualified ref such as `refs/heads/feature/add-icon`. The repository ends up on that branch.
+- A tag, as a qualified ref such as `refs/tags/v1.2.3`. The repository ends up on a detached `HEAD`.
+- A full commit SHA. The repository ends up on a detached `HEAD`.
+
+The `ref` input only works when your project sources come from a Git repository, for example, a build triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Place the step before [`eas/build`](#easbuild), which checks out the project internally.
+
 <EASFunctionDescription name="checkout" />
 
 #### `eas/use_npm_token`

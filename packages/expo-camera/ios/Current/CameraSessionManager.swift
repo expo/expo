@@ -88,7 +88,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     : deviceDiscovery.frontCameraLenses
 
     let selectedDevice = lenses.first {
-      $0.localizedName == delegate.selectedLens
+      $0.deviceType.rawValue == delegate.selectedLens
     }
 
     if let selectedDevice {
@@ -109,7 +109,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       return
     }
     if delegate.active {
-      if !self.session.isRunning {
+      if hasAvailableCameraDevice && !self.session.isRunning {
         self.session.startRunning()
       }
     } else {
@@ -224,7 +224,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     }
   }
 
-  func getAvailableLenses() -> [String] {
+  func getAvailableLenses() -> [LensInfo] {
     guard let delegate else {
       return []
     }
@@ -235,9 +235,9 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
 
     // Lens ordering can be varied which causes problems if you keep the result in react state.
     // We sort them to provide a stable ordering
-    return availableLenses.map { $0.localizedName }.sorted {
-      $0 < $1
-    }
+    return availableLenses
+      .map { LensInfo(deviceType: $0.deviceType.rawValue, localizedName: $0.localizedName) }
+      .sorted { $0.deviceType < $1.deviceType }
   }
 
   func setupMovieFileCapture(withSessionConfiguration: Bool = true) {
@@ -275,12 +275,20 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
   }
 
   func stopSession() {
+    runtimeErrorTask?.cancel()
+    runtimeErrorTask = nil
+
+    // Stop before deconfiguring. Removing inputs and outputs from a session that is still
+    // running rebuilds the capture graph just to tear it down, and that rebuild waits out
+    // its own deadline when the graph never started in the first place.
+    if session.isRunning {
+      session.stopRunning()
+    }
+
     guard hasAvailableCameraDevice else {
       return
     }
 
-    runtimeErrorTask?.cancel()
-    runtimeErrorTask = nil
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -290,10 +298,6 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       session.removeOutput(output)
     }
     session.commitConfiguration()
-
-    if session.isRunning {
-      session.stopRunning()
-    }
   }
 
   func addErrorNotification() {

@@ -193,6 +193,7 @@ The keys provided to `locales` should be the [language identifier](https://devel
   "ios": {
     "CFBundleDisplayName": "こんにちは",
     "NSContactsUsageDescription": "日本語のこれらの言葉",
+    "NSUserTrackingUsageDescription": "より関連性の高い広告を表示するために、このアプリによるアクティビティの追跡を許可します。",
     "Localizable.strings": {
       "HELLO_NOTIFICATION_KEY": "こんにちは世界"
     }
@@ -205,6 +206,8 @@ The keys provided to `locales` should be the [language identifier](https://devel
 ```
 
 Now, the display name of your app is set to `こんにちは` whenever it's installed on a device with the language set to Japanese.
+
+Config plugins set the default value for iOS usage descriptions in **Info.plist**. To show a translated system permission message, add the matching usage-description key to the `ios` object in each locale file. During prebuild, Expo writes those values to **InfoPlist.strings** for the corresponding locale.
 
 In SDK 55 and later, there is an iOS-only option to specify a `Localizable.strings` object whose entries are used to create native localization files. The entries can be used in [iOS localized notifications](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Localize-your-alert-messages).
 

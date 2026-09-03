@@ -115,18 +115,8 @@ class SQLiteModule : Module() {
 
           val dbPath = ensureDatabasePathExists(databasePath)
           database = NativeDatabase(databasePath, options)
-          if (BuildConfig.USE_LIBSQL) {
-            val libSQLUrl = options.libSQLUrl ?: throw InvalidArgumentsException("libSQLUrl must be provided")
-            val libSQLAuthToken = options.libSQLAuthToken ?: throw InvalidArgumentsException("libSQLAuthToken must be provided")
-            if (options.libSQLRemoteOnly) {
-              database.ref.libsql_open_remote(libSQLUrl, libSQLAuthToken)
-            } else {
-              database.ref.libsql_open(dbPath, libSQLUrl, libSQLAuthToken)
-            }
-          } else {
-            if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
-              throw OpenDatabaseException(databasePath)
-            }
+          if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
+            throw OpenDatabaseException(databasePath)
           }
         }
 
@@ -199,13 +189,6 @@ class SQLiteModule : Module() {
       Function("loadExtensionSync") { database: NativeDatabase, libPath: String, entryPoint: String? ->
         loadExtension(database, libPath, entryPoint)
       }
-
-      AsyncFunction("syncLibSQL") { database: NativeDatabase ->
-        maybeThrowForClosedDatabase(database)
-        if (database.ref.libsql_sync() != NativeDatabaseBinding.SQLITE_OK) {
-          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-        }
-      }.runOnQueue(moduleCoroutineScope)
     }
 
     // endregion NativeDatabase
@@ -529,13 +512,7 @@ class SQLiteModule : Module() {
     if (databasePath == MEMORY_DB_NAME) {
       return
     }
-    val dbFile = File(ensureDatabasePathExists(databasePath))
-    if (!dbFile.exists()) {
-      throw DatabaseNotFoundException(databasePath)
-    }
-    if (!dbFile.delete()) {
-      throw DeleteDatabaseFileException(databasePath)
-    }
+    deleteDatabaseFiles(File(ensureDatabasePathExists(databasePath)), databasePath)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)

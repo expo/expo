@@ -21,44 +21,36 @@ it('should go back to a previous route in the same stack', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               path: undefined,
               state: {
                 index: 2,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'a',
                     params: {},
-                    path: undefined,
+                    path: '/1/a',
                   },
                   {
                     key: expect.any(String),
@@ -74,16 +66,19 @@ it('should go back to a previous route in the same stack', () => {
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 
@@ -92,57 +87,52 @@ it('should go back to a previous route in the same stack', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'a',
                     params: {},
-                    path: undefined,
+                    path: '/1/a',
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -169,107 +159,95 @@ it('should go back to a previous route in different stacks', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               path: undefined,
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', '2'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'a',
                     params: {},
-                    path: undefined,
+                    path: '/1/a',
                   },
                   {
                     key: expect.any(String),
                     name: '2',
-                    params: {
-                      params: {},
-                      screen: 'c',
-                    },
+                    params: {},
                     path: undefined,
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['c', 'd', '3'],
                       routes: [
                         {
                           key: expect.any(String),
                           name: 'c',
                           params: {},
-                          path: undefined,
+                          path: '/1/2/c',
                         },
                         {
                           key: expect.any(String),
                           name: '3',
-                          params: {
-                            params: {},
-                            screen: 'e',
-                          },
+                          params: {},
                           path: undefined,
                           state: {
                             index: 0,
                             key: expect.any(String),
-                            preloadedRoutes: [],
                             routeNames: ['e', 'd'],
                             routes: [
                               {
                                 key: expect.any(String),
                                 name: 'e',
                                 params: {},
-                                path: undefined,
+                                path: '/1/2/3/e',
                               },
                             ],
                             stale: false,
-                            type: 'stack',
+                            routeKeySeq: expect.any(Number),
                           },
                         },
                       ],
                       stale: false,
+                      routeKeySeq: expect.any(Number),
                       type: 'stack',
                     },
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 
@@ -278,57 +256,52 @@ it('should go back to a previous route in different stacks', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', '2'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'a',
                     params: {},
-                    path: undefined,
+                    path: '/1/a',
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -356,100 +329,88 @@ it('will replace the route if the provided href is not in the history', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               path: undefined,
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', '2'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'a',
                     params: {},
-                    path: undefined,
+                    path: '/1/a',
                   },
                   {
                     key: expect.any(String),
                     name: '2',
-                    params: {
-                      params: {},
-                      screen: 'c',
-                    },
+                    params: {},
                     path: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['c', 'd', '3'],
                       routes: [
                         {
                           key: expect.any(String),
                           name: '3',
-                          params: {
-                            params: {},
-                            screen: 'e',
-                          },
+                          params: {},
                           state: {
                             index: 0,
                             key: expect.any(String),
-                            preloadedRoutes: [],
                             routeNames: ['e', 'd'],
                             routes: [
                               {
                                 key: expect.any(String),
                                 name: 'e',
                                 params: {},
-                                path: undefined,
+                                path: '/1/2/3/e',
                               },
                             ],
                             stale: false,
-                            type: 'stack',
+                            routeKeySeq: expect.any(Number),
                           },
                         },
                       ],
                       stale: false,
+                      routeKeySeq: expect.any(Number),
                       type: 'stack',
                     },
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });

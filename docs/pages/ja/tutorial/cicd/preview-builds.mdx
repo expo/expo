@@ -1,0 +1,312 @@
+---
+title: 'EAS Workflows でプルリクエスト向けのプレビュービルドを作成する'
+sidebar_title: プレビュービルド
+description: EAS Workflows を使って、Slack 通知や PR プレビューのためのプレビュービルドワークフローを作成する方法を学びます。
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { PreviewPipeline } from '~/ui/components/FlowDiagram/Diagrams/PreviewPipeline';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+作業中のモバイルの変更をチームメイトやプルリクエスト（PR）のレビュアーに共有しようとすると、ブランチをチェックアウトしてローカルで開発サーバーを起動してもらう必要が生じがちです。
+
+## この章で学べること
+
+- 内部配布向けのプレビュービルドを、フィンガープリントを使って自動化する
+- ビルドが完了したときに Slack へ通知を投稿する
+- プルリクエストのたびに [OTA アップデート](/deploy/send-over-the-air-updates/)を公開し、テスト用のリンクを PR にコメントする
+
+<Prerequisites>
+
+<Requirement title="expo-updates のインストール">
+
+[`expo-updates`](/versions/latest/sdk/updates/) ライブラリをインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-updates'],
+    yarn: ['$ yarn dlx expo install expo-updates'],
+    pnpm: ['$ pnpm dlx expo install expo-updates'],
+    bun: ['$ bunx expo install expo-updates'],
+  }}
+/>
+
+</Requirement>
+
+<Requirement title="EAS Update の設定">
+
+EAS Update を設定するには、次のコマンドを実行します。
+
+<Terminal cmd={['$ eas update:configure']} />
+
+上のコマンドは、**app.json** にアップデートの URL とランタイムバージョンを追加し、**eas.json** の各ビルドプロファイルに [`channel`](/eas-update/deployment/) フィールドを追加します。
+
+</Requirement>
+
+<Requirement title="プレビュービルドの作成">
+
+PR プレビューアップデートを受け取るには、レビュアーのデバイスに `expo-updates` と EAS Update のチャンネルが組み込まれたプレビュービルドがインストールされている必要があります。作成するには次のコマンドを実行します。
+
+<Terminal cmd={['$ eas build --profile preview --platform all']} />
+
+`expo-updates` はネイティブライブラリなので、このビルドにはそのネイティブコードと **eas.json** のチャンネルの両方が埋め込まれます。また、上のコマンドを実行することで、初回のプレビュービルド時に EAS CLI が[認証情報](/app-signing/app-credentials/)を生成できます。
+
+</Requirement>
+
+</Prerequisites>
+
+## プレビュービルド向けの `build` ジョブタイプ
+
+チームは、ステークホルダーによるテストのためにプレビュービルドを使用します。メンバーは内部配布を通じて、そのビルドを自分のデバイス/エミュレーター/シミュレーターにインストールします。変更をテストするために開発サーバーを起動したり、ブランチをチェックアウトしたりする必要はありません。
+
+<PreviewPipeline />
+
+[開発ビルド](/ja/tutorial/cicd/development-builds/#フィンガープリントで不要なビルドをスキップする)のときと同じように、ネイティブコードに変更がないときの不要な再ビルドを避けるためにフィンガープリントを追加します。
+
+<Step label="1">
+
+### preview.yml を追加する
+
+**.eas/workflows/** の中に **preview.yml** という新しいファイルを追加しましょう。このワークフローファイルでは `preview` プロファイルを使用します。
+
+```yaml .eas/workflows/preview.yml
+name: Preview builds
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    # @info #
+    environment: preview
+    # @end #
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      # @info #
+      profile: preview
+      # @end #
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      # @info #
+      profile: preview
+      # @end #
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      # @info #
+      profile: preview
+      # @end #
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      # @info #
+      profile: preview
+      # @end #
+```
+
+</Step>
+
+<Step label="2">
+
+### ワークフローを実行する
+
+次のコマンドでワークフローを手動で実行します。
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
+
+EAS ダッシュボードでは、このワークフローが[開発ビルド](/ja/tutorial/cicd/development-builds/#フィンガープリントで不要なビルドをスキップする)で実装したものと同じフィンガープリントのパターンをたどっていることが分かります。プレビュービルドを作成するのは初めてなので、Android と iOS のビルドジョブが実行されます。ネイティブコードを変更せずに `main` ブランチへ別のコミットをプッシュした場合は、互換性のあるビルドがすでに存在するため、ワークフローはビルドジョブをスキップします。
+
+<ContentSpotlight
+  alt="互換性のある Android と iOS のビルドがすでに存在するため、fingerprint ジョブと get-build ジョブがビルドジョブをスキップしている EAS Workflows のプレビュー実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-preview-fingerprint-skip.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## Slack 通知
+
+> **info** このセクションは任意です。Slack を使っていない場合は、PR プレビューについての次のセクションまで読み飛ばしてかまいません。
+
+多くのチームは、EAS ダッシュボードを確認しなくてもビルドの状況が分かるように、ビルド通知に Slack を使っています。ビルドが完了（またはスキップ）したとき、事前パッケージ済みの [`slack`](/eas/workflows/pre-packaged-jobs/#slack) ジョブがステータスをチャンネルに投稿します。
+
+<Step label="1">
+
+### Slack の Webhook URL を作成する
+
+EAS Workflows から Slack のチャンネルにメッセージを送るには、Slack の設定から Webhook URL を取得する必要があります。
+
+1. [api.slack.com/apps](https://api.slack.com/apps) にアクセスして、新しい Slack アプリを作成します（既存のものを使ってもかまいません）。
+2. **Features** の下にある **Incoming Webhooks** を選択し、有効に切り替えます。
+3. **Add New Webhook** をクリックし、通知を投稿するチャンネルを選択します。
+4. Webhook URL をコピーします。`https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX` のような形式です。
+5. この Webhook URL を `SLACK_WEBHOOK_URL` という名前の EAS 環境変数として追加します。EAS ダッシュボードでプロジェクトの [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) ページを開き、`preview` 環境用の変数を作成して、[可視性](/eas/environment-variables/#visibility-settings-for-environment-variables)を **secret** に設定します。この値を読み取る必要があるのは EAS のサーバーだけだからです。[EAS CLI](/eas/environment-variables/manage/) で作成することもできます。
+
+<Terminal
+  cmd={[
+    '$ eas env:set --name SLACK_WEBHOOK_URL --value https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX --environment preview --visibility secret',
+  ]}
+/>
+
+</Step>
+
+<Step label="2">
+
+### Slack 通知のジョブを追加する
+
+**preview.yml** を更新して、ビルドジョブのあとに `notify` ジョブを追加しましょう。`notify` ジョブでは `webhook_url` と `message` のパラメーター、または [Slack Block Kit](https://docs.slack.dev/block-kit) でリッチな装飾を行うための `payload` パラメーターを使用します。このジョブは、`environment` フィールドを通じて[先ほど作成した `SLACK_WEBHOOK_URL` 環境変数](#slack-の-webhook-url-を作成する)から Webhook URL を読み取ります。ジョブはデフォルトで `production` 環境を使うため、ここで `environment: preview` を指定することでこの変数が利用可能になります。
+
+```yaml .eas/workflows/preview.yml
+name: Preview builds
+
+jobs:
+  fingerprint: # ...
+  get_android_build: # ...
+  get_ios_build: # ...
+  build_android: # ...
+  build_ios: # ...
+  # @info #
+  notify:
+    name: Notify on Slack
+    after: [build_android, build_ios]
+    type: slack
+    environment: preview
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: 'Preview builds are ready - Android: ${{ after.build_android.status }}, iOS: ${{ after.build_ios.status }}'
+  # @end #
+```
+
+`after` フィールドによって、結果にかかわらずビルドが終わった時点で通知が送られます。`message` では `${{ after.build_android.status }}` と `${{ after.build_ios.status }}` を使って、各プラットフォームの結果（成功、失敗、スキップ）を含めています。これでチームは Slack を離れずに状況を把握できます。
+
+</Step>
+
+<Step label="3">
+
+### ワークフローを実行する
+
+次のコマンドでワークフローを手動で実行します。
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
+
+EAS ダッシュボードで、`Notify on Slack` ジョブが正常に実行されたことを確認できます。
+
+<ContentSpotlight
+  alt="Android と iOS のビルドジョブのあとに Notify on Slack ジョブが正常に完了している EAS Workflows のプレビュー実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-preview-slack-notify-job.png"
+  className="max-w-160"
+/>
+
+アプリと連携している Slack のチャンネルでも確認できます。
+
+<ContentSpotlight
+  alt="Expo プロジェクトの Android と iOS のプレビュービルドの完了ステータスを伝える、EAS Workflows が投稿した Slack メッセージ。"
+  src="/static/images/tutorial/cicd/eas-workflows-preview-slack-notification.webp"
+  className="max-w-90"
+/>
+
+</Step>
+
+## EAS Update を使った PR プレビュー
+
+PR のレビュアーは差分を読むことはできますが、変更を目で見て確かめたり、デバイス上でテストしたりはできません。
+
+web のチームは、これをデプロイプレビューで解決しています。誰かがプルリクエストを開くと、CI/CD のワークフローがプレビューリンクを生成します。レビュアーはそのリンクを開くだけで、ブランチをチェックアウトせずに変更を確認できます。
+
+モバイルでも、[EAS Update](/eas-update/introduction/) を使って同じことができます。EAS Update は、互換性のあるビルドがすでにインストールされているデバイスへ JavaScript バンドルを配信するので、ネイティブのコンパイルの工程を省けます。PR プレビューにアップデートが向いているのは、レビュアーがすぐに開いてテストし、そのまま PR にフィードバックを残せるからです。
+
+EAS Workflows はこのために、事前パッケージ済みの [`github-comment`](/eas/workflows/pre-packaged-jobs/#github-comment) ジョブを提供しています。アップデートが公開されたあとにプルリクエストへコメントを投稿し、レビュアーが自分のデバイスでアップデートを開けるようリンクや QR コードを渡します。
+
+<Step label="1">
+
+### pr-preview.yml を作成する
+
+**.eas/workflows/** の中に **pr-preview.yml** という新しいファイルを追加しましょう。このワークフローは `on.pull_request` トリガーによって、プルリクエストが作成されたときに実行されます。`update` ジョブタイプでアップデートを公開するだけの内容で、そのあとアップデートへのリンクを PR にコメントします。
+
+```yaml .eas/workflows/pr-preview.yml
+name: PR Preview
+
+on:
+  pull_request:
+    branches: ['*']
+
+jobs:
+  publish_preview:
+    name: Publish PR preview update
+    type: update
+    environment: preview
+    params:
+      channel: preview
+  comment:
+    needs: [publish_preview]
+    type: github-comment
+```
+
+> **important** 上のワークフローをテストする前に、**pr-preview.yml** をコミットして GitHub リポジトリの `main` ブランチにプッシュしてください。**EAS Workflows はデフォルトブランチからワークフローファイルを読み取ります。**
+
+</Step>
+
+<Step label="2">
+
+### プルリクエストでテストする
+
+GitHub リポジトリでプルリクエストを作成して、ワークフローをテストしてみましょう。プルリクエストには `main` とは別のブランチが必要です。次のコマンドを実行して、新しいブランチを作成して切り替えます。
+
+<Terminal cmd={['$ git checkout -b test-preview']} />
+
+続いて、Expo プロジェクトに目に見える変更（たとえばテキストや背景色の変更）を加えます。そのうえで、コミットしてブランチをプッシュします。
+
+<Terminal
+  cmd={['$ git add .', '$ git commit -m "Test PR preview"', '$ git push origin test-preview']}
+  cmdCopy="git add . && git commit -m 'Test PR preview' && git push origin test-preview"
+/>
+
+GitHub で `test-preview` から `main` へのプルリクエストを開きます。プルリクエストを作成すると、ワークフローが自動的に実行されます。EAS ダッシュボードでは、まず `publish_preview` ジョブが実行され、それが成功したあとに `comment` ジョブが実行されることを確認できます。
+
+<ContentSpotlight
+  alt="publish_preview ジョブに続いて、アップデートのリンクを GitHub に投稿する comment ジョブが実行されている EAS Workflows のプルリクエストプレビュー実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-preview-pr-publish-comment.png"
+  className="max-w-160"
+/>
+
+GitHub のプルリクエストには、デバイスでアップデートをテストするためのリンクまたは QR コードを含んだコメントが表示されるはずです。
+
+<ContentSpotlight
+  alt="提案された変更の EAS Update プレビューへのリンクを含む、EAS Workflows が投稿した GitHub プルリクエストのコメント。"
+  src="/static/images/tutorial/cicd/eas-workflows-preview-github-pr-comment.png"
+  className="max-w-160"
+/>
+
+コメント内のリンクや QR コードを使えば、デバイスやエミュレーター/シミュレーターでアップデートを開いて、変更をテストできます。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/cicd/preview-builds"
+  name="CICD_TUTORIAL"
+  chapterTitle="第 3 章：プレビュービルド"
+  summary="フィンガープリントを使ったプレビュービルドのワークフローを作成し、ビルドのステータスを知らせる Slack 通知を追加し、EAS Update による PR プレビューを設定して、レビュアーがブランチをチェックアウトせずに変更をテストできるようにしました。"
+  nextChapterDescription="次の章では、EAS Workflows のジョブで Maestro によるエンドツーエンドテストを実行する方法を学びます。"
+  nextChapterTitle="E2E テスト"
+  nextChapterLink="/ja/tutorial/cicd/e2e-tests"
+/>

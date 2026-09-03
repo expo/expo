@@ -132,6 +132,8 @@ class EventDispatcher(
         )
       is DispatchResult.RetryableFailure ->
         Log.w(OBSERVE_TAG, "Server responded with ${response.code} (retryable) and data: $responseBody")
+      is DispatchResult.PayloadTooLarge ->
+        Log.w(OBSERVE_TAG, "Server responded with ${response.code} (payload too large) and data: $responseBody")
       is DispatchResult.NonRetryableFailure ->
         Log.w(
           OBSERVE_TAG,

@@ -162,6 +162,19 @@ class DispatchUtilsClassifyResponseTest {
     }
   }
 
+  @Test
+  fun `413 returns PayloadTooLarge with or without Retry-After`() {
+    for (retryAfter in listOf(null, "120")) {
+      val result = DispatchUtils.classifyResponse(
+        statusCode = 413,
+        retryAfterHeader = retryAfter,
+        responseBody = null
+      )
+
+      assertEquals(DispatchResult.PayloadTooLarge, result)
+    }
+  }
+
   // MARK: -- Non-retryable 4xx / other 5xx
 
   @Test
@@ -241,40 +254,6 @@ class DispatchUtilsClassifyResponseTest {
       }
     )
     assertTrue("bodyExcerpt closure should not be called on 429", !bodyClosureCalled)
-  }
-}
-
-class DispatchUtilsShouldRemovePendingTest {
-  // On `Success`, the queue moves past the dispatched batch so the next round reads only
-  // newer rows. Unchanged from the pre-OTLP behavior; locked here for the table.
-  @Test
-  fun `Success removes pending IDs`() {
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.Success))
-  }
-
-  // `Retryable` is the "leave them alone" case — the next dispatch round picks the same
-  // rows up again. This is what keeps an in-flight outage from losing telemetry.
-  @Test
-  fun `Retryable keeps pending IDs`() {
-    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure()))
-    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure(retryAfterMs = 30_000L)))
-  }
-
-  // `PartialSuccess` removes pending IDs like `Success` does: the bytes landed on the
-  // server (a subset was rejected server-side, but the batch as a whole was accepted), so
-  // re-sending the same rows would just trip the same rejection.
-  @Test
-  fun `PartialSuccess removes pending IDs`() {
-    val partial = OTPartialSuccess(rejectedDataPoints = 1, errorMessage = "x")
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.PartialSuccess(partial)))
-  }
-
-  // The acceptance-criterion behavior: a non-retryable response (e.g. 400, 403) drops the
-  // offending batch. Without this, the next round would re-send the same rows and the
-  // server would refuse them again, wedging the queue indefinitely.
-  @Test
-  fun `NonRetryable removes pending IDs`() {
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.NonRetryableFailure("HTTP 400")))
   }
 }
 

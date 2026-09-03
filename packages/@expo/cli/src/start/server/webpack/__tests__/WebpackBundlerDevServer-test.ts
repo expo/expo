@@ -1,11 +1,15 @@
 import { vol } from 'memfs';
 import webpack from 'webpack';
 
+import { loadEnvFiles } from '../../../../utils/nodeEnv';
 import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 
 jest.mock('../../../../log');
+jest.mock('../../../../utils/nodeEnv', () => ({
+  loadEnvFiles: jest.fn(),
+}));
 jest.mock('../resolveFromProject');
 
 jest.mock('../compile', () => ({
@@ -51,6 +55,26 @@ describe('bundleAsync', () => {
       mode: 'development',
     });
   });
+});
+
+describe('loadConfigAsync', () => {
+  it.each(['development', 'production'] as const)(
+    'loads %s env files before Webpack config',
+    async (mode) => {
+      const devServer = new WebpackBundlerDevServer(
+        '/',
+        getPlatformBundlers('/', { web: { bundler: 'webpack' } })
+      );
+      const expoWebpackConfig = require('@expo/webpack-config') as jest.Mock;
+
+      await devServer.loadConfigAsync({ mode, isImageEditingEnabled: false });
+
+      expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode });
+      expect(jest.mocked(loadEnvFiles).mock.invocationCallOrder[0]).toBeLessThan(
+        expoWebpackConfig.mock.invocationCallOrder[0]!
+      );
+    }
+  );
 });
 
 describe('startAsync', () => {

@@ -7,7 +7,6 @@ import chalk from 'chalk';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -68,9 +67,6 @@ export async function prebuildAsync(
     skipDependencyUpdate?: string[];
   }
 ): Promise<PrebuildResults | null> {
-  setNodeEnv('development');
-  loadEnvFiles(projectRoot);
-
   const { platforms } = getConfig(projectRoot).exp;
   if (platforms?.length) {
     // Filter out platforms that aren't in the app.json.

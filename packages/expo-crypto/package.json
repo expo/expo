@@ -1,6 +1,6 @@
 {
   "name": "expo-crypto",
-  "version": "56.0.4",
+  "version": "57.0.1",
   "description": "Provides cryptography primitives for Android, iOS and web.",
   "keywords": [
     "android",

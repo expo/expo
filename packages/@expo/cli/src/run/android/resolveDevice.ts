@@ -1,6 +1,6 @@
 import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
-import { logDeviceArgument } from '../hints';
 import { debugEvent } from '../events';
+import { logDeviceArgument } from '../hints';
 
 /** Given a `device` argument from the CLI, parse and prompt our way to a usable device for building. */
 export async function resolveDeviceAsync(device?: string | boolean) {

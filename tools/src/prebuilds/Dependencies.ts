@@ -244,21 +244,36 @@ export const Dependencies = {
       }
     );
 
-    // Generate VFS overlay and stage missing headers for stock Maven xcframework.
-    // The xcframework itself is never modified (preserves Meta's code signature).
-    // Skipped if already generated and RN source version hasn't changed.
+    // React header resolution comes in two flavors:
+    //  - Modern modular artifact: ships ReactNativeHeaders.xcframework with a flattened clang
+    //    module map. Nothing to generate — the module map is consumed directly.
+    //  - Legacy artifact: ships only React.xcframework, so we synthesize a VFS overlay (and stage
+    //    missing headers) without ever modifying the xcframework (preserves Meta's code signature).
     const reactNativeSourcePath = resolvePackagePath('react-native');
     const xcframeworkPath = path.join(reactNativePath, 'React.xcframework');
-    if (fs.existsSync(xcframeworkPath) && !isVFSGenerated(reactNativePath, reactNativeSourcePath)) {
-      logger.verbose('🔄 Generating VFS overlay for stock React.xcframework...');
-      await transformReactXCFrameworkAsync({
-        outputPath: reactNativePath,
-        reactNativePath: reactNativeSourcePath,
-      });
-    }
+    const usesModularHeaders = fs.existsSync(
+      path.join(reactNativePath, 'ReactNativeHeaders.xcframework')
+    );
+    if (usesModularHeaders) {
+      logger.verbose(
+        '📦 Modular React headers detected (ReactNativeHeaders.xcframework) — skipping VFS overlay'
+      );
+    } else {
+      // Skipped if already generated and RN source version hasn't changed.
+      if (
+        fs.existsSync(xcframeworkPath) &&
+        !isVFSGenerated(reactNativePath, reactNativeSourcePath)
+      ) {
+        logger.verbose('🔄 Generating VFS overlay for stock React.xcframework...');
+        await transformReactXCFrameworkAsync({
+          outputPath: reactNativePath,
+          reactNativePath: reactNativeSourcePath,
+        });
+      }
 
-    // Generate the VFS overlay file from the template (resolves ${ROOT_PATH} placeholders)
-    await resolveVFSOverlayTemplate(reactNativePath);
+      // Generate the VFS overlay file from the template (resolves ${ROOT_PATH} placeholders)
+      await resolveVFSOverlayTemplate(reactNativePath);
+    }
 
     return {
       hermes: hermesPath,
@@ -325,8 +340,11 @@ export const Dependencies = {
         spinner.succeed('Artifacts already up-to-date in local .dependencies folder');
       }
 
-      // Resolve the VFS overlay template with the correct paths
-      await resolveVFSOverlayTemplate(rnDest);
+      // Legacy artifacts only: resolve the VFS overlay template with the correct paths. Modular
+      // artifacts (ReactNativeHeaders.xcframework) ship a module map and need no overlay.
+      if (!fs.existsSync(path.join(rnDest, 'ReactNativeHeaders.xcframework'))) {
+        await resolveVFSOverlayTemplate(rnDest);
+      }
     } else {
       const spinner = createAsyncSpinner('Verifying artifacts for local dependencies', pkg);
 

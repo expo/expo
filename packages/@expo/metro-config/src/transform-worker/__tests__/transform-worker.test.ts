@@ -76,6 +76,19 @@ it(`performs a sanity check by transforming a JS file as expected`, async () => 
   ).toMatchInlineSnapshot(`"export default {}"`);
 });
 
+it('marks prewarm transforms to skip the persistent cache', async () => {
+  jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
+    dependencies: [],
+    output: [{ type: 'js/module', data: {} }],
+  } as any);
+
+  const result = await doTransform('__prewarm__/0.js', 'export default {}', {
+    customTransformOptions: { prewarm: '1' },
+  });
+
+  expect(result.output[0]!.data.skipCache).toBe(true);
+});
+
 it(`transforms a global CSS file in dev for web`, async () => {
   expect(
     await doTransformForOutput('acme.css', 'body { background: red; }', {

@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import {
   useAudioStream,
   useAudioPlayer,

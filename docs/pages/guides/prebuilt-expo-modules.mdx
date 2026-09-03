@@ -70,7 +70,7 @@ Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"
 }
 ```
 
-This is typically only needed when you're modifying module source code yourself.
+This is typically only needed when you're modifying module source code yourself, or when you use a config plugin option that controls native compilation. Prebuilt artifacts ship with each module's default build options, so options that add or remove native dependencies (such as `expo-camera`'s [`barcodeScannerEnabled`](/versions/latest/sdk/camera/#configuration-in-app-config) on Android) only take effect when the module builds from source.
 
 </Collapsible>
 

@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "56.0.5",
+  "version": "57.0.9",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -95,6 +95,14 @@
       },
       "expo-source": "./src/winter/installGlobal.ts",
       "default": "./build/winter/installGlobal.js"
+    },
+    "./internal/bundle-origin": {
+      "types": {
+        "expo-source": "./src/utils/getBundleOrigin.ts",
+        "default": "./build/utils/getBundleOrigin.d.ts"
+      },
+      "expo-source": "./src/utils/getBundleOrigin.ts",
+      "default": "./build/utils/getBundleOrigin.js"
     },
     "./internal/*": {
       "types": "./internal/*.d.ts",
@@ -200,26 +208,26 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "workspace:^56.1.12",
-    "@expo/config": "workspace:~56.0.9",
-    "@expo/config-plugins": "workspace:~56.0.8",
-    "@expo/devtools": "workspace:~56.0.2",
-    "@expo/dom-webview": "workspace:~56.0.5",
-    "@expo/fingerprint": "workspace:^0.19.3",
-    "@expo/local-build-cache-provider": "workspace:^56.0.8",
-    "@expo/log-box": "workspace:^56.0.12",
-    "@expo/log-box-utils": "workspace:^56.0.0",
-    "@expo/metro": "~56.0.0",
-    "@expo/metro-config": "workspace:~56.0.13",
+    "@expo/cli": "workspace:^",
+    "@expo/config": "workspace:~",
+    "@expo/config-plugins": "workspace:~",
+    "@expo/devtools": "workspace:~",
+    "@expo/dom-webview": "workspace:~",
+    "@expo/fingerprint": "workspace:^",
+    "@expo/local-build-cache-provider": "workspace:^",
+    "@expo/log-box": "workspace:^",
+    "@expo/log-box-utils": "workspace:^",
+    "@expo/metro": "~56.0.2",
+    "@expo/metro-config": "workspace:~",
     "@ungap/structured-clone": "^1.3.0",
-    "babel-preset-expo": "workspace:~56.0.13",
-    "expo-asset": "workspace:~56.0.15",
-    "expo-constants": "workspace:~56.0.16",
-    "expo-file-system": "workspace:~56.0.7",
-    "expo-font": "workspace:~56.0.5",
-    "expo-keep-awake": "workspace:~56.0.3",
-    "expo-modules-autolinking": "workspace:~56.0.13",
-    "expo-modules-core": "workspace:~56.0.13",
+    "babel-preset-expo": "workspace:~",
+    "expo-asset": "workspace:~",
+    "expo-constants": "workspace:~",
+    "expo-file-system": "workspace:~",
+    "expo-font": "workspace:~",
+    "expo-keep-awake": "workspace:~",
+    "expo-modules-autolinking": "workspace:~",
+    "expo-modules-core": "workspace:~",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
     "whatwg-url-minimum": "^0.2.0"
@@ -233,7 +241,7 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.86.0",
+    "react-native": "0.87.0",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },

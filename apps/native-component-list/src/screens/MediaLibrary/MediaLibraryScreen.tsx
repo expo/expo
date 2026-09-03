@@ -1,7 +1,7 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { StackScreenProps } from '@react-navigation/stack';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library/legacy';
+import { router, useFocusEffect, type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
 import {
   Alert,
@@ -20,9 +20,8 @@ import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
 import Colors from '../../constants/Colors';
 import MediaLibraryCell from './MediaLibraryCell';
-
 const COLUMNS = 3;
-const PAGE_SIZE = COLUMNS * 10;
+const PAGE_SIZE_OPTIONS = [30, 300, 3000, 30000] as const;
 const WINDOW_SIZE = Dimensions.get('window');
 
 type MediaTypeWithoutPairedVideo = Exclude<MediaLibrary.MediaTypeValue, 'pairedVideo'>;
@@ -44,13 +43,14 @@ const sortByStates: { [key in MediaLibrary.SortByKey]: MediaLibrary.SortByKey } 
   [MediaLibrary.SortBy.duration]: MediaLibrary.SortBy.default,
 };
 
+// Route params must stay serializable, so screens pass ids and refetch the data they need.
 type Links = {
-  MediaLibrary: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
-  MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
+  MediaLibrary: { albumId?: string; albumTitle?: string };
+  MediaDetails: { assetId: string; albumId?: string; albumTitle?: string };
   MediaAlbums: undefined;
 };
 
-type Props = StackScreenProps<Links, 'MediaLibrary'> & {
+type Props = NativeStackScreenProps<Links, 'MediaLibrary'> & {
   accessPrivileges?: MediaLibrary.PermissionResponse['accessPrivileges'];
 };
 
@@ -60,6 +60,10 @@ type FetchState = {
   assets: MediaLibrary.Asset[];
   endCursor: string | null;
   hasNextPage: boolean;
+  /** First loaded asset location from getAssetsAsync (iOS batch location debug). */
+  batchLocationPreview: string | null;
+  /** Duration of the most recent getAssetsAsync call, in milliseconds. */
+  lastFetchDurationMs: number | null;
 };
 
 const initialState: FetchState = {
@@ -68,6 +72,8 @@ const initialState: FetchState = {
   assets: [],
   endCursor: null,
   hasNextPage: true,
+  batchLocationPreview: null,
+  lastFetchDurationMs: null,
 };
 
 function reducer(
@@ -103,12 +109,13 @@ function useMediaLibraryPermissions(): [undefined | MediaLibrary.PermissionRespo
 }
 
 export default function MediaLibraryScreen({ navigation, route }: Props) {
-  const album = route.params?.album;
+  const albumId = route.params?.albumId;
 
   // Set the navigation options
   React.useLayoutEffect(() => {
-    const goToAlbums = () => navigation.navigate('MediaAlbums');
-    const clearAlbumSelection = () => navigation.setParams({ album: undefined });
+    const goToAlbums = () => router.push('/apis/mediaalbums');
+    const clearAlbumSelection = () =>
+      navigation.setParams({ albumId: undefined, albumTitle: undefined });
     const addImage = async () => {
       const randomNameGenerator: (num: number) => string = (num) => {
         let res = '';
@@ -126,7 +133,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     };
 
     const removeAlbum = async () => {
-      await MediaLibrary.deleteAlbumsAsync(album);
+      await MediaLibrary.deleteAlbumsAsync(albumId!);
       clearAlbumSelection();
     };
 
@@ -135,20 +142,20 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
       headerRight: () => (
         <View style={{ marginRight: 5, flexDirection: 'row' }}>
           <RNButton
-            title={album ? 'Remove' : 'Add'}
-            onPress={album ? removeAlbum : addImage}
+            title={albumId ? 'Remove' : 'Add'}
+            onPress={albumId ? removeAlbum : addImage}
             color={Colors.tintColor}
           />
           <View style={{ width: 5 }} />
           <RNButton
-            title={album ? 'Show all' : 'Albums'}
-            onPress={album ? clearAlbumSelection : goToAlbums}
+            title={albumId ? 'Show all' : 'Albums'}
+            onPress={albumId ? clearAlbumSelection : goToAlbums}
             color={Colors.tintColor}
           />
         </View>
       ),
     });
-  }, [album, navigation]);
+  }, [albumId, navigation]);
 
   // Ensure the permissions are granted.
   const [permission] = useMediaLibraryPermissions();
@@ -177,8 +184,9 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
 }
 
 // The fetching and sorting logic is split out from the navigation and permission logic for simplicity.
-function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
-  const album = route.params?.album;
+function MediaLibraryView({ route, accessPrivileges }: Props) {
+  const albumId = route.params?.albumId;
+  const albumTitle = route.params?.albumTitle;
 
   const isLoadingAssets = React.useRef(false);
 
@@ -186,13 +194,15 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const [mediaType, setMediaType] = React.useState<MediaTypeWithoutPairedVideo>(
     MediaLibrary.MediaType.photo
   );
+  const [pageSize, setPageSize] = React.useState<number>(PAGE_SIZE_OPTIONS[0]);
+  const [resolveWithFullInfo, setResolveWithFullInfo] = React.useState(false);
 
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   // Update without showing the refresh indicator whenever the sorting parameters change.
   React.useEffect(() => {
     dispatch({ type: 'reset', refreshing: false });
-  }, [mediaType, sortBy, album?.id]);
+  }, [mediaType, sortBy, albumId, pageSize, resolveWithFullInfo]);
 
   const toggleMediaType = React.useCallback(() => {
     setMediaType(mediaTypeStates[mediaType]);
@@ -201,6 +211,10 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const toggleSortBy = React.useCallback(() => {
     setSortBy(sortByStates[sortBy]);
   }, [setSortBy, sortBy]);
+
+  const toggleResolveWithFullInfo = React.useCallback(() => {
+    setResolveWithFullInfo((current) => !current);
+  }, []);
 
   const loadMoreAssets = React.useCallback(async () => {
     if (
@@ -215,14 +229,27 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
     try {
       // Make a native request for assets.
+      if (!state.endCursor) {
+        dispatch({ type: 'update', refreshing: true });
+      }
+      const fetchStartedAt = performance.now();
       const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
-        first: PAGE_SIZE,
+        first: pageSize,
         after: state.endCursor ?? undefined,
         mediaType,
         mediaSubtypes: [],
         sortBy,
-        album: album?.id,
+        album: albumId,
+        resolveWithFullInfo,
       });
+      const lastFetchDurationMs = Math.round(performance.now() - fetchStartedAt);
+      const firstBatchAssetLocation = assets[0]?.location;
+      const batchLocationPreview =
+        state.endCursor == null
+          ? firstBatchAssetLocation != null
+            ? `${firstBatchAssetLocation.latitude}, ${firstBatchAssetLocation.longitude}`
+            : null
+          : state.batchLocationPreview;
 
       // Get the last asset currently in the state.
       const lastAsset = state.assets[state.assets.length - 1];
@@ -237,13 +264,25 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
           assets: ([] as MediaLibrary.Asset[]).concat(state.assets, assets),
           endCursor,
           hasNextPage,
+          lastFetchDurationMs,
+          batchLocationPreview,
         });
       }
     } finally {
       // Toggle this back to false in a finally to ensure we can reload later, even if an error ocurred.
       isLoadingAssets.current = false;
     }
-  }, [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, album?.id]);
+  }, [
+    state.endCursor,
+    state.hasNextPage,
+    state.assets,
+    state.batchLocationPreview,
+    mediaType,
+    sortBy,
+    albumId,
+    pageSize,
+    resolveWithFullInfo,
+  ]);
 
   // Fetch data whenever the state.fetching value is true.
   React.useEffect(() => {
@@ -257,8 +296,16 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   }, []);
 
   // Subscribe to state changes
+  const isFirstFocus = React.useRef(true);
   useFocusEffect(
     React.useCallback(() => {
+      // The details screen may delete or modify assets while this screen is unfocused
+      // (and its listener removed), so refresh whenever the screen regains focus.
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+      } else {
+        dispatch({ type: 'reset', refreshing: false });
+      }
       // When new media is added or removed, update the library
       const subscription = MediaLibrary.addListener((event) => {
         if (!event.hasIncrementalChanges) {
@@ -275,13 +322,12 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
   const onCellPress = React.useCallback(
     (asset: MediaLibrary.Asset) => {
-      navigation.navigate('MediaDetails', {
-        asset,
-        album,
-        onGoBack: refresh,
+      router.push({
+        pathname: '/apis/mediadetails',
+        params: { assetId: asset.id, albumId, albumTitle },
       });
     },
-    [navigation, album, refresh]
+    [albumId, albumTitle]
   );
 
   const renderRowItem: ListRenderItem<MediaLibrary.Asset> = React.useCallback(
@@ -301,7 +347,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
     return (
       <View style={styles.header}>
         <HeadingText style={styles.headerText}>
-          {album ? `Album: ${album.title}` : 'All albums'}
+          {albumId ? `Album: ${albumTitle}` : 'All albums'}
         </HeadingText>
 
         <View style={styles.headerButtons}>
@@ -311,9 +357,18 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
             onPress={toggleMediaType}
           />
           <Button style={styles.button} title={`Sort by key: ${sortBy}`} onPress={toggleSortBy} />
-        </View>
-        {accessPrivileges === 'limited' && (
-          <View style={styles.headerButtons}>
+          <View style={styles.pageSizeSelector}>
+            <BodyText style={styles.pageSizeLabel}>Page size</BodyText>
+            <SegmentedControl
+              style={styles.pageSizeControl}
+              values={PAGE_SIZE_OPTIONS.map(String)}
+              selectedIndex={PAGE_SIZE_OPTIONS.indexOf(
+                pageSize as (typeof PAGE_SIZE_OPTIONS)[number]
+              )}
+              onValueChange={(value) => setPageSize(Number(value))}
+            />
+          </View>
+          {accessPrivileges === 'limited' && (
             <Button
               style={styles.button}
               title="Change permissions"
@@ -325,11 +380,40 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
                 }
               }}
             />
-          </View>
+          )}
+          <Button
+            style={styles.button}
+            title={`Resolve with full info: ${resolveWithFullInfo}`}
+            onPress={toggleResolveWithFullInfo}
+          />
+        </View>
+        {state.lastFetchDurationMs != null && (
+          <BodyText style={styles.headerMetadata}>
+            {`Last fetch: ${state.lastFetchDurationMs} ms (${state.assets.length} assets loaded)`}
+          </BodyText>
+        )}
+        {state.batchLocationPreview != null && (
+          <BodyText style={styles.headerMetadata}>
+            {`First batch asset location: ${state.batchLocationPreview}`}
+          </BodyText>
         )}
       </View>
     );
-  }, [mediaType, album, sortBy, toggleMediaType, toggleSortBy]);
+  }, [
+    mediaType,
+    albumId,
+    albumTitle,
+    sortBy,
+    pageSize,
+    toggleMediaType,
+    toggleSortBy,
+    toggleResolveWithFullInfo,
+    resolveWithFullInfo,
+    accessPrivileges,
+    state.batchLocationPreview,
+    state.lastFetchDurationMs,
+    state.assets.length,
+  ]);
 
   const renderFooter = React.useCallback(() => {
     if (state.refreshing) {
@@ -386,6 +470,17 @@ const styles = StyleSheet.create({
   button: {
     marginHorizontal: 5,
   },
+  pageSizeSelector: {
+    marginHorizontal: 5,
+    alignItems: 'center',
+    gap: 6,
+  },
+  pageSizeLabel: {
+    fontSize: 12,
+  },
+  pageSizeControl: {
+    minWidth: 200,
+  },
   header: {
     paddingTop: 0,
     paddingBottom: 16,
@@ -398,6 +493,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     paddingVertical: 10,
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -408,5 +505,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerMetadata: {
+    marginTop: 8,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });

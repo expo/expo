@@ -2,8 +2,8 @@ package expo.modules.widgets
 
 import android.content.Context
 import android.content.Intent
-import io.github.jakex7.peek.emittables.PeekAction
-import io.github.jakex7.peek.emittables.actionSendBroadcast
+import androidx.glance.action.Action
+import androidx.glance.appwidget.action.actionSendBroadcast
 
 internal const val WIDGET_INTERACTION_ACTION = "expo.modules.widgets.ACTION_WIDGET_INTERACTION"
 internal const val WIDGET_INTERACTION_SOURCE_EXTRA = "expo.modules.widgets.extra.SOURCE"
@@ -14,13 +14,12 @@ internal data class WidgetInteraction(
   val target: String
 )
 
-internal fun WidgetInteraction.toPeekAction(context: Context): PeekAction {
+internal fun WidgetInteraction.toGlanceAction(context: Context): Action {
   val intent = Intent(WIDGET_INTERACTION_ACTION)
     .setComponent(widgetProviderComponentName(context, source))
     .putExtra(WIDGET_INTERACTION_SOURCE_EXTRA, source)
     .putExtra(WIDGET_INTERACTION_TARGET_EXTRA, target)
-  val requestCode = 31 * source.hashCode() + target.hashCode()
-  return actionSendBroadcast(intent, requestCode = requestCode)
+  return actionSendBroadcast(intent)
 }
 
 internal object WidgetsInteraction {

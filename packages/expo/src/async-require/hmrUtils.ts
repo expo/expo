@@ -1,6 +1,6 @@
 import * as devLoadingViewEmitter from '../devLoadingViewEmitter';
+import { getFullBundlerUrl as getFullBundlerUrlHelper } from '../utils/getFullBundlerUrl';
 import { HMRMetroBuildError } from './buildErrors';
-import { getFullBundlerUrl as getFullBundlerUrlHelper } from './getFullBundlerUrl';
 
 export function getFullBundlerUrl(_: {
   serverScheme?: string;

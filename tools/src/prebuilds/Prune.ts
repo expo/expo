@@ -14,6 +14,12 @@
  * With no names (or `all`) it scans the entire `.build` directory and cleans every cache on
  * disk — independent of package discovery, so it also catches packages that aren't part of
  * the default distributed set (e.g. `@expo/ui`). With explicit names it prunes just those.
+ *
+ * `--bundled` additionally removes each package's `prebuilds/` directory. Those are publish
+ * staging output, written by `bundleIOSPrebuilds` so `npm pack` ships them to consumers who
+ * have no `.build/`. In a monorepo checkout they are leftovers, and because the CocoaPods
+ * integration falls back to them whenever `.build/` is missing — without any staleness check
+ * — a stale one silently links month-old binaries against current source.
  */
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
@@ -21,7 +27,7 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { getPrecompileDir } from '../Directories';
+import { getPackagesDir, getPrecompileDir } from '../Directories';
 import logger from '../Logger';
 import { verifyAllPackagesAsync } from './Utils';
 
@@ -32,6 +38,8 @@ export type PruneOptions = {
   externalOnly?: boolean;
   /** Report what would be removed and how much it would free, without deleting anything. */
   dryRun?: boolean;
+  /** Also remove each package's bundled `prebuilds/` directory. Defaults to false. */
+  bundled?: boolean;
 };
 
 export type PruneResult = {
@@ -83,6 +91,25 @@ export async function findAllDerivedDataDirsAsync(): Promise<string[]> {
   return matches.filter(isDerivedDataDir);
 }
 
+export async function findBundledPrebuildDirsAsync(packagesRoot: string): Promise<string[]> {
+  if (!(await fs.pathExists(packagesRoot))) {
+    return [];
+  }
+
+  const matches = await glob(['*/prebuilds', '@*/*/prebuilds'], {
+    cwd: packagesRoot,
+    absolute: true,
+  });
+  const dirs = await Promise.all(
+    matches.map(async (dir) => ((await fs.stat(dir)).isDirectory() ? dir : null))
+  );
+  return dirs.filter((dir): dir is string => dir !== null);
+}
+
+function labelForBundledPrebuildDir(dir: string): string {
+  return path.relative(getPackagesDir(), path.dirname(dir));
+}
+
 /** Returns the size of a directory in kilobytes via `du -sk`, or 0 if it can't be measured. */
 async function getDirSizeKbAsync(dir: string): Promise<number> {
   try {
@@ -127,13 +154,25 @@ export async function prunePrebuildBuildFilesAsync(
 ): Promise<PruneResult> {
   const pruneEverything = selector.length === 0 || (selector.length === 1 && selector[0] === 'all');
 
-  // Map each DerivedData dir to a display label (package name).
-  const targets: { label: string; dir: string }[] = [];
+  const bundled = options.bundled ?? false;
+
+  const targets: { label: string; dir: string; display: string }[] = [];
+  const relativeToBuildCache = (dir: string) => path.relative(getBuildCacheRoot(), dir);
+  const relativeToPackages = (dir: string) => path.relative(getPackagesDir(), dir);
 
   if (pruneEverything) {
     logger.info('🔎 Scanning the prebuild cache for build files to prune...');
     for (const dir of await findAllDerivedDataDirsAsync()) {
-      targets.push({ label: labelForDerivedDataDir(dir), dir });
+      targets.push({ label: labelForDerivedDataDir(dir), dir, display: relativeToBuildCache(dir) });
+    }
+    if (bundled) {
+      for (const dir of await findBundledPrebuildDirsAsync(getPackagesDir())) {
+        targets.push({
+          label: labelForBundledPrebuildDir(dir),
+          dir,
+          display: relativeToPackages(dir),
+        });
+      }
     }
   } else {
     const packages = await verifyAllPackagesAsync(
@@ -144,7 +183,17 @@ export async function prunePrebuildBuildFilesAsync(
     );
     for (const pkg of packages) {
       for (const dir of await findDerivedDataDirsAsync(pkg.buildPath)) {
-        targets.push({ label: pkg.packageName, dir });
+        targets.push({ label: pkg.packageName, dir, display: relativeToBuildCache(dir) });
+      }
+      if (bundled) {
+        const bundledDir = path.join(pkg.path, 'prebuilds');
+        if (await fs.pathExists(bundledDir)) {
+          targets.push({
+            label: pkg.packageName,
+            dir: bundledDir,
+            display: relativeToPackages(bundledDir),
+          });
+        }
       }
     }
   }
@@ -153,20 +202,20 @@ export async function prunePrebuildBuildFilesAsync(
   let freedKb = 0;
   const prunedPackages = new Set<string>();
 
-  for (const { label, dir } of targets) {
+  for (const { label, dir, display } of targets) {
     const kb = await getDirSizeKbAsync(dir);
     freedKb += kb;
     prunedPackages.add(label);
     const action = dryRun ? 'would remove' : 'removing';
-    logger.info(
-      `🧹 ${chalk.green(label)}: ${action} ${chalk.gray(
-        path.relative(getBuildCacheRoot(), dir)
-      )} (${formatSize(kb)})`
-    );
+    logger.info(`🧹 ${chalk.green(label)}: ${action} ${chalk.gray(display)} (${formatSize(kb)})`);
     if (!dryRun) {
       await fs.remove(dir);
     }
   }
+
+  const kept = bundled
+    ? 'Build-cache XCFrameworks kept, bundled prebuilds removed.'
+    : 'XCFrameworks kept.';
 
   if (targets.length === 0) {
     logger.info('✨ Nothing to prune — no build files found. XCFrameworks are untouched.');
@@ -180,7 +229,7 @@ export async function prunePrebuildBuildFilesAsync(
     logger.info(
       `\n✅ Pruned ${chalk.cyan(targets.length)} build folder(s) across ${chalk.cyan(
         prunedPackages.size
-      )} package(s), freeing ${chalk.green(formatSize(freedKb))}. XCFrameworks kept.`
+      )} package(s), freeing ${chalk.green(formatSize(freedKb))}. ${kept}`
     );
   }
 

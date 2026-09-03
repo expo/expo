@@ -150,7 +150,8 @@ struct JavaScriptPromiseTests {
       const promise = Promise.resolve(42);
       promise.then = undefined;
       promise;
-      """)
+      """
+    )
 
     #expect(throws: Error.self) {
       _ = try promiseValue.getPromise()
@@ -323,7 +324,7 @@ struct JavaScriptPromiseTests {
 
     // Resolve from a task
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.resolve(JavaScriptValue(runtime, 99))
     }
 
@@ -341,7 +342,7 @@ struct JavaScriptPromiseTests {
     // Reject after the await has already suspended on the pending promise. This must throw, not
     // resume the awaiting caller with the rejection value as if it were fulfilled.
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.reject(TestError())
     }
 

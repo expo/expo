@@ -50,7 +50,7 @@ let maxJavaScriptDateMilliseconds: Double = 8_640_000_000_000_000
 /// faithful to `new Date(number)`; the `Date`/string branches pass an already-clipped `getTime()` through.
 @usableFromInline
 func dateFromMilliseconds(_ milliseconds: Double) throws -> Date {
-  guard milliseconds.isFinite, abs(milliseconds) <= maxJavaScriptDateMilliseconds else {
+  guard milliseconds.isFinite, milliseconds.magnitude <= maxJavaScriptDateMilliseconds else {
     throw InvalidDateException()
   }
   return Date(timeIntervalSince1970: milliseconds.rounded(.towardZero) / 1000.0)

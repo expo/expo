@@ -118,6 +118,15 @@ export type LiveActivityEnvironment = {
    */
   isActivityFullscreen?: boolean;
   /**
+   * Whether the activity's content is out of date, based on the `staleDate` passed to
+   * `LiveActivityFactory.start()` or `LiveActivity.update()`.
+   *
+   * Use it to de-emphasize content the system can no longer vouch for. It becomes `true`
+   * without the app running, so a Live Activity can degrade while the app is suspended.
+   * @platform iOS 16.2+
+   */
+  isStale?: boolean;
+  /**
    * A Boolean value that indicates whether the Live Activity update synchronization rate is reduced.
    * @platform iOS 18+
    */
@@ -307,6 +316,7 @@ export declare class NativeLiveActivityFactory extends SharedObject {
 }
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
+  getId(): string;
   update(props?: string, staleDate?: number): Promise<void>;
   end(
     dismissalPolicy?: string,

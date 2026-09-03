@@ -59,7 +59,8 @@ val cameraEvents = arrayOf(
   "onFacesDetected",
   "onFaceDetectionError",
   "onPictureSaved",
-  "onAvailableLensesChanged"
+  "onAvailableLensesChanged",
+  "onRecordingProgress"
 )
 
 val cameraPermissions = if (VRUtilities.isQuest()) {

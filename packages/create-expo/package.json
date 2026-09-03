@@ -1,6 +1,6 @@
 {
   "name": "create-expo",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "description": "Create universal Expo apps",
   "keywords": [
     "expo",
@@ -21,9 +21,15 @@
     "build",
     "template"
   ],
-  "main": "build",
+  "main": "build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
+    "prebuild": "expo-module clean",
     "build": "ncc build ./src/index.ts -o build/",
+    "prebuild:prod": "expo-module clean",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -54,7 +60,7 @@
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "memfs": "^3.2.0",
-    "multitars": "^1.0.0",
+    "multitars": "^1.0.2",
     "nock": "^14.0.10",
     "ora": "3.4.0",
     "picomatch": "^2.3.2",

@@ -52,6 +52,7 @@ export * from './ScrollView';
 export * from './Shapes';
 export * from './Mask';
 export * from './Overlay';
+export * from './Background';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';

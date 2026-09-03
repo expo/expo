@@ -50,7 +50,7 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     action: iosSimulatorBuildAsync,
   },
   'ios-simulator-upload': {
-    name: '[internal] Upload a new iOS Client simulator to expo/expo-go-releases repo and updates www endpoint',
+    name: '[internal] Upload a new iOS Client simulator build and device IPA to expo/expo-go-releases repo and updates www endpoint',
     actionId: 'ios-simulator-upload',
     action: iosSimulatorUploadAsync,
   },
@@ -135,6 +135,10 @@ function getAndroidApkUrl(appVersion: string): string {
 
 function getIosSimulatorUrl(appVersion: string): string {
   return `https://github.com/${REPO_OWNER}/${RELEASES_REPO_NAME}/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.tar.gz`;
+}
+
+function getIosIpaUrl(appVersion: string): string {
+  return `https://github.com/${REPO_OWNER}/${RELEASES_REPO_NAME}/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.ipa`;
 }
 
 async function confirmPromptIfOverridingRemoteFileAsync(
@@ -582,6 +586,33 @@ async function iosSimulatorUploadAsync() {
       spinner.fail('Upload failed!');
       throw error;
     }
+
+    await confirmPromptIfOverridingRemoteFileAsync(getIosIpaUrl(appVersion), appVersion);
+    const ipaPath = await downloadBuildArtifactAsync(
+      projectDir,
+      'ios',
+      appVersion,
+      sdkVersion,
+      RELEASE_BUILD_PROFILE,
+      'ipa'
+    );
+
+    const ipaSpinner = ora(`Uploading to GitHub: ${path.basename(ipaPath)}...`).start();
+    try {
+      const ipaRes = await uploadReleaseAssetAsync(
+        repoOwner,
+        repoName,
+        release.data.id,
+        path.basename(ipaPath),
+        await fs.readFile(ipaPath)
+      );
+      ipaSpinner.succeed(`Upload completed successfully! ${ipaRes.data.browser_download_url}`);
+    } catch (error) {
+      ipaSpinner.fail('IPA upload failed!');
+      throw error;
+    } finally {
+      await fs.unlink(ipaPath);
+    }
   } catch (error: any) {
     logger.error(`Error creating release: ${error.message}`);
     throw error;
@@ -608,7 +639,9 @@ async function downloadBuildArtifactAsync(
   projectDir: string,
   platform: 'ios' | 'android',
   appVersion: string,
-  sdkVersion: string
+  sdkVersion: string,
+  buildProfile: string = PUBLISH_CLIENT_BUILD_PROFILE,
+  extension: string = platform === 'android' ? 'apk' : 'tar.gz'
 ) {
   const buildInfo = await spawnAsync(
     'eas',
@@ -623,7 +656,7 @@ async function downloadBuildArtifactAsync(
       '--status',
       'finished',
       '--profile',
-      PUBLISH_CLIENT_BUILD_PROFILE,
+      buildProfile,
       '--sdk-version',
       sdkVersion,
     ],
@@ -632,7 +665,7 @@ async function downloadBuildArtifactAsync(
       stdio: 'pipe',
       env: {
         ...process.env,
-        EAS_BUILD_PROFILE: PUBLISH_CLIENT_BUILD_PROFILE,
+        EAS_BUILD_PROFILE: buildProfile,
       },
     }
   );
@@ -690,10 +723,8 @@ async function downloadBuildArtifactAsync(
           if (!input.startsWith('http')) {
             return 'URL must start with http:// or https://';
           }
-          if (platform === 'android' && !input.endsWith('.apk')) {
-            return 'URL must end with .apk';
-          } else if (platform === 'ios' && !input.endsWith('.tar.gz')) {
-            return 'URL must end with .tar.gz';
+          if (!input.endsWith(`.${extension}`)) {
+            return `URL must end with .${extension}`;
           }
           return true;
         },
@@ -707,10 +738,7 @@ async function downloadBuildArtifactAsync(
     buildUrl = selectedBuild.artifacts.buildUrl;
   }
 
-  const archivePath = path.join(
-    projectDir,
-    `${getAppName(appVersion)}.${platform === 'android' ? 'apk' : 'tar.gz'}`
-  );
+  const archivePath = path.join(projectDir, `${getAppName(appVersion)}.${extension}`);
 
   logger.info(`Downloading build from: ${buildUrl}`);
   await spawnAsync('curl', ['-L', '-o', archivePath, buildUrl], {

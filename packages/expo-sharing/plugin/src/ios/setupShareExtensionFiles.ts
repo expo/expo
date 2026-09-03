@@ -1,10 +1,10 @@
 import fs from 'fs';
 import * as path from 'path';
 
+import { ActivationRule } from '../sharingPlugin.types';
 import { getSharedFilesPath, getTemplateFilesPath } from '../utils';
 import { createEntitlementsFile } from './createEntitlements';
 import createInfoPlistFile from './createInfoPlistFile';
-import { ActivationRule } from '../sharingPlugin.types';
 
 export type ProjectFiles = {
   swiftFiles: string[];

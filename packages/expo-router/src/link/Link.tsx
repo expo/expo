@@ -7,7 +7,7 @@ import { LinkAppleZoomTarget } from './zoom/link-apple-zoom-target';
 
 export const Link = Object.assign(
   /**
-   * Component that renders a link using [`href`](#hreft) to another route.
+   * Component that renders a link using [`href`](#href) to another route.
    * By default, it accepts children and wraps them in a `<Text>` component.
    *
    * Uses an anchor tag (`<a>`) on web and performs a client-side navigation to preserve
@@ -32,6 +32,7 @@ export const Link = Object.assign(
    *}
    * ```
    */
+  // TODO(@ubax): Expose pending status scoped to this link's navigation.
   function Link(props: LinkProps) {
     // Re-exporting ExpoLink here so that Link.* can be used in server components.
     return <ExpoLink {...props} />;

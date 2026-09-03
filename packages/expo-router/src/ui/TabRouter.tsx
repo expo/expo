@@ -5,22 +5,20 @@ import {
   type TabActionType as RNTabActionType,
   type TabNavigationState,
   type TabRouterOptions as RNTabRouterOptions,
-  type StackActionType,
-  type NavigationAction,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
-import type { TriggerMap } from './common';
+import { ensureStateHistory } from '../react-navigation/routers/TabRouter';
+import { attachRouteState, type RouteState } from '../react-navigation/routers/attachRouteState';
+import { ensureStateType } from '../react-navigation/routers/ensureStateType';
+import { getTabRoute, type TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
 };
 
-type ReplaceAction = Extract<StackActionType, { type: 'REPLACE' }>;
-
 export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
-  | ReplaceAction
   | {
       type: 'JUMP_TO';
       source?: string;
@@ -29,6 +27,7 @@ export type ExpoTabActionType =
         name: string;
         resetOnFocus?: boolean;
         params?: object;
+        state?: RouteState;
       };
     };
 
@@ -40,59 +39,21 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
     ExpoTabActionType | CommonNavigationAction
   > = {
     ...rnTabRouter,
-    getStateForAction(state, action, options) {
-      if (isReplaceAction(action)) {
-        action = {
-          ...action,
-          type: 'JUMP_TO',
-        };
-        // Generate the state as if we were using JUMP_TO
-        const nextState = rnTabRouter.getStateForAction(state, action, options);
-
-        if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
-          return null;
-        }
-
-        // We can assert that nextState is TabNavigationState here, because we checked for index and history above
-        state = nextState as TabNavigationState<ParamListBase>;
-
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (state.index !== 0) {
-          const previousIndex = state.index - 1;
-
-          state = {
-            ...state,
-            key: `${state.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...state.history.slice(0, previousIndex),
-              ...state.history.splice(state.index),
-            ],
-          };
-        }
-      } else if (action.type !== 'JUMP_TO') {
-        return rnTabRouter.getStateForAction(state, action, options);
+    getStateForAction(state, action, routerConfigOptions) {
+      if (action.type !== 'JUMP_TO') {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      const route = state.routes.find((route) => route.name === action.payload.name);
+      const { route, isSwitching } = getTabRoute(state, action.payload.name);
 
-      if (!route || !state) {
-        // This shouldn't occur, but lets just hand it off to the next navigator in case.
-        return null;
+      if (!route) {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      // We should reset if this is the first time visiting the route
-      let shouldReset = !state.history?.some((item) => item.key === route?.key) && !route.state;
-
-      if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
-        shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
-      }
+      const shouldReset =
+        'resetOnFocus' in action.payload && Boolean(action.payload.resetOnFocus && isSwitching);
 
       if (shouldReset) {
-        options.routeParamList[route.name] = {
-          ...options.routeParamList[route.name],
-        };
         state = {
           ...state,
           routes: state.routes.map((r) => {
@@ -102,16 +63,26 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
             return { ...r, state: undefined };
           }),
         };
-        return rnTabRouter.getStateForAction(state, action, options);
-      } else {
-        return rnTabRouter.getStateForRouteFocus(state, route.key);
       }
+
+      if (!isSwitching && route.state !== undefined) {
+        const selectedRoute = attachRouteState(route, action);
+        if (selectedRoute === route) {
+          state = ensureStateType(
+            ensureStateHistory(
+              state,
+              options.backBehavior ?? 'firstRoute',
+              options.initialRouteName
+            ),
+            'tab'
+          );
+          return { state, affectedRouteKey: route.key };
+        }
+      }
+
+      return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
     },
   };
 
   return router;
-}
-
-function isReplaceAction(action: NavigationAction): action is ReplaceAction {
-  return action.type === 'REPLACE';
 }

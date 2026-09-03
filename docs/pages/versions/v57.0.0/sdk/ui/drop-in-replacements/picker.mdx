@@ -8,6 +8,8 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `Picker` component with an API compatible with `@react-native-picker/picker`. It uses a SwiftUI wheel `Picker` on iOS, a Material 3 `ExposedDropdownMenuBox` on Android, and a native `<select>` element on web.
 
@@ -17,6 +19,21 @@ Under the hood this component wraps the platform-specific `@expo/ui` primitives:
 - **iOS**: [SwiftUI Picker](../swift-ui/picker) with `pickerStyle('wheel')`
 
 If you need lower-level control, use those primitives directly.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-picker/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-picker/android-dark.webp',
+    alt: 'A dropdown field showing Java',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-picker/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-picker/ios-dark.webp',
+    alt: 'A wheel picker with Java selected',
+  }}
+/>
 
 ## Installation
 
@@ -32,13 +49,27 @@ If you need lower-level control, use those primitives directly.
 
 ## Basic usage
 
-```tsx PickerExample.tsx
+<ComponentExample
+  title="PickerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-picker-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-picker-basic-android-dark.webp',
+    alt: 'A dropdown field showing Java above a Selected label',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-picker-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-picker-basic-ios-dark.webp',
+    alt: 'A wheel picker with Java selected above a Selected label',
+  }}>
+
+```tsx
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, useColorScheme, View } from 'react-native';
 import { Picker } from '@expo/ui/community/picker';
 
 export default function PickerExample() {
   const [language, setLanguage] = useState('java');
+  const colorScheme = useColorScheme();
 
   return (
     <View>
@@ -48,11 +79,15 @@ export default function PickerExample() {
         <Picker.Item label="Objective C" value="objc" />
         <Picker.Item label="Swift" value="swift" />
       </Picker>
-      <Text>Selected: {language}</Text>
+      <Text style={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
+        Selected: {language}
+      </Text>
     </View>
   );
 }
 ```
+
+</ComponentExample>
 
 ## Per-item styling and state
 
@@ -60,7 +95,20 @@ Pass a `style` to `Picker.Item` to control `color`, `backgroundColor`, `fontFami
 
 `fontFamily` accepts iOS font names (for example, `'Menlo'`) on iOS, and Compose generic families (`'monospace'`, `'serif'`, `'sansSerif'`, `'cursive'`) or fonts loaded with [`expo-font`](../../font) on Android.
 
-```tsx StyledPickerExample.tsx
+<ComponentExample
+  title="StyledPickerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-picker-styled-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-picker-styled-android-dark.webp',
+    alt: 'An open dropdown with each language in its own color and font',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-picker-styled-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-picker-styled-ios-dark.webp',
+    alt: 'A wheel picker with each language in its own color and font',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Platform } from 'react-native';
 import { Picker } from '@expo/ui/community/picker';
@@ -100,11 +148,26 @@ export default function StyledPickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Imperative focus and blur (Android)
 
 Use a ref to programmatically open and close the dropdown on Android. On iOS, these methods are no-ops because the wheel picker is always visible.
 
-```tsx RefPickerExample.tsx
+<ComponentExample
+  title="RefPickerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-picker-ref-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-picker-ref-android-dark.webp',
+    alt: 'A dropdown opened by the button above it',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-picker-ref-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-picker-ref-ios-dark.webp',
+    alt: 'A button above a wheel picker with Java selected',
+  }}>
+
+```tsx
 import { useRef, useState } from 'react';
 import { Button } from 'react-native';
 import { Picker, type PickerRef } from '@expo/ui/community/picker';
@@ -133,6 +196,8 @@ export default function RefPickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -140,3 +205,5 @@ import { Picker } from '@expo/ui/community/picker';
 ```
 
 <APISection packageName="expo-ui/community/picker" apiName="Picker" />
+
+</PlatformTabsGroup>

@@ -50,12 +50,12 @@ class ExponentNetwork constructor(
     return clientBuilder
   }
 
-  val cache: Cache
-    get() {
-      val cacheSize = 50 * 1024 * 1024 // 50 MiB
-      val directory = File(context.cacheDir, CACHE_DIR)
-      return Cache(directory, cacheSize.toLong())
-    }
+  // One instance for the whole process. OkHttp's Cache owns an exclusive DiskLruCache over its
+  // directory, so a second instance on the same path risks corrupting it.
+  val cache: Cache by lazy {
+    val cacheSize = 50 * 1024 * 1024 // 50 MiB
+    Cache(File(context.cacheDir, CACHE_DIR), cacheSize.toLong())
+  }
 
   companion object {
     private val TAG = ExponentNetwork::class.java.simpleName

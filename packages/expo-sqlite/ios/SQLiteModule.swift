@@ -516,16 +516,7 @@ public final class SQLiteModule: Module {
       return
     }
     let path = try ensureDatabasePathExists(path: databasePath).toFilePath()
-
-    if !FileManager.default.fileExists(atPath: path) {
-      throw DatabaseNotFoundException(path)
-    }
-
-    do {
-      try FileManager.default.removeItem(atPath: path)
-    } catch {
-      throw DeleteDatabaseFileException(path)
-    }
+    try DatabaseFileUtils.deleteDatabaseFiles(atPath: path)
   }
 
   private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {

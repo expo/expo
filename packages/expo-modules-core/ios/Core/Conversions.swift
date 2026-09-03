@@ -34,6 +34,23 @@ public struct Conversions {
     }
   }
 
+  /**
+   Compares two prop values for equality, to tell an actual prop change from a re-delivery of the
+   same value.
+   */
+  static func areValuesEqual(_ lhs: Any?, _ rhs: Any?) -> Bool {
+    switch (lhs, rhs) {
+    case (nil, nil):
+      return true
+    case let (lhsValue as AnyHashable, rhsValue as AnyHashable):
+      return lhsValue == rhsValue
+    case let (lhsValue as NSObjectProtocol, rhsValue as NSObjectProtocol):
+      return lhsValue.isEqual(rhsValue)
+    default:
+      return false
+    }
+  }
+
   static func fromNSObject(_ object: Any) -> Any {
     switch object {
     case let object as NSArray:

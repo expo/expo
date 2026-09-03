@@ -193,9 +193,34 @@ export default function ImagePickerExample() {
     }
   };
 
+  const takePhoto = async () => {
+    // Camera access always requires the user's permission.
+    // Taking a photo also requires a device with a camera. The iOS Simulator
+    // does not have one, so use a physical device to test this button.
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'Permission to access the camera is required.');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
+      <Button title="Take a photo" onPress={takePhoto} />
       {image && <Image source={{ uri: image }} style={styles.image} />}
     </View>
   );

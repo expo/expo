@@ -7,7 +7,10 @@ import { expoInlineManifestPlugin } from '../plugins/expo-inline-manifest-plugin
 import { expoRouterBabelPlugin } from '../plugins/expo-router-plugin';
 import { expoImportMetaTransformPluginFactory } from '../plugins/import-meta-transform-plugin';
 import { expoInlineEnvVars } from '../plugins/inline-env-vars';
-import { lazyDecoratorsPlugin } from '../plugins/lazy-decorators-plugin';
+import {
+  lazyDecoratorsPlugins,
+  type LazyDecoratorsOptions,
+} from '../plugins/lazy-decorators-plugin';
 import { environmentRestrictedReactAPIsPlugin } from '../plugins/restricted-react-api-plugin';
 import { reactServerActionsPlugin } from '../plugins/server-actions-plugin';
 import { serverDataLoadersPlugin } from '../plugins/server-data-loaders-plugin';
@@ -33,7 +36,7 @@ export interface ExpoConfigOptions {
   baseUrl: string;
   bundler: 'metro' | 'webpack' | null;
   inlineEnvironmentVariables?: boolean;
-  decorators: { legacy?: boolean; version?: number } | false | undefined;
+  lazyDecorators: LazyDecoratorsOptions;
   reanimated: boolean | undefined;
   worklets: boolean | undefined;
   expoUi: boolean | undefined;
@@ -59,18 +62,6 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   const reactCompilerPlugin = getReactCompilerPlugin(options);
   if (reactCompilerPlugin != null) {
     plugins.push(reactCompilerPlugin);
-  }
-
-  // TODO(@kitten): Remove or add non-hermes config
-  if (options.engine !== 'hermes') {
-    // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
-    // getters and setters in spread objects. We need to add this plugin ourself without that option.
-    // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-    plugins.push([
-      require('@babel/plugin-transform-object-rest-spread'),
-      // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-      { loose: true, useBuiltIns: true },
-    ]);
   }
 
   const inlines = getInlinesFromOptions(options);
@@ -149,10 +140,8 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   const polyfillImportMeta = options.transformImportMeta !== false;
   plugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
 
-  // TODO: Remove
-  if (options.decorators !== false) {
-    plugins.push([lazyDecoratorsPlugin, options.decorators ?? { legacy: true }]);
-  }
+  // TODO(@kitten): Remove / deprecated
+  plugins.push(...lazyDecoratorsPlugins(options.lazyDecorators));
 
   // Automatically add worklets or reanimated plugin when package is installed.
   if (options.worklets !== false && options.reanimated !== false) {

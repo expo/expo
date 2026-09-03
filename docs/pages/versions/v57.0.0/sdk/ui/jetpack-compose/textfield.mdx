@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`TextInput`](../universal/textinput) — it renders the appropriate native component per platform.
@@ -38,8 +39,19 @@ Expo UI provides three text field components that match the official Jetpack Com
 
 Bind a [`useNativeState`](usenativestate) observable to `value`. The field tracks the user's input on its own, and you read the current value from `text.value`. The filled style shown here is the default Material3 text input.
 
-```tsx UncontrolledTextFieldExample.tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="UncontrolledTextFieldExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-uncontrolled-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-uncontrolled-android-dark.webp"
+  alt="A filled Material 3 text field labelled Username">
+
+```tsx
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function UncontrolledTextFieldExample() {
   const text = useNativeState('');
@@ -56,14 +68,27 @@ export default function UncontrolledTextFieldExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Controlled text field
 
 Pass a [`useNativeState`](usenativestate) observable as `value` and an `onValueChange` worklet to transform or validate input before writing it back. The example below uppercases the text as it is typed.
 
 > **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
-```tsx ControlledTextFieldExample.tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="ControlledTextFieldExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-controlled-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-controlled-android-dark.webp"
+  alt="A text field labelled Name containing ADA LOVELACE, uppercased as it was typed">
+
+```tsx
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 import { useCallback } from 'react';
 
 export default function ControlledTextFieldExample() {
@@ -89,12 +114,25 @@ export default function ControlledTextFieldExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Outlined text field
 
 Use `OutlinedTextField` for a text field with a border outline instead of a filled background.
 
-```tsx OutlinedTextFieldExample.tsx
-import { Host, OutlinedTextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="OutlinedTextFieldExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-outlined-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-outlined-android-dark.webp"
+  alt="A focused outlined text field with the Email label in the border notch and a placeholder">
+
+```tsx
+import {
+  Host,
+  OutlinedTextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function OutlinedTextFieldExample() {
   const text = useNativeState('');
@@ -114,12 +152,26 @@ export default function OutlinedTextFieldExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Basic text field
 
 `BasicTextField` is the unstyled Compose primitive, with no container, indicator, or padding. Style it yourself with [modifiers](modifiers) and supply decoration through `DecorationBox`, placing `InnerTextField` where the editable text should render. Wrap placeholder content in `Placeholder` to have it shown only while the field is empty, toggled natively from the field's text.
 
-```tsx BasicTextFieldExample.tsx
-import { Host, BasicTextField, Box, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="BasicTextFieldExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-basic-android-dark.webp"
+  alt="An unstyled text field drawn as a full-width rounded grey pill with a Search placeholder">
+
+```tsx
+import {
+  Host,
+  BasicTextField,
+  Box,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 import {
   background,
   clip,
@@ -132,7 +184,9 @@ export default function BasicTextFieldExample() {
   const value = useNativeState('');
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <BasicTextField
         cursorColor="#7c3aed"
         value={value}
@@ -156,12 +210,25 @@ export default function BasicTextFieldExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Slots
 
 Both `TextField` and `OutlinedTextField` support 7 composable slots that match the Compose API: `Label`, `Placeholder`, `LeadingIcon`, `TrailingIcon`, `Prefix`, `Suffix`, and `SupportingText`.
 
-```tsx TextFieldSlotsExample.tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="TextFieldSlotsExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-slots-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-slots-android-dark.webp"
+  alt="A focused text field showing a money icon, Price label, dollar prefix, placeholder, USD suffix, and supporting text">
+
+```tsx
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function TextFieldSlotsExample() {
   const text = useNativeState('');
@@ -193,12 +260,25 @@ export default function TextFieldSlotsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Keyboard options
 
 Use the `keyboardOptions` prop to configure the keyboard type, capitalization, auto-correct, and IME action.
 
-```tsx KeyboardOptionsExample.tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="KeyboardOptionsExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-keyboard-options-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-keyboard-options-android-dark.webp"
+  alt="A focused email field above the email keyboard, which shows a dedicated at-sign key and a done action">
+
+```tsx
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function KeyboardOptionsExample() {
   const text = useNativeState('');
@@ -223,12 +303,25 @@ export default function KeyboardOptionsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Keyboard actions
 
 Use the `keyboardActions` prop to handle IME action button presses. The triggered callback depends on the `imeAction` set in `keyboardOptions`. Each callback receives the current text value.
 
-```tsx KeyboardActionsExample.tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="KeyboardActionsExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-keyboard-actions-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-keyboard-actions-android-dark.webp"
+  alt="A focused search field above a keyboard whose action key is a magnifying glass">
+
+```tsx
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function KeyboardActionsExample() {
   const text = useNativeState('');
@@ -251,11 +344,19 @@ export default function KeyboardActionsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Imperative ref
 
 Use a ref to imperatively set text, clear the field, change the selection, or move focus.
 
-```tsx ImperativeRefExample.tsx
+<ComponentExample
+  title="ImperativeRefExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-imperative-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-imperative-android-dark.webp"
+  alt="A text field above five buttons: Set text, Clear, Select first word, Focus, and Blur">
+
+```tsx
 import { useRef } from 'react';
 import {
   Host,
@@ -281,8 +382,11 @@ export default function ImperativeRefExample() {
             <Text>Name</Text>
           </TextField.Label>
         </TextField>
-        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
-          <Button onClick={() => ref.current?.setText('Hello world')}>
+        <Row
+          horizontalArrangement={{ spacedBy: 8 }}
+          modifiers={[padding(8, 0, 0, 0)]}>
+          <Button
+            onClick={() => ref.current?.setText('Hello world')}>
             <Text>Set text</Text>
           </Button>
           <Button onClick={() => ref.current?.clear()}>
@@ -292,7 +396,9 @@ export default function ImperativeRefExample() {
             <Text>Select first word</Text>
           </Button>
         </Row>
-        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
+        <Row
+          horizontalArrangement={{ spacedBy: 8 }}
+          modifiers={[padding(8, 0, 0, 0)]}>
           <Button onClick={() => ref.current?.focus()}>
             <Text>Focus</Text>
           </Button>
@@ -306,39 +412,60 @@ export default function ImperativeRefExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Worklet text masking
 
 When `onValueChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `value` and `selection` from the worklet to keep the cursor at the end of the formatted value.
 
 > **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
-```tsx WorkletPhoneMaskExample.tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="WorkletPhoneMaskExample.tsx"
+  src="/static/images/expo-ui/examples/composetextfield-worklet-mask-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetextfield-worklet-mask-android-dark.webp"
+  alt="A full-width text field showing 2125559876 masked as a formatted phone number">
+
+```tsx
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
-import { useEffectEvent } from 'react';
+import { useCallback } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const phone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
 
-  const handleValueChange = useEffectEvent((v: string) => {
-    'worklet';
-    const digits = v.replace(/\D/g, '').slice(0, 10);
-    let formatted = digits;
-    if (digits.length > 6) {
-      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-    } else if (digits.length > 3) {
-      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-    }
-    if (formatted !== v) {
-      phone.value = formatted;
-      // Snaps to end for demo. Real masks need smarter cursor handling.
-      selection.value = { start: formatted.length, end: formatted.length };
-    }
-  });
+  const handleValueChange = useCallback(
+    (v: string) => {
+      'worklet';
+      const digits = v.replace(/\D/g, '').slice(0, 10);
+      let formatted = digits;
+      if (digits.length > 6) {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      } else if (digits.length > 3) {
+        formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+      }
+      if (formatted !== v) {
+        phone.value = formatted;
+        // Snaps to end for demo. Real masks need smarter cursor handling.
+        selection.value = {
+          start: formatted.length,
+          end: formatted.length,
+        };
+      }
+    },
+    [phone, selection]
+  );
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <TextField
         value={phone}
         selection={selection}
@@ -354,10 +481,19 @@ export default function WorkletPhoneMaskExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
-import { TextField, OutlinedTextField, BasicTextField } from '@expo/ui/jetpack-compose';
+import {
+  TextField,
+  OutlinedTextField,
+  BasicTextField,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/textfield" apiName="TextField" />
+<APISection
+  packageName="expo-ui/jetpack-compose/textfield"
+  apiName="TextField"
+/>

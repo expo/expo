@@ -47,6 +47,14 @@ describe('useBuildHref (unit)', () => {
     expect(result.current(route('feed'))).toBe('/resolved');
   });
 
+  it('accepts a route without a key', () => {
+    const { result } = renderHook(() => useBuildHref(), {
+      wrapper: withFocusedState(undefined),
+    });
+
+    expect(result.current({ name: 'feed' })).toBe('/resolved');
+  });
+
   it('grafts the route as the deepest focused route', () => {
     const { result } = renderHook(() => useBuildHref(), {
       wrapper: withFocusedState({

@@ -2,7 +2,7 @@ import { fetchThenEvalAsync } from '../fetchThenEval';
 import HMRClient from '../hmr';
 import { loadBundleAsync } from '../loadBundle';
 
-jest.mock('../getDevServer');
+jest.mock('../../utils/getDevServer');
 
 jest.mock('../fetchThenEval', () => ({
   fetchThenEvalAsync: jest.fn(async (): Promise<void> => {}),

@@ -46,9 +46,11 @@ export async function getExpoConfigSourcesAsync(
     'expo-splash-screen'
   );
   const fontPluginProps = getConfigPluginProps<{
-    // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts
+    // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts and must stay in sync with it
     fonts?: string[];
-    android?: { fonts?: (string | { fontDefinitions: { path: string }[] })[] };
+    android?: {
+      fonts?: (string | { path?: string; fontDefinitions: { path?: string }[] })[];
+    };
     ios?: { fonts?: string[] };
   }>(expoConfig, 'expo-font');
 
@@ -58,7 +60,11 @@ export async function getExpoConfigSourcesAsync(
     ...(isIos ? (fontPluginProps?.ios?.fonts ?? []) : []),
     ...(isAndroid
       ? (fontPluginProps?.android?.fonts ?? []).flatMap((f) =>
-          typeof f === 'string' ? [f] : (f.fontDefinitions ?? []).map((d) => d.path)
+          typeof f === 'string'
+            ? [f]
+            : // When a variable font file backs several definitions,
+              // a family may name the file path once instead of each definition repeating it
+              (f.fontDefinitions ?? []).map((d) => d.path ?? f.path)
         )
       : []),
 
@@ -287,7 +293,10 @@ export async function createHashSourceExternalFileAsync({
 }
 
 export async function getEasBuildSourcesAsync(projectRoot: string, options: NormalizedOptions) {
-  const files = ['eas.json', '.easignore'];
+  const files = [
+    ...(options.sourceSkips & SourceSkips.EasJson ? [] : ['eas.json']),
+    ...(options.sourceSkips & SourceSkips.Easignore ? [] : ['.easignore']),
+  ];
   const results = (
     await Promise.all(
       files.map(async (file) => {

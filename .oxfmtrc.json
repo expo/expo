@@ -17,7 +17,10 @@
     "**/.next/**",
     "**/assets/**",
     "**/android/**",
-    "**/ios/**"
+    "**/ios/**",
+    "!**/src/**/android/**",
+    "!**/src/**/ios/**",
+    "react-native-lab/**"
   ],
   "sortImports": {
     "groups": [

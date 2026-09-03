@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useTheme } from '../theming/useTheme';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter } from './__fixtures__/MockRouter';
 
 test('can get current theme with useTheme', () => {
@@ -138,7 +138,9 @@ test('passes theme to screenOptions prop', () => {
   };
 
   render(
-    <BaseNavigationContainer theme={theme}>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'foo' }, { name: 'bar' }] }}
+      theme={theme}>
       <TestNavigator screenOptions={({ theme }: any) => ({ title: theme.colors.primary })}>
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />

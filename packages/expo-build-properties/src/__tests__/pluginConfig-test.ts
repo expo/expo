@@ -111,6 +111,22 @@ describe(validateConfig, () => {
     ).not.toThrow();
   });
 
+  it('should validate Android image format support properties', () => {
+    expect(() =>
+      validateConfig({
+        android: {
+          gifEnabled: false,
+          webpEnabled: false,
+          webpAnimated: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() => validateConfig({ android: { gifEnabled: 'yes' as any } })).toThrow();
+    expect(() => validateConfig({ android: { webpEnabled: 'yes' as any } })).toThrow();
+    expect(() => validateConfig({ android: { webpAnimated: 'yes' as any } })).toThrow();
+  });
+
   it('should validate ios.extraPods', () => {
     expect(() => {
       validateConfig({ ios: { extraPods: [{ name: 'Protobuf' }] } });

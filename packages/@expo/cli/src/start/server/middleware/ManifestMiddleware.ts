@@ -1,14 +1,15 @@
 import type { ExpoConfig, ExpoGoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
+import { respond } from 'expo-server/adapter/http';
+import { posix } from 'node:path';
 import { resolve } from 'url';
 
 import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
+import { toPosixPath } from '../../../utils/filePath';
 import * as ProjectDevices from '../../project/devices';
 import type { UrlCreator } from '../UrlCreator';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
@@ -24,6 +25,7 @@ import {
   createBundleUrlPathFromExpoConfig,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
+import type { ForwardedRequestInfo } from './resolveForwarded';
 import type { RuntimePlatform } from './resolvePlatform';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
@@ -46,6 +48,8 @@ export interface ManifestRequestInfo {
   hostname?: string | null;
   /** The protocol used to request the manifest */
   protocol?: 'http' | 'https';
+  /** How the client addressed this dev server, when the request was forwarded */
+  forwarded?: ForwardedRequestInfo | undefined | null;
 }
 
 /** Project related info. */
@@ -57,6 +61,17 @@ export type ResponseProjectSettings = {
 };
 
 export const DEVELOPER_TOOL = 'expo-cli';
+
+/**
+ * Convert a project-relative asset path to the path component of an asset URL.
+ *
+ * Asset paths come from the app config, so they may be written as `./assets/icon.png` and may use
+ * Windows separators. Both forms are normalized here, since these paths are joined into URLs that
+ * clients resolve against the manifest URL.
+ */
+function toAssetUrlPath(assetPath: string): string {
+  return posix.normalize(toPosixPath(assetPath)).replace(/^\//, '');
+}
 
 export type ManifestMiddlewareOptions = {
   /** Should start the dev servers in development mode (minify). */
@@ -95,9 +110,10 @@ export abstract class ManifestMiddleware<
     platform,
     hostname,
     protocol,
+    forwarded,
   }: Pick<
     TManifestRequestInfo,
-    'hostname' | 'platform' | 'protocol'
+    'hostname' | 'platform' | 'protocol' | 'forwarded'
   >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
@@ -114,16 +130,20 @@ export abstract class ManifestMiddleware<
     const user = await getUserAsync();
     const username = getActorDisplayName(user);
 
+    // We emit relative URLs only if the client itself reported the authority,
+    // via a `Forwarded` header to differentiate older/newer clients
+    const shouldUseRelativeManifestUrls = !!forwarded?.viaForwardedHeader;
+    // `hostUri` and `debuggerHost` can only hold an authority, so they can't be made relative
+    const hostUri = forwarded?.authority ?? this.options.constructUrl({ scheme: '', hostname });
+
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
       mainModuleName,
-      hostname,
+      debuggerHost: hostUri,
       username: username !== 'anonymous' ? username : undefined,
     });
 
-    const hostUri = this.options.constructUrl({ scheme: '', hostname });
-
-    const bundleUrl = this._getBundleUrl({
+    const absoluteBundleUrl = this._getBundleUrl({
       platform,
       mainModuleName,
       hostname,
@@ -140,7 +160,15 @@ export abstract class ManifestMiddleware<
     });
 
     // Resolve all assets and set them on the manifest as URLs
-    await this.mutateManifestWithAssetsAsync(projectConfig.exp, bundleUrl);
+    await this.mutateManifestWithAssetsAsync(
+      projectConfig.exp,
+      absoluteBundleUrl,
+      !!shouldUseRelativeManifestUrls
+    );
+
+    const bundleUrl = shouldUseRelativeManifestUrls
+      ? this.toPathRelativeUrl(absoluteBundleUrl)
+      : absoluteBundleUrl;
 
     return {
       expoGoConfig,
@@ -233,16 +261,17 @@ export abstract class ManifestMiddleware<
 
   private getExpoGoConfig({
     mainModuleName,
-    hostname,
+    debuggerHost,
     username,
   }: {
     mainModuleName: string;
-    hostname?: string | null;
+    /** The authority the client can reach this dev server on, e.g. `localhost:8081`. */
+    debuggerHost: string;
     username?: string;
   }): ExpoGoConfig {
     return {
       // localhost:8081
-      debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
+      debuggerHost,
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,
@@ -259,17 +288,32 @@ export abstract class ManifestMiddleware<
     };
   }
 
+  /** Convert an absolute URL to one relative to the root of the dev server. */
+  private toPathRelativeUrl(url: string): string {
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname.replace(/^\//, '') + parsedUrl.search + parsedUrl.hash;
+  }
+
   /** Resolve all assets and set them on the manifest as URLs */
-  private async mutateManifestWithAssetsAsync(manifest: ExpoConfig, bundleUrl: string) {
+  private async mutateManifestWithAssetsAsync(
+    manifest: ExpoConfig,
+    bundleUrl: string,
+    shouldUseRelativeManifestUrls: boolean
+  ) {
     await resolveManifestAssets(this.projectRoot, {
       manifest,
-      resolver: async (path) => {
+      resolver: async (assetPath) => {
         if (this.options.isNativeWebpack) {
           // When using our custom dev server, just do assets normally
           // without the `assets/` subpath redirect.
-          return resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], path);
+          return shouldUseRelativeManifestUrls
+            ? toAssetUrlPath(assetPath)
+            : resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], assetPath);
         }
-        return bundleUrl!.match(/^https?:\/\/.*?\//)![0] + 'assets/' + path;
+        const assetUrlPath = 'assets/' + toAssetUrlPath(assetPath);
+        return shouldUseRelativeManifestUrls
+          ? assetUrlPath
+          : bundleUrl!.match(/^https?:\/\/.*?\//)![0] + assetUrlPath;
       },
     });
     // The server normally inserts this but if we're offline we'll do it here
@@ -361,18 +405,6 @@ export abstract class ManifestMiddleware<
     const options = this.getParsedHeaders(req);
 
     const response = await this._getManifestResponseAsync(options);
-    // Convert `Response` to node:http response
-    if (typeof res.setHeaders === 'function') {
-      res.setHeaders(response.headers);
-    } else {
-      for (const [key, value] of response.headers.entries()) {
-        res.appendHeader(key, value);
-      }
-    }
-    if (response.body) {
-      await pipeline(Readable.fromWeb(response.body as any), res);
-    } else {
-      res.end();
-    }
+    await respond(res, response);
   }
 }

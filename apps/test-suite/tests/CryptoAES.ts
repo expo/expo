@@ -7,6 +7,8 @@ import {
 } from 'expo-crypto';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 const DEFAULT_IV_LENGTH = 12;
 const DEFAULT_TAG_LENGTH = 16;
 
@@ -28,7 +30,7 @@ function uint8ArrayToBase64(uint8Array: Uint8Array) {
 
 export const name = 'CryptoAES';
 
-export async function test({ describe, it, expect, beforeAll }) {
+export async function test({ describe, it, expect, beforeAll }: JasmineInterface) {
   describe('AES Crypto', () => {
     describe('EncryptionKey', () => {
       it('generates a 256-bit key by default', async () => {

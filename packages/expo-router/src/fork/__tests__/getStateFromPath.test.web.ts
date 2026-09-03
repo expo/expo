@@ -11,6 +11,19 @@ afterAll(() => {
   delete process.env.EXPO_BASE_URL;
 });
 
+test('allows Expo Router route metadata', () => {
+  expect(() =>
+    getStateFromPath<object>('', {
+      screens: {
+        Foo: {
+          path: 'foo',
+          _route: {},
+        },
+      },
+    } as any)
+  ).not.toThrow();
+});
+
 describe(stripBaseUrl, () => {
   (
     [

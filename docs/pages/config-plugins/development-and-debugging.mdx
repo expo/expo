@@ -433,7 +433,7 @@ For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if 
 
 Plugins can transform application code with regular expressions, but these modifications are dangerous if the template changes over time then the regex becomes hard to predict (similarly if the user modifies a file manually or uses a custom template). Here are some examples of files you shouldn't modify manually, and alternatives.
 
-### Android Gradle Files
+### Android Gradle files
 
 Gradle files are written in either Groovy or Kotlin. They are used to manage dependencies, versioning, and other settings in the Android app.
 Instead of modifying them directly with the `withProjectBuildGradle`, `withAppBuildGradle`, or `withSettingsGradle` mods, utilize the static `gradle.properties` file.

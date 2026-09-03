@@ -292,13 +292,16 @@ function useTestRunner() {
     // Wrap it/xit/fit so that test functions taking unused parameters
     // (e.g. `async (t) => {}`) aren't mistaken by jasmine 5.x as
     // callback-style tests expecting a `done` argument.
-    const wrapSpec = (fn: Function) => () => fn();
+    const wrapSpec = (fn: jasmine.ImplementationCallback) => () => (fn as () => unknown)();
     const origIt = jasmine.it;
-    jasmine.it = (desc: string, fn: Function, t?: number) => origIt(desc, wrapSpec(fn), t);
+    jasmine.it = (desc: string, fn?: jasmine.ImplementationCallback, t?: number) =>
+      origIt(desc, fn && wrapSpec(fn), t);
     const origXit = jasmine.xit;
-    jasmine.xit = (desc: string, fn: Function, t?: number) => origXit(desc, wrapSpec(fn), t);
+    jasmine.xit = (desc: string, fn?: jasmine.ImplementationCallback, t?: number) =>
+      origXit(desc, fn && wrapSpec(fn), t);
     const origFit = jasmine.fit;
-    jasmine.fit = (desc: string, fn: Function, t?: number) => origFit(desc, wrapSpec(fn), t);
+    jasmine.fit = (desc: string, fn?: jasmine.ImplementationCallback, t?: number) =>
+      origFit(desc, fn && wrapSpec(fn), t);
 
     const suiteModuleMap = suiteModuleMapRef.current;
     let topLevelSuiteIndex = 0;
@@ -382,13 +385,27 @@ function useTestRunner() {
   return { state, runTests, cancel, replay };
 }
 
-export default function TestScreen({ route }: { route: { params?: { tests?: string } } }) {
+export default function TestScreen({
+  route,
+  preselectedTestModules,
+}: {
+  route?: { params?: { tests?: string } };
+  /**
+   * Test modules that the host app selected itself (see apps/notification-tester).
+   * When set, the screen runs these modules and ignores `route.params.tests`.
+   */
+  preselectedTestModules?: Module[];
+}) {
   const { state, runTests, cancel, replay } = useTestRunner();
   const prevSelectionQueryRef = useRef('');
 
-  const selectionQuery = route.params?.tests ?? '';
+  const selectionQuery = route?.params?.tests ?? '';
 
   useEffect(() => {
+    if (preselectedTestModules?.length) {
+      runTests(preselectedTestModules);
+      return;
+    }
     if (!selectionQuery) {
       return;
     }
@@ -412,7 +429,7 @@ export default function TestScreen({ route }: { route: { params?: { tests?: stri
     }
 
     runTests(selectedModules);
-  }, [selectionQuery, runTests]);
+  }, [selectionQuery, runTests, preselectedTestModules]);
 
   const {
     testRunnerError,
@@ -427,7 +444,7 @@ export default function TestScreen({ route }: { route: { params?: { tests?: stri
     totalDuration,
   } = state;
 
-  if (!selectedModules?.length && !selectionQuery) {
+  if (!selectedModules?.length && !selectionQuery && !preselectedTestModules?.length) {
     const moduleLinks = getTestModules().map(getScreenIdForLinking);
 
     return (

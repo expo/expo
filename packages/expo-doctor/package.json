@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.19.8",
+  "version": "1.20.1",
   "description": "Check your Expo project for known issues",
   "keywords": [
     "android",
@@ -22,8 +22,14 @@
     "build"
   ],
   "main": "build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
+    "prebuild": "expo-module clean",
     "build": "ncc build ./src/index.ts -o build/",
+    "prebuild:prod": "expo-module clean",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -37,8 +43,9 @@
     "@expo/config": "workspace:*",
     "@expo/env": "workspace:*",
     "@expo/json-file": "workspace:*",
-    "@expo/metro": "~56.0.0",
+    "@expo/metro": "~56.0.2",
     "@expo/schemer": "workspace:*",
+    "@expo/sdk-compatibility": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/debug": "^4.1.8",
     "@types/getenv": "^1.0.0",

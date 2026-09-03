@@ -50,7 +50,7 @@ public:
    `scheduleTask` dispatches through `fn`, which the host implements against
    the real react::RuntimeScheduler.
    */
-  RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
+  SWIFT_RETURNS_RETAINED RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
       : nativeScheduler(scheduler), scheduleFn(fn) {}
 
   /**
@@ -58,7 +58,7 @@ public:
    caller's thread — intended for standalone runtimes (e.g. tests) that have
    no React scheduler.
    */
-  RuntimeScheduler() {}
+  SWIFT_RETURNS_RETAINED RuntimeScheduler() {}
 
   RuntimeScheduler(const RuntimeScheduler &) = delete;
 

@@ -2,8 +2,10 @@
 /* eslint-disable no-new */
 // Based on tests in https://github.com/web-platform-tests/wpt/tree/master/FileAPI/blob
 
-import { Blob } from 'expo-blob';
+import { Blob, type BlobPart } from 'expo-blob';
 import { Platform } from 'expo-modules-core';
+
+import type { JasmineInterface } from '../types';
 
 export const name = 'Blob';
 
@@ -12,13 +14,25 @@ const test_error = {
   message: 'test error',
 };
 
-export async function test({ describe, it, expect }) {
-  const test_blob = (fn, expectations) => {
+type BlobExpectations = {
+  expected: string;
+  type: string;
+  desc: string;
+};
+
+type BinaryBlobExpectations = {
+  expected: number[];
+  type: string;
+  desc: string;
+};
+
+export async function test({ describe, it, expect }: JasmineInterface) {
+  const test_blob = (fn: () => Blob, expectations: BlobExpectations) => {
     const expected = expectations.expected,
       type = expectations.type,
       desc = expectations.desc;
 
-    it(desc, async (t) => {
+    it(desc, async () => {
       const blob = fn();
       expect(blob instanceof Blob).toBeTruthy();
       expect(blob instanceof File).toBeFalsy();
@@ -29,7 +43,7 @@ export async function test({ describe, it, expect }) {
       expect(text).toEqual(expected);
     });
   };
-  const test_blob_binary = async (fn, expectations) => {
+  const test_blob_binary = async (fn: () => Blob, expectations: BinaryBlobExpectations) => {
     const expected = expectations.expected,
       type = expectations.type,
       desc = expectations.desc;
@@ -48,11 +62,14 @@ export async function test({ describe, it, expect }) {
 
   // Helper function that triggers garbage collection while reading a chunk
   // if perform_gc is true.
-  const read_and_gc = async (reader, perform_gc) => {
+  const read_and_gc = async (
+    reader: ReadableStreamDefaultReader<Uint8Array> | ReadableStreamBYOBReader,
+    perform_gc: boolean
+  ): Promise<ReadableStreamReadResult<Uint8Array>> => {
     // Passing Uint8Array for byte streams; non-byte streams will simply ignore it
-    const read_promise = reader.read(new Uint8Array(64));
+    const read_promise = (reader as ReadableStreamBYOBReader).read(new Uint8Array(64));
     if (perform_gc) {
-      gc();
+      gc?.();
     }
     return read_promise;
   };
@@ -61,17 +78,17 @@ export async function test({ describe, it, expect }) {
   // an array that contains the results of each read operation. If perform_gc
   // is true, garbage collection is triggered while reading every chunk.
   const read_all_chunks = async (
-    stream,
-    { perform_gc = false, mode }: { perform_gc?: boolean; mode?: string } = {}
+    stream: ReadableStream<Uint8Array>,
+    { perform_gc = false, mode }: { perform_gc?: boolean; mode?: 'byob' } = {}
   ) => {
     expect(stream instanceof ReadableStream).toBeTruthy();
     expect('getReader' in stream).toBeTruthy();
-    const reader = stream.getReader({ mode });
+    const reader = mode === 'byob' ? stream.getReader({ mode }) : stream.getReader();
 
     expect('read' in reader).toBeTruthy();
     let read_value = await read_and_gc(reader, perform_gc);
 
-    const out = [];
+    const out: number[] = [];
     let i = 0;
     while (!read_value.done) {
       for (const val of read_value.value) {
@@ -108,6 +125,7 @@ export async function test({ describe, it, expect }) {
         expect(blob).toBeTruthy();
       });
       it("Blob don't flatten", async () => {
+        // @ts-expect-error a nested array is not a BlobPart; the spec stringifies it, which is what this checks
         const blob = new Blob(['aa', ['ab', 'cd'], 'ef']);
         expect(await blob.text()).toBe('aaab,cdef');
       });
@@ -390,6 +408,7 @@ export async function test({ describe, it, expect }) {
         }
       );
       it('A plain object with custom @@iterator should be treated as a sequence for the blobParts argument.', () => {
+        // @ts-expect-error a plain object is not an array of BlobParts; being iterable is enough at runtime
         const blob = new Blob({
           // @ts-ignore
           [Symbol.iterator]() {
@@ -428,6 +447,7 @@ export async function test({ describe, it, expect }) {
       );
       test_blob(
         function () {
+          // @ts-expect-error a typed array is not a sequence of BlobParts; the spec iterates it anyway
           return new Blob(new Uint8Array([1, 2, 3]));
         },
         {
@@ -474,7 +494,7 @@ export async function test({ describe, it, expect }) {
         }).toThrow(test_error);
       });
       it('Getters and value conversions should happen in order until an exception is thrown.', () => {
-        const received = [];
+        const received: string[] = [];
         const obj = {
           get [Symbol.iterator]() {
             received.push('Symbol.iterator');
@@ -525,6 +545,7 @@ export async function test({ describe, it, expect }) {
           () =>
             new Blob([
               {
+                // @ts-expect-error an object with toString() is not a BlobPart; stringifying it is the point
                 toString() {
                   throw test_error;
                 },
@@ -535,6 +556,7 @@ export async function test({ describe, it, expect }) {
           () =>
             new Blob([
               {
+                // @ts-expect-error an object with valueOf() is not a BlobPart; stringifying it is the point
                 toString: undefined,
                 valueOf() {
                   throw test_error;
@@ -549,6 +571,7 @@ export async function test({ describe, it, expect }) {
                 toString() {
                   throw test_error;
                 },
+                // @ts-expect-error an object with toString()/valueOf() is not a BlobPart; stringifying it is the point
                 valueOf() {
                   expect('Should not call valueOf if toString is present.').toBe('');
                 },
@@ -556,6 +579,7 @@ export async function test({ describe, it, expect }) {
             ])
         ).toThrow(test_error);
 
+        // @ts-expect-error null toString/valueOf make the object unstringifiable, which must throw TypeError
         expect(() => new Blob([{ toString: null, valueOf: null }])).toThrowError(TypeError);
       });
       test_blob(
@@ -575,6 +599,7 @@ export async function test({ describe, it, expect }) {
               },
             },
           ];
+          // @ts-expect-error the array holds objects that are not BlobParts; they get stringified
           return new Blob(arr);
         },
         {
@@ -606,6 +631,7 @@ export async function test({ describe, it, expect }) {
               },
             },
           ];
+          // @ts-expect-error the array holds objects that are not BlobParts; they get stringified
           return new Blob(arr);
         },
         {
@@ -617,6 +643,9 @@ export async function test({ describe, it, expect }) {
       test_blob(
         function () {
           // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17652
+          // None of these are valid BlobParts. The spec requires each to be
+          // stringified, which is exactly what this case checks, so the array is
+          // cast rather than carrying a directive on every entry.
           return new Blob([
             null,
             undefined,
@@ -645,7 +674,7 @@ export async function test({ describe, it, expect }) {
                 expect('Should not call valueOf if toString is present on the prototype.').toBe('');
               },
             },
-          ]);
+          ] as unknown as BlobPart[]);
         },
         {
           expected:
@@ -797,8 +826,8 @@ export async function test({ describe, it, expect }) {
       );
 
       it('options properties should be accessed in lexicographic order.', async () => {
-        const accessed = [];
-        const stringified = [];
+        const accessed: string[] = [];
+        const stringified: string[] = [];
 
         new Blob([], {
           // @ts-ignore
@@ -837,6 +866,7 @@ export async function test({ describe, it, expect }) {
             new Blob(
               [
                 {
+                  // @ts-expect-error an object with toString() is not a BlobPart; stringifying it is the point
                   toString() {
                     throw test_error;
                   },
@@ -1062,6 +1092,7 @@ export async function test({ describe, it, expect }) {
 
         test_blob(
           () => {
+            // @ts-expect-error null is not a valid contentType; the spec coerces it to a string
             return new Blob().slice(0, 0, null);
           },
           {
@@ -1099,7 +1130,8 @@ export async function test({ describe, it, expect }) {
           int8View[i] = i + 65;
         }
 
-        const testData = [
+        type SliceExpectation = { start?: number; end?: number; contents: string };
+        const testData: [BlobPart[], SliceExpectation[]][] = [
           [
             ['PASSSTRING'],
             [
@@ -1189,6 +1221,7 @@ export async function test({ describe, it, expect }) {
 
           // Test type coercion of a number
           [
+            // @ts-expect-error a number is not a BlobPart; coercing it is the point of this row.
             [3, int8View, 'foo'],
             [
               { start: 0, end: 8, contents: '3ABCDEFG' },
@@ -1303,6 +1336,7 @@ export async function test({ describe, it, expect }) {
 
     describe('stream', () => {
       it('stream byob crash', async () => {
+        // @ts-expect-error undefined is not a BlobPart; the spec stringifies it
         const a = new Blob(['', '', undefined], {});
         const b = a.stream();
         const c = new ReadableStreamBYOBReader(b);
@@ -1314,6 +1348,7 @@ export async function test({ describe, it, expect }) {
       });
 
       it('stream xhr crash', async () => {
+        // @ts-expect-error numbers are not BlobParts; the spec stringifies them
         const blob = new Blob([1, 2]);
         const readable = blob.stream();
         const writable = new WritableStream(
@@ -1358,10 +1393,10 @@ export async function test({ describe, it, expect }) {
       it("Blob.stream() garbage collection of blob shouldn't break stream consumption", async () => {
         const input_arr = [8, 241, 48, 123, 151];
         const typed_arr = new Uint8Array(input_arr);
-        let blob = new Blob([typed_arr]);
+        let blob: Blob | null = new Blob([typed_arr]);
         const stream = blob.stream();
         blob = null;
-        gc();
+        gc?.();
         const chunks = await read_all_chunks(stream, { perform_gc: true });
         expect(chunks).toEqual(input_arr);
       });
@@ -1371,7 +1406,7 @@ export async function test({ describe, it, expect }) {
         const typed_arr = new Uint8Array(input_arr);
         const blob = new Blob([typed_arr]);
         const chunksPromise = read_all_chunks(blob.stream());
-        gc();
+        gc?.();
         expect(await chunksPromise).toEqual(input_arr);
       });
 

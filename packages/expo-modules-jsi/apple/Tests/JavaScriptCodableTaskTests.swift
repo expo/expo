@@ -29,7 +29,7 @@ struct JavaScriptCodableTaskTests {
   @Test
   func `resolves with a value produced after suspension`() async throws {
     let task = Task<String, any Error> {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       return "done"
     }
     let result = try await Task.encode(task, in: runtime).getPromise().await()

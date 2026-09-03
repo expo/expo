@@ -254,11 +254,11 @@ export type ReadingOptions = {
    */
   encoding?: EncodingType | 'utf8' | 'base64';
   /**
-   * Optional number of bytes to skip. This option is only used when `encoding: FileSystem.EncodingType.Base64` and `length` is defined.
+   * Optional number of bytes to skip before reading. This option is only used when `length` is defined.
    * */
   position?: number;
   /**
-   * Optional number of bytes to read. This option is only used when `encoding: FileSystem.EncodingType.Base64` and `position` is defined.
+   * Optional number of bytes to read. This option is only used when `position` is defined.
    */
   length?: number;
 };

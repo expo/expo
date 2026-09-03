@@ -143,5 +143,6 @@ dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.react:hermes-android'
   implementation expoModule.getExpoDependency("expo-ui")
-  api 'io.github.jakex7.peek:peek-emittables:0.1.0'
+  api 'io.github.jakex7.peek:peek-emittables:0.2.0'
+  implementation "androidx.glance:glance:1.2.0-rc01"
 }

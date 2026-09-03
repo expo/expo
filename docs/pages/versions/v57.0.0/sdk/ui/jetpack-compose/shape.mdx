@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Shape matches the official Jetpack Compose [Shapes](https://developer.android.com/develop/ui/compose/graphics/draw/shapes) API and provides a set of sub-components for drawing geometric shapes such as stars, circles, rectangles, pills, and polygons.
@@ -30,17 +31,39 @@ Expo UI Shape matches the official Jetpack Compose [Shapes](https://developer.an
 
 Render common shapes using the `Shape` sub-components.
 
-```tsx BasicShapesExample.tsx
+<ComponentExample
+  title="BasicShapesExample.tsx"
+  src="/static/images/expo-ui/examples/shape-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/shape-basic-android-dark.webp"
+  alt="A gold star, blue circle, green square, and red pill in a row">
+
+```tsx
 import { Host, Shape, Row } from '@expo/ui/jetpack-compose';
 import { size } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function BasicShapesExample() {
   return (
-    <Host matchContents>
-      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
-        <Shape.Star color="#FFD700" modifiers={[size(80, 80)]} />
-        <Shape.Circle radius={40} color="#4285F4" modifiers={[size(80, 80)]} />
-        <Shape.Rectangle color="#34A853" modifiers={[size(80, 80)]} />
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Row
+        horizontalArrangement={{ spacedBy: 16 }}
+        verticalAlignment="center">
+        <Shape.Star
+          radius={1}
+          innerRadius={0.5}
+          color="#FFD700"
+          modifiers={[size(80, 80)]}
+        />
+        <Shape.Circle
+          radius={1}
+          color="#4285F4"
+          modifiers={[size(80, 80)]}
+        />
+        <Shape.Rectangle
+          color="#34A853"
+          modifiers={[size(80, 80)]}
+        />
         <Shape.Pill color="#EA4335" modifiers={[size(100, 50)]} />
       </Row>
     </Host>
@@ -48,26 +71,43 @@ export default function BasicShapesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Shapes with rounded corners
 
 Use `cornerRounding` and `smoothing` to customize the appearance of shapes.
 
-```tsx RoundedShapesExample.tsx
+<ComponentExample
+  title="RoundedShapesExample.tsx"
+  src="/static/images/expo-ui/examples/shape-rounded-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/shape-rounded-android-dark.webp"
+  alt="A purple rectangle with rounded corners next to an orange rectangle rounded only at the top">
+
+```tsx
 import { Host, Shape, Row } from '@expo/ui/jetpack-compose';
 import { size } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function RoundedShapesExample() {
   return (
-    <Host matchContents>
-      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Row
+        horizontalArrangement={{ spacedBy: 16 }}
+        verticalAlignment="center">
         <Shape.Rectangle
-          cornerRounding={16}
+          cornerRounding={0.2}
           smoothing={0.5}
           color="#9C27B0"
           modifiers={[size(100, 80)]}
         />
         <Shape.RoundedCorner
-          cornerRadii={{ topStart: 20, topEnd: 20, bottomStart: 0, bottomEnd: 0 }}
+          cornerRadii={{
+            topStart: 20,
+            topEnd: 20,
+            bottomStart: 0,
+            bottomEnd: 0,
+          }}
           color="#FF5722"
           modifiers={[size(100, 80)]}
         />
@@ -77,28 +117,41 @@ export default function RoundedShapesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Polygon and star variants
 
 Use `verticesCount` and `innerRadius` to control the shape geometry.
 
-```tsx PolygonShapesExample.tsx
+<ComponentExample
+  title="PolygonShapesExample.tsx"
+  src="/static/images/expo-ui/examples/shape-polygon-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/shape-polygon-android-dark.webp"
+  alt="A cyan hexagon, an orange eight-pointed star, and a pink six-pointed pill star">
+
+```tsx
 import { Host, Shape, Row } from '@expo/ui/jetpack-compose';
 import { size } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function PolygonShapesExample() {
   return (
-    <Host matchContents>
-      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Row
+        horizontalArrangement={{ spacedBy: 16 }}
+        verticalAlignment="center">
         <Shape.Polygon
           verticesCount={6}
-          cornerRounding={4}
+          cornerRounding={0.05}
           color="#00BCD4"
           modifiers={[size(80, 80)]}
         />
         <Shape.Star
           verticesCount={8}
+          radius={1}
           innerRadius={0.4}
-          cornerRounding={2}
+          cornerRounding={0.025}
           color="#FF9800"
           modifiers={[size(80, 80)]}
         />
@@ -114,10 +167,15 @@ export default function PolygonShapesExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Shape } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/shape" apiName="Shape" />
+<APISection
+  packageName="expo-ui/jetpack-compose/shape"
+  apiName="Shape"
+/>

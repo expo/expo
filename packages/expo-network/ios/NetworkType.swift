@@ -6,7 +6,7 @@ extension NWInterface.InterfaceType: CaseIterable {
     .wifi,
     .cellular,
     .loopback,
-    .wiredEthernet
+    .wiredEthernet,
   ]
 }
 

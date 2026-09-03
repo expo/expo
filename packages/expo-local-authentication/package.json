@@ -1,6 +1,6 @@
 {
   "name": "expo-local-authentication",
-  "version": "56.0.4",
+  "version": "57.0.2",
   "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "keywords": [
     "auth",

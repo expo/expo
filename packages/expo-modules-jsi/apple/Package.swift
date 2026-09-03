@@ -138,6 +138,16 @@ let package = Package(
     .testTarget(
       name: "Tests",
       dependencies: testFrameworks.dependencies,
+      path: "Tests",
+    ),
+
+    // Benchmarks are opt-in: their suites are gated on the `EXPO_BENCHMARK` environment
+    // variable, so regular test runs build them but skip every suite. Run `pnpm benchmark`
+    // to execute them in the Release configuration.
+    .testTarget(
+      name: "Benchmarks",
+      dependencies: testFrameworks.dependencies,
+      path: "Benchmarks",
     ),
   ] + testFrameworks.binaryTargets,
   swiftLanguageModes: [.v6],
@@ -156,9 +166,9 @@ func resolvePodsRoot() -> String {
   let repoRoot =
     env["EXPO_ROOT_DIR"]
     ?? URL(fileURLWithPath: packageDir)
-    .deletingLastPathComponent()  // expo-modules-jsi
-    .deletingLastPathComponent()  // packages
-    .deletingLastPathComponent()  // repo root
+    .deletingLastPathComponent() // expo-modules-jsi
+    .deletingLastPathComponent() // packages
+    .deletingLastPathComponent() // repo root
     .path
   return "\(repoRoot)/apps/bare-expo/ios/Pods"
 }

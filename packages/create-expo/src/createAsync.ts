@@ -58,7 +58,7 @@ async function resolveProjectRootArgAsync(
   }
 }
 
-async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
+export async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
 
@@ -72,9 +72,10 @@ async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 
 
   // Install dependencies
   let podsInstalled: boolean = false;
+  let nodeModulesInstalled: boolean = false;
   const needsPodsInstalled = await fs.existsSync(path.join(projectRoot, 'ios'));
   if (shouldInstall) {
-    await installNodeDependenciesAsync(projectRoot, packageManager);
+    nodeModulesInstalled = await installNodeDependenciesAsync(projectRoot, packageManager);
     if (needsPodsInstalled) {
       podsInstalled = await installCocoaPodsAsync(projectRoot);
     }
@@ -82,7 +83,8 @@ async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 
   const cdPath = getChangeDirectoryPath(projectRoot);
   console.log();
   Template.logProjectReady({ cdPath, packageManager });
-  if (!shouldInstall) {
+  // The install can also fail without stopping the command, so check the result and not the flag.
+  if (!nodeModulesInstalled) {
     logNodeInstallWarning(cdPath, packageManager, needsPodsInstalled && !podsInstalled);
   }
 }
@@ -282,18 +284,21 @@ async function configureNodeDependenciesAsync(
   }
 }
 
+/** Install the node modules. Returns `false` when the package manager failed. */
 async function installNodeDependenciesAsync(
   projectRoot: string,
   packageManager: PackageManagerName
-): Promise<void> {
+): Promise<boolean> {
   try {
     await installDependenciesAsync(projectRoot, packageManager, { silent: false });
+    return true;
   } catch (error: any) {
     debug(`Error installing node modules: %O`, error);
     Log.error(
       `Something went wrong installing JavaScript dependencies. Check your ${packageManager} logs. Continuing to create the app.`
     );
     Log.exception(error);
+    return false;
   }
 }
 

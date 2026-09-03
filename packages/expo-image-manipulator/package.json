@@ -1,6 +1,6 @@
 {
   "name": "expo-image-manipulator",
-  "version": "56.0.15",
+  "version": "57.0.7",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "keywords": [
     "expo",
@@ -43,7 +43,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "expo-image-loader": "workspace:~56.0.3"
+    "expo-image-loader": "workspace:~"
   },
   "devDependencies": {
     "expo": "workspace:*",
