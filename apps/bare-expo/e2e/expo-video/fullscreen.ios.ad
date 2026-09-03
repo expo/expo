@@ -1,0 +1,14 @@
+# expo-video: enter and leave fullscreen and check the fullscreen events. Native port of
+# fullscreen-test.yaml. iOS: the system player hides its controls until the video is tapped.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://components/video/fullscreen"
+wait text "Enter Fullscreen" 20000
+press "role=button label=\"Enter Fullscreen\""
+wait 2500
+press label="Video"
+press "role=button label=\"Close\""
+wait text "Enter Fullscreen" 10000
+wait text "0 = onFullscreenEnter" 10000
+wait text "1 = onFullscreenExit" 10000
+close
