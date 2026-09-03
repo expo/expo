@@ -44,4 +44,14 @@ export type BackgroundTaskOptions = {
    *
    */
   minimumInterval?: number;
+  /**
+   * Whether the background task requires network connectivity to run.
+   * - When `true`, the system will only launch the task when network is available.
+   * - When `false`, the task can run regardless of network state.
+   * - Defaults to `false`.
+   *
+   * On Android, this maps to the WorkManager `NetworkType.CONNECTED` constraint.
+   * On iOS, this maps to `BGProcessingTaskRequest.requiresNetworkConnectivity`.
+   */
+  requiresNetworkConnectivity?: boolean;
 };
