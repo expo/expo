@@ -282,6 +282,8 @@ export async function devDetachAsync(
         // that has already spent its timeout must not spend a second one here.
         Math.max(0, options.detachTimeoutMs - (Date.now() - startedAt))
       ),
+      // Only a run that waited for the bundler may be failed on the bundler.
+      watchStatus: ready === true,
     });
     failure = grace.failure;
     verdict = grace.verdict ?? verdict;
@@ -325,17 +327,26 @@ export const OPEN_PLATFORM_GRACE_MS = 1500;
 const OPEN_PLATFORM_POLL_MS = 100;
 
 /**
- * Whether this run's readiness claim is re-checked before it is printed.
+ * Whether this run's claim is re-checked before it is printed.
  *
  * Pure, and exported, for the same reason {@link resolveDetachFailure} is: the cost of the grace is
  * paid by real seconds of a real caller's time, so which runs pay it has to be readable in one
  * place and assertable without a second process.
  *
- * Three conditions, and each excludes runs the grace could only slow down. Readiness has to have
- * been **claimed** — a run that asked for none claims nothing, and one whose bundler never answered
- * has already failed. The plan has to be **serving** — a plan still compiling has started no dev
- * server. And the dev-server step has to be one that opens the app, which is where the late
- * rejection comes from.
+ * Two conditions, and each excludes runs the grace could only slow down. The plan has to be
+ * **serving** — a plan still compiling has started no dev server. And the dev-server step has to be
+ * one that **opens the app**, which is where the late rejection comes from; a plan that opens
+ * nothing has none on its way and pays nothing.
+ *
+ * **`ready === false` is the only readiness this declines**, and dropping the rest of that
+ * condition is the correction of 2026-09-03 (@ref llp/0021 §The rules). It used to require
+ * `ready === true`, on the reasoning that a run which asked for no readiness claims nothing. That
+ * reasoning was wrong about what this command prints: `dev --detach --ios` reports
+ * `Dev server <url> · detached` over a pid and exits 0, and live that pid was gone with nothing
+ * listening on that URL inside a second — the same macOS Automation refusal F140 is about, on the
+ * same plan step, caught only when `--wait-ready` was also passed [observed — macOS 25.5, no
+ * Automation grant, 2026-09-03]. The hazard is a property of the plan step, not of the flag. A
+ * `false` still declines: that run has already failed, and a grace on top would only delay it.
  */
 export function needsOpenPlatformGrace({
   ready,
@@ -344,7 +355,7 @@ export function needsOpenPlatformGrace({
   ready: boolean | null;
   phase: DetachedChildPhase;
 }): boolean {
-  return ready === true && phase.phase === 'serving' && phase.opensPlatform;
+  return ready !== false && phase.phase === 'serving' && phase.opensPlatform;
 }
 
 /**
@@ -360,7 +371,25 @@ export function needsOpenPlatformGrace({
 async function watchOpenPlatformGraceAsync(
   projectRoot: string,
   url: string,
-  { hasExited, budgetMs }: { hasExited: () => boolean; budgetMs: number }
+  {
+    hasExited,
+    budgetMs,
+    watchStatus,
+  }: {
+    hasExited: () => boolean;
+    budgetMs: number;
+    /**
+     * Whether `/status` is one of the facts this window may fail a run on.
+     *
+     * False for a run that claimed no readiness, and that is what makes the widened grace safe
+     * (@ref ./detachAsync §needsOpenPlatformGrace, 2026-09-03). Such a run never waited for the
+     * bundler, so a bundler that has not answered *yet* is the ordinary state of a first compile
+     * and not a failure — and `resolveDetachFailure` turns a `false` there into `not-answering`.
+     * The two facts that are left are conclusive whatever readiness was claimed: a handoff block in
+     * the log, and a child that is gone. Both are what the refusal this grace exists for produces.
+     */
+    watchStatus: boolean;
+  }
 ): Promise<{ failure: DetachFailureKind | null; verdict: DetachedChildVerdict | null }> {
   const deadline = Date.now() + budgetMs;
   let verdict = readChildVerdictSync(projectRoot);
@@ -373,7 +402,7 @@ async function watchOpenPlatformGraceAsync(
     const seen = resolveDetachFailure({
       exited: hasExited(),
       verdict,
-      statusAnswering: await isBundlerAnsweringAsync(url),
+      statusAnswering: watchStatus ? await isBundlerAnsweringAsync(url) : null,
     });
     if (seen === 'needs-human') {
       return { failure: seen, verdict };

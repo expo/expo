@@ -35,6 +35,8 @@ The CLI had the right data and printed the wrong claim. These fourteen rules are
 
 A detached `dev --wait-ready` that prints `Bundler ready` and then dies is rule 2. The report is written after the wait, and a later crash is a later claim.
 
+A detached `dev --detach --ios` **without** `--wait-ready` that prints `Dev server <url> · detached` over a pid and exits 0 is the same rule, and the correction of 2026-09-03. The grace window that catches the late macOS Automation refusal was gated on `ready === true`, on the reasoning that a run which asked for no readiness claims nothing — but a URL, a pid and exit 0 are a claim, and live that pid was gone with nothing listening inside the second [observed — macOS 25.5, no Automation grant, 2026-09-03: exit 0 beside a `curl` of the printed URL answering 000]. The hazard belongs to the plan step that opens the app, not to the flag, so `needsOpenPlatformGrace` now declines only a run that has already failed. What such a run may be failed _on_ is narrowed to the two facts that are conclusive without a readiness claim — a handoff block in the child's log, and a child that is gone — because a bundler that has not answered yet is the ordinary state of a first compile. The cost is real and is paid by the runs that need it: a healthy `dev --detach --ios` now spends the grace window before it reports, and only a plan step that opens the app pays anything at all.
+
 Copying one EAS build's fingerprint comparison onto both platforms is rule 3. `src/impact/buildCache.ts` answers per platform.
 
 `deploy` classifying EAS failures is rule 4. `src/deploy/easFailure.ts` reads the EAS CLI's own sentence first.
