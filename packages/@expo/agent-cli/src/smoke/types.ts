@@ -36,6 +36,14 @@ export type SmokePhaseId =
   | 'bundle'
   /** Was a simulator or an emulator booted for this run? Conditional, like `start-dev-server`. */
   | 'boot-device'
+  /**
+   * Was the app put on that device for this run?
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+   * **Conditional**, and for the same reason the two above it are: installing is an *act*. A
+   * machine that already had the app did not skip an install, it never had one to do.
+   */
+  | 'install-app'
   /** Is an app attached to it, and if not, can one be opened? */
   | 'app'
   /**

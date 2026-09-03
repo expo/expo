@@ -347,6 +347,30 @@ Compatibility is now a fifth input, below the two observations and above the nat
 
 Choosing the right app is half of it. Expo Go can already be attached because somebody ran `expo start --ios`, so the `app` phase also asks whether the app that answered is one this project can run. A mismatch is `inconclusive` with the build command named, never `failed` — nothing is wrong with the code — and never `passed`. The window is still opened and the screen still photographed, the same rule §Android sets for a runtime with no debugger. An error outranks all of it: Expo Go throwing on this project's bundle is a fact about the code, whichever app was holding it. `appMismatch` is on `--json` so nothing has to match English, and the follow-ups lead with `dev --<platform> --yes` rather than a re-run of a gate that will answer the same way for ever.
 
+### Putting Expo Go on a simulator that has not got it
+
+§The device that can open the app refused a machine with no Expo Go and named `npx expo start --ios`. That is a correct instruction and a dead end for the caller this CLI is for: an agent cannot take it without leaving its loop, and the loop is the thing being served. So the app is installed [confirmed, Kudo, 2026-09-03].
+
+**Only Expo Go, and only on the plan's `expo-go` rule.** That rule already is the pair of conditions this turns on — the project fits in Expo Go, and nothing in `agentCli` config overrode it to a development build (`src/plan/decide.ts`) — so the target reads the plan's answer rather than forming a third opinion. Everything else is a development build: a published binary is something to download, and a development build is this project's own artefact to compile.
+
+`install-app` is a **conditional** phase, like the start and the boot, because installing is an act: a machine that already had the app never had an install to do, and a `skipped` row there would read as work that was owed. It is bootstrap, not charged to `--timeout`, for the same reason the boot is — a 423 MB download is cold this run caused. It registers **no cleanup**, and that is the one deliberate exception to "stop only what you started": that rule is about resources this run is _holding_, and an installed app is not held but given. Uninstalling it on the way out would take away what the next run needs and make it download the whole thing again.
+
+It is driven off the **device**, not off the boot. Hanging it on the boot was the first cut and it missed the ordinary case — a simulator somebody left running without Expo Go, where this run boots nothing and the deep link comes back `115` [observed, 2026-09-03]. `installNeededOnDevice` asks of whichever device the run settled on.
+
+Two subprocesses, and neither is `@expo/cli`'s: `expo-go download <platform> <sdk> --json` for the binary, `xcrun simctl install` for the device. The download goes to a temporary directory rather than the project, because `expo-go download` writes into the working directory. **The boot comes first**: `simctl install` on a shut device answers `Unable to lookup in current state: Shutdown` (code 405).
+
+#### An install is not finished until the link works
+
+Two obstacles sit between a fresh install and an unattended run, and both were found by running it [observed — a fresh iOS 26.5 simulator, 2026-09-03].
+
+A freshly installed app has no approved URL schemes, so `simctl openurl exp://…` raises `Open in "Expo Go"?` and waits. Nobody presses Open, and the run reports — correctly and uselessly — that no app attached inside its budget. `@expo/cli` pre-writes the scheme-approval plist with a bplist library (`updateSimulatorLinkingPermissionsAsync`). The same key written **through the simulator's own `defaults`** needs no library and no plist parsing, and it is the version that works on a device that is already booted: the file written from outside is ignored, because the running preferences daemon has already read it.
+
+Then a first-ever Expo Go launch puts its developer-menu onboarding sheet over the app. The link works, the runtime attaches, the window reads — and the screenshot is a picture of the sheet, which §The smoke gate calls evidence and which is evidence of nothing, exactly as a splash screen is. The key is `expo-dev-menu`'s own, read out of this monorepo rather than guessed (`packages/expo-dev-menu/ios/Modules/DevMenuPreferences.swift` §isOnboardingFinishedKey), and it is written only for an Expo Go **this run just installed** — never for one the caller already had, whose preferences are theirs.
+
+Neither write can fail the install. Expo Go is on the device either way, and the worst case is the dialog or the sheet they exist to remove.
+
+End to end on a simulator created for the purpose: `install-app 15.2s`, `app 7.2s`, and a screenshot of the app itself [observed, 2026-09-03].
+
 ### The Expo Go on the device is not the Expo Go the SDK wants
 
 Expo Go being _installed_ is not Expo Go being the _right_ Expo Go [confirmed, Kudo, 2026-09-03]. Its native runtime is versioned with the SDK, and §The device that can open the app chose a simulator by asking which one _has_ `host.exp.Exponent` and then trusted whatever was there. A simulator nobody has opened since the spring holds a build of another SDK.

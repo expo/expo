@@ -157,6 +157,9 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
       register({ deviceId: 'SIM-BOOTED', backend: 'local-ios' });
       return { ok: true, deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null };
     },
+    // Nothing to install by default: the device this run settled on already has the app.
+    installNeededOnDevice: async () => false,
+    installApp: async () => ({ ok: true, version: null, reason: null }),
     shutdownDevice: async (deviceId) => ({ ok: true, target: deviceId, reason: null }),
     // Settled by default: the wait before the picture has its own cases (F57).
     waitForStableTargets: async () => ({ stable: true }),
@@ -2195,5 +2198,115 @@ describe(`${runSmokePhasesAsync.name} and a note about the app it read`, () => {
     const reason = run.phases.find((phase) => phase.id === 'app')?.reason ?? '';
     expect(reason).toContain('to connect one');
     expect(reason).toContain(NOTE);
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+//
+// The gate used to refuse a machine with no Expo Go and name `npx expo start --ios`. Correct, and a
+// dead end for the caller this CLI is for: an agent cannot take that instruction without leaving
+// its loop. So the app is installed — and because installing is an *act* rather than a question,
+// the phase is conditional like the start and the boot, and it is reported only by a run that did
+// it (llp/0005 §The run brings its own environment).
+describe(`${runSmokePhasesAsync.name} and installing the app`, () => {
+  /** A device this run settled on that has not got the app. */
+  const missingApp = { installNeededOnDevice: async () => true };
+
+  /**
+   * A run that has to boot: nothing attached, and no device found by the probe.
+   *
+   * A factory rather than a shared object, because `clearMocks` wipes a `jest.fn`'s queued
+   * implementations between tests — a shared one answers `undefined` from the second test on, and
+   * silently skips the phase under test.
+   */
+  const needsBoot = () => ({
+    bootstrap: true,
+    probeDevice: async () => ({ deviceId: null, backend: null, reason: 'nothing booted' }),
+    waitForAppConnection: jest
+      .fn<Promise<{ appsConnected: number; timedOut: boolean; waitedMs: number }>, []>()
+      .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+      .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 2 }),
+  });
+
+  it(`installs the app onto a device that was booted without it`, async () => {
+    const installApp = jest.fn(async () => ({ ok: true, version: '57.0.9', reason: null }));
+    const run = await runSmokePhasesAsync(
+      deps({ ...needsBoot(), ...missingApp, installApp }),
+      options({ bootstrap: true })
+    );
+
+    // Onto the device this run settled on, and no other.
+    expect(installApp).toHaveBeenCalledWith('SIM-BOOTED');
+    expect(statusOf(run, 'install-app')).toBe('ok');
+    expect(run.outcome).toBe('passed');
+  });
+
+  // Conditional, like the start and the boot: a machine that already had the app did not *skip* an
+  // install, it never had one to do, and a `skipped` row there reads as work that was owed.
+  it(`says nothing at all on a run that had no install to do`, async () => {
+    const run = await runSmokePhasesAsync(deps(), options());
+
+    expect(run.phases.some((phase) => phase.id === 'install-app')).toBe(false);
+  });
+
+  it(`does not install when the device already has the app`, async () => {
+    const installApp = jest.fn(async () => ({ ok: true, version: null, reason: null }));
+    await runSmokePhasesAsync(deps({ ...needsBoot(), installApp }), options({ bootstrap: true }));
+
+    expect(installApp).not.toHaveBeenCalled();
+  });
+
+  // An install that failed leaves nothing to open, so the run stops there rather than deep-linking
+  // into a device it has just been told has no app.
+  it(`stops when the install failed, and says why`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...needsBoot(),
+        ...missingApp,
+        installApp: async () => ({ ok: false, version: null, reason: 'the download timed out' }),
+      }),
+      options({ bootstrap: true })
+    );
+
+    expect(statusOf(run, 'install-app')).toBe('failed');
+    expect(run.phases.find((phase) => phase.id === 'install-app')?.reason).toContain(
+      'the download timed out'
+    );
+    expect(run.outcome).toBe('failed');
+    expect(statusOf(run, 'app')).toBe('skipped');
+  });
+
+  // The version that was installed is worth naming: it is the answer to "which Expo Go am I
+  // testing against", which is the question the version check exists for.
+  it(`names the version it installed`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...needsBoot(),
+        ...missingApp,
+        installApp: async () => ({ ok: true, version: '57.0.9', reason: null }),
+      }),
+      options({ bootstrap: true })
+    );
+
+    expect(run.phases.find((phase) => phase.id === 'install-app')?.reason).toContain('57.0.9');
+  });
+
+  // The install is bootstrap, like the boot that preceded it: a 423 MB download is this run paying
+  // for cold it caused, and charging it to `--timeout` would leave the error window with nothing.
+  it(`does not charge the install to the reading budget`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...needsBoot(),
+        ...missingApp,
+        installApp: async () => ({ ok: true, version: '57.0.9', reason: null }),
+        collectErrors: async (_url, windowMs) => {
+          expect(windowMs).toBe(3_000);
+          return { ok: true, records: [], reason: null };
+        },
+      }),
+      options({ bootstrap: true, timeoutMs: 20_000 })
+    );
+
+    expect(run.outcome).toBe('passed');
   });
 });

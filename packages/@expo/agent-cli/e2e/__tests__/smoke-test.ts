@@ -248,6 +248,52 @@ async function writeRoutesAsync(projectRoot: string, files: string[]): Promise<v
 }
 
 /**
+ * A stub `npx`, so no test in this tier downloads Expo Go.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+ * The install phase shells `npx --yes expo-go download`, which is a 423 MB transfer over the
+ * network. Left unstubbed it doubled this suite's wall clock and made it depend on a CDN
+ * [observed, 2026-09-03]. It answers the `{"path":…}` shape the real CLI does, and records what it
+ * was asked so a test can assert the install happened without one byte moving.
+ */
+async function installStubNpxAsync(projectRoot: string): Promise<() => string[][]> {
+  const recordPath = path.join(projectRoot, '.npx-calls.jsonl');
+  const scriptPath = path.join(projectRoot, '.stub-bin', 'npx-stub.js');
+  await fs.promises.mkdir(path.dirname(scriptPath), { recursive: true });
+  await fs.promises.writeFile(
+    scriptPath,
+    [
+      `const fs = require('fs');`,
+      `const path = require('path');`,
+      `const args = process.argv.slice(2);`,
+      `fs.appendFileSync(${JSON.stringify(recordPath)}, JSON.stringify(args) + '\\n');`,
+      // The one verb this tier exercises. A downloaded bundle is a directory, so the stub makes an
+      // empty one at the path it answers — which is what `simctl install` would be handed.
+      `if (args.includes('download')) {`,
+      `  const target = path.join(process.cwd(), 'Expo-Go-57.0.9.tar.app');`,
+      `  fs.mkdirSync(target, { recursive: true });`,
+      `  process.stdout.write(JSON.stringify({ path: target }));`,
+      `  process.exit(0);`,
+      `}`,
+      `if (args.includes('url')) {`,
+      `  process.stdout.write(JSON.stringify({ url: 'https://example.com/Expo-Go-57.0.9/Expo-Go-57.0.9.tar.gz' }));`,
+      `  process.exit(0);`,
+      `}`,
+      `process.exit(0);`,
+    ].join('\n')
+  );
+  await installStubBinAsync(path.join(projectRoot, '.stub-bin'), 'npx', scriptPath);
+  return () =>
+    fs.existsSync(recordPath)
+      ? fs
+          .readFileSync(recordPath, 'utf8')
+          .split('\n')
+          .filter(Boolean)
+          .map((line) => JSON.parse(line))
+      : [];
+}
+
+/**
  * A `HOME` whose CoreSimulator tree says which apps each simulator has.
  *
  * @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app
@@ -794,16 +840,69 @@ describe('@expo/agent-cli smoke', () => {
       }
     });
 
-    // An Expo Go project is **not** exempt, and that is a correction to what this was expected to
-    // do: `simctl openurl exp://…` on a simulator without Expo Go answers `115` exactly like a
-    // dev-client scheme does [observed — live, 2026-08-30, a freshly created simulator]. The open
-    // path installs nothing, so the same rule has to hold for both.
-    it('refuses for an Expo Go project on a machine with no Expo Go either', async () => {
+    // @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+    //
+    // An Expo Go project on a machine with no Expo Go used to be a refusal here, on the same
+    // footing as a missing development build: `simctl openurl exp://…` answers `115` for both, and
+    // the open path installs nothing [observed — live, 2026-08-30]. It is no longer, and the
+    // difference is what can be *done* about it — Expo Go is a published binary to download, so the
+    // boot goes ahead and the app is installed onto it.
+    it('boots and installs for an Expo Go project on a machine with no Expo Go', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
+      // The marker is what keeps this test off the cold attach budget: the stub `xcrun` writes it
+      // when it opens the URL, and the stub dev server starts listing a target once it exists. A
+      // run without it waits out the whole two minutes to prove something about the install.
+      const opened = path.join(projectRoot, '.app-opened');
+      const readXcrun = await installStubXcrunForBootAsync(
+        projectRoot,
+        [{ udid: FRESH, name: 'iPhone 17 Pro', lastBootedAt: '2026-08-30T09:00:00Z' }],
+        opened
+      );
+      const readNpx = await installStubNpxAsync(projectRoot);
+      const home = await writeSimulatorHomeAsync(projectRoot, { [FRESH]: [] });
+      const stub = await startStubDevServerAsync({
+        projectRoot,
+        targets: [EXPO_GO_TARGET],
+        targetsAppearWithFile: opened,
+      });
+
+      try {
+        const report = await runAsync(projectRoot, home, stub);
+
+        // It booted, rather than declining because no device had the app.
+        expect(readXcrun().filter((argv) => argv[1] === 'boot')).toEqual([
+          ['simctl', 'boot', FRESH],
+        ]);
+        const boot = report.phases.find((phase: any) => phase.id === 'boot-device');
+        expect(boot).toMatchObject({ status: 'ok' });
+        expect(boot.reason).toContain('to install it onto');
+
+        // And it installed: the release was asked for, and `simctl install` was handed a path.
+        expect(readNpx().some((argv) => argv.includes('download'))).toBe(true);
+        expect(readXcrun().some((argv) => argv[1] === 'install')).toBe(true);
+        const install = report.phases.find((phase: any) => phase.id === 'install-app');
+        expect(install).toMatchObject({ status: 'ok' });
+
+        // Then the link works without a tap, which is the half an install alone does not buy.
+        const approvals = readXcrun().filter((argv) =>
+          argv.some((arg) => arg.includes('schemeapproval'))
+        );
+        expect(approvals.length).toBeGreaterThan(0);
+      } finally {
+        await stub.close();
+      }
+    });
+
+    // The other half of the same boundary. A development build is this project's own artefact, and
+    // making one is a compile — so a machine without it is still refused, and still told which
+    // command builds it.
+    it('still refuses for a development build no device has', async () => {
+      const projectRoot = await devClientFixtureAsync();
       const readXcrun = await installStubXcrunForBootAsync(projectRoot, [
         { udid: FRESH, name: 'iPhone 17 Pro', lastBootedAt: '2026-08-30T09:00:00Z' },
       ]);
-      const home = await writeSimulatorHomeAsync(projectRoot, { [FRESH]: [] });
+      await installStubNpxAsync(projectRoot);
+      const home = await writeSimulatorHomeAsync(projectRoot, { [FRESH]: ['host.exp.Exponent'] });
       const stub = await startStubDevServerAsync({ projectRoot, targets: [] });
 
       try {
@@ -811,9 +910,9 @@ describe('@expo/agent-cli smoke', () => {
 
         expect(readXcrun().filter((argv) => argv[1] === 'boot')).toEqual([]);
         const boot = report.phases.find((phase: any) => phase.id === 'boot-device');
-        expect(boot.reason).toContain('Expo Go');
-        // And it names the command that puts Expo Go on a simulator.
-        expect(boot.reason).toContain('expo start --ios');
+        expect(boot).toMatchObject({ status: 'failed' });
+        expect(boot.reason).toContain(DEV_CLIENT_ID);
+        expect(report.phases.some((phase: any) => phase.id === 'install-app')).toBe(false);
       } finally {
         await stub.close();
       }

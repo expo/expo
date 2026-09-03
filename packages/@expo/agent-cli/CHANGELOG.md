@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- `smoke` now installs Expo Go on a simulator that has not got it, rather than refusing and naming `expo start`. Only for the plan's Expo Go rule, so a project set to `dev-build` or one that cannot run in Expo Go is unaffected. The install also pre-approves Expo Go's URL schemes and marks the developer-menu onboarding seen, without which the deep link raises a dialog nobody answers and the screenshot is a picture of an onboarding sheet. ([#49654](https://github.com/expo/expo/pull/49654) by [@kudo](https://github.com/kudo))
 - `smoke` no longer trusts an installed Expo Go without checking it: an Expo Go from a different SDK release line than the project cannot load its bundle, so the run is `inconclusive` rather than `passed` and names `npx expo start --<platform>`. An older patch of the same line is reported and decides nothing. The expected release comes from the `expo-go` CLI as a subprocess. ([#49654](https://github.com/expo/expo/pull/49654) by [@kudo](https://github.com/kudo))
 - `smoke` and `navigate` no longer target Expo Go for a project that cannot run in it. The deep-link decision now reads the same Expo Go compatibility the plan engine and `status` read, and `smoke` will not report `passed` when the app that answered is an Expo Go the project's native code is not in. ([#49654](https://github.com/expo/expo/pull/49654) by [@kudo](https://github.com/kudo))
 

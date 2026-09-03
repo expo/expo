@@ -17,6 +17,7 @@
 // | `bundler-ready`    | this command only                | `waitForBundlerReadyAsync`  |
 // | `bundle`           | this command, `runtime:reload`   | `checkEntryBundleAsync`     |
 // | `boot-device`      | (new, conditional)               | `bootDeviceAsync`           |
+// | `install-app`      | (new, conditional)               | `installExpoGoAsync`        |
 // | `app`              | this command only                | `waitForAppConnectionAsync` |
 // | `reload`           | `runtime:reload`                 | `reloadOverDevServerAsync`  |
 // | `route`            | `navigate`                       | `openRouteAsync`            |
@@ -28,7 +29,7 @@
 // (llp/0016). The library functions they call are unchanged and still live in `src/runtime/`; only
 // the second command that called them is gone.
 //
-// **The two conditional phases are acts rather than questions**, and that shapes three things
+// **The three conditional phases are acts rather than questions**, and that shapes three things
 // (llp/0005 §The run brings its own environment): they are reported only by a run that performed
 // them, they are never charged to `--timeout`, and each one registers the way to undo itself
 // *before* it does anything. `runSmokePhasesAsync` is the wrapper that runs those undos, newest
@@ -87,6 +88,12 @@ export interface SmokeBootResult {
   refused?: boolean;
   /** Why this device rather than another, for the report. Null when none was chosen. */
   choice?: string | null;
+  /**
+   * The device came up **without** the app, so the caller has an install to do.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+   */
+  installNeeded?: boolean;
 }
 
 /**
@@ -98,6 +105,15 @@ export interface SmokeBootResult {
  * that went wrong (llp/0005 §The run brings its own environment).
  */
 export type SmokeBootRegister = (device: { deviceId: string; backend: DeviceBackend }) => void;
+
+/** What putting the app on a device amounted to. Never a throw: a failed install is a result. */
+export interface SmokeInstallResult {
+  ok: boolean;
+  /** The version that was installed, when the installer could name one. */
+  version: string | null;
+  /** Why it was not. Null exactly when {@link ok} is true. */
+  reason: string | null;
+}
 
 /** What putting one thing back amounted to. Never a throw: a cleanup that failed is a result. */
 export interface SmokeReleaseResult {
@@ -177,6 +193,32 @@ export interface SmokeDeps {
   bootDevice(register: SmokeBootRegister): Promise<SmokeBootResult>;
   /** Shut down the device this run booted. Only ever called for one this run booted. */
   shutdownDevice(deviceId: string, backend: DeviceBackend): Promise<SmokeReleaseResult>;
+  /**
+   * Put the app on the device this run booted, when the boot said it has not got it.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+   * Only ever called for a boot whose {@link SmokeBootResult.installNeeded} is true, and only
+   * after that boot: the device has to be up for `simctl install` to reach it.
+   *
+   * **Registers no cleanup, deliberately.** "Stop only what you started" is about resources this
+   * run is *holding* — a dev server, a booted simulator. An installed app is not held, it is
+   * given: uninstalling Expo Go on the way out would take away what the next run needs and make
+   * it download 423 MB again.
+   */
+  installApp(deviceId: string): Promise<SmokeInstallResult>;
+  /**
+   * Whether this run has an app to put on that device before it can open anything.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+   * True only when the app is one this run may install *and* the device has not got it. The policy
+   * half lives with the caller, so this file stays a walk over phases rather than a second opinion
+   * about which apps may be installed.
+   *
+   * Asked of the device this run settled on, however it got there — **not** only of one this run
+   * booted. A simulator someone left running without Expo Go is the ordinary case, and the first
+   * version of this phase missed it by hanging the question off the boot [observed, 2026-09-03].
+   */
+  installNeededOnDevice(deviceId: string, backend: DeviceBackend | null): Promise<boolean>;
   waitForBundlerReady(devServerUrl: string, timeoutMs: number): Promise<BundlerReadyResult>;
   checkEntryBundle(devServerUrl: string, timeoutMs: number): Promise<BundleCheckResult>;
   waitForAppConnection(devServerUrl: string, timeoutMs: number): Promise<AppConnectionResult>;
@@ -458,6 +500,10 @@ const PHASE_ORDER: SmokePhaseId[] = [
   'bundler-ready',
   'bundle',
   'boot-device',
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it.
+  // After the boot and not before it: `simctl install` answers `Unable to lookup in current state:
+  // Shutdown` for a device that is not up [observed, 2026-09-03].
+  'install-app',
   'app',
   // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk. Before
   // `route` rather than after it: a reload sends the app back to its initial route, so a run that
@@ -476,9 +522,14 @@ const PHASE_ORDER: SmokePhaseId[] = [
  * Every other phase is a question of every run, so a run that did not reach one owes the reader a
  * `skipped` row saying why. These two are not questions; they are *acts*, and a machine that
  * already had a dev server and a simulator did not skip them — there was nothing there to do. A
- * `skipped start dev server` on a healthy run reads as work that was owed and not done.
+ * `skipped start dev server` on a healthy run reads as work that was owed and not done. The same
+ * holds for the install: a machine that already had the app never had one to do.
  */
-const CONDITIONAL_PHASES = new Set<SmokePhaseId>(['start-dev-server', 'boot-device']);
+const CONDITIONAL_PHASES = new Set<SmokePhaseId>([
+  'start-dev-server',
+  'boot-device',
+  'install-app',
+]);
 
 /**
  * A screenshot that was never attempted, so the report has the same keys either way.
@@ -969,6 +1020,57 @@ async function runPhasesAsync(
             ),
           });
         }
+      }
+    }
+  }
+
+  // ---- Is there an app on that device to open at all? ---------------------------------------
+  //
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+  //
+  // Conditional and an *act*, like the start and the boot: only a run that installed something
+  // reports a row, because a machine that already had the app never had an install to do.
+  //
+  // Driven off the **device**, not off the boot. Hanging it on the boot was the first version and
+  // it missed the ordinary case: a simulator somebody left running without Expo Go, where this run
+  // boots nothing and the deep link comes back `115` [observed — iOS 26.5, 2026-09-03].
+  //
+  // Bootstrap, like the boot: a 423 MB download is cold this run caused, and charging it to
+  // `--timeout` would leave the error window with nothing. Only for a run allowed to bring its own
+  // environment — `--no-start` says read what is there, and installing an app is not reading.
+  if (options.bootstrap) {
+    const device = await deviceAsync();
+    if (
+      device.deviceId != null &&
+      (await deps.installNeededOnDevice(device.deviceId, device.backend))
+    ) {
+      const installed = await recordBootstrap('install-app', async () => {
+        const result = await deps.installApp(device.deviceId!);
+        return result.ok
+          ? {
+              status: 'ok' as const,
+              reason: `installed ${result.version ?? 'the app'} on ${device.deviceId}, and left it there`,
+              value: result,
+            }
+          : {
+              status: 'failed' as const,
+              reason: result.reason ?? 'the install failed, and nothing said why',
+              value: result,
+            };
+      });
+      if (!installed.ok) {
+        // Nothing to open. Deep-linking into a device this run has just been told has no app would
+        // spend the attach budget proving what this phase already said.
+        skipRest('app', 'the app could not be installed, so there was nothing to open');
+        return done('failed', {
+          ...base,
+          bundle,
+          deviceId: device.deviceId,
+          deviceBackend: device.backend,
+          screenshot: noScreenshot(
+            'the app could not be installed, so there was nothing to photograph it running'
+          ),
+        });
       }
     }
   }

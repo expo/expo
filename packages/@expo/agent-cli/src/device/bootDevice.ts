@@ -60,6 +60,13 @@ export interface BootDeviceResult {
    */
   refused: boolean;
   /**
+   * This device was booted **without** having the app, for a caller that said it could install it.
+   *
+   * @ref ./bootDevice §mayInstall. Only ever true when the caller passed `mayInstall`, and it is
+   * the caller's cue to install before it opens anything.
+   */
+  installNeeded?: boolean;
+  /**
    * Why this device was chosen, for a report that has to explain itself.
    *
    * Null when none was. One clause, in the terms of the rule that picked it — "has Expo Go
@@ -104,6 +111,16 @@ export interface BootDeviceOptions {
   installWith?: string | null;
   /** Injected for the tests: which apps a simulator has. */
   hasAppAsync?: (udid: string, appId: string) => Promise<boolean>;
+  /**
+   * The caller can put {@link appId} on a device itself, so a machine with none is not a refusal.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+   * Without this, "no simulator has the app" ends the run — which is right for a caller that can
+   * only open what is already there. A caller that can *install* needs the opposite: a booted
+   * device to install onto. So the app filter is dropped rather than the boot refused, and
+   * {@link BootDeviceResult.installNeeded} tells the caller it has an install to do.
+   */
+  mayInstall?: boolean;
 }
 
 /** One simulator, as `simctl list devices -j` describes it. */
@@ -334,6 +351,7 @@ async function bootSimulatorAsync({
   appId = null,
   appLabel = null,
   installWith = null,
+  mayInstall = false,
   hasAppAsync = (udid, id) => simulatorHasAppAsync(udid, id),
 }: BootDeviceOptions): Promise<BootDeviceResult> {
   const none = (reason: string, refused = false): BootDeviceResult => ({
@@ -391,7 +409,11 @@ async function bootSimulatorAsync({
     simulators,
     withApp == null ? {} : { hasApp: (entry) => withApp.has(entry.udid) }
   );
-  if (simulator == null) {
+  // @ref ./bootDevice §mayInstall. A caller that can put the app there needs the opposite of a
+  // refusal: a booted device to install onto. So the app filter is dropped and the ordering that
+  // was here before it decides — and the caller is told it has an install to do.
+  const forInstall = simulator == null && mayInstall ? pickSimulator(simulators) : null;
+  if (simulator == null && forInstall == null) {
     // Nothing was booted, and that is the answer rather than a failure to boot: no simulator on
     // this machine has the app, so every one of them would have refused the deep link.
     return none(
@@ -404,17 +426,22 @@ async function bootSimulatorAsync({
     );
   }
 
+  // From here on there is one device, whichever branch produced it.
+  const chosen = simulator ?? forInstall!;
+  const installNeeded = simulator == null;
   const choice =
-    simulator.state === 'Booted'
+    chosen.state === 'Booted'
       ? 'it was already booted'
-      : withApp == null
-        ? 'it is the simulator this machine last used'
-        : `it has ${app} installed`;
+      : installNeeded
+        ? `no simulator has ${app}, so this one was booted to install it onto`
+        : withApp == null
+          ? 'it is the simulator this machine last used'
+          : `it has ${app} installed`;
 
   // Before the boot, so the caller is holding it from here on (@ref ./bootDevice §onBooting).
-  onBooting?.({ deviceId: simulator.udid, backend: 'local-ios' });
+  onBooting?.({ deviceId: chosen.udid, backend: 'local-ios' });
 
-  const booted = await spawnCaptureAsync('xcrun', ['simctl', 'boot', simulator.udid], {
+  const booted = await spawnCaptureAsync('xcrun', ['simctl', 'boot', chosen.udid], {
     timeoutMs: left(),
   });
   // "Unable to boot device in current state: Booted" is the race this run is happy to lose: the
@@ -422,10 +449,10 @@ async function bootSimulatorAsync({
   if (booted.exitCode !== 0 && !/current state: Booted/i.test(booted.stderr)) {
     return {
       ok: false,
-      deviceId: simulator.udid,
+      deviceId: chosen.udid,
       backend: 'local-ios',
-      name: simulator.name,
-      reason: `"xcrun simctl boot ${simulator.udid}" exited ${booted.exitCode}: ${firstLine(booted.stderr) || 'no output'}`,
+      name: chosen.name,
+      reason: `"xcrun simctl boot ${chosen.udid}" exited ${booted.exitCode}: ${firstLine(booted.stderr) || 'no output'}`,
       refused: false,
       choice,
     };
@@ -434,16 +461,16 @@ async function bootSimulatorAsync({
   // `bootstatus` blocks until the device has finished booting, which is a different moment from
   // the boot command returning: `simctl boot` returns as soon as the boot has *started*, and an
   // `openurl` before springboard is up is refused.
-  const status = await spawnCaptureAsync('xcrun', ['simctl', 'bootstatus', simulator.udid], {
+  const status = await spawnCaptureAsync('xcrun', ['simctl', 'bootstatus', chosen.udid], {
     timeoutMs: left(),
   });
   if (status.exitCode !== 0) {
     return {
       ok: false,
-      deviceId: simulator.udid,
+      deviceId: chosen.udid,
       backend: 'local-ios',
-      name: simulator.name,
-      reason: `${simulator.name} (${simulator.udid}) was asked to boot and "xcrun simctl bootstatus" did not report it up within ${timeoutMs}ms`,
+      name: chosen.name,
+      reason: `${chosen.name} (${chosen.udid}) was asked to boot and "xcrun simctl bootstatus" did not report it up within ${timeoutMs}ms`,
       refused: false,
       choice,
     };
@@ -451,11 +478,12 @@ async function bootSimulatorAsync({
 
   return {
     ok: true,
-    deviceId: simulator.udid,
+    deviceId: chosen.udid,
     backend: 'local-ios',
-    name: simulator.name,
+    name: chosen.name,
     reason: null,
     refused: false,
+    installNeeded,
     choice,
   };
 }
