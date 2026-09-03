@@ -79,10 +79,7 @@ it('does not crash when a route file is added and the app re-renders', () => {
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
-// TODO(@ubax): seed the new nested navigator before it renders; intent deduplication alone
-// cannot repair the missing child state synchronously.
-// https://linear.app/expo/issue/ENG-26163/fix-hot-module-reloading-by-utilizing-global-state
-it.skip('seeds state when a route gains a nested layout', () => {
+it('seeds state when a route gains a nested layout', () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
@@ -100,6 +97,15 @@ it.skip('seeds state when a route gains a nested layout', () => {
     result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
   ).not.toThrow();
   expect(screen.getByTestId('second-index')).toBeVisible();
+  const rootState = result.getRouterState()!.routes[0]!.state!;
+  const secondRoute = rootState.routes[rootState.index!]!;
+  expect(secondRoute).toMatchObject({
+    name: 'second',
+    state: {
+      routeNames: ['index'],
+      routes: [{ name: 'index' }],
+    },
+  });
 });
 
 it('does not crash when the currently focused route file is removed', () => {

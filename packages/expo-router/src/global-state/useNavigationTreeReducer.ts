@@ -32,6 +32,10 @@ type ReducerConfig = {
 type TreeOperation =
   | RoutingIntent
   | {
+      type: 'ROUTE_NODE_CHANGED';
+      routeNode: RouteNode;
+    }
+  | {
       type: 'NAVIGATOR_UNMOUNTED';
       stateKey: string;
       routeNode: RouteNode;
@@ -264,6 +268,10 @@ function navigationTreeReducer(
         eventSeq: result.eventSeq + events.length,
       };
     }
+    case 'ROUTE_NODE_CHANGED': {
+      const completeState = completeNavigationState(state, operation.routeNode);
+      return completeState === state ? result : { ...result, state: deepFreeze(completeState) };
+    }
     case 'NAVIGATOR_UNMOUNTED': {
       if (!findStateByKey(state, operation.stateKey)) {
         return result;
@@ -327,7 +335,24 @@ export function useNavigationTreeReducer({
       return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
     }
   );
+  const [previousRouteNode, setPreviousRouteNode] = React.useState(routeNode);
   const previousRegistryRef = React.useRef(registry);
+
+  if (routeNode !== previousRouteNode) {
+    setPreviousRouteNode(routeNode);
+    if (routeNode && completeNavigationState(result.state, routeNode) !== result.state) {
+      reactDispatch({
+        operation: { type: 'ROUTE_NODE_CHANGED', routeNode },
+        config: {
+          registry,
+          routesWithRemovalPrevented,
+          routeNode,
+          linking,
+          redirects,
+        },
+      });
+    }
+  }
 
   const processAction = React.useCallback(
     (operation: TreeOperation) =>
