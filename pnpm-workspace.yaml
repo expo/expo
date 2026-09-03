@@ -26,6 +26,9 @@ minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:
   - '@expo/*'
+  - metro
+  - 'metro-*'
+  - ob1
   - '@noxcturnal/*'
   - '@react-native/*'
   - '@turbo/*'
