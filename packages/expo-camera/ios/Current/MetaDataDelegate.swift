@@ -8,7 +8,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
   private var barcodeProviderEnabled = true
   private var barcodeProviderFPSProcessed = 6.0
   private var lastFrameTimeStamp = 0.0
-  private let responseHandler: BarcodeScanningResponseHandler
+  private weak var responseHandler: BarcodeScanningResponseHandler?
 
   private let ciContext = CIContext()
 
@@ -52,7 +52,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
 
         if let codeMetadata {
           if codeMetadata.stringValue != nil && codeMetadata.type == barcodeType {
-            self.responseHandler.onScanningResult(BarcodeScannerUtils.avMetadataCodeObjectToDictionary(codeMetadata))
+            self.responseHandler?.onScanningResult(BarcodeScannerUtils.avMetadataCodeObjectToDictionary(codeMetadata))
           }
         }
       }
@@ -74,7 +74,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
          let image = createImage(from: videoFrame) {
         for result in barcodeProvider.scanBarcodes(from: image) {
-          self.responseHandler.onScanningResult(result)
+          self.responseHandler?.onScanningResult(result)
         }
       }
     }

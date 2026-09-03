@@ -99,7 +99,10 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       return
     }
 
-    if metadataOutput == nil {
+    // A session can accept the metadata output while rejecting the video data output, which
+    // conflicts with the movie file output used in video mode. Keep retrying until the provider
+    // has its frame source, otherwise the types it claims scan nothing.
+    if metadataOutput == nil || (barcodeProvider != nil && videoDataOutput == nil) {
       addOutputs()
       if metadataOutput == nil {
         return
@@ -122,12 +125,13 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
   }
 
   private func addOutputs() {
-    delegate = MetaDataDelegate(
+    let delegate = delegate ?? MetaDataDelegate(
       settings: settings,
       previewLayer: previewLayer,
       barcodeProvider: barcodeProvider,
       barcodeProviderEnabled: barcodeProviderEnabled,
       metadataResultHandler: self)
+    self.delegate = delegate
 
     session.beginConfiguration()
     if metadataOutput == nil {
@@ -154,7 +158,10 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
 
   private func removeOutputs() {
     session.beginConfiguration()
-    defer { session.commitConfiguration() }
+    defer {
+      session.commitConfiguration()
+      delegate = nil
+    }
 
     if let metadataOutput {
       if session.outputs.contains(metadataOutput) {

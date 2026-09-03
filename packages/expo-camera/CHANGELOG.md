@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `CameraView` leaking its barcode scanner, metadata delegate and capture session on every mount, by no longer having the delegate retain the scanner it reports to. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix all barcode scanning stopping when the optional `ExpoCameraBarcodeScanning` companion pod is not linked. The AVFoundation scanner now runs on its own, so QR codes and every other natively supported symbology keep scanning; the ZXing provider is once again only the fallback for `pdf417`, `code39`, and `codabar`. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix repeatedly mounting and unmounting `CameraView` freezing the UI when the capture session cannot start, such as on a simulator. The session is now stopped before it is torn down and before the preview layer detaches from it, and it is no longer started at all when no capture device is available. ([#49028](https://github.com/expo/expo/pull/49028) by [@barthap](https://github.com/barthap))
 - [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
