@@ -25,6 +25,7 @@ import { isPathInside } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
 import type {
   AutolinkingModuleResolverInput,
   AutolinkingPlatform,
@@ -1012,7 +1013,7 @@ export async function withMetroMultiPlatformAsync(
 
     getMetroBundler,
   }: {
-    config: ConfigT;
+    config: ExpoMetroConfig;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
