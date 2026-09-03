@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -118,7 +119,13 @@ internal class HostView(context: Context, appContext: AppContext) :
     }
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
-    CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+    // Material3's `MaterialTheme` does not provide `LocalContentColor` — only `Surface` does — so
+    // without this a `Text` or `Icon` with no explicit color falls back to the `Color.Black`
+    // default of `LocalContentColor` and is unreadable in the dark color scheme.
+    CompositionLocalProvider(
+      LocalLayoutDirection provides layoutDirection,
+      LocalContentColor provides colorScheme.onSurface
+    ) {
       MaterialExpressiveTheme(colorScheme = colorScheme) {
         MaybeMatchContentsLayout {
           Children(this@Content)
