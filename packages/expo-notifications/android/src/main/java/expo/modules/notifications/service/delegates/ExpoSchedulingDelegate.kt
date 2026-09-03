@@ -10,6 +10,7 @@ import expo.modules.notifications.notifications.interfaces.SchedulableNotificati
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger
+import expo.modules.notifications.notifications.triggers.DateTrigger
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import java.io.IOException
@@ -64,7 +65,11 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
         NotificationsService.removeScheduledNotification(context, request.identifier)
       } else {
         store.saveNotificationRequest(request)
-        setupAlarm(nextTriggerDate.time, NotificationsService.createNotificationTrigger(context, request.identifier))
+        setupAlarm(
+          nextTriggerDate.time,
+          NotificationsService.createNotificationTrigger(context, request.identifier),
+          (request.trigger as? DateTrigger)?.alarmClock == true
+        )
       }
     }
   }
@@ -102,8 +107,19 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
     }
   }
 
-  private fun setupAlarm(triggerAtMillis: Long, operation: PendingIntent) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
+  private fun setupAlarm(triggerAtMillis: Long, operation: PendingIntent, alarmClock: Boolean = false) {
+    if (alarmClock && alarmManager.canScheduleExactAlarms()) {
+      // setAlarmClock() is the strongest delivery guarantee AlarmManager offers: per the
+      // Android docs "the system never adjusts their delivery time" and it "leaves low-power
+      // modes if necessary to deliver". Unlike setExactAndAllowWhileIdle(), OEM battery
+      // policies do not convert these alarms to windowed/inexact delivery.
+      AlarmManagerCompat.setAlarmClock(
+        alarmManager,
+        triggerAtMillis,
+        null,
+        operation
+      )
+    } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
       AlarmManagerCompat.setExactAndAllowWhileIdle(
         alarmManager,
         AlarmManager.RTC_WAKEUP,

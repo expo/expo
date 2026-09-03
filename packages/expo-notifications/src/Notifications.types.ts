@@ -356,6 +356,16 @@ export type DateTriggerInput = {
   type: SchedulableTriggerInputTypes.DATE;
   date: Date | number;
   channelId?: string;
+  /**
+   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
+   * Use for time-critical, user-facing alarms (prayer/adhan times, alarm clocks,
+   * medication reminders) that must not be deferred by OEM battery policies.
+   * The system will show the alarm indicator in the status bar and may briefly
+   * exit low-power modes to deliver the notification on time.
+   * Ignored on other platforms.
+   * @platform android
+   */
+  alarmClock?: boolean;
 };
 
 /**

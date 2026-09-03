@@ -164,7 +164,7 @@ open class NotificationScheduler : Module() {
         val timestamp = params["timestamp"] as? Number
           ?: throw InvalidArgumentException("Invalid value provided as date of trigger.")
 
-        DateTrigger(channelId, timestamp.toLong())
+        DateTrigger(channelId, timestamp.toLong(), params.getBoolean("alarmClock"))
       }
 
       "daily" -> {

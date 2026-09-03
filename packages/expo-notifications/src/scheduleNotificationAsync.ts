@@ -188,6 +188,9 @@ function parseDateTrigger(trigger: NotificationTriggerInput): NativeDateTriggerI
     if (trigger.channelId) {
       result.channelId = trigger.channelId;
     }
+    if (trigger.alarmClock) {
+      result.alarmClock = trigger.alarmClock;
+    }
     return result;
   } else {
     return undefined;

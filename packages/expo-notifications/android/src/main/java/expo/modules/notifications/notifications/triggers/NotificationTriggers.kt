@@ -53,12 +53,17 @@ class DailyTrigger(override val channelId: String?, val hour: Int, val minute: I
  * A schedulable trigger representing notification to be scheduled only once at a given moment of time.
  */
 @Parcelize
-class DateTrigger(override val channelId: String?, val timestamp: Long) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class DateTrigger(
+  override val channelId: String?,
+  val timestamp: Long,
+  val alarmClock: Boolean = false
+) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
 
   override fun toBundle() = bundleWithChannelId(
     "type" to "date",
     "repeats" to false,
-    "value" to timestamp
+    "value" to timestamp,
+    "alarmClock" to alarmClock
   )
 
   override fun nextTriggerDate(): Date? {

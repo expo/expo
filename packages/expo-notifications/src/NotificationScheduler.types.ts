@@ -78,6 +78,7 @@ export interface NativeMonthlyTriggerInput {
 
 export interface NativeDateTriggerInput {
   type: 'date';
+  alarmClock?: boolean;
   channelId?: string;
   timestamp: number; // seconds since 1970
 }
