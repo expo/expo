@@ -31,6 +31,7 @@ export interface ModuleAndroidProjectInfo {
   name: string;
   sourceDir: string;
   modules: ModuleAndroidModuleInfo[];
+  modulesV2: string[];
   services: string[];
   packages: string[];
   publication?: AndroidPublication;
@@ -260,6 +261,11 @@ export type RawAndroidProjectConfig = {
    * List of modules provided by the package.
    */
   modules?: (string | RawAndroidModuleConfig)[];
+
+  /**
+   * Fully qualified names of Expo Modules API v2 modules.
+   */
+  modulesV2?: string[];
 
   /**
    * Full qualified names of Android services (`expo.modules.kotlin.services.Service`) provided by the package.

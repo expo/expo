@@ -45,11 +45,38 @@ abstract class GeneratePackagesListTask : DefaultTask() {
 
   @TaskAction
   fun generatePackagesList() {
-    val target = outputDirectory.get().asFile
+    val packageDirectory = outputDirectory.get().asFile
       .resolve(namespace.get().replace('.', '/'))
+    packageDirectory.mkdirs()
+
+    packageDirectory
       .resolve(generatedPackageListFilename)
-    target.parentFile.mkdirs()
-    target.writeText(generatePackageListFileContent())
+      .writeText(generatePackageListFileContent())
+
+    packageDirectory
+      .resolve(generatedV2ModuleListFilename)
+      .writeText(generateV2ModuleListFileContent())
+  }
+
+  private fun generateV2ModuleListFileContent(): String {
+    val classifiers = modules
+      .flatMap { module -> module.projects.flatMap { it.modulesV2 } }
+      .joinToString(",\n") { "      ${it}::class.java" }
+
+    return """package ${namespace.get()}
+
+import expo.modules.v2.ExpoModulesV2Provider
+import io.github.expo.modules.v2.modules.Module
+
+class ExpoModulesV2ModuleList : ExpoModulesV2Provider {
+  override fun getModules(): List<Class<out Module>> {
+    return listOf<Class<out Module>>(
+$classifiers
+    )
+  }
+}
+
+""".trimIndent()
   }
 
   private fun generatePackageListFileContent(): String {
