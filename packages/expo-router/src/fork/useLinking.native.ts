@@ -1,4 +1,4 @@
-import { type RefObject, use, useCallback, useEffect, useRef } from 'react';
+import { type RefObject, use, useCallback, useEffect, useEffectEvent } from 'react';
 import { Linking } from 'react-native';
 
 import {
@@ -91,36 +91,20 @@ export function useLinking(
     };
   }, []);
 
-  // We store these options in refs to keep getInitialState stable across renders.
-  const prefixesRef = useRef(prefixes);
-  const filterRef = useRef(filter);
-  const configRef = useRef(config);
-  const getStateFromPathRef = useRef(getStateFromPath);
-
-  useEffect(() => {
-    prefixesRef.current = prefixes;
-    filterRef.current = filter;
-    configRef.current = config;
-    getStateFromPathRef.current = getStateFromPath;
-  });
-
-  const getStateFromURL = useCallback(
-    (url: string | null | undefined) => {
-      if (!url || (filterRef.current && !filterRef.current(url))) {
-        return undefined;
-      }
-
-      const path = extractExpoPathFromURL(prefixesRef.current, url);
-      if (path !== undefined) {
-        // TODO(@ubax): check if this is performant
-        // TODO(@ubax): check if ref.current?.getRootState() can be replaced with the context read
-        const segments = getRouteInfoFromState(ref.current?.getRootState()).segments;
-        return getStateFromPathRef.current(path, configRef.current, segments);
-      }
+  const getStateFromURL = useEffectEvent((url: string | null | undefined) => {
+    if (!url || (filter && !filter(url))) {
       return undefined;
-    },
-    [ref]
-  );
+    }
+
+    const path = extractExpoPathFromURL(prefixes, url);
+    if (path !== undefined) {
+      // TODO(@ubax): check if this is performant
+      // TODO(@ubax): check if ref.current?.getRootState() can be replaced with the context read
+      const segments = getRouteInfoFromState(ref.current?.getRootState()).segments;
+      return getStateFromPath(path, config, segments);
+    }
+    return undefined;
+  });
 
   const getInitialState = useCallback(() => {
     const url = getInitialURL();
@@ -179,7 +163,7 @@ export function useLinking(
     };
 
     return subscribe(listener);
-  }, [enqueue, getStateFromURL, prefixes, ref, subscribe]);
+  }, [enqueue, prefixes, ref, subscribe]);
 
   return {
     getInitialState,

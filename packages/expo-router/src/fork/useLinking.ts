@@ -1,5 +1,5 @@
 import isEqual from 'fast-deep-equal';
-import { type RefObject, use, useEffect, useRef, useState } from 'react';
+import { type RefObject, use, useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import {
   completeParsedState,
@@ -177,9 +177,6 @@ function useBrowserHistorySync({
   const routerConfig = use(RouterConfigContext);
   const enqueue = useEnqueueRoutingIntent();
   const [history] = useState(createMemoryHistory);
-  const configRef = useRef(config);
-  const getStateFromPathRef = useRef(getStateFromPath);
-  const getPathFromStateRef = useRef(getPathFromState);
   const previousIndexRef = useRef<number | undefined>(undefined);
   const previousStateRef = useRef<NavigationState | undefined>(undefined);
   // TODO(@ubax): buffer history intent metadata in the reducer and flush it immediately before
@@ -187,11 +184,39 @@ function useBrowserHistorySync({
   // https://linear.app/expo/issue/ENG-22046
   const pendingHistoryOperationsRef = useRef<{ path: string }[]>([]);
 
-  useEffect(() => {
-    configRef.current = config;
-    getStateFromPathRef.current = getStateFromPath;
-    getPathFromStateRef.current = getPathFromState;
-  });
+  const parseStateFromPath = useEffectEvent(
+    (path: string, segments?: Parameters<GetStateFromPath>[2]) =>
+      getStateFromPath(path, config, segments)
+  );
+
+  const getPathForRoute = useEffectEvent(
+    (route: ReturnType<typeof findFocusedRoute>, state: NavigationState): string => {
+      let path;
+
+      // Preserve the original URL for wildcard routes while the route and params still match.
+      if (route?.path) {
+        const stateForPath = parseStateFromPath(
+          route.path,
+          // TODO(@Ubax): Check if there is a way to do it in a more performant way
+          getRouteInfoFromState(state).segments
+        );
+
+        if (stateForPath) {
+          const focusedRoute = findFocusedRoute(stateForPath);
+
+          if (
+            focusedRoute &&
+            focusedRoute.name === route.name &&
+            isEqual({ ...focusedRoute.params }, { ...route.params })
+          ) {
+            path = appendBaseUrl(route.path);
+          }
+        }
+      }
+
+      return path ?? getPathFromState(state, config);
+    }
+  );
 
   useEffect(() => {
     previousIndexRef.current = history.index;
@@ -237,7 +262,7 @@ function useBrowserHistorySync({
 
       // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
       const segments = getRouteInfoFromState(navigation.getRootState()).segments;
-      const parsedState = getStateFromPathRef.current(path, configRef.current, segments);
+      const parsedState = parseStateFromPath(path, segments);
       if (parsedState) {
         const routeNames = getRootStackRouteNames();
         if (parsedState.routes.some((route) => !routeNames.includes(route.name))) {
@@ -285,37 +310,6 @@ function useBrowserHistorySync({
   }, [enqueue, history, ref]);
 
   useEffect(() => {
-    const getPathForRoute = (
-      route: ReturnType<typeof findFocusedRoute>,
-      state: NavigationState
-    ): string => {
-      let path;
-
-      // Preserve the original URL for wildcard routes while the route and params still match.
-      if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(
-          route.path,
-          configRef.current,
-          // TODO(@Ubax): Check if there is a way to do it in a more performant way
-          getRouteInfoFromState(state).segments
-        );
-
-        if (stateForPath) {
-          const focusedRoute = findFocusedRoute(stateForPath);
-
-          if (
-            focusedRoute &&
-            focusedRoute.name === route.name &&
-            isEqual({ ...focusedRoute.params }, { ...route.params })
-          ) {
-            path = appendBaseUrl(route.path);
-          }
-        }
-      }
-
-      return path ?? getPathFromStateRef.current(state, configRef.current);
-    };
-
     if (ref.current) {
       // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
       const rootState = ref.current.getRootState();

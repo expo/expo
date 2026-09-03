@@ -12,17 +12,12 @@ type Options = {
 };
 
 export function useOptionsGetters({ key, options }: Options) {
-  const optionsRef = React.useRef<object | undefined>(options);
   const optionsGettersFromChildRef = React.useRef<Record<string, () => object | undefined | null>>(
     {}
   );
 
   const { addOptionsGetter: parentAddOptionsGetter } = use(NavigationStateContext);
   const isFocused = useIsRouteFocused(key);
-
-  React.useEffect(() => {
-    optionsRef.current = options;
-  }, [options]);
 
   const getOptionsFromListener = React.useCallback(() => {
     for (const key in optionsGettersFromChildRef.current) {
@@ -50,7 +45,7 @@ export function useOptionsGetters({ key, options }: Options) {
       return optionsFromListener;
     }
 
-    return optionsRef.current;
+    return options;
   });
 
   React.useEffect(() => {

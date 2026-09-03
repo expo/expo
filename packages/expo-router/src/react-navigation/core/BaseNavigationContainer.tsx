@@ -216,18 +216,13 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     setRouteInfo(nextRouteInfo);
   }
 
-  const onReadyRef = React.useRef(onReady);
-
-  React.useEffect(() => {
-    onReadyRef.current = onReady;
-  });
-
   const onReadyCalledRef = React.useRef(false);
+  const notifyReady = React.useEffectEvent(() => onReady?.());
 
   React.useEffect(() => {
     if (!onReadyCalledRef.current && isReady()) {
       onReadyCalledRef.current = true;
-      onReadyRef.current?.();
+      notifyReady();
       emitter.emit({ type: 'ready' });
     }
   }, [state, registry, isReady, emitter]);
