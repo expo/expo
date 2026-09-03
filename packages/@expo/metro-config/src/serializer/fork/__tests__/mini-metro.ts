@@ -16,7 +16,7 @@ import { wrapTransformResultMaps } from '../../packedMap';
 
 export const projectRoot = '/app';
 
-const METRO_CONFIG_DEFAULTS = metroConfigDefaults.getDefaultValues(null);
+const METRO_CONFIG_DEFAULTS = metroConfigDefaults.getDefaultValues();
 
 type ExpoResolvedDependency = Omit<MetroDependency, 'data'> & {
   data: ExpoTransformDependency;
