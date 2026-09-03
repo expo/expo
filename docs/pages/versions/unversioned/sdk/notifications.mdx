@@ -441,7 +441,7 @@ Learn how to configure the native projects in the [installation instructions in 
 - Starting from Android 12 (API level 31), to schedule a notification that triggers at an exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
   Read more about the [exact alarm permission](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
-  The `alarmClock` trigger option also requires an exact alarm permission. On Android 13 (API level 33) and higher, alarm clock, timer, and calendar apps
+  The `alarmClock` trigger option also requires an exact alarm permission. On Android 13 (API level 33) and later, alarm clock, timer, and calendar apps
   can declare `<uses-permission android:name="android.permission.USE_EXACT_ALARM"/>` instead. The system grants that permission without a user prompt.
   [Google Play's exact alarm policy](https://support.google.com/googleplay/android-developer/answer/13161072) restricts `USE_EXACT_ALARM` to those app categories.
 
