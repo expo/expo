@@ -90,9 +90,47 @@ export default function ExplicitSizingExample() {
 }
 ```
 
+### Safe area and `matchContents`
+
+A host with `matchContents` on either axis defaults `ignoreSafeArea` to `'all'`, so it does not apply SwiftUI's safe-area or keyboard insets. A content-sized host is exactly as large as its content, so an inset would push the content outside the frame React Native laid out. Instead, the content starts at the frame origin and the host behaves like any other React Native view: handle the safe area and the keyboard in your React Native layout, for example with `react-native-safe-area-context` or `react-native-keyboard-controller`. Pass `ignoreSafeArea` explicitly to override the default. On a content-sized host, `'container'` or `'keyboard'` brings back the inset it does not name, and the content can extend past the frame React Native laid out, where it is visible but not tappable. A fill host (`flex: 1` or an explicit size, without `matchContents`) keeps SwiftUI's own safe-area and keyboard handling.
+
+```tsx ContentSizedHeaderExample.tsx
+import { Button, Host, HStack, Spacer } from '@expo/ui/swift-ui';
+import { labelStyle } from '@expo/ui/swift-ui/modifiers';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// A content-sized host pinned to the top of the screen. The host itself never applies the safe
+// area, so the inset is applied by the React Native layout around it.
+export default function ContentSizedHeaderExample() {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={{ paddingTop: insets.top }}>
+      <Host
+        style={{ width: '100%' }}
+        matchContents={{ vertical: true }}>
+        <HStack>
+          <Button
+            systemImage="chevron.backward"
+            label="Back"
+            modifiers={[labelStyle('iconOnly')]}
+          />
+          <Spacer />
+          <Button
+            systemImage="square.and.arrow.up"
+            label="Share"
+            modifiers={[labelStyle('iconOnly')]}
+          />
+        </HStack>
+      </Host>
+    </View>
+  );
+}
+```
+
 ### Ignoring keyboard safe area
 
-Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard avoidance (for example, with `react-native-keyboard-controller`), to prevent the SwiftUI host from applying its own keyboard inset.
+Use `ignoreSafeArea="keyboard"` on a fill host when React Native is already handling keyboard avoidance (for example, with `react-native-keyboard-controller`), to prevent the SwiftUI host from applying its own keyboard inset.
 
 ```tsx IgnoreKeyboardExample.tsx
 import { Host, TextField } from '@expo/ui/swift-ui';
@@ -116,10 +154,9 @@ export default function IgnoreKeyboardExample() {
             backgroundColor: 'green',
           }}>
           <Host
-            matchContents
             ignoreSafeArea="keyboard"
-            style={{ backgroundColor: 'red' }}>
-            <TextField placeholder="Enter text" axis="vertical" />
+            style={{ height: 44, backgroundColor: 'red' }}>
+            <TextField placeholder="Enter text" />
           </Host>
         </KeyboardStickyView>
       </View>
@@ -130,34 +167,21 @@ export default function IgnoreKeyboardExample() {
 
 ### Ignoring the container safe area
 
-Use `ignoreSafeArea="container"` to remove only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
+Use `ignoreSafeArea="container"` on a fill host to remove only the container safe area (notch, home indicator, status and navigation bars) while keeping the keyboard safe area, for example when the screen already applies the safe area around the host.
 
 ```tsx IgnoreContainerSafeAreaExample.tsx
-import { Button, Host, HStack, Spacer } from '@expo/ui/swift-ui';
-import { labelStyle } from '@expo/ui/swift-ui/modifiers';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Host, Text, VStack } from '@expo/ui/swift-ui';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function IgnoreContainerSafeAreaExample() {
-  const insets = useSafeAreaInsets();
   return (
-    <Host
-      style={{ width: '100%', paddingTop: insets.top }}
-      matchContents={{ vertical: true }}
-      ignoreSafeArea="container">
-      <HStack>
-        <Button
-          systemImage="chevron.backward"
-          label="Back"
-          modifiers={[labelStyle('iconOnly')]}
-        />
-        <Spacer />
-        <Button
-          systemImage="square.and.arrow.up"
-          label="Share"
-          modifiers={[labelStyle('iconOnly')]}
-        />
-      </HStack>
-    </Host>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Host style={{ flex: 1 }} ignoreSafeArea="container">
+        <VStack>
+          <Text>The screen already applied the safe area.</Text>
+        </VStack>
+      </Host>
+    </SafeAreaView>
   );
 }
 ```

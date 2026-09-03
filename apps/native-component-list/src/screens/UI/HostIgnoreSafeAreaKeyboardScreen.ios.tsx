@@ -19,7 +19,7 @@ function HostIgnoreSafeAreaKeyboardScreen() {
           backgroundColor: 'green',
         }}
         offset={{ opened: bottomOffset }}>
-        <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
+        <Host matchContents style={{ backgroundColor: 'red' }}>
           <TextField text={text} placeholder="Enter text" axis="vertical" />
         </Host>
       </KeyboardStickyView>

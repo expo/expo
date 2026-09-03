@@ -51,14 +51,20 @@ export interface UniversalHostProps extends ViewProps {
 
   /**
    * Controls which safe area regions the hosting view should ignore.
+   *
+   * On iOS, defaults to `'all'` when `matchContents` is set on either axis, so the content starts at
+   * the frame origin like any React Native view. Pass a value to override the default. On such a
+   * host, `'container'` or `'keyboard'` brings back the inset it does not name, and the content can
+   * extend past the frame React Native laid out, where it is visible but not tappable.
    * - `'all'`- ignores all safe area insets.
+   * - `'container'` - ignores only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
    * - `'keyboard'` - ignores only the keyboard safe area.
    *
    * @platform android
    * @platform ios
    * @platform web
    */
-  ignoreSafeArea?: 'all' | 'keyboard';
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard';
 
   /**
    * When true and no explicit size is provided, the host will use the viewport size as the proposed size for layout.

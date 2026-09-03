@@ -32,7 +32,7 @@ export function Slider(props: SliderProps) {
     modifiers.push(tintModifier(minimumTrackTintColor as string));
   }
   return (
-    <Host matchContents={{ vertical: true }} style={hostStyle} ignoreSafeArea="all">
+    <Host matchContents={{ vertical: true }} style={hostStyle}>
       <SwiftUISlider
         value={value}
         min={minimumValue}

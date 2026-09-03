@@ -3,11 +3,6 @@
 import SwiftUI
 import ExpoModulesCore
 
-/// Coordinate space anchored at the `Host`, so hosted React Native views can report where SwiftUI
-/// actually placed them. Name it last in the chain: Yoga measures a hosted view from the `Host`
-/// component view, so any `Host` inset or alignment has to be inside this space, not outside it.
-internal let expoHostCoordinateSpace = "expo.ui.host"
-
 internal enum ExpoColorScheme: String, Enumerable {
   case light
   case dark
@@ -76,7 +71,6 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       )
       .modifier(GeometryChangeModifier(props: props))
       .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
-      .coordinateSpace(name: expoHostCoordinateSpace)
     } else {
       ZStack(alignment: alignment) {
         Children()
@@ -92,7 +86,6 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       )
       .modifier(GeometryChangeModifier(props: props))
       .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
-      .coordinateSpace(name: expoHostCoordinateSpace)
     }
   }
 

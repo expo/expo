@@ -48,6 +48,13 @@ export interface HostProps extends CommonViewModifierProps {
 
   /**
    * Controls which safe area regions the SwiftUI hosting view should ignore.
+   *
+   * Defaults to `'all'` when `matchContents` is set on either axis. A content-sized host is exactly
+   * as large as its content, so an inset would push the content outside the frame React Native laid
+   * out. Its content starts at the frame origin like any React Native view, and the app handles
+   * insets and keyboard avoidance itself. Pass a value to override the default. On such a host,
+   * `'container'` or `'keyboard'` brings back the inset it does not name, and the content can extend
+   * past the frame React Native laid out, where it is visible but not tappable.
    * - `'all'` - ignores all safe area insets, including the keyboard.
    * - `'container'` - ignores only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
    * - `'keyboard'` - ignores only the keyboard safe area.
@@ -85,23 +92,26 @@ export function Host(props: HostProps) {
   } = props;
   const hostRef = useTextInputHostRef();
   const mergedRef = useMergeRefs(ref, hostRef);
+  const matchContentsVertical =
+    typeof matchContents === 'object' ? matchContents.vertical : matchContents;
+  const matchContentsHorizontal =
+    typeof matchContents === 'object' ? matchContents.horizontal : matchContents;
+  // A content-sized host is exactly as large as its content, so a safe-area inset would push the
+  // content outside the frame React Native laid out. Callers can still pass a value to override.
+  const isContentSized = !!matchContentsVertical || !!matchContentsHorizontal;
 
   return (
     <TextInputHostProvider hostRef={hostRef}>
       <HostNativeView
         modifiers={modifiers}
         {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-        matchContentsVertical={
-          typeof matchContents === 'object' ? matchContents.vertical : matchContents
-        }
-        matchContentsHorizontal={
-          typeof matchContents === 'object' ? matchContents.horizontal : matchContents
-        }
+        matchContentsVertical={matchContentsVertical}
+        matchContentsHorizontal={matchContentsHorizontal}
         onLayoutContent={onLayoutContent}
         layoutDirection={
           layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
         }
-        ignoreSafeArea={ignoreSafeArea}
+        ignoreSafeArea={ignoreSafeArea ?? (isContentSized ? 'all' : undefined)}
         seedColor={seedColor}
         {...restProps}
         ref={mergedRef}

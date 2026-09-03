@@ -1,7 +1,7 @@
 import { BottomSheet, Host, HStack, RNHostView, VStack } from '@expo/ui/swift-ui';
-import { padding } from '@expo/ui/swift-ui/modifiers';
+import { onGeometryChange, padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Modal, ScrollView, View } from 'react-native';
 
 // React Native types `View` as a function component, so the instance type is its ref type.
 type ViewRef = React.ComponentRef<typeof View>;
@@ -17,6 +17,9 @@ const SHORT = 30;
 const SCROLL_LEAD = 80;
 const SCROLL_TAIL = 2000;
 const SCROLL_BY = 60;
+const INSET_HOST_HEIGHT = 120;
+// Offsets the inset fixtures from the window origin, so converting into the host has work to do.
+const INSET_HOST_TOP = 40;
 
 type Measurement = {
   x: number;
@@ -37,6 +40,22 @@ function measureAsync(ref: React.RefObject<ViewRef | null>, label = 'view'): Pro
     node.measure((x, y, width, height, pageX, pageY) =>
       resolve({ x, y, width, height, pageX, pageY })
     );
+  });
+}
+
+type WindowFrame = { x: number; y: number; width: number; height: number };
+
+function measureInWindowAsync(
+  ref: React.RefObject<ViewRef | null>,
+  label = 'view'
+): Promise<WindowFrame> {
+  return new Promise((resolve, reject) => {
+    const node = ref.current;
+    if (!node) {
+      reject(new Error(`Cannot measure ${label} in the window: it is not mounted`));
+      return;
+    }
+    node.measureInWindow((x, y, width, height) => resolve({ x, y, width, height }));
   });
 }
 
@@ -66,10 +85,88 @@ async function measureWhenPresented(
   throw new Error(`Timed out waiting for ${label} to be presented and laid out`);
 }
 
+type InsetFixture = { host: WindowFrame; hosted: WindowFrame; drawn: WindowFrame };
+
+/**
+ * Mounts a `Host` near the top of a full-screen modal, so it sits under the status bar on every
+ * device, and measures the hosted box against where SwiftUI drew it. `presentationStyle` is
+ * load-bearing: a page sheet would not start at the window origin, and `measureInWindow` would no
+ * longer be comparable with SwiftUI's global frame.
+ */
+function makeInsetFixture(setPortalChild: any) {
+  return async ({ contentSized }: { contentSized: boolean }): Promise<InsetFixture> => {
+    const hostWrapperRef = React.createRef<ViewRef>();
+    const hostedRef = React.createRef<ViewRef>();
+
+    let onShown: () => void;
+    const shown = new Promise<void>((resolve) => {
+      onShown = resolve;
+    });
+    let onLaidOut: () => void;
+    const laidOut = new Promise<void>((resolve) => {
+      onLaidOut = resolve;
+    });
+    // Where SwiftUI actually placed the hosted view, in window coordinates.
+    const drawnRef: { current: WindowFrame | null } = { current: null };
+
+    setPortalChild(
+      <Modal visible presentationStyle="fullScreen" animationType="none" onShow={() => onShown()}>
+        <View
+          ref={hostWrapperRef}
+          collapsable={false}
+          style={{
+            position: 'absolute',
+            top: INSET_HOST_TOP,
+            left: 0,
+            right: 0,
+            height: contentSized ? undefined : INSET_HOST_HEIGHT,
+          }}>
+          <Host
+            style={contentSized ? { width: '100%' } : { flex: 1 }}
+            matchContents={contentSized ? { vertical: true } : undefined}
+            onLayoutContent={() => onLaidOut()}>
+            <VStack>
+              <VStack modifiers={[onGeometryChange((frame) => (drawnRef.current = frame))]}>
+                <RNHostView matchContents>
+                  <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+              </VStack>
+            </VStack>
+          </Host>
+        </View>
+      </Modal>
+    );
+
+    await Promise.all([shown, laidOut]);
+
+    // The drawn frame and the published origin come from two different views, so poll until the
+    // shadow tree agrees with the screen, or report the last disagreement.
+    let result: InsetFixture | null = null;
+    for (let attempt = 0; attempt < 40; attempt++) {
+      const drawn = drawnRef.current;
+      if (drawn != null) {
+        const host = await measureInWindowAsync(hostWrapperRef, 'the Host wrapper');
+        const hosted = await measureInWindowAsync(hostedRef, 'the hosted box');
+        result = { host, hosted, drawn };
+        if (Math.abs(hosted.x - drawn.x) < 0.5 && Math.abs(hosted.y - drawn.y) < 0.5) {
+          break;
+        }
+      }
+      await delay(50);
+    }
+    if (result == null) {
+      throw new Error('SwiftUI never reported where it drew the hosted view');
+    }
+    return result;
+  };
+}
+
 export async function test(
   { it, describe, expect, afterEach }: any,
   { setPortalChild, cleanupPortal }: any
 ) {
+  const mountInsetFixture = makeInsetFixture(setPortalChild);
+
   afterEach(async () => {
     await cleanupPortal();
   });
@@ -296,6 +393,31 @@ export async function test(
       // while the differences above stay right, because those two views scroll together.
       expect(hostedAfter.pageX - viewport.pageX).toBe(PADDING);
       expect(hostedAfter.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
+    });
+
+    // A full-screen modal puts the Host under the status bar on every device. A content-sized axis
+    // never applies SwiftUI's inset, so the content starts at the frame origin like any RN view.
+    it('draws a content-sized Host at its frame origin under the status bar', async () => {
+      const { host, hosted, drawn } = await mountInsetFixture({ contentSized: true });
+
+      expect(drawn.x - host.x).toBeCloseTo(0, 0);
+      expect(drawn.y - host.y).toBeCloseTo(0, 0);
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
+    });
+
+    // A fill Host keeps SwiftUI's own safe-area handling, so its content is inset by the rest of the
+    // status bar while Yoga's frame starts higher. measure() must report where the content is drawn.
+    it('measures a hosted view where SwiftUI drew it when a fill Host is inset by the safe area', async () => {
+      const { host, hosted, drawn } = await mountInsetFixture({ contentSized: false });
+
+      // The fixture only proves something if SwiftUI really inset the content.
+      expect(drawn.y - host.y).toBeGreaterThan(0);
+
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
+      expect(hosted.width).toBeCloseTo(BOX, 0);
+      expect(hosted.height).toBeCloseTo(BOX, 0);
     });
 
     // A sheet content uses RootNodeKind trait so measurement happens relative to the RNHostView and not the RN's root surface.

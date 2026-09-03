@@ -92,10 +92,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
   };
 
   return (
-    <Host
-      matchContents={isCompactStyle ? true : { vertical: true }}
-      style={style}
-      ignoreSafeArea="all">
+    <Host matchContents={isCompactStyle ? true : { vertical: true }} style={style}>
       <DatePicker {...iosProps} />
     </Host>
   );
