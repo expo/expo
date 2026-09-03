@@ -69,6 +69,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private static final Map<String, WeakReference<TaskManagerInterface>> sHeadlessTaskManagers = new HashMap<>();
 
   // { "<appScopeKey>": List(eventIds...) }
+  // Guarded by `synchronized (sEvents)`: entries are added from the JobScheduler
+  // thread (`executeTask`) and removed from the module's async queue
+  // (`notifyTaskFinished`), so compound accesses must hold the monitor.
   private static final Map<String, List<String>> sEvents = new HashMap<>();
 
   private TasksAndEventsRepository mTasksAndEventsRepository;
@@ -208,25 +211,38 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   @Override
   public void notifyTaskFinished(String taskName, final String appScopeKey, Map<String, Object> response) {
     String eventId = (String) response.get("eventId");
-    List<String> appEvents = sEvents.get(appScopeKey);
 
     Log.i(TAG, "Finished task '" + taskName + "' with eventId '" + eventId + "'.");
 
-    if (appEvents != null) {
-      appEvents.remove(eventId);
+    // Only the map/list mutations hold the lock — `maybeFinishHeadlessTask`
+    // and `invalidateAppRecord` stay outside it to keep the lock leaf-level.
+    boolean becameEmpty = false;
+    synchronized (sEvents) {
+      List<String> appEvents = sEvents.get(appScopeKey);
+      if (appEvents != null) {
+        appEvents.remove(eventId);
 
-      if (appEvents.isEmpty()) {
-        sEvents.remove(appScopeKey);
-        maybeFinishHeadlessTask(appScopeKey);
-
-        // Invalidate app record but after 2 seconds delay so we can still take batched events.
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-          if (!sEvents.containsKey(appScopeKey)) {
-            invalidateAppRecord(appScopeKey);
-          }
-        }, 2000);
+        if (appEvents.isEmpty()) {
+          sEvents.remove(appScopeKey);
+          becameEmpty = true;
+        }
       }
+    }
+
+    if (becameEmpty) {
+      maybeFinishHeadlessTask(appScopeKey);
+
+      // Invalidate app record but after 2 seconds delay so we can still take batched events.
+      Handler handler = new Handler();
+      handler.postDelayed(() -> {
+        boolean stillEmpty;
+        synchronized (sEvents) {
+          stillEmpty = !sEvents.containsKey(appScopeKey);
+        }
+        if (stillEmpty) {
+          invalidateAppRecord(appScopeKey);
+        }
+      }, 2000);
     }
 
     // Invoke task callback
@@ -393,14 +409,16 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       sTaskCallbacks.put(eventId, callback);
     }
 
-    boolean isFirstEvent = sEvents.get(appScopeKey) == null;
-    final List<String> appEvents;
-    if (isFirstEvent) {
-      appEvents = new ArrayList<>();
-      appEvents.add(eventId);
-      sEvents.put(appScopeKey, appEvents);
-    } else {
-      appEvents = sEvents.get(appScopeKey);
+    // Atomic check-then-act: `notifyTaskFinished` can remove the entry between
+    // an unsynchronized check and re-get, making the re-get return null.
+    boolean isFirstEvent;
+    synchronized (sEvents) {
+      List<String> appEvents = sEvents.get(appScopeKey);
+      isFirstEvent = appEvents == null;
+      if (isFirstEvent) {
+        appEvents = new ArrayList<>();
+        sEvents.put(appScopeKey, appEvents);
+      }
       appEvents.add(eventId);
     }
 
@@ -430,7 +448,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       },
       success -> {
         if (!success) {
-          sEvents.remove(appScopeKey);
+          synchronized (sEvents) {
+            sEvents.remove(appScopeKey);
+          }
           mTasksAndEventsRepository.removeEvents(appScopeKey);
 
           // Host unreachable? Unregister all tasks for that app.
