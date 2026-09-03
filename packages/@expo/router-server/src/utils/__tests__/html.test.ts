@@ -1,5 +1,6 @@
 import {
   createFaviconAsString,
+  isSvgFaviconHref,
   createInjectedCssAsString,
   createInjectedScriptsAsString,
   createLoaderDataScriptAsString,
@@ -87,9 +88,37 @@ describe(createInjectedScriptsAsString, () => {
   });
 });
 
+describe(isSvgFaviconHref, () => {
+  it.each(['/favicon.svg', '/app/favicon.svg', '/favicon.SVG', '/f.svg?v=2', '/f.svg#x'])(
+    'treats %s as an SVG',
+    (href) => {
+      expect(isSvgFaviconHref(href)).toBe(true);
+    }
+  );
+
+  it.each(['/favicon.ico', '/favicon.png', '/svg', '/not-svg.ico', '/favicon.svgz'])(
+    'does not treat %s as an SVG',
+    (href) => {
+      expect(isSvgFaviconHref(href)).toBe(false);
+    }
+  );
+});
+
 describe(createFaviconAsString, () => {
   it('returns the matching `<link rel="icon" />` markup', () => {
     expect(createFaviconAsString('/favicon.ico')).toBe('<link rel="icon" href="/favicon.ico"/>');
+  });
+
+  it('adds `type="image/svg+xml"` when the href points to an SVG', () => {
+    expect(createFaviconAsString('/favicon.svg')).toBe(
+      '<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>'
+    );
+  });
+
+  it('adds the SVG type for a baseUrl-prefixed SVG href', () => {
+    expect(createFaviconAsString('/app/favicon.svg')).toBe(
+      '<link rel="icon" type="image/svg+xml" href="/app/favicon.svg"/>'
+    );
   });
 
   it('escapes attribute-unsafe characters in the href', () => {
