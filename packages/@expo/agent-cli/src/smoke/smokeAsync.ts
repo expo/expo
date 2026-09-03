@@ -16,7 +16,7 @@ import { devStopAsync, type DevStopResultJson } from '../dev/stopAsync';
 import { bootDeviceAsync, shutdownDeviceAsync } from '../device/bootDevice';
 import { checkExpoGoVersionAsync } from '../device/expoGoVersion';
 import { installExpoGoAsync } from '../device/installExpoGo';
-import { simulatorHasAppAsync } from '../device/installedApps';
+import { simulatorDiskExistsAsync, simulatorHasAppAsync } from '../device/installedApps';
 import { captureScreenshotAsync, defaultScreenshotPath } from '../device/screenshot';
 import { event } from '../events';
 import { EXIT_OK } from '../exitCodes';
@@ -394,6 +394,16 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
       // second resolution of its own: a cloud session's disk is not this machine's, and Android
       // installs through a different tool (llp/0005 §Cloud simulator, §Android).
       if (options.platform !== 'ios' || backend !== 'local-ios') {
+        return false;
+      }
+      // @ref src/device/installedApps §simulatorDiskExistsAsync
+      //
+      // Asked **before** the app is looked for, because "no apps" and "could not look" are the same
+      // answer from the read below and this action is a 423 MB download. A machine with no
+      // CoreSimulator tree — the e2e tier's Linux runner, a udid nothing here has — would otherwise
+      // read as "Expo Go is not installed" and reach for a real one [observed — tier0-linux,
+      // 2026-09-03].
+      if (!(await simulatorDiskExistsAsync(deviceId))) {
         return false;
       }
       if (!(await simulatorHasAppAsync(deviceId, target.appId))) {

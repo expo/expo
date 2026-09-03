@@ -1001,6 +1001,14 @@ async function runPhasesAsync(
    * Null on a run that never had to decide about a boot, which is every run with a device already.
    */
   let firstConnection: AppConnectionResult | null = null;
+  /**
+   * This run replaced the app on the device, so nothing that was attached before is still running.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+   * Read by the `app` phase, which must open rather than take the attached-app shortcut: a target
+   * the dev server still lists is one the install has already killed.
+   */
+  let appReplaced = false;
 
   // `--cloud` named the device, and the device it named is not on this machine: booting a
   // simulator here would be answering a question about a session with a laptop (llp/0005 §Cloud simulator).
@@ -1111,7 +1119,20 @@ async function runPhasesAsync(
               value: result,
             };
       });
-      if (!installed.ok) {
+      if (installed.ok) {
+        // @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got
+        // it. **The install invalidates every read of the app that came before it.** `simctl
+        // install` over a running app replaces the bundle and takes the process with it, and the
+        // dev server's target list does not forget that app as quickly as the install kills it.
+        //
+        // So the probe taken in the boot decision above is dropped. Without this, a run that
+        // replaced a running Expo Go reported `app ok` off that stale count, opened nothing, and
+        // then found no app to reload, read or watch — every phase after it arguing with the one
+        // above [observed, Kudo, 2026-09-03]. The run after it passed, because it found nothing
+        // attached and opened the app, which is what this run has to do.
+        firstConnection = null;
+        appReplaced = true;
+      } else {
         // Nothing to open. Deep-linking into a device this run has just been told has no app would
         // spend the attach budget proving what this phase already said.
         skipRest('app', 'the app could not be installed, so there was nothing to open');
@@ -1204,7 +1225,9 @@ async function runPhasesAsync(
     const first =
       firstConnection ??
       (await deps.waitForAppConnection(devServerUrl, Math.min(remaining(), APP_PROBE_MS)));
-    if (first.appsConnected > 0) {
+    // `!appReplaced` is the whole of the fix above: an install replaced the app, so a count that
+    // says one is attached is describing the process the install ended.
+    if (!appReplaced && first.appsConnected > 0) {
       return { status: 'ok' as const, value: first };
     }
 

@@ -35,6 +35,32 @@ export function simulatorDeviceDir(
 }
 
 /**
+ * Whether this machine has a simulator with this udid at all, as a directory on disk.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+ *
+ * The distinction {@link readInstalledAppIdsAsync} deliberately does not draw. That function
+ * answers "no apps" for a device it could not read, and for the boot choice the two are the same
+ * answer: do not boot this one. For a caller that **acts** on the absence — the install phase,
+ * whose action is a 423 MB download — they are opposite, so it has to be able to tell whether the
+ * disk was there to read.
+ *
+ * Found by CI rather than by reasoning: the e2e tier runs on Linux, where there is no
+ * CoreSimulator tree and no `plutil`, so every fake udid in it read as "Expo Go is not installed"
+ * and the install reached for a real download [observed — tier0-linux, 2026-09-03].
+ */
+export async function simulatorDiskExistsAsync(
+  udid: string,
+  { homedir }: { homedir?: string } = {}
+): Promise<boolean> {
+  try {
+    return (await fs.promises.stat(simulatorDeviceDir(udid, { homedir }))).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Every installed app's `.app` bundle on one simulator.
  *
  * Never throws. A device with no `data` directory has never been booted and therefore has no apps,

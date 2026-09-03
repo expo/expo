@@ -2353,3 +2353,93 @@ describe(`${runSmokePhasesAsync.name} and what the install replaced`, () => {
     );
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+//
+// The install invalidates the probe that came before it. `simctl install` over a running app
+// replaces the bundle and takes the process with it, so an app that was attached a moment earlier
+// is gone — and the dev server's target list does not forget it that quickly.
+//
+// Live, that produced a run whose phases argued with each other [observed, Kudo, 2026-09-03]:
+//
+//   ok       install-app 4.8s · installed 57.0.9 …, replacing 54.0.7, and left it there
+//   ok       app
+//   unknown  reload · no app is connected to the dev server, so there is nothing to broadcast to
+//   unknown  runtime · No app connected to the dev server could be shown to be running on ios
+//
+// The `app` row is the tell: `ok` with no reason and no duration is the already-attached shortcut,
+// which reused a count taken before the install. The run that followed it passed, because it found
+// nothing attached and opened the app — which is what this one should have done.
+describe(`${runSmokePhasesAsync.name} and the app the install replaced`, () => {
+  /** Attached when the run starts, and gone by the time the install has finished. */
+  const attachedThenReplaced = () => ({
+    bootstrap: true,
+    installNeededOnDevice: async () => true,
+    probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
+    installApp: async () => ({ ok: true, version: '57.0.9', replaced: '54.0.7', reason: null }),
+  });
+
+  it(`opens the app again after replacing it, rather than trusting the earlier probe`, async () => {
+    const openRoute = jest.fn(async (route: string) => opened({ route }));
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...attachedThenReplaced(),
+        // One app all along, which is the stale target the live run tripped over: the count says
+        // yes both before the install and after it.
+        waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 1 }),
+        openRoute,
+      }),
+      options({ bootstrap: true })
+    );
+
+    expect(openRoute).toHaveBeenCalled();
+    expect(run.phases.find((phase) => phase.id === 'app')?.reason).toContain('to connect one');
+    expect(run.outcome).toBe('passed');
+  });
+
+  // And the app it opened is one this run moved, so it owes the settle and the runtime poll — and
+  // owes **no** reload, because it fetched the served bundle on its way up.
+  it(`treats the reopened app as one this run opened`, async () => {
+    const reloadApp = jest.fn();
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...attachedThenReplaced(),
+        waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 1 }),
+        reloadApp,
+      }),
+      options({ bootstrap: true })
+    );
+
+    expect(reloadApp).not.toHaveBeenCalled();
+    expect(statusOf(run, 'reload')).toBe('skipped');
+    expect(run.reload.disposition).toBe('not-needed');
+  });
+
+  // A run that installed nothing keeps the shortcut: re-opening an app that is already there costs
+  // a launch and answers nothing new.
+  it(`still trusts the probe when nothing was installed`, async () => {
+    const openRoute = jest.fn(async (route: string) => opened({ route }));
+    await runSmokePhasesAsync(
+      deps({ installNeededOnDevice: async () => false, openRoute }),
+      options({ bootstrap: true })
+    );
+
+    expect(openRoute).not.toHaveBeenCalled();
+  });
+
+  // An install that **failed** never gets here — the run stops at the phase — but the flag must not
+  // be set by the attempt either, or a failed install would send the run looking for an app it
+  // never put there.
+  it(`does not reopen after an install that failed`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...attachedThenReplaced(),
+        installApp: async () => ({ ok: false, version: null, replaced: null, reason: 'no space' }),
+      }),
+      options({ bootstrap: true })
+    );
+
+    expect(statusOf(run, 'install-app')).toBe('failed');
+    expect(statusOf(run, 'app')).toBe('skipped');
+  });
+});

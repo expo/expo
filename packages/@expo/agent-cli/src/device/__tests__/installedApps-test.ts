@@ -7,9 +7,15 @@
 // worth asking about is shut — that is why the run is about to boot one — so the only question the
 // tools can answer is the one nobody needs.
 
+import { vol } from 'memfs';
 import path from 'path';
 
-import { appBundleDirs, readInstalledAppIdsAsync, simulatorDeviceDir } from '../installedApps';
+import {
+  appBundleDirs,
+  readInstalledAppIdsAsync,
+  simulatorDeviceDir,
+  simulatorDiskExistsAsync,
+} from '../installedApps';
 
 describe(simulatorDeviceDir, () => {
   it(`points at the device's own directory under CoreSimulator`, () => {
@@ -96,5 +102,42 @@ describe(readInstalledAppIdsAsync, () => {
     expect(
       await readInstalledAppIdsAsync('FRESH', { homedir: '/Users/dev', bundleDirs: () => [] })
     ).toEqual([]);
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Putting Expo Go on a simulator that has not got it
+//
+// "No apps" and "could not look" are the same answer from `readInstalledAppIdsAsync`, and for the
+// boot choice that is deliberate: both mean do not boot this device. For the **install** decision
+// they are opposite, because one of them means spend 423 MB — so a caller that acts needs to know
+// whether the disk was there to read.
+//
+// Found by CI: the agent-cli e2e tier runs on Linux, where there is no CoreSimulator tree and no
+// `plutil`, so every fake udid read as "Expo Go is not installed" and the install phase reached for
+// a real download [observed — tier0-linux, 2026-09-03].
+describe(simulatorDiskExistsAsync, () => {
+  // The virtual filesystem is shared by every test in the process, so each case starts from empty
+  // — otherwise the first one's device directory answers for the second one's udid.
+  beforeEach(() => {
+    vol.reset();
+  });
+
+  it(`is true for a device whose directory is there`, async () => {
+    vol.fromJSON({ '/home/Library/Developer/CoreSimulator/Devices/UDID/.keep': '' });
+
+    expect(await simulatorDiskExistsAsync('UDID', { homedir: '/home' })).toBe(true);
+  });
+
+  it(`is false for a udid nothing on this machine has`, async () => {
+    vol.fromJSON({ '/home/Library/Developer/CoreSimulator/Devices/OTHER/.keep': '' });
+
+    expect(await simulatorDiskExistsAsync('UDID', { homedir: '/home' })).toBe(false);
+  });
+
+  // The Linux case, and the whole point: no CoreSimulator tree at all.
+  it(`is false on a machine with no simulator tree`, async () => {
+    vol.fromJSON({ '/home/.keep': '' });
+
+    expect(await simulatorDiskExistsAsync('UDID', { homedir: '/home' })).toBe(false);
   });
 });

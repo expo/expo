@@ -311,6 +311,13 @@ async function writeSimulatorHomeAsync(
   await installStubPlutilAsync(projectRoot);
   const home = path.join(projectRoot, '.sim-home');
   for (const [udid, appIds] of Object.entries(installed)) {
+    // The device's own directory, whether or not it has apps in it. A real simulator that exists
+    // has one, and a caller that acts on "no Expo Go here" needs to tell an empty device from a
+    // machine that has no simulators at all (@ref src/device/installedApps §simulatorDiskExistsAsync).
+    await fs.promises.mkdir(
+      path.join(home, 'Library/Developer/CoreSimulator/Devices', udid, 'data'),
+      { recursive: true }
+    );
     for (const [index, appId] of appIds.entries()) {
       const bundle = path.join(
         home,
@@ -484,7 +491,12 @@ describe('@expo/agent-cli smoke', () => {
 
       const result = await executeAgentCliAsync(
         projectRoot,
-        ['smoke', '--json', '--no-screenshot', '--port', '9377', '--timeout', '4s'],
+        // `--ios` named, not left to the host. The platform default is iOS on a Mac and Android
+        // everywhere else, so a test that asserted the sentence without naming one passed here and
+        // failed on both CI runners with `Building the android development build`
+        // [observed — tier0-linux and tier0-windows, 2026-09-03]. F58's rule for the follow-ups is
+        // the same rule for an assertion: a run that drops the platform is a different run.
+        ['smoke', '--ios', '--json', '--no-screenshot', '--port', '9377', '--timeout', '4s'],
         {
           env: {
             ...devServerOnlyEnv(projectRoot),
@@ -509,7 +521,7 @@ describe('@expo/agent-cli smoke', () => {
 
       const result = await executeAgentCliAsync(
         projectRoot,
-        ['smoke', '--json', '--no-screenshot', '--port', '9378', '--timeout', '4s'],
+        ['smoke', '--ios', '--json', '--no-screenshot', '--port', '9378', '--timeout', '4s'],
         { env: { ...devServerOnlyEnv(projectRoot), STUB_EXPO_EXIT_CODE: '1' }, reject: false }
       );
 
