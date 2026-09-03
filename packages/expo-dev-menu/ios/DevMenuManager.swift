@@ -72,6 +72,7 @@ open class DevMenuManager: NSObject {
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
+  var canShowFloatingActionButton = true
   @objc public var isReactAppRunning = false
 
   /**
@@ -407,6 +408,26 @@ open class DevMenuManager: NSObject {
     DevMenuPreferences.isOnboardingFinished = finished
   }
 
+  /**
+   Applies the session-only overrides carried by a launch URL: `__expo_show_menu_at_launch=0`,
+   `__expo_tools_button=0` and `__expo_disable_onboarding=1`. Returns the URL without its reserved params.
+   */
+  @objc(applyLaunchOverridesFromURL:)
+  @discardableResult
+  public func applyLaunchOverrides(from url: URL) -> URL {
+    let launch = ExpoLaunchURL(url)
+    if launch.suppressesMenuAtLaunch {
+      canLaunchDevMenuOnStart = false
+    }
+    if launch.hidesToolsButton {
+      canShowFloatingActionButton = false
+    }
+    if launch.disablesOnboarding {
+      DevMenuPreferences.isOnboardingFinished = true
+    }
+    return launch.strippedURL
+  }
+
   func readAutoLaunchDisabledState() {
     let userDefaultsValue = UserDefaults.standard.bool(forKey: "EXDevMenuDisableAutoLaunch")
     if userDefaultsValue {
@@ -580,6 +601,7 @@ open class DevMenuManager: NSObject {
       }
 
       let shouldShow = DevMenuPreferences.showFloatingActionButton
+        && self.canShowFloatingActionButton
         && !self.isVisible
         && self.isReactAppRunning
         && !self.isNavigatingHome

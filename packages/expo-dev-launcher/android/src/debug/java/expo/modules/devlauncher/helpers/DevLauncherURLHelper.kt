@@ -1,30 +1,22 @@
 package expo.modules.devlauncher.helpers
 
 import android.net.Uri
+import expo.modules.devmenu.launch.ExpoLaunchUrl
 
 fun replaceEXPScheme(uri: Uri, scheme: String): Uri = if (uri.scheme == "exp") uri.buildUpon().scheme(scheme).build() else uri
 
-fun isDevLauncherUrl(uri: Uri) = uri.host == "expo-development-client"
+/** A launcher command: any `__expo_*` query param, or the legacy `expo-development-client` host. */
+fun isDevLauncherUrl(uri: Uri) = ExpoLaunchUrl(uri).isLauncherCommand
 
-fun hasUrlQueryParam(uri: Uri): Boolean {
-  return uri.getQueryParameter("url") != null
-}
+/** Whether the launcher URL names a project to load, through `__expo_url` or the legacy `url`. */
+fun hasUrlQueryParam(uri: Uri): Boolean = ExpoLaunchUrl(uri).targetUrl != null
 
-class DevLauncherUrl(var url: Uri) {
-  val queryParams = mutableMapOf<String, String>()
+class DevLauncherUrl(url: Uri) {
+  val launch = ExpoLaunchUrl(url)
 
-  init {
-    url.queryParameterNames.forEach { name ->
-      queryParams[name] = url.getQueryParameter(name) ?: ""
-    }
+  /** The project URL to load, with `exp` rewritten to `http`. */
+  val url: Uri = replaceEXPScheme(launch.targetUrl ?: launch.strippedUrl, "http")
 
-    if (isDevLauncherUrl(url)) {
-      if (queryParams["url"] != null) {
-        val queryUrl = Uri.parse(queryParams["url"])
-        url = replaceEXPScheme(queryUrl, "http")
-      }
-    } else {
-      url = replaceEXPScheme(url, "http")
-    }
-  }
+  /** Query params the launcher passes on, for example `updateMessage`. Never contains reserved params. */
+  val queryParams: Map<String, String> = launch.passthroughParams
 }

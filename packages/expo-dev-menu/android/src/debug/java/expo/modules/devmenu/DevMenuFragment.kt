@@ -68,7 +68,8 @@ class DevMenuFragment(
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val shouldShowAtLaunch = preferences.showsAtLaunch || !preferences.isOnboardingFinished
+    val shouldShowAtLaunch = DevMenuLaunchOverrides.canLaunchDevMenuOnStart &&
+      (preferences.showsAtLaunch || !preferences.isOnboardingFinished)
     if (shouldShowAtLaunch) {
       showMenuAtLaunch()
     }

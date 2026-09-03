@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add the shared `ExpoLaunchURL` parser for the reserved `__expo_*` launch URL params, and honor `__expo_show_menu_at_launch=0` and `__expo_tools_button=0` for the current session.
 - Add a JavaScript API to show or hide the floating Tools button at runtime. ([#47746](https://github.com/expo/expo/pull/47746) by [@KevinvdBurg](https://github.com/KevinvdBurg))
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 

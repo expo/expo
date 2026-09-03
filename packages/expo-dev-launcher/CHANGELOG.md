@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Accept launcher commands as reserved `__expo_*` query params on any host: `__expo_url`, `__expo_disable_onboarding`, `__expo_show_menu_at_launch` and `__expo_tools_button`. The `expo-development-client` host and the `url` param remain supported. Reserved params are removed before the app receives the URL.
 - Resolve asset URLs and `bundleUrl` from base request URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
 - [iOS] Filter discovered development servers by bundle identifier, Expo account, or slug. ([#48697](https://github.com/expo/expo/pull/48697) by [@alanjhughes](https://github.com/alanjhughes))
 

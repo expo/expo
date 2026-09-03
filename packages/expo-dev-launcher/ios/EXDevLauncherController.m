@@ -318,7 +318,17 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return [self _handleExternalDeepLink:url options:options];
   }
 
+  // Session-only dev menu overrides ride on the outer launch url (__expo_show_menu_at_launch=0, ...).
+  // TODO: exchange __expo_launch_token for a session. Never log its value.
+  [[DevMenuManager shared] applyLaunchOverridesFromURL:url];
+
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
+    NSURL *externalDeepLink = [EXDevLauncherURLHelper externalDeepLinkFromLauncherURL:url];
+    if (externalDeepLink) {
+      // e.g. `myapp://login?__expo_launch_token=...`: the launcher consumed the reserved params,
+      // the app receives the rest as a regular deep link.
+      return [self _handleExternalDeepLink:externalDeepLink options:options];
+    }
     // edgecase: this is a dev launcher url but it doesn't specify what url to open
     // fallback to navigating to the launcher home screen
     [self launchDefaultUrlFallbackOrNavigateToLauncher];

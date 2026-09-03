@@ -44,4 +44,39 @@ internal class DevLauncherURLHelperTest {
       )
     ).isFalse()
   }
+
+  @Test
+  fun `tests isDevLauncherUrl accepts reserved params on any host`() {
+    Truth.assertThat(isDevLauncherUrl(Uri.parse("myapp://login?__expo_launch_token=abc"))).isTrue()
+    Truth.assertThat(isDevLauncherUrl(Uri.parse("myapp://?__expo_url=http%3A%2F%2Flocalhost%3A8081"))).isTrue()
+    Truth.assertThat(isDevLauncherUrl(Uri.parse("myapp://login"))).isFalse()
+  }
+
+  @Test
+  fun `tests hasUrlQueryParam`() {
+    Truth.assertThat(hasUrlQueryParam(Uri.parse("exp://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081"))).isTrue()
+    Truth.assertThat(hasUrlQueryParam(Uri.parse("myapp://?__expo_url=http%3A%2F%2Flocalhost%3A8081"))).isTrue()
+    Truth.assertThat(hasUrlQueryParam(Uri.parse("exp://expo-development-client"))).isFalse()
+    Truth.assertThat(hasUrlQueryParam(Uri.parse("myapp://login?__expo_launch_token=abc"))).isFalse()
+  }
+
+  @Test
+  fun `tests DevLauncherUrl resolves the target and drops reserved params`() {
+    val legacy = DevLauncherUrl(
+      Uri.parse("scheme://expo-development-client/?url=exp%3A%2F%2Flocalhost%3A8081&updateMessage=hi&__expo_launch_token=abc")
+    )
+    Truth.assertThat(legacy.url.toString()).isEqualTo("http://localhost:8081")
+    Truth.assertThat(legacy.queryParams["updateMessage"]).isEqualTo("hi")
+    Truth.assertThat(legacy.queryParams).doesNotContainKey("__expo_launch_token")
+
+    val reserved = DevLauncherUrl(
+      Uri.parse("scheme://?__expo_url=exp%3A%2F%2Flocalhost%3A8081&__expo_tools_button=0")
+    )
+    Truth.assertThat(reserved.url.toString()).isEqualTo("http://localhost:8081")
+    Truth.assertThat(reserved.queryParams).isEmpty()
+
+    val plain = DevLauncherUrl(Uri.parse("exp://localhost:8081?x=1"))
+    Truth.assertThat(plain.url.toString()).isEqualTo("http://localhost:8081?x=1")
+    Truth.assertThat(plain.queryParams["x"]).isEqualTo("1")
+  }
 }
