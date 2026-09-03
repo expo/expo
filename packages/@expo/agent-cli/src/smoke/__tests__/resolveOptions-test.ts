@@ -30,9 +30,26 @@ describe(resolveSmokeOptions, () => {
       screenshot: true,
       devServerUrl: null,
       routeCheck: true,
+      reload: true,
       json: false,
       followups: true,
     });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk. The same
+  // shape as `--start` above: reloading an app this run found already attached is what the command
+  // does, `--reload` is that spelled out loud, and `--no-reload` is the opt-out for a caller who is
+  // asking about the session that is running rather than about the code on disk.
+  it(`treats --reload as the default and --no-reload as the opt-out`, () => {
+    expect(resolveSmokeOptions([]).reload).toBe(true);
+    expect(resolveSmokeOptions(['--reload']).reload).toBe(true);
+    expect(resolveSmokeOptions(['--no-reload']).reload).toBe(false);
+  });
+
+  // The same refusal the other opposite-flag pairs get: a run with no rule for what to do must not
+  // pick one.
+  it(`refuses --reload and --no-reload together`, () => {
+    expect(() => resolveSmokeOptions(['--reload', '--no-reload'])).toThrow(/opposite things/);
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment

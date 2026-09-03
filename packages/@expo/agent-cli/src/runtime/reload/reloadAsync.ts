@@ -957,7 +957,7 @@ export async function reloadOverDevServerAsync(
 }
 
 /** What the wait for a cloud reload found: the target list, and the dev server's own output. */
-interface ReloadEvidence {
+export interface ReloadEvidence {
   appsConnected: number;
   freshTargets: number;
   timedOut: boolean;
@@ -973,7 +973,7 @@ interface ReloadEvidence {
  * there is (S11). Every rung uses it (wave 21); until then the log was read on the cloud path alone,
  * which made one question have two answers.
  */
-async function waitForReloadEvidenceAsync(
+export async function waitForReloadEvidenceAsync(
   devServerUrl: string,
   projectRoot: string,
   {

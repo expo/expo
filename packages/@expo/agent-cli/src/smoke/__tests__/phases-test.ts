@@ -41,6 +41,10 @@ function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
     screenshot: true,
     devServerUrl: null,
     routeCheck: true,
+    // On by default here *and* in the command, unlike `bootstrap` above: this is the flag that
+    // decides whether the four phases below the `app` one are about the code on disk, so a table
+    // that defaulted it off would be a table of the bug it was added to remove.
+    reload: true,
     json: true,
     followups: false,
     ...overrides,
@@ -167,6 +171,16 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
     waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 3 }),
     probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
     openRoute: async (route) => opened({ route }),
+    // A reload the dev server's own command socket proved, which is the healthy local case.
+    reloadApp: async () => ({
+      ok: true,
+      verifiedBy: 'message-socket-peers' as const,
+      knownTargetIds: ['page-1'],
+      freshTargets: 0,
+      commandSocketReconnected: true,
+      bundleServed: false,
+      reason: null,
+    }),
     evaluate: async () => ({ ok: true, unsupported: false, reason: null }),
     collectErrors: async () => ({ ok: true, records: [], reason: null }),
     captureScreenshot: async () => screenshot(),
@@ -190,6 +204,8 @@ describe(runSmokePhasesAsync, () => {
     expect(statusOf(run, 'bundler-ready')).toBe('ok');
     expect(statusOf(run, 'bundle')).toBe('ok');
     expect(statusOf(run, 'app')).toBe('ok');
+    // The app was already attached, so it was put back on the served bundle before it was read.
+    expect(statusOf(run, 'reload')).toBe('ok');
     // No `--route`, so the route phase did not run — and says so rather than reading as a pass.
     expect(statusOf(run, 'route')).toBe('skipped');
     expect(statusOf(run, 'runtime')).toBe('ok');
@@ -282,6 +298,7 @@ describe(runSmokePhasesAsync, () => {
         'bundler-ready',
         'bundle',
         'app',
+        'reload',
         'route',
         'runtime',
         'errors',
@@ -608,11 +625,7 @@ describe(runSmokePhasesAsync, () => {
       expect(run.outcome).toBe('failed');
       expect(startDevServer).not.toHaveBeenCalled();
       expect(bootDevice).not.toHaveBeenCalled();
-      expect(run.environment).toMatchObject({
-        devServer: 'absent',
-        device: 'absent',
-        cleanup: [],
-      });
+      expect(run.environment).toMatchObject({ devServer: 'absent', device: 'absent', cleanup: [] });
     });
 
     // The bootstrap is not charged to `--timeout`: a cold simulator takes a minute to boot, and a
@@ -1011,9 +1024,11 @@ describe(runSmokePhasesAsync, () => {
       expect(run.runtimeSupported).toBe(false);
     });
 
-    // An app that was already attached when this run arrived is not one this run is waiting on.
-    // Reading it once and reporting the answer is what every previous version did, and is right.
-    it(`asks once when the app was already there`, async () => {
+    // An app that was already attached when this run arrived **and was not reloaded** is not one
+    // this run is waiting on. Reading it once and reporting the answer is right, and `--no-reload`
+    // is what puts the run in that state now: a reload leaves the app coming back, and an app that
+    // is coming back gets the poll (@ref ./phases §RUNTIME_READY_TIMEOUT_MS).
+    it(`asks once when the app was already there and nothing moved it`, async () => {
       let tries = 0;
       await runSmokePhasesAsync(
         deps({
@@ -1022,7 +1037,7 @@ describe(runSmokePhasesAsync, () => {
             return { ok: false, unsupported: false, reason: 'No target found.' };
           },
         }),
-        options({ bootstrap: true })
+        options({ bootstrap: true, reload: false })
       );
 
       expect(tries).toBe(1);
@@ -1528,12 +1543,15 @@ describe(runSmokePhasesAsync, () => {
       expect(statusOf(run, 'errors')).toBe('inconclusive');
     });
 
+    // `reload: false` so this stays a test of the *verdict*: a run that reloaded the app polls the
+    // runtime for `RUNTIME_READY_TIMEOUT_MS` before it gives up, which is its own case above, and
+    // spending that wait here would measure the poll rather than what the poll's answer decides.
     it(`is inconclusive when the runtime did not answer for another reason`, async () => {
       const run = await runSmokePhasesAsync(
         deps({
           evaluate: async () => ({ ok: false, unsupported: false, reason: 'socket hang up' }),
         }),
-        options()
+        options({ reload: false })
       );
 
       expect(run.outcome).toBe('inconclusive');
@@ -1636,12 +1654,7 @@ describe(smokeExitCode, () => {
     [{ collectErrors: async () => ({ ok: true, records: [record()], reason: null }) }, 20],
     [{ checkEntryBundle: async () => bundle({ outcome: 'broken' }) }, 20],
     [{ discoverDevServer: async () => discovery({ reachable: false }) }, 20],
-    [
-      {
-        evaluate: async () => ({ ok: false, unsupported: true, reason: 'method not found' }),
-      },
-      22,
-    ],
+    [{ evaluate: async () => ({ ok: false, unsupported: true, reason: 'method not found' }) }, 22],
     [{ checkEntryBundle: async () => bundle({ outcome: 'timeout' }) }, 22],
     [
       {
@@ -1780,10 +1793,252 @@ describe(`${runSmokePhasesAsync.name} and the app it opened`, () => {
     expect(order).toEqual(['settle', 'evaluate', 'screenshot']);
   });
 
-  it(`does not spend the wait on an app that was already attached`, async () => {
+  // `--no-reload`, because that is now the only way a run reads an app it did not move: an app it
+  // reloaded is re-registering and owes the wait for the same reason a cold launch does.
+  it(`does not spend the wait on an app that was already attached and not reloaded`, async () => {
     const waitForStableTargets = jest.fn(async () => ({ stable: true }));
 
+    await runSmokePhasesAsync(deps({ waitForStableTargets }), options({ reload: false }));
+
+    expect(waitForStableTargets).not.toHaveBeenCalled();
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+//
+// The false green this phase was added to remove, and the one this command exists to prevent.
+// Every phase below `app` reads the *running app*, and an app that was already attached when the
+// run arrived is running whatever it last loaded. At the moment `smoke` is for — after an edit,
+// before saying "done" — that is the bundle from before the edit.
+//
+// Observed on a plain Expo Go project [iOS 26.5 simulator, Expo Go SDK 57, 2026-09-03]: with a
+// bare `throw new Error(...)` at the top of the entry component, `smoke --platform ios --no-start`
+// reported `smoke passed` with `errors ok` at 3.1 s and exited 0, and its own screenshot showed
+// the *previous* screen. Killing the app first made the identical run fail with the throw in the
+// error window, which is what proved it was staleness and not the error reader.
+describe(`${runSmokePhasesAsync.name} and the code on disk`, () => {
+  it(`reloads an app that was already attached, before it reads it`, async () => {
+    const reloadApp = jest.fn(async () => ({
+      ok: true,
+      verifiedBy: 'message-socket-peers' as const,
+      knownTargetIds: ['page-1'],
+      freshTargets: 0,
+      commandSocketReconnected: true,
+      bundleServed: false,
+      reason: null,
+    }));
+    const run = await runSmokePhasesAsync(
+      deps({
+        discoverDevServer: async () => discovery({ devServerUrl: 'http://127.0.0.1:8210' }),
+        reloadApp,
+      }),
+      options()
+    );
+
+    // On the dev server this run settled on, like every other phase.
+    expect(reloadApp).toHaveBeenCalledWith('http://127.0.0.1:8210', expect.any(Number));
+    expect(statusOf(run, 'reload')).toBe('ok');
+    expect(run.reload.disposition).toBe('reloaded');
+    expect(run.reload.verifiedBy).toBe('message-socket-peers');
+    expect(run.outcome).toBe('passed');
+  });
+
+  // The reload has to come *before* the error window, or the window is of the session the reload
+  // replaced and the whole phase buys nothing.
+  it(`opens the error window after the reload, not before it`, async () => {
+    const order: string[] = [];
+    await runSmokePhasesAsync(
+      deps({
+        reloadApp: async () => {
+          order.push('reload');
+          return {
+            ok: true,
+            verifiedBy: 'message-socket-peers' as const,
+            knownTargetIds: [],
+            freshTargets: 0,
+            commandSocketReconnected: true,
+            bundleServed: false,
+            reason: null,
+          };
+        },
+        collectErrors: async () => {
+          order.push('errors');
+          return { ok: true, records: [], reason: null };
+        },
+      }),
+      options()
+    );
+
+    expect(order).toEqual(['reload', 'errors']);
+  });
+
+  // And before the route, because a reload sends the app back to its initial route: reloading
+  // after the open would throw away the screen the caller asked for.
+  it(`reloads before it opens the route`, async () => {
+    const order: string[] = [];
+    await runSmokePhasesAsync(
+      deps({
+        reloadApp: async () => {
+          order.push('reload');
+          return {
+            ok: true,
+            verifiedBy: 'message-socket-peers' as const,
+            knownTargetIds: [],
+            freshTargets: 0,
+            commandSocketReconnected: true,
+            bundleServed: false,
+            reason: null,
+          };
+        },
+        openRoute: async (route) => {
+          order.push('route');
+          return opened({ route });
+        },
+      }),
+      options({ route: '/notes' })
+    );
+
+    expect(order).toEqual(['reload', 'route']);
+  });
+
+  // An app this run opened fetched the served bundle on its way up, so there is no stale session
+  // to replace and a reload would cost a second load to reach the state the run is already in.
+  it(`does not reload an app it opened itself`, async () => {
+    const reloadApp = jest.fn();
+    const run = await runSmokePhasesAsync(
+      deps({
+        waitForAppConnection: jest
+          .fn<Promise<{ appsConnected: number; timedOut: boolean; waitedMs: number }>, []>()
+          .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+          .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 2 }),
+        reloadApp,
+      }),
+      options()
+    );
+
+    expect(reloadApp).not.toHaveBeenCalled();
+    expect(statusOf(run, 'reload')).toBe('skipped');
+    expect(run.reload.disposition).toBe('not-needed');
+    expect(run.outcome).toBe('passed');
+  });
+
+  // @ref llp/0021-honest-reports.rfc.md §The rules band. The whole point: a reload nothing was
+  // seen to come of leaves the run unable to say which session the window below is of, and a gate
+  // that cannot say that must not report that the app is fine. `inconclusive` rather than
+  // `failed` — nothing has been shown to be *wrong*, and the next action is to look again.
+  it(`will not pass a run whose reload was never proved`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        reloadApp: async () => ({
+          ok: false,
+          verifiedBy: null,
+          knownTargetIds: ['page-1'],
+          freshTargets: 0,
+          commandSocketReconnected: false,
+          bundleServed: false,
+          reason: 'no client reconnected',
+        }),
+      }),
+      options()
+    );
+
+    expect(statusOf(run, 'reload')).toBe('inconclusive');
+    expect(run.reload.disposition).toBe('unproved');
+    expect(run.reload.verifiedBy).toBeNull();
+    expect(run.outcome).toBe('inconclusive');
+    expect(smokeExitCode(run.outcome)).toBe(22);
+  });
+
+  // A real error still decides the run, whatever the reload did: an app that threw has been shown
+  // to be broken, and "which session" is no longer the open question.
+  it(`still fails on an error, even when the reload was not proved`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        reloadApp: async () => ({
+          ok: false,
+          verifiedBy: null,
+          knownTargetIds: [],
+          freshTargets: 0,
+          commandSocketReconnected: false,
+          bundleServed: false,
+          reason: 'nothing came of it',
+        }),
+        collectErrors: async () => ({ ok: true, records: [record()], reason: null }),
+      }),
+      options()
+    );
+
+    expect(run.outcome).toBe('failed');
+    expect(smokeExitCode(run.outcome)).toBe(20);
+  });
+
+  // `--no-reload`. The one question a reload destroys is "is the app throwing right now, where I
+  // navigated it to by hand", so the caller has to be able to say no — and the row then says which
+  // of the two questions the run answered rather than reading as a step that was owed.
+  it(`reads the app where it is when --no-reload says to`, async () => {
+    const reloadApp = jest.fn();
+    const run = await runSmokePhasesAsync(deps({ reloadApp }), options({ reload: false }));
+
+    expect(reloadApp).not.toHaveBeenCalled();
+    expect(statusOf(run, 'reload')).toBe('skipped');
+    expect(run.reload.disposition).toBe('declined');
+    expect(run.phases.find((phase) => phase.id === 'reload')?.reason).toContain('--no-reload');
+    // Still a pass: the caller asked about the session that is running, and it was read.
+    expect(run.outcome).toBe('passed');
+  });
+
+  // The proof is carried, not summarized. A label with nothing behind it is the shape llp/0021
+  // exists to remove, so what the run reports is the evidence the label rests on.
+  it(`carries the evidence the reload label rests on`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        reloadApp: async () => ({
+          ok: true,
+          verifiedBy: 'fresh-debugger-target' as const,
+          knownTargetIds: ['page-1', 'page-2'],
+          freshTargets: 1,
+          commandSocketReconnected: false,
+          bundleServed: false,
+          reason: null,
+        }),
+      }),
+      options()
+    );
+
+    expect(run.reload.verifiedBy).toBe('fresh-debugger-target');
+    expect(run.reload.freshTargets).toBe(1);
+    expect(run.reload.knownTargetIds).toEqual(['page-1', 'page-2']);
+  });
+
+  // A proved reload leaves the app re-registering exactly the way a cold launch does, so it owes
+  // the same settle and the same runtime-ready poll — a single read landing in that gap answers
+  // "No target found" about an app that is coming back fine (@ref ./phases §APP_SETTLE_MS).
+  it(`waits for the app to settle after a reload it proved`, async () => {
+    const waitForStableTargets = jest.fn(async () => ({ stable: true }));
     await runSmokePhasesAsync(deps({ waitForStableTargets }), options());
+
+    expect(waitForStableTargets).toHaveBeenCalled();
+  });
+
+  // And does not wait on one it did not: an app that never acted is not coming up, so the wait
+  // would spend the caller's budget proving nothing.
+  it(`does not wait on a reload that was never proved`, async () => {
+    const waitForStableTargets = jest.fn(async () => ({ stable: true }));
+    await runSmokePhasesAsync(
+      deps({
+        waitForStableTargets,
+        reloadApp: async () => ({
+          ok: false,
+          verifiedBy: null,
+          knownTargetIds: [],
+          freshTargets: 0,
+          commandSocketReconnected: false,
+          bundleServed: false,
+          reason: 'nothing came of it',
+        }),
+      }),
+      options()
+    );
 
     expect(waitForStableTargets).not.toHaveBeenCalled();
   });

@@ -38,6 +38,17 @@ export type SmokePhaseId =
   | 'boot-device'
   /** Is an app attached to it, and if not, can one be opened? */
   | 'app'
+  /**
+   * Is the app that answers the rest of this run the code that is on disk?
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+   * The phase that makes the four after it mean something. An app this run opened fetched the
+   * served bundle on its way up, so it is `skipped` there and the reason says so. An app that was
+   * *already* attached is running whatever it last loaded, which after an edit is the code the
+   * caller has already replaced — so it is reloaded, and the reload has to be proved rather than
+   * assumed (llp/0005 §What proves a reload).
+   */
+  | 'reload'
   /** Did the route the caller named open? */
   | 'route'
   /** Can the runtime be read at all? */
@@ -159,6 +170,48 @@ export interface SmokeEnvironmentJson {
   cleanup: SmokeCleanupJson[];
 }
 
+/**
+ * Whether the app the rest of the run read was the code on disk, and what says so.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+ * The narrow claim, and it has to be narrow: this says the app fetched the bundle the dev server is
+ * serving *after* this run arrived. It does not say the bundle contains any particular edit — the
+ * dev server's own freshness is the `bundle` phase's question, and nothing here re-answers it.
+ */
+export interface SmokeReloadJson {
+  /**
+   * What this run did about it.
+   *
+   * `not-needed` — this run opened the app, so it fetched the served bundle on its way up and
+   * there was never a stale session to replace. `reloaded` — it was already attached and was put
+   * back on the served bundle, with {@link verifiedBy} naming the proof. `unproved` — the reload
+   * was attempted and nothing was observed to come of it, so what the later phases read might be
+   * either session. `declined` — `--no-reload`, so the app was read on the bundle it already had.
+   */
+  disposition: 'not-needed' | 'reloaded' | 'unproved' | 'declined';
+  /**
+   * What proved it, or null when nothing did.
+   *
+   * The same four labels `runtime:reload --json` uses, from the same observations, and under the
+   * same rule: a label may be named only when its own evidence is in this payload and non-empty
+   * (llp/0021 §The rules band).
+   */
+  verifiedBy: 'message-socket-peers' | 'fresh-debugger-target' | 'dev-server-bundle' | null;
+  /**
+   * Debugger targets the dev server had listed *before* the reload, by id.
+   *
+   * The evidence behind `fresh-debugger-target`: Metro's page ids come from a counter it does not
+   * rewind, so a target under an id that is not in this list is an app that came back.
+   */
+  knownTargetIds: string[];
+  /** Fresh targets seen after it. The count `fresh-debugger-target` rests on. */
+  freshTargets: number | null;
+  /** Whether the app's client on the dev server's command socket was replaced. */
+  commandSocketReconnected: boolean | null;
+  /** Whether the dev server served a bundle after this run acted. */
+  bundleServed: boolean | null;
+}
+
 /** What the error window caught, summarized next to the records themselves. */
 export interface SmokeErrorsJson {
   /** How long the window was open, in milliseconds. Null when it never opened. */
@@ -230,6 +283,14 @@ export interface SmokeResultJson {
   deviceBackend: string | null;
   /** Whether the runtime answered an evaluation at all. Null when it was never asked. */
   runtimeSupported: boolean | null;
+  /**
+   * Whether the app the later phases read was the code on disk.
+   *
+   * Never null, for the same reason `bundle` is not: a run that stopped before this phase still
+   * owes the reader the fact that nothing put the app on the served bundle, and a missing key
+   * reads as a question that was never worth asking (llp/0006 §Output contract).
+   */
+  reload: SmokeReloadJson;
   errors: SmokeErrorsJson;
   screenshot: ScreenshotResult;
   /** How long the whole run took, in milliseconds. */

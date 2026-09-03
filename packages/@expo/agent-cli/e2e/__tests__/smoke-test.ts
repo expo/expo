@@ -768,9 +768,7 @@ describe('@expo/agent-cli smoke', () => {
         { udid: FRESH, name: 'iPhone 17 Pro', lastBootedAt: '2026-08-30T09:00:00Z' },
       ]);
       // A simulator with Expo Go on it and *not* this project's development build.
-      const home = await writeSimulatorHomeAsync(projectRoot, {
-        [FRESH]: ['host.exp.Exponent'],
-      });
+      const home = await writeSimulatorHomeAsync(projectRoot, { [FRESH]: ['host.exp.Exponent'] });
       const stub = await startStubDevServerAsync({ projectRoot, targets: [] });
 
       try {
@@ -1054,6 +1052,113 @@ describe('@expo/agent-cli smoke', () => {
 
   // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — the property the flag exists
   // for, checked as the property rather than as a substring.
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+  //
+  // The gate's four reading phases are about the *running* app, and an app that was already
+  // attached is running whatever it last loaded. Live, that made `smoke` exit 0 over a `throw` at
+  // the top of the entry component, with the previous screen in its own screenshot [observed —
+  // iOS 26.5 simulator, Expo Go SDK 57, 2026-09-03]. The stub dev server speaks the real
+  // `/message` protocol, so the rung and both of its proofs are exercised here rather than mocked.
+  describe('putting the app on the code on disk', () => {
+    it('reloads an app that was already attached, and says what proved it', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const stub = await startStubDevServerAsync({
+        projectRoot,
+        targets: [EXPO_GO_TARGET],
+        messageSocket: 'v2',
+        reloadTargets: 'reconnect',
+      });
+      const release = await holdLockForAsync(projectRoot, stub);
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['smoke', '--ios', '--json', '--no-screenshot', '--timeout', '20s'],
+          { env: stubExpoEnv(projectRoot), reject: false }
+        );
+
+        const report = JSON.parse(result.stdout);
+        expect(report.phases.find((phase: any) => phase.id === 'reload')).toMatchObject({
+          status: 'ok',
+        });
+        expect(report.reload.disposition).toBe('reloaded');
+        // The label, and the evidence it rests on in the same payload (llp/0021 §The rules band).
+        expect(report.reload.verifiedBy).not.toBeNull();
+        expect(
+          report.reload.commandSocketReconnected === true ||
+            report.reload.freshTargets > 0 ||
+            report.reload.bundleServed === true
+        ).toBe(true);
+      } finally {
+        release();
+        await stub.close();
+      }
+    });
+
+    // A dev server that answers `getpeers` and whose broadcast changes nothing: the app did not
+    // act. Nothing is wrong with the app, and the run cannot say which session it read — so 22,
+    // and never a pass.
+    it('will not pass when nothing came of the reload', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const stub = await startStubDevServerAsync({
+        projectRoot,
+        targets: [EXPO_GO_TARGET],
+        messageSocket: 'no-churn',
+        reloadTargets: 'stale',
+      });
+      const release = await holdLockForAsync(projectRoot, stub);
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['smoke', '--ios', '--json', '--no-screenshot', '--timeout', '20s'],
+          { env: stubExpoEnv(projectRoot), reject: false }
+        );
+
+        const report = JSON.parse(result.stdout);
+        expect(report.phases.find((phase: any) => phase.id === 'reload')).toMatchObject({
+          status: 'inconclusive',
+        });
+        expect(report.reload.disposition).toBe('unproved');
+        expect(report.reload.verifiedBy).toBeNull();
+        expect(report.outcome).toBe('inconclusive');
+        expect(result.exitCode).toBe(22);
+      } finally {
+        release();
+        await stub.close();
+      }
+    });
+
+    // The opt-out, and the row that has to say which of the two questions the run answered.
+    it('reads the app where it is under --no-reload, and says so', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const stub = await startStubDevServerAsync({
+        projectRoot,
+        targets: [EXPO_GO_TARGET],
+        // Deaf on purpose: a run that declines the reload must not touch this socket at all.
+        messageSocket: 'deaf',
+      });
+      const release = await holdLockForAsync(projectRoot, stub);
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['smoke', '--ios', '--json', '--no-screenshot', '--no-reload', '--timeout', '20s'],
+          { env: stubExpoEnv(projectRoot), reject: false }
+        );
+
+        const report = JSON.parse(result.stdout);
+        const reload = report.phases.find((phase: any) => phase.id === 'reload');
+        expect(reload).toMatchObject({ status: 'skipped' });
+        expect(reload.reason).toContain('--no-reload');
+        expect(report.reload.disposition).toBe('declined');
+      } finally {
+        release();
+        await stub.close();
+      }
+    });
+  });
+
   describe('--json', () => {
     it('prints exactly one parseable object, whatever the outcome', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
@@ -1080,6 +1185,7 @@ describe('@expo/agent-cli smoke', () => {
         'phases',
         'platform',
         'projectRootMatched',
+        'reload',
         'route',
         'routeCheck',
         'runtimeSupported',
@@ -1136,6 +1242,6 @@ describe('@expo/agent-cli smoke', () => {
       .map((line) => JSON.parse(line));
     const smoke = events.find((entry) => entry._e === 'cli:smoke');
     expect(smoke).toMatchObject({ outcome: 'failed', started: false });
-    expect(smoke.phases).toHaveLength(8);
+    expect(smoke.phases).toHaveLength(9);
   });
 });

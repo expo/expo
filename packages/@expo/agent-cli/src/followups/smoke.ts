@@ -47,6 +47,15 @@ export interface SmokeFollowUpInput {
    */
   platform: 'ios' | 'android';
   /**
+   * What the `reload` phase did about the app the window was read from.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+   * It decides whether `runtime:reload` is still the first thing to do about a non-empty window.
+   * The advice exists because the window belongs to a session that outlives the fix — and a run
+   * that reloaded, or that opened the app itself, has already left that state.
+   */
+  reloadDisposition: 'not-needed' | 'reloaded' | 'unproved' | 'declined';
+  /**
    * Whether this run was told to use the project's EAS Simulator session.
    *
    * @ref llp/0005-runtime-loop-tools.rfc.md §Cloud simulator
@@ -169,12 +178,23 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   }
 
   if (input.failing > 0) {
+    // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk. The reload
+    // leads this list only when the window might still be of the session before the fix. A run
+    // that reloaded the app, or that opened it and so loaded the served bundle on the way in, has
+    // already answered that — and repeating it as the first step is advice about a state this run
+    // has left, which is the class of stale follow-up llp/0009 exists to keep out.
+    const windowMightPredateTheFix =
+      input.reloadDisposition === 'declined' || input.reloadDisposition === 'unproved';
     return capFollowUps([
-      {
-        id: 'runtime-reload',
-        command: `${PROGRAM_PREFIX} runtime:reload --${input.platform}${onCloud}`,
-        why: 'An error window is a property of the app’s session and the session outlives a fix, so reload before believing a second reading.',
-      },
+      ...(windowMightPredateTheFix
+        ? [
+            {
+              id: 'runtime-reload',
+              command: `${PROGRAM_PREFIX} runtime:reload --${input.platform}${onCloud}`,
+              why: 'An error window is a property of the app’s session and the session outlives a fix, so reload before believing a second reading.',
+            },
+          ]
+        : []),
       {
         id: 'runtime-errors',
         command: `${PROGRAM_PREFIX} runtime:errors --${input.platform} --duration 5s --json`,

@@ -1,11 +1,11 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// The gate itself: eight phases, one verdict — and two more that only some runs perform.
+// The gate itself: nine phases, one verdict — and two more that only some runs perform.
 //
 // Every phase is a question one existing command already answers, asked here through the same
 // function rather than by running that command again. That is the whole design constraint. A
-// `smoke` built out of subprocesses of itself would have eight processes, eight dev-server
-// discoveries, and eight chances for the answers to disagree — and it would hand back a chain of
+// `smoke` built out of subprocesses of itself would have nine processes, nine dev-server
+// discoveries, and nine chances for the answers to disagree — and it would hand back a chain of
 // exit codes rather than one.
 //
 // The phases and where each one comes from:
@@ -18,6 +18,7 @@
 // | `bundle`           | this command, `runtime:reload`   | `checkEntryBundleAsync`     |
 // | `boot-device`      | (new, conditional)               | `bootDeviceAsync`           |
 // | `app`              | this command only                | `waitForAppConnectionAsync` |
+// | `reload`           | `runtime:reload`                 | `reloadOverDevServerAsync`  |
 // | `route`            | `navigate`                       | `openRouteAsync`            |
 // | `runtime`          | `runtime:eval`                   | `CdpClient.evaluateAsync`   |
 // | `errors`           | `runtime:errors`                 | `CdpRuntimeErrorCollector`  |
@@ -54,6 +55,7 @@ import type {
   SmokePhase,
   SmokePhaseId,
   SmokePhaseStatus,
+  SmokeReloadJson,
   SmokeResource,
 } from './types';
 
@@ -122,6 +124,36 @@ export interface SmokeEvaluateResult {
   reason: string | null;
 }
 
+/**
+ * What putting an already-attached app back on the served bundle amounted to.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+ * Never a throw: a reload that could not be performed is a fact this gate reports, not a tool
+ * failure — the run still has a picture and an error window to hand back, and the phase's job is to
+ * say which session they are of.
+ */
+export interface SmokeReloadResult {
+  /** The reload mechanism ran and was **observed** to have reloaded the app. */
+  ok: boolean;
+  /**
+   * What proved it. Null exactly when {@link ok} is false.
+   *
+   * Under llp/0021's rule: named only when this result's own evidence field for it is non-empty, so
+   * `ok` and a label with nothing behind it cannot be reported together.
+   */
+  verifiedBy: 'message-socket-peers' | 'fresh-debugger-target' | 'dev-server-bundle' | null;
+  /** The targets listed before the broadcast, which is what makes a later one "fresh". */
+  knownTargetIds: string[];
+  /** Targets seen afterwards under an id that was not in that list. */
+  freshTargets: number;
+  /** Whether the app's client on the command socket was replaced. */
+  commandSocketReconnected: boolean;
+  /** Whether the dev server was seen to serve a bundle after this run acted. */
+  bundleServed: boolean;
+  /** Why nothing was proved. Null exactly when {@link ok} is true. */
+  reason: string | null;
+}
+
 /** What the error window amounted to. Never a throw: an unreadable app is a result. */
 export interface SmokeErrorsResult {
   ok: boolean;
@@ -183,6 +215,15 @@ export interface SmokeDeps {
      */
     attachBudgetMs: number
   ): Promise<OpenRouteResult>;
+  /**
+   * Put an app that was already attached back on the bundle the dev server is serving.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+   * `runtime:reload`'s rung 1 and its proofs, asked here through the same functions. Only rung 1:
+   * the rungs above it stop the app and start it again, and a gate is not allowed to take the
+   * caller's app away to answer a question about it.
+   */
+  reloadApp(devServerUrl: string, timeoutMs: number): Promise<SmokeReloadResult>;
   evaluate(devServerUrl: string): Promise<SmokeEvaluateResult>;
   collectErrors(devServerUrl: string, windowMs: number): Promise<SmokeErrorsResult>;
   captureScreenshot(deviceId: string, backend: DeviceBackend | null): Promise<ScreenshotResult>;
@@ -236,10 +277,35 @@ export interface SmokeRun {
   deviceId: string | null;
   deviceBackend: DeviceBackend | null;
   runtimeSupported: boolean | null;
+  /**
+   * Whether the app the later phases read was the code on disk.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+   * Its default says the truth for a run that never reached the phase: nothing replaced the
+   * session, because there was no session to replace.
+   */
+  reload: SmokeReloadJson;
   windowMs: number | null;
   errors: RuntimeErrorRecord[];
   screenshot: ScreenshotResult;
   durationMs: number;
+}
+
+/**
+ * What the `reload` phase amounts to for a run that never got there.
+ *
+ * A fresh object each call: this is handed out as the run's own mutable record, and a shared
+ * literal would let one run's phase write into the next one's report.
+ */
+export function noReload(): SmokeReloadJson {
+  return {
+    disposition: 'not-needed',
+    verifiedBy: null,
+    knownTargetIds: [],
+    freshTargets: null,
+    commandSocketReconnected: null,
+    bundleServed: null,
+  };
 }
 
 /** The route opened when nothing was named and there is no app to read. */
@@ -316,6 +382,20 @@ export const APP_ATTACH_TIMEOUT_MS = 120_000;
  */
 export const RUNTIME_READY_TIMEOUT_MS = 15_000;
 
+/**
+ * How long the reload gets to be proved, before the run reports that it was not.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+ * `runtime:reload`'s own default is 30 s and covers a ladder that can stop and start the app. This
+ * covers one broadcast on a socket that is already open, and the app fetching a bundle the dev
+ * server has already built — the `bundle` phase two rows above just proved that it compiles, which
+ * is the slow part. Ten seconds is the reconnect, not the compile.
+ *
+ * Charged to `--timeout` rather than to the bootstrap: the caller's app was already running, so
+ * nothing here is this run paying for cold it caused.
+ */
+export const RELOAD_TIMEOUT_MS = 10_000;
+
 /** How often the runtime is asked again while that wait runs. */
 const RUNTIME_READY_POLL_MS = 500;
 
@@ -352,6 +432,10 @@ const PHASE_ORDER: SmokePhaseId[] = [
   'bundle',
   'boot-device',
   'app',
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk. Before
+  // `route` rather than after it: a reload sends the app back to its initial route, so a run that
+  // opened the route first would reload out of the screen it had just asked for.
+  'reload',
   'route',
   'runtime',
   'errors',
@@ -581,6 +665,7 @@ async function runPhasesAsync(
     deviceId: null,
     deviceBackend: null,
     runtimeSupported: null,
+    reload: noReload(),
     windowMs: null,
     errors: [],
     screenshot: noScreenshot('nothing was photographed'),
@@ -606,11 +691,7 @@ async function runPhasesAsync(
     // @ref ./phases §RegisteredCleanup — registered **before** the start, so a start that got
     // halfway is still put back: a detached child that published its lock and then died in the
     // readiness wait is a dev server this run is responsible for, and one it never saw succeed.
-    cleanups.push({
-      resource: 'dev-server',
-      target: null,
-      release: () => deps.stopDevServer(),
-    });
+    cleanups.push({ resource: 'dev-server', target: null, release: () => deps.stopDevServer() });
     const start = await recordBootstrap('start-dev-server', async () => {
       const result = await deps.startDevServer();
       return result.ok && result.devServerUrl != null
@@ -870,10 +951,19 @@ async function runPhasesAsync(
   let deviceBackend: DeviceBackend | null = null;
   let routeCheck: RouteCheckJson | null = null;
   let routeOpenedWhileConnecting = false;
-  // Whether this run put the app on the screen, which is the only case the settle wait is for
-  // (F57). Not the same as `routeOpenedWhileConnecting`: a run with no `--route` still opens the
-  // root route when nothing is attached.
+  // Whether this run put the app on the screen. Not the same as `routeOpenedWhileConnecting`: a
+  // run with no `--route` still opens the root route when nothing is attached.
   let appOpenedByThisRun = false;
+  /**
+   * Whether this run changed what the app is running, so it may still be coming up.
+   *
+   * Opened **or reloaded** (F57 plus the `reload` phase). The two waits below — the target settle
+   * and the runtime-ready poll — exist for an app that is mid-load, and after wave 25 there are two
+   * ways for this run to have put it there. Kept apart from `appOpenedByThisRun`, which still
+   * answers a different question: whether the thing on the screen is something this run opened,
+   * which is what the picture's caption rests on.
+   */
+  let appMovedByThisRun = false;
   /**
    * The launcher URL this run opened that never produced a loaded app, if any.
    *
@@ -903,15 +993,18 @@ async function runPhasesAsync(
   const attachBudget = () => (coldEnvironment() ? APP_ATTACH_TIMEOUT_MS : remaining());
 
   /**
-   * Wait for the app this run opened to stop re-registering. At most once, and never otherwise.
+   * Wait for the app this run moved to stop re-registering. At most once, and never otherwise.
    *
    * @ref ./phases §APP_SETTLE_MS. Shared by the runtime read and the picture because it is one
    * fact about one app: a second wait would be a second budget spent proving what the first one
    * already proved.
+   *
+   * "Moved" rather than "opened": a proved reload leaves the app re-registering exactly the way a
+   * cold launch does, so it owes this wait for the same reason.
    */
   let settled = false;
   const settleIfOpenedAsync = async (): Promise<void> => {
-    if (!appOpenedByThisRun || settled) {
+    if (!appMovedByThisRun || settled) {
       return;
     }
     settled = true;
@@ -956,6 +1049,7 @@ async function runPhasesAsync(
       Math.max(0, attachDeadline - deps.now())
     );
     appOpenedByThisRun = true;
+    appMovedByThisRun = true;
     devLauncherLeftOnScreen = opened.launch != null && !opened.launch.attached;
     deviceId = opened.deviceId;
     deviceBackend = opened.deviceBackend;
@@ -1000,7 +1094,10 @@ async function runPhasesAsync(
     const appPhase = phases[phases.length - 1]!;
     // No app, so no runtime and no window — but there may still be a device, and a picture of
     // whatever is on it is the most useful thing left to hand back.
-    skipRest('route', 'no app is connected, so there was nothing to read', 'screenshot');
+    // From `reload` rather than from `route`: the reload phase sits between this one and the route
+    // now, and a phase that is stepped over rather than filled in is a phase missing from the
+    // report — which is the one property the phase list has (`reports every phase exactly once`).
+    skipRest('reload', 'no app is connected, so there was nothing to read', 'screenshot');
     // The run opened the app in this phase, so whatever is on screen may still be loading.
     const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
       settleAsync: settleIfOpenedAsync,
@@ -1017,7 +1114,83 @@ async function runPhasesAsync(
     });
   }
 
-  // ---- Phase 6: the route, unless the app phase already opened it -------------------------
+  // ---- Phase 6: is the app that answers the rest of this run the code on disk? --------------
+  //
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+  //
+  // The phase that makes the three after it mean something. `runtime`, `errors` and `screenshot`
+  // all read *the app*, and an app that was already attached when this run arrived is running
+  // whatever it last loaded — which, at the moment this command is for, is the bundle from before
+  // the edit the caller wants verified. Without this the gate reported `passed` over a `throw` at
+  // the top of the entry component, with the *previous* screen in the screenshot [observed — iOS
+  // 26.5 simulator, Expo Go SDK 57, 2026-09-03; `errors` ok at 3.1 s, exit 0].
+  //
+  // llp/0005 §Reloading the app had already written the rule this phase applies — "an error window
+  // is a property of the app's session, and the session outlives the fix" — and named the command
+  // that must not be believed without it. `smoke` reads that window and was not applying it.
+
+  const reloadJson = noReload();
+
+  if (appOpenedByThisRun) {
+    // Nothing to replace: the app came up during the `app` phase, so it fetched the bundle the dev
+    // server is serving now on its way in. A reload here would cost a relaunch to reach the state
+    // the run is already in.
+    phases.push({
+      id: 'reload',
+      status: 'skipped',
+      ms: 0,
+      reason: 'this run opened the app, so it already fetched the bundle the dev server is serving',
+    });
+  } else if (!options.reload) {
+    // Asked for, so the row says which of the two questions this run is answering rather than
+    // reading as a step that was owed and not done. The verdict is left alone: "is the app throwing
+    // where I left it" is a real question, and it is the one this caller asked.
+    reloadJson.disposition = 'declined';
+    phases.push({
+      id: 'reload',
+      status: 'skipped',
+      ms: 0,
+      reason:
+        '--no-reload was given, so the app was read on the bundle it already had, which may predate the code on disk',
+    });
+  } else {
+    const reloaded = await record('reload', async () => {
+      const result = await deps.reloadApp(devServerUrl, Math.min(RELOAD_TIMEOUT_MS, remaining()));
+      reloadJson.knownTargetIds = result.knownTargetIds;
+      reloadJson.freshTargets = result.freshTargets;
+      reloadJson.commandSocketReconnected = result.commandSocketReconnected;
+      reloadJson.bundleServed = result.bundleServed;
+      if (result.ok) {
+        reloadJson.disposition = 'reloaded';
+        reloadJson.verifiedBy = result.verifiedBy;
+        return {
+          status: 'ok' as const,
+          reason: `the app fetched the served bundle again (${result.verifiedBy})`,
+          value: result,
+        };
+      }
+      // @ref llp/0021-honest-reports.rfc.md §The rules band. Not `failed`: nothing has been shown
+      // to be wrong with the app, and the next action is to look again rather than to fix
+      // something. What is unknown is *which session* the phases below are about, and that is
+      // exactly the band `inconclusive` exists for (llp/0010 §Exit codes).
+      reloadJson.disposition = 'unproved';
+      return {
+        status: 'inconclusive' as const,
+        reason: `${result.reason ?? 'nothing was observed to come of the reload'}, so what the phases below read may be the session from before the code on disk`,
+        value: result,
+      };
+    });
+    if (reloaded.ok) {
+      // The app is coming back, so it owes the same waits a freshly opened one does: the settle
+      // before the reads, and the runtime-ready poll rather than a single look
+      // (@ref ./phases §APP_SETTLE_MS, §RUNTIME_READY_TIMEOUT_MS). A reload that was *not* proved
+      // must not claim them — an app that never acted is not coming up, and waiting on it would
+      // spend the caller's budget proving nothing.
+      appMovedByThisRun = true;
+    }
+  }
+
+  // ---- Phase 7: the route, unless the app phase already opened it -------------------------
 
   if (options.route == null) {
     phases.push({
@@ -1037,6 +1210,7 @@ async function runPhasesAsync(
     const opened = await record('route', async () => {
       const result = await deps.openRoute(options.route!, devServerUrl, attachBudget());
       appOpenedByThisRun = true;
+      appMovedByThisRun = true;
       devLauncherLeftOnScreen = result.launch != null && !result.launch.attached;
       deviceId = result.deviceId;
       deviceBackend = result.deviceBackend;
@@ -1066,13 +1240,14 @@ async function runPhasesAsync(
         deviceId: captured.deviceId,
         deviceBackend: captured.deviceBackend,
         routeCheck,
+        reload: reloadJson,
         screenshot: captured.screenshot,
         durationMs: deps.now() - startedAt,
       });
     }
   }
 
-  // ---- Phase 7: can the runtime be read at all? ---------------------------------------------
+  // ---- Phase 8: can the runtime be read at all? ---------------------------------------------
 
   // @ref ./phases §APP_SETTLE_MS. Before the read rather than only before the picture: an app that
   // has just been launched onto a simulator this run booted is still registering, and asking a
@@ -1087,11 +1262,12 @@ async function runPhasesAsync(
    * bundle has run": two reads of one id 500 ms apart are alike whether the app is ready or about
    * to reload. This asks the runtime itself, which is the thing the phase is about.
    *
-   * An app that was already there when this run arrived is asked **once**, exactly as before: it
-   * is not coming up, so a second look would answer the same and cost the caller a wait.
+   * An app that was already there when this run arrived **and was not reloaded** is asked once,
+   * exactly as before: it is not coming up, so a second look would answer the same and cost the
+   * caller a wait. One this run reloaded *is* coming up, and gets the same poll a cold launch does.
    */
   const evaluateUntilReadableAsync = async (): Promise<SmokeEvaluateResult> => {
-    const deadline = deps.now() + (appOpenedByThisRun ? RUNTIME_READY_TIMEOUT_MS : 0);
+    const deadline = deps.now() + (appMovedByThisRun ? RUNTIME_READY_TIMEOUT_MS : 0);
     for (;;) {
       const result = await deps.evaluate(devServerUrl);
       // Both of these are decided. `unsupported` is llp/0005-runtime-loop-tools.rfc.md §Android — a runtime with no
@@ -1119,7 +1295,7 @@ async function runPhasesAsync(
     };
   });
 
-  // ---- Phase 8: what did the app report while it was watched? -------------------------------
+  // ---- Phase 9: what did the app report while it was watched? -------------------------------
 
   // Opened even for a runtime that cannot be evaluated, because an empty window costs one wait and
   // the report is more useful with it — but the *verdict* never rests on it. That is the rule
@@ -1159,7 +1335,7 @@ async function runPhasesAsync(
     };
   });
 
-  // ---- Phase 9: the picture -----------------------------------------------------------------
+  // ---- Phase 10: the picture ----------------------------------------------------------------
 
   // Already done before the runtime read on this path, so this call costs nothing: the wait
   // happens once per run, for a run that opened the app.
@@ -1173,18 +1349,29 @@ async function runPhasesAsync(
 
   // The verdict. `failed` needs something to have gone wrong; `passed` needs the runtime to have
   // answered, so a window nobody could have read is never a pass.
+  //
+  // **And it needs the window to be of the code on disk** (@ref ./phases, the `reload` phase). A
+  // reload that was attempted and never observed leaves the run unable to say which of two
+  // sessions the runtime read and the window are about, and `passed` is a claim about the app the
+  // caller has on disk. `threw` still wins: an app that reported an error has been shown to be
+  // broken, and which session it was is no longer the open question.
   const threw = collected.records.some(isFailingRecord);
-  return done(threw ? 'failed' : runtime.ok && collected.ok ? 'passed' : 'inconclusive', {
-    ...withApp,
-    routeCheck,
-    deviceId: captured.deviceId,
-    deviceBackend: captured.deviceBackend,
-    runtimeSupported: runtime.unsupported ? false : runtime.ok ? true : null,
-    windowMs: options.windowMs,
-    errors: collected.records,
-    screenshot: captured.screenshot,
-    durationMs: deps.now() - startedAt,
-  });
+  const sessionKnown = reloadJson.disposition !== 'unproved';
+  return done(
+    threw ? 'failed' : runtime.ok && collected.ok && sessionKnown ? 'passed' : 'inconclusive',
+    {
+      ...withApp,
+      routeCheck,
+      deviceId: captured.deviceId,
+      deviceBackend: captured.deviceBackend,
+      runtimeSupported: runtime.unsupported ? false : runtime.ok ? true : null,
+      reload: reloadJson,
+      windowMs: options.windowMs,
+      errors: collected.records,
+      screenshot: captured.screenshot,
+      durationMs: deps.now() - startedAt,
+    }
+  );
 }
 
 /**

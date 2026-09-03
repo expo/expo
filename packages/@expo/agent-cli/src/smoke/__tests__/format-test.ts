@@ -4,7 +4,7 @@
 // device branches on a value rather than on a missing key.
 
 import { formatSmokeResult, smokeResultToJson } from '../format';
-import { noScreenshot, type SmokeRun } from '../phases';
+import { noReload, noScreenshot, type SmokeRun } from '../phases';
 import type { SmokeOptions } from '../resolveOptions';
 
 function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
@@ -19,6 +19,7 @@ function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
     screenshot: true,
     devServerUrl: null,
     routeCheck: true,
+    reload: true,
     json: true,
     followups: false,
     ...overrides,
@@ -34,6 +35,7 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
       { id: 'bundler-ready', status: 'ok', ms: 4210, reason: null },
       { id: 'bundle', status: 'ok', ms: 48, reason: null },
       { id: 'app', status: 'ok', ms: 3, reason: null },
+      { id: 'reload', status: 'ok', ms: 620, reason: null },
       { id: 'route', status: 'skipped', ms: 0, reason: 'no --route was given' },
       { id: 'runtime', status: 'ok', ms: 90, reason: null },
       { id: 'errors', status: 'ok', ms: 3000, reason: null },
@@ -62,6 +64,14 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
     routeCheck: null,
     deviceId: 'SIM-1',
     runtimeSupported: true,
+    reload: {
+      disposition: 'reloaded',
+      verifiedBy: 'message-socket-peers',
+      knownTargetIds: ['page-1'],
+      freshTargets: 0,
+      commandSocketReconnected: true,
+      bundleServed: false,
+    },
     windowMs: 3_000,
     errors: [],
     screenshot: {
@@ -95,6 +105,7 @@ describe(smokeResultToJson, () => {
       'phases',
       'platform',
       'projectRootMatched',
+      'reload',
       'route',
       'routeCheck',
       'runtimeSupported',
@@ -116,6 +127,7 @@ describe(smokeResultToJson, () => {
         bundle: null,
         deviceId: null,
         runtimeSupported: null,
+        reload: noReload(),
         windowMs: null,
         screenshot: noScreenshot('no dev server answered'),
       }),

@@ -23,6 +23,12 @@ import { PROGRAM_PREFIX } from '../programName';
 import { checkEntryBundleAsync } from '../runtime/bundleCheck';
 import { CdpClient, isMethodNotFoundError } from '../runtime/cdpClient';
 import { discoverDevServerAsync, probeDevServerAsync } from '../runtime/devServer';
+import { markBundleSignalSync } from '../runtime/reload/bundleSignal';
+import {
+  reloadOverDevServerAsync,
+  waitForReloadEvidenceAsync,
+  type CommandSocketChurn,
+} from '../runtime/reload/reloadAsync';
 import { CdpRuntimeErrorCollector } from '../runtime/runtimeErrorCollector';
 import { buildDeviceNameIndexIfNeededAsync, type DeviceNameIndex } from '../runtime/targetPlatform';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
@@ -159,6 +165,7 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
     screenshotPath: run.screenshot.ok ? run.screenshot.path : null,
     route: options.route,
     platform: options.platform,
+    reloadDisposition: run.reload.disposition,
     // `required` is `--cloud`; `fallback` is a run that would only reach a session if this machine
     // had no device, and a ladder must not put a billed session on a line the caller never asked
     // for (llp/0005 §Cloud simulator).
@@ -323,11 +330,7 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
       waitForBundlerReadyAsync(devServerUrl, { timeoutMs, projectRoot }),
 
     checkEntryBundle: (devServerUrl, timeoutMs) =>
-      checkEntryBundleAsync(devServerUrl, {
-        platform: options.platform,
-        timeoutMs,
-        projectRoot,
-      }),
+      checkEntryBundleAsync(devServerUrl, { platform: options.platform, timeoutMs, projectRoot }),
 
     // Scoped to this run's platform: a `smoke --android` that counted the iOS simulator already
     // attached to this dev server would go on to read that simulator's runtime, and report the
@@ -389,6 +392,78 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         // a second URL of its own (F96).
         confirmAttachMs: attachBudgetMs,
       }),
+
+    // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+    //
+    // `runtime:reload`'s rung 1, and its proofs, through the same functions — the whole point of
+    // this command being one process (llp/0005 §The smoke gate). Deliberately **only** rung 1: the
+    // rungs above it stop the app and start it again, and a gate is not allowed to take the
+    // caller's app away in order to answer a question about it. An app the broadcast cannot reach
+    // is a fact this phase reports, not a licence to relaunch.
+    //
+    // The bundle mark is taken *before* the broadcast because that is what makes the log a proof:
+    // `dev-server-bundle` says a bundle was served after this run acted, which is only readable
+    // against a count from before it.
+    reloadApp: async (devServerUrl, timeoutMs) => {
+      const before = await probeDevServerAsync(devServerUrl);
+      const knownTargetIds = before.targets.map((target) => target.id);
+      const bundleMark = markBundleSignalSync(projectRoot);
+
+      let churn: CommandSocketChurn | null = null;
+      const attempt = await reloadOverDevServerAsync(devServerUrl, {
+        connectedApps: before.targets.length,
+        onChurn: (observed) => {
+          churn = observed;
+        },
+      });
+      // The churn out-parameter is written on every path through the rung, including the ones that
+      // fail before the broadcast, so it is read whatever `attempt.ok` says.
+      const reconnected = ((churn as CommandSocketChurn | null)?.reconnected ?? 0) > 0;
+
+      if (!attempt.ok) {
+        return {
+          ok: false,
+          verifiedBy: null,
+          knownTargetIds,
+          freshTargets: 0,
+          commandSocketReconnected: reconnected,
+          bundleServed: false,
+          reason: attempt.reason,
+        };
+      }
+
+      const evidence = await waitForReloadEvidenceAsync(devServerUrl, projectRoot, {
+        timeoutMs,
+        knownTargetIds,
+        bundleMark,
+        platform: options.platform,
+      });
+
+      // The same order of preference `runtime:reload` uses, for the same reason: the mechanism's
+      // own observation is the strongest fact, a target the dev server had never listed is the
+      // next, and a bundle line says something fetched a bundle without saying which client did.
+      // Each label is named only where its own evidence in this result is non-empty (llp/0021).
+      const verifiedBy = reconnected
+        ? ('message-socket-peers' as const)
+        : evidence.freshTargets > 0
+          ? ('fresh-debugger-target' as const)
+          : evidence.bundle.observed
+            ? ('dev-server-bundle' as const)
+            : null;
+
+      return {
+        ok: verifiedBy != null,
+        verifiedBy,
+        knownTargetIds,
+        freshTargets: evidence.freshTargets,
+        commandSocketReconnected: reconnected,
+        bundleServed: evidence.bundle.observed,
+        reason:
+          verifiedBy != null
+            ? null
+            : 'the reload was delivered to the dev server and nothing was seen to come of it: no client reconnected, no debugger target appeared under a new id, and the dev server served no bundle',
+      };
+    },
 
     evaluate: async (devServerUrl) => {
       try {

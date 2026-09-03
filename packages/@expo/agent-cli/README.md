@@ -14,7 +14,7 @@ Design documents: `llp/0001-agentic-cli-on-expo-cli.rfc.md` and its child LLPs i
 | 3. Edit and reload           | `npx @expo/agent-cli runtime:reload`      | after your edit, the app runs the code on disk |
 |                              | `npx @expo/agent-cli runtime:errors`      | what it threw, over a time window              |
 |                              | `npx @expo/agent-cli runtime:tree`        | what is on screen, and its testIDs             |
-| 4. Verify before you're done | `npx @expo/agent-cli smoke`               | bundle, boot, and error window, one exit code  |
+| 4. Verify before you're done | `npx @expo/agent-cli smoke`               | the app on the code on disk, and one exit code |
 |                              | `npx @expo/agent-cli typecheck`           | the type errors neither of those can see       |
 | 5. Release                   | `npx @expo/agent-cli deploy`              | the web app to EAS Hosting                     |
 | One-time setup               | `npx @expo/agent-cli new my-app`          | create a project                               |
@@ -40,7 +40,7 @@ Design documents: `llp/0001-agentic-cli-on-expo-cli.rfc.md` and its child LLPs i
 | `runtime:errors` / `runtime:eval`                              | Read runtime errors, or evaluate JS in the running app              |
 | `runtime:tree` / `runtime:tap` / `runtime:type`                | Drive the app by `testID`                                           |
 | `runtime:stop`                                                 | Stop the app on the device                                          |
-| `smoke`                                                        | Bundle, boot, open a route, check for errors. One exit code         |
+| `smoke`                                                        | Reload onto the code on disk, open a route, check for errors        |
 | `typecheck`                                                    | The project's own `tsc --noEmit`                                    |
 | `doctor`                                                       | `expo-doctor`, normalized                                           |
 | `deploy`                                                       | Ship the web app to EAS Hosting, or the native app with `--native`  |
@@ -75,6 +75,7 @@ Flags beat `package.json`. `package.json` beats detection. Unknown keys are erro
 
 - Expo Go on Android has no debugger. Use a development build to drive the app there.
 - `runtime:tree`, `runtime:tap`, and `runtime:type` call the app's props. They do not touch the screen. They need a development bundle.
+- `smoke` reloads an app that is already running before it reads it, because that app is holding the bundle from before your edit. A reload it cannot prove is exit 22, never a pass. Pass `--no-reload` to read the app where it is.
 - `smoke` does not run on web. A browser is not in the debugger target list.
 - A cloud simulator needs a tunnelled dev server. Localhost is refused.
 

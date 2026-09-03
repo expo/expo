@@ -77,6 +77,23 @@ export interface SmokeOptions {
   devServerUrl: string | null;
   /** Check `--route` against the project's routes first, cleared by `--no-route-check`. */
   routeCheck: boolean;
+  /**
+   * Put an app that was already attached back on the code on disk before reading it. Cleared by
+   * `--no-reload`.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+   * On by default because the moment this command is for is the moment after an edit, and at that
+   * moment the app is already running the bundle from *before* it. A run that read that session
+   * answered about code the caller had already replaced — exit 0 over a `throw` at the top of the
+   * component, with the previous screen in the screenshot [observed — iOS 26.5 simulator, Expo Go
+   * SDK 57, 2026-09-03].
+   *
+   * The opt-out is for the one question a reload destroys: "is the app throwing *right now*, where
+   * I navigated it to by hand". A reload sends it back to the initial route, so that caller has to
+   * be able to say no — and the `reload` phase row then says out loud which of the two questions
+   * the run answered.
+   */
+  reload: boolean;
   /** Print the result as one JSON object instead of the human summary (`--json`). */
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
@@ -101,6 +118,10 @@ const SMOKE_ARGS = {
   // Sugar for the URL above (llp/0005 §One preflight for the runtime family).
   '--port': String,
   '--no-route-check': Boolean,
+  // Accepted as well as its negation, for the same reason `--start` is: it names what the command
+  // already does, and it is on command lines people write to be explicit.
+  '--reload': Boolean,
+  '--no-reload': Boolean,
   '--json': Boolean,
   '--no-followups': Boolean,
 };
@@ -131,6 +152,17 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
         `--screenshot and --no-screenshot ask for opposite things, so this run has no rule for what to do.`,
         `Why: --screenshot names where to write the picture and --no-screenshot says not to take one; there is no reading of the pair that does both.`,
         `How: pass one. Use --screenshot ${args['--screenshot']} to choose the path, or --no-screenshot to skip the capture and everything it needs a device for.`,
+      ].join('\n')
+    );
+  }
+
+  if (args['--reload'] && args['--no-reload']) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--reload and --no-reload ask for opposite things, so this run has no rule for what to do.`,
+        `Why: --reload says to put an app that is already running back on the code on disk before reading it, and --no-reload says to read it on the bundle it already has; there is no reading of the pair that does both.`,
+        `How: pass one, or neither. Reloading an app this run found already attached is what this command does by default, so --reload is only the same thing spelled out loud.`,
       ].join('\n')
     );
   }
@@ -169,6 +201,7 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
     screenshot: !args['--no-screenshot'],
     devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'smoke'),
     routeCheck: !args['--no-route-check'],
+    reload: !args['--no-reload'],
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };

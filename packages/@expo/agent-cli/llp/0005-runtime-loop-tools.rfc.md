@@ -275,7 +275,7 @@ Two consequences the code cites here:
 
 `@expo/agent-cli smoke` answers "does this app still boot" by asking the questions of existing commands in this process, plus a picture of the screen [confirmed, Kudo, 2026-08-24]. Graduated 2026-08-28 ([[0016-v1-scope]]). One process. Every dependency is injected (`src/smoke/phases.ts`). A `smoke` built out of subprocesses would do dev-server discovery eight times, and eight discoveries on a machine running two projects can answer eight different things.
 
-Eight phases:
+Nine phases:
 
 | phase           | the function                                       |
 | --------------- | -------------------------------------------------- |
@@ -283,6 +283,7 @@ Eight phases:
 | `bundler-ready` | `waitForBundlerReadyAsync`                         |
 | `bundle`        | `checkEntryBundleAsync`                            |
 | `app`           | `waitForAppConnectionAsync`, then `openRouteAsync` |
+| `reload`        | `reloadOverDevServerAsync`, then its proofs        |
 | `route`         | `openRouteAsync` (route-checked)                   |
 | `runtime`       | `CdpClient.evaluateAsync('1')`                     |
 | `errors`        | `CdpRuntimeErrorCollector`                         |
@@ -308,6 +309,33 @@ A development build can pass. The `runtime` phase measures. Live runs have exite
 The gate fails on `isError || source === 'exception'`. React Native reports an Error through the console path as one string holding the message and its frames. `splitTextStack` lifts them out. `RuntimeErrorRecord` gains `isError` for it. `source === 'exception'` is kept because a runtime that does use the exception channel exists. A logged `Error` and an uncaught one are the same bytes here, so `console.error(new Error(…))` fails the gate too. Plain `console.error` text does not.
 
 The screenshot primitive writes a PNG (`src/device/screenshot.ts`). `simctl` is given the path and writes the file. `adb exec-out screencap -p` writes the PNG to stdout. Never through `adb shell`, which rewrites `\n` as `\r\n` and corrupts every image. Never through a JavaScript string. Success is the first eight bytes matching the PNG signature. `adb exec-out` answers a device that is not ready by writing a sentence to stdout and exiting 0. A missing screenshot degrades. It never decides the run. When no app of this project was connected, `screenshot.ok` says the picture is of the device's screen.
+
+### The app under test is the code on disk
+
+The phase that makes the four below it mean something [confirmed, 2026-09-03]. `runtime`, `errors` and `screenshot` all read _the running app_, and an app that was already attached when the run arrived is running whatever it last loaded. At the moment this command is for — after an edit, before saying "done" — that is the bundle from before the edit.
+
+Without it the gate passed a broken app. On a plain Expo Go project with a bare `throw new Error(...)` at the top of the entry component, `smoke --platform ios --no-start` reported `smoke passed` with `errors` `ok` at 3.1 s and exited 0, and its own screenshot showed the _previous_ screen [observed — iOS 26.5 simulator, Expo Go SDK 57, 2026-09-03]. Killing the app first made the identical run fail with the throw in the error window, which is what proved it was staleness rather than the error reader. §Reloading the app had already written the rule — "an error window is a property of the app's session, and the session outlives the fix" — and named `runtime:errors` as the command that must not be believed without a reload. `smoke` reads that window and was not applying it.
+
+The phase is `runtime:reload`'s **rung 1 only**, asked through the same functions in the same process. The rungs above it stop the app and start it again, and a gate is not allowed to take the caller's app away in order to answer a question about it. An app the broadcast cannot reach is a fact this phase reports.
+
+Four dispositions, and the report carries the evidence rather than a summary of it:
+
+| disposition  | when                                                                   | the verdict                     |
+| ------------ | ---------------------------------------------------------------------- | ------------------------------- |
+| `not-needed` | this run opened the app, so it fetched the served bundle on its way up | unaffected                      |
+| `reloaded`   | it was already attached, and the reload was observed                   | unaffected                      |
+| `unproved`   | the reload was attempted and nothing came of it                        | never `passed`                  |
+| `declined`   | `--no-reload`                                                          | unaffected, and the row says so |
+
+`unproved` is `inconclusive` rather than `failed`: nothing has been shown to be wrong with the app, and what is unknown is _which session_ the phases below are about. `passed` is a claim about the app the caller has on disk, so a run that cannot say which session it read must not make it (llp/0021 §The rules band). A real error still wins over all of it — an app that reported one has been shown to be broken, and which session it was is no longer the open question.
+
+`verifiedBy` reuses §What proves a reload's four labels and its one rule: a label may be named only where its own evidence is in the payload and non-empty. `--json` carries `knownTargetIds`, `freshTargets`, `commandSocketReconnected` and `bundleServed` beside it.
+
+Before `route`, not after. A reload sends the app back to its initial route, so a run that opened the route first would reload out of the screen it had just asked for. A proved reload also leaves the app re-registering exactly the way a cold launch does, so it owes the same settle and the same runtime-ready poll (§APP*SETTLE_MS, §RUNTIME_READY_TIMEOUT_MS) — and one that was \_not* proved owes neither, because an app that never acted is not coming up.
+
+`--no-reload` is the opt-out, and it exists for the one question a reload destroys: "is the app throwing right now, where I navigated it to by hand". That is a real question and the caller has to be able to ask it, so the verdict is left alone and the `reload` row says out loud which of the two questions the run answered. The narrow claim this phase makes is that the app fetched the bundle the dev server is serving _after_ this run arrived. It says nothing about the dev server's own freshness, which is the `bundle` phase's question.
+
+Cost: one broadcast on a socket that is already open, plus the reconnect. Measured at ~260 ms across six consecutive break-detect-fix-verify runs, all six correct [observed — iOS 26.5 simulator, Expo Go SDK 57, 2026-09-03].
 
 ### The run brings its own environment
 

@@ -25,6 +25,9 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
     // Named, always: a re-run that drops the platform is a different run (F58).
     platform: 'ios',
     cloud: false,
+    // The default is the common case after the `reload` phase: the app was put on the code on disk
+    // before it was read, so the window these follow-ups are about is already trustworthy.
+    reloadDisposition: 'reloaded',
     ...overrides,
   };
 }
@@ -135,8 +138,13 @@ describe(buildSmokeFollowUps, () => {
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — an error window is a property of the
   // app's session and the session outlives a fix, so a reload leads.
+  //
+  // **For a run that has not already performed one.** The gate grew a `reload` phase of its own
+  // (§The app under test is the code on disk), so the state this advice is for is now the state of
+  // a run that declined it or could not prove it. The cases either side of that are next to this
+  // file's `after the reload phase` block.
   it(`leads a non-empty window with the reload`, () => {
-    expect(commands({ failing: 1, outcome: 'failed' })[0]).toBe(
+    expect(commands({ failing: 1, outcome: 'failed', reloadDisposition: 'declined' })[0]).toBe(
       'npx @expo/agent-cli runtime:reload --ios'
     );
   });
@@ -215,5 +223,53 @@ describe('a run that asked for the cloud', () => {
         expect(command).not.toContain('--cloud');
       }
     }
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
+//
+// The `reload` phase makes one of these follow-ups stale. `runtime:reload` led the list of a
+// non-empty error window because the window belonged to a session that outlived the fix — and the
+// gate now performs that reload itself, so telling the caller to do it first is advice about a
+// state this run has already left. It is still the right first step for the one run that declined.
+describe(`${buildSmokeFollowUps.name} after the reload phase`, () => {
+  const failed = { failing: 1, outcome: 'failed' as const };
+
+  it(`does not suggest a reload the run already performed`, () => {
+    expect(commands({ ...failed, reloadDisposition: 'reloaded' })).not.toContain(
+      'npx @expo/agent-cli runtime:reload --ios'
+    );
+  });
+
+  // An app this run opened fetched the served bundle on its way up, so the window is of the code on
+  // disk for that run too.
+  it(`does not suggest a reload for an app this run opened`, () => {
+    expect(commands({ ...failed, reloadDisposition: 'not-needed' })).not.toContain(
+      'npx @expo/agent-cli runtime:reload --ios'
+    );
+  });
+
+  // `--no-reload`. The window really is of a session that may predate the fix, which is the state
+  // the advice was written for, so it leads the list exactly as before.
+  it(`still leads with a reload for a run that declined one`, () => {
+    expect(commands({ ...failed, reloadDisposition: 'declined' })[0]).toBe(
+      'npx @expo/agent-cli runtime:reload --ios'
+    );
+  });
+
+  // An unproved reload leaves the same doubt as a declined one: nothing established which session
+  // was read, so the reload is still the first thing to do about it.
+  it(`still leads with a reload for a run whose reload was not proved`, () => {
+    expect(commands({ ...failed, reloadDisposition: 'unproved' })[0]).toBe(
+      'npx @expo/agent-cli runtime:reload --ios'
+    );
+  });
+
+  // And what a run that already reloaded gets instead: the stacks, which is the thing the summary
+  // does not have.
+  it(`leads with the whole stacks when the window is already trustworthy`, () => {
+    expect(commands({ ...failed, reloadDisposition: 'reloaded' })[0]).toBe(
+      'npx @expo/agent-cli runtime:errors --ios --duration 5s --json'
+    );
   });
 });
