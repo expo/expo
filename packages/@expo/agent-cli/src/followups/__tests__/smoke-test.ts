@@ -29,6 +29,7 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
     // before it was read, so the window these follow-ups are about is already trustworthy.
     reloadDisposition: 'reloaded',
     appMismatch: null,
+    buildAttempted: false,
     ...overrides,
   };
 }
@@ -300,6 +301,34 @@ describe(`${buildSmokeFollowUps.name} for an app that cannot run the project`, (
   it(`names the platform the run was about`, () => {
     expect(commands({ ...mismatched, platform: 'android' })[0]).toBe(
       'npx @expo/agent-cli dev --android --yes'
+    );
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §It builds what the app needs, and says so first
+//
+// The gate builds now, so "start one on its own and watch it fail" is no longer cheap advice: it is
+// another native build, minutes of it, to see something the first one already wrote down. The log
+// leads instead — llp/0009's rule is about re-runs that cannot change the state, and this is its
+// neighbour: a re-run that can, at a price the reader does not have to pay to find out why.
+describe(`${buildSmokeFollowUps.name} after a build that failed`, () => {
+  const failedBuild = { devServerFound: false, buildAttempted: true, outcome: 'failed' as const };
+
+  it(`leads with the log the build already wrote`, () => {
+    expect(commands(failedBuild)[0]).toBe('npx @expo/agent-cli dev:logs');
+  });
+
+  // And it still offers the foreground run, second: watching it fail is the right next step when
+  // the log does not say enough.
+  it(`still offers to watch the build in the foreground`, () => {
+    expect(commands(failedBuild)).toContain('npx @expo/agent-cli dev --detach --yes --wait-ready');
+  });
+
+  // A start that failed without building keeps what it had: there is no long build to avoid, so
+  // starting one in the foreground is the cheapest way to see the failure.
+  it(`leads with the foreground start when nothing was built`, () => {
+    expect(commands({ ...failedBuild, buildAttempted: false })[0]).toBe(
+      'npx @expo/agent-cli dev --detach --yes --wait-ready'
     );
   });
 });

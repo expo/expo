@@ -73,6 +73,7 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
       bundleServed: false,
     },
     appMismatch: null,
+    buildAttempted: false,
     windowMs: 3_000,
     errors: [],
     screenshot: {

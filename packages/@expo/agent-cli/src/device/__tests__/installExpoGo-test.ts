@@ -210,3 +210,25 @@ describe(installExpoGoAsync, () => {
     expect(result.reason).toContain('android');
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The Expo Go on the device is not the Expo Go the SDK wants
+//
+// Installing over a wrong version is the same call as installing a missing one, and that is on
+// purpose: `@expo/cli` notes that iOS needs no uninstall to update ("Don't need to uninstall to
+// update on iOS"), so there is no second path for the replacement case.
+describe(`${installExpoGoAsync.name} over a version that is already there`, () => {
+  it(`installs without uninstalling first`, async () => {
+    const calls: string[][] = [];
+    const result = await installExpoGoAsync('SIM-1', 'ios', '57.0.19', {
+      spawn: async (command, args) => {
+        calls.push([command, ...args]);
+        return captured({ stdout: command === 'npx' ? DOWNLOADED : '' });
+      },
+      tempDirAsync: async () => '/tmp/dl',
+      cleanupAsync: async () => {},
+    });
+
+    expect(result.ok).toBe(true);
+    expect(calls.some((argv) => argv.includes('uninstall'))).toBe(false);
+  });
+});

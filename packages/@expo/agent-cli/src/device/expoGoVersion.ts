@@ -53,17 +53,19 @@ export interface ExpoGoVersionCheck {
   /**
    * What the comparison established.
    *
-   * `sdk-mismatch` and `outdated` are deliberately not one value. Expo Go's runtime is versioned
-   * with the SDK, so a copy from **another SDK line** has neither this project's native modules nor
-   * its runtime contract and cannot run the bundle at all. An **older patch of the same line**
-   * almost always can, and failing a run for it would be the false red that mirrors the false green
-   * this area exists to remove — so it is reported and never decides a verdict.
+   * **Exact equality, the way `@expo/cli` does it** [confirmed, Kudo, 2026-09-03]. Its
+   * `ExpoGoInstaller.isInstalledClientVersionMismatched` is `!semver.eq(installed, expected)`, and
+   * a first cut here split a different release line from an older patch of the same one so it could
+   * fail the run for the first and merely mention the second. That distinction is the wrong tool:
+   * the answer to a wrong version is not a better sentence about it, it is the right version — and
+   * `@expo/cli` installs it rather than reporting it. Newer than expected is a mismatch too, for
+   * the same reason it is there: the release this SDK ships is the one under test.
    *
    * `unknown` is every case where one of the two versions could not be had: offline, no `expo-go` on
    * the machine, an unreadable `Info.plist`, a version string nothing can parse. A check that could
    * not run must not become a refusal.
    */
-  verdict: 'match' | 'sdk-mismatch' | 'outdated' | 'unknown';
+  verdict: 'match' | 'mismatch' | 'unknown';
   /** The version on the device, or null when it could not be read. */
   installed: string | null;
   /** The version this project's SDK wants, or null when it could not be resolved. */
@@ -122,28 +124,20 @@ export function compareExpoGoVersion(
     );
   }
 
-  // The SDK line is the major. A different one is a different runtime, whichever way round.
-  if (a[0] !== b[0]) {
-    return {
-      verdict: 'sdk-mismatch',
-      installed,
-      expected,
-      reason: `the Expo Go on the device is ${installed}, and this project's SDK wants ${expected} — a different Expo Go release line, whose runtime does not carry this SDK's native modules`,
-    };
-  }
-
-  // Same line, and already at or past what the SDK asks for. Past happens to anyone who updated
-  // Expo Go ahead of this SDK's pinned release, and their app runs.
-  const ordered = a[1] === b[1] ? a[2] >= b[2] : a[1] > b[1];
-  if (ordered) {
+  if (a[0] === b[0] && a[1] === b[1] && a[2] === b[2]) {
     return { verdict: 'match', installed, expected, reason: null };
   }
 
+  // One value, and a sentence that still says which kind it is: a different release line and an
+  // older patch of the same one need the same action and read very differently to a person.
   return {
-    verdict: 'outdated',
+    verdict: 'mismatch',
     installed,
     expected,
-    reason: `the Expo Go on the device is ${installed}, and ${expected} is the version this SDK ships — the same release line, so it will usually still run the app`,
+    reason:
+      a[0] === b[0]
+        ? `the Expo Go on the device is ${installed}, and ${expected} is the release this SDK ships`
+        : `the Expo Go on the device is ${installed}, and this project's SDK ships ${expected} — a different release line, whose runtime does not carry this SDK's native modules`,
   };
 }
 

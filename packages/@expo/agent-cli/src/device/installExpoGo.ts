@@ -20,7 +20,7 @@ import os from 'os';
 import path from 'path';
 
 import { spawnCaptureAsync } from '../utils/spawnCapture';
-import { expoGoVersionFromUrl } from './expoGoVersion';
+import { expoGoVersionFromUrl, readInstalledExpoGoVersionAsync } from './expoGoVersion';
 
 /**
  * How long the download gets.
@@ -40,6 +40,14 @@ export interface InstallExpoGoResult {
   ok: boolean;
   /** The version that was installed, when one was. */
   version: string | null;
+  /**
+   * The version that was on the device before, when this install replaced one.
+   *
+   * Null for a device that had no Expo Go at all. Reported because the two are different things to
+   * do to somebody's machine, and a report that called them both "installed" would leave a reader
+   * unable to tell an addition from a replacement (llp/0021 §The rules).
+   */
+  replaced: string | null;
   /** Why it was not. Null exactly when {@link ok} is true. */
   reason: string | null;
 }
@@ -164,9 +172,14 @@ export async function installExpoGoAsync(
     return {
       ok: false,
       version: null,
+      replaced: null,
       reason: `this command installs Expo Go through "xcrun simctl", so it cannot put it on an android device — "npx expo start --android" is what installs it there`,
     };
   }
+
+  // Read before anything is downloaded, so the report can tell a replacement from an addition. A
+  // failure to read is not a failure to install: it only means the report says less.
+  const replaced = await readInstalledExpoGoVersionAsync(deviceId).catch(() => null);
 
   const dir = await tempDirAsync();
   try {
@@ -179,6 +192,7 @@ export async function installExpoGoAsync(
       return {
         ok: false,
         version: null,
+        replaced,
         reason: `the expo-go CLI could not be run (${downloaded.spawnError.code ?? downloaded.spawnError.message})`,
       };
     }
@@ -191,12 +205,18 @@ export async function installExpoGoAsync(
       payload = null;
     }
     if (payload != null && typeof payload.error === 'string') {
-      return { ok: false, version: null, reason: `the expo-go CLI said: ${payload.error}` };
+      return {
+        ok: false,
+        version: null,
+        replaced,
+        reason: `the expo-go CLI said: ${payload.error}`,
+      };
     }
     if (payload == null || typeof payload.path !== 'string') {
       return {
         ok: false,
         version: null,
+        replaced,
         reason: `the expo-go CLI answered no download path${downloaded.exitCode == null ? ' and did not exit' : ` (exit ${downloaded.exitCode})`}`,
       };
     }
@@ -208,6 +228,7 @@ export async function installExpoGoAsync(
       return {
         ok: false,
         version: null,
+        replaced,
         reason: `xcrun could not be run (${installed.spawnError.code ?? installed.spawnError.message})`,
       };
     }
@@ -221,6 +242,7 @@ export async function installExpoGoAsync(
       return {
         ok: false,
         version: null,
+        replaced,
         reason: notBooted
           ? `the simulator ${deviceId} is not booted, and "simctl install" only works on one that is — so the boot has to come first (${said})`
           : `"xcrun simctl install" exited ${installed.exitCode ?? 'on a signal'}: ${said}`,
@@ -233,7 +255,12 @@ export async function installExpoGoAsync(
 
     // The version is in the path the CLI answered, which is the release it chose — so this reports
     // what was installed rather than what was asked for.
-    return { ok: true, version: expoGoVersionFromUrl(payload.path), reason: null };
+    return {
+      ok: true,
+      version: expoGoVersionFromUrl(payload.path),
+      replaced,
+      reason: null,
+    };
   } finally {
     await cleanupAsync(dir);
   }

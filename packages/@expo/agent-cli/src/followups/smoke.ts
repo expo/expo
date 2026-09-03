@@ -47,6 +47,15 @@ export interface SmokeFollowUpInput {
    */
   platform: 'ios' | 'android';
   /**
+   * This run's start phase ran a plan that **compiled**.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §It builds what the app needs, and says so first
+   * It changes what the cheapest next step is. "Start one in the foreground and watch it fail" is
+   * good advice for a start that took seconds and expensive advice for one that took minutes — the
+   * build already wrote down why it failed, and reading that costs nothing.
+   */
+  buildAttempted: boolean;
+  /**
    * Why the app that answered cannot run this project, or null when it can.
    *
    * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
@@ -121,6 +130,17 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   // its output is visible; a `--no-start` run needs the start it declined to do.
   if (!input.devServerFound) {
     return capFollowUps([
+      // @ref llp/0005 §It builds what the app needs, and says so first. The log first when a build
+      // ran, because the alternative below is that build again.
+      ...(input.buildAttempted
+        ? [
+            {
+              id: 'dev-logs',
+              command: `${PROGRAM_PREFIX} dev:logs`,
+              why: 'The build this run started wrote why it stopped to the detached log, and reading it costs nothing — where starting another one costs the whole build again.',
+            },
+          ]
+        : []),
       {
         id: 'dev-detach',
         command: `${PROGRAM_PREFIX} dev --detach --yes --wait-ready`,

@@ -76,7 +76,7 @@ Flags beat `package.json`. `package.json` beats detection. Unknown keys are erro
 - Expo Go on Android has no debugger. Use a development build to drive the app there.
 - `runtime:tree`, `runtime:tap`, and `runtime:type` call the app's props. They do not touch the screen. They need a development bundle.
 - `smoke` reloads an app that is already running before it reads it, because that app is holding the bundle from before your edit. A reload it cannot prove is exit 22, never a pass. Pass `--no-reload` to read the app where it is.
-- `smoke` installs Expo Go when the simulator has not got it, for a project that runs in Expo Go and is not set to `dev-build`. It downloads the release your SDK ships, and leaves it installed. A development build is not installed for you — that is a compile, and `dev` owns it.
+- `smoke` makes sure the simulator has the Expo Go your SDK ships, for a project that runs in Expo Go and is not set to `dev-build`. Missing, older or newer all get replaced with the right release, the way `expo start` does. Under `--no-start` nothing is installed, and a wrong version is reported instead of a pass.
 - `smoke` checks that the app that answered is one your project can actually run. Expo Go holding a project whose native code its runtime does not have, or an Expo Go from a different SDK release line, is exit 22 with the build command named — never a pass. An Expo Go an update behind on the same line is reported and does not fail the run.
 - `smoke` does not run on web. A browser is not in the debugger target list.
 - A cloud simulator needs a tunnelled dev server. Localhost is refused.

@@ -69,6 +69,22 @@ export function log(...message: string[]): void {
   console.log(...message);
 }
 
+/**
+ * A line about work in progress, on stderr.
+ *
+ * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — `stdout` carries one object and
+ * nothing else, and `stderr` is where progress goes. So this is **not** {@link log}: a progress
+ * line on stdout would put a second thing there and break `JSON.parse(stdout)` for every `--json`
+ * caller.
+ *
+ * Not {@link warn} either, which colours yellow. Nothing here is going wrong; the run is telling
+ * the reader what it is about to spend their time on, which is a different thing to say and has to
+ * look different.
+ */
+export function progress(...message: string[]): void {
+  process.stderr.write(message.join(' ') + '\n');
+}
+
 /** @deprecated use `debug` package with the `expo:` prefix instead.  */
 export function debug(...message: any[]): void {
   if (require('./utils/env').env.EXPO_DEBUG) console.log(...message);

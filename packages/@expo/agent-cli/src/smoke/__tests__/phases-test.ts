@@ -159,7 +159,7 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
     },
     // Nothing to install by default: the device this run settled on already has the app.
     installNeededOnDevice: async () => false,
-    installApp: async () => ({ ok: true, version: null, reason: null }),
+    installApp: async () => ({ ok: true, version: null, replaced: null, reason: null }),
     shutdownDevice: async (deviceId) => ({ ok: true, target: deviceId, reason: null }),
     // Settled by default: the wait before the picture has its own cases (F57).
     waitForStableTargets: async () => ({ stable: true }),
@@ -2137,14 +2137,15 @@ describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () 
   });
 });
 
-// @ref llp/0005-runtime-loop-tools.rfc.md §The Expo Go on the device is not the Expo Go the SDK wants
+// @ref ./phases §SmokeDeps.checkAppFitsProject
 //
-// The softer half of the same check, and it has to stay soft. An Expo Go from an older patch of the
-// *same* SDK line almost always runs the app, so failing a run for it would be the false red that
-// mirrors the false green this area exists to remove — but saying nothing would leave a caller
-// debugging their code when the answer is that their simulator is months behind.
+// The dep answers two things, and this is the one that decides nothing: a finding worth printing on
+// the row it is about, which leaves the verdict alone. Nothing produces one today — the version
+// mismatch that used to became an install instead (§The Expo Go on the device is not the Expo Go the
+// SDK wants) — so this covers the mechanism rather than a caller of it, and the next finding that
+// needs to be said without being fatal has somewhere to go.
 describe(`${runSmokePhasesAsync.name} and a note about the app it read`, () => {
-  const NOTE = 'the Expo Go on the device is 57.0.3, and 57.0.9 is the version this SDK ships';
+  const NOTE = 'something worth saying that decides nothing';
 
   it(`keeps the phase ok and still passes the run`, async () => {
     const run = await runSmokePhasesAsync(
@@ -2308,5 +2309,47 @@ describe(`${runSmokePhasesAsync.name} and installing the app`, () => {
     );
 
     expect(run.outcome).toBe('passed');
+  });
+});
+
+// @ref ./phases §SmokeInstallResult.replaced — an addition and a replacement are different things
+// to do to somebody's machine, and the row has to say which.
+describe(`${runSmokePhasesAsync.name} and what the install replaced`, () => {
+  const needsInstall = {
+    installNeededOnDevice: async () => true,
+    probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
+  };
+
+  it(`names the version it replaced`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...needsInstall,
+        installApp: async () => ({
+          ok: true,
+          version: '57.0.9',
+          replaced: '56.0.4',
+          reason: null,
+        }),
+      }),
+      options({ bootstrap: true })
+    );
+
+    expect(run.phases.find((phase) => phase.id === 'install-app')?.reason).toContain(
+      'replacing 56.0.4'
+    );
+  });
+
+  it(`says nothing about replacing when there was nothing there`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        ...needsInstall,
+        installApp: async () => ({ ok: true, version: '57.0.9', replaced: null, reason: null }),
+      }),
+      options({ bootstrap: true })
+    );
+
+    expect(run.phases.find((phase) => phase.id === 'install-app')?.reason).not.toContain(
+      'replacing'
+    );
   });
 });

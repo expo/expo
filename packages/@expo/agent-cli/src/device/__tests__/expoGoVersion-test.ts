@@ -51,26 +51,33 @@ describe(compareExpoGoVersion, () => {
     expect(compareExpoGoVersion('57.0.9', '57.0.9')).toMatchObject({ verdict: 'match' });
   });
 
-  // The one that cannot run the project: Expo Go's runtime is versioned with the SDK, so a copy
-  // from another SDK line has neither this project's native modules nor its JS runtime contract.
-  it(`calls a different SDK line a mismatch`, () => {
-    const result = compareExpoGoVersion('56.0.4', '57.0.9');
+  // @ref ../expoGoVersion §ExpoGoVersionCheck — exact equality, the way `@expo/cli` does it.
+  //
+  // A first cut here split a different release line from an older patch of the same one, so it
+  // could fail a run for the first and merely mention the second. That is the wrong tool: the
+  // answer to a wrong version is the right version, and `ExpoGoInstaller` installs it rather than
+  // grading it (`!semver.eq(installed, expected)`). So all three of these are one verdict.
+  it.each([
+    ['a different release line', '56.0.4', '57.0.9'],
+    ['an older patch of the same line', '57.0.3', '57.0.9'],
+    // Newer counts too. The release this SDK ships is the one under test, and somebody who updated
+    // Expo Go from the App Store ahead of it is running something else.
+    ['a newer patch than the SDK ships', '57.0.12', '57.0.9'],
+  ])(`calls %s a mismatch`, (_name, installed, expected) => {
+    const result = compareExpoGoVersion(installed, expected);
 
-    expect(result.verdict).toBe('sdk-mismatch');
-    expect(result.reason).toContain('56.0.4');
-    expect(result.reason).toContain('57.0.9');
+    expect(result.verdict).toBe('mismatch');
+    expect(result.reason).toContain(installed);
+    expect(result.reason).toContain(expected);
   });
 
-  // The softer one, and it must stay softer. An older patch of the same line runs the app in almost
-  // every case, so this is worth saying and not worth failing.
-  it(`calls an older patch of the same line outdated`, () => {
-    expect(compareExpoGoVersion('57.0.3', '57.0.9')).toMatchObject({ verdict: 'outdated' });
-  });
-
-  // Newer than expected is not a problem to report. It happens to anyone who updated Expo Go from
-  // the App Store ahead of this SDK's pinned release, and their app runs.
-  it(`accepts an installed version newer than the expected one`, () => {
-    expect(compareExpoGoVersion('57.0.12', '57.0.9')).toMatchObject({ verdict: 'match' });
+  // The sentence still tells the two apart, because they read very differently to a person even
+  // though they need the same action.
+  it(`says which kind of mismatch it found`, () => {
+    expect(compareExpoGoVersion('56.0.4', '57.0.9').reason).toContain('a different release line');
+    expect(compareExpoGoVersion('57.0.3', '57.0.9').reason).not.toContain(
+      'a different release line'
+    );
   });
 
   // Either side missing is `unknown`, never a mismatch. Offline, no `expo-go` on the machine, or an
@@ -260,7 +267,7 @@ describe(checkExpoGoVersionAsync, () => {
     });
 
     expect(check).toMatchObject({
-      verdict: 'sdk-mismatch',
+      verdict: 'mismatch',
       installed: '56.0.1',
       expected: '57.0.9',
     });

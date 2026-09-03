@@ -381,14 +381,16 @@ describe('@expo/agent-cli smoke', () => {
     // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment. A command that
     // starts a dev server and boots a simulator changes the machine, so the help says so before
     // anybody runs it — and says what to do to keep the dev server afterwards.
-    it(`says it starts what is missing, puts it back, and does not build`, async () => {
+    it(`says it starts what is missing, puts it back, and builds what is missing`, async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
       const result = await executeAgentCliAsync(projectRoot, ['smoke', '--help']);
 
       expect(result.all).toContain('brings its own environment');
       expect(result.all).toContain('stops exactly what it started');
-      expect(result.all).toContain('It does not build');
+      // @ref llp/0005 §It builds what the app needs, and says so first. This said "It does not
+      // build" until 2026-09-03, which was the boundary and is now the opposite promise.
+      expect(result.all).toContain('It builds the development build');
     });
 
     // The two limits a reader would otherwise assume away, both of them llp/0005 findings.
@@ -469,6 +471,52 @@ describe('@expo/agent-cli smoke', () => {
   // project's lock, and it is gone by the time this command's own process exits. The dev server is
   // the stub `expo` bin, which takes the lock exactly as the real one does, because the wrapper
   // that takes it is real here.
+  // @ref llp/0005-runtime-loop-tools.rfc.md §It builds what the app needs, and says so first
+  //
+  // This command used to refuse a project whose development build is missing, and name `dev`. That
+  // is a correct instruction and a dead end for a loop that cannot leave itself to take it, so it
+  // now runs the plan — and the one thing a caller needs from a command that will block for
+  // minutes is the sentence saying so, before the wait rather than after it.
+  describe('a project that has to be built first', () => {
+    it('says it is building, on stderr, before it waits', async () => {
+      // No recorded build for its fingerprint, so the plan compiles.
+      const projectRoot = await setupFixtureAsync('dev-client-app');
+
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['smoke', '--json', '--no-screenshot', '--port', '9377', '--timeout', '4s'],
+        {
+          env: {
+            ...devServerOnlyEnv(projectRoot),
+            // The stub `expo` exits without ever listening, so the start fails fast — this case is
+            // about what was *said* before the wait, not about a build succeeding.
+            STUB_EXPO_EXIT_CODE: '1',
+          },
+          reject: false,
+        }
+      );
+
+      // On stderr, never stdout: a `--json` run puts one object there and nothing else.
+      expect(result.stderr).toContain('Building the ios development build');
+      expect(result.stderr).toContain('nothing is stuck');
+      expect(() => JSON.parse(result.stdout)).not.toThrow();
+    });
+
+    // The other half: a project that needs no build says nothing, because a line printed on every
+    // healthy run is a line nobody reads.
+    it('says nothing about building for a project that needs none', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['smoke', '--json', '--no-screenshot', '--port', '9378', '--timeout', '4s'],
+        { env: { ...devServerOnlyEnv(projectRoot), STUB_EXPO_EXIT_CODE: '1' }, reject: false }
+      );
+
+      expect(result.stderr).not.toContain('Building the');
+    });
+  });
+
   describe('with no dev server, by default', () => {
     /** Whether this project's dev-server lock still answers. */
     async function lockHeldAsync(projectRoot: string): Promise<boolean> {

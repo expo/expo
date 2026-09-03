@@ -604,6 +604,19 @@ declare module '2g' {
      *
      * @see llp/0005-runtime-loop-tools.rfc.md §The smoke gate
      */
+    /**
+     * The start phase is about to run a plan that **compiles**, before it waits on it.
+     *
+     * @ref llp/0005-runtime-loop-tools.rfc.md §It builds what the app needs, and says so first
+     * Emitted before the build rather than after, because its whole purpose is to tell a reader
+     * that a long wait is starting and is not a hang. The human sentence goes to stderr; this is
+     * the same fact for a reader of the stream.
+     */
+    'cli:smoke_building': {
+      platform: 'ios' | 'android';
+      /** Where the plan builds: `local` for this machine, `eas` for a cloud build. */
+      where: string;
+    };
     'cli:smoke': {
       /** `passed`, `failed` or `inconclusive`. */
       outcome: string;

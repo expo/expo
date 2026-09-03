@@ -67,6 +67,14 @@ export interface SmokeStartResult {
   devServerUrl: string | null;
   /** Why it did not. Null exactly when {@link ok} is true. */
   reason: string | null;
+  /**
+   * The plan this start ran **compiled** something.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §It builds what the app needs, and says so first
+   * Reported whether the start succeeded or failed, because what it changes — the cheapest way to
+   * find out why — is most useful exactly when it failed.
+   */
+  built?: boolean;
 }
 
 /** What booting a simulator or an emulator amounted to. */
@@ -111,6 +119,12 @@ export interface SmokeInstallResult {
   ok: boolean;
   /** The version that was installed, when the installer could name one. */
   version: string | null;
+  /**
+   * The version that was there before, when this replaced one rather than adding it.
+   *
+   * Two different things to do to somebody's machine, and the row says which (llp/0021 §The rules).
+   */
+  replaced?: string | null;
   /** Why it was not. Null exactly when {@link ok} is true. */
   reason: string | null;
 }
@@ -354,6 +368,14 @@ export interface SmokeRun {
    * (llp/0005 §One preflight for the runtime family, on `error.data`).
    */
   appMismatch: string | null;
+  /**
+   * The start phase ran a plan that **compiled**.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §It builds what the app needs, and says so first
+   * Read by the follow-ups, which offer a different cheapest-next-step for a start that took
+   * minutes than for one that took seconds.
+   */
+  buildAttempted: boolean;
   windowMs: number | null;
   errors: RuntimeErrorRecord[];
   screenshot: ScreenshotResult;
@@ -479,6 +501,22 @@ const RUNTIME_READY_POLL_MS = 500;
  * --wait-ready` is what this phase runs.
  */
 export const START_DEV_SERVER_TIMEOUT_MS = 120_000;
+
+/**
+ * How long the start phase gets when the plan it runs **builds** first.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §It builds what the app needs, and says so first
+ *
+ * Thirty minutes, and the number is the shape of the work rather than a measurement: a cold
+ * `expo run:ios` is a pod install and a full native compile, and a machine doing it for the first
+ * time on a cold Xcode cache is the slow end of that. The cost of a bound that is too short is the
+ * worst kind of failure this command has — twenty minutes spent and then a timeout reported for a
+ * build that was going fine.
+ *
+ * Bootstrap, like every other act: what the build spends is not taken out of the budget the error
+ * window and the runtime read live on.
+ */
+export const BUILD_DEV_SERVER_TIMEOUT_MS = 1_800_000;
 
 /**
  * How long the run gives a device to boot, per platform, out of a budget of its own.
@@ -745,6 +783,7 @@ async function runPhasesAsync(
     runtimeSupported: null,
     reload: noReload(),
     appMismatch: null,
+    buildAttempted: false,
     windowMs: null,
     errors: [],
     screenshot: noScreenshot('nothing was photographed'),
@@ -759,6 +798,13 @@ async function runPhasesAsync(
   // `dev-server` phase, which is the phase about finding one, so it is counted there by hand.
 
   let started = false;
+  /**
+   * The start phase ran a plan that compiled (@ref ./phases §BUILD_DEV_SERVER_TIMEOUT_MS).
+   *
+   * Kept for the follow-ups, and set whether the start succeeded or failed: a build that failed is
+   * exactly the case where the cheapest next step differs from the ordinary one.
+   */
+  let buildAttempted = false;
   let devServerMs = 0;
   const lookAt = deps.now();
   let discovery = await deps.discoverDevServer(options.devServerUrl);
@@ -773,6 +819,7 @@ async function runPhasesAsync(
     cleanups.push({ resource: 'dev-server', target: null, release: () => deps.stopDevServer() });
     const start = await recordBootstrap('start-dev-server', async () => {
       const result = await deps.startDevServer();
+      buildAttempted = result.built === true;
       return result.ok && result.devServerUrl != null
         ? {
             status: 'ok' as const,
@@ -817,6 +864,7 @@ async function runPhasesAsync(
       devServerUrl: discovery.devServerUrl,
       discovery,
       started,
+      buildAttempted,
       screenshot: noScreenshot('no dev server answered, so nothing was opened to photograph'),
     });
   }
@@ -860,6 +908,7 @@ async function runPhasesAsync(
     devServerUrl,
     discovery,
     started,
+    buildAttempted,
     projectRootMatched: readiness.projectRootMatched,
   };
 
@@ -1049,7 +1098,11 @@ async function runPhasesAsync(
         return result.ok
           ? {
               status: 'ok' as const,
-              reason: `installed ${result.version ?? 'the app'} on ${device.deviceId}, and left it there`,
+              reason: [
+                `installed ${result.version ?? 'the app'} on ${device.deviceId}`,
+                result.replaced ? `, replacing ${result.replaced}` : '',
+                `, and left it there`,
+              ].join(''),
               value: result,
             }
           : {
