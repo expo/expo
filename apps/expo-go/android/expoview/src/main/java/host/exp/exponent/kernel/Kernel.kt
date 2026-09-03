@@ -24,6 +24,8 @@ import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
+import expo.modules.devmenu.launch.ExpoLauncherUrl
+import expo.modules.devmenu.launch.applyDevMenuLaunchParams
 import expo.modules.jsonutils.require
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
@@ -41,6 +43,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
 import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity
+import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.experience.ErrorActivity
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.HomeActivity
@@ -499,8 +502,18 @@ class Kernel : KernelInterface() {
     openExperience(ExperienceOptions(defaultUrl, defaultUrl, null))
   }
 
+  @Suppress("DEPRECATION")
   override fun openExperience(options: ExperienceOptions) {
-    openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true)
+    val launch = ExpoLauncherUrl(Uri.parse(options.manifestUri))
+    launch.applyDevMenuLaunchParams(DevMenuSharedPreferencesAdapter(applicationContext, exponentSharedPreferences))
+    // A target is normalized to `exp(s)://` like on iOS, so it shares its task with a scanned `exp://` URL.
+    val projectUri = launch.targetUrl?.let { ExponentUrls.toExp(it.toString()) } ?: launch.strippedUrl.toString()
+    val resolved = if (projectUri == options.manifestUri) {
+      options
+    } else {
+      ExperienceOptions(projectUri, projectUri, options.notification, options.notificationObject)
+    }
+    openManifestUrl(getManifestUrlFromFullUri(resolved.manifestUri), resolved, true)
   }
 
   private fun getManifestUrlFromFullUri(uriString: String?): String? {
