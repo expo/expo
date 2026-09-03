@@ -304,6 +304,28 @@ describe.each([
     test('import side effect')`
       import 'apple-icons';
     `,
+    test('import side effect + default import of same module')`
+      import 'apple-icons';
+      import AppleIcons from 'apple-icons';
+      test(AppleIcons);
+    `,
+    test('import side effect + namespace import of same module')`
+      import 'apple-icons';
+      import * as AppleIcons from 'apple-icons';
+      test(AppleIcons);
+    `,
+    test('import side effect ordered before an unrelated side effect')`
+      import 'apple-icons';
+      import 'android-icons';
+      import AppleIcons from 'apple-icons';
+      test(AppleIcons);
+    `,
+    test('import side effect after a default import of the same module')`
+      import AppleIcons from 'apple-icons';
+      import 'android-icons';
+      import 'apple-icons';
+      test(AppleIcons);
+    `,
 
     // Regressions
     test('export-named "__proto__" export by specifier')`

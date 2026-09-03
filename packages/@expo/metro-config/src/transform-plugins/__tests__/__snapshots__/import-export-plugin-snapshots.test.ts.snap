@@ -108,20 +108,14 @@ exports[`with live bindings 5. export default + import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
     return _default;
   }
 });
-var _test = require('test');
-var Test = _interopDefault(_test);
-test(Test.default);
+var Test = _$$_IMPORT_DEFAULT('test');
+test(Test);
 const local = 'local';
 var _default = local;"
 `;
@@ -384,59 +378,42 @@ exports[`with live bindings 14. re-export default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
-var _appleIcons = require('apple-icons');
-var _appleIcons2 = _interopDefault(_appleIcons);"
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 15. re-export default as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "local", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
-var _appleIcons = require('apple-icons');
-var _appleIcons2 = _interopDefault(_appleIcons);"
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 16. re-export combined cases (1) 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "_test", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 Object.defineProperty(exports, "test", {
@@ -446,22 +423,17 @@ Object.defineProperty(exports, "test", {
   }
 });
 var _appleIcons = require('apple-icons');
-var _appleIcons2 = _interopDefault(_appleIcons);"
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 17. re-export combined cases (2) 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "_test", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 Object.defineProperty(exports, "test", {
@@ -473,22 +445,17 @@ Object.defineProperty(exports, "test", {
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 var _appleIcons = require('apple-icons');
-var _appleIcons2 = _interopDefault(_appleIcons);"
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 18. re-export combined cases (3) 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "test", {
   enumerable: true,
   get: function () {
@@ -498,28 +465,23 @@ Object.defineProperty(exports, "test", {
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 Object.defineProperty(exports, "_test", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 var _appleIcons = require('apple-icons');
-var _appleIcons2 = _interopDefault(_appleIcons);"
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 19. re-export combined cases (4) 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "test", {
   enumerable: true,
   get: function () {
@@ -529,28 +491,23 @@ Object.defineProperty(exports, "test", {
 Object.defineProperty(exports, "_test", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 var _appleIcons = require('apple-icons');
-var _appleIcons2 = _interopDefault(_appleIcons);"
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 20. re-export all + namespaces 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
@@ -575,7 +532,7 @@ Object.defineProperty(exports, "test", {
 Object.defineProperty(exports, "_test", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 Object.defineProperty(exports, "AppleIcons", {
@@ -601,7 +558,7 @@ Object.keys(_appleIcons).forEach(function (k) {
     });
   }
 });
-var _appleIcons2 = _interopDefault(_appleIcons);
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');
 var _appleIcons3 = _interopNamespace(_appleIcons);"
 `;
 
@@ -609,11 +566,6 @@ exports[`with live bindings 21. re-export all multiple + namespaces 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
@@ -638,7 +590,7 @@ Object.defineProperty(exports, "test", {
 Object.defineProperty(exports, "_test", {
   enumerable: true,
   get: function () {
-    return _appleIcons2.default;
+    return _appleIcons2;
   }
 });
 Object.defineProperty(exports, "AppleIcons", {
@@ -664,7 +616,7 @@ Object.keys(_appleIcons).forEach(function (k) {
     });
   }
 });
-var _appleIcons2 = _interopDefault(_appleIcons);
+var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');
 var _androidIcons = require('android-icons');
 Object.keys(_androidIcons).forEach(function (k) {
   if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
@@ -712,14 +664,8 @@ test(AppleIcons);"
 `;
 
 exports[`with live bindings 23. import default 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
-test(AppleIcons.default);"
+"var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+test(AppleIcons);"
 `;
 
 exports[`with live bindings 24. import specifier 1`] = `
@@ -733,91 +679,49 @@ test(_appleIcons.test);"
 `;
 
 exports[`with live bindings 26. import default specifier as local 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var local = _interopDefault(_appleIcons);
-test(local.default);"
+"var local = _$$_IMPORT_DEFAULT('apple-icons');
+test(local);"
 `;
 
 exports[`with live bindings 27. import specifier, and default 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
-(0, _appleIcons.test)(AppleIcons.default, _appleIcons.test);"
+"var _appleIcons = require('apple-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+(0, _appleIcons.test)(AppleIcons, _appleIcons.test);"
 `;
 
 exports[`with live bindings 28. import specifier as local, and default 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
-test(AppleIcons.default, _appleIcons.test);"
+"var _appleIcons = require('apple-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+test(AppleIcons, _appleIcons.test);"
 `;
 
 exports[`with live bindings 29. import default specifier as local, and default 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var _AppleIcons = _interopDefault(_appleIcons);
-test(_AppleIcons.default, _AppleIcons.default);"
+"var _AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+test(_AppleIcons, _AppleIcons);"
 `;
 
 exports[`with live bindings 30. import combined cases (1) 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var a = _interopDefault(_appleIcons);
-test(a.default, _appleIcons.b, a.default, _appleIcons.test);"
+"var _appleIcons = require('apple-icons');
+var a = _$$_IMPORT_DEFAULT('apple-icons');
+test(a, _appleIcons.b, a, _appleIcons.test);"
 `;
 
 exports[`with live bindings 31. import combined cases (2) 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var a = _interopDefault(_appleIcons);
-test(a.default, _appleIcons.b, a.default, _appleIcons.test);"
+"var _appleIcons = require('apple-icons');
+var a = _$$_IMPORT_DEFAULT('apple-icons');
+test(a, _appleIcons.b, a, _appleIcons.test);"
 `;
 
 exports[`with live bindings 32. import combined cases (3) 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var a = _interopDefault(_appleIcons);
-test(a.default, _appleIcons.b, a.default, _appleIcons.test);"
+"var _appleIcons = require('apple-icons');
+var a = _$$_IMPORT_DEFAULT('apple-icons');
+test(a, _appleIcons.b, a, _appleIcons.test);"
 `;
 
 exports[`with live bindings 33. import combined cases (4) 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _appleIcons = require('apple-icons');
-var a = _interopDefault(_appleIcons);
-test(a.default, _appleIcons.b, a.default, _appleIcons.test);"
+"var _appleIcons = require('apple-icons');
+var a = _$$_IMPORT_DEFAULT('apple-icons');
+test(a, _appleIcons.b, a, _appleIcons.test);"
 `;
 
 exports[`with live bindings 34. export imported namespace by specifier 1`] = `
@@ -853,19 +757,13 @@ exports[`with live bindings 35. export import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "AppleIcons", {
   enumerable: true,
   get: function () {
-    return AppleIcons.default;
+    return AppleIcons;
   }
 });
-var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);"
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 36. export import specifier 1`] = `
@@ -898,34 +796,23 @@ exports[`with live bindings 38. export import default specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "local", {
   enumerable: true,
   get: function () {
-    return local.default;
+    return local;
   }
 });
-var _appleIcons = require('apple-icons');
-var local = _interopDefault(_appleIcons);"
+var local = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 39. export import specifier and default (0) 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "AppleIcons", {
   enumerable: true,
   get: function () {
-    return AppleIcons.default;
+    return AppleIcons;
   }
 });
 Object.defineProperty(exports, "test", {
@@ -935,23 +822,18 @@ Object.defineProperty(exports, "test", {
   }
 });
 var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
-(0, _appleIcons.test)(AppleIcons.default);"
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+(0, _appleIcons.test)(AppleIcons);"
 `;
 
 exports[`with live bindings 40. export import specifier and default (1) 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "AppleIcons", {
   enumerable: true,
   get: function () {
-    return AppleIcons.default;
+    return AppleIcons;
   }
 });
 Object.defineProperty(exports, "test", {
@@ -961,23 +843,18 @@ Object.defineProperty(exports, "test", {
   }
 });
 var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
-(0, _appleIcons.test)(AppleIcons.default);"
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+(0, _appleIcons.test)(AppleIcons);"
 `;
 
 exports[`with live bindings 41. export import specifier as local, and default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "AppleIcons", {
   enumerable: true,
   get: function () {
-    return AppleIcons.default;
+    return AppleIcons;
   }
 });
 Object.defineProperty(exports, "local", {
@@ -987,32 +864,26 @@ Object.defineProperty(exports, "local", {
   }
 });
 var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);"
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 42. export import default specifier as local, and default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "_AppleIcons", {
   enumerable: true,
   get: function () {
-    return _AppleIcons.default;
+    return _AppleIcons;
   }
 });
 Object.defineProperty(exports, "local", {
   enumerable: true,
   get: function () {
-    return _AppleIcons.default;
+    return _AppleIcons;
   }
 });
-var _appleIcons = require('apple-icons');
-var _AppleIcons = _interopDefault(_appleIcons);"
+var _AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');"
 `;
 
 exports[`with live bindings 43. export-default imported namespace by specifier 1`] = `
@@ -1049,20 +920,14 @@ exports[`with live bindings 44. export-default import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
     return _default;
   }
 });
-var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
-var _default = AppleIcons.default;"
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+var _default = AppleIcons;"
 `;
 
 exports[`with live bindings 45. export-default import specifier 1`] = `
@@ -1097,20 +962,14 @@ exports[`with live bindings 47. export-default import default specifier as local
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
     return _default;
   }
 });
-var _appleIcons = require('apple-icons');
-var local = _interopDefault(_appleIcons);
-var _default = local.default;"
+var local = _$$_IMPORT_DEFAULT('apple-icons');
+var _default = local;"
 `;
 
 exports[`with live bindings 48. export-named imported namespace by specifier 1`] = `
@@ -1147,20 +1006,14 @@ exports[`with live bindings 49. export-named import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "AppleIcons", {
   enumerable: true,
   get: function () {
     return AppleIcons;
   }
 });
-var _appleIcons = require('apple-icons');
-var _AppleIcons = _interopDefault(_appleIcons);
-const AppleIcons = _AppleIcons.default;"
+var _AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+const AppleIcons = _AppleIcons;"
 `;
 
 exports[`with live bindings 50. export-named import specifier 1`] = `
@@ -1195,20 +1048,14 @@ exports[`with live bindings 52. export-named import default specifier as local 1
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "_local", {
   enumerable: true,
   get: function () {
     return _local;
   }
 });
-var _appleIcons = require('apple-icons');
-var local = _interopDefault(_appleIcons);
-const _local = local.default;"
+var local = _$$_IMPORT_DEFAULT('apple-icons');
+const _local = local;"
 `;
 
 exports[`with live bindings 53. export destructured object from imported namespace by specifier 1`] = `
@@ -1254,11 +1101,6 @@ exports[`with live bindings 54. export destructured object from import default 1
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "a", {
   enumerable: true,
   get: function () {
@@ -1271,12 +1113,11 @@ Object.defineProperty(exports, "b", {
     return b;
   }
 });
-var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
 const {
   a,
   b
-} = AppleIcons.default;"
+} = AppleIcons;"
 `;
 
 exports[`with live bindings 55. export destructured object from import specifier 1`] = `
@@ -1329,11 +1170,6 @@ exports[`with live bindings 57. export destructured object from import default s
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "a", {
   enumerable: true,
   get: function () {
@@ -1346,12 +1182,11 @@ Object.defineProperty(exports, "b", {
     return b;
   }
 });
-var _appleIcons = require('apple-icons');
-var local = _interopDefault(_appleIcons);
+var local = _$$_IMPORT_DEFAULT('apple-icons');
 const {
   a,
   b
-} = local.default;"
+} = local;"
 `;
 
 exports[`with live bindings 58. export nested destructured object w/ rest from import specifier 1`] = `
@@ -1426,11 +1261,6 @@ exports[`with live bindings 60. export destructured array from import default 1`
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "a", {
   enumerable: true,
   get: function () {
@@ -1443,9 +1273,8 @@ Object.defineProperty(exports, "b", {
     return b;
   }
 });
-var _appleIcons = require('apple-icons');
-var AppleIcons = _interopDefault(_appleIcons);
-const [a, b] = AppleIcons.default;"
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+const [a, b] = AppleIcons;"
 `;
 
 exports[`with live bindings 61. export destructured array from import specifier 1`] = `
@@ -1492,11 +1321,6 @@ exports[`with live bindings 63. export destructured array from import default sp
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "a", {
   enumerable: true,
   get: function () {
@@ -1509,14 +1333,54 @@ Object.defineProperty(exports, "b", {
     return b;
   }
 });
-var _appleIcons = require('apple-icons');
-var local = _interopDefault(_appleIcons);
-const [a, b] = local.default;"
+var local = _$$_IMPORT_DEFAULT('apple-icons');
+const [a, b] = local;"
 `;
 
 exports[`with live bindings 64. import side effect 1`] = `"require('apple-icons');"`;
 
-exports[`with live bindings 65. export-named "__proto__" export by specifier 1`] = `
+exports[`with live bindings 65. import side effect + default import of same module 1`] = `
+"require('apple-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+test(AppleIcons);"
+`;
+
+exports[`with live bindings 66. import side effect + namespace import of same module 1`] = `
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    var d = Object.getOwnPropertyDescriptor(e, k);
+    Object.defineProperty(n, k, d.get ? d : {
+      enumerable: true,
+      get: function () {
+        return e[k];
+      }
+    });
+  });
+  n.default = e;
+  return n;
+}
+var _appleIcons = require('apple-icons');
+var AppleIcons = _interopNamespace(_appleIcons);
+test(AppleIcons);"
+`;
+
+exports[`with live bindings 67. import side effect ordered before an unrelated side effect 1`] = `
+"require('apple-icons');
+require('android-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+test(AppleIcons);"
+`;
+
+exports[`with live bindings 68. import side effect after a default import of the same module 1`] = `
+"require('apple-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+require('android-icons');
+test(AppleIcons);"
+`;
+
+exports[`with live bindings 69. export-named "__proto__" export by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -2168,7 +2032,33 @@ exports.b = b;"
 
 exports[`without live bindings 64. import side effect 1`] = `"require('apple-icons');"`;
 
-exports[`without live bindings 65. export-named "__proto__" export by specifier 1`] = `
+exports[`without live bindings 65. import side effect + default import of same module 1`] = `
+"require('apple-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+test(AppleIcons);"
+`;
+
+exports[`without live bindings 66. import side effect + namespace import of same module 1`] = `
+"require('apple-icons');
+var AppleIcons = _$$_IMPORT_ALL('apple-icons');
+test(AppleIcons);"
+`;
+
+exports[`without live bindings 67. import side effect ordered before an unrelated side effect 1`] = `
+"require('apple-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+require('android-icons');
+test(AppleIcons);"
+`;
+
+exports[`without live bindings 68. import side effect after a default import of the same module 1`] = `
+"require('apple-icons');
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+require('android-icons');
+test(AppleIcons);"
+`;
+
+exports[`without live bindings 69. export-named "__proto__" export by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });

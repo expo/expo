@@ -194,15 +194,10 @@ it('imports multiple members from another module and export them in separate sta
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     Object.defineProperty(exports, "bar", {
       enumerable: true,
       get: function () {
-        return bar.default;
+        return bar;
       }
     });
     Object.defineProperty(exports, "foo", {
@@ -218,13 +213,15 @@ it('imports multiple members from another module and export them in separate sta
       }
     });
     var _bar = require('bar');
-    var bar = _interopDefault(_bar);
+    var bar = _$$_IMPORT_DEFAULT('bar');
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
   expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
+    > 2 |     import bar, { foo, baz } from 'bar';
+        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)
     > 2 |     import bar, { foo, baz } from 'bar';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)"
   `);
@@ -267,11 +264,6 @@ it('transforms and extracts "import" statements as live bindings', () => {
   `;
 
   const expected = `
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     function _interopNamespace(e) {
       if (e && e.__esModule) return e;
       var n = {};
@@ -287,14 +279,13 @@ it('transforms and extracts "import" statements as live bindings', () => {
       n.default = e;
       return n;
     }
-    var _foo = require('foo');
-    var v = _interopDefault(_foo);
+    var v = _$$_IMPORT_DEFAULT('foo');
     var _bar = require('bar');
     var w = _interopNamespace(_bar);
     var _baz = require('baz');
     var _qux = require('qux');
     require('side-effect');
-    test(v.default, w, _baz.x, _qux.y);
+    test(v, w, _baz.x, _qux.y);
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
@@ -489,20 +480,14 @@ it('does not transform direct export default as live binding', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     Object.defineProperty(exports, "default", {
       enumerable: true,
       get: function () {
         return _default;
       },
     });
-    var _bar = require('bar');
-    var foo = _interopDefault(_bar);
-    var _default = foo.default;
+    var foo = _$$_IMPORT_DEFAULT('bar');
+    var _default = foo;
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
@@ -565,19 +550,13 @@ it('transforms export default as local with live binding', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     Object.defineProperty(exports, "foo", {
       enumerable: true,
       get: function () {
-        return _bar2.default;
+        return _bar2;
       }
     });
-    var _bar = require('bar');
-    var _bar2 = _interopDefault(_bar);
+    var _bar2 = _$$_IMPORT_DEFAULT('bar');
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
@@ -594,15 +573,10 @@ it('transforms export default as local then >1 locals with live binding', () => 
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     Object.defineProperty(exports, "b", {
       enumerable: true,
       get: function () {
-        return _bar2.default;
+        return _bar2;
       }
     });
     Object.defineProperty(exports, "c", {
@@ -618,7 +592,7 @@ it('transforms export default as local then >1 locals with live binding', () => 
       }
     });
     var _bar = require('bar');
-    var _bar2 = _interopDefault(_bar);
+    var _bar2 = _$$_IMPORT_DEFAULT('bar');
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
@@ -631,14 +605,8 @@ it('transforms import default as local with live binding', () => {
   `;
 
   const expected = `
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
-    var _bar = require('bar');
-    var foo = _interopDefault(_bar);
-    test(foo.default);
+    var foo = _$$_IMPORT_DEFAULT('bar');
+    test(foo);
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
@@ -652,15 +620,10 @@ it('transforms import default as local then >1 locals with live binding', () => 
   `;
 
   const expected = `
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     var _bar = require('bar');
-    var b = _interopDefault(_bar);
+    var b = _$$_IMPORT_DEFAULT('bar');
 
-    test(b.default, _bar.c, _bar.d)
+    test(b, _bar.c, _bar.d)
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
@@ -673,14 +636,9 @@ it('transforms import default and named as local with live binding', () => {
   `;
 
   const expected = `
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     var _bar = require('bar');
-    var foo = _interopDefault(_bar);
-    console.log(foo.default, _bar.baz);
+    var foo = _$$_IMPORT_DEFAULT('bar');
+    console.log(foo, _bar.baz);
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });

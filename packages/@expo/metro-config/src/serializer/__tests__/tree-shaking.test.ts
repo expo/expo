@@ -674,19 +674,12 @@ it(`export var with trailing exports`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      function _interopDefault(e) {
-        return e && e.__esModule ? e : {
-          default: e
-        };
-      }
       Object.defineProperty(exports, "add", {
         enumerable: true,
         get: function () {
-          return add;
+          return _$$_IMPORT_DEFAULT(_dependencyMap[0]).add;
         }
       });
-      var client = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
-      var add = client.default.add;
     },"/app/lib.js",["/app/b.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1060,18 +1053,12 @@ export { Worm as default };
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      function _interopDefault(e) {
-        return e && e.__esModule ? e : {
-          default: e
-        };
-      }
       Object.defineProperty(exports, "AArrowDown", {
         enumerable: true,
         get: function () {
-          return _aArrowDownJs2.default;
+          return _$$_IMPORT_DEFAULT(_dependencyMap[0]);
         }
       });
-      var _aArrowDownJs2 = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
     },"/app/lucide.js",["/app/a-arrow-down.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1079,19 +1066,13 @@ export { Worm as default };
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      function _interopDefault(e) {
-        return e && e.__esModule ? e : {
-          default: e
-        };
-      }
       Object.defineProperty(exports, "default", {
         enumerable: true,
         get: function () {
           return AArrowDown;
         }
       });
-      var createLucideIcon = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
-      const AArrowDown = (0, createLucideIcon.default)();
+      const AArrowDown = (0, _$$_IMPORT_DEFAULT(_dependencyMap[0]))();
     },"/app/a-arrow-down.js",["/app/createLucideIcon.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1473,13 +1454,7 @@ it(`recursively expands unused with overlapping exports`, async () => {
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      function _interopDefault(e) {
-        return e && e.__esModule ? e : {
-          default: e
-        };
-      }
-      var m = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
-      console.log(m.default.z1, DDD);
+      console.log(_$$_IMPORT_DEFAULT(_dependencyMap[0]).z1, DDD);
     },"/app/index.js",["/app/x0.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1487,19 +1462,12 @@ it(`recursively expands unused with overlapping exports`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      function _interopDefault(e) {
-        return e && e.__esModule ? e : {
-          default: e
-        };
-      }
       Object.defineProperty(exports, "default", {
         enumerable: true,
         get: function () {
-          return _default;
+          return _$$_IMPORT_DEFAULT(_dependencyMap[0]);
         }
       });
-      var X = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
-      var _default = X.default;
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1576,11 +1544,6 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      function _interopDefault(e) {
-        return e && e.__esModule ? e : {
-          default: e
-        };
-      }
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
@@ -1590,11 +1553,9 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       Object.defineProperty(exports, "default", {
         enumerable: true,
         get: function () {
-          return _default;
+          return _$$_IMPORT_DEFAULT(_dependencyMap[0]);
         }
       });
-      var X = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
-      var _default = X.default;
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";

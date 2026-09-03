@@ -57,30 +57,18 @@ exports[`importInterop-none export-from 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return _foo2.default;
+    return _foo2;
   }
 });
-var _foo = require('foo');
-var _foo2 = _interopDefault(_foo);"
+var _foo2 = _$$_IMPORT_DEFAULT('foo');"
 `;
 
 exports[`importInterop-none import-default-only 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _foo = require("foo");
-var foo = _interopDefault(_foo);
-(0, foo.default)();"
+"var foo = _$$_IMPORT_DEFAULT("foo");
+(0, foo)();"
 `;
 
 exports[`importInterop-none import-wildcard 1`] = `
@@ -109,11 +97,6 @@ exports[`interop export-all 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
@@ -131,12 +114,12 @@ Object.keys(_react).forEach(function (k) {
     });
   }
 });
-var _default = _interopDefault(_react);
+var _default = _$$_IMPORT_DEFAULT('react');
 // The fact that this exports both a normal default, and all of the names via
 // re-export is an edge case that is important not to miss. See
 // https://github.com/babel/babel/issues/8306 as an example.
 
-var _default2 = _default.default;"
+var _default2 = _default;"
 `;
 
 exports[`interop export-default 1`] = `
@@ -430,19 +413,13 @@ exports[`interop export-from-7 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "foo", {
   enumerable: true,
   get: function () {
-    return _foo2.default;
+    return _foo2;
   }
 });
-var _foo = require("foo");
-var _foo2 = _interopDefault(_foo);"
+var _foo2 = _$$_IMPORT_DEFAULT("foo");"
 `;
 
 exports[`interop export-from-8 1`] = `
@@ -1303,15 +1280,9 @@ require("./directory/foo-bar");"
 `;
 
 exports[`interop imports-default 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _foo = require("foo");
-var foo = _interopDefault(_foo);
-foo.default;
-foo.default;"
+"var foo = _$$_IMPORT_DEFAULT("foo");
+foo;
+foo;"
 `;
 
 exports[`interop imports-glob 1`] = `"require("foo");"`;
@@ -1319,14 +1290,9 @@ exports[`interop imports-glob 1`] = `"require("foo");"`;
 exports[`interop imports-hoisting 1`] = `"tag\`foo\`;"`;
 
 exports[`interop imports-mixing 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _foo = require("foo");
-var foo = _interopDefault(_foo);
-foo.default;
+"var _foo = require("foo");
+var foo = _$$_IMPORT_DEFAULT("foo");
+foo;
 _foo.baz;"
 `;
 
@@ -1366,11 +1332,6 @@ exports[`interop overview 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "test", {
   enumerable: true,
   get: function () {
@@ -1386,8 +1347,7 @@ Object.defineProperty(exports, "test2", {
 require("foo");
 require("foo-bar");
 require("./directory/foo-bar");
-var _foo2 = require("foo2");
-var foo = _interopDefault(_foo2);
+var foo = _$$_IMPORT_DEFAULT("foo2");
 require("foo3");
 var _foo4 = require("foo4");
 var _foo5 = require("foo5");
@@ -1395,7 +1355,7 @@ var test;
 var test2 = 5;
 _foo4.bar;
 _foo5.foo;
-foo.default;"
+foo;"
 `;
 
 exports[`interop remap 1`] = `
@@ -1468,15 +1428,10 @@ exports[`misc copy-getters-setters 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
 Object.defineProperty(exports, "Foo", {
   enumerable: true,
   get: function () {
-    return Foo.default;
+    return Foo;
   }
 });
 Object.defineProperty(exports, "baz", {
@@ -1486,7 +1441,7 @@ Object.defineProperty(exports, "baz", {
   }
 });
 var _moduleWithGetter = require("./moduleWithGetter");
-var Foo = _interopDefault(_moduleWithGetter);"
+var Foo = _$$_IMPORT_DEFAULT("./moduleWithGetter");"
 `;
 
 exports[`misc copy-getters-setters-star 1`] = `
@@ -1689,12 +1644,7 @@ for (foo of []);
 `;
 
 exports[`misc import-const-throw 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-function _interopNamespace(e) {
+"function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
@@ -1709,8 +1659,7 @@ function _interopNamespace(e) {
   n.default = e;
   return n;
 }
-var _foo = require("foo");
-var Foo = _interopDefault(_foo);
+var Foo = _$$_IMPORT_DEFAULT("foo");
 var _bar = require("bar");
 var Bar = _interopNamespace(_bar);
 var _baz = require("baz");
@@ -1744,13 +1693,13 @@ Baz >>>= 3;
 Foo &&= 4;
 Bar &&= 4;
 Baz &&= 4;
---Foo.default;
+--Foo;
 --Bar;
 --_baz.Baz;
-Foo.default++;
+Foo++;
 Bar++;
 _baz.Baz++;
-for (Foo.default in {});
+for (Foo in {});
 for (Bar in {}) {}
 for (_baz.Baz of []) {
   let Baz;
@@ -1935,12 +1884,7 @@ module.prop = "";"
 `;
 
 exports[`misc reference-source-map 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-function _interopNamespace(e) {
+"function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
@@ -1955,33 +1899,26 @@ function _interopNamespace(e) {
   n.default = e;
   return n;
 }
-var _one = require("one");
-var aDefault = _interopDefault(_one);
+var aDefault = _$$_IMPORT_DEFAULT("one");
 var _two = require("two");
 var _three = require("three");
 var _four = require("four");
 var aNamespace = _interopNamespace(_four);
-console.log(aDefault.default);
+console.log(aDefault);
 console.log(_two.aNamed);
 console.log(_three.orig);
 console.log(aNamespace);
-console.log((0, aDefault.default)());
+console.log((0, aDefault)());
 console.log((0, _two.aNamed)());
 console.log((0, _three.orig)());
 console.log((0, aNamespace)());"
 `;
 
 exports[`shadowed-namespace-import transformed-name 1`] = `
-"function _interopDefault(e) {
-  return e && e.__esModule ? e : {
-    default: e
-  };
-}
-var _mod = require("mod");
-var t = _interopDefault(_mod);
+"var t = _$$_IMPORT_DEFAULT("mod");
 const foo = e => {
   return {
-    amount: t.default.format(1)
+    amount: t.format(1)
   };
 };"
 `;
