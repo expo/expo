@@ -171,8 +171,8 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
     waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 3 }),
     probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
     openRoute: async (route) => opened({ route }),
-    // The ordinary case: the app that answered is one this project can run.
-    checkAppFitsProject: async () => null,
+    // The ordinary case: the app that answered is one this project can run, with nothing to note.
+    checkAppFitsProject: async () => ({ mismatch: null, note: null }),
     // A reload the dev server's own command socket proved, which is the healthy local case.
     reloadApp: async () => ({
       ok: true,
@@ -2061,7 +2061,7 @@ describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () 
 
   it(`will not pass a run whose runtime is an app the project cannot run`, async () => {
     const run = await runSmokePhasesAsync(
-      deps({ checkAppFitsProject: async () => MISMATCH }),
+      deps({ checkAppFitsProject: async () => ({ mismatch: MISMATCH, note: null }) }),
       options()
     );
 
@@ -2076,7 +2076,7 @@ describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () 
   // decide the verdict.
   it(`still reads the app it found, and still photographs it`, async () => {
     const run = await runSmokePhasesAsync(
-      deps({ checkAppFitsProject: async () => MISMATCH }),
+      deps({ checkAppFitsProject: async () => ({ mismatch: MISMATCH, note: null }) }),
       options()
     );
 
@@ -2090,7 +2090,7 @@ describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () 
   it(`still fails on an error the wrong app reported`, async () => {
     const run = await runSmokePhasesAsync(
       deps({
-        checkAppFitsProject: async () => MISMATCH,
+        checkAppFitsProject: async () => ({ mismatch: MISMATCH, note: null }),
         collectErrors: async () => ({ ok: true, records: [record()], reason: null }),
       }),
       options()
@@ -2103,7 +2103,7 @@ describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () 
   // An app this run opened itself is asked the same question: the open picks the target from the
   // same decision, so a mismatch there would mean this gate had opened the wrong app.
   it(`asks the question for an app it opened as well as one it found`, async () => {
-    const checkAppFitsProject = jest.fn(async () => null);
+    const checkAppFitsProject = jest.fn(async () => ({ mismatch: null, note: null }));
     await runSmokePhasesAsync(
       deps({
         checkAppFitsProject,
@@ -2120,7 +2120,7 @@ describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () 
 
   // And a run with no app at all never asks: there is no runtime to be about.
   it(`does not ask when nothing is connected`, async () => {
-    const checkAppFitsProject = jest.fn(async () => null);
+    const checkAppFitsProject = jest.fn(async () => ({ mismatch: null, note: null }));
     await runSmokePhasesAsync(
       deps({
         checkAppFitsProject,
@@ -2131,5 +2131,69 @@ describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () 
     );
 
     expect(checkAppFitsProject).not.toHaveBeenCalled();
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The Expo Go on the device is not the Expo Go the SDK wants
+//
+// The softer half of the same check, and it has to stay soft. An Expo Go from an older patch of the
+// *same* SDK line almost always runs the app, so failing a run for it would be the false red that
+// mirrors the false green this area exists to remove — but saying nothing would leave a caller
+// debugging their code when the answer is that their simulator is months behind.
+describe(`${runSmokePhasesAsync.name} and a note about the app it read`, () => {
+  const NOTE = 'the Expo Go on the device is 57.0.3, and 57.0.9 is the version this SDK ships';
+
+  it(`keeps the phase ok and still passes the run`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({ checkAppFitsProject: async () => ({ mismatch: null, note: NOTE }) }),
+      options()
+    );
+
+    expect(statusOf(run, 'app')).toBe('ok');
+    expect(run.outcome).toBe('passed');
+  });
+
+  // Said out loud on the row it is about, because a fact nobody prints is a fact nobody has.
+  it(`says it on the app phase`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({ checkAppFitsProject: async () => ({ mismatch: null, note: NOTE }) }),
+      options()
+    );
+
+    expect(run.phases.find((phase) => phase.id === 'app')?.reason).toBe(NOTE);
+  });
+
+  // A mismatch outranks a note: there is no use telling someone their Expo Go is a patch behind
+  // when the real answer is that it cannot run their project at all.
+  it(`prefers the mismatch when there is one`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        checkAppFitsProject: async () => ({ mismatch: 'cannot run this project', note: NOTE }),
+      }),
+      options()
+    );
+
+    expect(statusOf(run, 'app')).toBe('inconclusive');
+    expect(run.phases.find((phase) => phase.id === 'app')?.reason).toBe('cannot run this project');
+    expect(run.outcome).toBe('inconclusive');
+  });
+
+  // And a note never overwrites the sentence the phase already had, which says how the app got
+  // there — that is the fact the row exists for.
+  it(`does not lose the phase's own reason`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        checkAppFitsProject: async () => ({ mismatch: null, note: NOTE }),
+        waitForAppConnection: jest
+          .fn<Promise<{ appsConnected: number; timedOut: boolean; waitedMs: number }>, []>()
+          .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+          .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 2 }),
+      }),
+      options()
+    );
+
+    const reason = run.phases.find((phase) => phase.id === 'app')?.reason ?? '';
+    expect(reason).toContain('to connect one');
+    expect(reason).toContain(NOTE);
   });
 });

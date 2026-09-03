@@ -337,6 +337,37 @@ Before `route`, not after. A reload sends the app back to its initial route, so 
 
 Cost: one broadcast on a socket that is already open, plus the reconnect. Measured at ~260 ms across six consecutive break-detect-fix-verify runs, all six correct [observed — iOS 26.5 simulator, Expo Go SDK 57, 2026-09-03].
 
+### Expo Go is only a target for a project that fits in it
+
+`decideExpoGoTarget` decided from four facts — `--app-id`, the app ids on the dev server, `expo-dev-client`, and checked-in native directories — and none of them was "can this project run in Expo Go" [confirmed, 2026-09-03]. Its last branch therefore answered `isExpoGo: true` with `certain: true` for a project `status` and the plan engine already called `needs-dev-client`. One question, two answers, and the wrong one won where it mattered: on a CNG project with a podspec-shipping dependency `smoke` opened `exp://…`, Expo Go answered the debugger, and the gate reported `passed` at exit 0 — a run that proved Expo Go can boot the bundle and called it the app working [observed — iOS 26.5 simulator, 2026-09-03].
+
+Compatibility is now a fifth input, below the two observations and above the native-directory guess. `--app-id` and an app already on the dev server still win: those are facts about _what will open the link_, and answering `<scheme>://` for a session that is demonstrably Expo Go would send the link to an app that is not there.
+
+`ExpoGoCompatibility.compatible` could not be used directly, and that is the part worth writing down. It is `false` for all four reason kinds and only two of them rule Expo Go out. `unbundled-native-module` and `config-plugin` do. `unknown-sdk` does not — it is the check saying it could not read the project, which is the ordinary state of a fresh clone with no `node_modules`. Nor does `custom-native-code`, whose own `detail` says a checked-in native directory _can_ contain code the runtime lacks: a bare project with no unbundled module still runs in Expo Go, which is exactly the uncertainty `ExpoGoDecision.certain` carries. `decidesAgainstExpoGo` is the three-valued answer, and the suites that run against a virtual filesystem caught both mistakes before they shipped.
+
+Choosing the right app is half of it. Expo Go can already be attached because somebody ran `expo start --ios`, so the `app` phase also asks whether the app that answered is one this project can run. A mismatch is `inconclusive` with the build command named, never `failed` — nothing is wrong with the code — and never `passed`. The window is still opened and the screen still photographed, the same rule §Android sets for a runtime with no debugger. An error outranks all of it: Expo Go throwing on this project's bundle is a fact about the code, whichever app was holding it. `appMismatch` is on `--json` so nothing has to match English, and the follow-ups lead with `dev --<platform> --yes` rather than a re-run of a gate that will answer the same way for ever.
+
+### The Expo Go on the device is not the Expo Go the SDK wants
+
+Expo Go being _installed_ is not Expo Go being the _right_ Expo Go [confirmed, Kudo, 2026-09-03]. Its native runtime is versioned with the SDK, and §The device that can open the app chose a simulator by asking which one _has_ `host.exp.Exponent` and then trusted whatever was there. A simulator nobody has opened since the spring holds a build of another SDK.
+
+Two questions, two sources, and neither is `@expo/cli`'s. What is installed comes from `plutil` over the app bundle's own `Info.plist` — `CFBundleShortVersionString`, the same read `installedApps.ts` already does for `CFBundleIdentifier`, with no network and no boot. What the SDK wants comes from the `expo-go` CLI as a subprocess: `npx expo-go url <platform> <sdk> --json` answers `{"url":…}` at exit 0 and `{"error":…}` at exit 1, and the release URL carries the version (`Expo-Go-57.0.9`). `@expo/cli` answers this in `ExpoGoInstaller`, which is precisely the internal llp/0001 constraint 5 forbids importing — and `expo-go` is the Expo-maintained CLI whose whole job it is. It resolves per release line: 54 → 54.0.7, 55 → 55.0.34, 56 → 56.0.4, 57 → 57.0.9 [observed, 2026-09-03].
+
+Four verdicts, and the two failures are deliberately not one:
+
+| verdict        | what it means                                          | the run                  |
+| -------------- | ------------------------------------------------------ | ------------------------ |
+| `match`        | at or past the release this SDK ships                  | unaffected               |
+| `sdk-mismatch` | a different release line, so it cannot load the bundle | never `passed`           |
+| `outdated`     | an older patch of the **same** line                    | unaffected, and reported |
+| `unknown`      | offline, no `expo-go`, or a version nothing could read | unaffected, and silent   |
+
+`outdated` staying soft is the point. An older patch of the same line runs the app in almost every case, and failing a run for it would be the false red that mirrors the false green this whole area removes. Newer than expected is `match`: that happens to anyone who updated Expo Go ahead of this SDK's pinned release, and their app runs.
+
+`unknown` prints nothing, which is a decision rather than an oversight. A machine with no route out would otherwise carry "the version could not be checked" on the `app` row of every run it ever makes, and that is chatter rather than a finding.
+
+The local read gates the network one. Reading the device's plist is a file read; resolving the release is a subprocess and a request. With nothing installed to compare there is nothing the second answer could be compared _to_, so it is not spent — which is also what keeps the e2e tier off the network, since its fixture plists carry no version key. `EXPO_OFFLINE` skips the lookup outright, the same courtesy `@expo/cli` extends. Measured at ~290 ms warm, and asked only when Expo Go is the app that actually answered on a local simulator: a development build is this project's own app and its version is the project's own business, and a cloud session's disk is not this machine's.
+
 ### The run brings its own environment
 
 Start what is missing, stop only what you started, leave what you found [confirmed, Kudo, 2026-08-29]. `--start` is the default. `--no-start` is the opt-out. A dev server that was already up is used and still running afterwards. One this run started is stopped in a cleanup. The same for the device. The run tracks "I started this" explicitly. It never infers it at cleanup time.

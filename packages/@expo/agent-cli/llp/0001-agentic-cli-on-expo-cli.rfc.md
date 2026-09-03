@@ -29,7 +29,7 @@ An Expo-built tool layer lets any driving agent read structured CLI state, encod
 1. The code lives in the `expo/expo` repository.
 2. The command can be an entirely new bin, not necessarily an `expo` subcommand.
 3. Testing must be heavy. An eval suite must gate shipping. Testing infrastructure is built first [confirmed, Kudo, 2026-08-20].
-4. **Process boundary** [confirmed, Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible. It does not import `@expo/cli` code. The same boundary generalizes across the Expo CLI family: `expo`, `eas-cli`, `expo-doctor` (bin `expo-doctor`), `@expo/fingerprint` (bin `fingerprint`), `create-expo`, and more. Details: [[0006-agent-native-cli-surface]].
+4. **Process boundary** [confirmed, Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible. It does not import `@expo/cli` code. The same boundary generalizes across the Expo CLI family: `expo`, `eas-cli`, `expo-doctor` (bin `expo-doctor`), `@expo/fingerprint` (bin `fingerprint`), `create-expo`, `expo-go` (bin `expo-go`, added 2026-09-03 for [[0005-runtime-loop-tools]] §The Expo Go on the device is not the Expo Go the SDK wants — `@expo/cli` answers that question in `ExpoGoInstaller`, which this constraint forbids importing), and more. Details: [[0006-agent-native-cli-surface]].
 5. Feature areas are documented in separate LLPs. This document stays the umbrella: decisions, constraints, naming. The v1 command list is [[0016-v1-scope]].
 
 ## Status convention
@@ -86,7 +86,7 @@ Shape 1 consequences:
 
 Three layers, all machine-readable:
 
-1. **The Expo CLI family as structured subprocesses.** The tool layer orchestrates `expo`, `eas-cli`, `expo-doctor`, `@expo/fingerprint`, `create-expo`, and more. `expo` already emits JSONL events via `installEventLogger` / `LOG_EVENTS`. Sibling CLIs without structured output get wrapped until they emit events natively.
+1. **The Expo CLI family as structured subprocesses.** The tool layer orchestrates `expo`, `eas-cli`, `expo-doctor`, `@expo/fingerprint`, `create-expo`, `expo-go`, and more. `expo` already emits JSONL events via `installEventLogger` / `LOG_EVENTS`. Sibling CLIs without structured output get wrapped until they emit events natively.
 2. **`expo-mcp` stays untouched. `@expo/agent-cli` is self-serve.** [confirmed, Kudo, 2026-08-22] Runtime capabilities are implemented inside `packages/@expo/agent-cli` as CLI commands. Published `expo-mcp` tools stay available to agents that connect to them.
 3. **Expo-specific decision tools** built for the agent: the Expo Go compatibility check, the post-install impact classifier, the project-state probe.
 

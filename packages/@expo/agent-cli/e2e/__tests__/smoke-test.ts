@@ -221,9 +221,16 @@ async function installStubPlutilAsync(projectRoot: string): Promise<void> {
     scriptPath,
     [
       `const fs = require('fs');`,
+      // The key that was asked for, not always CFBundleIdentifier. Two callers read these plists
+      // now — the device choice wants the bundle id and the Expo Go version check wants
+      // CFBundleShortVersionString — and a stub that answered the same key whichever was asked
+      // would hand a bundle id back as a version string.
+      `const key = process.argv[process.argv.indexOf('-extract') + 1];`,
       `const plist = process.argv[process.argv.length - 1];`,
       `const xml = fs.readFileSync(plist, 'utf8');`,
-      `const match = xml.match(/<key>CFBundleIdentifier<\\/key>\\s*<string>([^<]*)<\\/string>/);`,
+      `const match = xml.match(new RegExp('<key>' + key + '<\\\\/key>\\\\s*<string>([^<]*)<\\\\/string>'));`,
+      // Real `plutil` exits non-zero for a key the plist has not got, which is the case the
+      // version check reads as "nothing installed to compare".
       `if (!match) process.exit(1);`,
       `process.stdout.write(match[1] + '\\n');`,
     ].join('\n')
@@ -1171,6 +1178,7 @@ describe('@expo/agent-cli smoke', () => {
 
       expect(() => JSON.parse(result.stdout)).not.toThrow();
       expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
+        'appMismatch',
         'appsConnected',
         'bundle',
         'devServerUrl',

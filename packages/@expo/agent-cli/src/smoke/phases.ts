@@ -219,12 +219,20 @@ export interface SmokeDeps {
    * Whether the app that answered is one this project can actually run.
    *
    * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
-   * A reason when it is not, and null when it is or when nothing could be decided. The case it
-   * exists for: Expo Go attached to a project whose native code Expo Go's fixed runtime does not
-   * contain — the state `expo start --ios` leaves behind. Reading that runtime answers about Expo
-   * Go rather than about this project, so the gate must not report a pass on it.
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The Expo Go on the device is not the Expo Go the SDK wants
+   *
+   * Two answers, because the findings are not the same weight. A `mismatch` is an app that cannot
+   * run this project — Expo Go holding a project whose native code its fixed runtime does not
+   * contain, or an Expo Go from another SDK release line — and the gate must not report a pass on
+   * a reading taken through it. A `note` is a finding worth printing that decides nothing, such as
+   * an Expo Go an update behind on the same release line, which will usually run the app.
+   *
+   * Both null is the ordinary answer, and so is both null when nothing could be decided: a check
+   * that could not run must not become a refusal.
    */
-  checkAppFitsProject(devServerUrl: string): Promise<string | null>;
+  checkAppFitsProject(
+    devServerUrl: string
+  ): Promise<{ mismatch: string | null; note: string | null }>;
   /**
    * Put an app that was already attached back on the bundle the dev server is serving.
    *
@@ -1151,12 +1159,21 @@ async function runPhasesAsync(
   // there and still photograph it — the same rule llp/0005 §Android sets for a runtime with no
   // debugger, where an empty window costs one wait and the report is more useful with it. What
   // changes is that the verdict can no longer be `passed`.
-  const appMismatch = await deps.checkAppFitsProject(devServerUrl);
-  if (appMismatch != null) {
-    const appPhase = phases.find((phase) => phase.id === 'app');
-    if (appPhase != null) {
+  const appFit = await deps.checkAppFitsProject(devServerUrl);
+  const appMismatch = appFit.mismatch;
+  const appPhase = phases.find((phase) => phase.id === 'app');
+  if (appPhase != null) {
+    if (appMismatch != null) {
+      // A mismatch outranks a note: there is no use telling a caller their Expo Go is a patch
+      // behind when the answer is that it cannot run their project at all.
       appPhase.status = 'inconclusive';
       appPhase.reason = appMismatch;
+    } else if (appFit.note != null) {
+      // Appended rather than substituted. The sentence already there says how the app got where it
+      // is — "opened … to connect one" — which is the fact the row exists for, and a note that
+      // replaced it would trade a finding for a finding.
+      appPhase.reason =
+        appPhase.reason == null ? appFit.note : `${appPhase.reason} · ${appFit.note}`;
     }
   }
 

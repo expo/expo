@@ -12,6 +12,7 @@ import { resolveDevOptions } from '../dev/resolveOptions';
 import { resolveDevStopOptions } from '../dev/resolveStopOptions';
 import { devStopAsync, type DevStopResultJson } from '../dev/stopAsync';
 import { bootDeviceAsync, shutdownDeviceAsync } from '../device/bootDevice';
+import { checkExpoGoVersionAsync } from '../device/expoGoVersion';
 import { captureScreenshotAsync, defaultScreenshotPath } from '../device/screenshot';
 import { event } from '../events';
 import { EXIT_OK } from '../exitCodes';
@@ -22,6 +23,7 @@ import { openRouteAsync } from '../navigate/openRoute';
 import { EXPO_GO_APP_IDS } from '../navigate/target';
 import { PROGRAM_PREFIX } from '../programName';
 import { checkExpoGoCompatibilityAsync, decidesAgainstExpoGo } from '../project/expoGo';
+import { readSdkVersionAsync } from '../project/nodeModules';
 import { checkEntryBundleAsync } from '../runtime/bundleCheck';
 import { CdpClient, isMethodNotFoundError } from '../runtime/cdpClient';
 import { discoverDevServerAsync, probeDevServerAsync } from '../runtime/devServer';
@@ -415,13 +417,7 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
     // Scoped to this run's platform for the same reason every other read is (F51): an iOS Expo Go
     // attached to the same dev server must not decide an `--android` run's answer.
     checkAppFitsProject: async (devServerUrl) => {
-      const ruledOut = decidesAgainstExpoGo(await checkExpoGoCompatibilityAsync(projectRoot));
-      // Only a project that is **ruled out** is a mismatch. Unknown is not: a project this could
-      // not read is the ordinary state of a fresh clone, and refusing to pass one would be the
-      // false red of the same mistake (@ref src/project/expoGo §RULES_OUT_EXPO_GO).
-      if (ruledOut !== false) {
-        return null;
-      }
+      const nothing = { mismatch: null, note: null };
       const probe = await probeDevServerAsync(devServerUrl);
       // `matched` only, never `undetermined`: a target whose platform nothing decided must not earn
       // this run's verdict either way (@ref src/runtime/targetPlatform §scopeTargets). Erring that
@@ -430,9 +426,61 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
       const expoGo = scoped.matched
         .map((target) => target.appId)
         .find((appId): appId is string => appId != null && EXPO_GO_APP_IDS.includes(appId));
-      return expoGo == null
-        ? null
-        : `the app that answered is Expo Go (${expoGo}), and this project cannot run in Expo Go — its native code is not in that runtime, so this window is about Expo Go rather than about this project. "${PROGRAM_PREFIX} dev --${options.platform} --yes" makes the development build that can run it`;
+      // Everything below is about Expo Go. A development build is this project's own app and its
+      // version is the project's own business, so there is nothing here to ask about it.
+      if (expoGo == null) {
+        return nothing;
+      }
+
+      // @ref llp/0005 §Expo Go is only a target for a project that fits in it. Only a project that
+      // is **ruled out** is a mismatch. Unknown is not: a project this could not read is the
+      // ordinary state of a fresh clone (@ref src/project/expoGo §RULES_OUT_EXPO_GO).
+      if (decidesAgainstExpoGo(await checkExpoGoCompatibilityAsync(projectRoot)) === false) {
+        return {
+          mismatch: `the app that answered is Expo Go (${expoGo}), and this project cannot run in Expo Go — its native code is not in that runtime, so this window is about Expo Go rather than about this project. "${PROGRAM_PREFIX} dev --${options.platform} --yes" makes the development build that can run it`,
+          note: null,
+        };
+      }
+
+      // @ref llp/0005 §The Expo Go on the device is not the Expo Go the SDK wants
+      //
+      // The project fits in Expo Go — but the Expo Go on the device is a build of *some* SDK, and
+      // only the one from this project's release line is the app under test. Asked only of a local
+      // simulator: the check reads that simulator's own bundle, and a cloud session's disk is not
+      // this machine's (llp/0005 §Cloud simulator).
+      // The same resolution `probeDevice` performs, and for the same reason: the device this run is
+      // about. Any failure to find one is nothing to check rather than something to report — the
+      // app answered, so whatever it is running on is beyond this check's reach.
+      let udid: string | null = null;
+      try {
+        const device = await resolveDeviceAsync(options.platform, {
+          cloud: options.cloud,
+          projectRoot,
+        });
+        udid = device.backend === 'local-ios' ? device.deviceId : null;
+      } catch {
+        udid = null;
+      }
+      if (udid == null) {
+        return nothing;
+      }
+      const version = await checkExpoGoVersionAsync(
+        udid,
+        options.platform,
+        await readSdkVersionAsync(projectRoot)
+      );
+      if (version.verdict === 'sdk-mismatch') {
+        return {
+          mismatch: `${version.reason}, so this window is about an Expo Go that cannot load this project's bundle. "npx expo start --${options.platform}" installs the one this SDK ships`,
+          note: null,
+        };
+      }
+      // `outdated` is printed and decides nothing. `unknown` prints **nothing at all**, and that
+      // is a decision rather than an oversight: a machine with no route out would otherwise carry
+      // "the version could not be checked" on the `app` row of every run it ever makes, which is
+      // chatter rather than a finding. The phase list already has a vocabulary for work that did
+      // not happen, and a check that established nothing has nothing to add to a row about the app.
+      return version.verdict === 'outdated' ? { mismatch: null, note: version.reason } : nothing;
     },
 
     // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
