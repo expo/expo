@@ -21,15 +21,14 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
 
   private let barcodeProvider: ExpoBarcodeScannerProvider?
 
-  init(session: AVCaptureSession, sessionQueue: DispatchQueue) {
+  init(
+    session: AVCaptureSession,
+    sessionQueue: DispatchQueue,
+    provider: ExpoBarcodeScannerProvider? = BarcodeScanner.discoverProvider()
+  ) {
     self.session = session
     self.sessionQueue = sessionQueue
-    self.barcodeProvider = BarcodeScanner.discoverProvider()
-  }
-
-  /// True when a barcode scanner provider is available (the companion pod is linked).
-  var isAvailable: Bool {
-    return barcodeProvider != nil
+    self.barcodeProvider = provider
   }
 
   /// Discovers the optional barcode scanner provider at runtime.
@@ -100,11 +99,7 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       return
     }
 
-    guard barcodeProvider != nil else {
-      return
-    }
-
-    if metadataOutput == nil || videoDataOutput == nil {
+    if metadataOutput == nil {
       addOutputs()
       if metadataOutput == nil {
         return
@@ -127,10 +122,6 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
   }
 
   private func addOutputs() {
-    guard let barcodeProvider else {
-      return
-    }
-
     delegate = MetaDataDelegate(
       settings: settings,
       previewLayer: previewLayer,
@@ -148,7 +139,7 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       }
     }
 
-    if videoDataOutput == nil {
+    if barcodeProvider != nil && videoDataOutput == nil {
       let output = AVCaptureVideoDataOutput()
       output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
       output.alwaysDiscardsLateVideoFrames = true

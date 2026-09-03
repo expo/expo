@@ -4,7 +4,7 @@ import CoreImage
 class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   private var settings: [String: [AVMetadataObject.ObjectType]]
   private var previewLayer: AVCaptureVideoPreviewLayer?
-  private let barcodeProvider: ExpoBarcodeScannerProvider
+  private let barcodeProvider: ExpoBarcodeScannerProvider?
   private var barcodeProviderEnabled = true
   private var barcodeProviderFPSProcessed = 6.0
   private var lastFrameTimeStamp = 0.0
@@ -15,7 +15,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
   init(
     settings: [String: [AVMetadataObject.ObjectType]],
     previewLayer: AVCaptureVideoPreviewLayer?,
-    barcodeProvider: ExpoBarcodeScannerProvider,
+    barcodeProvider: ExpoBarcodeScannerProvider?,
     barcodeProviderEnabled: Bool,
     metadataResultHandler: BarcodeScanningResponseHandler
   ) {
@@ -36,7 +36,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
       return
     }
 
-    let barcodeProviderTypes = Set(barcodeProvider.supportedTypes)
+    let barcodeProviderTypes = Set(barcodeProvider?.supportedTypes ?? [])
 
     for metadata in metadataObjects {
       var codeMetadata = metadata as? AVMetadataMachineReadableCodeObject
@@ -60,7 +60,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
   }
 
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-    guard barcodeProviderEnabled else {
+    guard barcodeProviderEnabled, let barcodeProvider else {
       return
     }
 
