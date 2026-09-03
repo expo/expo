@@ -3,6 +3,13 @@ import { UrlCreator } from '../UrlCreator';
 
 jest.mock('../../../log');
 
+const NO_DEV_MENU_QUERY =
+  '__expo_disable_fab=1&__expo_disable_auto_launch=1&__expo_disable_onboarding=1';
+
+beforeEach(() => {
+  delete process.env.EXPO_NO_DEV_MENU;
+});
+
 function createDefaultCreator(overrides?: {
   getProxyUrl?: () => string;
   getHostnameOverride?: () => string | null;
@@ -37,6 +44,32 @@ describe('constructLoadingUrl', () => {
       `"http://100.100.1.100:8081/_expo/loading"`
     );
   });
+  it(`ignores EXPO_NO_DEV_MENU`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructLoadingUrl({}, 'ios')).toBe(
+      'http://100.100.1.100:8081/_expo/loading?platform=ios'
+    );
+  });
+});
+
+describe('constructExpoGoUrl', () => {
+  it(`creates default`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl()).toBe('exp://100.100.1.100:8081');
+  });
+  it(`uses the exps scheme`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl({}, 'exps')).toBe('exps://100.100.1.100:8081');
+  });
+  it(`ignores a custom scheme option`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl({ scheme: 'foobar' })).toBe(
+      'exp://100.100.1.100:8081'
+    );
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructExpoGoUrl()).toBe(
+      `exp://100.100.1.100:8081?${NO_DEV_MENU_QUERY}`
+    );
+  });
 });
 
 describe('constructDevClientUrl', () => {
@@ -54,7 +87,7 @@ describe('constructDevClientUrl', () => {
   });
   it(`creates default`, () => {
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toMatchInlineSnapshot(
-      `"bacon://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A8081"`
+      `"bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081"`
     );
   });
   it(`uses the forwarded address`, () => {
@@ -63,25 +96,27 @@ describe('constructDevClientUrl', () => {
         scheme: 'bacon',
         forwarded: { authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: true },
       })
-    ).toMatchInlineSnapshot(
-      `"bacon://expo-development-client/?url=https%3A%2F%2Fproxy.test%3A4443"`
-    );
+    ).toMatchInlineSnapshot(`"bacon://?__expo_url=https%3A%2F%2Fproxy.test%3A4443"`);
   });
   it(`creates tunnel`, () => {
     expect(
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostType: 'tunnel' })
-    ).toMatchInlineSnapshot(`"bacon://expo-development-client/?url=http%3A%2F%2Ftunnel.dev"`);
+    ).toMatchInlineSnapshot(`"bacon://?__expo_url=http%3A%2F%2Ftunnel.dev"`);
   });
   it(`creates localhost`, () => {
     expect(
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostType: 'localhost' })
-    ).toMatchInlineSnapshot(`"bacon://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081"`);
+    ).toMatchInlineSnapshot(`"bacon://?__expo_url=http%3A%2F%2F127.0.0.1%3A8081"`);
   });
   it(`uses custom hostname`, () => {
     expect(
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostname: 'foobar.dev' })
-    ).toMatchInlineSnapshot(
-      `"bacon://expo-development-client/?url=http%3A%2F%2Ffoobar.dev%3A8081"`
+    ).toMatchInlineSnapshot(`"bacon://?__expo_url=http%3A%2F%2Ffoobar.dev%3A8081"`);
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      `bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081&${NO_DEV_MENU_QUERY}`
     );
   });
 });
@@ -141,6 +176,10 @@ describe('constructUrl', () => {
     expect(createDefaultCreator().constructUrl({ scheme: 'exp' })).toMatchInlineSnapshot(
       `"exp://100.100.1.100:8081"`
     );
+  });
+  it(`ignores EXPO_NO_DEV_MENU`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructUrl({ scheme: 'exp' })).toBe('exp://100.100.1.100:8081');
   });
   it(`uses localhost`, () => {
     expect(createDefaultCreator().constructUrl({ hostType: 'localhost' })).toMatchInlineSnapshot(

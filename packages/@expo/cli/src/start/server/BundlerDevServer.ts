@@ -453,7 +453,7 @@ export abstract class BundlerDevServer {
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
       ? (this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl())
-      : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
+      : this.getUrlCreator().constructExpoGoUrl(opts);
   }
 
   /** Get the URL for the running instance of the dev server. */
@@ -547,7 +547,7 @@ export abstract class BundlerDevServer {
 
   /** Get the URL for opening in Expo Go. */
   protected getExpoGoUrl(): string {
-    return this.getUrlCreator().constructUrl({ scheme: 'exp' });
+    return this.getUrlCreator().constructExpoGoUrl();
   }
 
   /** Should use the interstitial page for selecting which runtime to use. */
