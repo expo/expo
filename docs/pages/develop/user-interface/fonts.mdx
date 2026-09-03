@@ -31,7 +31,18 @@ Expo SDK officially supports OTF and TTF font formats across Android, iOS and we
 
 ### Variable fonts
 
-Variable fonts, including variable font implementations in OTF and TTF, do not have support across all platforms. For full platform support, use static fonts. Alternatively, use a utility such as [fontTools](https://fonttools.readthedocs.io/en/latest/varLib/mutator.html) to extract the specific axis configuration you want to use from the variable font and save it as a separate font file.
+A variable font holds many faces in one file. Instead of shipping one file per weight, you ship one file and select a face with the `fontWeight` and `fontStyle` style props. Both the [config plugin](#with-expo-font-config-plugin) and the [`useFonts` hook](#with-usefonts-hook) accept them.
+
+> **info** Android and iOS support variable fonts in SDK 58 and later. On earlier versions, use static font files.
+
+Each platform decides which faces a file offers in a different way, so check the file before you rely on it:
+
+- **Android** reads the `wght` axis and draws each weight `fontWeight` can name from it, limited to the range the axis declares. This needs Android 10 or newer. On earlier versions the font renders at its default weight, and Android creates the bold by thickening the letters.
+- **iOS** reads the _named instances_ the file declares. A named instance is a face the font designer gave a name and a fixed position on each axis, such as "Bold" or "Condensed Light". React Native selects the named instance whose weight is closest to the one you request, so a weight with no named instance is a weight you cannot select. If the file declares no named instances, only its default face renders.
+
+For `fontStyle: 'italic'`, Android applies the font's `ital` axis on Android 15 and newer. On earlier versions, Android creates the italic by slanting the upright letters. iOS uses the italic named instances in the file.
+
+Inspect a file's axes and named instances with a utility such as [fontTools](https://fonttools.readthedocs.io/). If a face you need is out of reach on a platform, use fontTools to extract that axis configuration and save it as a separate static font file.
 
 ### How to choose between OTF and TTF
 
@@ -93,6 +104,8 @@ If you plan to refer to fonts using just the `fontFamily`, provide an array of f
 
 If you want to refer to fonts using a combination of `fontFamily`, `weight`, and `style`, provide an array of objects (see `Inter` below).
 
+For a [variable font](#variable-fonts) on Android, declare the file path once inside each fontDefinition entry, or next to `fontFamily` (to reduce duplication). Each definition needs a `weight` and `style` pair that no other definition in the same family uses, because Android resolves a family by that pair.
+
 ```json app.json
 {
   "expo": {
@@ -122,11 +135,28 @@ If you want to refer to fonts using a combination of `fontFamily`, `weight`, and
                     "weight": 700
                   }
                 ]
+              },
+              {
+                "fontFamily": "Roboto Flex",
+                /* @info One variable font file backs every definition below. */
+                "path": "./assets/fonts/RobotoFlex.ttf",
+                /* @end */
+                "fontDefinitions": [
+                  { "weight": 400 },
+                  { "weight": 700 },
+                  /* @info Refer to this font using fontFamily: 'Roboto Flex', fontWeight: '400', fontStyle: 'italic' */
+                  { "weight": 400, "style": "italic", "axes": { "slnt": -10 } }
+                  /* @end */
+                ]
               }
             ]
           },
           "ios": {
-            "fonts": ["./assets/fonts/Inter-Bold.ttf", "./assets/fonts/Inter-BoldItalic.ttf"]
+            "fonts": [
+              "./assets/fonts/Inter-Bold.ttf",
+              "./assets/fonts/Inter-BoldItalic.ttf",
+              "./assets/fonts/RobotoFlex.ttf"
+            ]
           }
         }
       ]
@@ -134,6 +164,12 @@ If you want to refer to fonts using a combination of `fontFamily`, `weight`, and
   }
 }
 ```
+
+`style` selects the face that `fontStyle` matches, but it does not slant the glyphs. To get an italic out of an upright file, set a slant axis in `axes`, such as `slnt` or `ital`.
+
+`axes` accepts any [variation axis](https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg) the font declares, such as `wdth` for a condensed face. Tags are four characters and case sensitive: the registered axes (`ital`, `opsz`, `slnt`, `wdth`, `wght`) are lowercase, and a font's own axes are uppercase, such as `GRAD`. `weight` sets `wght` unless you override it in `axes`.
+
+On iOS, `path` and `axes` do not apply. List the variable font file in `ios.fonts` as you would a static font, and the faces available are the [named instances](#variable-fonts) in it.
 
 </Step>
 
@@ -147,6 +183,7 @@ You can use the font with `<Text>` by specifying the `fontFamily` style prop. Th
 <Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
 <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontStyle: 'italic' }}>Inter Bold Italic</Text>
 <Text style={{ fontFamily: 'FiraSans-MediumItalic' }}>Fira Sans Medium Italic</Text>
+<Text style={{ fontFamily: 'Roboto Flex', fontWeight: '400', fontStyle: 'italic' }}>Roboto Flex Italic</Text>
 ```
 
 </Step>
@@ -249,6 +286,15 @@ Use the font on the `<Text>` by using `fontFamily` style prop in a React compone
 ```tsx
 <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
 ```
+
+If the file you mapped is a [variable font](#variable-fonts), select a face with the `fontWeight` and `fontStyle` style props:
+
+```tsx
+<Text style={{ fontFamily: 'RobotoFlex-variable', fontWeight: '300' }}>Light</Text>
+<Text style={{ fontFamily: 'RobotoFlex-variable', fontWeight: '700' }}>Bold</Text>
+```
+
+`useFonts` reads the weight axis only. To set another axis, such as `wdth` or `slnt`, embed the font with the [config plugin](#with-expo-font-config-plugin) on Android.
 
 </Step>
 
