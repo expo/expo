@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '1.0.0'
+
+expoModule {
+  canBePublished false
+  v2 true
+}
+
+android {
+  namespace "expo.modules.v2demo"
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+  }
+}

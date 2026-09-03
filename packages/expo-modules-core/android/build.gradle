@@ -78,7 +78,7 @@ if (workletsProject != null) {
 
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
 
-def expoModulesV2Version = "0.1.1"
+def expoModulesV2Version = "0.1.2"
 
 configurations {
   // Artifact-only: the C++ sources, not something to put on any classpath.

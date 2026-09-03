@@ -46,6 +46,8 @@ open class ExpoModuleExtension(val project: Project) {
 
   var canBePublished: Boolean = true
 
+  var v2: Boolean = false
+
   var enableCompileTimeOptimization: Boolean =
     findBoolProperty("expo.enableCompileTimeOptimization", default = true)
 
