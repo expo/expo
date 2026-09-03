@@ -15,21 +15,7 @@ public final class JavaScriptPropNameID: JavaScriptType {
   /// Creates a PropNameID from the string.
   public init(_ runtime: JavaScriptRuntime, string: String) {
     self.runtime = runtime
-    // Hand JSI the string's own UTF-8 storage, skipping the `std::string` copy. The `(pointer, length)`
-    // overload needs the UTF-8 *byte* count, which `withUTF8` provides exactly; `String.count` would
-    // be wrong here because it counts grapheme clusters (e.g. `"café"` reports 4 for 5 UTF-8 bytes).
-    // `withUTF8` is mutating (it makes a bridged string contiguous first), hence the local copy, and
-    // the result leaves the closure through an optional because it has to be a `Copyable` type.
-    var string = string
-    var pointee: facebook.jsi.PropNameID? = nil
-    string.withUTF8 { utf8 in
-      guard let base = utf8.baseAddress else {
-        pointee = facebook.jsi.PropNameID.forAscii(runtime.pointee, "", 0)
-        return
-      }
-      pointee = facebook.jsi.PropNameID.forUtf8(runtime.pointee, base, utf8.count)
-    }
-    self.pointee = pointee.take()!
+    self.pointee = string.toJSIPropNameID(in: runtime.pointee)
   }
 
   /// Copies the contents of the PropNameID into a string.
