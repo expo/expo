@@ -22,6 +22,7 @@ import {
 } from '../react-navigation/native';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { getHistoryLength } from '../utils/stack';
+import useLatestCallback from '../utils/useLatestCallback';
 import { createMemoryHistory } from './createMemoryHistory';
 import { extractExpoPathFromURL } from './extractPathFromURL';
 import { appendBaseUrl } from './getPathFromState';
@@ -111,7 +112,7 @@ export function useLinking(
     return thenable as PromiseLike<NavigationState | undefined>;
   };
 
-  useBrowserHistorySync({
+  const onActionCommitted = useBrowserHistorySync({
     ref,
     config,
     getStateFromPath,
@@ -120,6 +121,7 @@ export function useLinking(
 
   return {
     getInitialState,
+    onActionCommitted,
   };
 }
 
@@ -182,10 +184,12 @@ function useBrowserHistorySync({
   const getPathFromStateRef = useRef(getPathFromState);
   const previousIndexRef = useRef<number | undefined>(undefined);
   const previousStateRef = useRef<NavigationState | undefined>(undefined);
-  // TODO(@ubax): buffer history intent metadata in the reducer and flush it immediately before
-  // the matching state event so each operation is correlated with its commit.
-  // https://linear.app/expo/issue/ENG-22046
   const pendingHistoryOperationsRef = useRef<{ path: string }[]>([]);
+  const onActionCommitted = useLatestCallback((metadata: RoutingIntent['metadata']) => {
+    if (metadata?.history) {
+      pendingHistoryOperationsRef.current.push(metadata.history);
+    }
+  });
 
   useEffect(() => {
     configRef.current = config;
@@ -212,11 +216,6 @@ function useBrowserHistorySync({
       const operation = { path };
       const queueHistoryIntent = (intent: RoutingIntent) => {
         intent.metadata = { history: operation };
-        intent.onDispatch = (metadata) => {
-          if (metadata?.history) {
-            pendingHistoryOperationsRef.current.push(metadata.history);
-          }
-        };
         enqueue(intent);
       };
       const reset = (state: ResetState) => ({
@@ -395,4 +394,6 @@ function useBrowserHistorySync({
     // Serialize writes because `history.go` is asynchronous and can be interrupted by another write.
     return ref.current?.addListener('state', series(onStateChange));
   }, [history, ref]);
+
+  return onActionCommitted;
 }

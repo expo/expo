@@ -1,9 +1,12 @@
-import { act, render } from '@testing-library/react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RemovalPreventionProvider } from '../../../global-state/removalPrevention';
 import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
-import { RoutingQueueProvider } from '../../../global-state/routingQueueContext';
+import {
+  RoutingQueueProvider,
+  useEnqueueRoutingIntent,
+} from '../../../global-state/routingQueueContext';
 import {
   CommonActions,
   type DefaultRouterOptions,
@@ -42,6 +45,10 @@ function RootProviders({ children }: React.PropsWithChildren) {
   );
 }
 
+function EmptyScreen() {
+  return null;
+}
+
 test('throws when nesting containers', () => {
   expect(() =>
     render(
@@ -52,6 +59,60 @@ test('throws when nesting containers', () => {
       </BaseNavigationContainer>
     )
   ).toThrow("install '@react-navigation/native' and use its NavigationContainer instead.");
+});
+
+test('flushes committed intent metadata before the matching state event', async () => {
+  let enqueue!: ReturnType<typeof useEnqueueRoutingIntent>;
+  const order: string[] = [];
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const initialState: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'root',
+    index: 0,
+    routeNames: ['home', 'details'],
+    routes: [{ key: 'home', name: 'home' }],
+  };
+
+  function CaptureEnqueue() {
+    enqueue = useEnqueueRoutingIntent();
+    return null;
+  }
+
+  function Stack(props: any) {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  }
+
+  render(
+    <RawBaseNavigationContainer
+      ref={ref}
+      initialState={initialState}
+      onActionCommitted={() => order.push('metadata')}>
+      <Stack>
+        <Screen name="home" component={EmptyScreen} />
+        <Screen name="details" component={EmptyScreen} />
+      </Stack>
+      <CaptureEnqueue />
+    </RawBaseNavigationContainer>,
+    { wrapper: RootProviders }
+  );
+  ref.current?.addListener('state', () => order.push('state'));
+
+  act(() =>
+    enqueue({
+      type: 'ACTION',
+      payload: { action: CommonActions.navigate('details') },
+      metadata: { history: { path: '/details' } },
+    })
+  );
+
+  await waitFor(() => expect(order).toEqual(['metadata', 'state']));
 });
 
 test('throws when rendered outside ExpoRoot', () => {

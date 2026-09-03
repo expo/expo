@@ -75,7 +75,13 @@ test('reports and vetoes removal of a prevented route', () => {
     routesWithRemovalPrevented: new Set(['third']),
   });
 
-  act(() => result.result.current.handleAction(action));
+  act(() =>
+    result.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action },
+      metadata: { history: { path: '/first' } },
+    })
+  );
 
   expect(result.result.current.state).toBe(initialState);
   expect(result.reports.at(-1)).toMatchObject({
@@ -84,6 +90,7 @@ test('reports and vetoes removal of a prevented route', () => {
   expect(result.result.current.report).toMatchObject({
     events: [{ type: 'prevented-routes', routeKeys: ['third'], action }],
   });
+  expect(result.result.current.report?.events[0]).not.toHaveProperty('metadata');
 });
 
 test('commits removal and reports removed routes when none are prevented', () => {
@@ -389,11 +396,42 @@ it('logs an error when an action is dispatched before its router registers', () 
   const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   const result = renderReducer({ registry: new Map() });
 
-  act(() => result.result.current.handleAction({ type: 'TEST' }));
+  act(() =>
+    result.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'TEST' } },
+      metadata: { history: { path: '/test' } },
+    })
+  );
 
   expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'TEST'"));
   expect(result.result.current.state).toBe(initialState);
+  expect(result.result.current.report).toBeUndefined();
   error.mockRestore();
+});
+
+it('does not report metadata when an action does not change state', () => {
+  const result = renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state,
+          affectedRouteKey: state.routes[state.index]!.key,
+        })),
+      ],
+    ]),
+  });
+
+  act(() =>
+    result.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'NOOP' } },
+      metadata: { history: { path: '/noop' } },
+    })
+  );
+
+  expect(result.result.current.report).toBeUndefined();
 });
 
 it('logs an error for a later action after a same-batch reset changes the registered state key', () => {
@@ -495,12 +533,14 @@ describe('NAVIGATE_TO_HREF', () => {
       href?: string;
       options?: LinkToOptions;
       originalHref?: string;
-    } = {}
+    } = {},
+    metadata?: { history: { path: string } }
   ) {
     act(() =>
       result.result.current.processIntent({
         type: 'NAVIGATE_TO_HREF',
         payload: { href: '/second', options: {}, ...payload },
+        metadata,
       })
     );
   }
@@ -524,10 +564,11 @@ describe('NAVIGATE_TO_HREF', () => {
     });
     const result = renderReducer({ registry: new Map() });
 
-    navigateToHref(result);
+    navigateToHref(result, {}, { history: { path: '/invalid' } });
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('/resolved'));
     expect(result.result.current.state).toBe(initialState);
+    expect(result.result.current.report).toBeUndefined();
   });
 
   it('warns with the original href when the href is invalid after a redirect', () => {
@@ -583,6 +624,35 @@ describe('NAVIGATE_TO_HREF', () => {
       true,
       initialState
     );
+  });
+
+  it('retains intent metadata on the committed action report', () => {
+    const action = { type: 'NEXT' };
+    const metadata = { history: { path: '/second' } };
+    mockGetNavigateAction.mockReturnValue({ status: 'action', action });
+    const result = renderReducer({
+      registry: new Map([
+        [
+          'root',
+          entry((state) => ({
+            state: { ...state, index: state.index + 1 },
+            affectedRouteKey: state.routes[state.index + 1]!.key,
+          })),
+        ],
+      ]),
+    });
+
+    act(() =>
+      result.result.current.processIntent({
+        type: 'NAVIGATE_TO_HREF',
+        payload: { href: '/second', options: {} },
+        metadata,
+      })
+    );
+
+    expect(result.result.current.report?.events).toEqual([
+      expect.objectContaining({ type: 'action-dispatched', action, metadata }),
+    ]);
   });
 });
 

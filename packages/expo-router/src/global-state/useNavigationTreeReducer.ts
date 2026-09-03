@@ -17,7 +17,7 @@ import {
 import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
-import type { RoutingIntent } from './routingQueue';
+import type { RoutingIntent, RoutingIntentMetadata } from './routingQueue';
 import { resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
 
@@ -74,6 +74,7 @@ type NavigationTreeReportEventData =
       type: 'action-dispatched';
       action: NavigationAction;
       state: NavigationState;
+      metadata?: RoutingIntentMetadata;
     };
 
 export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
@@ -183,7 +184,11 @@ function navigationTreeReducer(
         return result;
       }
       return navigationTreeReducer(result, {
-        operation: { type: 'ACTION', payload: { action: resolution.action } },
+        operation: {
+          type: 'ACTION',
+          payload: { action: resolution.action },
+          metadata: operation.metadata,
+        },
         config,
       });
     }
@@ -248,6 +253,7 @@ function navigationTreeReducer(
                 type: 'action-dispatched',
                 action: operation.payload.action,
                 state: committedState,
+                ...(operation.metadata ? { metadata: operation.metadata } : null),
               },
             ];
       const events: NavigationTreeReportEvent[] = eventsWithoutIds.map((event, index) => ({

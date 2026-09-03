@@ -72,7 +72,7 @@ function NavigationContainerInner({
 
   useBackButton(refContainer);
 
-  const { getInitialState } = useLinking(refContainer, {
+  const { getInitialState, onActionCommitted } = useLinking(refContainer, {
     prefixes: [],
     ...linking,
   });
@@ -118,6 +118,7 @@ function NavigationContainerInner({
           theme={theme}
           initialState={initialState}
           UNSTABLE_routeNode={routerConfig?.routeNode ?? undefined}
+          onActionCommitted={onActionCommitted}
           ref={refContainer}
         />
       </LinkingContext.Provider>

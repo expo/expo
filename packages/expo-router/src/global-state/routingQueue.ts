@@ -9,10 +9,9 @@ interface NavigateToHrefIntent {
     originalHref?: string;
   };
   metadata?: RoutingIntentMetadata;
-  onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
 }
 
-interface RoutingIntentMetadata {
+export interface RoutingIntentMetadata {
   history?: {
     path: string;
   };
@@ -24,5 +23,4 @@ export type RoutingIntent =
       type: 'ACTION';
       payload: { action: NavigationAction; originKey?: string };
       metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
     };

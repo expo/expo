@@ -31,10 +31,6 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
         // Only catches errors thrown while dispatching. The navigation reducer runs
         // during the next render, so errors from it surface there, not here.
         try {
-          // TODO(@ubax): `onDispatch` records the web history operation now, but the commit that
-          // consumes it is deferred by the transition and an urgent `dispatchSync` can land in between.
-          // https://linear.app/expo/issue/ENG-22046
-          intent.onDispatch?.(intent.metadata);
           processIntent(intent);
         } catch (error) {
           const message =

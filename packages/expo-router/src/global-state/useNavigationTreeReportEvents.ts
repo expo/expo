@@ -5,11 +5,13 @@ import * as React from 'react';
 import { unstable_navigationEvents } from '../navigationEvents';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
+import type { RoutingIntentMetadata } from './routingQueue';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 
 export function useNavigationTreeReportEvents(
   report: NavigationTreeReport | undefined,
-  consumeReportEvents: (eventIds: readonly number[]) => void
+  consumeReportEvents: (eventIds: readonly number[]) => void,
+  onActionCommitted?: (metadata: RoutingIntentMetadata) => void
 ) {
   const emitterRegistry = React.use(GlobalRemovalEventEmitterRegistryContext)!;
   const consumedIds = React.useRef(new Set<number>());
@@ -46,6 +48,9 @@ export function useNavigationTreeReportEvents(
             }
             break;
           case 'action-dispatched':
+            if (event.metadata) {
+              onActionCommitted?.(event.metadata);
+            }
             // TODO(@ubax): emit an event when the action is enqueued.
             unstable_navigationEvents.emit('actionDispatched', {
               actionType: event.action.type,
@@ -65,5 +70,5 @@ export function useNavigationTreeReportEvents(
     if (ids.length > 0) {
       consumeReportEvents(ids);
     }
-  }, [consumeReportEvents, emitterRegistry, report]);
+  }, [consumeReportEvents, emitterRegistry, onActionCommitted, report]);
 }

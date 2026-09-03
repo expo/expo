@@ -13,6 +13,7 @@ import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/remo
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import { RouterRegistryContext } from '../../global-state/routerRegistry';
+import type { RoutingIntentMetadata } from '../../global-state/routingQueue';
 import { RoutingQueueApiContext } from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import { useNavigationTreeReportEvents } from '../../global-state/useNavigationTreeReportEvents';
@@ -47,6 +48,7 @@ type InternalNavigationContainerProps = Omit<NavigationContainerProps, 'initialS
   initialState: InitialState;
   ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
   UNSTABLE_routeNode?: RouteNode;
+  onActionCommitted?: (metadata: RoutingIntentMetadata) => void;
 };
 
 const serializableWarnings: string[] = [];
@@ -64,7 +66,8 @@ const duplicateNameWarnings: string[] = [];
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
-  const { ref, initialState, onReady, UNSTABLE_routeNode, theme, children } = props;
+  const { ref, initialState, onReady, UNSTABLE_routeNode, onActionCommitted, theme, children } =
+    props;
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
@@ -100,7 +103,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       linking: routerConfig?.linking,
       redirects: routerConfig?.redirects,
     });
-  useNavigationTreeReportEvents(report, consumeReportEvents);
+  useNavigationTreeReportEvents(report, consumeReportEvents, onActionCommitted);
 
   const { listeners, addListener } = useChildListeners();
 

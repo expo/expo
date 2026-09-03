@@ -52,6 +52,34 @@ test('emits and consumes only new report events', () => {
   unsubscribe();
 });
 
+test('flushes committed metadata without exposing it on navigation events', () => {
+  const metadata = { history: { path: '/details' } };
+  const onActionCommitted = jest.fn();
+  const publicEvents: unknown[] = [];
+  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+    publicEvents.push(event)
+  );
+  const report: NavigationTreeReport = {
+    events: [
+      {
+        id: 0,
+        type: 'action-dispatched',
+        action: { type: 'NAVIGATE' },
+        state,
+        metadata,
+      },
+    ],
+  };
+
+  renderHook(() => useNavigationTreeReportEvents(report, jest.fn(), onActionCommitted), {
+    wrapper,
+  });
+
+  expect(onActionCommitted).toHaveBeenCalledWith(metadata);
+  expect(publicEvents).toEqual([{ actionType: 'NAVIGATE', payload: undefined, state }]);
+  unsubscribe();
+});
+
 test('emits removePrevented and removed to the registered route emitters', () => {
   const emitRemovalEvent = jest.fn();
   const consumeReportEvents = jest.fn();

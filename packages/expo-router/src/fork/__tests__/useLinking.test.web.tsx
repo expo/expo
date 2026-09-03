@@ -17,7 +17,13 @@ import { getMockConfig } from '../../testing-library/mock-config';
 import { NavigationContainer } from '../NavigationContainer';
 import { createMemoryHistory } from '../createMemoryHistory';
 import { useLinking } from '../useLinking';
-import { getPendingIntents, render, setNavigationState, setRouteNode } from './__fixtures__/store';
+import {
+  getPendingIntents,
+  render,
+  renderHook,
+  setNavigationState,
+  setRouteNode,
+} from './__fixtures__/store';
 
 jest.mock('../createMemoryHistory');
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;
@@ -116,7 +122,6 @@ test('queues forward history navigation', () => {
       type: 'NAVIGATE_TO_HREF',
       payload: { href: '/forward', options: { event: 'NAVIGATE' } },
       metadata: { history: { path: '/forward' } },
-      onDispatch: expect.any(Function),
     },
   ]);
 });
@@ -145,7 +150,6 @@ test('restores saved history state without parsing its path', () => {
         action: { type: 'RESET', payload: savedState, target: 'saved-stack' },
       },
       metadata: { history: { path: '/saved' } },
-      onDispatch: expect.any(Function),
     },
   ]);
 });
@@ -193,7 +197,6 @@ test('restores initial state when a history path cannot be parsed', () => {
       type: 'ACTION',
       payload: { action: { type: 'RESET', payload: initialState, target: 'root' } },
       metadata: { history: { path: '/invalid' } },
-      onDispatch: expect.any(Function),
     },
   ]);
 });
@@ -248,7 +251,6 @@ test('keeps the current route group when parsing a popstate path', () => {
     type: 'ACTION',
     payload: { action: { type: 'RESET', target: 'navigator:root' } },
     metadata: { history: { path: '/shared' } },
-    onDispatch: expect.any(Function),
   });
   const parsedState =
     parsedIntent?.type === 'ACTION' ? parsedIntent.payload.action.payload : undefined;
@@ -370,5 +372,85 @@ test('does not add browser history when preloading a stack route', async () => {
 
   await waitFor(() => expect(history.replace).toHaveBeenCalled());
   expect(onStateChange).toHaveBeenCalled();
+  expect(history.push).not.toHaveBeenCalled();
+});
+
+test('keeps browser history metadata until its navigation commits', async () => {
+  let historyListener: (() => void) | undefined;
+  let stateListener: (() => void) | undefined;
+  let historyIndex = 0;
+  jest.mocked(createMemoryHistory).mockReturnValueOnce({
+    ...history,
+    get index() {
+      return historyIndex;
+    },
+    listen: (listener: () => void) => {
+      historyListener = listener;
+      return () => {};
+    },
+  });
+  const homeState: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'root',
+    index: 0,
+    routeNames: ['home', 'details'],
+    routes: [{ key: 'home', name: 'home' }],
+  };
+  const detailsState: NavigationState = {
+    ...homeState,
+    index: 1,
+    routes: [...homeState.routes, { key: 'details', name: 'details' }],
+  };
+  let rootState = homeState;
+  const navigation = {
+    addListener: jest.fn((type: string, listener: () => void) => {
+      if (type === 'state') {
+        stateListener = listener;
+      }
+      return () => {};
+    }),
+    getRootState: () => rootState,
+    dispatchSync: jest.fn(() => {
+      rootState = {
+        ...homeState,
+        routes: [{ ...homeState.routes[0]!, params: { sync: true } }],
+      };
+      stateListener?.();
+    }),
+  };
+  // The hook only uses this subset of the navigation ref in this test.
+  const ref = { current: navigation } as unknown as Parameters<typeof useLinking>[0];
+  const result = renderHook(() =>
+    useLinking(ref, {
+      prefixes: [],
+      getPathFromState: (state) => `/${state.routes[state.index ?? 0]!.name}`,
+    })
+  );
+
+  history.push.mockClear();
+  history.replace.mockClear();
+  history.get.mockReturnValueOnce({ path: '/details', state: detailsState });
+  historyIndex = 1;
+  Object.assign(globalThis.location, { pathname: '/details', search: '', hash: '' });
+
+  act(() => historyListener?.());
+  const browserIntent = getPendingIntents()[0]!;
+
+  act(() => navigation.dispatchSync());
+  await waitFor(() =>
+    expect(history.replace).toHaveBeenLastCalledWith(expect.objectContaining({ path: '/home' }))
+  );
+
+  act(() => {
+    result.result.current.onActionCommitted(browserIntent.metadata!);
+    rootState = detailsState;
+    stateListener?.();
+  });
+  await waitFor(() =>
+    expect(history.replace).toHaveBeenLastCalledWith(expect.objectContaining({ path: '/details' }))
+  );
+
   expect(history.push).not.toHaveBeenCalled();
 });
