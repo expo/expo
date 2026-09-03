@@ -16,7 +16,7 @@ struct Queries {
           ownerUserActor {
             id
             username
-            profilePhoto
+            primaryAccountProfileImageUrl
             firstName
             fullName
             lastName
@@ -26,7 +26,7 @@ struct Queries {
           username
           firstName
           lastName
-          profilePhoto
+          primaryAccountProfileImageUrl
           bestContactEmail
         }
         ... on PartnerActor {
@@ -59,7 +59,6 @@ struct Queries {
                 group
                 message
                 createdAt
-                runtimeVersion
                 expoGoSDKVersion
                 platform
                 manifestPermalink
@@ -95,7 +94,6 @@ struct Queries {
               group
               message
               createdAt
-              runtimeVersion
               expoGoSDKVersion
               platform
               manifestPermalink
@@ -151,7 +149,6 @@ struct Queries {
                 group
                 message
                 createdAt
-                runtimeVersion
                 expoGoSDKVersion
                 platform
                 manifestPermalink
@@ -189,7 +186,6 @@ struct Queries {
               group
               message
               createdAt
-              runtimeVersion
               expoGoSDKVersion
               platform
               manifestPermalink
@@ -217,7 +213,6 @@ struct Queries {
               group
               message
               createdAt
-              runtimeVersion
               expoGoSDKVersion
               platform
               manifestPermalink
