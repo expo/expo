@@ -84,6 +84,10 @@ class Env {
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
   }
+  /** Append the reserved `__expo_*` params that keep the dev menu closed to Expo Go and development build launch URLs. */
+  get EXPO_NO_DEV_MENU(): boolean {
+    return boolish('EXPO_NO_DEV_MENU', false);
+  }
   /** Disable printing the QR code in the interactive Terminal UI. */
   get EXPO_NO_QR_CODE(): boolean {
     return boolish('EXPO_NO_QR_CODE', false);
