@@ -25,7 +25,7 @@ export function fixCurrentParams(
   // Better handle array params
   const currentParams = Object.fromEntries(
     Object.entries(route.params!).flatMap(([key, value]) => {
-      if (key === 'screen' || key === 'params' || value === undefined) {
+      if (value === undefined) {
         return [];
       }
 
@@ -152,7 +152,7 @@ export function getPathWithConventionsCollapsed({
         }
         return '';
       }
-      // Preserve dynamic syntax for rehydration
+      // Preserve dynamic syntax so the path can be parsed back into state
       return shouldEncodeURISegment ? encodeURISegment(p, { preserveBrackets: true }) : p;
     })
     .map((v) => v ?? '')

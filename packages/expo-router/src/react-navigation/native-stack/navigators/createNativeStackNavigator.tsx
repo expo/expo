@@ -81,7 +81,7 @@ function NativeStackNavigator({
     });
   }, [meta, navigation, state.index, state.key]);
 
-  const pop = makePopAction(navigation.dispatch, state.key);
+  const pop = makePopAction(navigation.dispatchSync, state.key);
 
   return (
     <NavigationContent>

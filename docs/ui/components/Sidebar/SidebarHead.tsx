@@ -39,7 +39,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <div className="flex flex-col gap-0.5 border-b border-default bg-default p-1.5">
         <LinkBase
           href="/"
-          className="flex items-center gap-3 rounded-md p-2.5 text-secondary hocus:bg-element">
+          className="flex items-center gap-3 rounded-lg p-2.5 text-secondary hocus:bg-element">
           <ArrowLeftIcon aria-hidden="true" className="text-icon-secondary" />
           Back
         </LinkBase>

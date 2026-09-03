@@ -25,8 +25,14 @@
     "cli.js"
   ],
   "main": "build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
+    "prebuild": "expo-module clean",
     "build": "ncc build ./src/index.ts -o build/",
+    "prebuild:prod": "expo-module clean",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -41,6 +47,7 @@
     "@expo/plist": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/prompts": "^2.0.6",
+    "@vercel/ncc": "^0.38.4",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",

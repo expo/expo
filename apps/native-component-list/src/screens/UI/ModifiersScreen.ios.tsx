@@ -15,6 +15,7 @@ import {
   Stepper,
   Spacer,
   Image,
+  ZStack,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -141,6 +142,9 @@ export default function ModifiersScreen() {
     { key: 'bottom', label: 'Bottom' },
   ];
 
+  // `bar` has no tvOS counterpart and leaves the view unpainted there, so it comes last.
+  const materials = ['ultraThin', 'thin', 'regular', 'thick', 'ultraThick', 'bar'] as const;
+
   const badgeType = ['standard', 'increased', 'decreased'] as const;
   const [badgeIndex, setBadgeIndex] = useState(0);
 
@@ -164,6 +168,60 @@ export default function ModifiersScreen() {
               width: dimensions.width,
             }),
           ]}>
+          {/* The same `ShapeStyle` values work in every modifier that paints an area:
+              here the backdrop is painted with `foregroundStyle` and the labels on top
+              of it with `background`. */}
+          <Section title="Shape styles">
+            <ZStack>
+              <Rectangle
+                modifiers={[
+                  foregroundStyle({
+                    type: 'linearGradient',
+                    colors: ['#FF6B35', '#F7931E', '#FFD23F'],
+                    startPoint: { x: 0, y: 0 },
+                    endPoint: { x: 1, y: 1 },
+                  }),
+                  cornerRadius(12),
+                ]}
+              />
+              <VStack modifiers={[padding()]}>
+                <Text
+                  modifiers={[
+                    font({ size: 34, weight: 'bold' }),
+                    foregroundStyle({ type: 'material', material: 'regular' }),
+                    padding(),
+                  ]}>
+                  Frosted
+                </Text>
+                {materials.map((material) => (
+                  <Text
+                    key={material}
+                    modifiers={[
+                      padding(),
+                      background({ type: 'material', material }, shapes.capsule()),
+                    ]}>
+                    {material}
+                  </Text>
+                ))}
+                <Text
+                  modifiers={[
+                    padding(),
+                    background(
+                      {
+                        type: 'linearGradient',
+                        colors: ['#4facfe', '#00f2fe'],
+                        startPoint: { x: 0, y: 0 },
+                        endPoint: { x: 1, y: 0 },
+                      },
+                      shapes.roundedRectangle({ cornerRadius: 12 })
+                    ),
+                  ]}>
+                  linearGradient
+                </Text>
+              </VStack>
+            </ZStack>
+          </Section>
+
           {/* Badge modifiers */}
           <Section title="Badge modifier">
             <Text modifiers={[badge(''), badgeProminence(badgeType[badgeIndex])]}>Badge empty</Text>

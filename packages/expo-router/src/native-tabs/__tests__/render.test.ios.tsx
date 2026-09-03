@@ -207,8 +207,8 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('second');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
     expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
   });
@@ -247,8 +247,7 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('first')).toBeVisible();
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
-      // Two renders: the hidden `index` route is registered and initially focused, then the
-      // navigator redirects to the first visible tab.
+      // The queued redirect is applied before the native view renders.
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
     });
   });
@@ -293,6 +292,7 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
+    // TODO(@ubax): when ROUTE_NAMES_CHANGED is reworked check if this can be reduced
     expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
@@ -393,12 +393,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[3][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
-    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toBe('second');
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
 
     TabsScreen.mockClear();
     TabsHost.mockClear();
@@ -579,8 +578,8 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial mount - three screens mounted
-      expect(onMount).toHaveBeenCalledTimes(3);
+      // Initial render records four mounts across three screens.
+      expect(onMount).toHaveBeenCalledTimes(4);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
       expect(onMount).toHaveBeenCalledWith('third');
@@ -630,8 +629,8 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial mount - index, stack-index, and third mounted
-      expect(onMount).toHaveBeenCalledTimes(3);
+      // Initial render records four mounts across index, stack-index, and third.
+      expect(onMount).toHaveBeenCalledTimes(4);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('stack-index');
       expect(onMount).toHaveBeenCalledWith('third');
@@ -921,7 +920,7 @@ describe('Misc', () => {
       },
     });
 
-    router.navigate('/stack');
+    act(() => router.navigate('/stack'));
     expect(screen.getByTestId('stack-index')).toBeVisible();
   });
 

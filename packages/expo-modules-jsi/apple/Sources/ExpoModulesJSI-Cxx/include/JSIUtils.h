@@ -39,11 +39,13 @@ inline jsi::Value valueFromFunction(jsi::IRuntime &runtime, const jsi::Function 
 }
 
 // `jsi::Object::setProperty` is a template function that Swift does not support. We need to provide specialized versions.
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const char *name, const jsi::Value value) {
+// They take a `jsi::PropNameID` rather than a `const char *`: JSI treats a `const char *` name as ASCII,
+// which mangles non-ASCII property names coming from Swift strings.
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const jsi::PropNameID &name, const jsi::Value &value) {
   object.setProperty(runtime, name, value);
 }
 
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const char *name, const jsi::Value &value) {
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const jsi::PropNameID &name, const jsi::Value &value) {
   array.setProperty(runtime, name, value);
 }
 
@@ -100,7 +102,8 @@ inline std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::stri
 inline jsi::Function createHostFunction(jsi::IRuntime &runtime, const jsi::PropNameID &propName, HostFunctionClosure *closure) {
   auto closurePtr = std::shared_ptr<HostFunctionClosure>(closure);
   return jsi::Function::createFromHostFunction(runtime, propName, 0, [closurePtr](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
-    auto result = closurePtr->call(thisValue, args, count);
+    jsi::Value result;
+    closurePtr->call(thisValue, args, count, result);
 
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).

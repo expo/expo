@@ -1,6 +1,6 @@
-import { act, fireEvent, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, renderAsync, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
-import { type ReactNode, useLayoutEffect, useState } from 'react';
+import { type ReactNode, StrictMode, Suspense, use, useLayoutEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import { router, Slot } from '../../exports';
@@ -11,11 +11,13 @@ import {
   defaultLoaderContextValue,
   LoaderContext,
 } from '../../loaders/LoaderContext';
+import { LoaderRouteLifecycle } from '../../loaders/LoaderRouteLifecycle';
 import { ServerDataLoaderContext } from '../../loaders/ServerDataLoaderContext';
+import { readLoaderData } from '../../loaders/readLoaderData';
 import { fetchLoader } from '../../loaders/utils';
-import { renderRouter, renderRouterAsync } from '../../testing-library';
+import { renderRouterAsync } from '../../testing-library';
 import { useLoaderData } from '../useLoaderData';
-import { renderHook, renderHookAsync } from './renderHook';
+import { renderHookAsync } from './renderHook';
 
 jest.mock('../../loaders/utils', () => ({
   fetchLoader: jest.fn(),
@@ -54,26 +56,31 @@ describe(useLoaderData, () => {
       initialUrl: '/users/123',
       expectedPath: '/users/123',
     },
-  ])('resolves $route to $expectedPath', ({ route, initialUrl, expectedPath }) => {
+    {
+      route: 'docs/[...rest]',
+      initialUrl: '/docs/guides/loaders/',
+      expectedPath: '/docs/guides/loaders',
+    },
+  ])('resolves $route to $expectedPath', async ({ route, initialUrl, expectedPath }) => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       [expectedPath]: { correct: true },
     };
 
-    const { result } = renderHook(() => useLoaderData(), [route], {
+    const { result } = await renderHookAsync(() => useLoaderData(), [route], {
       initialUrl,
     });
 
     expect(result.current).toEqual({ correct: true });
   });
 
-  it('resolves nested route under `_layout` to full pathname', () => {
+  it('resolves nested route under `_layout` to full pathname', async () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/nested/index': { correct: true },
     };
 
     let loaderResult: any;
 
-    renderRouter(
+    await renderRouterAsync(
       {
         'nested/_layout': () => <Slot />,
         'nested/index': function NestedIndex() {
@@ -87,12 +94,12 @@ describe(useLoaderData, () => {
     expect(loaderResult).toEqual({ correct: true });
   });
 
-  it('includes search params in the lookup key', () => {
+  it('includes search params in the lookup key', async () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/request?foo=bar': { correct: true },
     };
 
-    const { result } = renderHook(() => useLoaderData(), ['request'], {
+    const { result } = await renderHookAsync(() => useLoaderData(), ['request'], {
       initialUrl: '/request?foo=bar',
     });
 
@@ -108,7 +115,7 @@ describe(useLoaderData, () => {
 
     const { ctx, LoaderWrapper } = createLoaderTestContext();
 
-    const firstMount = renderHook(() => useLoaderData(), ['index'], {
+    const firstMount = await renderHookAsync(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -116,7 +123,7 @@ describe(useLoaderData, () => {
     expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).not.toHaveProperty('/index');
     expect(fetchLoaderMock).not.toHaveBeenCalled();
 
-    firstMount.unmount();
+    await firstMount.unmountAsync();
     await act(async () => {});
     expect(ctx.store.get('/index')).toBeUndefined();
 
@@ -126,7 +133,10 @@ describe(useLoaderData, () => {
       wrapper: LoaderWrapper,
     });
     expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
-    expect(fetchLoaderMock).toHaveBeenCalledWith('/index');
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/index',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
   });
 
   it('retrieves fresh data from `fetchLoaderModule()`', async () => {
@@ -145,7 +155,10 @@ describe(useLoaderData, () => {
       wrapper: LoaderWrapper,
     });
 
-    expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/users/123',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
 
     await act(async () => {
       await fetchLoaderMock.mock.results[0]!.value;
@@ -175,24 +188,29 @@ describe(useLoaderData, () => {
     expect(fetchLoader).not.toHaveBeenCalled();
   });
 
-  it('reuses a hydrated entry across a same-tick Strict Mode remount', async () => {
+  it('reuses a hydrated entry across a same-tick remount', async () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
     fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.seed('/index', { hydrated: true });
 
-    const first = renderHook(() => useLoaderData(), ['index'], {
-      initialUrl: '/',
-      wrapper: LoaderWrapper,
-    });
-    first.unmount();
-    const remount = renderHook(() => useLoaderData(), ['index'], {
-      initialUrl: '/',
-      wrapper: LoaderWrapper,
-    });
-    await act(async () => {});
+    let data: unknown;
+    let remount!: () => void;
+    function Reader() {
+      data = useLoaderData();
+      return <Text>Reader</Text>;
+    }
+    function Screen() {
+      const [key, setKey] = useState(0);
+      remount = () => setKey((current) => current + 1);
+      return <Reader key={key} />;
+    }
 
-    expect(remount.result.current).toEqual({ hydrated: true });
+    await renderRouterAsync({ index: Screen }, { wrapper: LoaderWrapper });
+    jest.useRealTimers();
+    await act(async () => remount());
+
+    expect(data).toEqual({ hydrated: true });
     expect(ctx.store.get('/index')).toEqual({
       data: { hydrated: true },
     });
@@ -228,8 +246,9 @@ describe(useLoaderData, () => {
     jest.useRealTimers();
 
     expect(screen.getByTestId('first-reader')).toHaveTextContent('{"shared":true}');
-    fireEvent.press(screen.getByText('Remove first'));
-    await act(async () => {});
+    await act(async () => {
+      fireEvent.press(screen.getByText('Remove first'));
+    });
 
     expect(screen.queryByTestId('first-reader')).toBeNull();
     expect(screen.getByTestId('second-reader')).toHaveTextContent('{"shared":true}');
@@ -248,7 +267,7 @@ describe(useLoaderData, () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/index': { version: 1 },
     };
-    const hook = renderHook(() => useLoaderData(), ['index'], {
+    const hook = await renderHookAsync(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -283,7 +302,7 @@ describe(useLoaderData, () => {
         <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
       </ServerDataLoaderContext>
     );
-    const hook = renderHook(() => useLoaderData(), ['index'], {
+    const hook = await renderHookAsync(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -291,10 +310,10 @@ describe(useLoaderData, () => {
     expect(hook.result.current).toEqual({ source: 'server' });
 
     serverData = null;
-    hook.rerender(undefined);
+    await hook.rerenderAsync(undefined);
     expect(hook.result.current).toEqual({ version: 1 });
 
-    act(() => {
+    await act(async () => {
       const { client, store } = loaderContextValue;
       store.retain(client.revalidate());
     });
@@ -305,18 +324,18 @@ describe(useLoaderData, () => {
     expect(hook.result.current).toEqual({ version: 2 });
   });
 
-  it('clears inactive entries while retaining live entries during HMR coordination', () => {
+  it('clears inactive entries while retaining live entries during HMR coordination', async () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
     fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.seed('/index', { live: true });
     ctx.store.seed('/inactive', { stale: true });
-    renderHook(() => useLoaderData(), ['index'], {
+    await renderHookAsync(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
 
-    act(() => {
+    await act(async () => {
       const { client, store } = ctx;
       store.retain(client.revalidate());
     });
@@ -339,7 +358,7 @@ describe(useLoaderData, () => {
     let profileRenders = 0;
     let indexResult: unknown;
     let profileResult: unknown;
-    renderRouter(
+    await renderRouterAsync(
       {
         _layout: () => (
           <Tabs>
@@ -363,7 +382,7 @@ describe(useLoaderData, () => {
     jest.useRealTimers();
 
     expect(indexResult).toEqual({ tab: 'home' });
-    act(() => router.push('/profile'));
+    await act(async () => router.push('/profile'));
     expect(profileResult).toEqual({ tab: 'profile' });
     expect(indexResult).toEqual({ tab: 'home' });
     const indexBefore = indexRenders;
@@ -393,7 +412,7 @@ describe(useLoaderData, () => {
       return null;
     }
 
-    renderRouter({
+    await renderRouterAsync({
       index: () => (
         <>
           <Reader index={0} />
@@ -412,11 +431,11 @@ describe(useLoaderData, () => {
     expect(renders[1]).toBeGreaterThan(rendersBefore[1]);
   });
 
-  it('catches a store update between render and effect subscription', () => {
+  it('catches a store update between render and effect subscription', async () => {
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.seed('/index', { version: 1 });
 
-    const { result } = renderHook(
+    const { result } = await renderHookAsync(
       () => {
         const data = useLoaderData();
         useLayoutEffect(() => {
@@ -436,7 +455,7 @@ describe(useLoaderData, () => {
     ctx.store.seed('/index', { version: 1 });
     const oldFetch = createDeferred<{ version: number }>();
     let renders = 0;
-    const hook = renderHook(
+    const hook = await renderHookAsync(
       () => {
         renders++;
         return useLoaderData();
@@ -447,9 +466,11 @@ describe(useLoaderData, () => {
 
     ctx.client.execute('/index', () => oldFetch.promise);
     ctx.client.clear();
-    const replacementUnsubscribe = ctx.client.subscribeLoader('/index');
+    const replacementUnsubscribe = ctx.client.subscribeLoader('/index', undefined, {
+      committed: true,
+    });
     ctx.store.set('/index', { data: { version: 2 } });
-    hook.rerender(undefined);
+    await hook.rerenderAsync(undefined);
     const rendersBeforeOldSettle = renders;
 
     await act(async () => {
@@ -473,7 +494,7 @@ describe(useLoaderData, () => {
     let renders = 0;
     let latestData: unknown;
 
-    renderRouter(
+    await renderRouterAsync(
       {
         'users/[id]': function User() {
           const data = useLoaderData() as { id: number };
@@ -490,7 +511,7 @@ describe(useLoaderData, () => {
 
     ctx.client.execute('/users/1', () => oldFetch.promise);
 
-    act(() => router.replace('/users/2'));
+    await act(async () => router.replace('/users/2'));
 
     expect(subscribeLoaderSpy.mock.calls.map(([path]) => path)).toEqual(['/users/1', '/users/2']);
     expect(latestData).toEqual({ id: 2 });
@@ -504,7 +525,225 @@ describe(useLoaderData, () => {
     expect(renders).toBe(rendersBeforeOldSettle);
   });
 
-  it(`uses the loader function's return types`, () => {
+  it('aborts a suspended dynamic route through the real route shell and refetches on revisit', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    const signals: AbortSignal[] = [];
+    const resolvers: ((value: unknown) => void)[] = [];
+    fetchLoaderMock.mockImplementation((_path, requestInit) => {
+      const signal = requestInit!.signal as AbortSignal;
+      return new Promise((resolve, reject) => {
+        signals.push(signal);
+        resolvers.push(resolve);
+        signal.addEventListener('abort', () => reject(signal.reason));
+      });
+    });
+
+    await renderRouterAsync({
+      _layout: {
+        default: () => <Slot />,
+        SuspenseFallback: () => <Text>Loading</Text>,
+      },
+      index: () => <Text>Home</Text>,
+      'users/[id]': function UserScreen() {
+        const data = useLoaderData();
+        return <Text testID="user-data">{JSON.stringify(data)}</Text>;
+      },
+    });
+    jest.useRealTimers();
+
+    await act(async () => router.push('/users/1'));
+    expect(screen.getByText('Loading')).toBeVisible();
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/users/1',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
+    expect(signals).toHaveLength(1);
+
+    await act(async () => router.back());
+    expect(signals[0]!.aborted).toBe(true);
+    expect(defaultLoaderContextValue.store.get('/users/1')).toBeUndefined();
+
+    await act(async () => router.push('/users/1'));
+    expect(signals).toHaveLength(2);
+    expect(signals[1]).not.toBe(signals[0]);
+
+    await act(async () => {
+      resolvers[1]!({ fresh: true });
+      await Promise.resolve();
+    });
+    expect(await screen.findByTestId('user-data')).toHaveTextContent('{"fresh":true}');
+    expect(defaultLoaderContextValue.store.get('/users/1')).toEqual({ data: { fresh: true } });
+  });
+
+  it.each([
+    ['params', '/users/1', '/users/2'],
+    ['query', '/users/1?sort=asc', '/users/1?sort=desc'],
+  ])(
+    'abandons an old pending path when a mounted route changes %s',
+    async (_, oldPath, newPath) => {
+      const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+      const signals: AbortSignal[] = [];
+      fetchLoaderMock.mockImplementation((_path, requestInit) => {
+        const signal = requestInit!.signal as AbortSignal;
+        signals.push(signal);
+        return new Promise((_, reject) => {
+          signal.addEventListener('abort', () => reject(signal.reason));
+        });
+      });
+      const { ctx } = createLoaderTestContext();
+
+      function UserScreen({ path }: { path: string }) {
+        const result = readLoaderData(ctx, path, fetchLoaderMock);
+        if (result instanceof Promise) {
+          use(result);
+        }
+        return <Text>User</Text>;
+      }
+
+      function UserRouteShell({ path }: { path: string }) {
+        return (
+          <>
+            <LoaderRouteLifecycle path={path} />
+            <Suspense fallback={<Text>Loading</Text>}>
+              <UserScreen path={path} />
+            </Suspense>
+          </>
+        );
+      }
+
+      const route = await renderAsync(
+        <LoaderContext value={ctx}>
+          <UserRouteShell path={oldPath} />
+        </LoaderContext>
+      );
+
+      await route.rerenderAsync(
+        <LoaderContext value={ctx}>
+          <UserRouteShell path={newPath} />
+        </LoaderContext>
+      );
+
+      expect(fetchLoaderMock.mock.calls.map(([path]) => path)).toEqual([oldPath, newPath]);
+      expect(signals[0]!.aborted).toBe(true);
+      expect(signals[1]!.aborted).toBe(false);
+      expect(ctx.store.get(oldPath)).toBeUndefined();
+    }
+  );
+
+  it('keeps a pending route load through Strict Mode effect replay', async () => {
+    const ctx = createLoaderContextValue(new LoaderClient());
+    let signal!: AbortSignal;
+    readLoaderData(ctx, '/slow', (_path, requestInit) => {
+      signal = requestInit.signal as AbortSignal;
+      return new Promise(() => {});
+    });
+
+    const lifecycle = render(
+      <StrictMode>
+        <LoaderContext value={ctx}>
+          <LoaderRouteLifecycle path="/slow" />
+        </LoaderContext>
+      </StrictMode>
+    );
+    await act(async () => {});
+
+    expect(signal.aborted).toBe(false);
+    expect(ctx.store.get('/slow')).toBeDefined();
+
+    lifecycle.unmount();
+    await act(async () => {});
+    expect(signal.aborted).toBe(true);
+    expect(ctx.store.get('/slow')).toBeUndefined();
+  });
+
+  it('keeps a pending load when replacing the current route with the same path', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    let signal!: AbortSignal;
+    let resolveFetch!: (value: { fresh: boolean }) => void;
+    let fallbackMounts = 0;
+    let fallbackCleanups = 0;
+
+    fetchLoaderMock.mockImplementation((_path, requestInit) => {
+      const requestSignal = requestInit!.signal!;
+      signal = requestSignal;
+      return new Promise((resolve, reject) => {
+        resolveFetch = resolve;
+        requestSignal.addEventListener('abort', () => reject(requestSignal.reason));
+      });
+    });
+
+    function LoadingFallback() {
+      useLayoutEffect(() => {
+        fallbackMounts++;
+        return () => {
+          fallbackCleanups++;
+        };
+      }, []);
+      return <Text>Loading</Text>;
+    }
+
+    await renderRouterAsync({
+      _layout: {
+        default: () => <Slot />,
+        SuspenseFallback: LoadingFallback,
+      },
+      index: () => <Text>Home</Text>,
+      'users/[id]': function UserScreen() {
+        const data = useLoaderData();
+        return <Text testID="user-data">{JSON.stringify(data)}</Text>;
+      },
+    });
+    jest.useRealTimers();
+
+    await act(async () => router.push('/users/1'));
+    const pending = defaultLoaderContextValue.store.get('/users/1');
+    expect(screen.getByText('Loading')).toBeVisible();
+    expect(fallbackMounts).toBe(1);
+    expect(fallbackCleanups).toBe(0);
+
+    await act(async () => router.replace('/users/1'));
+    await act(async () => {});
+
+    expect(fallbackCleanups).toBe(1);
+    expect(fallbackMounts).toBe(2);
+    expect(signal.aborted).toBe(false);
+    expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
+    expect(defaultLoaderContextValue.store.get('/users/1')).toBe(pending);
+
+    await act(async () => {
+      resolveFetch({ fresh: true });
+      await Promise.resolve();
+    });
+    expect(await screen.findByTestId('user-data')).toHaveTextContent('{"fresh":true}');
+  });
+
+  it('keeps a pending load when a committed sibling reader remains', async () => {
+    const ctx = createLoaderContextValue(new LoaderClient());
+    let signal!: AbortSignal;
+    readLoaderData(ctx, '/slow', (_path, requestInit) => {
+      signal = requestInit.signal as AbortSignal;
+      return new Promise(() => {});
+    });
+    const unsubscribeSibling = ctx.client.subscribeLoader('/slow', undefined, {
+      committed: true,
+    });
+
+    const lifecycle = render(
+      <LoaderContext value={ctx}>
+        <LoaderRouteLifecycle path="/slow" />
+      </LoaderContext>
+    );
+    lifecycle.unmount();
+    await act(async () => {});
+
+    expect(signal.aborted).toBe(false);
+    expect(ctx.store.get('/slow')).toBeDefined();
+    unsubscribeSibling();
+    ctx.client.clear();
+    ctx.store.reset();
+  });
+
+  it(`uses the loader function's return types`, async () => {
     const asyncLoader = async () => {
       return { user: { id: 1, name: 'async user' }, timestamp: Date.now() };
     };
@@ -513,7 +752,7 @@ describe(useLoaderData, () => {
       '/index': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
     };
 
-    const { result } = renderHook(() => useLoaderData<typeof asyncLoader>(), ['index'], {
+    const { result } = await renderHookAsync(() => useLoaderData<typeof asyncLoader>(), ['index'], {
       initialUrl: '/',
     });
 

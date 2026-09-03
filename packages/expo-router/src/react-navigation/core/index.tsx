@@ -1,8 +1,3 @@
-/**
- * @deprecated `ExpoRoot` mounts the navigation container automatically — there is no need
- * to render `BaseNavigationContainer` directly. Will be removed in a future SDK.
- */
-export { BaseNavigationContainer } from './BaseNavigationContainer';
 export { createNavigationContainerRef } from './createNavigationContainerRef';
 export { createNavigatorFactory } from './createNavigatorFactory';
 /**
@@ -13,10 +8,6 @@ export { CurrentRenderContext } from './CurrentRenderContext';
  * @deprecated Will be removed in a future SDK.
  */
 export { findFocusedRoute } from '../../fork/findFocusedRoute';
-/**
- * @deprecated Will be removed in a future SDK.
- */
-export { getActionFromState } from './getActionFromState';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -51,7 +42,6 @@ export { NavigationProvider } from './NavigationProvider';
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationRouteContext } from './NavigationProvider';
-export { PreventRemoveContext } from './PreventRemoveContext';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -85,7 +75,6 @@ export { useNavigationBuilder } from './useNavigationBuilder';
 export { useNavigationContainerRef } from './useNavigationContainerRef';
 export { useNavigationState } from './useNavigationState';
 export { usePreventRemove } from './usePreventRemove';
-export { usePreventRemoveContext } from './usePreventRemoveContext';
 /**
  * @deprecated Import `useRoute` from `expo-router` instead. Will be removed in a future SDK.
  */

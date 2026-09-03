@@ -31,7 +31,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "expo-eas-client": "workspace:~56.0.0"
+    "expo-eas-client": "workspace:~"
   },
   "devDependencies": {
     "expo": "workspace:*",

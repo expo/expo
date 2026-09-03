@@ -8,7 +8,7 @@ import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.easclient.EASClientID
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
-import expo.modules.updates.db.DatabaseHolder
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
@@ -70,7 +70,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
   @Inject
-  lateinit var databaseHolder: DatabaseHolder
+  lateinit var database: UpdatesDatabase
 
   @Inject
   lateinit var kernel: Kernel
@@ -173,7 +173,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       EASClientID(context).uuid.toString(),
       configuration,
       logger,
-      databaseHolder.database
+      database
     )
     loaderScope.launch {
       startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
@@ -192,7 +192,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     LoaderTask(
       context,
       configuration,
-      databaseHolder,
+      database,
       directory,
       fileDownloader,
       selectionPolicy,

@@ -3,6 +3,8 @@ import fs from 'fs';
 import os from 'os';
 import { join, resolve } from 'path';
 
+import { autolinkingRunAsync } from '../TestUtils';
+
 jest.unmock('fs');
 jest.unmock('fs/promises');
 jest.setTimeout(2 * 60 * 1000);
@@ -59,4 +61,34 @@ const canRun = rubyAvailable() && fs.existsSync(join(repoRoot, 'apps/bare-expo/n
       throw error;
     }
   });
+
+  it('prebuilt-metadata emits the same identity fields as the fixture', async () => {
+    const { stdout } = await autolinkingRunAsync(['prebuilt-metadata', '--json'], {
+      cwd: bareExpoIosPath,
+    });
+    const pickIdentity = (entries: Record<string, any>, normalizePaths: boolean) =>
+      Object.fromEntries(
+        Object.entries(entries).map(([podName, e]) => [
+          podName,
+          {
+            type: e.type,
+            npmPackage: e.npmPackage,
+            packageRoot: normalizePaths ? repoRelative(e.packageRoot) : e.packageRoot,
+            podspecDir: normalizePaths ? repoRelative(e.podspecDir) : e.podspecDir,
+            productName: e.productName,
+          },
+        ])
+      );
+    const actual = pickIdentity(JSON.parse(stdout), true);
+    const expected = pickIdentity(JSON.parse(fs.readFileSync(fixturePath, 'utf8')), false);
+    expect(actual).toEqual(expected);
+  });
 });
+
+// Mirrors the Ruby dump's path canonicalization: repo-relative, pnpm store collapsed.
+function repoRelative(p: string): string {
+  return p
+    .replace(`${fs.realpathSync(repoRoot)}/`, '')
+    .replace(`${repoRoot}/`, '')
+    .replace(/^node_modules\/\.pnpm\/[^/]+\/node_modules\//, 'node_modules/');
+}

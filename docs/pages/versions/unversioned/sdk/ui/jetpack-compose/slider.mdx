@@ -233,10 +233,35 @@ export default function FullyCustomSliderExample() {
 
 </ComponentExample>
 
+### Vertical slider
+
+Use `VerticalSlider` to select a single value along a vertical track. Set `reverseDirection` to make values increase from bottom to top instead of top to bottom.
+
+```tsx
+import { useState } from 'react';
+import { Host, VerticalSlider } from '@expo/ui/jetpack-compose';
+import { height } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function VerticalSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <VerticalSlider
+        value={value}
+        reverseDirection
+        onValueChange={setValue}
+        modifiers={[height(240)]}
+      />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
-import { Slider } from '@expo/ui/jetpack-compose';
+import { Slider, VerticalSlider } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection

@@ -1,4 +1,4 @@
-import { renderHook, cleanup } from '@testing-library/react-native';
+import { renderHook, cleanup, waitFor } from '@testing-library/react-native';
 
 import { allowScreenCapture, preventScreenCapture } from '../ExpoScreenCapture';
 import * as ScreenCapture from '../ScreenCapture';
@@ -47,6 +47,16 @@ describe('hooks', () => {
     hook.unmount();
     // Unmounting results in final allowScreenCapture native method call
     expect(allowScreenCapture).toHaveBeenCalledTimes(2);
+  });
+
+  it('logs instead of leaving an unhandled rejection when the native prevent call fails', async () => {
+    preventScreenCapture.mockRejectedValueOnce(new Error('no key window'));
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    renderHook(ScreenCapture.usePreventScreenCapture);
+
+    await waitFor(() => expect(errorSpy).toHaveBeenCalledTimes(1));
+    errorSpy.mockRestore();
   });
 
   it('Unmounting one hook when two are active does not re-allow screen capturing', async () => {

@@ -9,7 +9,6 @@ import { env } from '../../utils/env';
 import type { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import { printItem } from '../interface/commandsTable';
-import * as AndroidDebugBridge from '../platforms/android/adb';
 import { resolveSchemeAsync } from '../resolveOptions';
 import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import DevToolsPluginManager from './DevToolsPluginManager';
@@ -223,12 +222,10 @@ export class DevServerManager {
     await this.devServers.find((server) => server.name === 'metro')?.watchEnvironmentVariables();
   }
 
-  /** Stop all servers including ADB. */
+  /** Stop all development servers. */
   async stopAsync(): Promise<void> {
     await Promise.allSettled([
       this.notifier?.stopObserving(),
-      // Stop ADB
-      AndroidDebugBridge.getServer().stopAsync(),
       // Stop all dev servers
       ...this.devServers.map((server) =>
         server.stopAsync().catch((error) => {

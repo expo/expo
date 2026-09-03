@@ -112,60 +112,64 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
           Example
         </span>
       </p>
-      <pre
-        class="relative my-4 overflow-x-auto rounded-md border border-secondary bg-subtle whitespace-pre [p+&]:mt-0"
-        data-md-lang="ts"
-        data-text="true"
+      <div
+        class="code-block-wrapper my-4 overflow-clip rounded-3xl border border-secondary bg-subtle [p+&]:mt-0"
       >
-        <div
-          class="w-fit p-4"
+        <pre
+          class="relative overflow-x-auto whitespace-pre [scrollbar-color:var(--slate-5)_transparent] scrollbar-thin"
+          data-md-lang="ts"
+          data-text="true"
         >
-          <code
-            class="text-xs text-default"
+          <div
+            class="w-fit p-4"
           >
-            <span
-              class="token keyword"
+            <code
+              class="text-xs text-default"
             >
-              await
-            </span>
-             Application
-            <span
-              class="token punctuation"
-            >
-              .
-            </span>
-            <span
-              class="token function"
-            >
-              getInstallReferrerAsync
-            </span>
-            <span
-              class="token punctuation"
-            >
-              (
-            </span>
-            <span
-              class="token punctuation"
-            >
-              )
-            </span>
-            <span
-              class="token punctuation"
-            >
-              ;
-            </span>
-            
+              <span
+                class="token keyword"
+              >
+                await
+              </span>
+               Application
+              <span
+                class="token punctuation"
+              >
+                .
+              </span>
+              <span
+                class="token function"
+              >
+                getInstallReferrerAsync
+              </span>
+              <span
+                class="token punctuation"
+              >
+                (
+              </span>
+              <span
+                class="token punctuation"
+              >
+                )
+              </span>
+              <span
+                class="token punctuation"
+              >
+                ;
+              </span>
+              
 
-            <span
-              class="token comment"
-            >
-              // "utm_source=google-play&utm_medium=organic"
-            </span>
-            
+              <span
+                class="token comment"
+              >
+                // "utm_source=google-play&utm_medium=organic"
+              </span>
+              
 
-          </code>
-        </div>
-      </pre>
+            </code>
+          </div>
+        </pre>
+      </div>
     </div>
   </div>
 </div>

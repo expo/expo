@@ -4,18 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Remove `SessionManager` insert listeners and `JsMetric.metricId` ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
+- [iOS] [Android] Dispatch attributed native crashes as fatal exception logs. ([#49489](https://github.com/expo/expo/pull/49489) by [@Ubax](https://github.com/Ubax))
 - Add an optional `displayName` to `logEvent` ([#47289](https://github.com/expo/expo/pull/47289) by [@Ubax](https://github.com/Ubax))
 - Capture React render-phase errors via `AppMetricsErrorBoundary`. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 - Describe the network a launch ran on: connection cost, request throughput, and a `slowest.*` group replacing `expo.network.requests.slowestDuration` and `slowestHost`. ([#48518](https://github.com/expo/expo/pull/48518) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed network request observers emitting duplicate events or continuing after their listeners were removed. ([#49609](https://github.com/expo/expo/pull/49609) by [@behenate](https://github.com/behenate))
 - [iOS] Preserve millisecond precision in log event timestamps. ([#49141](https://github.com/expo/expo/pull/49141) by [@Ubax](https://github.com/Ubax))
 - [android] Fix `UnsupportedOperationException` and `NoSuchMethodError` on Android 7.x ([#48577](https://github.com/expo/expo/pull/48577) by [@Ubax](https://github.com/Ubax))
 - [iOS] Retry the OTA `AppInfo` patch on updates state changes, so a launch where the module registry is created before `expo-updates` has assigned its startup procedure no longer keeps the embedded build's update attribution for the whole session. ([#48899](https://github.com/expo/expo/pull/48899) by [@spsaucier](https://github.com/spsaucier))
 - [iOS] Fix a crash on FirebaseAuth's first token refresh. GTMSessionFetcher branches on the class of `session.delegate`, so our network-observing delegate proxy now answers class and protocol checks for the delegate it wraps. ([#48360](https://github.com/expo/expo/pull/48360) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import type { ComponentProps } from 'react';
 
+import { RoutingQueueProvider } from '../../../global-state/routingQueueContext';
 import { router } from '../../../imperative-api';
 import { DefaultTheme, ThemeProvider } from '../../native';
 import { Button } from '../Button';
@@ -22,9 +23,11 @@ const mockedNavigate = router.navigate as jest.MockedFunction<typeof router.navi
 
 function renderButton(props: ComponentProps<typeof Button>) {
   return render(
-    <ThemeProvider value={DefaultTheme}>
-      <Button {...props} />
-    </ThemeProvider>
+    <RoutingQueueProvider>
+      <ThemeProvider value={DefaultTheme}>
+        <Button {...props} />
+      </ThemeProvider>
+    </RoutingQueueProvider>
   );
 }
 

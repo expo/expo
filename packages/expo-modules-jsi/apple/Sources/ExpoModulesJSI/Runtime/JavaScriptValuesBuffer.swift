@@ -6,7 +6,12 @@ internal import jsi
 public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   // Safe to use unowned — the buffer's lifetime is scoped to a host function call,
   // so the runtime is always alive while the buffer exists.
-  internal unowned let runtime: JavaScriptRuntime
+  //
+  // `unowned(unsafe)` rather than `unowned`: the runtime object carries a refcount side table (other
+  // wrappers hold it `weak`), so a safe `unowned` retain/release on it takes the slow side-table path
+  // on every buffer construction and destruction. Profiling showed that pair as roughly a third of the
+  // native-side cost of a no-op `@JS` host call. `unowned(unsafe)` is a plain pointer store/load.
+  internal unowned(unsafe) let runtime: JavaScriptRuntime
 
   // The raw `facebook.jsi.IRuntime`, cached alongside the `JavaScriptRuntime` wrapper. `IRuntime` is
   // an immortal reference (`jsi.apinotes`), so reading it costs no ARC, whereas reading `.pointee`
@@ -68,7 +73,7 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   public subscript(index: Int) -> JavaScriptValue {
-    return JavaScriptValue(runtime, bufferPointer[index])
+    return JavaScriptValue(runtime, copying: bufferPointer[index])
   }
 
   /// Returns a non-owning, non-copyable value borrowing the element at `index` for the zero-copy decode

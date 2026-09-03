@@ -74,6 +74,13 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       default: '"Allow $(PRODUCT_NAME) to use your location"',
     },
     {
+      name: 'motionUsagePermission',
+      platform: 'ios',
+      description:
+        'A string to set the `NSMotionUsageDescription` permission message shown when `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.',
+      default: '"Allow $(PRODUCT_NAME) to detect your current motion activity"',
+    },
+    {
       name: 'isIosBackgroundLocationEnabled',
       platform: 'ios',
       description: 'A boolean to enable `location` in the `UIBackgroundModes` in **Info.plist**.',

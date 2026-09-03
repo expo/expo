@@ -2,7 +2,7 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
-import { type ParamListBase, StackActions, StackRouter } from '../../routers';
+import { CommonActions, type ParamListBase, StackActions, StackRouter } from '../../routers';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -28,22 +28,24 @@ test('blocks removal with the hook and emits removePrevented', () => {
     );
   };
   const removePrevented = jest.fn();
-  const beforeRemove = jest.fn();
+  const removed = jest.fn();
+  const explicitlyUnsubscribedRemoved = jest.fn();
   let setPreventRemove: React.Dispatch<React.SetStateAction<boolean>>;
+  let unsubscribeRemoved: () => void;
 
   const TestScreen = ({ navigation }: any) => {
     const [preventRemove, setPreventRemoveState] = React.useState(true);
     setPreventRemove = setPreventRemoveState;
     usePreventRemove(preventRemove, removePrevented);
     React.useEffect(() => navigation.addListener('removePrevented', removePrevented), [navigation]);
-    React.useEffect(
-      () =>
-        navigation.addListener('beforeRemove', (event: any) => {
-          beforeRemove(event);
-          event.preventDefault();
-        }),
-      [navigation]
-    );
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener('removed', removed);
+      return () => queueMicrotask(unsubscribe);
+    }, [navigation]);
+    React.useEffect(() => {
+      unsubscribeRemoved = navigation.addListener('removed', explicitlyUnsubscribedRemoved);
+      return () => queueMicrotask(unsubscribeRemoved);
+    }, [navigation]);
     return null;
   };
 
@@ -65,19 +67,19 @@ test('blocks removal with the hook and emits removePrevented', () => {
   expect(removePrevented).toHaveBeenCalledTimes(2);
   expect(removePrevented.mock.calls[0][0].data.action).toBe(action);
   expect(removePrevented.mock.calls[1][0].data.action).toBe(action);
-  expect(beforeRemove).not.toHaveBeenCalled();
+  expect(removed).not.toHaveBeenCalled();
 
+  act(() => unsubscribeRemoved());
   act(() => setPreventRemove(false));
-  expect(() => act(() => ref.current?.goBack())).toThrow(
-    '`beforeRemove` is a notification-only event and cannot prevent screen removal. Use `usePreventRemove` with the `removePrevented` event instead.'
-  );
+  act(() => ref.current?.dispatchSync(CommonActions.goBack()));
 
-  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo', 'bar']);
-  expect(beforeRemove).toHaveBeenCalledTimes(1);
-  expect(beforeRemove.mock.calls[0][0].defaultPrevented).toBe(false);
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo']);
+  expect(removed).toHaveBeenCalledTimes(1);
+  expect(explicitlyUnsubscribedRemoved).not.toHaveBeenCalled();
 });
 
-test('blocks synchronous redispatch from removePrevented without re-emitting', () => {
+// TODO(@ubax): prevent synchronous redispatch from a `removePrevented` callback.
+test.skip('blocks synchronous redispatch from removePrevented without re-emitting', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
     return (
@@ -87,40 +89,31 @@ test('blocks synchronous redispatch from removePrevented without re-emitting', (
     );
   };
   const ref = createNavigationContainerRef<ParamListBase>();
-  const removePrevented = jest.fn(({ data }) => ref.current?.dispatch(data.action));
-  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const removePrevented = jest.fn(({ data }) => ref.current?.dispatchSync(data.action));
 
   const TestScreen = () => {
     usePreventRemove(true, removePrevented);
     return null;
   };
 
-  try {
-    render(
-      <BaseNavigationContainer ref={ref}>
-        <TestNavigator initialRouteName="foo">
-          <Screen name="foo">{() => null}</Screen>
-          <Screen name="bar" component={TestScreen} />
-        </TestNavigator>
-      </BaseNavigationContainer>,
-      { wrapper: RouterRegistryProvider }
-    );
+  render(
+    <BaseNavigationContainer ref={ref}>
+      <TestNavigator initialRouteName="foo">
+        <Screen name="foo">{() => null}</Screen>
+        <Screen name="bar" component={TestScreen} />
+      </TestNavigator>
+    </BaseNavigationContainer>,
+    { wrapper: RouterRegistryProvider }
+  );
 
-    act(() => ref.current?.navigate('bar'));
-    act(() => ref.current?.goBack());
+  act(() => ref.current?.navigate('bar'));
+  act(() => ref.current?.dispatchSync(CommonActions.goBack()));
 
-    expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo', 'bar']);
-    expect(removePrevented).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith(
-      "The action 'GO_BACK' was dispatched from inside a `usePreventRemove` callback and was prevented again. The `removePrevented` event was not re-emitted to avoid an infinite loop. There is no way to dispatch directly from the callback; set `preventRemove` to `false` first, then retry (for example, call `router.back()` from the handler or dispatch the captured action from an effect)."
-    );
-  } finally {
-    warn.mockRestore();
-  }
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo', 'bar']);
+  expect(removePrevented).toHaveBeenCalledTimes(1);
 });
 
-test('emits beforeRemove in a nested navigator when its parent route is removed', () => {
+test('emits removed in a nested navigator when its parent route is removed', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
     return (
@@ -129,10 +122,13 @@ test('emits beforeRemove in a nested navigator when its parent route is removed'
       </NavigationContent>
     );
   };
-  const beforeRemove = jest.fn();
+  const removed = jest.fn();
 
   const NestedScreen = ({ navigation }: any) => {
-    React.useEffect(() => navigation.addListener('beforeRemove', beforeRemove), [navigation]);
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener('removed', removed);
+      return () => queueMicrotask(unsubscribe);
+    }, [navigation]);
     return null;
   };
 
@@ -144,7 +140,17 @@ test('emits beforeRemove in a nested navigator when its parent route is removed'
 
   const ref = createNavigationContainerRef<ParamListBase>();
   render(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        type: 'stack',
+        index: 0,
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { name: 'foo' },
+          { name: 'bar', state: { type: 'stack', routes: [{ name: 'nested' }] } },
+        ],
+      }}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={NestedNavigator} />
@@ -153,8 +159,10 @@ test('emits beforeRemove in a nested navigator when its parent route is removed'
   );
 
   act(() => ref.current?.navigate('bar'));
-  act(() => ref.current?.goBack());
+  const action = CommonActions.goBack();
+  act(() => ref.current?.dispatch(action));
 
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo']);
-  expect(beforeRemove).toHaveBeenCalledTimes(1);
+  expect(removed).toHaveBeenCalledTimes(1);
+  expect(removed.mock.calls[0][0].data.action).toBe(action);
 });

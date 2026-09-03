@@ -41,7 +41,7 @@ fun AccountHeaderAction(
 
   // Show account info
   AsyncImage(
-    model = account.ownerUserActor.profilePhoto,
+    model = account.ownerUserActor.primaryAccountProfileImageUrl,
     contentDescription = "Avatar",
     modifier = Modifier
       .size(24.dp)

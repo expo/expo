@@ -107,14 +107,14 @@ function DrawerViewBase({
   const drawerStatus = getDrawerStatusFromState(state, defaultStatus);
 
   const handleDrawerOpen = useLatestCallback(() => {
-    navigation.dispatch({
+    navigation.dispatchSync({
       ...DrawerActions.openDrawer(),
       target: state.key,
     });
   });
 
   const handleDrawerClose = useLatestCallback(() => {
-    navigation.dispatch({
+    navigation.dispatchSync({
       ...DrawerActions.closeDrawer(),
       target: state.key,
     });

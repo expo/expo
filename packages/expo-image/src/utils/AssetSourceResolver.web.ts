@@ -1,6 +1,6 @@
-import type { PackagerAsset } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo';
 import { PixelRatio } from 'react-native';
+import type { PackagerAsset } from 'react-native/asset-registry';
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean;

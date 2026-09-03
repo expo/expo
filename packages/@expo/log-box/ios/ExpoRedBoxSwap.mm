@@ -41,11 +41,16 @@
                        withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
                               isUpdate: (BOOL) isUpdate
                            errorCookie:(int)errorCookie {
-  NSURL *bundleURL = self.overrideBundleURL ?: self.bundleManager.bundleURL;
-  UIViewController *expoRedBox = [ExpoLogBoxScreenProvider makeHostingControllerWithMessage:message
-                                                                                     stack:stack
-                                                                                 bundleURL:bundleURL];
-  [RCTKeyWindow().rootViewController presentViewController:expoRedBox animated:YES completion:nil];
+  // Fatal JS errors are reported from the JS thread. The original RCTRedBox method dispatches
+  // to the main queue internally, so this swizzled replacement must do the same before touching UIKit.
+  // See: https://github.com/react/react-native/blob/11f9a7f4491eb1b01955298851d5a87a3bb311cc/packages/react-native/React/CoreModules/RCTRedBox.mm#L181-L185
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSURL *bundleURL = self.overrideBundleURL ?: self.bundleManager.bundleURL;
+    UIViewController *expoRedBox = [ExpoLogBoxScreenProvider makeHostingControllerWithMessage:message
+                                                                                       stack:stack
+                                                                                   bundleURL:bundleURL];
+    [RCTKeyWindow().rootViewController presentViewController:expoRedBox animated:YES completion:nil];
+  });
 }
 
 @end

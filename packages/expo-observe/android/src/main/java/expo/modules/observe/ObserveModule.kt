@@ -3,6 +3,7 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
+import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -56,6 +57,10 @@ class ObserveModule : Module() {
 
       OnActivityEntersBackground {
         observabilityManager.scheduleBackgroundDispatch()
+      }
+
+      Constant("clientId") {
+        EASClientID(context).uuid.toString().lowercase()
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->

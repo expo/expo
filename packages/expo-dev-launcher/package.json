@@ -22,9 +22,9 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "@expo/schema-utils": "workspace:^56.0.0",
-    "expo-dev-menu": "workspace:~56.0.15",
-    "expo-manifests": "workspace:~56.0.4"
+    "@expo/schema-utils": "workspace:^",
+    "expo-dev-menu": "workspace:~",
+    "expo-manifests": "workspace:~"
   },
   "peerDependencies": {
     "expo": "*",

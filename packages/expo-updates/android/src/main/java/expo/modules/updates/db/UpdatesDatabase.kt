@@ -38,10 +38,9 @@ import java.util.*
  * https://github.com/expo/expo/blob/main/packages/expo-updates/guides/migrations.md for step by
  * step instructions.
  *
- * [DatabaseHolder] provides a rudimentary locking mechanism, and most other classes access the
- * database through this class. This allows control over what high-level operations involving the
- * database can occur simultaneously - e.g. we don't want to be trying to download a new update at
- * the same time the [Reaper] is running.
+ * High-level operations involving the database (e.g. loading an update, running the [Reaper]) are
+ * serialized by the state machine's procedure queue; individual queries rely on Room's own thread
+ * safety. Queries must not run on the main thread.
  */
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
@@ -81,7 +80,6 @@ abstract class UpdatesDatabase : RoomDatabase() {
           MIGRATION_11_12,
           MIGRATION_12_13
         )
-          .allowMainThreadQueries()
           .fallbackToDestructiveMigration()
           .build()
 

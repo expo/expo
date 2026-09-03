@@ -1,8 +1,12 @@
-import { store } from '../../../global-state/router-store';
+import { getLinkingConfig } from '../../../getLinkingConfig';
+import { getRoutes } from '../../../getRoutes';
+import { getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
+import { navigationRef } from '../../../global-state/navigationRef';
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
+import { INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME } from '../../../navigationParams';
 import type { NavigationState } from '../../../react-navigation/native';
-import { renderRouter } from '../../../testing-library';
+import { getMockContext, renderRouter } from '../../../testing-library';
 import {
   deepEqual,
   getPreloadedRouteFromRootStateByHref,
@@ -27,6 +31,40 @@ beforeAll(() => {
 afterAll(() => {
   console.info = originalConsoleInfo;
 });
+
+const routes = {
+  _layout: () => (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" />
+      <NativeTabs.Trigger name="faces" />
+      <NativeTabs.Trigger name="explore" />
+    </NativeTabs>
+  ),
+  index: () => null,
+  'faces/_layout': () => <Stack />,
+  'faces/index': () => null,
+  'faces/[face]': () => null,
+  'explore/_layout': () => <Stack />,
+  'explore/index': () => null,
+  'explore/news/_layout': () => <Stack />,
+  'explore/news/index': () => null,
+  'explore/news/[title]': () => null,
+};
+const context = getMockContext(routes);
+const routeNode = getRoutes(context, {
+  ignoreEntryPoints: true,
+  platform: 'ios',
+  preserveRedirectAndRewrites: true,
+  skipGenerated: true,
+})!;
+const linking = getLinkingConfig(routeNode, context, {
+  metaOnly: false,
+  redirects: [],
+  skipGenerated: false,
+  sitemap: true,
+  notFound: true,
+});
+const getRouteInfo = () => getRouteInfoFromState(navigationRef.getRootState());
 
 describe('deepEqual', () => {
   it('returns true for same object reference', () => {
@@ -93,29 +131,13 @@ describe('deepEqual', () => {
 
 describe(getTabPathFromRootStateByHref, () => {
   beforeEach(() => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="faces" />
-          <NativeTabs.Trigger name="explore" />
-        </NativeTabs>
-      ),
-      index: () => null,
-      'faces/_layout': () => <Stack />,
-      'faces/index': () => null,
-      'faces/[face]': () => null,
-      'explore/_layout': () => <Stack />,
-      'explore/index': () => null,
-      'explore/news/_layout': () => <Stack />,
-      'explore/news/index': () => null,
-      'explore/news/[title]': () => null,
-    });
+    renderRouter(routes);
   });
 
   it('returns single tab path with one tab navigator in href, but without change', () => {
     const state = {
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
       key: 'stack-JffH1vhEyC5DchHoYg_-L',
       index: 0,
@@ -125,6 +147,7 @@ describe(getTabPathFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
+            routeKeySeq: 0,
             type: 'tab',
             key: 'tab-IBiK_OuEIIGFJ_YDRF760',
             index: 1,
@@ -146,6 +169,7 @@ describe(getTabPathFromRootStateByHref, () => {
                 key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
                 state: {
                   stale: false,
+                  routeKeySeq: 0,
                   type: 'stack',
                   key: 'stack-7sR1tGrlUaLv2LXn74x0d',
                   index: 0,
@@ -179,8 +203,8 @@ describe(getTabPathFromRootStateByHref, () => {
     const tabPath = getTabPathFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(tabPath).toEqual([
       {
@@ -193,6 +217,7 @@ describe(getTabPathFromRootStateByHref, () => {
   it('returns single tab path with one tab navigator in href and with change', () => {
     const state = {
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
       key: 'stack-BwGGEF5WBtNuQP8AG6YUK',
       index: 0,
@@ -202,6 +227,7 @@ describe(getTabPathFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
+            routeKeySeq: 0,
             type: 'tab',
             key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
             index: 0,
@@ -223,6 +249,7 @@ describe(getTabPathFromRootStateByHref, () => {
                 key: 'faces-CtzasUGRC7VBM70ECYYD9',
                 state: {
                   stale: false,
+                  routeKeySeq: 0,
                   type: 'stack',
                   key: 'stack-0o3mKk6OKgAREN0rnNN9T',
                   index: 0,
@@ -256,8 +283,8 @@ describe(getTabPathFromRootStateByHref, () => {
     const tabPath = getTabPathFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(tabPath).toEqual([
       {
@@ -269,30 +296,21 @@ describe(getTabPathFromRootStateByHref, () => {
 });
 
 describe(getPreloadedRouteFromRootStateByHref, () => {
+  let getStateForHref: jest.SpyInstance | undefined;
+
   beforeEach(() => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="faces" />
-          <NativeTabs.Trigger name="explore" />
-        </NativeTabs>
-      ),
-      index: () => null,
-      'faces/_layout': () => <Stack />,
-      'faces/index': () => null,
-      'faces/[face]': () => null,
-      'explore/_layout': () => <Stack />,
-      'explore/index': () => null,
-      'explore/news/_layout': () => <Stack />,
-      'explore/news/index': () => null,
-      'explore/news/[title]': () => null,
-    });
+    renderRouter(routes);
+  });
+
+  afterEach(() => {
+    getStateForHref?.mockRestore();
+    getStateForHref = undefined;
   });
 
   it('returns correct preloaded route in the same stack', () => {
     const state = {
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
       key: 'stack-JffH1vhEyC5DchHoYg_-L',
       index: 0,
@@ -302,6 +320,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
+            routeKeySeq: 0,
             type: 'tab',
             key: 'tab-IBiK_OuEIIGFJ_YDRF760',
             index: 1,
@@ -323,6 +342,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
                 key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
                 state: {
                   stale: false,
+                  routeKeySeq: 0,
                   type: 'stack',
                   key: 'stack-7sR1tGrlUaLv2LXn74x0d',
                   index: 0,
@@ -355,9 +375,10 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(
       href,
+      // The inline fixture is a complete navigation state despite widened string literals.
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(preloadedRoute).toEqual({
       key: '[face]-9rms2gdsibY9dVYUGCpZG',
@@ -371,6 +392,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
   it('returns correct preloaded route in the different stack in different tab', () => {
     const state = {
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
       key: 'stack-BwGGEF5WBtNuQP8AG6YUK',
       index: 0,
@@ -380,6 +402,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
+            routeKeySeq: 0,
             type: 'tab',
             key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
             index: 0,
@@ -401,6 +424,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
                 key: 'faces-CtzasUGRC7VBM70ECYYD9',
                 state: {
                   stale: false,
+                  routeKeySeq: 0,
                   type: 'stack',
                   key: 'stack-0o3mKk6OKgAREN0rnNN9T',
                   index: 0,
@@ -433,9 +457,10 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(
       href,
+      // The inline fixture is a complete navigation state despite widened string literals.
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(preloadedRoute).toEqual({
       key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
@@ -444,5 +469,143 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
         face: '1e3a8a',
       },
     });
+  });
+
+  it('matches the preloaded route by nested state shape', () => {
+    getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
+      routes: [
+        {
+          name: 'details',
+          params: { id: 'one' },
+          state: {
+            routes: [{ name: 'child', params: { filter: 'target' } }],
+          },
+        },
+      ],
+    } as any);
+    const matchingRoute = {
+      key: 'details-matching',
+      name: 'details',
+      params: {
+        id: 'one',
+        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+      },
+      state: {
+        key: 'child-stack-generated',
+        index: 0,
+        routeNames: ['child'],
+        routes: [
+          {
+            key: 'child-generated',
+            name: 'child',
+            params: {
+              filter: 'target',
+              [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+            },
+          },
+        ],
+        stale: false as const,
+        routeKeySeq: 0,
+        type: 'stack' as const,
+      },
+    };
+    const state = {
+      key: 'root-stack',
+      index: 0,
+      routeNames: ['details'],
+      routes: [
+        {
+          key: 'details-active',
+          name: 'details',
+          params: { id: 'one' },
+          state: {
+            key: 'active-child-stack',
+            index: 0,
+            routeNames: ['child'],
+            routes: [
+              {
+                key: 'active-child',
+                name: 'child',
+                params: { filter: 'active' },
+              },
+            ],
+            stale: false as const,
+            routeKeySeq: 0,
+            type: 'stack' as const,
+          },
+        },
+        {
+          key: 'details-wrong',
+          name: 'details',
+          params: { id: 'one' },
+          state: {
+            key: 'wrong-child-stack',
+            index: 0,
+            routeNames: ['child'],
+            routes: [
+              {
+                key: 'wrong-child',
+                name: 'child',
+                params: { filter: 'wrong' },
+              },
+            ],
+            stale: false as const,
+            routeKeySeq: 0,
+            type: 'stack' as const,
+          },
+        },
+        matchingRoute,
+      ],
+      stale: false as const,
+      routeKeySeq: 0,
+      type: 'stack' as const,
+    };
+
+    expect(getPreloadedRouteFromRootStateByHref('/details', state, getRouteInfo(), linking)).toBe(
+      matchingRoute
+    );
+  });
+
+  it('does not match a preloaded route from a different branch', () => {
+    getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
+      routes: [
+        {
+          name: 'target',
+          state: { routes: [{ name: 'child', params: { filter: 'target' } }] },
+        },
+      ],
+    } as any);
+    const unrelatedPreloadedRoute = {
+      key: 'child-preloaded',
+      name: 'child',
+      params: { filter: 'target' },
+    };
+    const state = {
+      key: 'root-stack',
+      index: 0,
+      routeNames: ['current', 'target'],
+      routes: [
+        {
+          key: 'current',
+          name: 'current',
+          state: {
+            key: 'current-stack',
+            index: 0,
+            routeNames: ['index', 'child'],
+            routes: [{ key: 'index', name: 'index' }, unrelatedPreloadedRoute],
+            stale: false as const,
+            routeKeySeq: 0,
+            type: 'stack' as const,
+          },
+        },
+      ],
+      stale: false as const,
+      routeKeySeq: 0,
+      type: 'stack' as const,
+    };
+
+    expect(
+      getPreloadedRouteFromRootStateByHref('/target/child', state, getRouteInfo(), linking)
+    ).toBeUndefined();
   });
 });

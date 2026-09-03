@@ -2,10 +2,11 @@
 
 import React, { use, useCallback, useMemo, useRef } from 'react';
 
-import type {
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
+import {
+  CommonActions,
+  type ParamListBase,
+  type TabNavigationState,
+  type TabRouterOptions,
 } from '../react-navigation/native';
 import { unstable_createStandardRouterNavigator } from '../standard-navigation';
 import {
@@ -37,15 +38,17 @@ export const NativeTabsContext = React.createContext<boolean>(false);
 export interface NativeTabsNavigatorCreateProps {
   routeNames: string[];
   preload: (name: string) => void;
+  navigateSync: (name: string) => void;
 }
 
 function NativeTabsContent({
   state,
   routeNames,
   descriptors,
-  actions,
+  actions: _actions,
   emitter,
   preload,
+  navigateSync,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -144,10 +147,10 @@ function NativeTabsContent({
             isPrevented: false,
           },
         });
-        actions.navigate(selectedRoute.name);
+        navigateSync(selectedRoute.name);
       }
     },
-    [routes, actions, emitter]
+    [routes, navigateSync, emitter]
   );
 
   // Compile-time guard: everything spread onto `<NativeTabsView>` must be a prop it declares. The
@@ -190,9 +193,10 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
 >(NativeTabsContent, NativeBottomTabsRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch }) => ({
+  createProps: ({ state, dispatch, dispatchSync }) => ({
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
+    navigateSync: (name) => dispatchSync(CommonActions.navigate(name)),
   }),
 });
 

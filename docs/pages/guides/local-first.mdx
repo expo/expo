@@ -30,6 +30,8 @@ Another characteristic of local-first software is that it is collaborative — m
 
 You no longer have to manage various states of your app for each network request — "loaded", "loading", "error", and so on, with their corresponding UI states and other logic. Write to a local database, and the app will automatically sync the changes to the server. This means that you can focus on building the app, and not worry as much about the networking and offline states.
 
+Local-first architecture does not remove every network-dependent state. Some actions, such as sending an email, are complete only when a remote service accepts them. Write those actions to the local database first. Then track their state, such as "queued", "sending", "accepted", and "failed".
+
 Your server availability may still be important, but in the event of an outage your users can still access the app and continue working. You may even provide a mechanism to sync the data without going through your server.
 
 ## Challenges in building local-first apps

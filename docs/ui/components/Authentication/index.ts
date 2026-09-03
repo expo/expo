@@ -1,6 +1,4 @@
 export { Box } from './Box';
-export { Grid } from './Grid';
-export { GridItem } from './GridItem';
 
 const ASSETS_PATH = '/static/images/sdk/auth-session/';
 export const ASSETS = {

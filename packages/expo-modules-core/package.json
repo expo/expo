@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "@expo/expo-modules-macros-plugin": "0.8.0",
-    "expo-modules-jsi": "workspace:~56.0.7",
+    "expo-modules-jsi": "workspace:~",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

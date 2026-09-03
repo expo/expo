@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 
 import { Image } from '..';
-import { font, opacity } from '../../modifiers';
+import { font, foregroundStyle, opacity } from '../../modifiers';
 
 const mockNativeViewFn = jest.fn();
 
@@ -42,10 +42,7 @@ describe('Image', () => {
 
   it('routes the color prop to a foregroundStyle modifier', () => {
     render(<Image systemName="bell.fill" color="red" />);
-    expect(nativeModifiers()).toEqual([
-      { $type: 'font', size: 24 },
-      { $type: 'foregroundStyle', styleType: 'color', color: 'red' },
-    ]);
+    expect(nativeModifiers()).toEqual([{ $type: 'font', size: 24 }, foregroundStyle('red')]);
   });
 
   it('does not inject a default font when the user supplies a font modifier', () => {
@@ -72,7 +69,7 @@ describe('Image', () => {
     expect(nativeModifiers()).toEqual([
       { $type: 'opacity', value: 0.5 },
       { $type: 'font', size: 24 },
-      { $type: 'foregroundStyle', styleType: 'color', color: 'red' },
+      foregroundStyle('red'),
     ]);
   });
 });

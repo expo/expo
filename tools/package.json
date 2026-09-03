@@ -72,7 +72,7 @@
     "@types/node": "^22.14.0",
     "@types/semver": "^7.5.8",
     "eslint": "^9.39.4",
-    "eslint-config-universe": "workspace:^15.2.0",
+    "eslint-config-universe": "workspace:^",
     "eslint-plugin-lodash": "^7.4.0",
     "expo-module-scripts": "workspace:*",
     "prettier": "^3.8.3",

@@ -98,10 +98,6 @@ const SPECIAL_DEPENDENCIES = {
 const IGNORED_IMPORTS = {
   'expo-modules-core': 'ignore-dev',
   'expo-asset': 'ignore-dev',
-
-  // This is force-resolved in the CLI and therefore, for Expo modules, is generally safe.
-  // See: https://github.com/expo/expo/blob/d63143c/packages/%40expo/cli/src/start/server/metro/withMetroMultiPlatform.ts#L603-L622
-  '@react-native/assets-registry/registry': 'ignore-dev',
 };
 
 const WORKSPACE_SPECIFIER = 'workspace:';
@@ -306,12 +302,8 @@ function createExternalImportValidator(packageName, packageJson) {
       seenDependencyName.add(ref.packageName);
       const dependency = dependencyMap.get(ref.packageName);
       if (dependency && dependency.kind !== DependencyKind.Dev) {
-        let { versionRange } = dependency;
-        if (versionRange.startsWith(WORKSPACE_SPECIFIER)) {
-          versionRange = versionRange.slice(WORKSPACE_SPECIFIER.length);
-        }
-        // NOTE: Loose check to see if a dependency is pinned
-        const isLoose = /[~|^><=](\s*\d+\.)/.test(versionRange) || versionRange === '*';
+        const { versionRange } = dependency;
+        const isLoose = isLooseDependencyVersionRange(versionRange);
         const isPrerelease = versionRange.includes('-');
         const isPinned = /^\d+\.\d+\.\d+$/.test(versionRange);
         return !isPrerelease && (!isLoose || isPinned);
@@ -319,6 +311,24 @@ function createExternalImportValidator(packageName, packageJson) {
       return null;
     },
   };
+}
+
+/**
+ * Loosely checks whether a dependency range allows more than one version
+ *
+ * @param {string} versionRange
+ * @returns {boolean}
+ */
+function isLooseDependencyVersionRange(versionRange) {
+  if (versionRange.startsWith(WORKSPACE_SPECIFIER)) {
+    versionRange = versionRange.slice(WORKSPACE_SPECIFIER.length);
+  }
+  return (
+    versionRange === '*' ||
+    versionRange === '~' ||
+    versionRange === '^' ||
+    /[~|^><=](\s*\d+\.)/.test(versionRange)
+  );
 }
 
 /** @type {DepsLogger} */

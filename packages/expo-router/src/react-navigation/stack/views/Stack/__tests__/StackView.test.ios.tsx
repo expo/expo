@@ -19,6 +19,7 @@ const createNavigationState = (
   const allRoutes = routes.concat(options.preloadedRoutes ?? []);
   return {
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
     key: 'stack-1',
     index: options.index ?? routes.length - 1,

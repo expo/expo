@@ -33,6 +33,9 @@ module.exports = function (_api: ConfigAPI, _options: WebviewConfigOptions) {
       [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
       [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
       [require('@babel/plugin-transform-logical-assignment-operators'), { loose: true }],
+      // Keep this after transform-destructuring to avoid the loose-mode computed exclusion bug.
+      // See: https://github.com/babel/babel/pull/18197
+      [require('@babel/plugin-transform-object-rest-spread'), { loose: true, useBuiltIns: true }],
     ] as PluginItem[],
   };
 };

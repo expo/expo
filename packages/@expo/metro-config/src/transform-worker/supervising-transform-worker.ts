@@ -1,32 +1,28 @@
-import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
+import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import path from 'path';
 
 import { event } from './events';
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
+import type { ExpoJsTransformerConfig } from './types';
 import { patchNodeModuleResolver } from './utils/moduleMapper';
 
 const defaultTransformer: typeof import('./transform-worker') = require('./transform-worker');
 const defaultTransformerPath = require.resolve('./transform-worker');
 
-declare module '@expo/metro/metro-transform-worker' {
-  export interface JsTransformerConfig {
-    expo_customTransformerPath?: string;
-  }
-}
-
 const getCustomTransform = (() => {
   let _transformerPath: string | undefined;
   let _transformer: typeof import('./transform-worker') | undefined;
-  return (config: JsTransformerConfig, projectRoot: string) => {
+  return (config: ExpoJsTransformerConfig, projectRoot: string) => {
     // The user's original `transformerPath` is stored on `config.transformer.expo_customTransformerPath`
-    // by @expo/cli in `withMetroSupervisingTransformWorker()`
+    // by @expo/cli in `withMetroSupervisingTransformWorker()`. `false` opts out of the
+    // supervising transformer, in which case @expo/cli never installs us in the first
+    // place, so it means the same thing as an absent path here.
+    const customTransformerPath =
+      config.expo_customTransformerPath === false ? undefined : config.expo_customTransformerPath;
     if (_transformer == null && _transformerPath == null) {
-      _transformerPath = config.expo_customTransformerPath;
-    } else if (
-      config.expo_customTransformerPath != null &&
-      _transformerPath !== config.expo_customTransformerPath
-    ) {
+      _transformerPath = customTransformerPath;
+    } else if (customTransformerPath != null && _transformerPath !== customTransformerPath) {
       throw new Error('expo_customTransformerPath must not be modified after initialization');
     }
 
@@ -67,7 +63,7 @@ const getCustomTransform = (() => {
 })();
 
 export function transform(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,

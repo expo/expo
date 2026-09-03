@@ -5,15 +5,10 @@ import Foundation
 struct Queries {
   static func getCurrentUser() -> String {
     return """
-    query Home_CurrentUserActor {
-      meUserActor {
+    query Home_CurrentActor {
+      meActor {
         __typename
         id
-        username
-        firstName
-        lastName
-        profilePhoto
-        bestContactEmail
         accounts {
           id
           name
@@ -21,11 +16,21 @@ struct Queries {
           ownerUserActor {
             id
             username
-            profilePhoto
+            primaryAccountProfileImageUrl
             firstName
             fullName
             lastName
           }
+        }
+        ... on UserActor {
+          username
+          firstName
+          lastName
+          primaryAccountProfileImageUrl
+          bestContactEmail
+        }
+        ... on PartnerActor {
+          username
         }
       }
     }
@@ -34,34 +39,40 @@ struct Queries {
 
   static func getProjectsList() -> String {
     return """
-    query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!, $platform: AppPlatform!) {
+    query Home_AccountApps($accountName: String!, $first: Int!, $after: String, $platform: AppPlatform!) {
       account {
         byName(accountName: $accountName) {
           id
           name
-          apps(limit: $limit, offset: $offset, includeUnpublished: true) {
-            id
-            name
-            fullName
-            ownerAccount {
-              name
+          appsPaginated(first: $first, after: $after) {
+            pageInfo {
+              hasNextPage
+              endCursor
             }
-            firstTwoBranches: updateBranches(limit: 2, offset: 0) {
-              id
-              name
-              updates(limit: 1, offset: 0, filter: { platform: $platform }) {
+            edges {
+              node {
                 id
-                group
-                message
-                createdAt
-                runtimeVersion
-                expoGoSDKVersion
-                platform
-                manifestPermalink
+                name
+                fullName
+                ownerAccount {
+                  name
+                }
+                firstTwoBranches: updateBranches(limit: 2, offset: 0) {
+                  id
+                  name
+                  updates(limit: 1, offset: 0, filter: { platform: $platform }) {
+                    id
+                    group
+                    message
+                    createdAt
+                    expoGoSDKVersion
+                    platform
+                    manifestPermalink
+                  }
+                }
               }
             }
           }
-          appCount
         }
       }
     }
@@ -90,7 +101,6 @@ struct Queries {
               group
               message
               createdAt
-              runtimeVersion
               expoGoSDKVersion
               platform
               manifestPermalink
@@ -104,19 +114,27 @@ struct Queries {
 
   static func getSnacksList() -> String {
     return """
-    query Home_AccountSnacks($accountName: String!, $limit: Int!, $offset: Int!) {
+    query Home_AccountSnacks($accountName: String!, $first: Int!, $after: String) {
       account {
         byName(accountName: $accountName) {
           id
           name
-          snacks(limit: $limit, offset: $offset) {
-            id
-            name
-            description
-            fullName
-            slug
-            isDraft
-            sdkVersion
+          snacksPaginated(first: $first, after: $after) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              node {
+                id
+                name
+                description
+                fullName
+                slug
+                isDraft
+                sdkVersion
+              }
+            }
           }
         }
       }
@@ -131,58 +149,43 @@ struct Queries {
         byName(accountName: $accountName) {
           id
           name
-          ownerUserActor {
-            __typename
-            id
-            username
-            firstName
-            lastName
-            profilePhoto
-            bestContactEmail
-            accounts {
-              id
-              name
-              profileImageUrl
-              ownerUserActor {
+          appsPaginated(first: 5) {
+            edges {
+              node {
                 id
-                username
-                profilePhoto
-                firstName
+                name
                 fullName
-                lastName
+                ownerAccount {
+                  name
+                }
+                firstTwoBranches: updateBranches(limit: 2, offset: 0) {
+                  id
+                  name
+                  updates(limit: 1, offset: 0, filter: { platform: $platform }) {
+                    id
+                    group
+                    message
+                    createdAt
+                    expoGoSDKVersion
+                    platform
+                    manifestPermalink
+                  }
+                }
               }
             }
           }
-          apps(limit: 5, offset: 0, includeUnpublished: true) {
-            id
-            name
-            fullName
-            ownerAccount {
-              name
-            }
-            firstTwoBranches: updateBranches(limit: 2, offset: 0) {
-              id
-              name
-              updates(limit: 1, offset: 0, filter: { platform: $platform }) {
+          snacksPaginated(first: 5) {
+            edges {
+              node {
                 id
-                group
-                message
-                createdAt
-                runtimeVersion
-                expoGoSDKVersion
-                platform
-                manifestPermalink
+                name
+                description
+                fullName
+                slug
+                isDraft
+                sdkVersion
               }
             }
-          }
-          snacks(limit: 5, offset: 0) {
-            id
-            name
-            description
-            fullName
-            slug
-            isDraft
-            sdkVersion
           }
           appCount
         }
@@ -206,7 +209,6 @@ struct Queries {
               group
               message
               createdAt
-              runtimeVersion
               expoGoSDKVersion
               platform
               manifestPermalink
@@ -234,7 +236,6 @@ struct Queries {
               group
               message
               createdAt
-              runtimeVersion
               expoGoSDKVersion
               platform
               manifestPermalink

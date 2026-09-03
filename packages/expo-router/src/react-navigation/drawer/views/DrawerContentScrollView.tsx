@@ -8,7 +8,7 @@ import { useLocale } from '../../native';
 import { DrawerPositionContext } from '../utils/DrawerPositionContext';
 
 type Props = ScrollViewProps & {
-  ref?: React.Ref<ScrollView>;
+  ref?: React.Ref<React.ComponentRef<typeof ScrollView>>;
   children: React.ReactNode;
 };
 
