@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme. ([#49697](https://github.com/expo/expo/pull/49697) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 - [Android] Marked `InnerTextFieldProps` and `PlaceholderProps` as optimized, so they no longer fall back to reflection-based props parsing and no longer log a warning on startup. ([#49632](https://github.com/expo/expo/issues/49632) by [@sfourdrinier](https://github.com/sfourdrinier)) ([#46919](https://github.com/expo/expo/pull/46919) by [@lukmccall](https://github.com/lukmccall))
