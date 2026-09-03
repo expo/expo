@@ -1,7 +1,8 @@
 import { BottomSheet, Host, HStack, RNHostView, VStack } from '@expo/ui/swift-ui';
-import { padding } from '@expo/ui/swift-ui/modifiers';
+import { onGeometryChange, padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Modal, ScrollView, View } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // React Native types `View` as a function component, so the instance type is its ref type.
 type ViewRef = React.ComponentRef<typeof View>;
@@ -17,6 +18,7 @@ const SHORT = 30;
 const SCROLL_LEAD = 80;
 const SCROLL_TAIL = 2000;
 const SCROLL_BY = 60;
+const INSET_HOST_HEIGHT = 120;
 
 type Measurement = {
   x: number;
@@ -37,6 +39,22 @@ function measureAsync(ref: React.RefObject<ViewRef | null>, label = 'view'): Pro
     node.measure((x, y, width, height, pageX, pageY) =>
       resolve({ x, y, width, height, pageX, pageY })
     );
+  });
+}
+
+type WindowFrame = { x: number; y: number; width: number; height: number };
+
+function measureInWindowAsync(
+  ref: React.RefObject<ViewRef | null>,
+  label = 'view'
+): Promise<WindowFrame> {
+  return new Promise((resolve, reject) => {
+    const node = ref.current;
+    if (!node) {
+      reject(new Error(`Cannot measure ${label} in the window: it is not mounted`));
+      return;
+    }
+    node.measureInWindow((x, y, width, height) => resolve({ x, y, width, height }));
   });
 }
 
@@ -66,10 +84,134 @@ async function measureWhenPresented(
   throw new Error(`Timed out waiting for ${label} to be presented and laid out`);
 }
 
+type InsetFixture = {
+  host: WindowFrame;
+  hosted: WindowFrame;
+  drawn: WindowFrame;
+  /** The top safe-area inset of the modal window. */
+  insetTop: number;
+  /** Where the Host wrapper starts, so the Host is still partly under the status bar. */
+  wrapperTop: number;
+};
+
+type InsetHostProps = {
+  safeArea: boolean;
+  hostWrapperRef: React.RefObject<ViewRef | null>;
+  hostedRef: React.RefObject<ViewRef | null>;
+  drawnRef: { current: WindowFrame | null };
+  geometryRef: { current: { insetTop: number; wrapperTop: number } | null };
+  onLaidOut: () => void;
+};
+
+function InsetHost({
+  safeArea,
+  hostWrapperRef,
+  hostedRef,
+  drawnRef,
+  geometryRef,
+  onLaidOut,
+}: InsetHostProps) {
+  const insets = useSafeAreaInsets();
+  const wrapperTop = Math.round(insets.top / 2);
+  geometryRef.current = { insetTop: insets.top, wrapperTop };
+  return (
+    <View
+      ref={hostWrapperRef}
+      collapsable={false}
+      style={{
+        position: 'absolute',
+        top: wrapperTop,
+        left: 0,
+        right: 0,
+        height: INSET_HOST_HEIGHT,
+      }}>
+      <Host
+        style={{ flex: 1 }}
+        ignoreSafeArea={safeArea ? 'none' : undefined}
+        onLayoutContent={() => onLaidOut()}>
+        <VStack>
+          <VStack modifiers={[onGeometryChange((frame) => (drawnRef.current = frame))]}>
+            <RNHostView matchContents>
+              <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+            </RNHostView>
+          </VStack>
+        </VStack>
+      </Host>
+    </View>
+  );
+}
+
+/**
+ * Mounts a fill `Host` partly under the status bar of a full-screen modal and measures the hosted
+ * box against where SwiftUI drew it.
+ */
+function makeInsetFixture(setPortalChild: any) {
+  return async ({ safeArea }: { safeArea: boolean }): Promise<InsetFixture> => {
+    const hostWrapperRef = React.createRef<ViewRef>();
+    const hostedRef = React.createRef<ViewRef>();
+    const geometryRef: { current: { insetTop: number; wrapperTop: number } | null } = {
+      current: null,
+    };
+
+    let onShown: () => void;
+    const shown = new Promise<void>((resolve) => {
+      onShown = resolve;
+    });
+    let onLaidOut: () => void;
+    const laidOut = new Promise<void>((resolve) => {
+      onLaidOut = resolve;
+    });
+    // Where SwiftUI actually placed the hosted view, in window coordinates.
+    const drawnRef: { current: WindowFrame | null } = { current: null };
+
+    setPortalChild(
+      <Modal visible presentationStyle="fullScreen" animationType="none" onShow={() => onShown()}>
+        {/* The modal is its own window, so it needs its own provider to report that window's insets. */}
+        <SafeAreaProvider>
+          <InsetHost
+            safeArea={safeArea}
+            hostWrapperRef={hostWrapperRef}
+            hostedRef={hostedRef}
+            drawnRef={drawnRef}
+            geometryRef={geometryRef}
+            onLaidOut={() => onLaidOut()}
+          />
+        </SafeAreaProvider>
+      </Modal>
+    );
+
+    await Promise.all([shown, laidOut]);
+
+    let result: InsetFixture | null = null;
+    for (let attempt = 0; attempt < 40; attempt++) {
+      const drawn = drawnRef.current;
+      if (drawn != null) {
+        const host = await measureInWindowAsync(hostWrapperRef, 'the Host wrapper');
+        const hosted = await measureInWindowAsync(hostedRef, 'the hosted box');
+        const geometry = geometryRef.current;
+        if (geometry == null) {
+          throw new Error('The safe-area insets of the modal were never reported');
+        }
+        result = { host, hosted, drawn, ...geometry };
+        if (Math.abs(hosted.x - drawn.x) < 0.5 && Math.abs(hosted.y - drawn.y) < 0.5) {
+          break;
+        }
+      }
+      await delay(50);
+    }
+    if (result == null) {
+      throw new Error('SwiftUI never reported where it drew the hosted view');
+    }
+    return result;
+  };
+}
+
 export async function test(
   { it, describe, expect, afterEach }: any,
   { setPortalChild, cleanupPortal }: any
 ) {
+  const mountInsetFixture = makeInsetFixture(setPortalChild);
+
   afterEach(async () => {
     await cleanupPortal();
   });
@@ -296,6 +438,40 @@ export async function test(
       // while the differences above stay right, because those two views scroll together.
       expect(hostedAfter.pageX - viewport.pageX).toBe(PADDING);
       expect(hostedAfter.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
+    });
+
+    // The Host starts halfway down the status bar. With `ignoreSafeArea="none"`, SwiftUI insets the
+    // content of this fill host by the rest of the bar while Yoga's frame for the host starts higher.
+    it('measures a hosted view where SwiftUI drew it when the Host is inset by the safe area', async () => {
+      const { host, hosted, drawn, insetTop, wrapperTop } = await mountInsetFixture({
+        safeArea: true,
+      });
+      if (insetTop === 0) {
+        // No status bar, for example an iPhone in landscape: nothing to inset, so the two coordinate
+        // spaces coincide and the fixture cannot tell them apart.
+        return;
+      }
+
+      // The fixture only proves something if SwiftUI really inset the content: the box must sit
+      // below the top of the host's frame by the part of the status bar the host is still under.
+      expect(drawn.y - host.y).toBeCloseTo(insetTop - wrapperTop, 0);
+
+      // measure() must report the position the content occupies on screen, not the position it
+      // would have had without the inset.
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
+      expect(hosted.width).toBeCloseTo(BOX, 0);
+      expect(hosted.height).toBeCloseTo(BOX, 0);
+    });
+
+    it('applies no safe-area inset to a Host by default', async () => {
+      const { host, hosted, drawn } = await mountInsetFixture({ safeArea: false });
+
+      // Same fixture with the default `ignoreSafeArea`: the content starts at the frame origin.
+      expect(drawn.x - host.x).toBeCloseTo(0, 0);
+      expect(drawn.y - host.y).toBeCloseTo(0, 0);
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
     });
 
     // A sheet content uses RootNodeKind trait so measurement happens relative to the RNHostView and not the RN's root surface.
