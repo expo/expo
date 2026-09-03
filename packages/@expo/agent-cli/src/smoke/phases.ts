@@ -216,6 +216,16 @@ export interface SmokeDeps {
     attachBudgetMs: number
   ): Promise<OpenRouteResult>;
   /**
+   * Whether the app that answered is one this project can actually run.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+   * A reason when it is not, and null when it is or when nothing could be decided. The case it
+   * exists for: Expo Go attached to a project whose native code Expo Go's fixed runtime does not
+   * contain — the state `expo start --ios` leaves behind. Reading that runtime answers about Expo
+   * Go rather than about this project, so the gate must not report a pass on it.
+   */
+  checkAppFitsProject(devServerUrl: string): Promise<string | null>;
+  /**
    * Put an app that was already attached back on the bundle the dev server is serving.
    *
    * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
@@ -285,6 +295,15 @@ export interface SmokeRun {
    * session, because there was no session to replace.
    */
   reload: SmokeReloadJson;
+  /**
+   * Why the app that answered cannot run this project, or null when it can.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+   * Reported as a fact rather than only as the `app` phase's sentence, because the follow-ups and
+   * the explanation both branch on it and neither may do that by matching English
+   * (llp/0005 §One preflight for the runtime family, on `error.data`).
+   */
+  appMismatch: string | null;
   windowMs: number | null;
   errors: RuntimeErrorRecord[];
   screenshot: ScreenshotResult;
@@ -666,6 +685,7 @@ async function runPhasesAsync(
     deviceBackend: null,
     runtimeSupported: null,
     reload: noReload(),
+    appMismatch: null,
     windowMs: null,
     errors: [],
     screenshot: noScreenshot('nothing was photographed'),
@@ -1114,6 +1134,32 @@ async function runPhasesAsync(
     });
   }
 
+  // ---- Is the app that answered one this project can run at all? ---------------------------
+  //
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+  //
+  // Not a phase of its own: it is the second half of the question the `app` phase asks. "Is an app
+  // attached" and "is it *this project's* app" have one answer between them, and a run that split
+  // them into two rows would report `app ok` above a row saying the app cannot run this project.
+  //
+  // Asked on both paths — an app this run found *and* one it opened — because the open picks its
+  // target from the same decision, so a mismatch on that path would mean this gate had opened the
+  // wrong app. Never asked when nothing is connected: there is no runtime for it to be about, and
+  // that path returned above.
+  //
+  // Downgrades the phase rather than stopping the run. The phases below still read the app that is
+  // there and still photograph it — the same rule llp/0005 §Android sets for a runtime with no
+  // debugger, where an empty window costs one wait and the report is more useful with it. What
+  // changes is that the verdict can no longer be `passed`.
+  const appMismatch = await deps.checkAppFitsProject(devServerUrl);
+  if (appMismatch != null) {
+    const appPhase = phases.find((phase) => phase.id === 'app');
+    if (appPhase != null) {
+      appPhase.status = 'inconclusive';
+      appPhase.reason = appMismatch;
+    }
+  }
+
   // ---- Phase 6: is the app that answers the rest of this run the code on disk? --------------
   //
   // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
@@ -1357,8 +1403,16 @@ async function runPhasesAsync(
   // broken, and which session it was is no longer the open question.
   const threw = collected.records.some(isFailingRecord);
   const sessionKnown = reloadJson.disposition !== 'unproved';
+  // @ref llp/0005 §Expo Go is only a target for a project that fits in it. `threw` still outranks
+  // it: Expo Go reporting an error while running this project's bundle is a fact about the code,
+  // whichever app was holding it.
+  const appFitsProject = appMismatch == null;
   return done(
-    threw ? 'failed' : runtime.ok && collected.ok && sessionKnown ? 'passed' : 'inconclusive',
+    threw
+      ? 'failed'
+      : runtime.ok && collected.ok && sessionKnown && appFitsProject
+        ? 'passed'
+        : 'inconclusive',
     {
       ...withApp,
       routeCheck,
@@ -1366,6 +1420,7 @@ async function runPhasesAsync(
       deviceBackend: captured.deviceBackend,
       runtimeSupported: runtime.unsupported ? false : runtime.ok ? true : null,
       reload: reloadJson,
+      appMismatch,
       windowMs: options.windowMs,
       errors: collected.records,
       screenshot: captured.screenshot,

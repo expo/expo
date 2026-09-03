@@ -28,6 +28,7 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
     // The default is the common case after the `reload` phase: the app was put on the code on disk
     // before it was read, so the window these follow-ups are about is already trustworthy.
     reloadDisposition: 'reloaded',
+    appMismatch: null,
     ...overrides,
   };
 }
@@ -270,6 +271,35 @@ describe(`${buildSmokeFollowUps.name} after the reload phase`, () => {
   it(`leads with the whole stacks when the window is already trustworthy`, () => {
     expect(commands({ ...failed, reloadDisposition: 'reloaded' })[0]).toBe(
       'npx @expo/agent-cli runtime:errors --ios --duration 5s --json'
+    );
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+//
+// The one inconclusive state a re-run can never change, which is the rule this file exists for
+// (llp/0009, F41/F48-8). Expo Go answered for a project whose native code it does not contain: no
+// amount of looking again makes that runtime the right one, and the only thing that helps is making
+// the build that can run the project.
+describe(`${buildSmokeFollowUps.name} for an app that cannot run the project`, () => {
+  const mismatched = {
+    outcome: 'inconclusive' as const,
+    appMismatch: 'the app that answered is Expo Go, and this project cannot run in Expo Go',
+  };
+
+  it(`leads with the build that can run the project`, () => {
+    expect(commands(mismatched)[0]).toBe('npx @expo/agent-cli dev --ios --yes');
+  });
+
+  // The rule itself: never offer a re-run of this gate for a state a re-run cannot change.
+  it(`never offers to run the gate again`, () => {
+    expect(commands(mismatched).join(' ')).not.toContain('agent-cli smoke');
+  });
+
+  // And it keeps the platform, like every other follow-up here (F58).
+  it(`names the platform the run was about`, () => {
+    expect(commands({ ...mismatched, platform: 'android' })[0]).toBe(
+      'npx @expo/agent-cli dev --android --yes'
     );
   });
 });

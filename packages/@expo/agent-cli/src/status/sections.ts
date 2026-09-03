@@ -14,6 +14,7 @@ import { decideStartPlan } from '../plan/decide';
 import type { LastBuildRecord } from '../plan/lastBuild';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
 import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
+import { decidesAgainstExpoGo } from '../project/expoGo';
 import type { FingerprintResult } from '../project/fingerprint';
 import type { ProjectState, StartPlan } from '../project/types';
 import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
@@ -410,6 +411,10 @@ function resolveConnectUrls(
     targetAppIds,
     hasNativeDirs: state.nativeDirs.ios || state.nativeDirs.android,
     usesDevClient: state.usesDevClient,
+    // Free here: the probe already answered it, and this is the same fact the `expo go` row of this
+    // very report prints. A connect URL for Expo Go printed under "expo go not compatible" is this
+    // report arguing with itself (llp/0021 §The rules).
+    expoGoCompatible: decidesAgainstExpoGo(state.expoGo),
   });
   const tunnelHost = devServer.tunnelUrl ? hostOf(devServer.tunnelUrl) : null;
   return buildConnectUrls({

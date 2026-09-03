@@ -47,6 +47,15 @@ export interface SmokeFollowUpInput {
    */
   platform: 'ios' | 'android';
   /**
+   * Why the app that answered cannot run this project, or null when it can.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+   * The one inconclusive state a re-run can never change, so the one that has to lead with a
+   * different command entirely: no amount of looking again turns Expo Go into a runtime that holds
+   * this project's native code.
+   */
+  appMismatch: string | null;
+  /**
    * What the `reload` phase did about the app the window was read from.
    *
    * @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
@@ -77,6 +86,36 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   // The flag first, so a reader sees what the command is about before what it opens.
   const same = ` --${input.platform}${sameRoute}${onCloud}`;
   const otherPlatform = input.platform === 'android' ? 'ios' : 'android';
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+  //
+  // Above the dev-server rows, because it is the one state here that no command in this file's
+  // ordinary ladder addresses: the dev server is fine, the bundle is fine, an app answered — and it
+  // is the wrong app for this project. Offering a re-run of the gate would be the exact mistake
+  // llp/0009 was written against, since the same Expo Go will answer the same way for ever.
+  if (input.appMismatch) {
+    return capFollowUps([
+      {
+        id: 'dev-build',
+        command: `${PROGRAM_PREFIX} dev --${input.platform} --yes`,
+        why: 'This project needs a development build to run at all, and that is the command that makes one and starts the dev server for it. Expo Go cannot load its native code, so no reading taken through Expo Go is about this project.',
+      },
+      {
+        id: 'status',
+        command: `${PROGRAM_PREFIX} status`,
+        why: 'Names every reason this project cannot run in Expo Go, which is what decides whether the build above is the whole of what is needed.',
+      },
+      ...(input.screenshotPath
+        ? [
+            {
+              id: 'screenshot',
+              command: `open ${input.screenshotPath}`,
+              why: 'What Expo Go had on screen while it was read, which is evidence about Expo Go rather than about this project.',
+            },
+          ]
+        : []),
+    ]);
+  }
 
   // No dev server. A run that tried to start one and could not needs to see the start fail where
   // its output is visible; a `--no-start` run needs the start it declined to do.

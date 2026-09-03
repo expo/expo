@@ -72,6 +72,7 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
       commandSocketReconnected: true,
       bundleServed: false,
     },
+    appMismatch: null,
     windowMs: 3_000,
     errors: [],
     screenshot: {
@@ -91,6 +92,7 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
 describe(smokeResultToJson, () => {
   it(`prints one object with a stable set of keys`, () => {
     expect(Object.keys(smokeResultToJson(run(), options(), [])).sort()).toEqual([
+      'appMismatch',
       'appsConnected',
       'bundle',
       'devServerUrl',

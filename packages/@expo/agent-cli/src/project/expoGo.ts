@@ -106,3 +106,50 @@ export async function checkExpoGoCompatibilityAsync(
 
   return { compatible: reasons.length === 0, reasons };
 }
+
+/**
+ * The reason kinds that **rule Expo Go out**, as opposed to merely counting against it.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+ *
+ * Two of the four kinds, and which two is the whole content of this list.
+ *
+ * `unbundled-native-module` is native code that is not in the runtime, so the app cannot run there.
+ * `config-plugin` changes the native projects, and Expo Go is not built from those projects — the
+ * check is already deliberately optimistic here, accepting a plugin whose module *is* bundled, so
+ * what reaches this point is a plugin whose changes really are absent.
+ *
+ * The two that are left out are not weaker versions of the same thing; they are different
+ * statements. `unknown-sdk` is this check saying it could not read the project — the ordinary state
+ * of a fresh clone with no `node_modules`. And `custom-native-code` is a checked-in native
+ * directory, which its own `detail` calls out as something that *can* contain native code the
+ * runtime lacks: a bare project with no unbundled module still runs in Expo Go, which is exactly
+ * the uncertainty {@link import('../navigate/target').ExpoGoDecision.certain} exists to carry.
+ * Treating either as decisive would refuse working projects.
+ */
+const RULES_OUT_EXPO_GO = new Set<ExpoGoIncompatibility['kind']>([
+  'unbundled-native-module',
+  'config-plugin',
+]);
+
+/**
+ * Whether the project can run in Expo Go, as a three-valued answer for a caller that must *act*.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+ *
+ * {@link ExpoGoCompatibility.compatible} is two-valued and cannot be used for this, because it is
+ * `false` for all four reason kinds and only two of them rule Expo Go out
+ * (@ref ./expoGo §RULES_OUT_EXPO_GO). A caller that read it directly would refuse a fresh clone and
+ * would claim certainty about a bare project, and the unit suites that run against a virtual
+ * filesystem caught both [observed, 2026-09-03].
+ *
+ * `true` means the check read the project and found nothing against it. `null` means "decide from
+ * something else": either the project could not be read, or what was found is a reason that counts
+ * against Expo Go without settling it.
+ */
+export function decidesAgainstExpoGo(compatibility: ExpoGoCompatibility): boolean | null {
+  if (compatibility.reasons.some((reason) => RULES_OUT_EXPO_GO.has(reason.kind))) {
+    return false;
+  }
+  return compatibility.reasons.length === 0 ? true : null;
+}

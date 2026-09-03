@@ -291,6 +291,15 @@ export interface SmokeResultJson {
    * reads as a question that was never worth asking (llp/0006 §Output contract).
    */
   reload: SmokeReloadJson;
+  /**
+   * Why the app that answered cannot run this project, or null when it can.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+   * A `passed` is impossible while this is set, so a caller reading the verdict alone is never
+   * misled — and one that wants to know *why* it could not decide reads this rather than the phase
+   * list's prose.
+   */
+  appMismatch: string | null;
   errors: SmokeErrorsJson;
   screenshot: ScreenshotResult;
   /** How long the whole run took, in milliseconds. */

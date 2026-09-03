@@ -171,6 +171,8 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
     waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 3 }),
     probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
     openRoute: async (route) => opened({ route }),
+    // The ordinary case: the app that answered is one this project can run.
+    checkAppFitsProject: async () => null,
     // A reload the dev server's own command socket proved, which is the healthy local case.
     reloadApp: async () => ({
       ok: true,
@@ -2041,5 +2043,93 @@ describe(`${runSmokePhasesAsync.name} and the code on disk`, () => {
     );
 
     expect(waitForStableTargets).not.toHaveBeenCalled();
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+//
+// The other half of that section. Not opening Expo Go stops this gate *choosing* the wrong app; it
+// does nothing about an Expo Go that is already attached, which is the state `expo start --ios`
+// leaves behind and the one an agent is most likely to inherit. Reading that runtime answers about
+// Expo Go, not about a project whose native code Expo Go does not contain.
+//
+// Live: with Expo Go opened by hand against an Expo-Go-incompatible project, every phase answered
+// and the gate reported `passed` at exit 0 [observed — iOS 26.5 simulator, 2026-09-03].
+describe(`${runSmokePhasesAsync.name} and whether the app fits the project`, () => {
+  const MISMATCH =
+    'the app that answered is Expo Go, and this project cannot run in Expo Go — its native code is not in that runtime';
+
+  it(`will not pass a run whose runtime is an app the project cannot run`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({ checkAppFitsProject: async () => MISMATCH }),
+      options()
+    );
+
+    expect(statusOf(run, 'app')).toBe('inconclusive');
+    expect(run.phases.find((phase) => phase.id === 'app')?.reason).toBe(MISMATCH);
+    expect(run.outcome).toBe('inconclusive');
+    expect(smokeExitCode(run.outcome)).toBe(22);
+  });
+
+  // The window is still opened and still reported, exactly as it is for a runtime with no debugger:
+  // an empty window costs one wait and the report is more useful with it. What it must not do is
+  // decide the verdict.
+  it(`still reads the app it found, and still photographs it`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({ checkAppFitsProject: async () => MISMATCH }),
+      options()
+    );
+
+    expect(statusOf(run, 'errors')).toBe('ok');
+    expect(statusOf(run, 'screenshot')).toBe('ok');
+    expect(run.screenshot.ok).toBe(true);
+  });
+
+  // An error is an error. Expo Go threw while running this project's bundle, which is a fact about
+  // the code whichever app was holding it — so `failed` outranks the mismatch.
+  it(`still fails on an error the wrong app reported`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        checkAppFitsProject: async () => MISMATCH,
+        collectErrors: async () => ({ ok: true, records: [record()], reason: null }),
+      }),
+      options()
+    );
+
+    expect(run.outcome).toBe('failed');
+    expect(smokeExitCode(run.outcome)).toBe(20);
+  });
+
+  // An app this run opened itself is asked the same question: the open picks the target from the
+  // same decision, so a mismatch there would mean this gate had opened the wrong app.
+  it(`asks the question for an app it opened as well as one it found`, async () => {
+    const checkAppFitsProject = jest.fn(async () => null);
+    await runSmokePhasesAsync(
+      deps({
+        checkAppFitsProject,
+        waitForAppConnection: jest
+          .fn<Promise<{ appsConnected: number; timedOut: boolean; waitedMs: number }>, []>()
+          .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+          .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 2 }),
+      }),
+      options()
+    );
+
+    expect(checkAppFitsProject).toHaveBeenCalled();
+  });
+
+  // And a run with no app at all never asks: there is no runtime to be about.
+  it(`does not ask when nothing is connected`, async () => {
+    const checkAppFitsProject = jest.fn(async () => null);
+    await runSmokePhasesAsync(
+      deps({
+        checkAppFitsProject,
+        waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 1 }),
+        openRoute: async (route) => opened({ route, exitCode: 115 }),
+      }),
+      options()
+    );
+
+    expect(checkAppFitsProject).not.toHaveBeenCalled();
   });
 });

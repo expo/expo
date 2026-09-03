@@ -19,7 +19,9 @@ import { buildSmokeFollowUps, followUpsEnabled, reportFollowUps } from '../follo
 import * as Log from '../log';
 import { resolveDeviceAsync, type DeviceBackend } from '../navigate/device';
 import { openRouteAsync } from '../navigate/openRoute';
+import { EXPO_GO_APP_IDS } from '../navigate/target';
 import { PROGRAM_PREFIX } from '../programName';
+import { checkExpoGoCompatibilityAsync, decidesAgainstExpoGo } from '../project/expoGo';
 import { checkEntryBundleAsync } from '../runtime/bundleCheck';
 import { CdpClient, isMethodNotFoundError } from '../runtime/cdpClient';
 import { discoverDevServerAsync, probeDevServerAsync } from '../runtime/devServer';
@@ -30,7 +32,11 @@ import {
   type CommandSocketChurn,
 } from '../runtime/reload/reloadAsync';
 import { CdpRuntimeErrorCollector } from '../runtime/runtimeErrorCollector';
-import { buildDeviceNameIndexIfNeededAsync, type DeviceNameIndex } from '../runtime/targetPlatform';
+import {
+  buildDeviceNameIndexIfNeededAsync,
+  scopeTargets,
+  type DeviceNameIndex,
+} from '../runtime/targetPlatform';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { formatSmokeResult, smokeResultToJson } from './format';
 import {
@@ -166,6 +172,7 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
     route: options.route,
     platform: options.platform,
     reloadDisposition: run.reload.disposition,
+    appMismatch: run.appMismatch,
     // `required` is `--cloud`; `fallback` is a run that would only reach a session if this machine
     // had no device, and a ladder must not put a billed session on a line the caller never asked
     // for (llp/0005 §Cloud simulator).
@@ -193,9 +200,14 @@ function explainOutcome(run: SmokeRun): string {
     run.outcome === 'failed'
       ? `Read the phase list above: every phase before the one that failed did answer, so the failure is about what that phase asked and nothing later. The "Suggested next:" line is the command that acts on it.`
       : `Nothing was shown to be wrong and nothing was proved right, so this is not a failure to act on. ${
-          run.runtimeSupported === false
-            ? 'This runtime carries no debugger, so no window read from it will ever say anything — a development build, or iOS, is what answers.'
-            : 'Looking again is the honest next step, with a longer --timeout when a first build was still running.'
+          run.appMismatch != null
+            ? // @ref llp/0009 §the no-useless-re-run rule. The one inconclusive state looking again
+              // cannot change: the same Expo Go will answer the same way for ever, so "look again"
+              // here would send a caller round a loop with no exit.
+              'The app that answered cannot run this project at all, so looking again reads the same wrong runtime — the development build is what has to exist first.'
+            : run.runtimeSupported === false
+              ? 'This runtime carries no debugger, so no window read from it will ever say anything — a development build, or iOS, is what answers.'
+              : 'Looking again is the honest next step, with a longer --timeout when a first build was still running.'
         }`;
   return [what, `Why: ${why}`, `How: ${how}`].join('\n');
 }
@@ -392,6 +404,36 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         // a second URL of its own (F96).
         confirmAttachMs: attachBudgetMs,
       }),
+
+    // @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+    //
+    // The gate's own version of the question `decideExpoGoTarget` answers for the *link*. That
+    // decision stops this command opening Expo Go for a project that cannot run there; it says
+    // nothing about an Expo Go that was already attached when the run arrived, which is what
+    // `expo start --ios` leaves behind and the state an agent is most likely to inherit.
+    //
+    // Scoped to this run's platform for the same reason every other read is (F51): an iOS Expo Go
+    // attached to the same dev server must not decide an `--android` run's answer.
+    checkAppFitsProject: async (devServerUrl) => {
+      const ruledOut = decidesAgainstExpoGo(await checkExpoGoCompatibilityAsync(projectRoot));
+      // Only a project that is **ruled out** is a mismatch. Unknown is not: a project this could
+      // not read is the ordinary state of a fresh clone, and refusing to pass one would be the
+      // false red of the same mistake (@ref src/project/expoGo §RULES_OUT_EXPO_GO).
+      if (ruledOut !== false) {
+        return null;
+      }
+      const probe = await probeDevServerAsync(devServerUrl);
+      // `matched` only, never `undetermined`: a target whose platform nothing decided must not earn
+      // this run's verdict either way (@ref src/runtime/targetPlatform §scopeTargets). Erring that
+      // way keeps the check from turning an unreadable target into a refusal.
+      const scoped = scopeTargets(probe.targets, options.platform, await indexAsync(devServerUrl));
+      const expoGo = scoped.matched
+        .map((target) => target.appId)
+        .find((appId): appId is string => appId != null && EXPO_GO_APP_IDS.includes(appId));
+      return expoGo == null
+        ? null
+        : `the app that answered is Expo Go (${expoGo}), and this project cannot run in Expo Go — its native code is not in that runtime, so this window is about Expo Go rather than about this project. "${PROGRAM_PREFIX} dev --${options.platform} --yes" makes the development build that can run it`;
+    },
 
     // @ref llp/0005-runtime-loop-tools.rfc.md §The app under test is the code on disk
     //

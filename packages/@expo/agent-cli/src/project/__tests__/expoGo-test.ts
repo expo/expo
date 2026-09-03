@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { checkExpoGoCompatibilityAsync } from '../expoGo';
+import { checkExpoGoCompatibilityAsync, decidesAgainstExpoGo } from '../expoGo';
 
 const projectRoot = '/project';
 
@@ -304,5 +304,60 @@ describe(checkExpoGoCompatibilityAsync, () => {
       compatible: false,
       reasons: [expect.objectContaining({ kind: 'unknown-sdk' })],
     });
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+//
+// `compatible` is `false` for all four reason kinds, and only two of them rule Expo Go out. The
+// commands that pick a deep-link shape need the three-valued answer, because the other two kinds
+// mean "decide from something else": `unknown-sdk` is a fresh clone with no `node_modules`, and a
+// checked-in native directory is a project that may still run in Expo Go perfectly well.
+describe(decidesAgainstExpoGo, () => {
+  it(`rules Expo Go out for a native module its runtime does not have`, () => {
+    expect(
+      decidesAgainstExpoGo({
+        compatible: false,
+        reasons: [
+          { kind: 'unbundled-native-module', packageName: 'react-native-mmkv', detail: '' },
+        ],
+      })
+    ).toBe(false);
+  });
+
+  it(`rules Expo Go out for a config plugin that changes the native projects`, () => {
+    expect(
+      decidesAgainstExpoGo({
+        compatible: false,
+        reasons: [{ kind: 'config-plugin', detail: '' }],
+      })
+    ).toBe(false);
+  });
+
+  it(`answers yes for a project with nothing against it`, () => {
+    expect(decidesAgainstExpoGo({ compatible: true, reasons: [] })).toBe(true);
+  });
+
+  // The two that must not become a refusal. A project this check could not read is the ordinary
+  // state of a fresh clone, and a bare project with no unbundled module still runs in Expo Go —
+  // both have to reach the caller as "unknown" so its own precedence decides.
+  it.each([
+    ['the project could not be read', 'unknown-sdk' as const],
+    ['a native directory is checked in', 'custom-native-code' as const],
+  ])(`answers unknown when %s`, (_name, kind) => {
+    expect(decidesAgainstExpoGo({ compatible: false, reasons: [{ kind, detail: '' }] })).toBeNull();
+  });
+
+  // A decisive reason wins over an inconclusive one, whatever order they arrive in.
+  it(`rules Expo Go out when a decisive reason sits beside an inconclusive one`, () => {
+    expect(
+      decidesAgainstExpoGo({
+        compatible: false,
+        reasons: [
+          { kind: 'custom-native-code', detail: '' },
+          { kind: 'unbundled-native-module', packageName: 'react-native-fancy', detail: '' },
+        ],
+      })
+    ).toBe(false);
   });
 });

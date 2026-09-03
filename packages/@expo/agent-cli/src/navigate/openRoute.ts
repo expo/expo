@@ -30,6 +30,7 @@ import {
 } from '../device/cloudSimulator';
 import { event as cliEvent } from '../events';
 import { PROGRAM_PREFIX } from '../programName';
+import { checkExpoGoCompatibilityAsync, decidesAgainstExpoGo } from '../project/expoGo';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
 import {
   isInstalledDependencyAsync,
@@ -304,22 +305,31 @@ export async function resolveRouteUrlAsync(
 ): Promise<ResolvedRoute> {
   const { route, platform, scheme, appId } = options;
 
-  const [devServer, config, nativeDirs, packageJson, routeTable, reach] = await Promise.all([
-    discoverDevServerAsync(options.devServerUrl ?? undefined, { projectRoot }),
-    Promise.resolve(readProjectSchemeConfig(projectRoot)),
-    readProjectNativeDirsAsync(projectRoot),
-    readProjectPackageJsonAsync(projectRoot),
-    readProjectRoutesAsync(projectRoot),
-    // What the dev server said about where a device reaches it (`src/dev/advertisedUrl.ts`).
-    //
-    // Not asked when `--dev-server-url` **named** one: the caller named the host they want reached,
-    // and substituting this project's tunnel host for it would quietly answer a different question —
-    // the flag may well name a dev server that is not this project's at all. A URL a *step of this
-    // run* found is not that (F96, `devServerUrlSource`), so it is asked for.
-    isCallerNamedDevServer(options)
-      ? namedDevServerReach()
-      : resolveDevServerReachAsync(projectRoot),
-  ]);
+  const [devServer, config, nativeDirs, packageJson, routeTable, reach, expoGo] = await Promise.all(
+    [
+      discoverDevServerAsync(options.devServerUrl ?? undefined, { projectRoot }),
+      Promise.resolve(readProjectSchemeConfig(projectRoot)),
+      readProjectNativeDirsAsync(projectRoot),
+      readProjectPackageJsonAsync(projectRoot),
+      readProjectRoutesAsync(projectRoot),
+      // What the dev server said about where a device reaches it (`src/dev/advertisedUrl.ts`).
+      //
+      // Not asked when `--dev-server-url` **named** one: the caller named the host they want reached,
+      // and substituting this project's tunnel host for it would quietly answer a different question —
+      // the flag may well name a dev server that is not this project's at all. A URL a *step of this
+      // run* found is not that (F96, `devServerUrlSource`), so it is asked for.
+      isCallerNamedDevServer(options)
+        ? namedDevServerReach()
+        : resolveDevServerReachAsync(projectRoot),
+      // @ref llp/0005-runtime-loop-tools.rfc.md §Expo Go is only a target for a project that fits in it
+      //
+      // In this `Promise.all` rather than after it, so it overlaps the dev-server discovery that
+      // dominates this function's latency instead of adding to it. Never throws — an unreadable
+      // project answers with reasons rather than an error — and its `compatible` is handed to
+      // `decideExpoGoTarget` as the one fact about the *project* that outranks the guesses.
+      checkExpoGoCompatibilityAsync(projectRoot),
+    ]
+  );
   const devServerUrl = devServer.devServerUrl;
 
   // Before anything is opened, and before the device is even looked for. A route the project has
@@ -373,6 +383,7 @@ export async function resolveRouteUrlAsync(
     targetAppIds: decisionTargets.map((item) => item.appId).filter(Boolean),
     hasNativeDirs: nativeDirs.ios || nativeDirs.android,
     usesDevClient,
+    expoGoCompatible: decidesAgainstExpoGo(expoGo),
   });
   debugEvent('target_decided', target);
 
