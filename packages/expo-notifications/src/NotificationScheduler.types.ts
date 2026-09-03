@@ -46,6 +46,7 @@ export interface NativeTimeIntervalTriggerInput {
 
 export interface NativeDailyTriggerInput {
   type: 'daily';
+  alarmClock?: boolean;
   channelId?: string;
   hour: number;
   minute: number;
@@ -53,6 +54,7 @@ export interface NativeDailyTriggerInput {
 
 export interface NativeWeeklyTriggerInput {
   type: 'weekly';
+  alarmClock?: boolean;
   channelId?: string;
   weekday: number;
   hour: number;
@@ -61,6 +63,7 @@ export interface NativeWeeklyTriggerInput {
 
 export interface NativeYearlyTriggerInput {
   type: 'yearly';
+  alarmClock?: boolean;
   channelId?: string;
   day: number;
   month: number;
@@ -70,6 +73,7 @@ export interface NativeYearlyTriggerInput {
 
 export interface NativeMonthlyTriggerInput {
   type: 'monthly';
+  alarmClock?: boolean;
   channelId?: string;
   day: number;
   hour: number;

@@ -305,6 +305,13 @@ export type DailyTriggerInput = {
   channelId?: string;
   hour: number;
   minute: number;
+  /**
+   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
+   * Use for time-critical, user-facing alarms that must not be deferred by OEM
+   * battery policies. Ignored on other platforms.
+   * @platform android
+   */
+  alarmClock?: boolean;
 };
 
 /**
@@ -318,6 +325,13 @@ export type WeeklyTriggerInput = {
   weekday: number;
   hour: number;
   minute: number;
+  /**
+   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
+   * Use for time-critical, user-facing alarms that must not be deferred by OEM
+   * battery policies. Ignored on other platforms.
+   * @platform android
+   */
+  alarmClock?: boolean;
 };
 
 /**
@@ -331,6 +345,13 @@ export type MonthlyTriggerInput = {
   day: number;
   hour: number;
   minute: number;
+  /**
+   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
+   * Use for time-critical, user-facing alarms that must not be deferred by OEM
+   * battery policies. Ignored on other platforms.
+   * @platform android
+   */
+  alarmClock?: boolean;
 };
 
 /**
@@ -345,6 +366,13 @@ export type YearlyTriggerInput = {
   month: number;
   hour: number;
   minute: number;
+  /**
+   * Delivers the notification through `AlarmManager.setAlarmClock()` on Android.
+   * Use for time-critical, user-facing alarms that must not be deferred by OEM
+   * battery policies. Ignored on other platforms.
+   * @platform android
+   */
+  alarmClock?: boolean;
 };
 
 /**

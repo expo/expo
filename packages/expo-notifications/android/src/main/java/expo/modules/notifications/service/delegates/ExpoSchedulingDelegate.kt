@@ -9,8 +9,8 @@ import androidx.core.app.AlarmManagerCompat
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.triggers.AlarmClockAwareTrigger
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger
-import expo.modules.notifications.notifications.triggers.DateTrigger
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import java.io.IOException
@@ -68,7 +68,7 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
         setupAlarm(
           nextTriggerDate.time,
           NotificationsService.createNotificationTrigger(context, request.identifier),
-          (request.trigger as? DateTrigger)?.alarmClock == true
+          (request.trigger as? AlarmClockAwareTrigger)?.alarmClock == true
         )
       }
     }

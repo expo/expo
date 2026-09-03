@@ -178,7 +178,8 @@ open class NotificationScheduler : Module() {
         DailyTrigger(
           channelId,
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          params.getBoolean("alarmClock")
         )
       }
 
@@ -194,7 +195,8 @@ open class NotificationScheduler : Module() {
           channelId,
           weekday.toInt(),
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          params.getBoolean("alarmClock")
         )
       }
 
@@ -211,7 +213,8 @@ open class NotificationScheduler : Module() {
           channelId,
           day.toInt(),
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          params.getBoolean("alarmClock")
         )
       }
 
@@ -230,7 +233,8 @@ open class NotificationScheduler : Module() {
           day.toInt(),
           month.toInt(),
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          params.getBoolean("alarmClock")
         )
       }
 
