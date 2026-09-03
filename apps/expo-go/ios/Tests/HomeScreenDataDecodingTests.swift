@@ -31,4 +31,16 @@ final class HomeScreenDataDecodingTests: XCTestCase {
   func testHomeScreenQueryDoesNotSelectOwnerUserActor() {
     XCTAssertFalse(Queries.getHomeScreenData().contains("ownerUserActor"))
   }
+
+  func testQueriesDoNotSelectDeprecatedRuntimeVersion() {
+    for query in [
+      Queries.getHomeScreenData(),
+      Queries.getProjectsList(),
+      Queries.getProjectDetails(),
+      Queries.getBranchesList(),
+      Queries.getBranchDetails()
+    ] {
+      XCTAssertFalse(query.contains("runtimeVersion"), query)
+    }
+  }
 }
