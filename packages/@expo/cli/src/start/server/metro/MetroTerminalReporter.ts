@@ -273,8 +273,8 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
   }
 
-  shouldFilterClientLog(event: { type: 'client_log'; data: unknown[] }): boolean {
-    return isAppRegistryStartupMessage(event.data);
+  shouldFilterClientLog(event: TerminalReportableEvent): boolean {
+    return event.type === 'client_log' && isAppRegistryStartupMessage(event.data);
   }
 
   shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
