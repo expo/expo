@@ -38,6 +38,44 @@ extension JSIBenchmarks {
     }
   }
 
+  // MARK: - Property access by name
+
+  @Test
+  func `object property by non-ASCII name`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ 'odpowiedź': 42 })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:): non-ASCII name", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("odpowiedź")
+        }
+      }
+    }
+  }
+
+  @Test
+  func `has object property by name`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer: 42 })").getObject()
+      try benchmark("JavaScriptObject.hasProperty(_:)", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.hasProperty("answer")
+        }
+      }
+    }
+  }
+
+  @Test
+  func `set object property by name`() async throws {
+    try await benchmarkCase { runtime in
+      let object = JavaScriptObject(runtime)
+      try benchmark("JavaScriptObject.setProperty(_:value:): double", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          object.setProperty("answer", value: 42.0)
+        }
+      }
+    }
+  }
+
   // MARK: - String as JavaScriptRepresentable
 
   @Test

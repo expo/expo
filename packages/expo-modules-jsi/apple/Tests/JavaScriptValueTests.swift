@@ -215,6 +215,26 @@ struct JavaScriptValueTests {
   }
 
   @Test
+  func `dictionary with non-ASCII keys round-trips through JavaScriptRepresentable`() throws {
+    let value = try runtime.eval("({ 'café': 'one', '日本語': 'two' })")
+    let dictionary = [String: String].fromJavaScriptValue(value)
+    #expect(dictionary == ["café": "one", "日本語": "two"])
+  }
+
+  @Test
+  func `dictionary with non-ASCII keys encodes to JavaScript`() throws {
+    let value = ["café": "one", "": "empty"].toJavaScriptValue(in: runtime)
+    runtime.global().setProperty("dict", value: value)
+    #expect(try runtime.eval("dict['café'] === 'one' && dict[''] === 'empty'").getBool() == true)
+  }
+
+  @Test
+  func `array of non-ASCII strings round-trips through JavaScriptRepresentable`() throws {
+    let value = try runtime.eval("['café', '日本語', '']")
+    #expect([String].fromJavaScriptValue(value) == ["café", "日本語", ""])
+  }
+
+  @Test
   func `dictionary with an empty key round-trips through JavaScriptRepresentable`() throws {
     let value = try runtime.eval("({ '': 'empty' })")
     let dictionary = [String: String].fromJavaScriptValue(value)

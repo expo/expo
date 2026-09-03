@@ -21,6 +21,27 @@ extension String {
     }
     self = result
   }
+
+  /// Builds a `jsi::PropNameID` from the string's UTF-8 bytes. This is how every String-keyed
+  /// property API turns its name into a key: JSI's `const char*` overloads treat the bytes as ASCII
+  /// and would mangle any non-ASCII name.
+  internal func toJSIPropNameID(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.PropNameID {
+    // The `(pointer, length)` overload needs the UTF-8 *byte* count, which `withUTF8` provides
+    // exactly; `String.count` would be wrong here because it counts grapheme clusters (e.g. `"café"`
+    // reports 4 for 5 UTF-8 bytes). `withUTF8` is mutating (it makes a bridged string contiguous
+    // first), hence the local copy, and the result leaves the closure through an optional because
+    // it has to be a `Copyable` type.
+    var string = self
+    var propNameID: facebook.jsi.PropNameID? = nil
+    string.withUTF8 { utf8 in
+      guard let base = utf8.baseAddress else {
+        propNameID = facebook.jsi.PropNameID.forAscii(runtime, "", 0)
+        return
+      }
+      propNameID = facebook.jsi.PropNameID.forUtf8(runtime, base, utf8.count)
+    }
+    return propNameID.take()!
+  }
 }
 
 /// Callback for `getStringData`. `ctx` points at the Swift `String` being built; each call appends
