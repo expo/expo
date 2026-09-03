@@ -10,14 +10,26 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   internal weak let runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Value
 
-  /// Initializer from the existing JSI value.
+  /// Takes ownership of the given JSI value. Only runtime-free values (undefined, null, booleans and
+  /// numbers) pass `nil` here.
   internal init(_ runtime: JavaScriptRuntime?, _ pointee: consuming facebook.jsi.Value) {
     self.runtime = runtime
     self.pointee = pointee
   }
 
-  /// Copy initializer from the existing JSI value.
-  internal init(_ runtime: JavaScriptRuntime, _ pointee: borrowing facebook.jsi.Value) {
+  /// Takes ownership of the given JSI value. Same as the optional-runtime overload, but the exact
+  /// parameter type keeps the caller from promoting its runtime to an optional, which costs a
+  /// retain/release pair around every call on the hot paths (property reads, function results).
+  internal init(_ runtime: JavaScriptRuntime, _ pointee: consuming facebook.jsi.Value) {
+    self.runtime = runtime
+    self.pointee = pointee
+  }
+
+  /// Copies the given JSI value, which asks the engine to clone the handle for pointer values.
+  /// The `copying:` label keeps this initializer from being picked for temporaries: with a plain
+  /// second argument, a non-optional runtime used to win overload resolution over the consuming
+  /// initializer above, cloning every freshly returned value instead of taking it over.
+  internal init(_ runtime: JavaScriptRuntime, copying pointee: borrowing facebook.jsi.Value) {
     self.runtime = runtime
     self.pointee = facebook.jsi.Value(runtime.pointee, pointee)
   }
