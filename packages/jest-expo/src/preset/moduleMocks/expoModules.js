@@ -1416,6 +1416,11 @@ module.exports = {
             key: 'canUseBiometricAuthentication',
           },
           {
+            name: 'canUseDeviceCredentialsAuthentication',
+            argumentsCount: 0,
+            key: 'canUseDeviceCredentialsAuthentication',
+          },
+          {
             name: 'deleteValueWithKeyAsync',
             argumentsCount: 2,
             key: 'deleteValueWithKeyAsync',
@@ -2420,6 +2425,7 @@ module.exports = {
           ALWAYS: { type: 'number', mock: 2 },
           ALWAYS_THIS_DEVICE_ONLY: { type: 'number', mock: 4 },
           canUseBiometricAuthentication: { type: 'function' },
+          canUseDeviceCredentialsAuthentication: { type: 'function' },
           deleteValueWithKeyAsync: { type: 'function' },
           getValueWithKeyAsync: { type: 'function' },
           getValueWithKeySync: { type: 'function' },

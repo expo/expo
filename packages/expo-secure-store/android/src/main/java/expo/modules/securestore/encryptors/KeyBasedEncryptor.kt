@@ -12,7 +12,7 @@ enum class KeyPurpose {
   DECRYPT
 }
 interface KeyBasedEncryptor<E : KeyStore.Entry> {
-  fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean): String
+  fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String
 
   fun getKeyStoreAlias(options: SecureStoreOptions): String
 
