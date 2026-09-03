@@ -38,7 +38,11 @@ To get your project's ID, use the URL in the [app config's `expo.updates.url`](/
 
 ### Deep linking to an update's URL
 
-You can load your app on a device that has a compatible build of your custom client by opening a URL of the form `{scheme}://expo-development-client/?url={manifestUrl}`. You'll need to pass the following parameters:
+You can load your app on a device that has a compatible build of your custom client by opening a launch URL. Launch URLs carry launcher commands in reserved query parameters that start with `__expo_`. Any URL that has at least one `__expo_*` parameter is handled by the launcher before it reaches your app.
+
+```text
+{scheme}://?__expo_url={manifestUrl}
+```
 
 | parameter     | value                                                                                                                                     |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
@@ -48,14 +52,27 @@ You can load your app on a device that has a compatible build of your custom cli
 Example:
 
 ```text
-exp+app-slug://expo-development-client/?url=https%3A%2F%2Fu.expo.dev%2F767ADF57-B487-4D8F-9522-85549C39F43F%2F%3Fchannel-name%3Dmain
+exp+app-slug://?__expo_url=https%3A%2F%2Fu.expo.dev%2F767ADF57-B487-4D8F-9522-85549C39F43F%2F%3Fchannel-name%3Dmain
 ```
 
 In the example above, the `scheme` is `exp+app-slug`, and the `manifestUrl` is a project with an ID of `F767ADF57-B487-4D8F-9522-85549C39F43F` and a channel of `main`.
 
-#### Using updates deep links in automation scenarios
+All reserved parameters are optional and independent. The launcher removes them before your app receives the URL, so they never reach your app's deep link handling or the development server.
 
-When launching an update URL in a development build on an emulator or simulator using automation, such as in a CI/CD workflow, you can add the `disableOnboarding=1` query parameter to the URL to skip the onboarding screen that appears on the first launch of a development build after installation.
+| parameter                      | value                                                                                                                                  |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `__expo_url`                   | URL-encoded URL of the project or update manifest to load.                                                                             |
+| `__expo_disable_onboarding=1`  | Skip the onboarding screen that appears on the first launch of a development build after installation.                                 |
+| `__expo_show_menu_at_launch=0` | Do not open the developer menu at launch. The menu stays available through gestures and the tools button. Applies to this launch only. |
+| `__expo_tools_button=0`        | Hide the floating tools button. Applies to this launch only.                                                                           |
+
+The same parameters work on Expo Go launch URLs, for example `exp://192.168.1.10:8081?__expo_show_menu_at_launch=0`.
+
+> **Note:** The legacy form `{scheme}://expo-development-client/?url={manifestUrl}&disableOnboarding=1` keeps working. `npx expo start` still emits this form.
+
+#### Using launch URLs in automation scenarios
+
+When launching a development build on an emulator or simulator using automation, such as in a CI/CD workflow or an agent loop, add `__expo_disable_onboarding=1`, `__expo_show_menu_at_launch=0` and `__expo_tools_button=0` to the launch URL. Set `EXPO_NO_DEV_MENU=1` when you start Expo CLI to add these parameters to every launch URL, QR code and redirect for that session.
 
 #### App-specific deep links
 

@@ -56,6 +56,21 @@ describe('resolveOpenInfo — LAN (no tunnel)', () => {
     expect(info.runtime).toBe('web');
     expect(info.url).toBe(`http://${LAN_ADDR}:8081`);
   });
+
+  it('appends the dev menu launch params to the expo go deep link when EXPO_NO_DEV_MENU is set', async () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    try {
+      const info = (await resolveOpenInfo(
+        { platform: 'ios', runtime: 'default' },
+        deps
+      )) as OpenSinglePlatformResult;
+      expect(info.url).toBe(
+        `exp://${LAN_ADDR}:8081?__expo_show_menu_at_launch=0&__expo_tools_button=0&__expo_disable_onboarding=1`
+      );
+    } finally {
+      delete process.env.EXPO_NO_DEV_MENU;
+    }
+  });
 });
 
 describe('resolveOpenInfo — tunnel', () => {

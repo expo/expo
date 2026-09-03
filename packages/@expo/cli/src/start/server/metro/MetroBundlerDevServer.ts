@@ -1354,11 +1354,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           if (runtime === 'custom') {
             return this.urlCreator?.constructDevClientUrl({ forwarded });
           } else {
-            return this.urlCreator?.constructUrl({
+            return this.urlCreator?.constructExpoGoUrl(
+              { forwarded },
               // Expo Go maps the `exps` scheme to HTTPS, which `exp` can't express.
-              scheme: forwarded?.protocol === 'https' ? 'exps' : 'exp',
-              forwarded,
-            });
+              forwarded?.protocol === 'https' ? 'exps' : 'exp'
+            );
           }
         },
       });

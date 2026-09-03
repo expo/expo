@@ -3,6 +3,13 @@ import { UrlCreator } from '../UrlCreator';
 
 jest.mock('../../../log');
 
+const NO_DEV_MENU_QUERY =
+  '__expo_show_menu_at_launch=0&__expo_tools_button=0&__expo_disable_onboarding=1';
+
+beforeEach(() => {
+  delete process.env.EXPO_NO_DEV_MENU;
+});
+
 function createDefaultCreator(overrides?: {
   getProxyUrl?: () => string;
   getHostnameOverride?: () => string | null;
@@ -35,6 +42,32 @@ describe('constructLoadingUrl', () => {
   it(`allows null platform`, () => {
     expect(createDefaultCreator().constructLoadingUrl({}, null)).toMatchInlineSnapshot(
       `"http://100.100.1.100:8081/_expo/loading"`
+    );
+  });
+  it(`ignores EXPO_NO_DEV_MENU`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructLoadingUrl({}, 'ios')).toBe(
+      'http://100.100.1.100:8081/_expo/loading?platform=ios'
+    );
+  });
+});
+
+describe('constructExpoGoUrl', () => {
+  it(`creates default`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl()).toBe('exp://100.100.1.100:8081');
+  });
+  it(`uses the exps scheme`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl({}, 'exps')).toBe('exps://100.100.1.100:8081');
+  });
+  it(`ignores a custom scheme option`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl({ scheme: 'foobar' })).toBe(
+      'exp://100.100.1.100:8081'
+    );
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructExpoGoUrl()).toBe(
+      `exp://100.100.1.100:8081?${NO_DEV_MENU_QUERY}`
     );
   });
 });
@@ -82,6 +115,12 @@ describe('constructDevClientUrl', () => {
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostname: 'foobar.dev' })
     ).toMatchInlineSnapshot(
       `"bacon://expo-development-client/?url=http%3A%2F%2Ffoobar.dev%3A8081"`
+    );
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      `bacon://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A8081&${NO_DEV_MENU_QUERY}`
     );
   });
 });
@@ -141,6 +180,10 @@ describe('constructUrl', () => {
     expect(createDefaultCreator().constructUrl({ scheme: 'exp' })).toMatchInlineSnapshot(
       `"exp://100.100.1.100:8081"`
     );
+  });
+  it(`ignores EXPO_NO_DEV_MENU`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructUrl({ scheme: 'exp' })).toBe('exp://100.100.1.100:8081');
   });
   it(`uses localhost`, () => {
     expect(createDefaultCreator().constructUrl({ hostType: 'localhost' })).toMatchInlineSnapshot(

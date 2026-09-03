@@ -11,6 +11,7 @@
 
 ### 🎉 New features
 
+- Add `EXPO_NO_DEV_MENU=1` to append the reserved `__expo_*` params that keep the dev menu closed to Expo Go and development build launch URLs: the terminal URL, the QR code, `/_expo/link`, `/_expo/open`, `expo start --ios/--android` and `expo run:*`.
 - Add `pageHeaders` to exported routes manifests ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Apply `pageHeaders` when serving static exports with `expo serve` ([#47781](https://github.com/expo/expo/pull/47781) by [@hassankhan](https://github.com/hassankhan))
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))

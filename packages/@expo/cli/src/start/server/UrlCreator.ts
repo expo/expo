@@ -2,6 +2,7 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
+import { env } from '../../utils/env';
 import type { GatewayInfo } from '../../utils/ip';
 import { getGateway, getGatewayAsync } from '../../utils/ip';
 import { debugEvent } from './events';
@@ -16,6 +17,17 @@ export interface CreateURLOptions {
   hostname?: string | null;
   /** Address the client used to reach the dev server, from a forwarded request */
   forwarded?: ForwardedRequestInfo | null;
+}
+
+/** Reserved launch URL params that keep the dev menu closed for the launched session. */
+const NO_DEV_MENU_LAUNCH_QUERY =
+  '__expo_show_menu_at_launch=0&__expo_tools_button=0&__expo_disable_onboarding=1';
+
+function withDevMenuLaunchParams(url: string): string {
+  if (!env.EXPO_NO_DEV_MENU) {
+    return url;
+  }
+  return url + (url.includes('?') ? '&' : '?') + NO_DEV_MENU_LAUNCH_QUERY;
 }
 
 interface UrlComponents {
@@ -85,9 +97,19 @@ export class UrlCreator {
       options?.forwarded?.protocol ?? (this.defaults?.hostType === 'tunnel' ? 'https' : 'http');
     const manifestUrl = this.constructUrl({ ...options, scheme });
     const manifestUrlEncoded = encodeURIComponent(manifestUrl);
-    const devClientUrl = `${protocol}://expo-development-client/?url=${manifestUrlEncoded}`;
+    const devClientUrl = withDevMenuLaunchParams(
+      `${protocol}://expo-development-client/?url=${manifestUrlEncoded}`
+    );
     debugEvent('dev_client_url', { url: devClientUrl, manifestUrl });
     return devClientUrl;
+  }
+
+  /** Create a URL for launching in Expo Go, e.g. `exp://192.168.1.10:8081`. */
+  public constructExpoGoUrl(
+    options?: Partial<CreateURLOptions> | null,
+    scheme: 'exp' | 'exps' = 'exp'
+  ): string {
+    return withDevMenuLaunchParams(this.constructUrl({ ...options, scheme }));
   }
 
   /** Create a generic URL. */

@@ -104,6 +104,12 @@ You can configure development client launcher using its built-in [config plugin]
       default: 'true',
     },
     {
+      name: 'embeddedBundle',
+      description:
+        'Whether to enable loading an embedded JavaScript bundle from the launcher. When enabled and a bundle file is present in the app, a "Load embedded bundle" option appears in the launcher.',
+      default: 'false',
+    },
+    {
       name: 'skipOnboarding',
       description:
         'Skip the onboarding screen that shows in the dev menu on the first launch of the app.',
@@ -116,6 +122,8 @@ You can configure development client launcher using its built-in [config plugin]
     },
   ]}
 />
+
+These properties set build-time defaults. To change the behavior for one launch, add `__expo_disable_onboarding=1`, `__expo_show_menu_at_launch=0` or `__expo_tools_button=0` to the launch URL. See [Deep linking to an update's URL](/develop/development-builds/development-workflows/#deep-linking-to-an-updates-url).
 
 ## TV support
 

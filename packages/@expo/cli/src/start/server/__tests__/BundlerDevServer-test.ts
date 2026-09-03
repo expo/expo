@@ -50,6 +50,7 @@ beforeEach(() => {
   vol.reset();
   jest.mocked(envIsWebcontainer).mockReset();
   delete process.env.EXPO_NO_REDIRECT_PAGE;
+  delete process.env.EXPO_NO_DEV_MENU;
   delete process.env.EXPO_UNSTABLE_TUNNEL_V2;
   delete process.env.EXPO_PACKAGER_PROXY_URL;
   delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
@@ -452,6 +453,27 @@ describe('getNativeRuntimeUrl', () => {
     );
     expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe(
       'foobar://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A3000'
+    );
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, async () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    const query = '__expo_show_menu_at_launch=0&__expo_tools_button=0&__expo_disable_onboarding=1';
+
+    const expoGo = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    await expoGo.startAsync({ location: {} });
+    expect(expoGo.getNativeRuntimeUrl()).toBe(`exp://100.100.1.100:3000?${query}`);
+
+    const devClient = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      { isDevClient: true }
+    );
+    await devClient.startAsync({ location: { scheme: 'my-app' } });
+    expect(devClient.getNativeRuntimeUrl()).toBe(
+      `my-app://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A3000&${query}`
     );
   });
 });
