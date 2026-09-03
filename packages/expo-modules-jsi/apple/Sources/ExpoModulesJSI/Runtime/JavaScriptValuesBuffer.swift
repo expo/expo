@@ -70,7 +70,7 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   public subscript(index: Int) -> JavaScriptValue {
-    return JavaScriptValue(runtime, bufferPointer[index])
+    return JavaScriptValue(runtime, copying: bufferPointer[index])
   }
 
   /// Returns a non-owning, non-copyable value borrowing the element at `index` for the zero-copy decode
