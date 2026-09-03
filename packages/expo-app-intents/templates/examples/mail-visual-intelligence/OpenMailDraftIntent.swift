@@ -3,8 +3,8 @@ internal import ExpoAppIntents
 import Foundation
 
 /// Opens a draft the system already knows about, for example a Spotlight result. `.mail.openDraft`
-/// is the mail domain's own open schema; it requires iOS 27, the same floor as the generic
-/// `.system.open`.
+/// is the mail domain's own open schema; it requires the iOS 27 SDK
+#if compiler(>=6.4)
 @available(iOS 27.0, *)
 @AppIntent(schema: .mail.openDraft)
 struct OpenMailDraftIntent {
@@ -26,3 +26,4 @@ struct OpenMailDraftIntent {
     return .result()
   }
 }
+#endif

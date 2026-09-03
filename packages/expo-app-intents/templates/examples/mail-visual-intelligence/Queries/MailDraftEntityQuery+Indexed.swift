@@ -26,7 +26,8 @@ extension MailDraftEntityQuery: EnumerableEntityQuery {
 /// work itself is the same indexing the package already does for `setEntityCatalogAsync` — so this
 /// hands it straight back.
 ///
-/// It requires iOS 27, so it is a separate extension from the conformances above.
+/// It requires the iOS 27 SDK, so it is compiler-gated separately from the conformances above.
+#if compiler(>=6.4)
 @available(iOS 27.0, *)
 extension MailDraftEntityQuery: IndexedEntityQuery {
   func reindexEntities(
@@ -43,3 +44,4 @@ extension MailDraftEntityQuery: IndexedEntityQuery {
     try await AppEntityIdentifierRegistry.shared.replaceIndexFromCatalog(kind: "mailDraft")
   }
 }
+#endif
