@@ -151,7 +151,7 @@ function withWebPolyfills(
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
+  const getPolyfills: typeof originalGetPolyfills = (ctx) => {
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -575,7 +575,10 @@ export function withExtendedResolver(
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
             const opaqueId = idFactory(realPath, {
               platform: platform!,
-              environment: context.customResolverOptions?.environment,
+              environment:
+                typeof context.customResolverOptions?.environment === 'string'
+                  ? context.customResolverOptions.environment
+                  : undefined,
             });
             const contents =
               typeof opaqueId === 'number'
