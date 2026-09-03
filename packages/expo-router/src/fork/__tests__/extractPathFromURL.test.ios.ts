@@ -109,6 +109,49 @@ describe(extractExpoPathFromURL, () => {
     ).not.toThrow();
   });
 
+  it(`ignores reserved launch params on a legacy dev client URL`, () => {
+    delete expo.modules.ExpoGo;
+    expect(
+      extractExpoPathFromURL(
+        [],
+        'scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2Fexample%2Fpath&__expo_show_menu_at_launch=0&__expo_launch_token=abc'
+      )
+    ).toEqual('example/path');
+  });
+
+  it(`unwraps a dev client URL that uses __expo_url`, () => {
+    delete expo.modules.ExpoGo;
+    expect(
+      extractExpoPathFromURL(
+        [],
+        'scheme://?__expo_url=http%3A%2F%2Flocalhost%3A8081%2Fexample%2Fpath&__expo_tools_button=0'
+      )
+    ).toEqual('example/path');
+  });
+
+  it(`ignores reserved launch params in Expo Go`, () => {
+    expo.modules.ExpoGo = {};
+    expect(
+      extractExpoPathFromURL(
+        [],
+        'exp://127.0.0.1:8081?__expo_show_menu_at_launch=0&__expo_tools_button=0&__expo_disable_onboarding=1'
+      )
+    ).toEqual('');
+    expect(
+      extractExpoPathFromURL(
+        [],
+        'exp://127.0.0.1:8081/--/test/path?__expo_show_menu_at_launch=0&query=param'
+      )
+    ).toEqual('test/path?query=param');
+  });
+
+  it(`ignores a reserved launch param on an app deep link`, () => {
+    delete expo.modules.ExpoGo;
+    expect(extractExpoPathFromURL([], 'myapp://login?__expo_launch_token=abc&x=1')).toEqual(
+      'login?x=1'
+    );
+  });
+
   it(`only handles Expo Go URLs in Expo Go`, () => {
     delete expo.modules.ExpoGo;
 

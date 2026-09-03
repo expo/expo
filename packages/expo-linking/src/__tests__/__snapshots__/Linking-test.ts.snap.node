@@ -67,7 +67,7 @@ exports[`parse parses "custom:///?shouldBeEscaped=x%252By%2540xxx.com" 1`] = `
   "hostname": null,
   "path": "",
   "queryParams": {
-    "shouldBeEscaped": "x+y@xxx.com",
+    "shouldBeEscaped": "x%2By%40xxx.com",
   },
   "scheme": "custom",
 }

@@ -43,6 +43,67 @@ describe('parse', () => {
   ])(`parses %p`, (url) => {
     expect(Linking.parse(url)).toMatchSnapshot();
   });
+
+  it(`does not decode query params twice`, () => {
+    expect(Linking.parse('custom:///?shouldBeEscaped=x%252By%2540xxx.com').queryParams).toEqual({
+      shouldBeEscaped: 'x%2By%40xxx.com',
+    });
+  });
+
+  it(`does not throw on malformed percent-encoding`, () => {
+    expect(Linking.parse('custom:///?q=%GG').queryParams).toEqual({ q: '%GG' });
+  });
+});
+
+describe(Linking.unwrapDevLaunchURL, () => {
+  it(`returns the target of a legacy development client launch URL`, () => {
+    expect(
+      Linking.unwrapDevLaunchURL(
+        'bacon://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081&__expo_launch_token=abc'
+      )
+    ).toBe('http://127.0.0.1:8081');
+  });
+
+  it(`returns an empty string for a legacy launch URL without a target`, () => {
+    expect(Linking.unwrapDevLaunchURL('app.bacon.expo://expo-development-client')).toBe('');
+  });
+
+  it(`returns the target given by __expo_url on any host`, () => {
+    expect(
+      Linking.unwrapDevLaunchURL(
+        'bacon://?__expo_url=http%3A%2F%2F127.0.0.1%3A8081%2Fpath%3Fx%3D1&__expo_show_menu_at_launch=0'
+      )
+    ).toBe('http://127.0.0.1:8081/path?x=1');
+  });
+
+  it(`removes the reserved params from an Expo Go URL`, () => {
+    expect(
+      Linking.unwrapDevLaunchURL(
+        'exp://127.0.0.1:8081?__expo_show_menu_at_launch=0&__expo_tools_button=0&__expo_disable_onboarding=1'
+      )
+    ).toBe('exp://127.0.0.1:8081');
+  });
+
+  it(`keeps the other params`, () => {
+    expect(
+      Linking.unwrapDevLaunchURL('exp://127.0.0.1:8081/--/path?__expo_show_menu_at_launch=0&x=1')
+    ).toBe('exp://127.0.0.1:8081/--/path?x=1');
+  });
+
+  it(`removes a reserved param from an app deep link`, () => {
+    expect(Linking.unwrapDevLaunchURL('myapp://login?__expo_launch_token=abc')).toBe(
+      'myapp://login'
+    );
+  });
+
+  it(`returns other URLs unchanged`, () => {
+    expect(Linking.unwrapDevLaunchURL('myapp://path?x=1')).toBe('myapp://path?x=1');
+    expect(Linking.unwrapDevLaunchURL('my_app://foo')).toBe('my_app://foo');
+    expect(Linking.unwrapDevLaunchURL('invalid')).toBe('invalid');
+    expect(Linking.unwrapDevLaunchURL('exp://127.0.0.1:8081?disableOnboarding=1')).toBe(
+      'exp://127.0.0.1:8081?disableOnboarding=1'
+    );
+  });
 });
 
 describe(Linking.createURL, () => {
