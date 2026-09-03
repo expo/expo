@@ -42,9 +42,32 @@ struct AccountQuery: Codable {
 struct AccountByName: Codable {
   let id: String
   let name: String
-  let apps: [App]
-  let snacks: [Snack]
+  let appsPaginated: AppsConnection
+  let snacksPaginated: SnacksConnection
   let appCount: Int
+}
+
+struct PageInfo: Codable {
+  let hasNextPage: Bool
+  let endCursor: String?
+}
+
+struct AppsConnection: Codable {
+  let pageInfo: PageInfo?
+  let edges: [AppEdge]
+}
+
+struct AppEdge: Codable {
+  let node: App
+}
+
+struct SnacksConnection: Codable {
+  let pageInfo: PageInfo?
+  let edges: [SnackEdge]
+}
+
+struct SnackEdge: Codable {
+  let node: Snack
 }
 
 struct UserActor: Codable {
@@ -155,8 +178,7 @@ struct ProjectsListAccount: Codable {
 struct ProjectsListByName: Codable {
   let id: String
   let name: String
-  let apps: [App]
-  let appCount: Int
+  let appsPaginated: AppsConnection
 }
 
 struct ProjectDetailsResponse: Codable {
@@ -238,7 +260,7 @@ struct SnacksListAccount: Codable {
 struct SnacksListByName: Codable {
   let id: String
   let name: String
-  let snacks: [Snack]
+  let snacksPaginated: SnacksConnection
 }
 
 extension App {

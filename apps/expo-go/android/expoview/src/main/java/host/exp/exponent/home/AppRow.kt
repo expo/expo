@@ -18,7 +18,7 @@ import host.exp.exponent.graphql.Home_AccountAppsQuery
 
 @Composable
 fun AppRow(
-  app: Home_AccountAppsQuery.App,
+  app: Home_AccountAppsQuery.Node,
   onClick: () -> Unit
 ) {
   Row(
