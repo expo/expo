@@ -146,9 +146,6 @@ export interface DailyNotificationTrigger {
   type: 'daily';
   hour: number;
   minute: number;
-  /**
-   * Whether the notification was scheduled with the `alarmClock` option.
-   */
   alarmClock?: boolean;
 }
 
@@ -162,9 +159,6 @@ export interface WeeklyNotificationTrigger {
   weekday: number;
   hour: number;
   minute: number;
-  /**
-   * Whether the notification was scheduled with the `alarmClock` option.
-   */
   alarmClock?: boolean;
 }
 
@@ -178,9 +172,6 @@ export interface MonthlyNotificationTrigger {
   day: number;
   hour: number;
   minute: number;
-  /**
-   * Whether the notification was scheduled with the `alarmClock` option.
-   */
   alarmClock?: boolean;
 }
 
@@ -195,9 +186,6 @@ export interface YearlyNotificationTrigger {
   month: number;
   hour: number;
   minute: number;
-  /**
-   * Whether the notification was scheduled with the `alarmClock` option.
-   */
   alarmClock?: boolean;
 }
 
