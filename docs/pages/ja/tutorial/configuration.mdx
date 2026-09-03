@@ -25,13 +25,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 [`expo-status-bar`](/versions/latest/sdk/status-bar/) ライブラリは、`create-expo-app` で作成したすべてのプロジェクトにあらかじめインストールされています。このライブラリは、アプリのステータスバーのスタイルを設定するための `StatusBar` コンポーネントを提供します。
 
-**app/\_layout.tsx** で次の手順を行います。
+**src/app/\_layout.tsx** で次の手順を行います。
 
 1. `expo-status-bar` から `StatusBar` をインポートします。
 2. `StatusBar` と既存の `Stack` コンポーネントを [React の Fragment コンポーネント](https://react.dev/reference/react/Fragment) でまとめます。
 
 {/* prettier-ignore */}
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 /* @tutinfo */
 import { StatusBar } from 'expo-status-bar';

@@ -89,6 +89,9 @@ allprojects {
       libs.fresco.imagepipeline.okhttp3,
       libs.fresco.ui.common
     )
+    // Stripe's optional push-provisioning SDK pulls in Google's private play-services-tapandpay,
+    // which AGP 9's lint classpath tries to resolve. Expo Go never uses push provisioning.
+    exclude group: "com.google.android.gms", module: "play-services-tapandpay"
   }
 }
 

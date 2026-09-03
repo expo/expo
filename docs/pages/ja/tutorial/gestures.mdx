@@ -28,10 +28,10 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## GestureHandlerRootView を追加する
 
-アプリ内でジェスチャー操作を機能させるために、`Index` コンポーネントの最上位に `react-native-gesture-handler` の `<GestureHandlerRootView>` をレンダリングします。**app/(tabs)/index.tsx** のルートレベルの `<View>` コンポーネントを `<GestureHandlerRootView>` に置き換えます。
+アプリ内でジェスチャー操作を機能させるために、`Index` コンポーネントの最上位に `react-native-gesture-handler` の `<GestureHandlerRootView>` をレンダリングします。**src/app/(tabs)/index.tsx** のルートレベルの `<View>` コンポーネントを `<GestureHandlerRootView>` に置き換えます。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 // ... rest of the import statements remain same
 /* @tutinfo `react-native-gesture-handler-library` から `GestureHandlerRootView` をインポートします。 */import { GestureHandlerRootView } from 'react-native-gesture-handler';/* @end */
 
@@ -56,11 +56,11 @@ export default function Index() {
 
 `Animated` コンポーネントは、コンポーネントの `style` プロパティを参照してアニメーションさせる値を判断し、更新を適用してアニメーションを作成します。Reanimated は `<Animated.View>`、`<Animated.Text>`、`<Animated.ScrollView>` などのアニメーション対応コンポーネントをエクスポートしています。ここでは、ダブルタップジェスチャーを動作させるために `<Animated.Image>` コンポーネントにアニメーションを適用します。
 
-1. **components** ディレクトリ内の **EmojiSticker.tsx** ファイルを開きます。アニメーション対応コンポーネントを使うために、`react-native-reanimated` ライブラリから `Animated` をインポートします。
+1. **src/components** ディレクトリ内の **emoji-sticker.tsx** ファイルを開きます。アニメーション対応コンポーネントを使うために、`react-native-reanimated` ライブラリから `Animated` をインポートします。
 2. `Image` コンポーネントを `<Animated.Image>` に置き換えます。
 
 {/* prettier-ignore */}
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 import { ImageSourcePropType, View } from 'react-native';
 /* @tutinfo `react-native-reanimated` から `Animated` をインポートします。 */import Animated from 'react-native-reanimated';/* @end */
 
@@ -94,14 +94,14 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 
 React Native Gesture Handler を使うと、ダブルタップイベントなどのタッチ入力を検出したときの動作を追加できます。
 
-**EmojiSticker.tsx** ファイル内で:
+**src/components/emoji-sticker.tsx** ファイル内で:
 
 1. `react-native-gesture-handler` から `Gesture` と `GestureDetector` をインポートします。
 2. ステッカーのタップを認識するために、`react-native-reanimated` から `useAnimatedStyle`、`useSharedValue`、`withSpring` をインポートし、`<Animated.Image>` のスタイルをアニメーションさせます。
 3. `EmojiSticker` コンポーネント内で、`useSharedValue()` フックを使って `scaleImage` という参照を作成します。初期値には `imageSize` の値を使用します。
 
 {/* prettier-ignore */}
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 // ...rest of the import statements remain same
 /* @tutinfo `react-native-gesture-handler` から `Gesture` と `GestureDetector` をインポートします。 */import { Gesture, GestureDetector } from 'react-native-gesture-handler';/* @end */
 /* @tutinfo `react-native-reanimated` から `useAnimatedStyle`、`useSharedValue`、`withSpring` をインポートします。 */import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';/* @end */
@@ -119,7 +119,7 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 
 `EmojiSticker` コンポーネント内に次のオブジェクトを作成します。
 
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 const doubleTap = Gesture.Tap()
   .numberOfTaps(2)
   .onStart(() => {
@@ -137,7 +137,7 @@ const doubleTap = Gesture.Tap()
 
 `imageStyle` 変数を作成し、`EmojiSticker` コンポーネントに追加します。
 
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 const imageStyle = useAnimatedStyle(() => {
   return {
     width: withSpring(scaleImage.value),
@@ -149,7 +149,7 @@ const imageStyle = useAnimatedStyle(() => {
 次に、`<Animated.Image>` コンポーネントを `<GestureDetector>` でラップし、`<Animated.Image>` の `style` プロパティを変更して `imageStyle` を渡します。
 
 {/* prettier-ignore */}
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 import { ImageSourcePropType, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -209,13 +209,13 @@ Android、iOS、web でアプリを確認してみましょう。
 
 ## パンジェスチャーを追加する
 
-ステッカー上のドラッグジェスチャーを認識し、その動きを追跡するために、パンジェスチャーを使用します。**components/EmojiSticker.tsx** で:
+ステッカー上のドラッグジェスチャーを認識し、その動きを追跡するために、パンジェスチャーを使用します。**src/components/emoji-sticker.tsx** で:
 
 1. 新しい共有値 `translateX` と `translateY` を 2 つ作成します。
 2. `<View>` を `<Animated.View>` コンポーネントに置き換えます。
 
 {/* prettier-ignore */}
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   const scaleImage = useSharedValue(imageSize);
   /* @tutinfo `translateX` と `translateY` の shared values を追加します。*/
@@ -244,7 +244,7 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 1. パンジェスチャーを処理する `drag` オブジェクトを作成します。`onChange()` コールバックは `event` を引数として受け取ります。`changeX` と `changeY` プロパティは前回のイベントからの位置変化量を保持し、`translateX` と `translateY` に格納された値を更新します。
 2. `useAnimatedStyle()` フックを使って `containerStyle` オブジェクトを定義します。これは変換の配列を返します。`<Animated.View>` コンポーネントでは、`transform` プロパティを `translateX` と `translateY` の値に設定する必要があります。これにより、ジェスチャーがアクティブな間にステッカーの位置が変わります。
 
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 const drag = Gesture.Pan().onChange(event => {
   translateX.value += event.changeX;
   translateY.value += event.changeY;
@@ -270,7 +270,7 @@ const containerStyle = useAnimatedStyle(() => {
 2. `<Animated.View>` コンポーネントに `containerStyle` を追加して、変換スタイルを適用します。
 
 {/* prettier-ignore */}
-```tsx components/EmojiSticker.tsx
+```tsx src/components/emoji-sticker.tsx
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { ImageSourcePropType } from 'react-native';
