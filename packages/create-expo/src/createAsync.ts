@@ -30,6 +30,7 @@ import {
   initializeAnalyticsIdentityAsync,
   track,
 } from './telemetry';
+import { detectCodingAgent, emitClaudeCodePluginHint, logAgentSetupHint } from './utils/agent';
 import { initGitRepoAsync } from './utils/git';
 import { withSectionLog } from './utils/log';
 
@@ -86,6 +87,33 @@ export async function setupDependenciesAsync(projectRoot: string, props: Pick<Op
   // The install can also fail without stopping the command, so check the result and not the flag.
   if (!nodeModulesInstalled) {
     logNodeInstallWarning(cdPath, packageManager, needsPodsInstalled && !podsInstalled);
+  }
+}
+
+/** Steps shared by templates and examples once the project files and dependencies are in place. */
+async function finalizeProjectAsync(projectRoot: string, props: Pick<Options, 'agentsMd'>) {
+  if (props.agentsMd) {
+    await generateAgentFiles(projectRoot);
+  }
+
+  // for now, we will just init a git repo if they have git installed and the
+  // project is not inside an existing git tree, and do it silently. we should
+  // at some point check if git is installed and actually bail out if not, because
+  // npm install will fail with a confusing error if so.
+  try {
+    // check if git is installed
+    // check if inside git repo
+    await initGitRepoAsync(projectRoot);
+  } catch (error) {
+    debug(`Error initializing git: %O`, error);
+    // todo: check if git is installed, bail out
+  }
+
+  if (props.agentsMd) {
+    // Point the user (and the agent running this command) at Expo Skills and the Expo MCP Server.
+    const agent = detectCodingAgent();
+    logAgentSetupHint(agent);
+    emitClaudeCodePluginHint(agent);
   }
 }
 
@@ -149,22 +177,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
 
   await setupDependenciesAsync(projectRoot, props);
 
-  if (props.agentsMd) {
-    await generateAgentFiles(projectRoot);
-  }
-
-  // for now, we will just init a git repo if they have git installed and the
-  // project is not inside an existing git tree, and do it silently. we should
-  // at some point check if git is installed and actually bail out if not, because
-  // npm install will fail with a confusing error if so.
-  try {
-    // check if git is installed
-    // check if inside git repo
-    await initGitRepoAsync(projectRoot);
-  } catch (error) {
-    debug(`Error initializing git: %O`, error);
-    // todo: check if git is installed, bail out
-  }
+  await finalizeProjectAsync(projectRoot, props);
 }
 
 async function createExampleAsync(inputPath: string, props: Options): Promise<void> {
@@ -243,22 +256,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
 
   await setupDependenciesAsync(projectRoot, props);
 
-  if (props.agentsMd) {
-    await generateAgentFiles(projectRoot);
-  }
-
-  // for now, we will just init a git repo if they have git installed and the
-  // project is not inside an existing git tree, and do it silently. we should
-  // at some point check if git is installed and actually bail out if not, because
-  // npm install will fail with a confusing error if so.
-  try {
-    // check if git is installed
-    // check if inside git repo
-    await initGitRepoAsync(projectRoot);
-  } catch (error) {
-    debug(`Error initializing git: %O`, error);
-    // todo: check if git is installed, bail out
-  }
+  await finalizeProjectAsync(projectRoot, props);
 }
 
 function getChangeDirectoryPath(projectRoot: string): string {

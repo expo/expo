@@ -1,13 +1,27 @@
+import { detectAgent } from 'agent-cli-detector';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
 import { generateAgentFiles } from '../generateAgentFiles';
 
+jest.mock('agent-cli-detector', () => ({
+  detectAgent: jest.fn(() => ({ detected: false })),
+}));
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
 function readAgentTemplate(fileName: 'AGENTS.md' | 'CLAUDE.md'): string {
   return fs.readFileSync(
     path.join(__dirname, '..', '..', 'template', 'agent-files', fileName),
     'utf-8'
+  );
+}
+
+function mockRunningInside(agent: { id: string; name: string } | null) {
+  asMock(detectAgent).mockReturnValue(
+    (agent ? { detected: true, agent } : { detected: false }) as any
   );
 }
 
@@ -19,6 +33,7 @@ describe(generateAgentFiles, () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'create-expo-test-'));
     homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'create-expo-home-'));
     jest.spyOn(os, 'homedir').mockReturnValue(homeDir);
+    mockRunningInside(null);
   });
 
   afterEach(() => {
@@ -98,5 +113,24 @@ describe(generateAgentFiles, () => {
 
     expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(true);
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
+  });
+
+  it('generates Claude files when running inside Claude Code without a local install', async () => {
+    mockRunningInside({ id: 'claude-code', name: 'Claude Code' });
+
+    await generateAgentFiles(tmpDir);
+
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
+  });
+
+  it('does not generate Claude files when running inside another agent', async () => {
+    mockRunningInside({ id: 'codex', name: 'Codex' });
+
+    await generateAgentFiles(tmpDir);
+
+    expect(fs.existsSync(path.join(tmpDir, 'AGENTS.md'))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(false);
+    expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(false);
   });
 });

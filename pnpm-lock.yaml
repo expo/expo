@@ -3397,6 +3397,9 @@ importers:
       '@vercel/ncc':
         specifier: ^0.38.3
         version: 0.38.4
+      agent-cli-detector:
+        specifier: 0.1.7
+        version: 0.1.7
       arg:
         specifier: ^5.0.2
         version: 5.0.2

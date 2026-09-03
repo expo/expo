@@ -42,6 +42,10 @@ async function run() {
   }
 
   if (args['--help']) {
+    // Agents often run --help first; let Claude Code offer the Expo plugin at that moment.
+    const { detectCodingAgent, emitClaudeCodePluginHint } = await import('./utils/agent');
+    emitClaudeCodePluginHint(detectCodingAgent());
+
     const nameWithoutCreate = PACKAGE_NAME.replace('create-', '');
     printHelp(
       `Creates a new Expo project`,
