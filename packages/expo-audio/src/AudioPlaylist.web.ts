@@ -148,6 +148,10 @@ export class AudioPlaylistWeb
     return this._getStatus();
   }
 
+  get isActiveForLockScreen(): boolean {
+    return mediaSessionController.isActive(this);
+  }
+
   play(): void {
     if (!this._currentMedia || this._sources.length === 0) {
       return;
