@@ -1448,18 +1448,12 @@ importers:
       '@expo/dom-webview':
         specifier: workspace:*
         version: link:../../packages/@expo/dom-webview
-      '@expo/material-symbols':
-        specifier: 0.1.1
-        version: 0.1.1
       '@expo/vector-icons':
         specifier: ^15.0.2
         version: 15.1.1(expo-font@packages+expo-font)(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
-      expo-asset:
-        specifier: workspace:*
-        version: link:../../packages/expo-asset
       expo-build-properties:
         specifier: workspace:*
         version: link:../../packages/expo-build-properties
@@ -1484,9 +1478,6 @@ importers:
       expo-sqlite:
         specifier: workspace:*
         version: link:../../packages/expo-sqlite
-      expo-symbols:
-        specifier: workspace:*
-        version: link:../../packages/expo-symbols
       jose:
         specifier: ^5
         version: 5.10.0

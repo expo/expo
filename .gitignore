@@ -153,3 +153,6 @@ docs/pages/versions/*/react-native/*.diff
 # Secrets - contains real secrets fetched from GCP
 /secrets/keys.json
 /secrets/expotools.env
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat

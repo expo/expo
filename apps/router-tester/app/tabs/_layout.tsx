@@ -59,6 +59,16 @@ export default function Layout() {
             <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
             <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="icon-test">
+            <NativeTabs.Trigger.Icon
+              src={{
+                default: require('@/assets/expo-logo.png'),
+                selected: require('@/assets/expo-transparent.png'),
+              }}
+              renderingMode="original"
+            />
+            <NativeTabs.Trigger.Label>Image icon</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
           <NativeTabs.BottomAccessory>
             <MiniPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
           </NativeTabs.BottomAccessory>
