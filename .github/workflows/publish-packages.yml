@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       skip-ios-prebuilds:
-        description: Skip bundling iOS xcframeworks
+        description: Skip restoring or building iOS XCFrameworks with Turbo
         type: boolean
         default: false
   pull_request:
@@ -58,6 +58,8 @@ jobs:
         run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }} ${{ inputs.skip-ios-prebuilds && '--skip-ios-prebuilds' || '' }}
         env:
           FORCE_COLOR: '2'
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && github.event_name == 'schedule'
