@@ -218,9 +218,8 @@ class AppLoaderEmbeddedAssetTests {
     // Handed to the downloader, whose own guard rejects the filename.
     #expect(loader.downloadedKeys.contains("escaping-asset"))
 
-    // Nothing was written above the updates directory.
-    let escaped = testDatabaseDir.deletingLastPathComponent().deletingLastPathComponent()
-      .appendingPathComponent("evil")
+    // `escaping-asset/../../evil` resolves to a sibling of the updates directory.
+    let escaped = testDatabaseDir.deletingLastPathComponent().appendingPathComponent("evil")
     #expect(!FileManager.default.fileExists(atPath: escaped.path))
   }
 }

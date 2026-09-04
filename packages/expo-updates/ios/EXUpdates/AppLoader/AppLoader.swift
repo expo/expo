@@ -215,7 +215,6 @@ open class AppLoader: NSObject {
         !assets.isEmpty {
         self.assetsToLoad = assets
         let embeddedUpdate = self.embeddedUpdate
-        // Indexed once: `assets()` hits the database when the update came from there.
         let embeddedAssetsByKey = Dictionary(
           (embeddedUpdate?.assets() ?? []).compactMap { embeddedAsset in
             embeddedAsset.key.map { ($0, embeddedAsset) }
@@ -264,8 +263,7 @@ open class AppLoader: NSObject {
               }
             }
           } else {
-            // Not on `assetFilesQueue`: it is serial, and a copy is heavier than an exists check.
-            DispatchQueue.global().async {
+            FileDownloader.assetFilesQueue.async {
               if self.copyAssetFromEmbeddedBundleIfPresent(asset, embeddedAssetsByKey: embeddedAssetsByKey) {
                 return
               }
@@ -281,21 +279,17 @@ open class AppLoader: NSObject {
 
   /**
    * Satisfies an asset from the embedded update in the app binary rather than downloading it.
+   * Embedded assets have no database row when copying is off, so the lookup above misses them and
+   * a remote update would otherwise re-download bytes that already ship in the app.
    *
-   * Embedded assets have no database row when `EX_UPDATES_COPY_EMBEDDED_ASSETS` is off, so the
-   * lookup above misses them and a remote update would re-download bytes that already ship in the
-   * app. Android instead registers rows pointing into the APK; iOS asset paths are always relative
-   * to the updates directory, so we copy.
+   * Returns true when it handled the asset. Every failure returns false so the caller downloads it.
    *
-   * Returns true when it handled the asset, false when the caller should download it. Every failure
-   * falls through to the download.
+   * Must be called on `FileDownloader.assetFilesQueue`.
    */
   internal func copyAssetFromEmbeddedBundleIfPresent(
     _ asset: UpdateAsset,
     embeddedAssetsByKey: [String: UpdateAsset]
   ) -> Bool {
-    // `filename` ends in a manifest-supplied extension, so it is checked before any write.
-    // `downloadAsset` reports the rejection, keeping one error path for unsafe filenames.
     guard let key = asset.key,
       UpdatesUtils.isSafeFilename(asset.filename),
       let embeddedAsset = embeddedAssetsByKey[key],
@@ -304,7 +298,7 @@ open class AppLoader: NSObject {
       return false
     }
 
-    guard let data = try? Data(contentsOf: URL(fileURLWithPath: bundlePath)) else {
+    guard let data = try? Data(contentsOf: URL(fileURLWithPath: bundlePath), options: .mappedIfSafe) else {
       logger.warn(message: "AppLoader: could not read embedded asset \(key), downloading it instead")
       return false
     }
@@ -327,7 +321,9 @@ open class AppLoader: NSObject {
       return false
     }
 
-    handleAssetDownload(withData: data, response: nil, asset: asset)
+    DispatchQueue.global().async {
+      self.handleAssetDownload(withData: data, response: nil, asset: asset)
+    }
     return true
   }
 

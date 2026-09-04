@@ -164,8 +164,6 @@ public final class UpdatesUtils: NSObject {
     return path(forBundledAsset: asset, in: updatesBundle)
   }
 
-  /// Resolves an embedded asset inside an explicit bundle. `AppLoader` overrides the bundle in
-  /// tests, where fixtures live in the test bundle rather than in `updatesBundle`.
   internal static func path(forBundledAsset asset: UpdateAsset, in bundle: Bundle) -> String? {
     guard let mainBundleDir = asset.mainBundleDir else {
       return bundle.path(forResource: asset.mainBundleFilename, ofType: asset.type)
