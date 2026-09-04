@@ -4102,7 +4102,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorklets: 5e70b46d570c5b1b702c18bc8ac8d1af0171450e
   ExpoModulesWorkletsAdapter: ebf04f78b3cd68c709bdfd41eddca9393a402822
   ExpoNetwork: 973d523fe9b1f99223dd945fed9ad1226ae64920
-  ExpoNotifications: 7a46918d4bdf727a96a6142e8daaa16a33cf4115
+  ExpoNotifications: ad7eb34f6ec1a602f918b87a4dbb21d22d31a7de
   ExpoObserve: aeac92536da6de1ddb3b9c3f0339a1ebbb96f9e0
   ExpoPrint: 7e7a9bc7c12b9b336f34c4458d0c9ba14f243759
   ExpoScreenCapture: 6b82aba55db3ecc6f124ebd45163d6db9b916b2d
