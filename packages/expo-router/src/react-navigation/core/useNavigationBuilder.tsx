@@ -326,7 +326,7 @@ export function useNavigationBuilder<
   const { state: currentState } = use(NavigationStateContext);
   const rootState = use(RootNavigationStateContext);
 
-  const { resetNavigator, handleAction } = use(NavigationBuilderContext);
+  const { resetNavigator, handleAction, onRegistryChange } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -456,7 +456,7 @@ export function useNavigationBuilder<
     [reduce, routeNode, routeNamesKey, router]
   );
 
-  useRegisterRouter(committedState.key, registryEntry);
+  useRegisterRouter(committedState.key, registryEntry, onRegistryChange);
 
   useClientLayoutEffect(() => {
     if (isForeignType) {

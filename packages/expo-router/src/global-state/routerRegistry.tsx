@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
+import { createContext, use, useState, type PropsWithChildren } from 'react';
 
 import type { RouteNode } from '../Route';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
@@ -23,51 +23,78 @@ export type RouterRegistryEntry = {
 // Entries appear after the first commit and state keys can change when navigation state is reset.
 export type RouterRegistry = ReadonlyMap<string, RouterRegistryEntry>;
 
-type RouterRegistrySetters = {
-  register: (stateKey: string, entry: RouterRegistryEntry) => void;
-  unregister: (stateKey: string, entry: RouterRegistryEntry) => void;
+export type RouterRegistryChange = (
+  stateKey: string,
+  entry: RouterRegistryEntry,
+  registered: boolean
+) => void;
+
+/**
+ * Read handle over the registry. The handle is what goes in context, never the map itself: React
+ * drops a streamed `Suspense` boundary that is still pending when any context value above it
+ * changes, and navigators register during the hydration commit.
+ */
+export type RouterRegistryStore = {
+  /** The current registry. A new map on every change, so it is safe to hold on to. */
+  getSnapshot: () => RouterRegistry;
 };
 
-// React components read this map during render, so React state is intentional.
-export const RouterRegistryContext = createContext<RouterRegistry | undefined>(undefined);
+type RouterRegistrySetters = {
+  register: (stateKey: string, entry: RouterRegistryEntry) => boolean;
+  unregister: (stateKey: string, entry: RouterRegistryEntry) => boolean;
+};
+
+export const RouterRegistryContext = createContext<RouterRegistryStore | undefined>(undefined);
 const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(undefined);
 
+function createRouterRegistryStore() {
+  let snapshot: RouterRegistry = new Map();
+
+  const store: RouterRegistryStore = { getSnapshot: () => snapshot };
+
+  const setters: RouterRegistrySetters = {
+    register(stateKey, entry) {
+      if (snapshot.get(stateKey) === entry) {
+        return false;
+      }
+
+      snapshot = new Map(snapshot).set(stateKey, entry);
+      return true;
+    },
+    unregister(stateKey, entry) {
+      if (snapshot.get(stateKey) !== entry) {
+        return false;
+      }
+
+      const next = new Map(snapshot);
+      next.delete(stateKey);
+      snapshot = next;
+      return true;
+    },
+  };
+
+  return { store, setters };
+}
+
 export function RouterRegistryProvider({ children }: PropsWithChildren) {
-  const [registry, setRegistry] = useState<RouterRegistry>(() => new Map());
-  const setters = useMemo<RouterRegistrySetters>(
-    () => ({
-      register(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) === entry) {
-            return previous;
-          }
-
-          return new Map(previous).set(stateKey, entry);
-        });
-      },
-      unregister(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) !== entry) {
-            return previous;
-          }
-
-          const next = new Map(previous);
-          next.delete(stateKey);
-          return next;
-        });
-      },
-    }),
-    []
-  );
+  const [{ store, setters }] = useState(createRouterRegistryStore);
 
   return (
     <RouterRegistrySettersContext.Provider value={setters}>
-      <RouterRegistryContext.Provider value={registry}>{children}</RouterRegistryContext.Provider>
+      <RouterRegistryContext.Provider value={store}>{children}</RouterRegistryContext.Provider>
     </RouterRegistrySettersContext.Provider>
   );
 }
 
-export function useRegisterRouter(stateKey: string, entry: RouterRegistryEntry): void {
+/**
+ * Registers a navigator's router from a layout effect. `onChange` is the only signal consumers get,
+ * because both context values are stable; pass a stable callback.
+ */
+export function useRegisterRouter(
+  stateKey: string,
+  entry: RouterRegistryEntry,
+  onChange?: RouterRegistryChange
+): void {
   const setters = use(RouterRegistrySettersContext);
 
   useClientLayoutEffect(() => {
@@ -80,7 +107,13 @@ export function useRegisterRouter(stateKey: string, entry: RouterRegistryEntry):
       return;
     }
 
-    setters.register(stateKey, entry);
-    return () => setters.unregister(stateKey, entry);
-  }, [entry, setters, stateKey]);
+    if (setters.register(stateKey, entry)) {
+      onChange?.(stateKey, entry, true);
+    }
+    return () => {
+      if (setters.unregister(stateKey, entry)) {
+        onChange?.(stateKey, entry, false);
+      }
+    };
+  }, [entry, onChange, setters, stateKey]);
 }

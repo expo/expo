@@ -16,7 +16,7 @@ import {
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
-import type { RouterRegistry } from './routerRegistry';
+import type { RouterRegistry, RouterRegistryChange, RouterRegistryStore } from './routerRegistry';
 import type { RoutingIntent } from './routingQueue';
 import { resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
@@ -49,7 +49,7 @@ type TreeOperation =
 type Options = {
   initialState: InitialState | undefined;
   routeNode?: RouteNode;
-  registry: RouterRegistry;
+  registry: RouterRegistryStore;
   routesWithRemovalPrevented?: ReadonlySet<string>;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
@@ -327,14 +327,40 @@ export function useNavigationTreeReducer({
       return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
     }
   );
-  const previousRegistryRef = React.useRef(registry);
+  // The registry snapshot is swapped outside React, so renders derive from this state instead.
+  // Unregistered route nodes wait until the commit settles, so a same-key re-registration is not
+  // an unmount.
+  const [registeredKeys, setRegisteredKeys] = React.useState<ReadonlySet<string>>(EMPTY_SET);
+  const unregisteredRouteNodesRef = React.useRef(new Map<string, RouteNode>());
+  const onRegistryChange = React.useCallback<RouterRegistryChange>(
+    (stateKey, entry, registered) => {
+      if (!registered && entry.routeNode) {
+        unregisteredRouteNodesRef.current.set(stateKey, entry.routeNode);
+      }
+      setRegisteredKeys((previous) => {
+        if (registered && previous.has(stateKey)) {
+          return previous;
+        }
+        const next = new Set(previous);
+        if (registered) {
+          next.add(stateKey);
+        } else {
+          // Always a new set on removal, so the effect below runs for the pending route node.
+          next.delete(stateKey);
+        }
+        return next;
+      });
+    },
+    []
+  );
 
   const processAction = React.useCallback(
     (operation: TreeOperation) =>
       reactDispatch({
         operation,
         config: {
-          registry,
+          // Snapshot at dispatch: the store may swap in a newer map before React runs the reducer.
+          registry: registry.getSnapshot(),
           routesWithRemovalPrevented,
           routeNode,
           linking,
@@ -373,21 +399,20 @@ export function useNavigationTreeReducer({
   }, [result.state]);
 
   useClientLayoutEffect(() => {
-    const previousRegistry = previousRegistryRef.current;
-    previousRegistryRef.current = registry;
-    for (const [stateKey, entry] of previousRegistry) {
-      if (!registry.has(stateKey) && entry.routeNode) {
+    const unregistered = unregisteredRouteNodesRef.current;
+    if (unregistered.size === 0) {
+      return;
+    }
+    unregisteredRouteNodesRef.current = new Map();
+    for (const [stateKey, routeNode] of unregistered) {
+      if (!registeredKeys.has(stateKey)) {
         // This runs inside an effect; the rule doesn't recognize the `useClientLayoutEffect`
         // wrapper as one.
         // oxlint-disable-next-line react-hooks/rules-of-hooks
-        process({
-          type: 'NAVIGATOR_UNMOUNTED',
-          stateKey,
-          routeNode: entry.routeNode,
-        });
+        process({ type: 'NAVIGATOR_UNMOUNTED', stateKey, routeNode });
       }
     }
-  }, [registry]);
+  }, [registeredKeys]);
 
   return {
     state: result.state,
@@ -396,6 +421,9 @@ export function useNavigationTreeReducer({
     resetNavigator,
     handleAction,
     processIntent,
+    /** State keys of the navigators currently registered with the router registry. */
+    registeredKeys,
+    onRegistryChange,
   };
 }
 

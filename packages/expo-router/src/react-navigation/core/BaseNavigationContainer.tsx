@@ -91,15 +91,23 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
-    useNavigationTreeReducer({
-      initialState,
-      routeNode: UNSTABLE_routeNode,
-      registry,
-      routesWithRemovalPrevented,
-      linking: routerConfig?.linking,
-      redirects: routerConfig?.redirects,
-    });
+  const {
+    state,
+    report,
+    consumeReportEvents,
+    resetNavigator,
+    handleAction,
+    processIntent,
+    registeredKeys,
+    onRegistryChange,
+  } = useNavigationTreeReducer({
+    initialState,
+    routeNode: UNSTABLE_routeNode,
+    registry,
+    routesWithRemovalPrevented,
+    linking: routerConfig?.linking,
+    redirects: routerConfig?.redirects,
+  });
   useNavigationTreeReportEvents(report, consumeReportEvents);
 
   const { listeners, addListener } = useChildListeners();
@@ -148,7 +156,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   });
 
   // TODO(@ubax): check if this is still needed anywhere
-  const isReady = useLatestCallback(() => listeners.focus[0] != null && registry.has(state.key));
+  const isReady = useLatestCallback(
+    () => listeners.focus[0] != null && registeredKeys.has(state.key)
+  );
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -194,8 +204,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       addListener,
       handleAction,
       resetNavigator,
+      onRegistryChange,
     }),
-    [addListener, handleAction, resetNavigator]
+    [addListener, handleAction, onRegistryChange, resetNavigator]
   );
 
   const context = React.useMemo(
@@ -230,7 +241,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       onReadyRef.current?.();
       emitter.emit({ type: 'ready' });
     }
-  }, [state, registry, isReady, emitter]);
+  }, [state, registeredKeys, isReady, emitter]);
 
   React.useEffect(() => {
     const hydratedState = getRootState();
@@ -311,7 +322,10 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
               <EnsureSingleNavigator>
                 <ThemeProvider value={theme}>{children}</ThemeProvider>
               </EnsureSingleNavigator>
-              <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+              <RoutingQueueDrainer
+                ready={registeredKeys.has(state.key)}
+                processIntent={processIntent}
+              />
             </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>
