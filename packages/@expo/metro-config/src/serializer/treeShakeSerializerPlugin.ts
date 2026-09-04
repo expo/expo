@@ -157,6 +157,85 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
   }
 }
 
+const PURE_ANNOTATION = /[@#]__PURE__/;
+
+function hasPureAnnotation(node: types.Node): boolean {
+  return node.leadingComments?.some((comment) => PURE_ANNOTATION.test(comment.value)) ?? false;
+}
+
+function hasDecorators(node: types.Node): boolean {
+  return 'decorators' in node && Array.isArray(node.decorators) && node.decorators.length > 0;
+}
+
+function canRemoveClass(node: types.Class): boolean {
+  if (hasDecorators(node) || (node.superClass && !canRemoveInitializer(node.superClass))) {
+    return false;
+  }
+  return node.body.body.every((member) => {
+    if (types.isStaticBlock(member) || hasDecorators(member)) {
+      return false;
+    }
+    if ('computed' in member && member.computed) {
+      return false;
+    }
+    if (types.isClassProperty(member) && member.static) {
+      return canRemoveInitializer(member.value);
+    }
+    return true;
+  });
+}
+
+/**
+ * Removing an unused export also removes its initializer, so it may only be dropped when
+ * evaluating that initializer cannot be observed. Rollup and webpack require an explicit
+ * `#__PURE__` annotation before dropping a call for the same reason -- e.g. `culori` registers
+ * its color spaces with `export const rgb = useMode(modeRgb)`.
+ */
+function canRemoveInitializer(node?: types.Node | null): boolean {
+  if (node == null || hasPureAnnotation(node)) {
+    return true;
+  }
+  if (types.isPureish(node) || types.isIdentifier(node)) {
+    return true;
+  }
+  if (types.isClass(node)) {
+    return canRemoveClass(node);
+  }
+  if (types.isTemplateLiteral(node)) {
+    return node.expressions.every((expression) => canRemoveInitializer(expression));
+  }
+  if (types.isArrayExpression(node)) {
+    return node.elements.every(
+      (element) => !types.isSpreadElement(element) && canRemoveInitializer(element)
+    );
+  }
+  if (types.isObjectExpression(node)) {
+    return node.properties.every(
+      (property) =>
+        types.isObjectProperty(property) &&
+        !property.computed &&
+        canRemoveInitializer(property.value)
+    );
+  }
+  if (types.isMemberExpression(node)) {
+    return !node.computed && canRemoveInitializer(node.object);
+  }
+  if (types.isUnaryExpression(node)) {
+    return node.operator !== 'delete' && canRemoveInitializer(node.argument);
+  }
+  if (types.isBinaryExpression(node) || types.isLogicalExpression(node)) {
+    return canRemoveInitializer(node.left) && canRemoveInitializer(node.right);
+  }
+  if (types.isConditionalExpression(node)) {
+    return (
+      canRemoveInitializer(node.test) &&
+      canRemoveInitializer(node.consequent) &&
+      canRemoveInitializer(node.alternate)
+    );
+  }
+  return false;
+}
+
 function markUnused(path: NodePath) {
   path.remove();
 }
@@ -566,7 +645,11 @@ export async function treeShakeSerializer(
       // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
       traverse(ast, {
         ExportDefaultDeclaration(path) {
-          if (possibleUnusedExports.includes('default') && !isExportUsed('default')) {
+          if (
+            possibleUnusedExports.includes('default') &&
+            !isExportUsed('default') &&
+            canRemoveInitializer(path.node.declaration)
+          ) {
             // TODO: Update source maps
             markUnused(path);
           }
@@ -602,7 +685,11 @@ export async function treeShakeSerializer(
           if (types.isVariableDeclaration(declaration)) {
             declaration.declarations = declaration.declarations.filter((decl) => {
               if (decl.id.type === 'Identifier') {
-                if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
+                if (
+                  possibleUnusedExports.includes(decl.id.name) &&
+                  !isExportUsed(decl.id.name) &&
+                  canRemoveInitializer(decl.init)
+                ) {
                   // TODO: Update source maps
                   // Account for variables, and classes which may contain references to other exports.
                   shouldRecurseUnusedExports = true;

@@ -198,6 +198,73 @@ export class Math {
   expect(artifacts[0].source).toMatch('gravity');
 });
 
+describe('unused exports with initializers', () => {
+  it(`preserves an initializer that has side effects`, async () => {
+    const [, artifacts] = await serializeShakingAsync({
+      'index.js': `
+import { getModes } from "./culori";
+console.log(getModes());
+            `,
+      // Registration-by-side-effect, as used by `culori`. `rgb` is never imported, but dropping its
+      // declaration would also drop the `useMode` call that populates `modes`.
+      'culori.js': `
+const modes = {};
+
+function useMode(mode) {
+	modes[mode.id] = mode;
+	return mode;
+}
+
+export const rgb = useMode({ id: 'rgb' });
+
+export function getModes() {
+	return modes;
+}
+`,
+    });
+
+    expect(artifacts[0].source).toMatch('useMode(');
+  });
+
+  it(`removes an initializer that is side-effect free`, async () => {
+    const [, artifacts] = await serializeShakingAsync({
+      'index.js': `
+import { gravity } from "./b";
+console.log(gravity);
+            `,
+      'b.js': `
+export const gravity = 7;
+export const unusedNumber = 42;
+export const unusedObject = { value: 1 };
+`,
+    });
+
+    expect(artifacts[0].source).toMatch('gravity');
+    expect(artifacts[0].source).not.toMatch('unusedNumber');
+    expect(artifacts[0].source).not.toMatch('unusedObject');
+  });
+
+  it(`removes an initializer that is annotated as pure`, async () => {
+    const [, artifacts] = await serializeShakingAsync({
+      'index.js': `
+import { gravity } from "./b";
+console.log(gravity);
+            `,
+      'b.js': `
+function createValue(value) {
+	return value;
+}
+
+export const gravity = 7;
+export const unusedValue = /*#__PURE__*/ createValue(42);
+`,
+    });
+
+    expect(artifacts[0].source).toMatch('gravity');
+    expect(artifacts[0].source).not.toMatch('unusedValue');
+  });
+});
+
 // TODO: We could possibly use a special transform to convert `import "./foo"` to something like `IMPORT_SIDE_EFFECT("./foo")` but we'd need to ensure the import order is preserved.
 describe('side-effecty imports', () => {
   // TODO: Fix this...
