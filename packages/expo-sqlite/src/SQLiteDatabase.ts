@@ -138,12 +138,18 @@ export class SQLiteDatabase {
    * @param task An async function to execute within a transaction.
    */
   public async withTransactionAsync(task: () => Promise<void>): Promise<void> {
+    // `BEGIN` stays outside the `try`: when it fails this call never opened a transaction, and
+    // rolling back anyway would discard a transaction another code path owns on this connection.
+    await this.execAsync('BEGIN');
     try {
-      await this.execAsync('BEGIN');
       await task();
       await this.execAsync('COMMIT');
     } catch (e) {
-      await this.execAsync('ROLLBACK');
+      try {
+        await this.execAsync('ROLLBACK');
+      } catch {
+        // Keep the original error: it explains why the transaction had to be rolled back.
+      }
       throw e;
     }
   }
@@ -180,13 +186,22 @@ export class SQLiteDatabase {
     }
     const transaction = await Transaction.createAsync(this);
     let error;
+    let began = false;
     try {
       await transaction.execAsync('BEGIN');
+      began = true;
       await task(transaction);
       await transaction.execAsync('COMMIT');
     } catch (e) {
-      await transaction.execAsync('ROLLBACK');
       error = e;
+      // See `withTransactionAsync`: only roll back a transaction this call actually began.
+      if (began) {
+        try {
+          await transaction.execAsync('ROLLBACK');
+        } catch {
+          // Keep the original error: it explains why the transaction had to be rolled back.
+        }
+      }
     } finally {
       await transaction.closeAsync();
     }
@@ -296,12 +311,17 @@ export class SQLiteDatabase {
    * @param task An async function to execute within a transaction.
    */
   public withTransactionSync(task: () => void): void {
+    // See `withTransactionAsync`: only roll back a transaction this call actually began.
+    this.execSync('BEGIN');
     try {
-      this.execSync('BEGIN');
       task();
       this.execSync('COMMIT');
     } catch (e) {
-      this.execSync('ROLLBACK');
+      try {
+        this.execSync('ROLLBACK');
+      } catch {
+        // Keep the original error: it explains why the transaction had to be rolled back.
+      }
       throw e;
     }
   }

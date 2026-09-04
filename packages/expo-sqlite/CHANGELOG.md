@@ -15,6 +15,7 @@
 - Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
 - Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
 - Fixed reading a prepared statement result after the same statement ran again returning the later run's rows instead of throwing. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
+- Fixed `withTransactionAsync`, `withTransactionSync` and `withExclusiveTransactionAsync` issuing `ROLLBACK` when their own `BEGIN` failed, ending a transaction another code path had open on the same connection. ([#49727](https://github.com/expo/expo/pull/49727) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ### 💡 Others
 
