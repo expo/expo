@@ -8,6 +8,7 @@ import { getExpoRepositoryRootDir } from '../Directories';
 import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import {
   BuildPlatform,
@@ -102,6 +103,15 @@ export const SPMBuild = {
    * @returns Output path
    */
   getPackageBuildPath: (pkg: SPMPackageSource, product: SPMProduct, buildType: BuildFlavor) => {
+    if (usesPackageLocalBuildPath(pkg)) {
+      return path.join(
+        pkg.buildPath,
+        'intermediates',
+        'products',
+        buildType.toLowerCase(),
+        product.name
+      );
+    }
     return path.join(pkg.buildPath, 'output', buildType.toLowerCase(), 'frameworks', product.name);
   },
 
@@ -854,7 +864,8 @@ export async function buildSharedSPMDependencyAsync(
   dep: SPMPackageDependencyConfig,
   buildType: BuildFlavor,
   allSharedDeps: Map<string, SPMPackageDependencyConfig> = new Map(),
-  platforms: BuildPlatform[] = ['iOS', 'iOS Simulator']
+  platforms: BuildPlatform[] = ['iOS', 'iOS Simulator'],
+  storageRoot: string = Frameworks.getSharedSPMDepsRoot()
 ): Promise<void> {
   const productName = dep.productName;
   assertSafeSPMIdentifier(productName, 'productName');
@@ -863,7 +874,10 @@ export async function buildSharedSPMDependencyAsync(
   }
 
   // Check if already built
-  if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
+  const getFrameworkPath = (name: string): string =>
+    path.join(storageRoot, name, buildType.toLowerCase(), `${name}.xcframework`);
+
+  if (await fs.pathExists(getFrameworkPath(productName))) {
     logger.info(`⏭️  Shared SPM dep ${chalk.cyan(productName)} already exists for ${buildType}`);
     return;
   }
@@ -876,7 +890,7 @@ export async function buildSharedSPMDependencyAsync(
   // SourcePackages are shared across all shared dep builds via -clonedSourcePackagesDirPath
   // so xcodebuild clones each transitive dependency only once. DerivedData is per-dep
   // to avoid "Multiple commands produce" conflicts between different dep builds.
-  const spmDepsRoot = Frameworks.getSharedSPMDepsRoot();
+  const spmDepsRoot = storageRoot;
   const buildDir = path.join(spmDepsRoot, productName, '_build');
   const derivedDataPath = path.join(buildDir, 'DerivedData');
   const sharedSourcePackages = path.join(spmDepsRoot, '_SourcePackages');
@@ -937,7 +951,7 @@ export async function buildSharedSPMDependencyAsync(
     if (await fs.pathExists(artifactsDir)) {
       const xcframeworkPath = await findXCFrameworkInDir(artifactsDir, productName);
       if (xcframeworkPath) {
-        const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
+        const destPath = getFrameworkPath(productName);
         await fs.mkdirp(path.dirname(destPath));
         await fs.remove(destPath);
         await spawnAsync('rsync', ['-a', `${xcframeworkPath}/`, `${destPath}/`], { stdio: 'pipe' });
@@ -996,16 +1010,22 @@ export async function buildSharedSPMDependencyAsync(
       // Recursively build any inter-deps that haven't been built yet
       for (const interDepName of externalInterDeps) {
         const interDep = allSharedDeps.get(interDepName);
-        if (interDep && !Frameworks.hasSharedSPMDepFramework(interDepName, buildType)) {
+        if (interDep && !(await fs.pathExists(getFrameworkPath(interDepName)))) {
           logger.verbose(`   ↳ Building dependency ${chalk.cyan(interDepName)} first...`);
-          await buildSharedSPMDependencyAsync(interDep, buildType, allSharedDeps, platforms);
+          await buildSharedSPMDependencyAsync(
+            interDep,
+            buildType,
+            allSharedDeps,
+            platforms,
+            storageRoot
+          );
         }
       }
 
       // Patch the checkout's Package.swift to use pre-built binary targets
       const builtDeps = new Map<string, string>();
       for (const interDepName of externalInterDeps) {
-        const xcfwPath = Frameworks.getSharedSPMDepFrameworkPath(interDepName, buildType);
+        const xcfwPath = getFrameworkPath(interDepName);
         if (await fs.pathExists(xcfwPath)) {
           builtDeps.set(interDepName, xcfwPath);
         }
@@ -1100,7 +1120,7 @@ export async function buildSharedSPMDependencyAsync(
 
       if (await fs.pathExists(artifactXCFrameworkPath)) {
         // Binary xcframework from SPM — copy it directly to the shared location
-        const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
+        const destPath = getFrameworkPath(productName);
         await fs.mkdirp(path.dirname(destPath));
         await fs.remove(destPath);
         await spawnAsync('rsync', ['-a', `${artifactXCFrameworkPath}/`, `${destPath}/`], {
@@ -1121,7 +1141,7 @@ export async function buildSharedSPMDependencyAsync(
   }
 
   // Create the xcframework
-  const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
+  const destPath = getFrameworkPath(productName);
   await fs.mkdirp(path.dirname(destPath));
   await fs.remove(destPath);
   frameworkArgs.push('-output', destPath);

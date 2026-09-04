@@ -264,6 +264,8 @@ export interface SPMProduct {
 export interface SPMConfig {
   /** JSON Schema reference */
   $schema?: string;
+  /** Whether this package publishes its precompiled XCFrameworks in its npm package. */
+  publishPrebuilds?: boolean;
   /** List of SPM products to generate with their targets */
   products: SPMProduct[];
 }

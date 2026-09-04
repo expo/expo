@@ -1,5 +1,6 @@
 {
   "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "publishPrebuilds": true,
   "products": [
     {
       "name": "ExpoLocation",

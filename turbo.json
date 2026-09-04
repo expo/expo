@@ -47,6 +47,20 @@
     "test": {
       "cache": false,
       "outputLogs": "errors-only"
+    },
+    "precompile-ios": {
+      "dependsOn": ["expo-modules-core#precompile-ios"],
+      "inputs": [
+        "spm.config.json",
+        "*.podspec",
+        "ios/**",
+        "node_modules/react-native/package.json",
+        "node_modules/react-native/sdks/hermes-engine/version.properties",
+        "$TURBO_ROOT$/tools/src/prebuilds/**"
+      ],
+      "env": ["RCT_HERMES_V1_ENABLED"],
+      "outputs": [".expo-prebuild/output/**"],
+      "outputLogs": "new-only"
     }
   },
   "remoteCache": {

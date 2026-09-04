@@ -1,0 +1,18 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "precompile-ios": {
+      "inputs": [
+        "spm.config.json",
+        "*.podspec",
+        "ios/**",
+        "common/**",
+        "node_modules/react-native/package.json",
+        "node_modules/react-native/sdks/hermes-engine/version.properties",
+        "$TURBO_ROOT$/tools/src/prebuilds/**"
+      ],
+      "dependsOn": ["expo-modules-jsi#precompile-ios"]
+    }
+  }
+}

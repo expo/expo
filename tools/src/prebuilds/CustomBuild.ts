@@ -13,6 +13,7 @@ import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { usesPackageLocalBuildPath } from './PackageLocalBuild';
 import type { BuildFlavor } from './Prebuilder.types';
 import type { BuildPlatform, SPMProduct } from './SPMConfig.types';
 import { createAsyncSpinner } from './Utils';
@@ -172,6 +173,9 @@ export async function runCustomBuildAsync(
   const podsRoot = await stagePodsRootAsync(pkg, artifacts);
   const sdk = platformFilter && PLATFORM_TO_SDK[platformFilter];
   const env: NodeJS.ProcessEnv = { ...process.env, PODS_ROOT: podsRoot };
+  if (usesPackageLocalBuildPath(pkg)) {
+    env.EXPO_CUSTOM_BUILD_ROOT = path.join(pkg.buildPath, 'custom-build');
+  }
   if (sdk) env.PLATFORM_NAME = sdk;
   else delete env.PLATFORM_NAME;
 
@@ -192,7 +196,9 @@ export async function composeCustomBuildAsync(
   product: SPMProduct,
   flavor: BuildFlavor
 ): Promise<void> {
-  const src = path.resolve(pkg.path, product.customBuild!.output);
+  const src = usesPackageLocalBuildPath(pkg)
+    ? path.join(pkg.buildPath, 'custom-build', 'Products', `${product.name}.xcframework`)
+    : path.resolve(pkg.path, product.customBuild!.output);
   if (!(await fs.pathExists(src))) {
     throw new Error(`customBuild produced no xcframework at ${src}`);
   }
