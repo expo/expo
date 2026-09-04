@@ -55,6 +55,10 @@ open class AppLoader: NSObject {
   /// Overridable for testing, where fixtures live in the test bundle rather than in `updatesBundle`.
   internal var embeddedAssetsBundle: Bundle = updatesBundle
 
+  /// Whether an asset with no database row may be copied out of the app binary rather than
+  /// downloaded. Only remote loads have anything to reuse.
+  internal var reusesEmbeddedAssets: Bool { true }
+
   public init(
     config: UpdatesConfig,
     logger: UpdatesLogger,
@@ -290,6 +294,10 @@ open class AppLoader: NSObject {
     _ asset: UpdateAsset,
     embeddedAssetsByKey: [String: UpdateAsset]
   ) -> Bool {
+    guard reusesEmbeddedAssets else {
+      return false
+    }
+
     guard let key = asset.key,
       UpdatesUtils.isSafeFilename(asset.filename),
       let embeddedAsset = embeddedAssetsByKey[key],

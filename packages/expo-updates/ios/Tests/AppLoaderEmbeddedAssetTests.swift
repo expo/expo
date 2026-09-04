@@ -222,4 +222,36 @@ class AppLoaderEmbeddedAssetTests {
     let escaped = testDatabaseDir.deletingLastPathComponent().appendingPathComponent("evil")
     #expect(!FileManager.default.fileExists(atPath: escaped.path))
   }
+
+  @Test
+  func `the embedded loader leaves the copy to the launcher`() throws {
+    let config = try UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+      UpdatesConfig.EXUpdatesConfigScopeKeyKey: "dummyScope",
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+    ])
+
+    let embeddedAsset = UpdateAsset(key: "shared-asset", type: "png")
+    embeddedAsset.mainBundleFilename = "embedded-image"
+
+    let loader = EmbeddedAppLoader(
+      config: config,
+      logger: UpdatesLogger(),
+      database: db,
+      directory: testDatabaseDir,
+      launchedUpdate: nil,
+      completionQueue: DispatchQueue.global(qos: .default)
+    )
+    loader.embeddedAssetsBundle = Bundle(for: AppLoaderEmbeddedAssetTestsForBundle.self)
+
+    // Inputs a remote load would copy from, so only the loader itself can refuse them.
+    let handled = loader.copyAssetFromEmbeddedBundleIfPresent(
+      UpdateAsset(key: "shared-asset", type: "png"),
+      embeddedAssetsByKey: ["shared-asset": embeddedAsset]
+    )
+
+    #expect(handled == false)
+    let copied = testDatabaseDir.appendingPathComponent("shared-asset.png")
+    #expect(!FileManager.default.fileExists(atPath: copied.path))
+  }
 }
