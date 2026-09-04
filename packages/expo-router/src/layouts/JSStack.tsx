@@ -2,25 +2,41 @@
 
 import type { ComponentProps } from 'react';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
-import type { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
-import { createStackNavigator } from '../react-navigation/stack';
+import { StackRouter } from '../react-navigation/native';
+import { makePopAction } from '../react-navigation/native-stack';
+import {
+  createStandardStackNavigator,
+  type StackNavigationOptions,
+} from '../react-navigation/stack';
+import type {
+  StackNavigatorCreateProps,
+  StandardStackNavigationEventMap,
+} from '../react-navigation/stack/navigators/createStackNavigator';
+import type { StackNavigationConfig } from '../react-navigation/stack/types';
+import { makeRestoreRouteAction } from '../react-navigation/stack/utils/makeRestoreRouteAction';
+import { unstable_integrateWithRouter } from '../standard-navigation';
+import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-import { withLayoutContext } from './withLayoutContext';
 
 export * from '../react-navigation/stack';
 
-const JSStackNavigator = createStackNavigator().Navigator;
-
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
-const JSStack = withLayoutContext<
+const JSStack = unstable_integrateWithRouter<
   StackNavigationOptions,
-  typeof JSStackNavigator,
   StackNavigationState<ParamListBase>,
-  StackNavigationEventMap
->(JSStackNavigator);
+  StandardStackNavigationEventMap,
+  StackNavigationConfig,
+  object,
+  StackNavigatorCreateProps
+>(createStandardStackNavigator, StackRouter, {
+  createProps: ({ dispatchSync, navigation, state }) => ({
+    pop: makePopAction(dispatchSync, state.key),
+    restoreRoute: makeRestoreRouteAction(dispatchSync, state),
+    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
+  }),
+});
 
 /**
  * Renders a JavaScript-based stack navigator.
@@ -28,10 +44,7 @@ const JSStack = withLayoutContext<
  * @hideType
  */
 const Stack = Object.assign(
-  (props: Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>) => {
-    const routeNode = useRouteNode();
-    return <JSStack {...props} initialRouteName={getValidInitialRouteName(routeNode)} />;
-  },
+  (props: Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>) => <JSStack {...props} />,
   {
     Screen,
     Protected,

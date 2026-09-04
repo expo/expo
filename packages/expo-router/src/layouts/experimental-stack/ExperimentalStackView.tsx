@@ -7,17 +7,13 @@ import {
   isRouteRemovalPrevented,
   useRoutesWithRemovalPrevented,
 } from '../../global-state/removalPrevention';
-import {
-  type ParamListBase,
-  StackActions,
-  type StackNavigationState,
-} from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
   ExperimentalStackDescriptor,
   ExperimentalStackDescriptorMap,
-  ExperimentalStackNavigationHelpers,
   ExperimentalStackNavigationOptions,
+  ExperimentalStackViewEmit,
+  ExperimentalStackViewState,
 } from './types';
 
 const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>([
@@ -28,12 +24,13 @@ const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>(
 ]);
 
 type Props = {
-  state: StackNavigationState<ParamListBase>;
-  navigation: ExperimentalStackNavigationHelpers;
+  state: ExperimentalStackViewState;
+  emit: ExperimentalStackViewEmit;
+  pop: (count: number, sourceRouteKey: string) => void;
   descriptors: ExperimentalStackDescriptorMap;
 };
 
-export function ExperimentalStackView({ state, navigation, descriptors }: Props) {
+export function ExperimentalStackView({ state, emit, pop, descriptors }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
   const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
@@ -44,7 +41,13 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
           const descriptor = descriptors[route.key]!;
           const isPreloaded = index > state.index;
           const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
-          const preventFromContext = isRouteRemovalPrevented(route, routesWithRemovalPrevented);
+          const routeWithState = descriptor.navigation
+            .getState()
+            .routes.find((currentRoute) => currentRoute.key === route.key);
+          const preventFromContext = isRouteRemovalPrevented(
+            routeWithState ?? descriptor.route,
+            routesWithRemovalPrevented
+          );
 
           return (
             <ScreenView
@@ -55,28 +58,28 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
               isPreloaded={isPreloaded}
               preventNativeDismiss={preventFromContext}
               onWillAppear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionStart',
                   data: { closing: false },
                   target: route.key,
                 });
               }}
               onWillDisappear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionStart',
                   data: { closing: true },
                   target: route.key,
                 });
               }}
               onDidAppear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionEnd',
                   data: { closing: false },
                   target: route.key,
                 });
               }}
               onDidDisappear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionEnd',
                   data: { closing: true },
                   target: route.key,
@@ -86,28 +89,20 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
                 // Native dismissal (e.g. swipe-to-dismiss). JS state still has the route —
                 // catch up by dispatching pop and arming useDismissedRouteError so a stale
                 // `usePreventRemove` surfaces an actionable console.error.
-                navigation.dispatchSync({
-                  ...StackActions.pop(),
-                  source: route.key,
-                  target: state.key,
-                });
+                pop(1, route.key);
                 setNextDismissedKey(route.key);
               }}
               onNativeDismissPrevented={() => {
                 if (preventFromContext) {
                   // A real pop runs child-first prevention checks and notifies the nested route
                   // that owns the guard; emitting directly here would only reach this route.
-                  navigation.dispatchSync({
-                    ...StackActions.pop(),
-                    source: route.key,
-                    target: state.key,
-                  });
+                  pop(1, route.key);
                 } else {
                   console.warn(
                     `ExperimentalStack received \`onNativeDismissPrevented\` for route '${route.name}' without an active removal guard. The dismiss action was ignored because prevention context and native state are out of sync.`
                   );
                 }
-                navigation.emit({
+                emit({
                   type: 'gestureCancel',
                   data: undefined,
                   target: route.key,

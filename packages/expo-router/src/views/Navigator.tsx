@@ -11,10 +11,15 @@ import {
   useRouteNode,
 } from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
+import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
+import {
+  unstable_createStandardRouterNavigator,
+  type NavigatorContentProps,
+} from '../standard-navigation';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
 import type { ErrorBoundaryProps } from './Try';
@@ -123,39 +128,20 @@ export function useNavigatorContext() {
   return context;
 }
 
-function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProps<any>) {
-  const contextKey = useContextKey();
-  const node = useRouteNode();
+const SlotOuterLayoutContext = React.createContext(false);
 
-  // Allows adding Screen components as children to configure routes.
-  const { screens, guardedRedirects } = useFilterScreenChildren([], {
-    contextKey,
-  });
-
-  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
-    ...props,
-    id: contextKey,
-    children: useSortedScreens(screens ?? [], guardedRedirects),
-    initialRouteName: getValidInitialRouteName(node),
-  });
+function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
   const focusedRouteKey = state.routes[state.index]?.key;
+  const outerLayoutContext = React.use(SlotOuterLayoutContext);
 
-  const content = (
-    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-      <NavigationContent>
-        {focusedRouteKey ? descriptors[focusedRouteKey]!.render() : null}
-      </NavigationContent>
-    </GuardContextProvider>
-  );
-
-  return unstable_screenErrorBoundary ? (
-    <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-      {content}
-    </ScreenErrorBoundaryContext>
-  ) : (
-    content
-  );
+  return focusedRouteKey ? (
+    <IsWithinLayoutContext value={outerLayoutContext}>
+      {descriptors[focusedRouteKey]?.render() ?? null}
+    </IsWithinLayoutContext>
+  ) : null;
 }
+
+const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter);
 
 /**
  * Renders the currently selected content.
@@ -171,10 +157,15 @@ function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProp
 export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
   const contextKey = useContextKey();
   const context = React.use(NavigatorContext);
+  const outerLayoutContext = React.use(IsWithinLayoutContext);
 
   if (context?.contextKey !== contextKey) {
     // The _layout has changed since the last navigator
-    return <SlotNavigator {...props} />;
+    return (
+      <SlotOuterLayoutContext value={outerLayoutContext}>
+        <RouterSlot {...props} />
+      </SlotOuterLayoutContext>
+    );
   }
 
   /*
@@ -201,11 +192,11 @@ function NavigatorSlot() {
  */
 export function DefaultNavigator() {
   if (process.env.EXPO_OS === 'android') {
-    return <SlotNavigator />;
+    return <RouterSlot />;
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <SlotNavigator />
+      <RouterSlot />
     </SafeAreaView>
   );
 }
