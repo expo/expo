@@ -1,8 +1,8 @@
 'use client';
-import { Host, Row } from '@expo/ui/jetpack-compose';
 import { type ReactNode, useMemo } from 'react';
 
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import { requireExpoUI } from '../../../optional-libraries/expo-ui';
 import type {
   NativeStackHeaderItemProps,
   NativeStackNavigationOptions,
@@ -27,6 +27,7 @@ export function processHeaderItemsForPlatform(
   if (placement !== 'left' && placement !== 'right') {
     return null;
   }
+  requireExpoUI();
 
   const headerContent = (props: NativeStackHeaderItemProps) => (
     <HeaderToolbarHostBase placement={placement} colors={colors} headerProps={props}>
@@ -58,6 +59,9 @@ function HeaderToolbarHostBase({
   colors?: ToolbarColors;
   headerProps?: NativeStackHeaderItemProps;
 }) {
+  const {
+    expoUI: { Host, Row },
+  } = requireExpoUI();
   const stableColors = useMemo(
     () => ({
       tintColor: colors?.tintColor ?? headerProps?.tintColor,

@@ -1,7 +1,15 @@
 import { render, within } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
+import { requireExpoUI } from '../../optional-libraries/expo-ui';
 import { RouterToolbarHost } from '../native';
+
+jest.mock('../../optional-libraries/expo-ui', () => ({
+  requireExpoUI: jest.fn(() => ({
+    expoUI: jest.requireMock('@expo/ui/jetpack-compose'),
+    modifiers: jest.requireMock('@expo/ui/jetpack-compose/modifiers'),
+  })),
+}));
 
 jest.mock('@expo/ui/jetpack-compose', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -27,8 +35,28 @@ jest.mock('react-native-safe-area-context', () => ({
 
 const flatten = (style: unknown) =>
   Object.assign({}, ...(Array.isArray(style) ? style : [style]).filter(Boolean));
+const mockedRequireExpoUI = jest.mocked(requireExpoUI);
+
+beforeEach(() => {
+  mockedRequireExpoUI.mockImplementation(() => ({
+    expoUI: jest.requireMock('@expo/ui/jetpack-compose'),
+    modifiers: jest.requireMock('@expo/ui/jetpack-compose/modifiers'),
+  }));
+});
 
 describe('RouterToolbarHost (Android bottom toolbar)', () => {
+  it("throws when @expo/ui isn't installed", () => {
+    mockedRequireExpoUI.mockImplementation(() => {
+      throw new Error(
+        "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+      );
+    });
+
+    expect(() => render(<RouterToolbarHost />)).toThrow(
+      "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+    );
+  });
+
   it('does not cover the full screen so touches above the toolbar pass through', () => {
     const { getByTestId } = render(
       <RouterToolbarHost>

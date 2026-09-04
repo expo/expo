@@ -283,7 +283,6 @@
     "@expo/log-box": "workspace:^",
     "@expo/metro-runtime": "workspace:^",
     "@expo/schema-utils": "workspace:^",
-    "@expo/ui": "workspace:^",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-native-masked-view/masked-view": "^0.3.2",
@@ -308,6 +307,7 @@
     "standard-navigation": "^0.0.5"
   },
   "devDependencies": {
+    "@expo/ui": "workspace:^",
     "@jest/globals": "^29.7.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.9.1",
@@ -336,6 +336,7 @@
   "peerDependencies": {
     "@expo/log-box": "workspace:^",
     "@expo/metro-runtime": "workspace:^",
+    "@expo/ui": "workspace:^",
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",
     "expo-constants": "workspace:^",
@@ -351,6 +352,9 @@
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
+    "@expo/ui": {
+      "optional": true
+    },
     "@testing-library/react-native": {
       "optional": true
     },
