@@ -157,8 +157,16 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
 
   // TODO(@ubax): check if this is still needed anywhere
   const isReady = useLatestCallback(
-    () => listeners.focus[0] != null && registeredKeys.has(state.key)
+    () => listeners.focus[0] != null && registry.getSnapshot().has(state.key)
   );
+
+  const assertNavigatorMounted = useLatestCallback(() => {
+    if (!registry.getSnapshot().has(state.key)) {
+      throw new Error(
+        'Attempted to navigate before the root layout mounted a navigator. Expo Router builds its navigation tree from the navigator you render, so there is nothing to navigate until one exists. Render a `Slot`, `Stack`, or another navigator on the first render of your root layout.'
+      );
+    }
+  });
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -323,7 +331,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
                 <ThemeProvider value={theme}>{children}</ThemeProvider>
               </EnsureSingleNavigator>
               <RoutingQueueDrainer
-                ready={registeredKeys.has(state.key)}
+                assertNavigatorMounted={assertNavigatorMounted}
                 processIntent={processIntent}
               />
             </RootNavigationStateContext.Provider>
