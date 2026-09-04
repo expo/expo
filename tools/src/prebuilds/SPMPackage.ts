@@ -15,6 +15,7 @@ import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import {
   ObjcTarget,
@@ -1482,7 +1483,11 @@ async function buildPackageSwiftContext(
       const productName = isScoped ? parts[2] : parts[1];
 
       // XCFrameworks are in the centralized build directory
-      const depBuildPath = path.join(getPrecompileDir(), '.build', packageName);
+      const dependencyPackage = getPackageByName(packageName);
+      const depBuildPath =
+        usesPackageLocalBuildPath(pkg) && dependencyPackage
+          ? getPackageLocalBuildPath(dependencyPackage)
+          : path.join(getPrecompileDir(), '.build', packageName);
       const xcframeworkPath = Frameworks.getFrameworkPath(depBuildPath, productName, buildType);
 
       if (await fs.pathExists(xcframeworkPath)) {
@@ -1567,15 +1572,22 @@ async function buildPackageSwiftContext(
       const packageName = spmPkg.packageName || derivePackageNameFromUrl(spmPkg.url);
 
       // Check if this SPM dep has been built as a shared xcframework
-      const sharedXCFrameworkPath = Frameworks.getSharedSPMDepFrameworkPath(
-        spmPkg.productName,
-        buildType
-      );
-      if (fs.existsSync(sharedXCFrameworkPath)) {
+      const packageLocal = usesPackageLocalBuildPath(pkg);
+      const preparedXCFrameworkPath = packageLocal
+        ? path.join(
+            pkg.buildPath,
+            'intermediates',
+            'spm-deps',
+            spmPkg.productName,
+            buildType.toLowerCase(),
+            `${spmPkg.productName}.xcframework`
+          )
+        : Frameworks.getSharedSPMDepFrameworkPath(spmPkg.productName, buildType);
+      if (fs.existsSync(preparedXCFrameworkPath)) {
         // Use as binary target instead of SPM package dependency
-        const relativePath = path.relative(packageSwiftDir, sharedXCFrameworkPath);
+        const relativePath = path.relative(packageSwiftDir, preparedXCFrameworkPath);
         spinner.info(
-          `Using shared SPM dep: ${spmPkg.productName} → .binaryTarget(path: "${relativePath}")`
+          `Using prepared SPM dep: ${spmPkg.productName} → .binaryTarget(path: "${relativePath}")`
         );
         resolvedTargets.push({
           type: 'binary',

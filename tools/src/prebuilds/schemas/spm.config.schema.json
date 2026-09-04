@@ -9,6 +9,10 @@
             "type": "string",
             "description": "JSON Schema reference"
         },
+        "publishPrebuilds": {
+            "type": "boolean",
+            "description": "Whether this package publishes its precompiled XCFrameworks in its npm package"
+        },
         "products": {
             "type": "array",
             "description": "List of SPM products to generate with their targets",
