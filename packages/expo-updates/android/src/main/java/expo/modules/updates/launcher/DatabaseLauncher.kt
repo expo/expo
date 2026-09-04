@@ -173,7 +173,14 @@ class DatabaseLauncher(
       filteredLaunchableUpdates.add(update)
     }
     val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
-    return selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
+    val selectedUpdate = selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
+    if (selectedUpdate != null) {
+      return selectedUpdate
+    }
+
+    // Fall back to this binary's embedded update when no configuration match exists.
+    val embeddedUpdateId = embeddedUpdate?.updateEntity?.id
+    return filteredLaunchableUpdates.firstOrNull { it.id == embeddedUpdateId }
   }
 
   private fun embeddedAssetFileMap(): MutableMap<AssetEntity, String> {
