@@ -565,6 +565,7 @@ jobs:
             eas/project_id: ${{ app.id }}
             eas/workflow_id: ${{ workflow.id }}
             eas/build_id: ${{ needs.build.outputs.build_id }}
+            eas/channel: ${{ needs.build.outputs.channel }}
             platform: ios
             profile: production
 ```

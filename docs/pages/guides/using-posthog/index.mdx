@@ -215,7 +215,7 @@ function ReleaseTagger() {
 }
 ```
 
-Render `<ReleaseTagger />` inside `<PostHogProvider>`. Every subsequent `capture()` carries these properties, so you can filter or group events by `eas/update_id` in PostHog. `eas/account` has a value only when your [app config](/workflow/configuration/) sets `owner`.
+Render `<ReleaseTagger />` inside `<PostHogProvider>`. Every subsequent `capture()` carries these properties, so you can filter or group events by `eas/update_id` in PostHog. `eas/account` has a value only when your [app config](/workflow/configuration/) sets `owner`. `eas/update_id` and `eas/channel` are set only in release and preview builds. In Expo Go and development builds they are `null`, so events from those builds do not carry them.
 
 ## Standard EAS properties
 
@@ -231,7 +231,7 @@ PostHog recognizes these `eas/` names. It shows the Expo logo next to each and l
 | `eas/account`         | `expo-constants` | `${{ account.name }}` | `expo.dev/accounts/<name>` |
 | `eas/workflow_id`     | not available    | `${{ workflow.id }}`  | `expo.dev/workflows/<id>`  |
 
-The `ReleaseTagger` snippet sets the in-app values from `expo-updates` and `expo-constants`. In a workflow, set the same names on [`eas/posthog_capture_event`](/eas/workflows/syntax/#easposthog_capture_event): `eas/account`, `eas/project_id`, and `eas/workflow_id` come from the [`account`](/eas/workflows/syntax/#account), [`app`](/eas/workflows/syntax/#app), and [`workflow`](/eas/workflows/syntax/#workflow) contexts, which every job can read. The build and update fields come from a build or update job's outputs. The [recipes](/guides/using-posthog/recipes) show this in context. `eas/update_id` is the individual update id in the app and the update group id in a workflow; both open the update on expo.dev.
+The `ReleaseTagger` snippet sets the in-app values from `expo-updates` and `expo-constants`. In a workflow, set the same names on [`eas/posthog_capture_event`](/eas/workflows/syntax/#easposthog_capture_event): `eas/account`, `eas/project_id`, and `eas/workflow_id` come from the [`account`](/eas/workflows/syntax/#account), [`app`](/eas/workflows/syntax/#app), and [`workflow`](/eas/workflows/syntax/#workflow) contexts, which every job can read. The build and update fields come from a build or update job's outputs. The [recipes](/guides/using-posthog/recipes) show this in context. `eas/update_id` is the individual update ID in the app and the update group ID in a workflow, where one publish produces a group of platform-specific updates; both open the update on expo.dev.
 
 ## Feature flags
 
