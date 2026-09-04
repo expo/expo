@@ -187,9 +187,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       nonisolated(unsafe) let resultPtr = resultPtr
 
       withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
-        resultPtr.pointee = JavaScriptActor.assumeIsolated {
-          return forwardingSwiftErrorsToJS(runtime: runtime) {
-            return try context.get(propertyName).asJSIValue()
+        JavaScriptActor.assumeIsolated {
+          forwardingSwiftErrorsToJS(runtime: runtime) {
+            try context.get(propertyName).writeJSIValue(to: resultPtr)
           }
         }
       }
@@ -814,12 +814,12 @@ private func createFunctionClosure(
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     withGuaranteedContext(context) { (context: HostFunctionContext, runtime) in
-      resultPtr.pointee = JavaScriptActor.assumeIsolated {
-        return forwardingSwiftErrorsToJS(runtime: runtime) {
+      JavaScriptActor.assumeIsolated {
+        forwardingSwiftErrorsToJS(runtime: runtime) {
           let this = UnsafeMutablePointer(mutating: thisPtr).move()
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
           let thisValue = JavaScriptValue(runtime, this)
-          return try context.call(thisValue, consume arguments).asJSIValue()
+          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
         }
       }
     }
@@ -858,11 +858,11 @@ private func createFunctionClosure(
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     withGuaranteedContext(context) { (context: UnownedThisHostFunctionContext, runtime) in
-      resultPtr.pointee = JavaScriptActor.assumeIsolated {
-        return forwardingSwiftErrorsToJS(runtime: runtime) {
+      JavaScriptActor.assumeIsolated {
+        forwardingSwiftErrorsToJS(runtime: runtime) {
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
           let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
-          return try context.call(thisValue, consume arguments).asJSIValue()
+          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
         }
       }
     }
