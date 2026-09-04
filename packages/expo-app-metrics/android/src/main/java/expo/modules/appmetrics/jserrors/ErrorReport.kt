@@ -11,7 +11,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 
 /**
  * An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
- * an `exception` log event following OpenTelemetry's exception conventions.
+ * a `js.exception` log event following OpenTelemetry's exception conventions.
  */
 @OptimizedRecord
 data class ErrorReport(
@@ -22,7 +22,7 @@ data class ErrorReport(
   @Field val componentStack: String? = null,
   @Field val isFatal: Boolean = false
 ) : Record {
-  /** Builds the `exception` log event for the live path. */
+  /** Builds the `js.exception` log event for the live path. */
   fun toLogRecord(sessionId: String): LogRecord =
     makeExceptionLogRecord(
       sessionId = sessionId,
@@ -60,7 +60,7 @@ enum class ErrorSource(val rawValue: String) : Enumerable {
 }
 
 /**
- * Builds the `exception` log event for a fatal error ingested from disk on the next launch, using the
+ * Builds the `js.exception` log event for a fatal error ingested from disk on the next launch, using the
  * session and timestamp captured at fatal time.
  */
 fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
@@ -76,13 +76,12 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
   )
 
 /**
- * Builds an `exception` log event following OpenTelemetry's exception-in-logs convention: the error
- * rides as `exception.*` attributes (the event name is `exception` because this captures errors from a
- * handler, not a specific operation), and `expo.error.*` carries the bits OTel has no field for (the
+ * Builds a `js.exception` log event following OpenTelemetry's exception-in-logs convention. The error
+ * rides as `exception.*` attributes, while `expo.error.*` carries the bits OTel has no field for (the
  * capture source and whether the error was fatal). Fatal errors log at `fatal` severity, the rest at
  * `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
  *
- * Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so every `exception`
+ * Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so every `js.exception`
  * event carries the same attribute keys. The React component stack only exists for error-boundary
  * captures, so `expo.error.component_stack` is omitted entirely when absent rather than logged as
  * `null` on every event.
@@ -110,7 +109,7 @@ private fun makeExceptionLogRecord(
   return LogRecord(
     sessionId = sessionId,
     timestamp = timestamp,
-    name = "exception",
+    name = "js.exception",
     severity = (if (isFatal) Severity.FATAL else Severity.ERROR).rawValue,
     attributes = JsonAny.encodeMapToJsonString(attributes)
   )
