@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed default imports of `__esModule` CommonJS modules, such as compiled config plugins, resolving to the module namespace object instead of the default export when a TypeScript file is transformed to CommonJS without `typescript` installed ([#49566](https://github.com/expo/expo/pull/49566) by [@gustavohariel](https://github.com/gustavohariel))
+
 ### 💡 Others
 
 - Support Node 26's `stripTypeScriptTypes` and call without transform-mode, to fix the fallback when TypeScript isn't installed ([#48826](https://github.com/expo/expo/pull/48826) by [@kkkhs](https://github.com/kkkhs))
