@@ -15,6 +15,12 @@ function isIndexLikeSegment(segment: string): boolean {
   return segment === 'index' || matchGroupName(segment) != null;
 }
 
+function hasIndexSegment(route: string): boolean {
+  return route.split('/').includes('index');
+}
+
+// Ranks the first segment where the routes differ, preferring `index` and group segments. When
+// that segment ranks the same for both, the whole route length decides.
 function compareSegments(a: string, b: string): number {
   const aSegments = a.split('/');
   const bSegments = b.split('/');
@@ -37,10 +43,10 @@ function compareSegments(a: string, b: string): number {
     if (!aIndex && bIndex) {
       return 1;
     }
-    return aSegment.length - bSegment.length || a.length - b.length;
+    break;
   }
 
-  return aSegments.length - bSegments.length;
+  return a.length - b.length;
 }
 
 export function sortRoutes(a: RouteNode, b: RouteNode): number {
@@ -89,11 +95,14 @@ export function sortRoutes(a: RouteNode, b: RouteNode): number {
   if (!aIndex && bIndex) {
     return 1;
   }
-  if (aIndex && bIndex) {
-    return a.route.length - b.route.length;
+
+  // Only routes holding a nested `index` need the per-segment comparison; the rest are ordered
+  // by whole route length.
+  if (hasIndexSegment(a.route) || hasIndexSegment(b.route)) {
+    return compareSegments(a.route, b.route);
   }
 
-  return compareSegments(a.route, b.route);
+  return a.route.length - b.route.length;
 }
 
 export function sortRoutesWithInitial(initialRouteName?: string) {

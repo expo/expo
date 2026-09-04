@@ -65,6 +65,12 @@ describe(sortRoutes, () => {
     ]);
     expect(getSortedRoutes('a/b/main', 'a/b/index')).toEqual(['a/b/index', 'a/b/main']);
     expect(getSortedRoutes('sessions/index', 'index')).toEqual(['index', 'sessions/index']);
+    // A group segment anywhere in the route does not hide a nested index
+    expect(getSortedRoutes('a/(b)/main', 'a/(b)/index')).toEqual(['a/(b)/index', 'a/(b)/main']);
+  });
+  it(`sorts routes without an index segment by route length`, () => {
+    expect(getSortedRoutes('test/1234', 'explore')).toEqual(['explore', 'test/1234']);
+    expect(getSortedRoutes('a/b/cccc', 'z/qqqqq')).toEqual(['z/qqqqq', 'a/b/cccc']);
   });
   it(`ties equal-length named segments`, () => {
     expect(sortRoutes(asRouteNode('zebra'), asRouteNode('apple'))).toBe(0);

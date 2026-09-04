@@ -148,7 +148,7 @@ it('will prefetch the correct route within a group', () => {
         state: {
           index: 0,
           key: expect.any(String),
-          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index'],
+          routeNames: ['(a)/index', '(a)/test', '(b)/index', '(b)/test'],
           routes: [
             {
               key: expect.any(String),
@@ -180,7 +180,7 @@ it('will prefetch the correct route within a group', () => {
         state: {
           index: 0,
           key: expect.any(String),
-          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index'],
+          routeNames: ['(a)/index', '(a)/test', '(b)/index', '(b)/test'],
           routes: [
             {
               key: expect.any(String),
@@ -223,7 +223,7 @@ it('will prefetch the correct route within nested groups', () => {
         state: {
           index: 0,
           key: expect.any(String),
-          routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test'],
+          routeNames: ['(a)/index', '(b)/index', '(b)/test', '(a)/(c)/test'],
           routes: [
             {
               key: expect.any(String),
@@ -255,7 +255,7 @@ it('will prefetch the correct route within nested groups', () => {
         state: {
           index: 0,
           key: expect.any(String),
-          routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test'],
+          routeNames: ['(a)/index', '(b)/index', '(b)/test', '(a)/(c)/test'],
           routes: [
             {
               key: expect.any(String),
