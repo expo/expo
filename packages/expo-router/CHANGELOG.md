@@ -70,6 +70,7 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix header title not adapting its color to content scrolling underneath a transparent header on iOS 26 Liquid Glass. ([#49639](https://github.com/expo/expo/pull/49639) by [@Jonas-C](https://github.com/Jonas-C))
 - Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
 - Make layouts with explicitly declared screens honor `unstable_settings.initialRouteName` instead of declaration order, which can change deep-link back stacks. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))
 - Prevent unfocused nested native tab navigators from redirecting global router state. ([#48257](https://github.com/expo/expo/pull/48257) by [@Ubax](https://github.com/Ubax))
