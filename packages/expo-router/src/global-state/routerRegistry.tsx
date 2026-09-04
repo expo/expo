@@ -37,6 +37,7 @@ export type RouterRegistryChange = (
 export type RouterRegistryStore = {
   /** The current registry. A new map on every change, so it is safe to hold on to. */
   getSnapshot: () => RouterRegistry;
+  subscribe: (listener: () => void) => () => void;
 };
 
 type RouterRegistrySetters = {
@@ -49,8 +50,21 @@ const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undef
 
 function createRouterRegistryStore() {
   let snapshot: RouterRegistry = new Map();
+  const listeners = new Set<() => void>();
 
-  const store: RouterRegistryStore = { getSnapshot: () => snapshot };
+  const store: RouterRegistryStore = {
+    getSnapshot: () => snapshot,
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+
+  const emit = () => {
+    for (const listener of listeners) {
+      listener();
+    }
+  };
 
   const setters: RouterRegistrySetters = {
     register(stateKey, entry) {
@@ -59,6 +73,7 @@ function createRouterRegistryStore() {
       }
 
       snapshot = new Map(snapshot).set(stateKey, entry);
+      emit();
       return true;
     },
     unregister(stateKey, entry) {
@@ -69,6 +84,7 @@ function createRouterRegistryStore() {
       const next = new Map(snapshot);
       next.delete(stateKey);
       snapshot = next;
+      emit();
       return true;
     },
   };

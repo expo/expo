@@ -43,7 +43,6 @@ type Props<ParamList extends object> = Omit<NavigationContainerProps, 'initialSt
  * Container component which holds the navigation state designed for React Native apps.
  * This should be rendered at the root wrapping the whole app.
  *
- * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
  * @param props.direction Text direction of the components. Defaults to `'ltr'`.
  * @param props.theme Theme object for the UI elements.

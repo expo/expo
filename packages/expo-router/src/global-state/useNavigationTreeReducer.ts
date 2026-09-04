@@ -421,8 +421,6 @@ export function useNavigationTreeReducer({
     resetNavigator,
     handleAction,
     processIntent,
-    /** State keys of the navigators currently registered with the router registry. */
-    registeredKeys,
     onRegistryChange,
   };
 }

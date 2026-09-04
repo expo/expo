@@ -17,9 +17,8 @@ import { navigationRef } from './navigationRef';
 import type { RoutingIntent } from './routingQueue';
 import type { LinkToOptions, NavigationOptions } from './types';
 
-function assertIsReady() {
-  // TODO(@ubax): check whether this is still needed
-  if (!navigationRef.isReady()) {
+function assertIsMounted() {
+  if (navigationRef.current == null) {
     throw new Error(
       'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
     );
@@ -109,11 +108,10 @@ export function canGoBack(): boolean {
   // before mounting a navigator. This behavior exists due to React Navigation being dynamically
   // constructed at runtime. We can get rid of this in the future if we use
   // the static configuration internally.
-  // TODO(@ubax): check whether this is still needed
-  if (!navigationRef.isReady()) {
+  if (navigationRef.current == null) {
     return false;
   }
-  return navigationRef.current?.canGoBack() ?? false;
+  return navigationRef.current.canGoBack();
 }
 
 export function canDismiss(): boolean {
@@ -122,8 +120,7 @@ export function canDismiss(): boolean {
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  // TODO(@ubax): check whether this is still needed
-  if (!navigationRef.isReady()) {
+  if (navigationRef.current == null) {
     return false;
   }
   // TODO(@ubax): check whether this is still needed
@@ -150,7 +147,7 @@ export function setParams(
   if (emitDomSetParams(params)) {
     return;
   }
-  assertIsReady();
+  assertIsMounted();
   return (navigationRef.current?.setParams as any)(params);
 }
 

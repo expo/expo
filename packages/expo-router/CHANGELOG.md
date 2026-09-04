@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `onReady` container prop and the `ready` container event. Expo Router has no ready state: navigating before a navigator is mounted now throws instead of being deferred. `NavigationContainerRef.isReady()` is deprecated and always returns `true`. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@jakub-agent](https://github.com/jakub-agent))
 - Remove `UNSTABLE_UnhandledLinkingContext` from `expo-router/react-navigation`. ([#49616](https://github.com/expo/expo/pull/49616) by [@Ubax](https://github.com/Ubax))
 - Remove `BaseNavigationContainer` export from `expo-router/react-navigation`. ([#49587](https://github.com/expo/expo/pull/49587) by [@Ubax](https://github.com/Ubax))
 - Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))

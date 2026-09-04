@@ -52,13 +52,8 @@ export function createNavigationContainerRef<
         });
       }
     },
-    isReady: () => {
-      if (current == null) {
-        return false;
-      }
-
-      return current.isReady();
-    },
+    // Kept for compatibility. There is no ready state to report.
+    isReady: () => true,
     ...methods.reduce<any>((acc, name) => {
       acc[name] = (...args: any[]) => {
         if (current == null) {

@@ -444,77 +444,6 @@ test('handles getRootState', () => {
   });
 });
 
-test('emits ready event when the container is ready with synchronous content', () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  const listener = jest.fn();
-
-  ref.addListener('ready', () => {
-    listener(ref.isReady(), ref.getCurrentRoute()?.name);
-  });
-
-  expect(listener).not.toHaveBeenCalled();
-
-  render(
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="foo">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(listener).toHaveBeenCalledWith(true, 'foo');
-});
-
-// TODO(@ubax): restore when actions dispatched before registration are deferred.
-// https://linear.app/expo/issue/ENG-26123/fix-event-emission-from-global-store
-test.skip('emits ready event when the container is ready with asynchronous content', async () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  const listener = jest.fn();
-
-  ref.addListener('ready', () => {
-    listener(ref.isReady(), ref.getCurrentRoute()?.name);
-  });
-
-  const wrapper = render(<BaseNavigationContainer ref={ref}>{null}</BaseNavigationContainer>);
-
-  expect(listener).not.toHaveBeenCalled();
-
-  await Promise.resolve();
-
-  wrapper.update(
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="foo">{() => null}</Screen>
-        <Screen name="bar">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(listener).toHaveBeenCalledWith(true, 'foo');
-});
-
 test('emits state events when the state changes', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
@@ -790,7 +719,7 @@ test("throws if the ref hasn't finished initializing", () => {
   render(element);
 });
 
-test('fires onReady after navigator is rendered', () => {
+test('reports ready before and after a navigator is rendered', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const TestNavigator = (props: any) => {
@@ -801,34 +730,22 @@ test('fires onReady after navigator is rendered', () => {
     );
   };
 
-  const onReady = jest.fn();
-
-  const element = (
-    <BaseNavigationContainer
-      ref={ref}
-      onReady={onReady}
-      initialState={{ routes: [{ name: 'foo' }] }}>
+  const root = render(
+    <BaseNavigationContainer ref={ref} initialState={{ routes: [{ name: 'foo' }] }}>
       {null}
     </BaseNavigationContainer>
   );
 
-  const root = render(element);
-
-  expect(onReady).not.toHaveBeenCalled();
-  expect(ref.current?.isReady()).toBe(false);
+  expect(ref.current?.isReady()).toBe(true);
 
   root.rerender(
-    <BaseNavigationContainer
-      ref={ref}
-      onReady={onReady}
-      initialState={{ routes: [{ name: 'foo' }] }}>
+    <BaseNavigationContainer ref={ref} initialState={{ routes: [{ name: 'foo' }] }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
     </BaseNavigationContainer>
   );
 
-  expect(onReady).toHaveBeenCalledTimes(1);
   expect(ref.current?.isReady()).toBe(true);
 });
 

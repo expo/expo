@@ -1,6 +1,14 @@
 'use client';
 
-import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import {
+  type PropsWithChildren,
+  Fragment,
+  type ComponentType,
+  use,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -11,7 +19,7 @@ import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { navigationRef } from './global-state/navigationRef';
 import { RemovalPreventionProvider } from './global-state/removalPrevention';
 import { RouterConfigContext } from './global-state/routerConfigContext';
-import { RouterRegistryProvider } from './global-state/routerRegistry';
+import { RouterRegistryContext, RouterRegistryProvider } from './global-state/routerRegistry';
 import { RoutingQueueProvider } from './global-state/routingQueueContext';
 import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
@@ -89,11 +97,29 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
-function onNavigationReady() {
-  maybeHideSplashScreen();
+// The splash screen covers the app until a navigator owns the tree, so an async root layout keeps
+// it up while it suspends. This is a leaf, so subscribing here re-renders nothing else.
+function SplashScreenController() {
+  const store = use(RouterRegistryContext);
+  const registry = useSyncExternalStore(
+    store?.subscribe ?? noopSubscribe,
+    store?.getSnapshot ?? emptyRegistry,
+    emptyRegistry
+  );
+
+  useEffect(() => {
+    if (registry.size > 0) {
+      maybeHideSplashScreen();
+    }
+  }, [registry]);
+
+  return null;
 }
 
-// TODO(@ubax): Refactor onReady logic and use listeners pattern
+const EMPTY_REGISTRY = new Map();
+const emptyRegistry = () => EMPTY_REGISTRY;
+const noopSubscribe = () => () => {};
+
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -141,10 +167,10 @@ function ContextNavigator({
     <RouterConfigContext.Provider value={routerConfig}>
       <RouterRegistryProvider>
         <RemovalPreventionProvider>
+          <SplashScreenController />
           <UpstreamNavigationContainer
             ref={navigationRef}
-            linking={linkingConfig as LinkingOptions<any>}
-            onReady={onNavigationReady}>
+            linking={linkingConfig as LinkingOptions<any>}>
             <WrapperComponent>
               <Content rootComponent={rootComponent} />
             </WrapperComponent>

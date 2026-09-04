@@ -31,7 +31,7 @@ const initialState: NavigationState = {
 function createTestStore(registry: RouterRegistry) {
   let snapshot = registry;
   return {
-    store: { getSnapshot: () => snapshot } satisfies RouterRegistryStore,
+    store: { getSnapshot: () => snapshot, subscribe: () => () => {} } satisfies RouterRegistryStore,
     setRegistry(next: RouterRegistry) {
       snapshot = next;
     },
@@ -462,11 +462,9 @@ it('resets a state slice when its router unregisters', () => {
   });
 
   act(() => result.result.current.onRegistryChange('root', registryEntry, true));
-  expect(result.result.current.registeredKeys.has('root')).toBe(true);
 
   act(() => result.result.current.onRegistryChange('root', registryEntry, false));
 
-  expect(result.result.current.registeredKeys.has('root')).toBe(false);
   expect(result.result.current.state).toMatchObject({
     index: 0,
     routeNames: ['second', 'first', 'third'],
@@ -513,7 +511,6 @@ it('does not reset a state slice when its router entry is replaced', () => {
     result.result.current.onRegistryChange('root', nextEntry, true);
   });
 
-  expect(result.result.current.registeredKeys.has('root')).toBe(true);
   expect(result.result.current.state).toBe(initialState);
 });
 
@@ -631,7 +628,7 @@ it('throws for an incomplete initial state', () => {
     renderHook(() =>
       useNavigationTreeReducer({
         initialState: { routes: [{ name: 'first' }] },
-        registry: { getSnapshot: () => new Map() },
+        registry: { getSnapshot: () => new Map(), subscribe: () => () => {} },
       })
     )
   ).toThrow('incomplete initial state');
