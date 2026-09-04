@@ -284,7 +284,9 @@ public final class LocationModule: Module {
 
     // Background motion activity
 
-    AsyncFunction("startMotionActivityUpdatesAsync") { (taskName: String) in
+    // `options` is accepted for API parity with Android (e.g. its `foregroundService` option,
+    // which has no iOS equivalent since there's no foreground service concept here) and ignored.
+    AsyncFunction("startMotionActivityUpdatesAsync") { (taskName: String, options: [String: Any]) in
       guard CMMotionActivityManager.isActivityAvailable() else {
         throw Exceptions.MotionActivityUnavailable()
       }
