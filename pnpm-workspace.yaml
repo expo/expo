@@ -8,17 +8,14 @@ packages:
   - packages/expo-sqlite/dev-plugin-webui
 
 ignoreWorkspaceCycles: true
-
-ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - '@swc/core'
-  - core-js
-  - esbuild
-  - fmerge
-  - protobufjs
-  - unrs-resolver
-
+verifyDepsBeforeRun: warn
 linkWorkspacePackages: deep
+preferWorkspacePackages: true
+resolvePeersFromWorkspaceRoot: true
+dedupePeerDependents: true
+strictDepBuilds: true
+blockExoticSubdeps: true
+shellEmulator: true
 
 loglevel: info
 
@@ -28,31 +25,19 @@ minimumReleaseAgeExclude:
   - '@expo/*'
   - '@noxcturnal/*'
   - '@react-native/*'
-  - '@turbo/*'
   - 'react-native'
   - multitars
   - noxcturnal
-  - 'react-native-gesture-handler'
-  - 'react-native-reanimated'
-  - 'react-native-screens'
-  - turbo
-  - 'whatwg-url-minimum'
-  - 'expo'
-  - 'expo-asset'
-  - 'expo-constants'
-  - 'expo-modules-autolinking'
-  - 'expo-modules-core'
-  - 'expo-modules-jsi'
-  - 'babel-preset-expo'
-  - 'jest-expo'
-  - '2g'
 
-onlyBuiltDependencies:
-  - '@shopify/react-native-skia'
-  - better-sqlite3
-  - fsevents
-  - sharp
-  - workerd
+overrides:
+  '@types/babel__code-frame': ^7.27.0
+  '@types/babel__core': ^7.20.5
+  '@types/babel__generator': ^7.27.0
+  '@types/babel__template': ^7.4.4
+  '@types/babel__traverse': ^7.20.7
+  react-native: 0.87.0
+  react-native-reanimated: 4.5.1
+  react-native-worklets: 0.10.1
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
@@ -63,6 +48,19 @@ patchedDependencies:
   react-native-worklets: patches/react-native-worklets.patch
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 
-preferWorkspacePackages: true
+packageExtensions:
+  # NOTE(@kitten): `debug` has an optional peer on `supports-color`. However, depending on
+  # where `debug` is installed, which can happen transitively, this may be missing. This
+  # then leads to an upward cascade of peers being split into two or more variants
+  'debug@*':
+    dependencies:
+      supports-color: ^8.1.1
 
-shellEmulator: true
+allowBuilds:
+  '@parcel/watcher': false
+  '@shopify/react-native-skia': true
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: false
+  workerd: true

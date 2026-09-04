@@ -48,7 +48,7 @@ Read any `AGENTS.md` or `CLAUDE.md` governing the files you may change. Make eve
 Do not reflexively run a full monorepo install. First locate the changed subsystem, its package manager, scripts, focused tests, docs tooling, and generated-file rules. Install only what the trustworthy repository command you need requires. For package code whose own checks rely on built workspace siblings, use the proven full setup rather than an attractive but invalid partial install:
 
 ```sh
-corepack prepare pnpm@10.33.0 --activate
+corepack prepare pnpm@12.2.1 --activate
 pnpm install
 ```
 

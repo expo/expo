@@ -1,7 +1,7 @@
-diff --git a/node_modules/react-native-tvos/React/Base/RCTConstants.m b/node_modules/react-native-tvos/React/Base/RCTConstants.m
+diff --git a/React/Base/RCTConstants.m b/React/Base/RCTConstants.m
 index eb90640..fbeb63b 100644
---- a/node_modules/react-native-tvos/React/Base/RCTConstants.m
-+++ b/node_modules/react-native-tvos/React/Base/RCTConstants.m
+--- a/React/Base/RCTConstants.m
++++ b/React/Base/RCTConstants.m
 @@ -7,7 +7,7 @@
  
  #import "RCTConstants.h"
@@ -11,10 +11,10 @@ index eb90640..fbeb63b 100644
  
  NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
  NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
-diff --git a/node_modules/react-native-tvos/react-native.config.js b/node_modules/react-native-tvos/react-native.config.js
+diff --git a/react-native.config.js b/react-native.config.js
 index 6d70ec0..714fea5 100644
---- a/node_modules/react-native-tvos/react-native.config.js
-+++ b/node_modules/react-native-tvos/react-native.config.js
+--- a/react-native.config.js
++++ b/react-native.config.js
 @@ -120,14 +120,6 @@ const config = {
      }>} */,
  };
@@ -38,10 +38,10 @@ index 6d70ec0..714fea5 100644
    };
  } catch {
    if (verbose) {
-diff --git a/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb b/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb
+diff --git a/scripts/cocoapods/autolinking.rb b/scripts/cocoapods/autolinking.rb
 index d8e9c7c..ac23875 100644
---- a/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb
-+++ b/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb
+--- a/scripts/cocoapods/autolinking.rb
++++ b/scripts/cocoapods/autolinking.rb
 @@ -38,7 +38,8 @@ def list_native_modules!(config_command)
    config = JSON.parse(json)
  
@@ -70,10 +70,10 @@ index d8e9c7c..ac23875 100644
    if !(
      config[:ios_packages].is_a? Array and
      config[:ios_project_root_path].is_a? String and
-diff --git a/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb b/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb
+diff --git a/scripts/cocoapods/codegen.rb b/scripts/cocoapods/codegen.rb
 index a5cf266..d9b952d 100644
---- a/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb
-+++ b/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb
+--- a/scripts/cocoapods/codegen.rb
++++ b/scripts/cocoapods/codegen.rb
 @@ -11,7 +11,7 @@ def run_codegen!(
    config_file_dir,
    new_arch_enabled: true,
@@ -83,10 +83,10 @@ index a5cf266..d9b952d 100644
    fabric_enabled: false,
    hermes_enabled: true,
    codegen_output_dir: 'build/generated/ios',
-diff --git a/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb b/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb
+diff --git a/scripts/cocoapods/codegen_utils.rb b/scripts/cocoapods/codegen_utils.rb
 index 3c51ad5..d4d762b 100644
---- a/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb
-+++ b/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb
+--- a/scripts/cocoapods/codegen_utils.rb
++++ b/scripts/cocoapods/codegen_utils.rb
 @@ -26,7 +26,7 @@ class CodegenUtils
      def use_react_native_codegen_discovery!(
        codegen_disabled,
@@ -96,10 +96,10 @@ index 3c51ad5..d4d762b 100644
        fabric_enabled: false,
        hermes_enabled: true,
        config_file_dir: '',
-diff --git a/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb b/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb
+diff --git a/scripts/cocoapods/fabric.rb b/scripts/cocoapods/fabric.rb
 index b6c8264..72fa064 100644
---- a/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb
-+++ b/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb
+--- a/scripts/cocoapods/fabric.rb
++++ b/scripts/cocoapods/fabric.rb
 @@ -7,7 +7,7 @@
  # It sets up the Fabric dependencies.
  #
@@ -109,10 +109,10 @@ index b6c8264..72fa064 100644
      pod 'React-Fabric', :path => "#{react_native_path}/ReactCommon"
      pod 'React-FabricComponents', :path => "#{react_native_path}/ReactCommon"
      pod 'React-graphics', :path => "#{react_native_path}/ReactCommon/react/renderer/graphics"
-diff --git a/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb b/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb
+diff --git a/scripts/cocoapods/jsengine.rb b/scripts/cocoapods/jsengine.rb
 index a15c928..be7909d 100644
---- a/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb
-+++ b/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb
+--- a/scripts/cocoapods/jsengine.rb
++++ b/scripts/cocoapods/jsengine.rb
 @@ -9,7 +9,7 @@ require_relative './utils.rb'
  #
  # @parameter react_native_path: relative path to react-native
@@ -122,10 +122,10 @@ index a15c928..be7909d 100644
      react_native_dir = Pod::Config.instance.installation_root.join(react_native_path)
      # This `:tag => hermestag` below is only to tell CocoaPods to update hermes-engine when React Native version changes.
      # We have custom logic to compute the source for hermes-engine. See sdks/hermes-engine/*
-diff --git a/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb b/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb
+diff --git a/scripts/cocoapods/local_podspec_patch.rb b/scripts/cocoapods/local_podspec_patch.rb
 index 1f7fea8..f3ad9ed 100644
---- a/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb
-+++ b/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb
+--- a/scripts/cocoapods/local_podspec_patch.rb
++++ b/scripts/cocoapods/local_podspec_patch.rb
 @@ -7,7 +7,7 @@
  # This is necessary because local podspec dependencies must be otherwise manually updated.
  module LocalPodspecPatch
@@ -135,10 +135,10 @@ index 1f7fea8..f3ad9ed 100644
          @@local_podspecs = dir_manager.glob("#{react_native_path}/third-party-podspecs/*").map { |file| file_manager.basename(file, ".podspec") }
          @@local_podspecs = @@local_podspecs.select do |podspec_name|
  
-diff --git a/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb b/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb
+diff --git a/scripts/cocoapods/runtime.rb b/scripts/cocoapods/runtime.rb
 index c2833d8..9d00361 100644
---- a/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb
-+++ b/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb
+--- a/scripts/cocoapods/runtime.rb
++++ b/scripts/cocoapods/runtime.rb
 @@ -7,7 +7,7 @@
  # Set up Bridgeless dependencies
  #
@@ -148,10 +148,10 @@ index c2833d8..9d00361 100644
      pod "React-jsitracing", :path => "#{react_native_path}/ReactCommon/hermes/executor/"
      pod "React-runtimescheduler", :path => "#{react_native_path}/ReactCommon/react/renderer/runtimescheduler"
      pod 'React-RuntimeCore', :path => "#{react_native_path}/ReactCommon/react/runtime"
-diff --git a/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js b/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js
+diff --git a/scripts/codegen/generate-artifacts-executor/utils.js b/scripts/codegen/generate-artifacts-executor/utils.js
 index 3ffba68..59ca6c7 100644
---- a/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js
-+++ b/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js
+--- a/scripts/codegen/generate-artifacts-executor/utils.js
++++ b/scripts/codegen/generate-artifacts-executor/utils.js
 @@ -479,7 +479,7 @@ function findReactNativeRootPath(projectRoot /* : string */) /* : string */ {
    let reactNativePackageJsonPath;
    try {
@@ -161,10 +161,10 @@ index 3ffba68..59ca6c7 100644
        {
          paths: [projectRoot],
        },
-diff --git a/node_modules/react-native-tvos/scripts/react_native_pods.rb b/node_modules/react-native-tvos/scripts/react_native_pods.rb
+diff --git a/scripts/react_native_pods.rb b/scripts/react_native_pods.rb
 index f2525de..a560e41 100644
---- a/node_modules/react-native-tvos/scripts/react_native_pods.rb
-+++ b/node_modules/react-native-tvos/scripts/react_native_pods.rb
+--- a/scripts/react_native_pods.rb
++++ b/scripts/react_native_pods.rb
 @@ -63,7 +63,7 @@ end
  # - app_path: path to the React Native app. Required by the New Architecture.
  # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
@@ -183,10 +183,10 @@ index f2525de..a560e41 100644
    mac_catalyst_enabled: false,
    ccache_enabled: ENV['USE_CCACHE'] == '1'
  )
-diff --git a/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec b/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec
+diff --git a/sdks/hermes-engine/hermes-engine.podspec b/sdks/hermes-engine/hermes-engine.podspec
 index cacef72..e81a035 100644
---- a/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec
-+++ b/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec
+--- a/sdks/hermes-engine/hermes-engine.podspec
++++ b/sdks/hermes-engine/hermes-engine.podspec
 @@ -9,7 +9,7 @@ require_relative "./hermes-utils.rb"
  begin
    react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
@@ -196,10 +196,10 @@ index cacef72..e81a035 100644
      {paths: [process.argv[1]]},
      )', __dir__]).strip
    )
-diff --git a/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec b/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec
+diff --git a/third-party-podspecs/ReactNativeDependencies.podspec b/third-party-podspecs/ReactNativeDependencies.podspec
 index 0c41590..a158850 100644
---- a/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec
-+++ b/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec
+--- a/third-party-podspecs/ReactNativeDependencies.podspec
++++ b/third-party-podspecs/ReactNativeDependencies.podspec
 @@ -9,7 +9,7 @@ require_relative "../scripts/cocoapods/utils.rb"
  begin
    react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',

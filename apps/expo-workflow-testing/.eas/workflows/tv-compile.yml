@@ -2,7 +2,7 @@ name: TV compile test
 
 defaults:
   tools:
-    pnpm: '10.34.5'
+    pnpm: '12.2.1'
 
 on:
   push:
@@ -104,6 +104,7 @@ jobs:
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: '4747'
+          PNPM_CONFIG_FROZEN_LOCKFILE: 'false'
         run: |
           pnpm --silent ts-node ./packages/expo-updates/e2e/setup/create-eas-project-tv.ts
           ls -la ../updates-e2e
