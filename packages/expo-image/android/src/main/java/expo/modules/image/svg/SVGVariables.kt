@@ -26,10 +26,6 @@ object SVGVariables {
   internal const val MAX_FALLBACK_DEPTH = 32
 
   /**
-   * Substitutes the variables in an SVG document. An empty map still resolves every `var()` to its
-   * fallback, which is how a document authored with fallbacks renders as its author intended.
-   */
-  /**
    * Resolves every `var()` in a document to its fallback, for sources loaded without `svgVariables`.
    * AndroidSVG doesn't understand custom properties, so without this a document authored with
    * fallbacks would not render the way it does in a browser. Documents that don't use `var()` at
@@ -42,6 +38,10 @@ object SVGVariables {
     return substitute(source, emptyMap())
   }
 
+  /**
+   * Substitutes the variables in an SVG document. An empty map still resolves every `var()` to its
+   * fallback, which is how a document authored with fallbacks renders as its author intended.
+   */
   fun substitute(source: String, variables: Map<String, String>): String {
     val chars = source.toCharArray()
     val out = StringBuilder(chars.size)

@@ -425,11 +425,11 @@ internal enum SVGVariables {
   // MARK: - Character helpers
 
   private static func matches(_ chars: [Character], at index: Int, _ needle: String) -> Bool {
-    let needleChars = Array(needle)
-    guard index + needleChars.count <= chars.count else {
+    let end = index + needle.count
+    guard end <= chars.count else {
       return false
     }
-    return Array(chars[index..<(index + needleChars.count)]) == needleChars
+    return chars[index..<end].elementsEqual(needle)
   }
 
   private static func readName(_ chars: [Character], from start: Int) -> String {
@@ -443,27 +443,38 @@ internal enum SVGVariables {
   private static func firstIndex(of needle: String, in chars: [Character], from start: Int) -> Int? {
     let needleChars = Array(needle)
     let last = chars.count - needleChars.count
-    guard !needleChars.isEmpty, start <= last else {
+    guard let first = needleChars.first, start <= last else {
       return nil
     }
-    for index in start...last where matches(chars, at: index, needle) {
-      return index
+    for index in start...last where chars[index] == first {
+      if chars[index..<(index + needleChars.count)].elementsEqual(needleChars) {
+        return index
+      }
     }
     return nil
   }
 
-  /// Case-insensitive search, comparing character by character. Lowercasing the whole document first
-  /// would be simpler but is not index-safe — for some scripts `lowercased()` changes the length of
-  /// the string, which would misalign every index that follows.
+  /// Case-insensitive search for an ASCII needle, comparing character by character against its lower-
+  /// and uppercase forms. Lowercasing the whole document first would be simpler but is not index-safe —
+  /// for some scripts `lowercased()` changes the length of the string, which would misalign every index
+  /// that follows.
   private static func firstIndex(ofCaseInsensitive needle: String, in chars: [Character], from start: Int) -> Int? {
-    let needleChars = Array(needle.lowercased())
-    let last = chars.count - needleChars.count
-    guard !needleChars.isEmpty, start <= last else {
+    let lowercase = Array(needle.lowercased())
+    let uppercase = Array(needle.uppercased())
+    let last = chars.count - lowercase.count
+    guard !lowercase.isEmpty, start <= last else {
       return nil
     }
     for index in start...last {
-      let candidate = chars[index..<(index + needleChars.count)]
-      if candidate.elementsEqual(needleChars, by: { $0.lowercased() == String($1) }) {
+      var isMatch = true
+      for offset in 0..<lowercase.count {
+        let char = chars[index + offset]
+        if char != lowercase[offset] && char != uppercase[offset] {
+          isMatch = false
+          break
+        }
+      }
+      if isMatch {
         return index
       }
     }
