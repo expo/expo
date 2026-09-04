@@ -49,7 +49,7 @@ type State = {
 };
 
 /**
- * A React error boundary that records render-phase errors as non-fatal `exception` log events (with
+ * A React error boundary that records render-phase errors as non-fatal `js.exception` log events (with
  * the React component stack) and renders a `fallback` in place of the subtree that threw.
  *
  * Render-phase errors don't reach `global.ErrorUtils`, so a boundary is the only way to capture them

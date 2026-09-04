@@ -549,7 +549,7 @@ export interface ExpoAppMetricsModuleType {
   getAllCrashReports?: () => Promise<CrashReport[]>;
 
   /**
-   * Reports an unhandled JavaScript error, recorded natively as an `exception` log event following
+   * Reports an unhandled JavaScript error, recorded natively as a `js.exception` log event following
    * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
    * `installErrorHandler` installs and by `AppMetricsErrorBoundary`; the `source` field records
    * which path captured the error.
