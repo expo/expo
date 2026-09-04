@@ -4157,6 +4157,9 @@ importers:
       react:
         specifier: '*'
         version: 19.2.3
+      react-native:
+        specifier: 0.87.0
+        version: 0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
       '@bacons/xcode':
         specifier: 1.0.0-alpha.29
@@ -4839,7 +4842,16 @@ importers:
       expo-image-loader:
         specifier: workspace:~
         version: link:../expo-image-loader
+      react:
+        specifier: '*'
+        version: 19.2.3
+      react-native:
+        specifier: 0.87.0
+        version: 0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
       expo:
         specifier: workspace:*
         version: link:../expo
@@ -5054,6 +5066,12 @@ importers:
       '@expo/image-utils':
         specifier: workspace:^
         version: link:../@expo/image-utils
+      react:
+        specifier: '*'
+        version: 19.2.3
+      react-native:
+        specifier: 0.87.0
+        version: 0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
       '@types/jest':
         specifier: ^29.2.1
@@ -5061,6 +5079,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
       expo:
         specifier: workspace:*
         version: link:../expo
