@@ -7,7 +7,10 @@ function isMapLoaded(map: FontMap) {
   if (typeof map === 'string') {
     return isLoaded(map);
   } else if (Array.isArray(map)) {
-    return map.every(({ fontFamily }) => isLoaded(fontFamily));
+    return map.every((definition) => {
+      const fontFamily = (definition as { fontFamily?: unknown } | null)?.fontFamily;
+      return typeof fontFamily === 'string' && isLoaded(fontFamily);
+    });
   } else {
     return Object.keys(map).every((fontFamily) => isLoaded(fontFamily));
   }
@@ -55,6 +58,9 @@ function useStaticFonts(map: FontMap): [boolean, Error | null] {
  * loaded and ready to use. It also returns an error if something went wrong, to use in development.
  *
  * > Note, the fonts are not "reloaded" when you dynamically change the font map.
+ *
+ * > A `fontFamily` loads once. Declare all of its faces in the same `useFonts` call. A later
+ * > call for an already-loaded `fontFamily` adds none of its faces, even if that call lists more.
  *
  * @param map A map of `fontFamily`s to [`FontSource`](#fontsource)s, or an array of
  * [`FontFamilyDefinition`](#fontfamilydefinition)s for loading multiple faces (for example

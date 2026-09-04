@@ -48,6 +48,25 @@ it('`Font.loadAsync()` throws when called outside `withServerContext()`', () => 
   expect(() => Font.loadAsync('A', { uri: 'a.ttf' })).toThrow(/outside of withServerContext/);
 });
 
+it('throws synchronously for an array with a duplicate fontFamily (static render discards the promise)', () => {
+  Server.withServerContext(() => {
+    expect(() =>
+      Font.loadAsync([
+        { fontFamily: 'Dup', fontDefinitions: [{ path: 'a.ttf' }] },
+        { fontFamily: 'Dup', fontDefinitions: [{ path: 'b.ttf' }] },
+      ])
+    ).toThrow(expect.objectContaining({ code: 'ERR_FONT_API' }));
+  });
+});
+
+it('throws synchronously for an array element that is not a well-shaped FontFamilyDefinition', () => {
+  Server.withServerContext(() => {
+    expect(() => Font.loadAsync([null as any])).toThrow(
+      expect.objectContaining({ code: 'ERR_FONT_API' })
+    );
+  });
+});
+
 it('isolates fonts between two concurrent server renders', async () => {
   // Each render is wrapped in `withServerContext()`; two overlapping renders must not leak fonts
   // into each other.

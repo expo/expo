@@ -18,15 +18,16 @@ public extension UIFont {
       return fontNames
     }
 
-    // Nothing under that name directly, so try the alias. It may carry several faces, the
-    // default face's names first — RN falls back to the first name, so preserve the order.
+    // RN falls back to the first name, so the alias's names must stay in default-face-first order.
     let aliasedFontNames = FontFamilyAliasManager.postScriptNames(forAlias: familyName)
+
+    // Expanding as a family name only makes sense for a single-face alias: a multi-face alias's
+    // name could match an unrelated CoreText family and its order would override ours.
+    let canExpandAsFamily = FontFamilyAliasManager.hasSingleFace(forAlias: familyName)
 
     var result = [String]()
     for name in aliasedFontNames {
-      // Try each name as a family name so faces registered under it stay reachable; a name that
-      // isn't one (e.g. a variable font's named instance) is kept as-is.
-      let expanded = UIFont._expo_fontNames(forFamilyName: name)
+      let expanded = canExpandAsFamily ? UIFont._expo_fontNames(forFamilyName: name) : []
       for expandedName in expanded.isEmpty ? [name] : expanded where !result.contains(expandedName) {
         result.append(expandedName)
       }
