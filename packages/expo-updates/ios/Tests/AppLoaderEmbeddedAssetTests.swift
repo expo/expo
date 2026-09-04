@@ -92,7 +92,12 @@ class AppLoaderEmbeddedAssetTests {
           "contentType": "application/javascript",
         ],
         "assets": [
-          ["key": "shared-asset", "url": "https://example.com/shared.png", "fileExtension": ".png"],
+          [
+            "key": "shared-asset",
+            "url": "https://example.com/shared.png",
+            "fileExtension": ".png",
+            "hash": "iG7KKTcT3Q3HfujEksZOgTWfbgKGt51fbfIMUGRm0eI",
+          ],
           ["key": "remote-only", "url": "https://example.com/other.png", "fileExtension": ".png"],
         ],
       ]),
@@ -221,6 +226,79 @@ class AppLoaderEmbeddedAssetTests {
     // `escaping-asset/../../evil` resolves to a sibling of the updates directory.
     let escaped = testDatabaseDir.deletingLastPathComponent().appendingPathComponent("evil")
     #expect(!FileManager.default.fileExists(atPath: escaped.path))
+  }
+
+  @Test
+  func `an embedded asset whose hash does not match the manifest is downloaded instead`() async throws {
+    let config = try UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+      UpdatesConfig.EXUpdatesConfigScopeKeyKey: "dummyScope",
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+    ])
+
+    let embeddedUpdate = Update.update(
+      withRawEmbeddedManifest: [
+        "id": "0eef8214-4833-4089-9dff-b4138a14f196",
+        "commitTime": 1609975977832,
+        "assets": [
+          ["packagerHash": "shared-asset", "type": "png", "nsBundleFilename": "embedded-image"]
+        ],
+      ],
+      config: config,
+      database: db
+    )
+
+    // The manifest expects different bytes than the binary ships, so the copy must be refused.
+    let remoteUpdate = ExpoUpdatesUpdate.update(
+      withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": "8b3c2e10-4f5a-4a1e-9c77-2b0f1d6a4e21",
+        "createdAt": "2026-01-02T00:17:54.797Z",
+        "launchAsset": [
+          "key": "remote-bundle",
+          "url": "https://example.com/index.bundle",
+          "contentType": "application/javascript",
+        ],
+        "assets": [
+          [
+            "key": "shared-asset",
+            "url": "https://example.com/shared.png",
+            "fileExtension": ".png",
+            "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          ]
+        ],
+      ]),
+      extensions: [:],
+      config: config,
+      database: db
+    )
+
+    let loader = RecordingAppLoader(
+      config: config,
+      logger: UpdatesLogger(),
+      database: db,
+      directory: testDatabaseDir,
+      launchedUpdate: nil,
+      completionQueue: DispatchQueue.global(qos: .default)
+    )
+    loader.embeddedUpdate = embeddedUpdate
+    loader.embeddedAssetsBundle = Bundle(for: AppLoaderEmbeddedAssetTestsForBundle.self)
+
+    let success: Bool = await withCheckedContinuation { continuation in
+      loader.updateResponseBlock = { _ in true }
+      loader.assetBlock = { _, _, _, _ in }
+      loader.successBlock = { _ in continuation.resume(returning: true) }
+      loader.errorBlock = { _ in continuation.resume(returning: false) }
+      loader.startLoading(fromUpdateResponse: UpdateResponse(
+        responseHeaderData: nil,
+        manifestUpdateResponsePart: ManifestUpdateResponsePart(updateManifest: remoteUpdate),
+        directiveUpdateResponsePart: nil
+      ))
+    }
+
+    #expect(success == true)
+    #expect(loader.downloadedKeys.contains("shared-asset"))
+    #expect(!FileManager.default.fileExists(atPath: testDatabaseDir.appendingPathComponent("shared-asset.png").path))
   }
 
   @Test
