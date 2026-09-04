@@ -40,13 +40,42 @@ Below is a reference for the syntax of the workflow configuration file.
 
 ## `name`
 
-The human-friendly name of the workflow. This is displayed on the EAS dashboard on the workflows list page and is the title of the workflow's detail page.
+The human-friendly name of the workflow. This is displayed on the EAS dashboard on the workflows list page and is the title of the workflow's detail page. To set a title for each individual run, use [`run_name`](#run_name).
 
 ```yaml
 # @info #
 name: My workflow
 # @end #
 ```
+
+## `run_name`
+
+The title of an individual workflow run. This is separate from [`name`](#name), which labels the workflow itself.
+
+```yaml
+name: Deploy
+# @info #
+run_name: Deploy ${{ inputs.environment }}
+# @end #
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options:
+          - preview
+          - production
+        required: true
+```
+
+The value is a string. It can include `${{ }}` expressions. EAS renders the template when it creates the run, before any job starts.
+
+The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), `inputs`, [`workflow`](#workflow), `app`, and `account` contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run.
+
+Job-level contexts such as `needs`, `steps`, and `env` are not available. If the template references an unsupported context, the run fails. EAS stores an error and does not store a custom title.
+
+If the rendered text is longer than 255 characters, EAS truncates it to 254 characters and appends an ellipsis.
 
 ## `on`
 
