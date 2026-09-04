@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Re-export the vendored JavaScript stack API from `expo-router/js-stack`. ([#49657](https://github.com/expo/expo/pull/49657) by [@davidmokos](https://github.com/davidmokos))
+
 ### 💡 Others
 
 ## 57.0.19 — 2026-09-04

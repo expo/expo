@@ -9,6 +9,8 @@ import { createStackNavigator } from '../react-navigation/stack';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
+export * from '../react-navigation/stack';
+
 const JSStackNavigator = createStackNavigator().Navigator;
 
 const JSStack = withLayoutContext<
