@@ -62,11 +62,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
 
-  // Map with task managers of running (foregrounded) apps. { "<appScopeKey>": WeakReference(TaskManagerInterface) }
-  private static final Map<String, WeakReference<TaskManagerInterface>> sTaskManagers = new HashMap<>();
+  // Map with task managers of running (foregrounded) apps. { "<appScopeKey>": TaskManagerInterface }
+  //
+  // Held strongly. These used to be WeakReferences, but nothing else retains the task
+  // manager, so a GC could clear one while its app was running: getTaskManager() then
+  // returned null, executeTask() took its "app is not fully loaded" path, and the event
+  // was queued for a headless load of an app that was already running — silently dropping
+  // every background task event from that point on. Entries are removed explicitly in
+  // setTaskManager(null, ...) when the host activity is destroyed, so the weak reference
+  // was never what released them.
+  private static final Map<String, TaskManagerInterface> sTaskManagers = new HashMap<>();
 
   // Same as above but for headless (backgrounded) apps.
-  private static final Map<String, WeakReference<TaskManagerInterface>> sHeadlessTaskManagers = new HashMap<>();
+  private static final Map<String, TaskManagerInterface> sHeadlessTaskManagers = new HashMap<>();
 
   // { "<appScopeKey>": List(eventIds...) }
   private static final Map<String, List<String>> sEvents = new HashMap<>();
@@ -250,10 +258,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
     boolean isHeadless = isStartedByHeadlessLoader(appScopeKey);
-    Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
+    Map<String, TaskManagerInterface> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
-    taskManagers.put(appScopeKey, new WeakReference<>(taskManager));
+    taskManagers.put(appScopeKey, taskManager);
 
     // Execute events waiting for the task manager.
     List<Bundle> eventsQueue = mTasksAndEventsRepository.getEvents(appScopeKey);
@@ -600,13 +608,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
    */
   @Nullable
   private TaskManagerInterface getTaskManager(String appScopeKey) {
-    WeakReference<TaskManagerInterface> weakRef = sTaskManagers.get(appScopeKey);
-    TaskManagerInterface taskManager = weakRef == null ? null : weakRef.get();
+    TaskManagerInterface taskManager = sTaskManagers.get(appScopeKey);
 
     if (taskManager == null) {
-      weakRef = sHeadlessTaskManagers.get(appScopeKey);
+      taskManager = sHeadlessTaskManagers.get(appScopeKey);
     }
-    return weakRef == null ? null : weakRef.get();
+    return taskManager;
   }
 
   private void invalidateAppRecord(String appScopeKey) {
