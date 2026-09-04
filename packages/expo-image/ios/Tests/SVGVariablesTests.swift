@@ -38,6 +38,16 @@ struct SVGVariablesTests {
     }
 
     @Test
+    func `substitutes non-color values inside functions, lists and percentages`() {
+      #expect(substitute(##"<g transform="rotate(var(--angle, 0) 50 50)"/>"##, ["--angle": "45"])
+        == ##"<g transform="rotate(45 50 50)"/>"##)
+      #expect(substitute(##"<rect stroke-dasharray="var(--dash, 4 2)"/>"##, ["--dash": "8 4 1 4"])
+        == ##"<rect stroke-dasharray="8 4 1 4"/>"##)
+      #expect(substitute(##"<rect rx="var(--radius, 0)" width="var(--w, 50%)"/>"##, ["--radius": "12", "--w": "75%"])
+        == ##"<rect rx="12" width="75%"/>"##)
+    }
+
+    @Test
     func `substitutes several references in one value`() {
       #expect(substitute(##"<rect stroke-dasharray="var(--a, 1) var(--b, 2)"/>"##, ["--a": "5", "--b": "6"])
         == ##"<rect stroke-dasharray="5 6"/>"##)
@@ -84,6 +94,17 @@ struct SVGVariablesTests {
     func `prefers the outer value over a nested fallback`() {
       #expect(substitute(##"<rect fill="var(--a, var(--b, green))"/>"##, ["--a": "red", "--b": "blue"])
         == ##"<rect fill="red"/>"##)
+    }
+
+    @Test
+    func `stops resolving fallbacks nested beyond the depth limit`() {
+      // Deep enough to overflow the stack if every level were resolved recursively.
+      let depth = 10_000
+      let value = String(repeating: "var(--a, ", count: depth) + "red" + String(repeating: ")", count: depth)
+      let result = substitute("<rect fill=\"\(value)\"/>", ["--z": "blue"])
+      let remaining = result.components(separatedBy: "var(").count - 1
+      #expect(result.contains("red"))
+      #expect(remaining == depth - SVGVariables.maxFallbackDepth)
     }
 
     @Test
@@ -166,6 +187,12 @@ struct SVGVariablesTests {
     }
 
     @Test
+    func `substitutes non-color declarations in a style body`() {
+      #expect(substitute("<style>.m { display: var(--marker, inline); stroke-width: var(--w, 1); }</style>", ["--marker": "none", "--w": "3"])
+        == "<style>.m { display: none; stroke-width: 3; }</style>")
+    }
+
+    @Test
     func `leaves an unresolved declaration empty so it is ignored`() {
       #expect(substitute(##"<svg><style>.wall { fill: var(--a) }</style></svg>"##, ["--b": "red"])
         == ##"<svg><style>.wall { fill:  }</style></svg>"##)
@@ -199,9 +226,9 @@ struct SVGVariablesTests {
     }
 
     @Test
-    func `is a no-op for an empty variable map`() {
-      #expect(substitute(##"<rect fill="var(--a, #000)"/>"##, [:])
-        == ##"<rect fill="var(--a, #000)"/>"##)
+    func `resolves fallbacks for an empty variable map`() {
+      #expect(substitute(##"<rect fill="var(--a, #000)" stroke="var(--b)"/>"##, [:])
+        == ##"<rect fill="#000"/>"##)
     }
   }
 
@@ -254,6 +281,16 @@ struct SVGVariablesTests {
     }
 
     @Test
+    func `rejects a value that could add declarations to a style attribute`() {
+      // A `style` attribute is a declaration list too, so `;` would let the value set other properties.
+      #expect(substitute(##"<rect style="fill: var(--a); stroke: black"/>"##, ["--a": "red; stroke: none"])
+        == ##"<rect style="fill: ; stroke: black"/>"##)
+      // Other attributes keep their semicolons, which some of them use as separators.
+      #expect(substitute(##"<animate values="var(--v)"/>"##, ["--v": "0;1"])
+        == ##"<animate values="0;1"/>"##)
+    }
+
+    @Test
     func `escapes metacharacters inside a style body`() {
       #expect(substitute(##"<style>.a { fill: var(--a) }</style>"##, ["--a": "A & B"])
         == ##"<style>.a { fill: A &amp; B }</style>"##)
@@ -274,6 +311,19 @@ struct SVGVariablesTests {
       // Re-encoding a document that declares another encoding would make its own declaration lie.
       let data = Data([0xFF, 0xFE, 0x00, 0x41])
       #expect(SVGVariables.substitute(in: data, variables: ["--a": "red"]) == data)
+    }
+
+    @Test
+    func `resolves fallbacks in a document that uses var()`() {
+      let data = Data(##"<svg><rect fill="var(--a, #000)" stroke="var(--b)"/></svg>"##.utf8)
+      #expect(String(decoding: SVGVariables.resolveFallbacks(in: data), as: UTF8.self)
+        == ##"<svg><rect fill="#000"/></svg>"##)
+    }
+
+    @Test
+    func `returns a document without var() untouched`() {
+      let data = Data(##"<svg><rect fill="#123456"/></svg>"##.utf8)
+      #expect(SVGVariables.resolveFallbacks(in: data) == data)
     }
   }
 }

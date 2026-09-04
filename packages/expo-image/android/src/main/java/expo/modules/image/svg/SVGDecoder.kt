@@ -60,22 +60,24 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   }
 
   /**
-   * Parses the document, first substituting any CSS custom properties the request asked for.
-   * The substitution happens on the source text because AndroidSVG cannot resolve `var()` itself.
+   * Parses the document, first substituting the CSS custom properties the request asked for, or
+   * resolving every `var()` to its fallback when it asked for none. The substitution happens on the
+   * source text because AndroidSVG cannot resolve `var()` itself.
    */
   private fun parse(source: InputStream, options: Options): SVG {
     val variables = options.get(CustomOptions.svgVariables)
-    if (variables.isNullOrEmpty()) {
-      return SVG.getFromInputStream(source)
-    }
-
     val bytes = source.readBytes()
     val text = decodeUtf8(bytes)
       // Substituting would mean re-encoding the document as UTF-8, which would contradict its own
       // XML declaration. Leave it alone rather than corrupt it.
       ?: return SVG.getFromInputStream(ByteArrayInputStream(bytes))
 
-    return SVG.getFromString(SVGVariables.substitute(text, variables))
+    val substituted = if (variables == null) {
+      SVGVariables.resolveFallbacks(text)
+    } else {
+      SVGVariables.substitute(text, variables)
+    }
+    return SVG.getFromString(substituted)
   }
 
   private fun decodeUtf8(bytes: ByteArray): String? = try {

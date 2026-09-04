@@ -126,7 +126,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
     }
 
-  internal var svgVariables: Map<String, String> = emptyMap()
+  // `null` leaves SVG documents untouched. An empty map still resolves `var()` fallbacks.
+  internal var svgVariables: Map<String, String>? = null
     set(value) {
       if (field == value) {
         return
@@ -610,7 +611,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .customize(tintColor) {
           apply(RequestOptions().set(CustomOptions.tintColor, it))
         }
-        .customize(svgVariables.takeIf { it.isNotEmpty() }) {
+        .customize(svgVariables) {
           apply(RequestOptions().set(CustomOptions.svgVariables, it))
         }
 

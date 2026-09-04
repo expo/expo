@@ -2,6 +2,7 @@ package expo.modules.image.svg
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
@@ -47,6 +48,25 @@ class SVGVariablesTest {
     assertEquals(
       """<rect opacity="0.25"/>""",
       substitute("""<rect opacity="var(--o, 1)"/>""", mapOf("--o" to "0.25"))
+    )
+  }
+
+  @Test
+  fun `substitutes non-color values inside functions, lists and percentages`() {
+    assertEquals(
+      """<g transform="rotate(45 50 50)"/>""",
+      substitute("""<g transform="rotate(var(--angle, 0) 50 50)"/>""", mapOf("--angle" to "45"))
+    )
+    assertEquals(
+      """<rect stroke-dasharray="8 4 1 4"/>""",
+      substitute("""<rect stroke-dasharray="var(--dash, 4 2)"/>""", mapOf("--dash" to "8 4 1 4"))
+    )
+    assertEquals(
+      """<rect rx="12" width="75%"/>""",
+      substitute(
+        """<rect rx="var(--radius, 0)" width="var(--w, 50%)"/>""",
+        mapOf("--radius" to "12", "--w" to "75%")
+      )
     )
   }
 
@@ -121,6 +141,17 @@ class SVGVariablesTest {
         mapOf("--a" to "red", "--b" to "blue")
       )
     )
+  }
+
+  @Test
+  fun `stops resolving fallbacks nested beyond the depth limit`() {
+    // Deep enough to overflow the stack if every level were resolved recursively.
+    val depth = 50_000
+    val value = "var(--a, ".repeat(depth) + "red" + ")".repeat(depth)
+    val result = substitute("""<rect fill="$value"/>""", mapOf("--z" to "blue"))
+    val remaining = result.split("var(").size - 1
+    assertTrue(result.contains("red"))
+    assertEquals(depth - SVGVariables.MAX_FALLBACK_DEPTH, remaining)
   }
 
   @Test
@@ -236,6 +267,17 @@ class SVGVariablesTest {
   }
 
   @Test
+  fun `substitutes non-color declarations in a style body`() {
+    assertEquals(
+      "<style>.m { display: none; stroke-width: 3; }</style>",
+      substitute(
+        "<style>.m { display: var(--marker, inline); stroke-width: var(--w, 1); }</style>",
+        mapOf("--marker" to "none", "--w" to "3")
+      )
+    )
+  }
+
+  @Test
   fun `leaves an unresolved declaration empty so it is ignored`() {
     assertEquals(
       """<svg><style>.wall { fill:  }</style></svg>""",
@@ -285,10 +327,10 @@ class SVGVariablesTest {
   }
 
   @Test
-  fun `is a no-op for an empty variable map`() {
+  fun `resolves fallbacks for an empty variable map`() {
     assertEquals(
-      """<rect fill="var(--a, #000)"/>""",
-      substitute("""<rect fill="var(--a, #000)"/>""", emptyMap())
+      """<rect fill="#000"/>""",
+      substitute("""<rect fill="var(--a, #000)" stroke="var(--b)"/>""", emptyMap())
     )
   }
 
@@ -357,11 +399,43 @@ class SVGVariablesTest {
   }
 
   @Test
+  fun `rejects a value that could add declarations to a style attribute`() {
+    // A `style` attribute is a declaration list too, so `;` would let the value set other properties.
+    assertEquals(
+      """<rect style="fill: ; stroke: black"/>""",
+      substitute("""<rect style="fill: var(--a); stroke: black"/>""", mapOf("--a" to "red; stroke: none"))
+    )
+    // Other attributes keep their semicolons, which some of them use as separators.
+    assertEquals(
+      """<animate values="0;1"/>""",
+      substitute("""<animate values="var(--v)"/>""", mapOf("--v" to "0;1"))
+    )
+  }
+
+  @Test
   fun `escapes metacharacters inside a style body`() {
     assertEquals(
       """<style>.a { fill: A &amp; B }</style>""",
       substitute("""<style>.a { fill: var(--a) }</style>""", mapOf("--a" to "A & B"))
     )
+  }
+
+  // endregion
+
+  // region documents without supplied variables
+
+  @Test
+  fun `resolves fallbacks in a document that uses var()`() {
+    assertEquals(
+      """<svg><rect fill="#000"/></svg>""",
+      SVGVariables.resolveFallbacks("""<svg><rect fill="var(--a, #000)" stroke="var(--b)"/></svg>""")
+    )
+  }
+
+  @Test
+  fun `returns a document without var() untouched`() {
+    val source = """<svg><rect fill="#123456"/></svg>"""
+    assertEquals(source, SVGVariables.resolveFallbacks(source))
   }
 
   // endregion
