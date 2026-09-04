@@ -52,12 +52,14 @@
   },
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
+    "precompile-ios": "et prebuild-package-for-publish",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest",
+    "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"

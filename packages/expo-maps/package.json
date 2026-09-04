@@ -31,12 +31,14 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "precompile-ios": "et prebuild-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
