@@ -15,13 +15,13 @@ import org.robolectric.RobolectricTestRunner
 class AlarmClockTriggerTest {
 
   @Test
-  fun `toBundle carries alarmClock`() {
-    assertTrue(DateTrigger(null, 0L, true).toBundle().getBoolean("alarmClock"))
-    assertTrue(DailyTrigger(null, 1, 2, true).toBundle().getBoolean("alarmClock"))
-    assertTrue(WeeklyTrigger(null, 1, 2, 3, true).toBundle().getBoolean("alarmClock"))
-    assertTrue(MonthlyTrigger(null, 1, 2, 3, true).toBundle().getBoolean("alarmClock"))
-    assertTrue(YearlyTrigger(null, 1, 2, 3, 4, true).toBundle().getBoolean("alarmClock"))
-    assertFalse(DateTrigger(null, 0L).toBundle().getBoolean("alarmClock"))
+  fun `toBundle carries delivery`() {
+    assertEquals("alarmClock", DateTrigger(null, 0L, true).toBundle().getString("delivery"))
+    assertEquals("alarmClock", DailyTrigger(null, 1, 2, true).toBundle().getString("delivery"))
+    assertEquals("alarmClock", WeeklyTrigger(null, 1, 2, 3, true).toBundle().getString("delivery"))
+    assertEquals("alarmClock", MonthlyTrigger(null, 1, 2, 3, true).toBundle().getString("delivery"))
+    assertEquals("alarmClock", YearlyTrigger(null, 1, 2, 3, 4, true).toBundle().getString("delivery"))
+    assertEquals("bestEffort", DateTrigger(null, 0L).toBundle().getString("delivery"))
   }
 
   @Test

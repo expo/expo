@@ -1,6 +1,10 @@
 import type { ProxyNativeModule } from 'expo-modules-core';
 
-import type { NotificationRequest, NotificationContentInput } from './Notifications.types';
+import type {
+  NotificationRequest,
+  NotificationContentInput,
+  NotificationDelivery,
+} from './Notifications.types';
 
 export interface NotificationSchedulerModule extends ProxyNativeModule {
   getAllScheduledNotificationsAsync?: () => Promise<NotificationRequest[]>;
@@ -46,7 +50,7 @@ export interface NativeTimeIntervalTriggerInput {
 
 export interface NativeDailyTriggerInput {
   type: 'daily';
-  alarmClock?: boolean;
+  delivery?: NotificationDelivery;
   channelId?: string;
   hour: number;
   minute: number;
@@ -54,7 +58,7 @@ export interface NativeDailyTriggerInput {
 
 export interface NativeWeeklyTriggerInput {
   type: 'weekly';
-  alarmClock?: boolean;
+  delivery?: NotificationDelivery;
   channelId?: string;
   weekday: number;
   hour: number;
@@ -63,7 +67,7 @@ export interface NativeWeeklyTriggerInput {
 
 export interface NativeYearlyTriggerInput {
   type: 'yearly';
-  alarmClock?: boolean;
+  delivery?: NotificationDelivery;
   channelId?: string;
   day: number;
   month: number;
@@ -73,7 +77,7 @@ export interface NativeYearlyTriggerInput {
 
 export interface NativeMonthlyTriggerInput {
   type: 'monthly';
-  alarmClock?: boolean;
+  delivery?: NotificationDelivery;
   channelId?: string;
   day: number;
   hour: number;
@@ -82,7 +86,7 @@ export interface NativeMonthlyTriggerInput {
 
 export interface NativeDateTriggerInput {
   type: 'date';
-  alarmClock?: boolean;
+  delivery?: NotificationDelivery;
   channelId?: string;
   timestamp: number; // seconds since 1970
 }

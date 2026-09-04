@@ -188,8 +188,8 @@ function parseDateTrigger(trigger: NotificationTriggerInput): NativeDateTriggerI
     if (trigger.channelId) {
       result.channelId = trigger.channelId;
     }
-    if (trigger.alarmClock) {
-      result.alarmClock = trigger.alarmClock;
+    if (trigger.delivery) {
+      result.delivery = trigger.delivery;
     }
     return result;
   } else {
@@ -220,8 +220,8 @@ function parseDailyTrigger(trigger: NotificationTriggerInput): NativeDailyTrigge
     if (trigger.channelId) {
       result.channelId = trigger.channelId;
     }
-    if (trigger.alarmClock) {
-      result.alarmClock = trigger.alarmClock;
+    if (trigger.delivery) {
+      result.delivery = trigger.delivery;
     }
     return result;
   }
@@ -247,8 +247,8 @@ function parseWeeklyTrigger(
     if (trigger.channelId) {
       result.channelId = trigger.channelId;
     }
-    if (trigger.alarmClock) {
-      result.alarmClock = trigger.alarmClock;
+    if (trigger.delivery) {
+      result.delivery = trigger.delivery;
     }
     return result;
   }
@@ -274,8 +274,8 @@ function parseMonthlyTrigger(
     if (trigger.channelId) {
       result.channelId = trigger.channelId;
     }
-    if (trigger.alarmClock) {
-      result.alarmClock = trigger.alarmClock;
+    if (trigger.delivery) {
+      result.delivery = trigger.delivery;
     }
     return result;
   }
@@ -302,8 +302,8 @@ function parseYearlyTrigger(
     if (trigger.channelId) {
       result.channelId = trigger.channelId;
     }
-    if (trigger.alarmClock) {
-      result.alarmClock = trigger.alarmClock;
+    if (trigger.delivery) {
+      result.delivery = trigger.delivery;
     }
     return result;
   }

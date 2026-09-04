@@ -25,10 +25,19 @@ open class ChannelAwareTrigger(open val channelId: String?) :
 }
 
 /**
- * A schedulable trigger that opts into `AlarmManager.setAlarmClock()` delivery.
+ * A schedulable trigger that can opt into `AlarmManager.setAlarmClock()` delivery.
+ * JS exposes the choice as `delivery: 'bestEffort' | 'alarmClock'`.
  */
 interface AlarmClockAwareTrigger {
   val alarmClock: Boolean
+
+  val delivery: String
+    get() = if (alarmClock) DELIVERY_ALARM_CLOCK else DELIVERY_BEST_EFFORT
+
+  companion object {
+    const val DELIVERY_BEST_EFFORT = "bestEffort"
+    const val DELIVERY_ALARM_CLOCK = "alarmClock"
+  }
 }
 
 /**
@@ -47,7 +56,7 @@ class DailyTrigger(override val channelId: String?, val hour: Int, val minute: I
     "type" to "daily",
     "hour" to hour,
     "minute" to minute,
-    "alarmClock" to alarmClock
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -84,7 +93,7 @@ class DateTrigger(
     "type" to "date",
     "repeats" to false,
     "value" to timestamp,
-    "alarmClock" to alarmClock
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -116,7 +125,7 @@ class MonthlyTrigger(override val channelId: String?, val day: Int, val hour: In
     "day" to day,
     "hour" to hour,
     "minute" to minute,
-    "alarmClock" to alarmClock
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -192,7 +201,7 @@ class WeeklyTrigger(override val channelId: String?, val weekday: Int, val hour:
     "weekday" to weekday,
     "hour" to hour,
     "minute" to minute,
-    "alarmClock" to alarmClock
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -228,7 +237,7 @@ class YearlyTrigger(override val channelId: String?, val day: Int, val month: In
     "month" to month,
     "hour" to hour,
     "minute" to minute,
-    "alarmClock" to alarmClock
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {

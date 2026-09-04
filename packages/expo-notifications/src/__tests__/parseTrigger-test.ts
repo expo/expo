@@ -45,26 +45,26 @@ const WALL_CLOCK_TRIGGERS: [string, WallClockTriggerInput][] = [
 ];
 
 describe(parseTrigger, () => {
-  it.each(WALL_CLOCK_TRIGGERS)('forwards alarmClock for a %s trigger', (kind, trigger) => {
-    expect(parseTrigger({ ...trigger, alarmClock: true })).toMatchObject({
+  it.each(WALL_CLOCK_TRIGGERS)('forwards delivery for a %s trigger', (kind, trigger) => {
+    expect(parseTrigger({ ...trigger, delivery: 'alarmClock' })).toMatchObject({
       type: kind,
-      alarmClock: true,
+      delivery: 'alarmClock',
     });
   });
 
   it.each(WALL_CLOCK_TRIGGERS)(
-    'omits alarmClock for a %s trigger when it is not set',
+    'omits delivery for a %s trigger when it is not set',
     (_kind, trigger) => {
-      expect(parseTrigger(trigger)).not.toHaveProperty('alarmClock');
+      expect(parseTrigger(trigger)).not.toHaveProperty('delivery');
     }
   );
 
-  it('does not add alarmClock to a timeInterval trigger', () => {
+  it('does not add delivery to a timeInterval trigger', () => {
     const result = parseTrigger({
       type: SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: 60,
       repeats: false,
     });
-    expect(result).not.toHaveProperty('alarmClock');
+    expect(result).not.toHaveProperty('delivery');
   });
 });

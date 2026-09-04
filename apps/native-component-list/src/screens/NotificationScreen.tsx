@@ -331,13 +331,13 @@ export default class NotificationScreen extends React.Component<
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Alarm-clock notification',
-        body: 'Scheduled with alarmClock: true',
+        body: "Scheduled with delivery: 'alarmClock'",
         sound: true,
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: Date.now() + 60_000,
-        alarmClock: true,
+        delivery: 'alarmClock',
       },
     });
   };

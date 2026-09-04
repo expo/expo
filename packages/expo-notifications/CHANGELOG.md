@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- [android] Add opt-in `alarmClock` option to `DateTriggerInput` and the repeating wall-clock triggers (`DailyTriggerInput`, `WeeklyTriggerInput`, `MonthlyTriggerInput`, `YearlyTriggerInput`) that delivers the notification via `AlarmManager.setAlarmClock()`, which OEM battery policies do not defer. Intended for time-critical, user-facing alarms. ([#49687](https://github.com/expo/expo/pull/49687) by [@capt-muji](https://github.com/capt-muji))
+- [android] Add a `delivery` option to `DateTriggerInput` and the repeating wall-clock triggers (`DailyTriggerInput`, `WeeklyTriggerInput`, `MonthlyTriggerInput`, `YearlyTriggerInput`). Set it to `'alarmClock'` to deliver the notification via `AlarmManager.setAlarmClock()`, which OEM battery policies do not defer. Intended for time-critical, user-facing alarms. ([#49687](https://github.com/expo/expo/pull/49687) by [@capt-muji](https://github.com/capt-muji))
 - [ios] Forward notification center calls to a `UNUserNotificationCenterDelegate` that another library set, so that both libraries keep working. ([#48313](https://github.com/expo/expo/pull/48313) by [@vonovak](https://github.com/vonovak))
 - [ios] Add support for grouping notifications via `threadIdentifier`. ([#49429](https://github.com/expo/expo/pull/49429) by [@vonovak](https://github.com/vonovak))
 - [Android] Add a `largeIcon` config plugin property that sets the notification large icon. ([#49481](https://github.com/expo/expo/pull/49481) by [@expo-bot](https://github.com/expo-bot))
