@@ -224,6 +224,8 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * Values are not limited to colors. Anything a custom property stands in for, such as
    * `stroke-width` or `opacity`, is substituted the same way. Keys include the leading `--`.
+   * Values are inserted as written and cannot refer to other custom properties: a value such as
+   * `'var(--other)'` is not resolved. Reference a paint server the document defines with `url(#id)`.
    *
    * A property that is not supplied falls back to the value declared inside its own `var()`, and
    * when there is no fallback the declaration is dropped so the renderer applies its own default.
