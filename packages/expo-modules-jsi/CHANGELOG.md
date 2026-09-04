@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.8 — 2026-09-04
+
+### 🎉 New features
+
 - [iOS] Add `JavaScriptRuntime.collectGarbage(cause:)` that requests a full garbage collection through the runtime's JSI instrumentation. It is a no-op on engines whose runtime doesn't implement GC instrumentation, unlike the Hermes-only `gc()` global that the tests used to evaluate. ([#48446](https://github.com/expo/expo/pull/48446) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes

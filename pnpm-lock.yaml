@@ -3146,7 +3146,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-widgets:
-        specifier: workspace:^57.0.16
+        specifier: workspace:^57.0.17
         version: link:../expo-widgets
     devDependencies:
       '@babel/core':
@@ -3490,7 +3490,7 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^57.0.21
+        specifier: workspace:^57.0.22
         version: link:../@expo/cli
       '@expo/config':
         specifier: workspace:~57.0.9
@@ -3544,7 +3544,7 @@ importers:
         specifier: workspace:~57.0.12
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~57.0.15
+        specifier: workspace:~57.0.16
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3771,7 +3771,7 @@ importers:
   packages/expo-background-fetch:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~57.0.15
+        specifier: workspace:~57.0.16
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3787,7 +3787,7 @@ importers:
   packages/expo-background-task:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~57.0.15
+        specifier: workspace:~57.0.16
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3893,7 +3893,7 @@ importers:
         specifier: ^5.2.0
         version: 5.2.2
       expo-build-properties:
-        specifier: workspace:~57.0.16
+        specifier: workspace:~57.0.17
         version: link:../expo-build-properties
       expo-manifests:
         specifier: workspace:~57.0.1
@@ -4929,7 +4929,7 @@ importers:
         specifier: 0.6.1
         version: 0.6.1
       expo-modules-jsi:
-        specifier: workspace:~57.0.7
+        specifier: workspace:~57.0.8
         version: link:../expo-modules-jsi
       invariant:
         specifier: ^2.2.4
@@ -5083,7 +5083,7 @@ importers:
   packages/expo-observe:
     dependencies:
       expo-app-metrics:
-        specifier: workspace:~57.0.16
+        specifier: workspace:~57.0.17
         version: link:../expo-app-metrics
       expo-eas-client:
         specifier: workspace:~57.0.3
@@ -5152,7 +5152,7 @@ importers:
         specifier: workspace:^57.0.2
         version: link:../@expo/schema-utils
       '@expo/ui':
-        specifier: workspace:^57.0.15
+        specifier: workspace:^57.0.16
         version: link:../expo-ui
       '@radix-ui/react-slot':
         specifier: ^1.2.0
@@ -5959,7 +5959,7 @@ importers:
         specifier: workspace:^0.8.1
         version: link:../@expo/plist
       '@expo/ui':
-        specifier: workspace:~57.0.15
+        specifier: workspace:~57.0.16
         version: link:../expo-ui
       react:
         specifier: 19.2.3

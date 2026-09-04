@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix a data race on `NotificationCenterManager`'s delegate list that crashed the app with `SIGSEGV` when one app context registered its modules while another tore its own down, such as on a dev-client reload or `Updates.reloadAsync()`. [#49554](https://github.com/expo/expo/pull/49554) by [@dennytosp](https://github.com/dennytosp))
-
 ### 💡 Others
+
+## 57.0.17 — 2026-09-04
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a data race on `NotificationCenterManager`'s delegate list that crashed the app with `SIGSEGV` when one app context registered its modules while another tore its own down, such as on a dev-client reload or `Updates.reloadAsync()`. [#49554](https://github.com/expo/expo/pull/49554) by [@dennytosp](https://github.com/dennytosp))
 
 ## 57.0.16 — 2026-09-01
 
