@@ -8,6 +8,7 @@
 
 - Add `Circle` type to the `GoogleMaps` namespace. ([#49124](https://github.com/expo/expo/pull/49124) by [@CatLover01](https://github.com/CatLover01))
 - [iOS] Added `anchor` to `AppleMaps.View` annotations, so a pin-shaped icon can point at its coordinates instead of being centered on them. Matches the `anchor` that `GoogleMaps.View` markers already support. ([#49315](https://github.com/expo/expo/pull/49315) by [@jensdev](https://github.com/jensdev))
+- [iOS] Added `animateAnnotations` to `AppleMaps.View`, which fades and scales an annotation's content in when it first appears instead of popping it in. ([#49526](https://github.com/expo/expo/pull/49526) by [@moishinetzer](https://github.com/moishinetzer))
 
 ### 🐛 Bug fixes
 
