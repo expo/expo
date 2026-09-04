@@ -317,6 +317,7 @@ export declare class NativeLiveActivityFactory extends SharedObject {
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   getId(): string;
+  getContentState(): string | null;
   update(props?: string, staleDate?: number): Promise<void>;
   end(
     dismissalPolicy?: string,
