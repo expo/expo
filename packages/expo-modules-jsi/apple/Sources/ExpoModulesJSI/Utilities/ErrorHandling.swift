@@ -48,15 +48,17 @@ internal func forwardingSwiftErrorsToJS(
   return .undefined()
 }
 
-/// Void overload of `forwardingSwiftErrorsToJS` for host object setter trampolines, which
-/// have no return value to propagate.
+/// Overload for trampolines that write their result into the caller's slot themselves. Returns
+/// whether an error was stored, so the C++ caller reads the thread-local error slot only then and
+/// skips the thread-local access on every successful call.
 @_transparent
 internal func forwardingSwiftErrorsToJS(
   runtime: JavaScriptRuntime,
   _ body: () throws -> Void
-) {
+) -> Bool {
   do {
     try body()
+    return false
   } catch let jsError as JavaScriptError {
     // Relay the wrapped `jsi::JSError` directly so the thrown value reaches JS as-is, which may be
     // an arbitrary value rather than an `Error` instance.
@@ -68,4 +70,5 @@ internal func forwardingSwiftErrorsToJS(
   } catch let error {
     expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
   }
+  return true
 }

@@ -105,12 +105,12 @@ inline jsi::Function createHostFunction(jsi::IRuntime &runtime, const jsi::PropN
   auto closurePtr = std::shared_ptr<HostFunctionClosure>(closure);
   return jsi::Function::createFromHostFunction(runtime, propName, 0, [closurePtr](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
     jsi::Value result;
-    closurePtr->call(thisValue, args, count, result);
-
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
-    if (auto *error = CppError::getCurrent()) {
-      throw error->release();
+    if (closurePtr->call(thisValue, args, count, result)) {
+      if (auto *error = CppError::getCurrent()) {
+        throw error->release();
+      }
     }
     return result;
   });
