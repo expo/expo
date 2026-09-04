@@ -5478,9 +5478,6 @@ importers:
       expo-server:
         specifier: workspace:^
         version: link:../expo-server
-      expo-symbols:
-        specifier: workspace:^
-        version: link:../expo-symbols
       fast-deep-equal:
         specifier: ^3.1.3
         version: 3.1.3
@@ -5575,6 +5572,9 @@ importers:
       expect-type:
         specifier: ^1.3.0
         version: 1.3.0
+      expo-symbols:
+        specifier: workspace:^
+        version: link:../expo-symbols
       immer:
         specifier: ^10.1.1
         version: 10.2.0

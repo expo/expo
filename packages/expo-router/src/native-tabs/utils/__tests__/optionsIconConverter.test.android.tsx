@@ -1,6 +1,48 @@
 import type { ImageSourcePropType } from 'react-native';
 
-import { convertOptionsIconToScreensPropsIcon } from '../optionsIconConverter';
+import { requireExpoSymbols } from '../../../optional-libraries/expo-symbols';
+import { appendIconOptions, convertOptionsIconToScreensPropsIcon } from '../optionsIconConverter';
+
+jest.mock('../../../optional-libraries/expo-symbols', () => ({
+  requireExpoSymbols: jest.fn(() => jest.requireMock('expo-symbols')),
+}));
+
+jest.mock('expo-symbols', () => ({
+  unstable_getMaterialSymbolSourceAsync: jest.fn(),
+}));
+
+const mockedRequireExpoSymbols = jest.mocked(requireExpoSymbols);
+
+beforeEach(() => {
+  mockedRequireExpoSymbols.mockImplementation(() => jest.requireMock('expo-symbols'));
+});
+
+describe(appendIconOptions, () => {
+  it("throws for an md icon when expo-symbols isn't installed", () => {
+    mockedRequireExpoSymbols.mockImplementation(() => {
+      throw new Error(
+        "NativeTabs.Trigger.Icon `md` icons on Android require 'expo-symbols'. Install it with `npx expo install expo-symbols` or use the `src` or `drawable` prop."
+      );
+    });
+
+    expect(() => appendIconOptions({}, { md: 'home' })).toThrow(
+      "NativeTabs.Trigger.Icon `md` icons on Android require 'expo-symbols'. Install it with `npx expo install expo-symbols` or use the `src` or `drawable` prop."
+    );
+  });
+
+  it("doesn't require expo-symbols for src or drawable icons", () => {
+    const source = { uri: 'https://example.com/icon.png' };
+    const srcOptions = {};
+    const drawableOptions = {};
+
+    appendIconOptions(srcOptions, { src: source });
+    appendIconOptions(drawableOptions, { drawable: 'home' });
+
+    expect(mockedRequireExpoSymbols).not.toHaveBeenCalled();
+    expect(srcOptions).toEqual({ icon: { src: source } });
+    expect(drawableOptions).toEqual({ icon: { drawable: 'home' } });
+  });
+});
 
 describe(convertOptionsIconToScreensPropsIcon, () => {
   it('returns drawableResource when drawable is provided', () => {
