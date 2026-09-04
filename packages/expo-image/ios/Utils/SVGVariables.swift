@@ -41,10 +41,16 @@ internal enum SVGVariables {
   /// don't use `var()` at all, which is nearly all of them, are returned as they are without a scan
   /// of their markup.
   static func resolveFallbacks(in data: Data) -> Data {
-    guard data.range(of: Data("var(".utf8)) != nil else {
+    guard usesVariables(data) else {
       return data
     }
     return substitute(in: data, variables: [:])
+  }
+
+  /// Whether a document refers to any custom property. A substring check, so a `var(` inside text
+  /// content counts too, which only costs a needless substitution pass.
+  static func usesVariables(_ data: Data) -> Bool {
+    return data.range(of: Data("var(".utf8)) != nil
   }
 
   static func substitute(in source: String, variables: [String: String]) -> String {

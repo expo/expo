@@ -214,15 +214,9 @@ public final class ImageView: ExpoView {
 
     onLoadStart([:])
 
-    var options = loadingOptions
-    if svgVariables != nil {
-      // The substituted document is rebuilt from the original data on every load, and a memory hit
-      // doesn't come with its data unless asked for.
-      options.insert(.queryMemoryData)
-    }
     pendingOperation = imageManager.loadImage(
       with: source.uri,
-      options: options,
+      options: loadingOptions,
       context: context,
       progress: imageLoadProgress(_:_:_:),
       completed: imageLoadCompleted(_:_:_:_:_:_:)
@@ -289,9 +283,11 @@ public final class ImageView: ExpoView {
     }
 
     // The manager delivered the original document, which is all it ever caches. With variables set the
-    // image it decoded is discarded, not shown, and rebuilt from the substituted document.
-    if let variables = svgVariables, let data, SDImageSVGCoder.shared.canDecode(from: data) {
-      substituteSVGVariables(variables, in: data, replacing: image, cacheType: cacheType, imageUrl: imageUrl)
+    // image it decoded is discarded, not shown, and rebuilt from the substituted document. A memory hit
+    // or a transformed image comes without data, but `SVGCoder` left the document on the image.
+    let document = data ?? (image.sd_extendedObject as? Data)
+    if let variables = svgVariables, let document, SDImageSVGCoder.shared.canDecode(from: document) {
+      substituteSVGVariables(variables, in: document, replacing: image, cacheType: cacheType, imageUrl: imageUrl)
       return
     }
     didLoad(image, cacheType: cacheType, imageUrl: imageUrl)
