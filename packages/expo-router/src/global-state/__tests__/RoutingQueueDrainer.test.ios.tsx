@@ -16,7 +16,12 @@ function actionType(intent: RoutingIntent): string {
   return intent.payload.action.type;
 }
 
-function renderDrainer(ready: boolean, processIntent: (intent: RoutingIntent) => void) {
+const noop = () => {};
+
+function renderDrainer(
+  processIntent: (intent: RoutingIntent) => void,
+  assertNavigatorMounted: () => void = noop
+) {
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
   function CaptureEnqueue() {
@@ -27,7 +32,10 @@ function renderDrainer(ready: boolean, processIntent: (intent: RoutingIntent) =>
   const result = render(
     <RoutingQueueProvider>
       <CaptureEnqueue />
-      <RoutingQueueDrainer ready={ready} processIntent={processIntent} />
+      <RoutingQueueDrainer
+        assertNavigatorMounted={assertNavigatorMounted}
+        processIntent={processIntent}
+      />
     </RoutingQueueProvider>
   );
 
@@ -41,7 +49,7 @@ it('isolates queue notifications from its parent', () => {
 
   function Consumer() {
     enqueue = useEnqueueRoutingIntent();
-    return <RoutingQueueDrainer ready processIntent={processIntent} />;
+    return <RoutingQueueDrainer assertNavigatorMounted={noop} processIntent={processIntent} />;
   }
 
   function Parent() {
@@ -60,37 +68,36 @@ it('isolates queue notifications from its parent', () => {
   expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
 });
 
-it('keeps intents queued until ready', () => {
+it('surfaces the mounted-navigator assertion instead of processing', () => {
   const processIntent = jest.fn();
-  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
+  const assertNavigatorMounted = jest.fn(() => {
+    throw new Error('no navigator');
+  });
+  const result = renderDrainer(processIntent, assertNavigatorMounted);
 
-  function Tree({ ready }: { ready: boolean }) {
-    enqueue = useEnqueueRoutingIntent();
-    return <RoutingQueueDrainer ready={ready} processIntent={processIntent} />;
-  }
-
-  const result = render(
-    <RoutingQueueProvider>
-      <Tree ready={false} />
-    </RoutingQueueProvider>
-  );
-  act(() => enqueue(actionIntent('TEST')));
+  expect(() => act(() => result.enqueue(actionIntent('TEST')))).toThrow('no navigator');
   expect(processIntent).not.toHaveBeenCalled();
+});
 
-  result.rerender(
-    <RoutingQueueProvider>
-      <Tree ready />
-    </RoutingQueueProvider>
-  );
+it('asserts once per batch rather than once per intent', () => {
+  const processIntent = jest.fn();
+  const assertNavigatorMounted = jest.fn();
+  const result = renderDrainer(processIntent, assertNavigatorMounted);
 
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
+  act(() => {
+    result.enqueue(actionIntent('FIRST'));
+    result.enqueue(actionIntent('SECOND'));
+  });
+
+  expect(assertNavigatorMounted).toHaveBeenCalledTimes(1);
+  expect(processIntent).toHaveBeenCalledTimes(2);
 });
 
 it('processes a queued batch in FIFO order', () => {
   const calls: string[] = [];
   const processIntent = jest.fn((intent: RoutingIntent) => calls.push(actionType(intent)));
   const onDispatch = jest.fn(() => calls.push('onDispatch'));
-  const result = renderDrainer(true, processIntent);
+  const result = renderDrainer(processIntent);
 
   act(() => {
     result.enqueue(actionIntent('FIRST'));
@@ -122,7 +129,7 @@ it('does not process a batch twice in Strict Mode', () => {
     <React.StrictMode>
       <RoutingQueueProvider>
         <CaptureEnqueue />
-        <RoutingQueueDrainer ready processIntent={processIntent} />
+        <RoutingQueueDrainer assertNavigatorMounted={noop} processIntent={processIntent} />
       </RoutingQueueProvider>
     </React.StrictMode>
   );
@@ -139,7 +146,7 @@ it('processes intents added while draining in a later batch', () => {
       enqueue(actionIntent('SECOND'));
     }
   });
-  const result = renderDrainer(true, processIntent);
+  const result = renderDrainer(processIntent);
   enqueue = result.enqueue;
 
   act(() => enqueue(actionIntent('FIRST')));
@@ -149,11 +156,23 @@ it('processes intents added while draining in a later batch', () => {
 
 it('drops pending intents when the provider unmounts', () => {
   const processIntent = jest.fn();
-  const first = renderDrainer(false, processIntent);
-  act(() => first.enqueue(actionIntent('TEST')));
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
+
+  function CaptureEnqueue() {
+    enqueue = useEnqueueRoutingIntent();
+    return null;
+  }
+
+  // No drainer, so the intent stays queued on this provider.
+  const first = render(
+    <RoutingQueueProvider>
+      <CaptureEnqueue />
+    </RoutingQueueProvider>
+  );
+  act(() => enqueue(actionIntent('TEST')));
 
   first.unmount();
-  renderDrainer(true, processIntent);
+  renderDrainer(processIntent);
 
   expect(processIntent).not.toHaveBeenCalled();
 });
@@ -165,7 +184,7 @@ it('continues after processIntent throws synchronously', () => {
       throw new Error('failed');
     }
   });
-  const result = renderDrainer(true, processIntent);
+  const result = renderDrainer(processIntent);
 
   act(() => {
     result.enqueue(actionIntent('FIRST'));

@@ -57,14 +57,13 @@ const duplicateNameWarnings: string[] = [];
  * This should be rendered at the root wrapping the whole app.
  *
  * @param props.initialState Initial state object for the navigation tree.
- * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
-  const { ref, initialState, onReady, UNSTABLE_routeNode, theme, children } = props;
+  const { ref, initialState, UNSTABLE_routeNode, theme, children } = props;
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
@@ -147,8 +146,13 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     return route as Route<string> | undefined;
   });
 
-  // TODO(@ubax): check if this is still needed anywhere
-  const isReady = useLatestCallback(() => listeners.focus[0] != null && registry.has(state.key));
+  const assertNavigatorMounted = useLatestCallback(() => {
+    if (!registry.getSnapshot().has(state.key)) {
+      throw new Error(
+        'Attempted to navigate before the root layout mounted a navigator. Expo Router builds its navigation tree from the navigator you render, so there is nothing to navigate until one exists. Render a `Slot`, `Stack`, or another navigator on the first render of your root layout.'
+      );
+    }
+  });
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -170,21 +174,13 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       getRootState,
       getCurrentRoute,
       getCurrentOptions,
-      isReady,
+      // Kept for compatibility. There is no ready state to report.
+      isReady: () => true,
       setOptions: () => {
         throw new Error('Cannot call setOptions outside a screen');
       },
     }),
-    [
-      canGoBack,
-      dispatch,
-      dispatchSync,
-      emitter,
-      getCurrentOptions,
-      getCurrentRoute,
-      getRootState,
-      isReady,
-    ]
+    [canGoBack, dispatch, dispatchSync, emitter, getCurrentOptions, getCurrentRoute, getRootState]
   );
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
@@ -215,17 +211,6 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   if (!areUrlObjectsEqual(routeInfo, nextRouteInfo)) {
     setRouteInfo(nextRouteInfo);
   }
-
-  const onReadyCalledRef = React.useRef(false);
-  const notifyReady = React.useEffectEvent(() => onReady?.());
-
-  React.useEffect(() => {
-    if (!onReadyCalledRef.current && isReady()) {
-      onReadyCalledRef.current = true;
-      notifyReady();
-      emitter.emit({ type: 'ready' });
-    }
-  }, [state, registry, isReady, emitter]);
 
   React.useEffect(() => {
     const hydratedState = getRootState();
@@ -306,7 +291,10 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
               <EnsureSingleNavigator>
                 <ThemeProvider value={theme}>{children}</ThemeProvider>
               </EnsureSingleNavigator>
-              <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+              <RoutingQueueDrainer
+                assertNavigatorMounted={assertNavigatorMounted}
+                processIntent={processIntent}
+              />
             </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>

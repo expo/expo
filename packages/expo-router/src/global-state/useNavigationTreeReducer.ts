@@ -16,7 +16,7 @@ import {
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
-import type { RouterRegistry } from './routerRegistry';
+import type { RouterRegistry, RouterRegistryStore } from './routerRegistry';
 import type { RoutingIntent } from './routingQueue';
 import { resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
@@ -49,7 +49,7 @@ type TreeOperation =
 type Options = {
   initialState: InitialState | undefined;
   routeNode?: RouteNode;
-  registry: RouterRegistry;
+  registry: RouterRegistryStore;
   routesWithRemovalPrevented?: ReadonlySet<string>;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
@@ -308,7 +308,7 @@ function navigationTreeReducer(
 export function useNavigationTreeReducer({
   initialState,
   routeNode,
-  registry,
+  registry: registryStore,
   routesWithRemovalPrevented = EMPTY_SET,
   linking,
   redirects,
@@ -327,6 +327,13 @@ export function useNavigationTreeReducer({
       return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
     }
   );
+  // Registration happens in layout effects, so subscribe rather than read a context value: the
+  // unmount pass below needs the entries from the commit that just landed.
+  const registry = React.useSyncExternalStore(
+    registryStore.subscribe,
+    registryStore.getSnapshot,
+    registryStore.getSnapshot
+  );
   const previousRegistryRef = React.useRef(registry);
 
   const processAction = React.useCallback(
@@ -334,14 +341,15 @@ export function useNavigationTreeReducer({
       reactDispatch({
         operation,
         config: {
-          registry,
+          // Snapshot at dispatch: a navigator may register before React runs the reducer.
+          registry: registryStore.getSnapshot(),
           routesWithRemovalPrevented,
           routeNode,
           linking,
           redirects,
         },
       }),
-    [linking, redirects, registry, routeNode, routesWithRemovalPrevented]
+    [linking, redirects, registryStore, routeNode, routesWithRemovalPrevented]
   );
   const process = React.useEffectEvent(processAction);
   const processIntent = React.useCallback(

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
+import { createContext, use, useState, type PropsWithChildren } from 'react';
 
 import type { RouteNode } from '../Route';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
@@ -23,46 +23,76 @@ export type RouterRegistryEntry = {
 // Entries appear after the first commit and state keys can change when navigation state is reset.
 export type RouterRegistry = ReadonlyMap<string, RouterRegistryEntry>;
 
+/**
+ * Read handle over the registry. The handle is the context value, never the map itself: navigators
+ * register from layout effects, so a map in context would only become visible one commit later.
+ * Readers that need the current entries call `getSnapshot`; readers that need to re-render on a
+ * change subscribe.
+ */
+export type RouterRegistryStore = {
+  /** The current registry. A new map on every change, so it is safe to hold on to. */
+  getSnapshot: () => RouterRegistry;
+  subscribe: (listener: () => void) => () => void;
+};
+
 type RouterRegistrySetters = {
   register: (stateKey: string, entry: RouterRegistryEntry) => void;
   unregister: (stateKey: string, entry: RouterRegistryEntry) => void;
 };
 
-// React components read this map during render, so React state is intentional.
-export const RouterRegistryContext = createContext<RouterRegistry | undefined>(undefined);
+export const RouterRegistryContext = createContext<RouterRegistryStore | undefined>(undefined);
 const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(undefined);
 
+function createRouterRegistryStore() {
+  let snapshot: RouterRegistry = new Map();
+  const listeners = new Set<() => void>();
+
+  const emit = () => {
+    for (const listener of listeners) {
+      listener();
+    }
+  };
+
+  const store: RouterRegistryStore = {
+    getSnapshot: () => snapshot,
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
+
+  const setters: RouterRegistrySetters = {
+    register(stateKey, entry) {
+      if (snapshot.get(stateKey) === entry) {
+        return;
+      }
+
+      snapshot = new Map(snapshot).set(stateKey, entry);
+      emit();
+    },
+    unregister(stateKey, entry) {
+      if (snapshot.get(stateKey) !== entry) {
+        return;
+      }
+
+      const next = new Map(snapshot);
+      next.delete(stateKey);
+      snapshot = next;
+      emit();
+    },
+  };
+
+  return { store, setters };
+}
+
 export function RouterRegistryProvider({ children }: PropsWithChildren) {
-  const [registry, setRegistry] = useState<RouterRegistry>(() => new Map());
-  const setters = useMemo<RouterRegistrySetters>(
-    () => ({
-      register(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) === entry) {
-            return previous;
-          }
-
-          return new Map(previous).set(stateKey, entry);
-        });
-      },
-      unregister(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) !== entry) {
-            return previous;
-          }
-
-          const next = new Map(previous);
-          next.delete(stateKey);
-          return next;
-        });
-      },
-    }),
-    []
-  );
+  const [{ store, setters }] = useState(createRouterRegistryStore);
 
   return (
     <RouterRegistrySettersContext.Provider value={setters}>
-      <RouterRegistryContext.Provider value={registry}>{children}</RouterRegistryContext.Provider>
+      <RouterRegistryContext.Provider value={store}>{children}</RouterRegistryContext.Provider>
     </RouterRegistrySettersContext.Provider>
   );
 }

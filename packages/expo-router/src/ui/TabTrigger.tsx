@@ -207,7 +207,12 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
           if (!owningState) {
             return;
           }
-          const action = buildTabAction(config, owningState, registry, options?.resetOnFocus);
+          const action = buildTabAction(
+            config,
+            owningState,
+            registry.getSnapshot(),
+            options?.resetOnFocus
+          );
           return navigation?.dispatchSync(
             config.contextKey !== contextKey
               ? { ...action, target: action.target ?? owningState.key }

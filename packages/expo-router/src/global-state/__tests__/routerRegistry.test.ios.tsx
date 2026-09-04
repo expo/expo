@@ -12,8 +12,8 @@ import { navigationRef } from '../navigationRef';
 import {
   RouterRegistryProvider,
   RouterRegistryContext,
-  type RouterRegistry,
   type RouterRegistryEntry,
+  type RouterRegistryStore,
   useRegisterRouter,
 } from '../routerRegistry';
 
@@ -68,12 +68,14 @@ function Registrant({
   return children;
 }
 
-function RegistryProbe({ onRender }: { onRender: (registry: RouterRegistry) => void }) {
-  const registry = use(RouterRegistryContext);
-  if (registry === undefined) {
+// The store is the context value, so this renders once. Read `getSnapshot()` after the commit
+// rather than collecting a value per render.
+function RegistryProbe({ onRender }: { onRender: (store: RouterRegistryStore) => void }) {
+  const store = use(RouterRegistryContext);
+  if (store === undefined) {
     throw new Error('Expected RouterRegistryProvider');
   }
-  onRender(registry);
+  onRender(store);
   return null;
 }
 
@@ -93,94 +95,176 @@ describe(RouterRegistryProvider, () => {
   });
 
   it('registers and unregisters entries', () => {
-    const registries: RouterRegistry[] = [];
+    const stores: RouterRegistryStore[] = [];
     const result = render(
       <RouterRegistryProvider>
-        <RegistryProbe onRender={(registry) => registries.push(registry)} />
+        <RegistryProbe onRender={(store) => stores.push(store)} />
         <Registrant entry={firstEntry} />
       </RouterRegistryProvider>
     );
 
-    expect(registries.at(-1)?.get(state.key)).toBe(firstEntry);
+    expect(stores.at(-1)?.getSnapshot().get(state.key)).toBe(firstEntry);
 
     result.rerender(
       <RouterRegistryProvider>
-        <RegistryProbe onRender={(registry) => registries.push(registry)} />
+        <RegistryProbe onRender={(store) => stores.push(store)} />
       </RouterRegistryProvider>
     );
 
-    expect(registries.at(-1)?.size).toBe(0);
+    expect(stores.at(-1)?.getSnapshot().size).toBe(0);
   });
 
   it('keeps a newer registration when an older owner unmounts', () => {
-    const registries: RouterRegistry[] = [];
+    const stores: RouterRegistryStore[] = [];
     const result = render(
       <RouterRegistryProvider>
-        <RegistryProbe onRender={(registry) => registries.push(registry)} />
+        <RegistryProbe onRender={(store) => stores.push(store)} />
         <Registrant entry={firstEntry} />
         <Registrant entry={secondEntry} />
       </RouterRegistryProvider>
     );
 
-    expect(registries.at(-1)?.get(state.key)).toBe(secondEntry);
+    expect(stores.at(-1)?.getSnapshot().get(state.key)).toBe(secondEntry);
 
     result.rerender(
       <RouterRegistryProvider>
-        <RegistryProbe onRender={(registry) => registries.push(registry)} />
+        <RegistryProbe onRender={(store) => stores.push(store)} />
         <Registrant entry={secondEntry} />
       </RouterRegistryProvider>
     );
 
-    expect(registries.at(-1)?.get(state.key)).toBe(secondEntry);
+    expect(stores.at(-1)?.getSnapshot().get(state.key)).toBe(secondEntry);
   });
 
   it('handles StrictMode effect replay', () => {
-    const registries: RouterRegistry[] = [];
+    const stores: RouterRegistryStore[] = [];
 
     render(
       <StrictMode>
         <RouterRegistryProvider>
-          <RegistryProbe onRender={(registry) => registries.push(registry)} />
+          <RegistryProbe onRender={(store) => stores.push(store)} />
           <Registrant entry={firstEntry} />
         </RouterRegistryProvider>
       </StrictMode>
     );
 
-    expect(registries.at(-1)?.get(state.key)).toBe(firstEntry);
+    expect(stores.at(-1)?.getSnapshot().get(state.key)).toBe(firstEntry);
   });
 
-  it('preserves map identity when registration does not change', () => {
-    const registries: RouterRegistry[] = [];
+  it('keeps one store identity for the life of the provider', () => {
+    const stores: RouterRegistryStore[] = [];
 
-    render(
+    const result = render(
       <RouterRegistryProvider>
-        <RegistryProbe onRender={(registry) => registries.push(registry)} />
+        <RegistryProbe onRender={(store) => stores.push(store)} />
         <Registrant entry={firstEntry} />
+      </RouterRegistryProvider>
+    );
+    result.rerender(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(store) => stores.push(store)} />
+        <Registrant entry={secondEntry} />
+      </RouterRegistryProvider>
+    );
+
+    expect(new Set(stores).size).toBe(1);
+    expect(stores.at(-1)?.getSnapshot().get(state.key)).toBe(secondEntry);
+  });
+
+  it('replaces the snapshot instead of mutating it', () => {
+    const stores: RouterRegistryStore[] = [];
+
+    const result = render(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(store) => stores.push(store)} />
+        <Registrant entry={firstEntry} />
+      </RouterRegistryProvider>
+    );
+    const store = stores.at(-1)!;
+    const first = store.getSnapshot();
+
+    result.rerender(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(nextStore) => stores.push(nextStore)} />
+        <Registrant entry={secondEntry} />
+      </RouterRegistryProvider>
+    );
+
+    expect(store.getSnapshot()).not.toBe(first);
+    // A snapshot taken earlier still reads what it read at the time.
+    expect(first.get(state.key)).toBe(firstEntry);
+    expect(store.getSnapshot().get(state.key)).toBe(secondEntry);
+  });
+
+  it('keeps the snapshot identity across a re-render', () => {
+    const stores: RouterRegistryStore[] = [];
+
+    const result = render(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(store) => stores.push(store)} />
+        <Registrant entry={firstEntry} />
+      </RouterRegistryProvider>
+    );
+    const store = stores.at(-1)!;
+    const first = store.getSnapshot();
+
+    result.rerender(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(nextStore) => stores.push(nextStore)} />
         <Registrant entry={firstEntry} />
       </RouterRegistryProvider>
     );
 
-    expect(new Set(registries).size).toBe(2);
-    expect(registries.at(-1)?.get(state.key)).toBe(firstEntry);
+    expect(store.getSnapshot()).toBe(first);
+  });
+
+  it('notifies subscribers when a registration changes', () => {
+    const listener = jest.fn();
+    const stores: RouterRegistryStore[] = [];
+
+    const result = render(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(store) => stores.push(store)} />
+      </RouterRegistryProvider>
+    );
+    const unsubscribe = stores.at(-1)!.subscribe(listener);
+
+    result.rerender(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(store) => stores.push(store)} />
+        <Registrant entry={firstEntry} />
+      </RouterRegistryProvider>
+    );
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    unsubscribe();
+    result.rerender(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(store) => stores.push(store)} />
+      </RouterRegistryProvider>
+    );
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('navigation builder registration', () => {
-  let registry: RouterRegistry;
+  let store: RouterRegistryStore | undefined;
   let registryRenders: number;
 
+  const getRegistry = () => store!.getSnapshot();
+
   function Probe() {
-    const currentRegistry = use(RouterRegistryContext);
-    if (currentRegistry === undefined) {
+    const currentStore = use(RouterRegistryContext);
+    if (currentStore === undefined) {
       throw new Error('Expected RouterRegistryProvider');
     }
-    registry = currentRegistry;
+    store = currentStore;
     registryRenders++;
     return <Text testID="probe" />;
   }
 
   beforeEach(() => {
-    registry = new Map();
+    store = undefined;
     registryRenders = 0;
   });
 
@@ -193,8 +277,10 @@ describe('navigation builder registration', () => {
     const rootState = navigationRef.current!.getRootState();
     const layoutState = rootState.routes[0]!.state!;
 
-    expect([...registry.keys()]).toEqual(expect.arrayContaining([rootState.key, layoutState.key]));
-    expect(registry.size).toBe(2);
+    expect([...getRegistry().keys()]).toEqual(
+      expect.arrayContaining([rootState.key, layoutState.key])
+    );
+    expect(getRegistry().size).toBe(2);
   });
 
   it('registers an inactive nested navigator only after its screen mounts', () => {
@@ -205,29 +291,33 @@ describe('navigation builder registration', () => {
       'nested/index': () => <Text testID="nested" />,
     });
 
-    expect(registry.size).toBe(2);
+    expect(getRegistry().size).toBe(2);
 
     act(() => router.push('/nested'));
 
-    expect(registry.size).toBe(3);
+    expect(getRegistry().size).toBe(3);
   });
 
-  it('notifies consumers when a navigator mounts and unmounts', () => {
+  it('reflects navigator mounts and unmounts in a new snapshot without re-rendering consumers', () => {
     renderRouter({
       _layout: () => <Stack />,
       index: Probe,
       'nested/_layout': () => <Stack />,
       'nested/index': () => <Text testID="nested" />,
     });
+    const initialStore = store;
+    const initialSnapshot = getRegistry();
     const initialRenders = registryRenders;
 
     act(() => router.push('/nested'));
-    expect(registryRenders).toBeGreaterThan(initialRenders);
+    expect(getRegistry().size).toBe(3);
 
-    const mountedRenders = registryRenders;
     act(() => router.back());
-    expect(registryRenders).toBeGreaterThan(mountedRenders);
-    expect(registry.size).toBe(2);
+    expect(getRegistry().size).toBe(2);
+    // The snapshot is replaced, but the context value that carries it never is.
+    expect(getRegistry()).not.toBe(initialSnapshot);
+    expect(store).toBe(initialStore);
+    expect(registryRenders).toBe(initialRenders);
   });
 
   it('reduces actions with the registered router configuration', () => {
@@ -237,7 +327,7 @@ describe('navigation builder registration', () => {
       second: () => <Text testID="second" />,
     });
     const layoutState = getLayoutState();
-    const entry = registry.get(layoutState.key)!;
+    const entry = getRegistry().get(layoutState.key)!;
 
     const result = entry.reduce(layoutState, StackActions.push('second'));
 
@@ -245,7 +335,7 @@ describe('navigation builder registration', () => {
     expect(result?.affectedRouteKey).toBe(result?.state.routes[1]!.key);
   });
 
-  it('preserves registry identity when screens do not change', () => {
+  it('preserves snapshot identity when screens do not change', () => {
     let rerenderLayout: () => void;
     function Layout() {
       const [, setRenderCount] = useState(0);
@@ -257,14 +347,14 @@ describe('navigation builder registration', () => {
       _layout: Layout,
       index: Probe,
     });
-    const initialRegistry = registry;
-    const initialEntry = registry.get(getLayoutState().key);
+    const initialRegistry = getRegistry();
+    const initialEntry = getRegistry().get(getLayoutState().key);
     const initialRenders = registryRenders;
 
     act(() => rerenderLayout());
 
-    expect(registry).toBe(initialRegistry);
-    expect(registry.get(getLayoutState().key)).toBe(initialEntry);
+    expect(getRegistry()).toBe(initialRegistry);
+    expect(getRegistry().get(getLayoutState().key)).toBe(initialEntry);
     expect(registryRenders).toBe(initialRenders);
   });
 
@@ -309,12 +399,12 @@ describe('navigation builder registration', () => {
 
     try {
       const result = render(<ExpoRoot context={context} location="/" />);
-      const initialEntry = registry.get(getLayoutState().key)!;
+      const initialEntry = getRegistry().get(getLayoutState().key)!;
 
       routes.second = () => <Text testID="second" />;
       result.rerender(<ExpoRoot context={context} location="/" />);
 
-      const updatedEntry = registry.get(getLayoutState().key)!;
+      const updatedEntry = getRegistry().get(getLayoutState().key)!;
       expect(updatedEntry).not.toBe(initialEntry);
       expect(
         updatedEntry.reduce(getLayoutState(), StackActions.push('second'))?.state.routes

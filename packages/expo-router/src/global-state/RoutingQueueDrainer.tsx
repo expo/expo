@@ -6,19 +6,23 @@ import type { RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
 
 type Props = {
-  ready: boolean;
+  /** Throws when no navigator owns the root state, i.e. there is nothing to navigate. */
+  assertNavigatorMounted: () => void;
   processIntent: (intent: RoutingIntent) => void;
 };
 
-export function RoutingQueueDrainer({ ready, processIntent }: Props) {
+export function RoutingQueueDrainer({ assertNavigatorMounted, processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
   const { dequeue, startTransition } = React.use(RoutingQueueApiContext)!;
   const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
-    if (!ready || intents.length === 0 || lastProcessed.current === intents) {
+    if (intents.length === 0 || lastProcessed.current === intents) {
       return;
     }
+    // Deliberately above the per-intent catch: a missing navigator is a setup mistake, not a bad
+    // action, so it must surface instead of being logged once per queued intent.
+    assertNavigatorMounted();
     // Strict Mode re-runs the mount effect with the same array before `dequeue` updates state.
     lastProcessed.current = intents;
     // TODO(@ubax): Navigation runs in a transition, so a destination that suspends keeps the
@@ -47,7 +51,7 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
         }
       }
     });
-  }, [dequeue, intents, processIntent, ready, startTransition]);
+  }, [assertNavigatorMounted, dequeue, intents, processIntent, startTransition]);
 
   return null;
 }

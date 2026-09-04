@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react-native';
 
 import type { NavigationAction, NavigationState } from '../../react-navigation/routers';
 import { getNavigateAction } from '../getNavigationAction';
-import type { RouterRegistry } from '../routerRegistry';
+import type { RouterRegistry, RouterRegistryStore } from '../routerRegistry';
 import type { LinkToOptions } from '../types';
 import { useNavigationTreeReducer } from '../useNavigationTreeReducer';
 import { node } from './__fixtures__/routeNode';
@@ -27,6 +27,29 @@ const initialState: NavigationState = {
   ],
 };
 
+// Tests pass a plain map; the hook takes the read handle the provider puts in context.
+function createTestStore(registry: RouterRegistry) {
+  let snapshot = registry;
+  const listeners = new Set<() => void>();
+  return {
+    store: {
+      getSnapshot: () => snapshot,
+      subscribe(listener: () => void) {
+        listeners.add(listener);
+        return () => {
+          listeners.delete(listener);
+        };
+      },
+    } satisfies RouterRegistryStore,
+    setRegistry(next: RouterRegistry) {
+      snapshot = next;
+      for (const listener of listeners) {
+        listener();
+      }
+    },
+  };
+}
+
 function renderReducer({
   state = initialState,
   registry,
@@ -36,11 +59,12 @@ function renderReducer({
   registry: RouterRegistry;
   routesWithRemovalPrevented?: ReadonlySet<string>;
 }) {
+  const { store, setRegistry } = createTestStore(registry);
   const reports: NonNullable<ReturnType<typeof useNavigationTreeReducer>['report']>[] = [];
   const result = renderHook<
     ReturnType<typeof useNavigationTreeReducer>,
     {
-      registry: RouterRegistry;
+      registry: RouterRegistryStore;
       routesWithRemovalPrevented: ReadonlySet<string>;
     }
   >(
@@ -55,9 +79,9 @@ function renderReducer({
       }
       return reducer;
     },
-    { initialProps: { registry, routesWithRemovalPrevented } }
+    { initialProps: { registry: store, routesWithRemovalPrevented } }
   );
-  return { ...result, reports };
+  return { ...result, reports, setRegistry };
 }
 
 test('reports and vetoes removal of a prevented route', () => {
@@ -230,6 +254,27 @@ it('reduces consecutive actions against accumulated state with one committed upd
       action: secondAction,
     }),
   ]);
+});
+
+it('reduces against the snapshot taken at dispatch', () => {
+  const reduceAtDispatch = jest.fn((state: NavigationState) => ({
+    state,
+    affectedRouteKey: state.routes[state.index]!.key,
+  }));
+  const reduceAfterDispatch = jest.fn((state: NavigationState) => ({
+    state,
+    affectedRouteKey: state.routes[state.index]!.key,
+  }));
+  const result = renderReducer({ registry: new Map([['root', entry(reduceAtDispatch)]]) });
+
+  act(() => {
+    result.result.current.handleAction({ type: 'NEXT' });
+    // A navigator registers before React processes the queued action, swapping in a new snapshot.
+    result.setRegistry(new Map([['root', entry(reduceAfterDispatch)]]));
+  });
+
+  expect(reduceAtDispatch).toHaveBeenCalledTimes(1);
+  expect(reduceAfterDispatch).not.toHaveBeenCalled();
 });
 
 it('assigns increasing ids to events across actions', () => {
@@ -428,10 +473,7 @@ it('resets a state slice when its router unregisters', () => {
     registry: new Map([['root', registryEntry]]),
   });
 
-  result.rerender({
-    registry: new Map(),
-    routesWithRemovalPrevented: new Set(),
-  });
+  act(() => result.setRegistry(new Map()));
 
   expect(result.result.current.state).toMatchObject({
     index: 0,
@@ -469,10 +511,7 @@ it('does not reset a state slice when its router entry is replaced', () => {
     registry: new Map([['root', entry(() => null)]]),
   });
 
-  result.rerender({
-    registry: new Map([['root', entry(() => null)]]),
-    routesWithRemovalPrevented: new Set(),
-  });
+  act(() => result.setRegistry(new Map([['root', entry(() => null)]])));
 
   expect(result.result.current.state).toBe(initialState);
 });
@@ -591,7 +630,7 @@ it('throws for an incomplete initial state', () => {
     renderHook(() =>
       useNavigationTreeReducer({
         initialState: { routes: [{ name: 'first' }] },
-        registry: new Map(),
+        registry: createTestStore(new Map()).store,
       })
     )
   ).toThrow('incomplete initial state');
