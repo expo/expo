@@ -848,4 +848,45 @@ describe('_getManifestResponseAsync', () => {
 
     expect(partsSeen.has('manifest')).toBeTruthy();
   });
+
+  it('caches the resolved runtime version across requests for the same platform', async () => {
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+
+    const requestOptions = {
+      responseContentType: ResponseContentType.APPLICATION_JSON,
+      platform: 'android' as const,
+      expectSignature: null,
+      hostname: 'localhost',
+    };
+
+    await middleware._getManifestResponseAsync(requestOptions);
+    await middleware._getManifestResponseAsync(requestOptions);
+
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('resolves the runtime version separately per platform', async () => {
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+
+    await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.APPLICATION_JSON,
+      platform: 'android',
+      expectSignature: null,
+      hostname: 'localhost',
+    });
+    await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.APPLICATION_JSON,
+      platform: 'ios',
+      expectSignature: null,
+      hostname: 'localhost',
+    });
+
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(2);
+  });
 });
