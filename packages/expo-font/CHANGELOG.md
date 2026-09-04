@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - [ios] `getLoadedFonts()` no longer reports the PostScript name read out of a font loaded with `loadAsync`, only the name (the alias) it was loaded under. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
+- [web] Removed `FontResource.testString`. The CSS Font Loading API detects font loading without a test string. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
 
@@ -23,6 +24,8 @@
 - [web] Match `@font-face` rules by comparing the rule's bare family name against the caller's literal name, so families whose names contain quotes or padding resolve correctly, and fixed `unloadAsync()` deleting wrong rules when several rules match. ([#49379](https://github.com/expo/expo/pull/49379) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+- [web] Replaced the `fontfaceobserver` dependency with the CSS Font Loading API, so `loadAsync` also waits for the font on Safari and iOS browsers. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
 
 ## 57.0.1 - 2026-07-15
 

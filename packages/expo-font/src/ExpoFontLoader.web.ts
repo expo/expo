@@ -1,5 +1,4 @@
 import { CodedError, registerWebModule } from 'expo-modules-core';
-import FontObserver from 'fontfaceobserver';
 
 import type { ExpoFontLoaderModule } from './ExpoFontLoader';
 import type { UnloadFontOptions } from './Font';
@@ -230,16 +229,52 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
       _createWebStyle(fontFamilyName, resource);
     }
 
-    if (!isFontLoadingListenerSupported()) {
+    if (typeof document.fonts?.load !== 'function') {
       return Promise.resolve();
     }
 
-    return new FontObserver(fontFamilyName, {
-      // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
-      display: resource.display,
-    }).load(resource.testString ?? null, 12000);
+    // Resolve when the browser has fetched the file, so text renders with it on resolution. The
+    // face is selected with the `font` shorthand syntax; skip a descriptor the CSS sanitization
+    // in `_createWebFontTemplate` drops, and a range weight, which the shorthand can't express.
+    let shorthand = '';
+    if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
+      shorthand += `${resource.style} `;
+    }
+    if (
+      (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) ||
+      (typeof resource.weight === 'string' &&
+        (CSS_IDENT_RE.test(resource.weight) ||
+          (CSS_WEIGHT_NUMERIC_RE.test(resource.weight) && !resource.weight.includes(' '))))
+    ) {
+      shorthand += `${resource.weight} `;
+    }
+    return withLoadTimeout(
+      document.fonts.load(`${shorthand}1em ${JSON.stringify(fontFamilyName)}`),
+      fontFamilyName
+    );
   },
 };
+
+const FONT_LOAD_TIMEOUT_MS = 12000;
+
+function withLoadTimeout(loading: Promise<unknown>, fontFamilyName: string): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timingOut = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      reject(
+        new CodedError(
+          'ERR_DOWNLOAD',
+          `Fetching the font family "${fontFamilyName}" timed out after ${FONT_LOAD_TIMEOUT_MS}ms. ` +
+            `Check that the font URL is reachable and served with CORS headers.`
+        )
+      );
+    }, FONT_LOAD_TIMEOUT_MS);
+  });
+
+  return Promise.race([loading, timingOut])
+    .finally(() => clearTimeout(timer))
+    .then(() => undefined);
+}
 
 const isServer = process.env.EXPO_OS === 'web' && typeof window === 'undefined';
 
@@ -315,16 +350,4 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
     styleElement.appendChild(textNode);
   }
   return styleElement;
-}
-
-function isFontLoadingListenerSupported(): boolean {
-  const { userAgent } = window.navigator;
-  // WebKit is broken https://github.com/bramstein/fontfaceobserver/issues/95
-  const isIOS = !!userAgent.match(/iPad|iPhone/i);
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  // Edge is broken https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
-  const isEdge = userAgent.includes('Edge');
-  // Internet Explorer
-  const isIE = userAgent.includes('Trident');
-  return !isSafari && !isIOS && !isEdge && !isIE;
 }
