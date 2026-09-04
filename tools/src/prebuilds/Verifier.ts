@@ -6,8 +6,10 @@ import os from 'os';
 import path from 'path';
 
 import logger from '../Logger';
+import { getPackageByName } from '../Packages';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct } from './SPMConfig.types';
 import { AsyncSpinner, createAsyncSpinner } from './Utils';
@@ -1405,10 +1407,14 @@ const collectDependencyXcframeworkPaths = (
     // We need the package name for the path
     const packageName = dep.includes('/') ? dep.split('/')[0] : dep;
 
+    const dependencyPackage = getPackageByName(packageName);
+    const dependencyBuildPath =
+      usesPackageLocalBuildPath(pkg) && dependencyPackage
+        ? getPackageLocalBuildPath(dependencyPackage)
+        : path.join(pkg.buildPath, '..', packageName);
+
     const depXcframeworksDir = path.join(
-      pkg.buildPath,
-      '..',
-      packageName,
+      dependencyBuildPath,
       'output',
       buildFlavor.toLowerCase(),
       'xcframeworks'

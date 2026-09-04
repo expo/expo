@@ -164,7 +164,7 @@ export const IOS_PREBUILD_PACKAGES = [
   'expo-media-library',
   'expo-modules-core',
   'expo-print',
-  'expo-ui',
+  '@expo/ui',
   'expo-video',
 ];
 

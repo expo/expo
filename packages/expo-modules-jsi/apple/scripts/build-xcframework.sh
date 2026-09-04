@@ -27,12 +27,13 @@ set -euo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
-XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
+BUILD_ROOT="${EXPO_CUSTOM_BUILD_ROOT:-${PACKAGE_DIR}}"
+XCFRAMEWORK_PATH="${BUILD_ROOT}/Products/${PACKAGE_NAME}.xcframework"
 
 CONFIGURATION="Release"
-DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
-SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
-SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
+DERIVED_DATA_PATH="${BUILD_ROOT}/DerivedData"
+SPM_BUILD_PATH="${BUILD_ROOT}/build"
+SPM_WORKSPACE_PATH="${BUILD_ROOT}/swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"

@@ -9,6 +9,7 @@ bare-apps
 
 # Node
 node_modules
+.expo-prebuild
 npm-debug.log
 yarn-error.log
 
