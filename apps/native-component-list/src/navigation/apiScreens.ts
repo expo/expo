@@ -148,6 +148,13 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Location/BackgroundMotionActivityScreen'));
+    },
+    name: 'BackgroundMotionActivity',
+    options: { title: 'Background motion activity' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/BackgroundFetchScreen'));
     },
     name: 'BackgroundFetch',

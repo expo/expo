@@ -18,6 +18,7 @@ import type {
   LocationTaskOptions,
   MotionActivityCallback,
   MotionActivityObject,
+  MotionActivityTaskOptions,
 } from './Location.types';
 import { LocationAccuracy } from './Location.types';
 import {
@@ -494,15 +495,21 @@ export async function watchMotionActivityAsync(
  * ```
  *
  * @param taskName Name of the task receiving motion activity updates.
+ * @param options An object of options passed to the motion activity manager. On Android, set
+ * `foregroundService` to keep the app process (and this task) alive across an app kill, the same
+ * way `startLocationUpdatesAsync` does.
  *
  * @return A promise resolving once the task with motion activity updates is registered.
  *
  * @platform android
  * @platform ios
  */
-export async function startMotionActivityUpdatesAsync(taskName: string): Promise<void> {
+export async function startMotionActivityUpdatesAsync(
+  taskName: string,
+  options: MotionActivityTaskOptions = {}
+): Promise<void> {
   _validate(taskName);
-  await ExpoLocation.startMotionActivityUpdatesAsync(taskName);
+  await ExpoLocation.startMotionActivityUpdatesAsync(taskName, options);
 }
 
 /**

@@ -53,6 +53,7 @@ import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.LocationTaskOptions
+import expo.modules.location.records.MotionActivityTaskOptions
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
 import expo.modules.location.records.ReverseGeocodeLocation
@@ -352,12 +353,20 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
       return@AsyncFunction
     }
 
-    AsyncFunction("startMotionActivityUpdatesAsync") { taskName: String ->
+    AsyncFunction("startMotionActivityUpdatesAsync") { taskName: String, options: MotionActivityTaskOptions ->
+      val shouldUseForegroundService = options.foregroundService != null
+
       if (isMissingActivityRecognitionPermission()) {
         throw MotionActivityUnauthorizedException()
       }
+      if (!AppForegroundedSingleton.isForegrounded && shouldUseForegroundService) {
+        throw ForegroundServiceStartNotAllowedException()
+      }
+      if (shouldUseForegroundService && !hasMotionActivityForegroundServicePermissions()) {
+        throw ForegroundServicePermissionsException()
+      }
 
-      mTaskManager.registerTask(taskName, MotionActivityTaskConsumer::class.java, emptyMap())
+      mTaskManager.registerTask(taskName, MotionActivityTaskConsumer::class.java, options.toMutableMap())
       return@AsyncFunction
     }
 
@@ -1003,6 +1012,21 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
         val canAccessForegroundServiceLocation = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
         val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
         canAccessForegroundService && canAccessForegroundServiceLocation
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService
+      } else {
+        true
+      }
+    } ?: throw Exceptions.AppContextLost()
+  }
+
+  private fun hasMotionActivityForegroundServicePermissions(): Boolean {
+    appContext.permissions?.let {
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        val canAccessForegroundServiceHealth = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_HEALTH)
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService && canAccessForegroundServiceHealth
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
         canAccessForegroundService

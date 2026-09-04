@@ -7,5 +7,9 @@
       android:name=".services.LocationTaskService"
       android:exported="false"
       android:foregroundServiceType="location" />
+    <service
+      android:name=".services.MotionActivityTaskService"
+      android:exported="false"
+      android:foregroundServiceType="health" />
   </application>
 </manifest>

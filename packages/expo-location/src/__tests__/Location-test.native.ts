@@ -94,8 +94,23 @@ describe('startMotionActivityUpdatesAsync', () => {
 
     await Location.startMotionActivityUpdatesAsync('motion-task');
 
-    expect(ExpoLocation.startMotionActivityUpdatesAsync).toHaveBeenCalledWith('motion-task');
+    expect(ExpoLocation.startMotionActivityUpdatesAsync).toHaveBeenCalledWith('motion-task', {});
     await expect(Location.hasStartedMotionActivityUpdatesAsync('motion-task')).resolves.toBe(true);
+  });
+
+  it(`forwards the foregroundService option`, async () => {
+    mockProperty(
+      ExpoLocation,
+      'startMotionActivityUpdatesAsync',
+      jest.fn(async () => {})
+    );
+
+    const foregroundService = { notificationTitle: 'Title', notificationBody: 'Body' };
+    await Location.startMotionActivityUpdatesAsync('motion-task', { foregroundService });
+
+    expect(ExpoLocation.startMotionActivityUpdatesAsync).toHaveBeenCalledWith('motion-task', {
+      foregroundService,
+    });
   });
 
   it(`rejects an empty task name`, () => {
