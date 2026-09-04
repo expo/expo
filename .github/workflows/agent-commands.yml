@@ -1476,6 +1476,7 @@ jobs:
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           MODE: ${{ steps.cmd.outputs.mode }}
+          IS_PR: ${{ steps.cmd.outputs.is_pr }}
           WORK_HEAD_SHA: ${{ steps.cmd.outputs.work_head_sha }}
           WORK_HEAD_REF: ${{ steps.cmd.outputs.work_head_ref }}
           WORK_HEAD_REPO: ${{ steps.cmd.outputs.work_head_repo }}
@@ -2054,6 +2055,14 @@ jobs:
               opt_note="_This run wrote a malformed \`Options considered\` block: $sc start marker(s), $ec end marker(s), $stray marker line(s) in total. The markers were removed so nothing can misread the body. The fix itself is unaffected._"
             fi
           fi
+          # Close the issue on merge. Keep plain `refs` for PR targets
+          # (closing keywords act on issues only) and docs-only changes
+          # (the docs may describe an unfixed bug — a human decides).
+          if [ "$IS_PR" = "true" ] || [ "$docs_only" = "yes" ]; then
+            target_ref="refs #$ISSUE_NUMBER"
+          else
+            target_ref="Closes #$ISSUE_NUMBER"
+          fi
           {
             # ONE LINE PER PARAGRAPH, however long. GitHub renders a newline
             # inside a comment or pull-request body as a hard <br>, unlike a
@@ -2065,7 +2074,7 @@ jobs:
             echo "> [!WARNING]"
             echo "> **Agent-authored and NOT human-reviewed.** An automated \`$command_name\` run for #$ISSUE_NUMBER wrote this change and checked it in a sandbox; the reasoning and evidence are in the outcome comment on that issue. Review it as you would any external contribution."
             echo ""
-            echo "Requested by @$TRIGGER_ACTOR · [$run_name]($RUN_URL) · refs #$ISSUE_NUMBER"
+            echo "Requested by @$TRIGGER_ACTOR · [$run_name]($RUN_URL) · $target_ref"
             echo ""
             cat "$desc"
             if [ -n "$related_prs_md" ]; then
