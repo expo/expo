@@ -1,8 +1,10 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #pragma once
+
 #ifdef __cplusplus
 
+#include <new>
 #include <TargetConditionals.h>
 
 // `jsi.h` only forward-declares `jsi::Instrumentation`.
@@ -150,6 +152,33 @@ inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_p
 // `jsi::Instrumentation` is not imported into Swift, so reach it from here.
 inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
   runtime.instrumentation().collectGarbage(cause);
+}
+
+// MARK: - Result slots
+
+// Construct a host callback's result in place in the engine's result slot. `::new (slot) T(...)` is
+// placement new: it runs the constructor on existing memory and allocates nothing. These `jsi::Value`
+// constructors are inline, so each helper is two stores, whereas a move-assignment into the slot
+// calls `Value::~Value()` and `Value::Value(Value&&)`, both out-of-line in the engine library.
+//
+// Placement new does not destroy the slot's previous contents, so the slot must hold a value that
+// owns nothing; an object or string there would leak its engine handle. Both callers,
+// `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side picks
+// the helper by kind in `JavaScriptValue.writeJSIValue(to:)` and moves everything else.
+inline void emplaceUndefined(jsi::Value *_Nonnull slot) noexcept {
+  ::new (slot) jsi::Value();
+}
+
+inline void emplaceNull(jsi::Value *_Nonnull slot) noexcept {
+  ::new (slot) jsi::Value(nullptr);
+}
+
+inline void emplaceBool(jsi::Value *_Nonnull slot, bool value) noexcept {
+  ::new (slot) jsi::Value(value);
+}
+
+inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
+  ::new (slot) jsi::Value(value);
 }
 
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {

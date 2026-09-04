@@ -517,6 +517,24 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     return copy()
   }
 
+  /// Writes this value into a host callback's result slot. Undefined, null, booleans and numbers are
+  /// emplaced with the engine's inline constructors, so the common results skip the out-of-line
+  /// `jsi::Value` move and destroy that assigning to the slot would cost; everything else is copied
+  /// through ``asJSIValue()``. The slot must hold a value with nothing to release (see `emplaceUndefined`).
+  internal func writeJSIValue(to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
+    if pointee.isUndefined() {
+      expo.emplaceUndefined(slot)
+    } else if pointee.isNumber() {
+      expo.emplaceNumber(slot, pointee.getNumber())
+    } else if pointee.isBool() {
+      expo.emplaceBool(slot, pointee.getBool())
+    } else if pointee.isNull() {
+      expo.emplaceNull(slot)
+    } else {
+      slot.pointee = asJSIValue()
+    }
+  }
+
   internal func asJSIValue() -> facebook.jsi.Value {
     if let runtime {
       return facebook.jsi.Value(runtime.pointee, pointee)
