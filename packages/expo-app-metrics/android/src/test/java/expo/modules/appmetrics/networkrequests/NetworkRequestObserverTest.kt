@@ -18,22 +18,13 @@ import java.util.UUID
  */
 class NetworkRequestObserverTest {
   @Test
-  fun `registers only while it has event listeners`() {
+  fun `registers with the monitor on construction, regardless of JS listeners`() {
     val appContext = mockk<AppContext>(relaxed = true)
     val monitor = NetworkRequestMonitor()
     val observer = NetworkRequestObserver.forTesting(appContext, monitor)
 
-    assertEquals(0, monitor.delegateCount)
-
-    observer.onStartListeningToEvent(REQUEST_STARTED_EVENT)
-    observer.onStartListeningToEvent(REQUEST_COMPLETED_EVENT)
     assertEquals(1, monitor.delegateCount)
-
-    observer.onStopListeningToEvent(REQUEST_STARTED_EVENT)
-    assertEquals(1, monitor.delegateCount)
-
-    observer.onStopListeningToEvent(REQUEST_COMPLETED_EVENT)
-    assertEquals(0, monitor.delegateCount)
+    assertTrue(observer.shouldObserveRequest("https://expo.dev", "GET"))
   }
 
   @Test
@@ -41,7 +32,6 @@ class NetworkRequestObserverTest {
     val appContext = mockk<AppContext>(relaxed = true)
     val monitor = NetworkRequestMonitor()
     val observer = NetworkRequestObserver.forTesting(appContext, monitor)
-    observer.onStartListeningToEvent(REQUEST_COMPLETED_EVENT)
 
     observer.sharedObjectDidRelease()
 
