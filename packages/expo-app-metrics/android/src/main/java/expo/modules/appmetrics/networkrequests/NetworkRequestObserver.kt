@@ -14,9 +14,15 @@ internal const val REQUEST_COMPLETED_EVENT = "requestCompleted"
 
 /**
  * JS-facing `SharedObject` that bridges per-instance JS subscriptions to the singleton
- * `NetworkRequestMonitor`. Each JS `new NetworkRequestObserver()` allocates one of these. It is
- * registered as a delegate while it has event listeners and is unregistered after its last
- * listener is removed or the shared object is released.
+ * `NetworkRequestMonitor`. Each JS `new NetworkRequestObserver()` allocates one of these and
+ * registers it as a delegate right away, whether or not JS has attached listeners yet; the
+ * registration is dropped when the shared object is released. This matches the iOS observer.
+ *
+ * Because registration doesn't track JS listeners, an observer whose listeners were all removed
+ * still pays one `emit` per matching request until JS releases it. Gating on listener count would
+ * need `onStartListeningToEvent`/`onStopListeningToEvent`, and the runtime only wires those up for
+ * classes that declare `Events(...)` in their module definition, which this one deliberately
+ * doesn't.
  *
  * The class only forwards events — it doesn't store request history. Use
  * `NetworkRequestMonitor.shared.recent` for that.
@@ -36,37 +42,18 @@ class NetworkRequestObserver private constructor(
   // monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
   // `setFilter` call never leaves a request observed under a half-applied filter.
   private val filter = AtomicReference(filter)
-  private val observing = AtomicBoolean(false)
-  private val listenerLock = Any()
-  private val listenedEvents = mutableSetOf<String>()
 
-  override fun onStartListeningToEvent(eventName: String) {
-    if (eventName != REQUEST_STARTED_EVENT && eventName != REQUEST_COMPLETED_EVENT) {
-      return
-    }
-    synchronized(listenerLock) {
-      listenedEvents.add(eventName)
-      if (observing.compareAndSet(false, true)) {
-        monitor.addDelegate(this)
-      }
-    }
-  }
+  // Flipped once on release. The monitor holds delegates weakly and prunes them on the next
+  // fan-out, so a request evaluated in that window must still be rejected here.
+  private val released = AtomicBoolean(false)
 
-  override fun onStopListeningToEvent(eventName: String) {
-    synchronized(listenerLock) {
-      listenedEvents.remove(eventName)
-      if (listenedEvents.isEmpty() && observing.compareAndSet(true, false)) {
-        monitor.removeDelegate(this)
-      }
-    }
+  init {
+    monitor.addDelegate(this)
   }
 
   override fun sharedObjectDidRelease() {
-    synchronized(listenerLock) {
-      listenedEvents.clear()
-      observing.set(false)
-      monitor.removeDelegate(this)
-    }
+    released.set(true)
+    monitor.removeDelegate(this)
     super.sharedObjectDidRelease()
   }
 
@@ -78,23 +65,15 @@ class NetworkRequestObserver private constructor(
   }
 
   override fun shouldObserveRequest(url: String, method: String): Boolean {
-    return observing.get() && (filter.get()?.matches(url, method) ?: true)
+    return !released.get() && (filter.get()?.matches(url, method) ?: true)
   }
 
   override fun onNetworkRequestStarted(request: NetworkRequestStarted) {
-    if (isListeningTo(REQUEST_STARTED_EVENT)) {
-      emit(REQUEST_STARTED_EVENT, startedPayload(request))
-    }
+    emit(REQUEST_STARTED_EVENT, startedPayload(request))
   }
 
   override fun onNetworkRequestCompleted(request: NetworkRequest) {
-    if (isListeningTo(REQUEST_COMPLETED_EVENT)) {
-      emit(REQUEST_COMPLETED_EVENT, completedPayload(request))
-    }
-  }
-
-  private fun isListeningTo(eventName: String): Boolean = synchronized(listenerLock) {
-    observing.get() && listenedEvents.contains(eventName)
+    emit(REQUEST_COMPLETED_EVENT, completedPayload(request))
   }
 
   companion object {
