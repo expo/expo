@@ -79,6 +79,59 @@ if (Platform.OS === 'android') {
   });
 }
 
+describe('startMotionActivityUpdatesAsync', () => {
+  it(`registers a task and reports it as started`, async () => {
+    mockProperty(
+      ExpoLocation,
+      'startMotionActivityUpdatesAsync',
+      jest.fn(async () => {})
+    );
+    mockProperty(
+      ExpoLocation,
+      'hasStartedMotionActivityUpdatesAsync',
+      jest.fn(async () => true)
+    );
+
+    await Location.startMotionActivityUpdatesAsync('motion-task');
+
+    expect(ExpoLocation.startMotionActivityUpdatesAsync).toHaveBeenCalledWith('motion-task', {});
+    await expect(Location.hasStartedMotionActivityUpdatesAsync('motion-task')).resolves.toBe(true);
+  });
+
+  it(`forwards the foregroundService option`, async () => {
+    mockProperty(
+      ExpoLocation,
+      'startMotionActivityUpdatesAsync',
+      jest.fn(async () => {})
+    );
+
+    const foregroundService = { notificationTitle: 'Title', notificationBody: 'Body' };
+    await Location.startMotionActivityUpdatesAsync('motion-task', { foregroundService });
+
+    expect(ExpoLocation.startMotionActivityUpdatesAsync).toHaveBeenCalledWith('motion-task', {
+      foregroundService,
+    });
+  });
+
+  it(`rejects an empty task name`, () => {
+    return expect(Location.startMotionActivityUpdatesAsync('')).rejects.toEqual(expect.any(Error));
+  });
+});
+
+describe('stopMotionActivityUpdatesAsync', () => {
+  it(`unregisters the task`, async () => {
+    mockProperty(
+      ExpoLocation,
+      'stopMotionActivityUpdatesAsync',
+      jest.fn(async () => {})
+    );
+
+    await Location.stopMotionActivityUpdatesAsync('motion-task');
+
+    expect(ExpoLocation.stopMotionActivityUpdatesAsync).toHaveBeenCalledWith('motion-task');
+  });
+});
+
 describe('reverseGeocodeAsync', () => {
   it(`rejects non-numeric latitude/longitude`, () => {
     // We need to cast these latitude/longitude strings to any type, so TypeScript diagnostics will pass here.

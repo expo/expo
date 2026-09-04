@@ -28,7 +28,6 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityRecognitionResult
-import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
@@ -54,17 +53,14 @@ import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.LocationTaskOptions
-import expo.modules.location.records.MotionActivitiesRecord
-import expo.modules.location.records.MotionActivityConfidence
-import expo.modules.location.records.MotionActivityObjectRecord
-import expo.modules.location.records.MotionActivityStateRecord
-import expo.modules.location.records.MotionActivityType
+import expo.modules.location.records.MotionActivityTaskOptions
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
 import expo.modules.location.records.ReverseGeocodeLocation
 import expo.modules.location.records.ReverseGeocodeResponse
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer
 import expo.modules.location.taskConsumers.LocationTaskConsumer
+import expo.modules.location.taskConsumers.MotionActivityTaskConsumer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -99,24 +95,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private val mMotionActivityReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
       val result = ActivityRecognitionResult.extractResult(intent) ?: return
-
-      // When multiple Android types map to the same unified type
-      // (e.g. WALKING + ON_FOOT -> walking), take the highest confidence.
-      val confidenceByType = result.probableActivities
-        .groupBy { it.toMotionActivityType() }
-        .mapValues { (_, activities) -> activities.maxOf { it.confidence } }
-
-      val activity = MotionActivityObjectRecord(
-        activities = MotionActivitiesRecord(
-          automotive = confidenceByType.stateFor(MotionActivityType.AUTOMOTIVE),
-          cycling = confidenceByType.stateFor(MotionActivityType.CYCLING),
-          running = confidenceByType.stateFor(MotionActivityType.RUNNING),
-          walking = confidenceByType.stateFor(MotionActivityType.WALKING),
-          stationary = confidenceByType.stateFor(MotionActivityType.STATIONARY),
-          unknown = confidenceByType.stateFor(MotionActivityType.UNKNOWN)
-        ),
-        timestamp = System.currentTimeMillis().toDouble()
-      )
+      val activity = LocationHelpers.motionActivityRecordFromResult(result)
       for (id in mMotionActivityWatchIds) {
         sendEvent(MOTION_ACTIVITY_EVENT_NAME, mapOf("watchId" to id, "activity" to activity))
       }
@@ -372,6 +351,32 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
       mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer::class.java)
       return@AsyncFunction
+    }
+
+    AsyncFunction("startMotionActivityUpdatesAsync") { taskName: String, options: MotionActivityTaskOptions ->
+      val shouldUseForegroundService = options.foregroundService != null
+
+      if (isMissingActivityRecognitionPermission()) {
+        throw MotionActivityUnauthorizedException()
+      }
+      if (!AppForegroundedSingleton.isForegrounded && shouldUseForegroundService) {
+        throw ForegroundServiceStartNotAllowedException()
+      }
+      if (shouldUseForegroundService && !hasMotionActivityForegroundServicePermissions()) {
+        throw ForegroundServicePermissionsException()
+      }
+
+      mTaskManager.registerTask(taskName, MotionActivityTaskConsumer::class.java, options.toMutableMap())
+      return@AsyncFunction
+    }
+
+    AsyncFunction("stopMotionActivityUpdatesAsync") { taskName: String ->
+      mTaskManager.unregisterTask(taskName, MotionActivityTaskConsumer::class.java)
+      return@AsyncFunction
+    }
+
+    AsyncFunction("hasStartedMotionActivityUpdatesAsync") { taskName: String ->
+      return@AsyncFunction mTaskManager.taskHasConsumerOfClass(taskName, MotionActivityTaskConsumer::class.java)
     }
 
     OnActivityEntersForeground {
@@ -987,27 +992,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
     return false
   }
 
-  private fun DetectedActivity.toMotionActivityType(): MotionActivityType = when (type) {
-    DetectedActivity.IN_VEHICLE -> MotionActivityType.AUTOMOTIVE
-    DetectedActivity.ON_BICYCLE -> MotionActivityType.CYCLING
-    DetectedActivity.RUNNING -> MotionActivityType.RUNNING
-    DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> MotionActivityType.WALKING
-    DetectedActivity.STILL -> MotionActivityType.STATIONARY
-    else -> MotionActivityType.UNKNOWN
-  }
-
-  private fun Map<MotionActivityType, Int>.stateFor(type: MotionActivityType): MotionActivityStateRecord {
-    val raw = getOrDefault(type, 0)
-    return MotionActivityStateRecord(
-      detected = raw >= 50,
-      confidence = when {
-        raw >= 75 -> MotionActivityConfidence.HIGH
-        raw >= 50 -> MotionActivityConfidence.MEDIUM
-        else -> MotionActivityConfidence.LOW
-      }
-    )
-  }
-
   // endregion
 
   //region private methods
@@ -1028,6 +1012,21 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
         val canAccessForegroundServiceLocation = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
         val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
         canAccessForegroundService && canAccessForegroundServiceLocation
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService
+      } else {
+        true
+      }
+    } ?: throw Exceptions.AppContextLost()
+  }
+
+  private fun hasMotionActivityForegroundServicePermissions(): Boolean {
+    appContext.permissions?.let {
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        val canAccessForegroundServiceHealth = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_HEALTH)
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService && canAccessForegroundServiceHealth
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
         canAccessForegroundService

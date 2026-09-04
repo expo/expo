@@ -281,5 +281,33 @@ public final class LocationModule: Module {
     AsyncFunction("hasStartedGeofencingAsync") { (taskName: String) -> Bool in
       return try taskManager.task(withName: taskName, hasConsumerOf: EXGeofencingTaskConsumer.self)
     }
+
+    // Background motion activity
+
+    // `options` is accepted for API parity with Android (e.g. its `foregroundService` option,
+    // which has no iOS equivalent since there's no foreground service concept here) and ignored.
+    AsyncFunction("startMotionActivityUpdatesAsync") { (taskName: String, options: [String: Any]) in
+      guard CMMotionActivityManager.isActivityAvailable() else {
+        throw Exceptions.MotionActivityUnavailable()
+      }
+      let authorizationStatus = CMMotionActivityManager.authorizationStatus()
+      guard authorizationStatus != .denied && authorizationStatus != .restricted else {
+        throw Exceptions.MotionActivityUnauthorized()
+      }
+
+      try taskManager.registerTask(withName: taskName, consumer: MotionActivityTaskConsumer.self, options: [:])
+    }
+
+    AsyncFunction("stopMotionActivityUpdatesAsync") { (taskName: String) in
+      let taskManager = try taskManager
+
+      try EXUtilities.catchException {
+        taskManager.unregisterTask(withName: taskName, consumerClass: MotionActivityTaskConsumer.self)
+      }
+    }
+
+    AsyncFunction("hasStartedMotionActivityUpdatesAsync") { (taskName: String) -> Bool in
+      return try taskManager.task(withName: taskName, hasConsumerOf: MotionActivityTaskConsumer.self)
+    }
   }
 }

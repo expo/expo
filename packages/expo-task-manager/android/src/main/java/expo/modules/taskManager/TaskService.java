@@ -82,13 +82,23 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   public TaskService(Context context) {
     super();
-    mContextRef = new WeakReference<>(context);
+    updateContext(context);
     mTasksAndEventsRepository = TasksAndEventsRepository.create(context);
 
     if (!mTasksAndEventsRepository.tasksExist()) {
       mTasksAndEventsRepository.createTasks();
       restoreTasks();
     }
+  }
+
+  /**
+   * Updates the context this instance uses to reach app resources (e.g. SharedPreferences).
+   * Needed because {@link #mContextRef} is a weak reference and this service can outlive the
+   * context it was originally created with, e.g. when it's cached as a long-lived singleton
+   * (see {@link TaskManagerPackage#getTaskServiceImpl}).
+   */
+  void updateContext(Context context) {
+    mContextRef = new WeakReference<>(context);
   }
 
   public String getName() {

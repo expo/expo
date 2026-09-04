@@ -45,3 +45,9 @@ export async function watchMotionActivityImplAsync(watchId: number): Promise<any
 export async function getMotionActivityPermissionsAsync(): Promise<any> {}
 
 export async function requestMotionActivityPermissionsAsync(): Promise<any> {}
+
+export async function startMotionActivityUpdatesAsync(taskName: string): Promise<any> {}
+
+export async function stopMotionActivityUpdatesAsync(taskName: string): Promise<any> {}
+
+export async function hasStartedMotionActivityUpdatesAsync(taskName: string): Promise<any> {}

@@ -253,6 +253,10 @@ const withLocation: ConfigPlugin<Props | void> = (
       enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE_LOCATION',
       isAndroidMotionActivityEnabled && 'android.permission.ACTIVITY_RECOGNITION',
       isAndroidMotionActivityEnabled && 'com.google.android.gms.permission.ACTIVITY_RECOGNITION',
+      // Required to run motion activity updates through a foreground service (`foregroundService`
+      // option of `startMotionActivityUpdatesAsync`), the same way background location does.
+      isAndroidMotionActivityEnabled && 'android.permission.FOREGROUND_SERVICE',
+      isAndroidMotionActivityEnabled && 'android.permission.FOREGROUND_SERVICE_HEALTH',
     ].filter(Boolean) as string[]
   );
 };
