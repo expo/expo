@@ -71,6 +71,7 @@
 
 ### 🐛 Bug fixes
 
+- Preserve streamed `Suspense` content during hydration on web by seeding the safe-area metrics the web provider will measure. ([#49684](https://github.com/expo/expo/pull/49684) by [@hassankhan](https://github.com/hassankhan))
 - Re-export the vendored JavaScript stack API from `expo-router/js-stack`. ([#49657](https://github.com/expo/expo/pull/49657) by [@davidmokos](https://github.com/davidmokos))
 - Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
 - Make layouts with explicitly declared screens honor `unstable_settings.initialRouteName` instead of declaration order, which can change deep-link back stacks. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))

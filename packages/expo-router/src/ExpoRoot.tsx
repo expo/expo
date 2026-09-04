@@ -29,6 +29,7 @@ import type { LinkingOptions } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import type { RequireContext } from './types';
+import { getInitialSafeAreaMetrics } from './utils/safeAreaMetrics';
 import { maybeHideSplashScreen } from './utils/splash';
 import { parseUrlUsingCustomBase } from './utils/url';
 import { RootUnmatched } from './views/RootUnmatched';
@@ -51,13 +52,10 @@ export type NativeIntent = {
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
+// Web is seeded with its own measurement so the safe-area context value does not change during
+// hydration. Native measures itself.
 const INITIAL_METRICS =
-  Platform.OS === 'web' || isTestEnv
-    ? {
-        frame: { x: 0, y: 0, width: 0, height: 0 },
-        insets: { top: 0, left: 0, right: 0, bottom: 0 },
-      }
-    : undefined;
+  Platform.OS === 'web' || isTestEnv ? getInitialSafeAreaMetrics() : undefined;
 
 /**
  * @hidden
