@@ -1,15 +1,7 @@
 'use client';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  HorizontalDivider,
-  Icon,
-  IconButton,
-  Text as ComposeText,
-} from '@expo/ui/jetpack-compose';
-import { background } from '@expo/ui/jetpack-compose/modifiers';
 import { createContext, use, useCallback, useState } from 'react';
 
+import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
@@ -37,6 +29,17 @@ const ToolbarMenuCloseContext = createContext<(() => void) | null>(null);
  * Renders as a DropdownMenu with IconButton trigger (root) or DropdownMenuItem trigger (nested).
  */
 export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
+  const {
+    expoUI: {
+      DropdownMenu,
+      DropdownMenuItem,
+      HorizontalDivider,
+      Icon,
+      IconButton,
+      Text: ComposeText,
+    },
+    modifiers: { background },
+  } = requireExpoUI();
   const [expanded, setExpanded] = useState(false);
   const parentClose = use(ToolbarMenuCloseContext);
   const isNested = parentClose !== null;
@@ -168,6 +171,10 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
  * Renders as a DropdownMenuItem.
  */
 export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (props) => {
+  const {
+    expoUI: { DropdownMenuItem, Icon, Text: ComposeText },
+    modifiers: { background },
+  } = requireExpoUI();
   const closeMenu = use(ToolbarMenuCloseContext);
   const toolbarColors = useToolbarColors();
   const tintColor = props.destructive

@@ -1,12 +1,15 @@
-import { Host, HorizontalFloatingToolbar, Box } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, height, padding, imePadding } from '@expo/ui/jetpack-compose/modifiers';
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { requireExpoUI } from '../optional-libraries/expo-ui';
 import type { RouterToolbarHostProps } from './native.types';
 
 export function RouterToolbarHost(props: RouterToolbarHostProps) {
+  const {
+    expoUI: { Host, HorizontalFloatingToolbar, Box },
+    modifiers: { fillMaxWidth, height, padding, imePadding },
+  } = requireExpoUI();
   const insets = useSafeAreaInsets();
 
   const modifiers = useMemo(() => {

@@ -5442,9 +5442,6 @@ importers:
       '@expo/schema-utils':
         specifier: workspace:^
         version: link:../@expo/schema-utils
-      '@expo/ui':
-        specifier: workspace:^
-        version: link:../expo-ui
       '@radix-ui/react-slot':
         specifier: ^1.2.0
         version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
@@ -5530,6 +5527,9 @@ importers:
         specifier: ^0.0.5
         version: 0.0.5
     devDependencies:
+      '@expo/ui':
+        specifier: workspace:^
+        version: link:../expo-ui
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
