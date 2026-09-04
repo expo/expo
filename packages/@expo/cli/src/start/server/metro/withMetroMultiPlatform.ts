@@ -457,7 +457,6 @@ export function withExtendedResolver(
   const skipMetroMainFieldOverride = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
   const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
-  const disableNativeTabsMaterialSymbols = env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
@@ -739,16 +738,6 @@ export function withExtendedResolver(
         });
       const doReplaceStrict = (from: string, to: string | undefined) =>
         doReplace(from, to, { throws: true });
-
-      if (disableNativeTabsMaterialSymbols && platform === 'android') {
-        const materialIconConverterModule = doReplace(
-          'expo-router/build/native-tabs/utils/materialIconConverter.android.js',
-          'expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js'
-        );
-        if (materialIconConverterModule) {
-          return materialIconConverterModule;
-        }
-      }
 
       if (!disableReactNavigationCheck) {
         // TODO(@ubax): Remove this rewrite once we published migration guide for library authors

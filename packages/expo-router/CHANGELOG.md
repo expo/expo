@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Make `expo-symbols` an optional peer dependency. Install it to use `md` icons with `NativeTabs.Trigger.Icon` on Android. ([#49738](https://github.com/expo/expo/pull/49738) by [@Ubax](https://github.com/Ubax))
 - Make `@expo/ui` an optional peer dependency. Install it to use `Stack.Toolbar` on Android. ([#49737](https://github.com/expo/expo/pull/49737) by [@Ubax](https://github.com/Ubax))
 - Remove `UNSTABLE_UnhandledLinkingContext` from `expo-router/react-navigation`. ([#49616](https://github.com/expo/expo/pull/49616) by [@Ubax](https://github.com/Ubax))
 - Remove `BaseNavigationContainer` export from `expo-router/react-navigation`. ([#49587](https://github.com/expo/expo/pull/49587) by [@Ubax](https://github.com/Ubax))
