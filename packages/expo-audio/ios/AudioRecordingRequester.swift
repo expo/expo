@@ -3,6 +3,8 @@ import ExpoModulesCore
 private let selector = ["request", "Record", "Permission", ":"]
 
 public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
+  typealias SystemPermissionRequest = (@escaping (Bool) -> Void) -> Void
+
   public static func permissionType() -> String {
     return "audioRecording"
   }
@@ -59,30 +61,44 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     requestPermissions(usageDescription: Self.microphoneUsageDescription, resolver: resolve, rejecter: reject)
   }
 
-  func requestPermissions(usageDescription: Any?, resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
+  func requestPermissions(
+    usageDescription: Any?,
+    requestSystemPermission: SystemPermissionRequest? = nil,
+    resolver resolve: @escaping EXPromiseResolveBlock,
+    rejecter reject: @escaping EXPromiseRejectBlock
+  ) {
     guard usageDescription != nil else {
       resolve(Self.permissions(systemStatus: AVAudioSession.sharedInstance().recordPermission, usageDescription: nil))
       return
     }
 
+    guard let requestSystemPermission = requestSystemPermission ?? Self.systemPermissionRequest() else {
+      reject("AudioRecordingRequester", "Failed to request audio recording permission", nil)
+      return
+    }
+
+    // The system reports the outcome through this callback. Reading `recordPermission` from inside
+    // it can still return `.undetermined`, which resolves a permission the user just granted as
+    // not granted.
+    requestSystemPermission { granted in
+      resolve(Self.permissions(systemStatus: granted ? .granted : .denied, usageDescription: usageDescription))
+    }
+  }
+
+  private static func systemPermissionRequest() -> SystemPermissionRequest? {
     typealias PermissionRequestFunction = @convention(c) (AnyObject, Selector, @escaping (Bool) -> Void) -> Void
     let recordPermissionSelector = NSSelectorFromString(selector.joined())
 
     let session = AVAudioSession.sharedInstance()
     guard let method = class_getInstanceMethod(type(of: session), recordPermissionSelector) else {
-      reject("AudioRecordingRequester", "Failed to request audio recording permission", nil)
-      return
+      return nil
     }
 
     let imp = method_getImplementation(method)
 
     let requestPermission = unsafeBitCast(imp, to: PermissionRequestFunction.self)
-    requestPermission(session, recordPermissionSelector) { [weak self] _ in
-      guard let self else {
-        reject("AudioRecordingRequester", "Failed to request audio recording permission", nil)
-        return
-      }
-      resolve(self.getPermissions())
+    return { handler in
+      requestPermission(session, recordPermissionSelector, handler)
     }
   }
 }
