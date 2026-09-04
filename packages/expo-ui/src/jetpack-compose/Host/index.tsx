@@ -64,6 +64,14 @@ export interface HostProps extends PrimitiveBaseProps {
    */
   ignoreSafeAreaKeyboardInsets?: boolean;
 
+  /**
+   * Controls which safe area regions the Compose content does not avoid. Compose never applies the container
+   * safe area, so only the keyboard part applies: `'all'` and `'keyboard'` turn keyboard avoidance off for hosts
+   * with `useViewportSizeMeasurement`. `ignoreSafeAreaKeyboardInsets` takes precedence when both are set.
+   * @default 'container'
+   */
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard' | 'none';
+
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
@@ -71,7 +79,7 @@ export interface HostProps extends PrimitiveBaseProps {
   ref?: Ref<any>;
 }
 
-type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
+type NativeHostProps = Omit<HostProps, 'colorScheme' | 'ignoreSafeArea'> & {
   matchContentsVertical?: boolean;
   matchContentsHorizontal?: boolean;
   colorScheme?: ColorSchemeName;
@@ -92,6 +100,8 @@ export function Host(props: HostProps) {
     layoutDirection,
     colorScheme,
     seedColor,
+    ignoreSafeArea,
+    ignoreSafeAreaKeyboardInsets,
     ref,
     ...restProps
   } = props;
@@ -120,6 +130,10 @@ export function Host(props: HostProps) {
           }
           colorScheme={schemeString}
           seedColor={seedColor}
+          ignoreSafeAreaKeyboardInsets={
+            ignoreSafeAreaKeyboardInsets ??
+            (ignoreSafeArea === 'all' || ignoreSafeArea === 'keyboard')
+          }
           onLayoutContent={onLayoutContent}
           layoutDirection={
             layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')

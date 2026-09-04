@@ -24,6 +24,12 @@ const styles = StyleSheet.create({
     paddingTop: 'env(safe-area-inset-top, 0px)',
     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
   },
+  keyboardOnly: {
+    paddingLeft: 'env(keyboard-inset-left, 0px)',
+    paddingRight: 'env(keyboard-inset-right, 0px)',
+    paddingTop: 'env(keyboard-inset-top, 0px)',
+    paddingBottom: 'env(keyboard-inset-bottom, 0px)',
+  },
 });
 
 /**
@@ -80,8 +86,9 @@ export function Host({
         }}
         style={[
           primaryColorScale,
-          ignoreSafeArea !== 'all' &&
-            (ignoreSafeArea === 'keyboard' ? styles.safeAreaWithoutKeyboard : styles.safeArea),
+          ignoreSafeArea === 'none' && styles.safeArea,
+          ignoreSafeArea === 'keyboard' && styles.safeAreaWithoutKeyboard,
+          (ignoreSafeArea === undefined || ignoreSafeArea === 'container') && styles.keyboardOnly,
           shouldMatchContents
             ? styles.matchContents
             : useViewportSizeMeasurement && styles.matchViewport,

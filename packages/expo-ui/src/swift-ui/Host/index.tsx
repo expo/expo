@@ -47,12 +47,12 @@ export interface HostProps extends CommonViewModifierProps {
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
   /**
-   * Controls which safe area regions the SwiftUI hosting view should ignore.
-   * - `'all'` - ignores all safe area insets, including the keyboard.
-   * - `'container'` - ignores only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
-   * - `'keyboard'` - ignores only the keyboard safe area.
+   * Controls which safe area regions SwiftUI does not apply inside the host view. Set `'none'` to let SwiftUI
+   * apply every region, for example on a `Form` that fills the screen. With `matchContents`, the host grows by
+   * the applied insets so that its frame still contains the content.
+   * @default 'container'
    */
-  ignoreSafeArea?: 'all' | 'container' | 'keyboard';
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard' | 'none';
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -101,7 +101,7 @@ export function Host(props: HostProps) {
         layoutDirection={
           layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
         }
-        ignoreSafeArea={ignoreSafeArea}
+        ignoreSafeArea={ignoreSafeArea ?? 'container'}
         seedColor={seedColor}
         {...restProps}
         ref={mergedRef}

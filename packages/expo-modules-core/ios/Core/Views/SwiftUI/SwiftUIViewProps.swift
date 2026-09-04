@@ -9,6 +9,8 @@ extension ExpoSwiftUI {
     case all
     case container
     case keyboard
+    // Ignore nothing: SwiftUI applies every region.
+    case none
   }
 
   /**
