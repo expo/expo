@@ -2,8 +2,16 @@ import { render, screen, within } from '@testing-library/react-native';
 import React from 'react';
 
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import { requireExpoUI } from '../../../optional-libraries/expo-ui';
 import { ToolbarColorContext, ToolbarPlacementContext } from '../toolbar/context';
 import { processHeaderItemsForPlatform } from '../toolbar/processHeaderItemsForPlatform';
+
+jest.mock('../../../optional-libraries/expo-ui', () => ({
+  requireExpoUI: jest.fn(() => ({
+    expoUI: jest.requireMock('@expo/ui/jetpack-compose'),
+    modifiers: jest.requireMock('@expo/ui/jetpack-compose/modifiers'),
+  })),
+}));
 
 jest.mock('@expo/ui/jetpack-compose', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -76,12 +84,29 @@ const { Row } = jest.requireMock(
   '@expo/ui/jetpack-compose'
 ) as typeof import('@expo/ui/jetpack-compose');
 const MockedRow = Row as jest.MockedFunction<typeof Row>;
+const mockedRequireExpoUI = jest.mocked(requireExpoUI);
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockedRequireExpoUI.mockImplementation(() => ({
+    expoUI: jest.requireMock('@expo/ui/jetpack-compose'),
+    modifiers: jest.requireMock('@expo/ui/jetpack-compose/modifiers'),
+  }));
 });
 
 describe('processHeaderItemsForPlatform', () => {
+  it("throws when @expo/ui isn't installed", () => {
+    mockedRequireExpoUI.mockImplementation(() => {
+      throw new Error(
+        "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+      );
+    });
+
+    expect(() => processHeaderItemsForPlatform(<></>, 'left')).toThrow(
+      "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+    );
+  });
+
   it('returns null for bottom placement', () => {
     const result = processHeaderItemsForPlatform(<></>, 'bottom');
     expect(result).toBeNull();
