@@ -116,6 +116,7 @@
     "expo-video": "workspace:*",
     "expo-video-thumbnails": "workspace:*",
     "expo-web-browser": "workspace:*",
+    "expo-widgets": "workspace:*",
     "fbemitter": "^2.1.1",
     "fuse.js": "^6.4.6",
     "gl-mat4": "^1.1.4",

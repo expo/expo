@@ -502,6 +502,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Widgets/WidgetsScreen'));
+    },
+    name: 'Widgets',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/VideoThumbnailsScreen'));
     },
     name: 'Video Thumbnails',

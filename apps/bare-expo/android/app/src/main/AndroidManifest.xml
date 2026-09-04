@@ -71,5 +71,13 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+    <receiver android:name=".BareExpoCounterWidgetProvider" android:exported="true" android:label="@string/bare_expo_counter_widget_display_name">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="expo.modules.widgets.ACTION_WIDGET_INTERACTION"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/bare_expo_counter_widget_info"/>
+      <meta-data android:name="expo.modules.widgets.NAME" android:value="BareExpoCounterWidget"/>
+    </receiver>
   </application>
 </manifest>

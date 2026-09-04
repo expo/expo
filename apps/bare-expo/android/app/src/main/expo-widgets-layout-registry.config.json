@@ -1,0 +1,8 @@
+{
+  "widgets": [
+    {
+      "name": "BareExpoCounterWidget",
+      "initialLayout": "../native-component-list/src/screens/Widgets/CounterWidget.android.tsx"
+    }
+  ]
+}
