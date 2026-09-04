@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 internal import SDWebImage
+internal import SDWebImageSVGCoder
 import ExpoModulesCore
 import Symbols
 #if !os(tvOS)
@@ -45,6 +46,7 @@ public final class ImageView: ExpoView {
 
   var pendingOperation: SDWebImageCombinedOperation?
 
+  /// Rebuilds the image from a substituted SVG document after the manager delivered the original.
   var pendingSVGVariablesTask: Task<Void, Never>?
 
   var contentFit: ContentFit = .cover
@@ -63,7 +65,8 @@ public final class ImageView: ExpoView {
   ///
   /// Not limited to colors: anything a custom property can stand in for, such as `stroke-width` or
   /// `opacity`, works the same way.
-  var svgVariables: [String: String] = [:]
+  /// `nil` leaves SVG documents untouched. An empty map still resolves `var()` fallbacks.
+  var svgVariables: [String: String]?
 
   var cachePolicy: ImageCachePolicy = .disk
 
@@ -188,15 +191,9 @@ public final class ImageView: ExpoView {
       context[.imageTransformer] = createTransformPipeline()
     }
 
-    // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
-    // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing || source.isPhotoLibraryAsset
-    if shouldEarlyResize {
+    if let thumbnailPixelSize = thumbnailPixelSize(for: source) {
       context[.imagePreserveAspectRatio] = true
-      context[.imageThumbnailPixelSize] = CGSize(
-        width: sdImageView.bounds.size.width * screenScale,
-        height: sdImageView.bounds.size.height * screenScale
-      )
+      context[.imageThumbnailPixelSize] = thumbnailPixelSize
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
@@ -215,85 +212,35 @@ public final class ImageView: ExpoView {
       return
     }
 
-    // SVG sources with variables go through their own loader so that the cache only ever holds the
-    // original document. See `SVGVariablesImageLoader` for why `SDWebImageManager` can't be used.
-    //
-    // `tintColor` is left on the normal path on purpose: it needs the rasterized template image that
-    // path produces, and flooding every pixel with one color would hide the substitution anyway.
-    if !svgVariables.isEmpty, imageTintColor == nil, let url = source.uri {
-      loadSVGWithVariables(from: source, url: url, context: context)
-      return
-    }
-
-    loadWithImageManager(source: source, context: context)
-  }
-
-  // MARK: - Loading
-
-  /// The standard load, through `SDWebImageManager`.
-  private func loadWithImageManager(source: ImageSource, context: SDWebImageContext) {
     onLoadStart([:])
 
+    var options = loadingOptions
+    if svgVariables != nil {
+      // The substituted document is rebuilt from the original data on every load, and a memory hit
+      // doesn't come with its data unless asked for.
+      options.insert(.queryMemoryData)
+    }
     pendingOperation = imageManager.loadImage(
       with: source.uri,
-      options: loadingOptions,
+      options: options,
       context: context,
       progress: imageLoadProgress(_:_:_:),
       completed: imageLoadCompleted(_:_:_:_:_:_:)
     )
   }
 
-  /// Loads an SVG source whose variables need substituting. Only the original document is cached, so
-  /// the substituted one is rebuilt per view — see `SVGVariablesImageLoader`.
-  private func loadSVGWithVariables(from source: ImageSource, url: URL, context: SDWebImageContext) {
-    onLoadStart([:])
-
-    let cacheKey = imageManager.cacheKey(for: url, context: context) ?? url.absoluteString
-    let variables = svgVariables
-    let scale = source.scale
-    let options = SVGVariablesImageLoader.Options(
-      context: context,
-      // SDWebImage reports progress from its download queue, so hop back before touching the view.
-      progress: { [weak self] received, expected, progressUrl in
-        Task { @MainActor in
-          self?.imageLoadProgress(received, expected, progressUrl)
-        }
-      }
-    )
-
-    // The view is main-actor isolated, so the task body is too — no hopping back to apply the result.
-    pendingSVGVariablesTask = Task { [weak self] in
-      guard let self else {
-        return
-      }
-      do {
-        let result = try await SVGVariablesImageLoader.shared.image(
-          for: url,
-          cacheKey: cacheKey,
-          variables: variables,
-          scale: scale,
-          options: options
-        )
-        // A newer load may have superseded this one after the last suspension point.
-        guard !Task.isCancelled else {
-          return
-        }
-        self.pendingSVGVariablesTask = nil
-        self.imageLoadCompleted(result.image, result.data, nil, result.cacheType, true, url)
-      } catch is CancellationError {
-        // A newer load replaced this one.
-      } catch is SVGVariablesNotAnSVG {
-        // Not an SVG after all, so `svgVariables` is simply a no-op for this source.
-        self.pendingSVGVariablesTask = nil
-        self.loadWithImageManager(source: source, context: context)
-      } catch {
-        guard !Task.isCancelled else {
-          return
-        }
-        self.pendingSVGVariablesTask = nil
-        self.imageLoadCompleted(nil, nil, error, .none, true, url)
-      }
+  /// The pixel size to decode a vector source to a bitmap at, or `nil` to keep it a vector.
+  /// It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
+  /// we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
+  private func thumbnailPixelSize(for source: ImageSource?) -> CGSize? {
+    let isPhotoLibraryAsset = source?.isPhotoLibraryAsset ?? false
+    guard imageTintColor != nil || enforceEarlyResizing || isPhotoLibraryAsset else {
+      return nil
     }
+    return CGSize(
+      width: sdImageView.bounds.size.width * screenScale,
+      height: sdImageView.bounds.size.height * screenScale
+    )
   }
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
@@ -336,39 +283,103 @@ public final class ImageView: ExpoView {
       log.debug("Loading the image has been canceled")
       return
     }
-
-    if let image {
-      onLoad([
-        "cacheType": cacheTypeToString(cacheType),
-        "source": [
-          "url": imageUrl?.absoluteString,
-          "width": image.size.width,
-          "height": image.size.height,
-          "mediaType": imageFormatToMediaType(image.sd_imageFormat),
-          "isAnimated": image.sd_isAnimated
-        ]
-      ])
-
-      appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
-        url: imageUrl?.absoluteString ?? "",
-        width: image.size.width * image.scale,
-        height: image.size.height * image.scale
-      )
-
-      let scale = window?.screen.scale ?? UIScreen.main.scale
-      imageLayoutSize = idealSize(
-        contentPixelSize: image.size * image.scale,
-        containerSize: frame.size,
-        scale: scale,
-        contentFit: contentFit
-      )
-      let imageIdealSize = imageLayoutSize.rounded(.up)
-      let image = processImage(image, idealSize: imageIdealSize, scale: scale)
-      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-      renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
-    } else {
+    guard let image else {
       displayPlaceholderIfNecessary()
+      return
     }
+
+    // The manager delivered the original document, which is all it ever caches. With variables set the
+    // image it decoded is discarded, not shown, and rebuilt from the substituted document.
+    if let variables = svgVariables, let data, SDImageSVGCoder.shared.canDecode(from: data) {
+      substituteSVGVariables(variables, in: data, replacing: image, cacheType: cacheType, imageUrl: imageUrl)
+      return
+    }
+    didLoad(image, cacheType: cacheType, imageUrl: imageUrl)
+  }
+
+  /// Rebuilds the image from the original SVG document with the variables substituted, then displays
+  /// it in place of the one the manager decoded. Only that original is ever cached, under its plain
+  /// key, so variants share one download and a substituted image can never be served for another set
+  /// of variables or for a load without any.
+  private func substituteSVGVariables(
+    _ variables: [String: String],
+    in data: Data,
+    replacing original: UIImage,
+    cacheType: SDImageCacheType,
+    imageUrl: URL?
+  ) {
+    let scale = original.scale
+    let thumbnailPixelSize = thumbnailPixelSize(for: bestSource)
+
+    pendingSVGVariablesTask = Task { [weak self] in
+      // Parsing happens off the main actor. The view is main-actor isolated, so the rest of this task is too.
+      let result = await Task.detached(priority: .userInitiated) {
+        SubstitutedSVG(image: Self.decodeSVG(data, variables: variables, scale: scale, thumbnailPixelSize: thumbnailPixelSize))
+      }.value
+      // A newer load may have superseded this one while parsing.
+      guard let self, !Task.isCancelled else {
+        return
+      }
+      self.pendingSVGVariablesTask = nil
+      guard let image = result.image else {
+        self.onError([
+          "error": "Failed to parse the SVG document after substituting its variables. "
+            + "The substituted document may not be valid SVG — check the values passed to `svgVariables`."
+        ])
+        return
+      }
+      self.didLoad(image, cacheType: cacheType, imageUrl: imageUrl)
+    }
+  }
+
+  private nonisolated static func decodeSVG(
+    _ data: Data,
+    variables: [String: String],
+    scale: CGFloat,
+    thumbnailPixelSize: CGSize?
+  ) -> UIImage? {
+    let substituted = SVGVariables.substitute(in: data, variables: variables)
+    var options: [SDImageCoderOption: Any] = [.decodeScaleFactor: scale]
+
+    // Without a thumbnail size the SVG coder takes its vector branch, which keeps the image sharp at
+    // any size. The view asks for one when it needs a bitmap, as `tintColor` does.
+    if let thumbnailPixelSize {
+      options[.decodeThumbnailPixelSize] = thumbnailPixelSize
+      options[.decodePreserveAspectRatio] = true
+    }
+    return SDImageSVGCoder.shared.decodedImage(with: substituted, options: options)
+  }
+
+  /// Reports a finished load and displays the image.
+  private func didLoad(_ image: UIImage, cacheType: SDImageCacheType, imageUrl: URL?) {
+    onLoad([
+      "cacheType": cacheTypeToString(cacheType),
+      "source": [
+        "url": imageUrl?.absoluteString,
+        "width": image.size.width,
+        "height": image.size.height,
+        "mediaType": imageFormatToMediaType(image.sd_imageFormat),
+        "isAnimated": image.sd_isAnimated
+      ]
+    ])
+
+    appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+      url: imageUrl?.absoluteString ?? "",
+      width: image.size.width * image.scale,
+      height: image.size.height * image.scale
+    )
+
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+    imageLayoutSize = idealSize(
+      contentPixelSize: image.size * image.scale,
+      containerSize: frame.size,
+      scale: scale,
+      contentFit: contentFit
+    )
+    let imageIdealSize = imageLayoutSize.rounded(.up)
+    let image = processImage(image, idealSize: imageIdealSize, scale: scale)
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
+    renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
   }
 
   private func renderSFSymbol(from source: ImageSource) {
@@ -964,4 +975,10 @@ func localAssetName(from url: URL?) -> String? {
     path.removeFirst()
   }
   return path.isEmpty ? nil : path
+}
+
+/// Carries a freshly decoded image from the parsing task back to the main actor. Unchecked because
+/// `UIImage` isn't `Sendable`; the image is never touched again from the parsing side.
+private struct SubstitutedSVG: @unchecked Sendable {
+  let image: UIImage?
 }

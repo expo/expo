@@ -19,12 +19,30 @@ package expo.modules.image.svg
  */
 object SVGVariables {
   /**
-   * Substitutes the variables in an SVG document.
+   * How many levels of `var()` fallbacks are resolved before the rest is copied through verbatim.
+   * Fallbacks are resolved recursively, so without a limit a document could nest them deeply enough
+   * to overflow the stack. No real document comes anywhere near this depth.
    */
-  fun substitute(source: String, variables: Map<String, String>): String {
-    if (variables.isEmpty()) {
+  internal const val MAX_FALLBACK_DEPTH = 32
+
+  /**
+   * Substitutes the variables in an SVG document. An empty map still resolves every `var()` to its
+   * fallback, which is how a document authored with fallbacks renders as its author intended.
+   */
+  /**
+   * Resolves every `var()` in a document to its fallback, for sources loaded without `svgVariables`.
+   * AndroidSVG doesn't understand custom properties, so without this a document authored with
+   * fallbacks would not render the way it does in a browser. Documents that don't use `var()` at
+   * all, which is nearly all of them, are returned as they are without a scan of their markup.
+   */
+  fun resolveFallbacks(source: String): String {
+    if (!source.contains("var(")) {
       return source
     }
+    return substitute(source, emptyMap())
+  }
+
+  fun substitute(source: String, variables: Map<String, String>): String {
     val chars = source.toCharArray()
     val out = StringBuilder(chars.size)
     var index = 0
@@ -114,7 +132,7 @@ object SVGVariables {
   // MARK: - Tag rewriting
 
   /** Whitespace before the name through the closing quote — the span to keep or drop wholesale. */
-  private class Attribute(val start: Int, val end: Int, val valueStart: Int, val valueEnd: Int)
+  private class Attribute(val name: String, val start: Int, val end: Int, val valueStart: Int, val valueEnd: Int)
 
   /**
    * Rewrites one element tag, substituting variables inside attribute values.
@@ -158,7 +176,9 @@ object SVGVariables {
     val out = StringBuilder()
     out.append(chars, start, prefixEnd - start)
     for (attribute in attributes) {
-      val value = substituteValue(chars, attribute.valueStart, attribute.valueEnd, variables, Context.ATTRIBUTE)
+      // A `style` attribute is a CSS declaration list, with the same escaping needs as a `<style>` body.
+      val context = if (attribute.name.equals("style", ignoreCase = true)) Context.STYLE_BODY else Context.ATTRIBUTE
+      val value = substituteValue(chars, attribute.valueStart, attribute.valueEnd, variables, context)
       if (value.isEntirelyUnresolved) {
         continue
       }
@@ -185,6 +205,7 @@ object SVGVariables {
     if (index == nameStart) {
       return null
     }
+    val nameEnd = index
     while (index < limit && chars[index].isWhitespace()) {
       index += 1
     }
@@ -207,7 +228,13 @@ object SVGVariables {
     if (index >= limit) {
       return null
     }
-    return Attribute(start = start, end = index + 1, valueStart = valueStart, valueEnd = index)
+    return Attribute(
+      name = String(chars, nameStart, nameEnd - nameStart),
+      start = start,
+      end = index + 1,
+      valueStart = valueStart,
+      valueEnd = index
+    )
   }
 
   // MARK: - Value substitution
@@ -220,7 +247,10 @@ object SVGVariables {
 
   /** Where a value is being written, which decides how it has to be escaped. */
   private enum class Context {
+    /** A plain attribute value. */
     ATTRIBUTE,
+
+    /** CSS text: a `<style>` element body or a `style` attribute. */
     STYLE_BODY
   }
 
@@ -233,8 +263,8 @@ object SVGVariables {
    * already escaped, so escaping them again would double up their entities.
    */
   private fun escape(value: String, context: Context): String? {
-    // Inside a stylesheet these could close the declaration or the rule and start another one. No
-    // legitimate CSS value needs them.
+    // Inside CSS these could close the declaration or the rule and start another one. No legitimate
+    // CSS value needs them.
     if (context == Context.STYLE_BODY && value.any { it == '{' || it == '}' || it == ';' }) {
       return null
     }
@@ -272,7 +302,8 @@ object SVGVariables {
     start: Int,
     end: Int,
     variables: Map<String, String>,
-    context: Context
+    context: Context,
+    depth: Int = 0
   ): SubstitutedValue {
     val out = StringBuilder()
     var index = start
@@ -287,7 +318,7 @@ object SVGVariables {
         index += 1
         continue
       }
-      when (val resolution = resolve(chars, index + 4, closeParen, variables, context)) {
+      when (val resolution = resolve(chars, index + 4, closeParen, variables, context, depth)) {
         is Resolution.Resolved -> {
           out.append(resolution.text)
           substitutions += 1
@@ -316,7 +347,8 @@ object SVGVariables {
     start: Int,
     end: Int,
     variables: Map<String, String>,
-    context: Context
+    context: Context,
+    depth: Int
   ): Resolution {
     val commaIndex = topLevelCommaIndex(chars, start, end)
     val name = String(chars, start, (if (commaIndex == -1) end else commaIndex) - start).trim()
@@ -331,8 +363,12 @@ object SVGVariables {
     if (commaIndex == -1) {
       return Resolution.Unresolved
     }
-    // A fallback may itself reference other variables.
-    val fallback = substituteValue(chars, commaIndex + 1, end, variables, context)
+    // A fallback may itself reference other variables. Past the depth limit the reference is copied
+    // through untouched instead, which bounds the recursion.
+    if (depth >= MAX_FALLBACK_DEPTH) {
+      return Resolution.Verbatim
+    }
+    val fallback = substituteValue(chars, commaIndex + 1, end, variables, context, depth + 1)
     if (fallback.isEntirelyUnresolved) {
       return Resolution.Unresolved
     }

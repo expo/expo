@@ -361,7 +361,7 @@ class ExpoImageModule : Module() {
       }
 
       Prop("svgVariables") { view: ExpoImageViewWrapper, variables: Map<String, String>? ->
-        view.svgVariables = variables ?: emptyMap()
+        view.svgVariables = variables
       }
 
       Prop("placeholder") { view: ExpoImageViewWrapper, placeholder: List<SourceMap>? ->

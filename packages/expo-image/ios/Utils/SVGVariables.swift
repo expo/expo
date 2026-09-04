@@ -15,22 +15,39 @@ import Foundation
 /// declaration and the doctype are copied verbatim, so a literal `var(--x)` written inside a
 /// `<text>` element survives untouched.
 internal enum SVGVariables {
+  /// How many levels of `var()` fallbacks are resolved before the rest is copied through verbatim.
+  /// Fallbacks are resolved recursively, so without a limit a document could nest them deeply enough
+  /// to overflow the stack. No real document comes anywhere near this depth.
+  static let maxFallbackDepth = 32
+
   /// Substitutes the variables in a UTF-8 encoded SVG document.
   ///
-  /// Returns the original data unchanged when there is nothing to do, or when the data is not valid
-  /// UTF-8. Re-encoding a document that declares a different encoding in its XML declaration would
-  /// make that declaration lie about its own contents, so those are deliberately left alone.
+  /// An empty map still resolves every `var()` to its fallback, which is how a document authored
+  /// with fallbacks renders as its author intended.
+  ///
+  /// Returns the original data unchanged when it is not valid UTF-8. Re-encoding a document that
+  /// declares a different encoding in its XML declaration would make that declaration lie about its
+  /// own contents, so those are deliberately left alone.
   static func substitute(in data: Data, variables: [String: String]) -> Data {
-    guard !variables.isEmpty, let source = String(data: data, encoding: .utf8) else {
+    guard let source = String(data: data, encoding: .utf8) else {
       return data
     }
     return Data(substitute(in: source, variables: variables).utf8)
   }
 
-  static func substitute(in source: String, variables: [String: String]) -> String {
-    guard !variables.isEmpty else {
-      return source
+  /// Resolves every `var()` in a document to its fallback, for sources loaded without
+  /// `svgVariables`. Neither platform's renderer understands custom properties, so without this a
+  /// document authored with fallbacks would not render the way it does in a browser. Documents that
+  /// don't use `var()` at all, which is nearly all of them, are returned as they are without a scan
+  /// of their markup.
+  static func resolveFallbacks(in data: Data) -> Data {
+    guard data.range(of: Data("var(".utf8)) != nil else {
+      return data
     }
+    return substitute(in: data, variables: [:])
+  }
+
+  static func substitute(in source: String, variables: [String: String]) -> String {
     let chars = Array(source)
     var out = ""
     out.reserveCapacity(chars.count)
@@ -136,6 +153,7 @@ internal enum SVGVariables {
   // MARK: - Tag rewriting
 
   private struct Attribute {
+    let name: String
     /// Whitespace before the name through the closing quote — the span to keep or drop wholesale.
     let fullRange: Range<Int>
     let valueRange: Range<Int>
@@ -181,7 +199,9 @@ internal enum SVGVariables {
 
     var out = String(chars[range.lowerBound..<prefixEnd])
     for attribute in attributes {
-      let value = substituteValue(Array(chars[attribute.valueRange]), variables: variables, context: .attribute)
+      // A `style` attribute is a CSS declaration list, with the same escaping needs as a `<style>` body.
+      let context: Context = attribute.name.lowercased() == "style" ? .styleBody : .attribute
+      let value = substituteValue(Array(chars[attribute.valueRange]), variables: variables, context: context)
       if value.isEntirelyUnresolved {
         continue
       }
@@ -206,6 +226,7 @@ internal enum SVGVariables {
     guard index > nameStart else {
       return nil
     }
+    let nameEnd = index
     while index < limit, chars[index].isWhitespace {
       index += 1
     }
@@ -228,7 +249,7 @@ internal enum SVGVariables {
     guard index < limit else {
       return nil
     }
-    return Attribute(fullRange: start..<(index + 1), valueRange: valueStart..<index)
+    return Attribute(name: String(chars[nameStart..<nameEnd]), fullRange: start..<(index + 1), valueRange: valueStart..<index)
   }
 
   // MARK: - Value substitution
@@ -249,7 +270,9 @@ internal enum SVGVariables {
 
   /// Where a value is being written, which decides how it has to be escaped.
   private enum Context {
+    /// A plain attribute value.
     case attribute
+    /// CSS text: a `<style>` element body or a `style` attribute.
     case styleBody
   }
 
@@ -260,7 +283,7 @@ internal enum SVGVariables {
   /// Only values that came from the variable map go through this. Fallbacks are document text that
   /// is already escaped, so escaping them again would double up their entities.
   private static func escape(_ value: String, for context: Context) -> String? {
-    // Inside a stylesheet these could close the declaration or the rule and start another one. No
+    // Inside CSS these could close the declaration or the rule and start another one. No
     // legitimate CSS value needs them.
     if context == .styleBody, value.contains(where: { $0 == "{" || $0 == "}" || $0 == ";" }) {
       return nil
@@ -293,7 +316,8 @@ internal enum SVGVariables {
   private static func substituteValue(
     _ value: [Character],
     variables: [String: String],
-    context: Context
+    context: Context,
+    depth: Int = 0
   ) -> SubstitutedValue {
     var out = ""
     var index = 0
@@ -309,7 +333,7 @@ internal enum SVGVariables {
       let span = index..<(close + 1)
       let inner = Array(value[(index + 4)..<close])
 
-      switch resolve(inner, variables: variables, context: context) {
+      switch resolve(inner, variables: variables, context: context, depth: depth) {
       case .resolved(let text):
         out += text
         substitutions += 1
@@ -332,7 +356,8 @@ internal enum SVGVariables {
   private static func resolve(
     _ inner: [Character],
     variables: [String: String],
-    context: Context
+    context: Context,
+    depth: Int
   ) -> Resolution {
     let (namePart, fallbackPart) = splitAtTopLevelComma(inner)
     let name = String(namePart).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -349,8 +374,12 @@ internal enum SVGVariables {
     guard let fallbackPart else {
       return .unresolved
     }
-    // A fallback may itself reference other variables.
-    let fallback = substituteValue(fallbackPart, variables: variables, context: context)
+    // A fallback may itself reference other variables. Past the depth limit the reference is copied
+    // through untouched instead, which bounds the recursion.
+    guard depth < maxFallbackDepth else {
+      return .verbatim
+    }
+    let fallback = substituteValue(fallbackPart, variables: variables, context: context, depth: depth + 1)
     if fallback.isEntirelyUnresolved {
       return .unresolved
     }

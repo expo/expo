@@ -227,12 +227,16 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * A property that is not supplied falls back to the value declared inside its own `var()`, and
    * when there is no fallback the declaration is dropped so the renderer applies its own default.
+   * An SVG that uses `var()` is rendered with its fallbacks even when this prop is not set, so a
+   * document authored for the browser looks the same here.
    *
    * > **Note:** Colors must be values the SVG itself understands, such as `'#ff0000'` or `'red'`.
    * > React Native color descriptors like `PlatformColor` are not resolved.
    *
-   * > **Note:** `tintColor` takes precedence over this prop on iOS. A tint floods every pixel with a
-   * > single color, which would hide the substitution.
+   * > **Note:** `tintColor` is applied on top of the substituted document. It floods every pixel with
+   * > a single color, so color values are hidden by it while other values, such as widths or
+   * > opacities, still take effect. On iOS the image is rasterized in that case, as with `tintColor`
+   * > alone.
    *
    * Has no effect on sources that aren't SVG.
    *
