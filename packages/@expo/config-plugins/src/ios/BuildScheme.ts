@@ -33,7 +33,7 @@ export function getSchemesFromXcodeproj(projectRoot: string): string[] {
 
 export function getRunnableSchemesFromXcodeproj(
   projectRoot: string,
-  { configuration = 'Debug' }: { configuration?: 'Debug' | 'Release' } = {}
+  { configuration = 'Debug' }: { configuration?: string } = {}
 ): { name: string; osType: string; type: string }[] {
   const project = getPbxproj(projectRoot);
 

@@ -170,10 +170,27 @@ xdescribe(getProcessOptions, () => {
         shouldSkipInitialBundling: true,
         terminal: 'foobar',
         port: 3000,
+        mode: 'development',
       })
     ).toEqual({
       env: {},
     });
+  });
+});
+
+describe(getProcessOptions, () => {
+  it.each([
+    { mode: 'development' as const, packager: true },
+    { mode: 'production' as const, packager: false },
+  ])('passes $mode mode to Xcode when packager is $packager', ({ mode, packager }) => {
+    expect(
+      getProcessOptions({
+        packager,
+        terminal: undefined,
+        port: 8081,
+        mode,
+      }).env
+    ).toMatchObject({ __EXPO_CONFIG_MODE: mode });
   });
 });
 
