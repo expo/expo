@@ -150,15 +150,12 @@ class LocalAuthenticationModule : Module() {
 
   private fun buildAuthenticationCallback(
     callPromise: Promise,
-    callOptions: AuthOptions
+    callOptions: AuthOptions,
+    successWarning: String? = null
   ): BiometricPrompt.AuthenticationCallback = object : BiometricPrompt.AuthenticationCallback() {
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
       finishCall(callPromise) {
-        callPromise.resolve(
-          Bundle().apply {
-            putBoolean("success", true)
-          }
-        )
+        callPromise.resolve(createResponse(warning = successWarning))
       }
     }
 
@@ -206,16 +203,21 @@ class LocalAuthenticationModule : Module() {
       return
     }
 
-    val allowedAuthenticators = if (options.disableDeviceFallback) {
-      options.biometricsSecurityLevel.toNativeBiometricSecurityLevel()
+    val (allowedAuthenticators, fallbackToWeakUsed) = selectAuthenticators(
+      securityLevel = options.biometricsSecurityLevel,
+      disableDeviceFallback = options.disableDeviceFallback,
+      apiLevel = Build.VERSION.SDK_INT
+    )
+    val successWarning = if (fallbackToWeakUsed) {
+      "Biometric strength 'strong' cannot be combined with the device credential fallback on Android 9 and 10, so the prompt also accepted Class 2 (weak) biometrics. Set `disableDeviceFallback: true` to enforce strong biometrics only."
     } else {
-      options.biometricsSecurityLevel.toNativeBiometricSecurityLevel() or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+      null
     }
 
     isAuthenticating = true
     activePromise = promise
     val executor: Executor = Executors.newSingleThreadExecutor()
-    val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, buildAuthenticationCallback(promise, options))
+    val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, buildAuthenticationCallback(promise, options, successWarning))
     biometricPrompt = localBiometricPrompt
     val promptInfoBuilder = PromptInfo.Builder().apply {
       setTitle(options.promptMessage)
