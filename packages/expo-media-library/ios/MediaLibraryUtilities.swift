@@ -26,7 +26,6 @@ func stringifyAlbumType(type: PHAssetCollectionType) -> String {
 
 func exportAssetInfo(asset: PHAsset) -> [String: Any?] {
   var assetDict = exportAsset(asset: asset)
-  assetDict["location"] = exportLocation(location: asset.location)
   assetDict["isFavorite"] = asset.isFavorite
   assetDict["isHidden"] = asset.isHidden
   return assetDict
@@ -34,7 +33,7 @@ func exportAssetInfo(asset: PHAsset) -> [String: Any?] {
 
 func exportAsset(asset: PHAsset) -> [String: Any?] {
   let fileName = asset.value(forKey: "filename")
-  return [
+  var assetDict: [String: Any?] = [
     "id": asset.localIdentifier,
     "filename": fileName,
     "uri": assetUriForLocalId(localId: asset.localIdentifier),
@@ -49,16 +48,22 @@ func exportAsset(asset: PHAsset) -> [String: Any?] {
     "duration": asset.duration,
     "pairedVideoAsset": nil
   ]
+  // Including location here avoids N calls to `getAssetInfoAsync` when
+  // batch-fetching assets that need GPS coordinates. Assigned via subscript so
+  // the key is omitted (JS `undefined`, matching `location?: Location`) when
+  // the asset has no GPS data — a dictionary literal would bridge nil to JS `null`.
+  assetDict["location"] = exportLocation(location: asset.location)
+  return assetDict
 }
 
-func exportLocation(location: CLLocation?) -> [String: String]? {
+func exportLocation(location: CLLocation?) -> [String: Double]? {
   guard let location else {
     return nil
   }
 
   return [
-    "latitude": "\(location.coordinate.latitude)",
-    "longitude": "\(location.coordinate.longitude)"
+    "latitude": location.coordinate.latitude,
+    "longitude": location.coordinate.longitude
   ]
 }
 

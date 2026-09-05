@@ -209,6 +209,31 @@ export async function test(t) {
           const keys = Object.keys(value);
           GET_ASSETS_KEYS.forEach((key) => t.expect(keys).toContain(key));
         });
+
+        if (Platform.OS === 'ios') {
+          t.it(
+            'getAssetsAsync includes location even without resolveWithFullInfo',
+            async () => {
+              let exifAsset = null;
+              try {
+                const [exifImage] = await Asset.loadAsync(require('../assets/exif_data_image.jpg'));
+                exifAsset = await MediaLibrary.createAssetAsync(exifImage.localUri, album);
+                const { assets } = await MediaLibrary.getAssetsAsync({ album, first: 20 });
+                const batchAsset = assets.find((asset) => asset.id === exifAsset.id);
+                t.expect(typeof batchAsset.location.latitude).toBe('number');
+                t.expect(typeof batchAsset.location.longitude).toBe('number');
+              } finally {
+                // We delete the asset to ensure other tests that depend on there
+                // being specific numbers of assets won't fail even if this test
+                // fails.
+                if (exifAsset != null) {
+                  await MediaLibrary.deleteAssetsAsync(exifAsset);
+                }
+              }
+            },
+            TIMEOUT_WHEN_USER_NEEDS_TO_INTERACT
+          );
+        }
       });
 
       t.describe('Small tests', () => {
@@ -389,27 +414,28 @@ export async function test(t) {
           });
         });
 
-        t.it('supports sorting in ascending order', async () => {
+        t.it('supports sorting in ascending and descending order', async () => {
           // Get some assets with the largest height.
-          const { assets } = await MediaLibrary.getAssetsAsync({
+          const { assets: descendingAssets } = await MediaLibrary.getAssetsAsync({
             sortBy: [[MediaLibrary.SortBy.height, false]],
           });
 
-          // Set the first and last items in the list
-          const first = assets[0].height;
-          const last = assets[assets.length - 1].height;
+          for (let i = 1; i < descendingAssets.length; i++) {
+            t.expect(descendingAssets[i].height).toBeLessThanOrEqual(
+              descendingAssets[i - 1].height
+            );
+          }
 
           // Repeat assets request but reverse the order.
           const { assets: ascendingAssets } = await MediaLibrary.getAssetsAsync({
             sortBy: [[MediaLibrary.SortBy.height, true]],
           });
 
-          // Set the first and last items in the new list
-          const ascFirst = ascendingAssets[0].height;
-          const ascLast = ascendingAssets[assets.length - 1].height;
-
-          t.expect(ascFirst).toBe(last);
-          t.expect(ascLast).toBe(first);
+          for (let i = 1; i < ascendingAssets.length; i++) {
+            t.expect(ascendingAssets[i].height).toBeGreaterThanOrEqual(
+              ascendingAssets[i - 1].height
+            );
+          }
         });
 
         t.it('supports getting assets from specified time range', async () => {
