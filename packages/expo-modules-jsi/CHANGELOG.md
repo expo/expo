@@ -38,6 +38,7 @@
 - [iOS] Made creating a deferred `JavaScriptPromise` ~1.2× faster by building it from a cached JavaScript closure instead of a host function executor. ([#49714](https://github.com/expo/expo/pull/49714) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptPromise` now installs its `then` callbacks on the first `await()` instead of at construction, making promises returned by async functions ~2.5× cheaper to create and ~3.9× cheaper to settle. ([#49718](https://github.com/expo/expo/pull/49718) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Reduced the native overhead of synchronous host function calls and host object property accessors that return `undefined`, `null`, a boolean or a number: the result is written into the engine's slot without engine calls, and errors are reported only when one was actually thrown instead of being checked on every call. ([#49761](https://github.com/expo/expo/pull/49761) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the native overhead of synchronous host function calls whose closure receives `this` as a `JavaScriptValue`, by letting the calling module destroy the arguments buffer directly. ([#49769](https://github.com/expo/expo/pull/49769) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.4 — 2026-07-22
 
