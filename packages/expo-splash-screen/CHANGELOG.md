@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Generate a transparent Android splash drawable when the config plugin has no image. ([#49371](https://github.com/expo/expo/pull/49371) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
+- [tvos] Write the plugin's generated files into `tvos/` instead of `ios/` when prebuilding for tvOS. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

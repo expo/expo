@@ -65,6 +65,7 @@ const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (config, { so
       sounds,
       project: config.modResults,
       projectName: config.modRequest.projectName,
+      platform: IOSConfig.Paths.toApplePlatform(config.modRequest.platform),
     });
     return config;
   });
@@ -79,7 +80,13 @@ export function setNotificationSounds(
     sounds,
     project,
     projectName,
-  }: { sounds: string[]; project: XcodeProject; projectName: string | undefined }
+    platform,
+  }: {
+    sounds: string[];
+    project: XcodeProject;
+    projectName: string | undefined;
+    platform?: IOSConfig.Paths.ApplePlatform;
+  }
 ): XcodeProject {
   if (!projectName) {
     throw new Error(ERROR_MSG_PREFIX + `Unable to find iOS project name.`);
@@ -90,7 +97,7 @@ export function setNotificationSounds(
         `Must provide an array of sound files in your app config, found ${typeof sounds}.`
     );
   }
-  const sourceRoot = IOSConfig.Paths.getSourceRoot(projectRoot);
+  const sourceRoot = IOSConfig.Paths.getSourceRoot(projectRoot, platform);
   for (const soundFileRelativePath of sounds) {
     const fileName = basename(soundFileRelativePath);
     const sourceFilepath = resolve(projectRoot, soundFileRelativePath);

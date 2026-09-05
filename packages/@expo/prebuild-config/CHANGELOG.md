@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support OOT prebuild for tvos. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))

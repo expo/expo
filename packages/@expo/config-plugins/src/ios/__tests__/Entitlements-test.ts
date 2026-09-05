@@ -64,6 +64,44 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
     expect(data).toEqual({});
   });
 
+  it('creates a new entitlements file in the tvos directory for a tvos-only project', async () => {
+    vol.fromJSON(
+      {
+        'tvos/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'tvos/testproject/AppDelegate.m': '',
+      },
+      projectRoot
+    );
+    ensureApplicationTargetEntitlementsFileConfigured(projectRoot);
+    const entitlementsPath = getEntitlementsPath(projectRoot);
+    expect(entitlementsPath).toBe('/app/tvos/testproject/HelloWorld.entitlements');
+    expect(fs.existsSync('/app/ios')).toBe(false);
+  });
+
+  it('reuses the entitlements file shipped with a tvos-only project', async () => {
+    vol.fromJSON(
+      {
+        'tvos/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
+          path.join(__dirname, 'fixtures/project-with-entitlements.pbxproj'),
+          'utf-8'
+        ),
+        'tvos/testapp/example.entitlements': exampleEntitlements,
+        'tvos/testproject/AppDelegate.m': '',
+      },
+      projectRoot
+    );
+    ensureApplicationTargetEntitlementsFileConfigured(projectRoot);
+    const entitlementsPath = getEntitlementsPath(projectRoot);
+    expect(entitlementsPath).toBe('/app/tvos/testapp/example.entitlements');
+
+    const data = plist.parse(await fs.promises.readFile(entitlementsPath!, 'utf8'));
+    expect(data).toEqual({ special: true });
+
+    // The `ios` directory must be left alone for a tvos-only project.
+    expect(fs.existsSync('/app/ios')).toBe(false);
+  });
+
   it('does not create any entitlements files if it already exists', async () => {
     vol.fromJSON(
       {
@@ -124,5 +162,21 @@ describe(getEntitlementsPath, () => {
 
     const entitlementsPath = getEntitlementsPath(projectRoot);
     expect(entitlementsPath).toBe('/app/ios/testapp/example.entitlements');
+  });
+  it('returns a path inside the tvos directory for a tvos-only project', async () => {
+    vol.fromJSON(
+      {
+        'tvos/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
+          path.join(__dirname, 'fixtures/project-with-entitlements.pbxproj'),
+          'utf-8'
+        ),
+        'tvos/testapp/example.entitlements': exampleEntitlements,
+        'tvos/testproject/AppDelegate.m': '',
+      },
+      projectRoot
+    );
+
+    const entitlementsPath = getEntitlementsPath(projectRoot);
+    expect(entitlementsPath).toBe('/app/tvos/testapp/example.entitlements');
   });
 });
