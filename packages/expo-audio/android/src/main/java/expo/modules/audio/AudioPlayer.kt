@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -162,6 +163,12 @@ class AudioPlayer(
       }
     }
 
+    override fun onPlayerError(error: PlaybackException) {
+      playerScope.launch {
+        sendPlayerUpdate()
+      }
+    }
+
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
       playerScope.launch {
         sendPlayerUpdate()
@@ -218,7 +225,8 @@ class AudioPlayer(
       "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) true else isLoaded,
       "playbackRate" to ref.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,
-      "isBuffering" to isBuffering
+      "isBuffering" to isBuffering,
+      "error" to ref.playerError?.let { it.message ?: it.errorCodeName }
     )
   }
 
