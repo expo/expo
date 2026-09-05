@@ -9,6 +9,7 @@ import AppMetrics, {
 import { fetch } from 'expo/fetch';
 
 import type { JasmineInterface } from '../types';
+import { gateOnHostAsync } from '../utils/HostReachability';
 
 export const name = 'AppMetrics';
 
@@ -126,7 +127,9 @@ function uniqueLabel(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 }
 
-export function test({ describe, expect, it, afterEach }: JasmineInterface) {
+export async function test({ describe, expect, it, afterEach, ...t }: JasmineInterface) {
+  const httpbin = await gateOnHostAsync({ describe, it, pending: t.pending }, `${TEST_HOST}/get`);
+
   describe('getMainSession', () => {
     it('returns a non-null main session with the documented shape', () => {
       const session = AppMetrics.getMainSession();
@@ -290,7 +293,7 @@ export function test({ describe, expect, it, afterEach }: JasmineInterface) {
     });
   });
 
-  describe('NetworkRequestObserver', () => {
+  httpbin.describe('NetworkRequestObserver', () => {
     it('emits requestStarted with the documented field shape', async () => {
       const url = `${TEST_HOST}/get?case=started-shape`;
       const { capture, release } = captureEvents((u) => u === url);

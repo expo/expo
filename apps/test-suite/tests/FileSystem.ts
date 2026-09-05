@@ -7,6 +7,7 @@ import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 import type { JasmineInterface } from '../types';
+import { gateOnHostAsync } from '../utils/HostReachability';
 import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'FileSystem';
@@ -17,6 +18,10 @@ function delay(ms: number): Promise<void> {
 }
 
 export async function test({ describe, expect, it, ...t }: JasmineInterface) {
+  const httpbingo = await gateOnHostAsync(
+    { describe, it, pending: t.pending },
+    'https://httpbingo.org/get'
+  );
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
@@ -1607,7 +1612,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(await src.digest('MD5')).toEqual(md5);
       });
 
-      it('reports download progress via onProgress callback', async () => {
+      httpbingo.it('reports download progress via onProgress callback', async () => {
         // Use a ~100KB file so progress events fire reliably
         const url = 'https://httpbingo.org/bytes/102400';
         const file = new File(testDirectory, 'progress_test.bin');
@@ -1634,7 +1639,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(lastUpdate.bytesWritten).toBe(file.size);
       });
 
-      it('reports monotonically increasing bytesWritten in progress', async () => {
+      httpbingo.it('reports monotonically increasing bytesWritten in progress', async () => {
         const url = 'https://httpbingo.org/bytes/102400';
         const file = new File(testDirectory, 'progress_monotonic.bin');
         const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
@@ -1653,7 +1658,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         }
       });
 
-      it('totalBytes matches content-length when server provides it', async () => {
+      httpbingo.it('totalBytes matches content-length when server provides it', async () => {
         const url = 'https://httpbingo.org/bytes/51200';
         const file = new File(testDirectory, 'progress_total.bin');
         const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
@@ -1671,7 +1676,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         }
       });
 
-      it('downloads with onProgress and custom headers together', async () => {
+      httpbingo.it('downloads with onProgress and custom headers together', async () => {
         const url = 'https://httpbingo.org/bytes/10240';
         const file = new File(testDirectory, 'progress_headers.bin');
         const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
@@ -1688,7 +1693,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(progressUpdates.length).toBeGreaterThan(0);
       });
 
-      it('can cancel a download with AbortSignal', async () => {
+      httpbingo.it('can cancel a download with AbortSignal', async () => {
         // Use a slow-streaming endpoint to ensure the download is still in-flight when we cancel.
         // Note: httpbingo.org/bytes has a 524288 byte limit and returns 400 for larger values.
         const url = 'https://httpbingo.org/drip?numbytes=51200&duration=5&delay=0';
@@ -1711,7 +1716,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(error.message).toBe('The operation was aborted.');
       });
 
-      it('rejects immediately when signal is already aborted', async () => {
+      httpbingo.it('rejects immediately when signal is already aborted', async () => {
         const url = 'https://httpbingo.org/bytes/1024';
         const file = new File(testDirectory, 'already_aborted.bin');
         const controller = new AbortController();
@@ -1732,7 +1737,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(file.exists).toBe(false);
       });
 
-      it('can use onProgress and signal together', async () => {
+      httpbingo.it('can use onProgress and signal together', async () => {
         // /drip streams data over 5s, so progress events fire before the download completes.
         const url = 'https://httpbingo.org/drip?numbytes=51200&duration=5&delay=0';
         const file = new File(testDirectory, 'progress_and_cancel.bin');
@@ -1772,7 +1777,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(output.uri).toBe(file.uri);
       });
 
-      it('overwrites existing file with idempotent and onProgress', async () => {
+      httpbingo.it('overwrites existing file with idempotent and onProgress', async () => {
         const url = 'https://httpbingo.org/bytes/10240';
         const file = new File(testDirectory, 'idempotent_progress.bin');
         file.create();
@@ -2327,7 +2332,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
 
     // You can also use something like container twostoryrobot/simple-file-upload to test if the file is saved correctly
-    it('Supports sending a file using blob', async () => {
+    httpbingo.it('Supports sending a file using blob', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.writeSync('abcde');
 
@@ -2340,7 +2345,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
 
     // You can also use this docker image: twostoryrobot/simple-file-upload to test e2e blob upload.
-    it('Supports sending a file using blob with formdata', async () => {
+    httpbingo.it('Supports sending a file using blob with formdata', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.writeSync('abcde');
 
@@ -2356,7 +2361,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       expect(body.files.data[0]).toEqual('abcde');
     });
 
-    it('Supports sending a named file blob using blob with formdata', async () => {
+    httpbingo.it('Supports sending a named file blob using blob with formdata', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.writeSync('abcde');
 
