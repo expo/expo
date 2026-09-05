@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed `toolbarColor` being applied as the secondary toolbar color, and being discarded entirely when `secondaryToolbarColor` was also set. ([#48900](https://github.com/expo/expo/issues/48900) by [@MUSE-CODE-SPACE](https://github.com/MUSE-CODE-SPACE))
+- [iOS] Fixed a failed presentation leaving the module unable to open a browser again, with every later `openBrowserAsync` resolving `{ type: 'locked' }` until the app was restarted. ([#49749](https://github.com/expo/expo/issues/49749) by [@LizunovSergey](https://github.com/LizunovSergey))
 
 ### 💡 Others
 

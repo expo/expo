@@ -20,6 +20,11 @@ final public class WebBrowserModule: Module {
       if vcDidPresent {
         self.currentWebBrowserSession = nil
         vcDidPresent = false
+      } else if currentWebBrowserSession?.isPresented == false {
+        // The previous session never reached the screen, so neither `didPresent` nor any of the
+        // delegate callbacks can fire for it and nothing else will ever release it. Without this the
+        // module answers "locked" to every later call for the lifetime of the process.
+        self.currentWebBrowserSession = nil
       }
 
       guard self.currentWebBrowserSession == nil else {
