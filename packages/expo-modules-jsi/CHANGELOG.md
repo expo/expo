@@ -34,6 +34,7 @@
 - [iOS] Made passing strings between JavaScript and Swift faster, up to ~3.8× for long strings. ([#49678](https://github.com/expo/expo/pull/49678) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Values returned to Swift from property reads, array reads and function calls are now taken over instead of cloned through the engine, making `toJavaScriptValue(in:)` ~1.16× faster. ([#49688](https://github.com/expo/expo/pull/49688) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Made decoding non-ASCII JS strings up to 512 UTF-16 code units long ~1.5× faster. ([#49691](https://github.com/expo/expo/pull/49691) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the native overhead of synchronous host function calls and host object property accessors that return `undefined`, `null`, a boolean or a number: the result is written into the engine's slot without engine calls, and errors are reported only when one was actually thrown instead of being checked on every call. ([#49761](https://github.com/expo/expo/pull/49761) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.4 — 2026-07-22
 
