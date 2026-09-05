@@ -28,7 +28,8 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     val entryFile = detectedEntryFile(reactExtension)
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
-    if (isNativeDebuggingEnabled(project)) {
+    val nativeDebuggingEnabled = isNativeDebuggingEnabled(project)
+    if (nativeDebuggingEnabled) {
       logger.warn("Disable all react.debuggableVariants because EX_UPDATES_NATIVE_DEBUG=1")
       reactExtension.debuggableVariants.set(listOf())
     }
@@ -38,12 +39,22 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       val projectRoot = project.rootProject.projectDir.parentFile.toPath()
       val isDebuggableVariant =
         reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
+      val isDevelopmentBuild = isDevelopmentBuild(
+        buildType = variant.buildType,
+        isDebuggableVariant = isDebuggableVariant,
+        nativeDebuggingEnabled = nativeDebuggingEnabled
+      )
+      val configMode = getConfigMode(
+        inheritedMode = System.getenv("__EXPO_CONFIG_MODE"),
+        isDevelopmentBuild = isDevelopmentBuild
+      )
 
       val createUpdatesResourcesTask = project.tasks.register("create${targetName}UpdatesResources", CreateUpdatesResourcesTask::class.java) {
         it.description = "expo-updates: Create updates resources for ${targetName}."
         it.projectRoot.set(projectRoot.toString())
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
         it.debuggableVariant.set(isDebuggableVariant)
+        it.configMode.set(configMode)
         it.entryFile.set(entryFile.toPath().toString())
       }
       variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
@@ -62,6 +73,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
     @get:Input
     abstract val debuggableVariant: Property<Boolean>
+
+    @get:Input
+    abstract val configMode: Property<String>
 
     @get:Input
     abstract val entryFile: Property<String>
@@ -83,6 +97,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           add(assetDir.get().toString())
           add(if (debuggableVariant.get()) "only-fingerprint" else "all")
           add(entryFile.get())
+          add(debuggableVariant.get().toString())
         }
 
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -91,6 +106,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           it.commandLine(args)
         }
 
+        it.environment("__EXPO_CONFIG_MODE", configMode.get())
         it.workingDir(projectRoot)
       }
     }
@@ -116,6 +132,26 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       LoggerFactory.getLogger(ExpoUpdatesPlugin::class.java)
     }
   }
+}
+
+internal fun getConfigMode(
+  inheritedMode: String?,
+  isDevelopmentBuild: Boolean
+): String = when {
+  !inheritedMode.isNullOrEmpty() -> inheritedMode
+  isDevelopmentBuild -> "development"
+  else -> "production"
+}
+
+internal fun isDevelopmentBuild(
+  buildType: String?,
+  isDebuggableVariant: Boolean,
+  nativeDebuggingEnabled: Boolean
+): Boolean {
+  if (!nativeDebuggingEnabled) {
+    return isDebuggableVariant
+  }
+  return buildType == "debug" || buildType == "debugOptimized"
 }
 
 /**
