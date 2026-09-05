@@ -55,6 +55,18 @@ class DevMenuCacheContainer<T> {
   }
 }
 
+final class DevMenuCallbacksRegistry {
+  private let storage = Mutex<[DevMenuManager.Callback]>([])
+
+  var callbacks: [DevMenuManager.Callback] {
+    storage.withLock { $0 }
+  }
+
+  func replace(with callbacks: [DevMenuManager.Callback]) {
+    storage.withLock { $0 = callbacks }
+  }
+}
+
 /**
  Manages the dev menu and provides most of the public API.
  */
@@ -74,10 +86,17 @@ open class DevMenuManager: NSObject {
   var canLaunchDevMenuOnStart = true
   @objc public var isReactAppRunning = false
 
+  private let appContextLock = NSLock()
+  private weak var _currentAppContext: AppContext?
+
   /**
    The AppContext for the currently running React app. Set by DevMenuModule.OnCreate.
    */
-  public private(set) weak var currentAppContext: AppContext?
+  public var currentAppContext: AppContext? {
+    appContextLock.lock()
+    defer { appContextLock.unlock() }
+    return _currentAppContext
+  }
 
   @objc public var configuration = DevMenuConfiguration()
 
@@ -179,7 +198,9 @@ open class DevMenuManager: NSObject {
 
   @objc
   public func setAppContext(_ appContext: AppContext?) {
-    currentAppContext = appContext
+    appContextLock.lock()
+    _currentAppContext = appContext
+    appContextLock.unlock()
     if appContext != nil {
       isReloading = false
       lastReloadEventAt = Date()
@@ -202,10 +223,17 @@ open class DevMenuManager: NSObject {
    */
   @objc
   public func clearAppContext(current context: AppContext?) {
-    if currentAppContext != nil && currentAppContext !== context {
+    appContextLock.lock()
+    let shouldClear = _currentAppContext == nil || _currentAppContext === context
+    if shouldClear {
+      _currentAppContext = nil
+    }
+    appContextLock.unlock()
+    guard shouldClear else {
       return
     }
-    setAppContext(nil)
+    isReactAppRunning = false
+    updateAutoLaunchObserver()
   }
 
   @objc
@@ -470,9 +498,18 @@ open class DevMenuManager: NSObject {
     callbacksSubject.eraseToAnyPublisher()
   }
 
-  public var registeredCallbacks: [Callback] = [] {
-    didSet {
-      callbacksSubject.send(registeredCallbacks)
+  private let callbacksRegistry = DevMenuCallbacksRegistry()
+
+  public var registeredCallbacks: [Callback] {
+    get {
+      callbacksRegistry.callbacks
+    }
+    set {
+      callbacksRegistry.replace(with: newValue)
+      // PassthroughSubject doesn't support concurrent sends.
+      DispatchQueue.main.async { [weak self] in
+        self?.callbacksSubject.send(newValue)
+      }
     }
   }
 
