@@ -126,6 +126,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       (await resolveRuntimeVersionWithExpoUpdatesAsync({
         projectRoot: this.projectRoot,
         platform: requestOptions.platform,
+        mode: this.options.mode ?? 'development',
       })) ??
       // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
       // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when

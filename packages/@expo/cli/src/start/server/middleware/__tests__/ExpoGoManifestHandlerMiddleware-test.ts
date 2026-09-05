@@ -825,7 +825,7 @@ describe('_getManifestResponseAsync', () => {
   it('delegates runtime version resolution to expo-updates if possible', async () => {
     jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
 
-    const middleware = createMiddleware();
+    const middleware = createMiddleware(undefined, { mode: 'production' });
     process.env.EXPO_OFFLINE = '1';
 
     const response = await middleware._getManifestResponseAsync({
@@ -847,5 +847,10 @@ describe('_getManifestResponseAsync', () => {
     }
 
     expect(partsSeen.has('manifest')).toBeTruthy();
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledWith({
+      projectRoot: '/',
+      platform: 'android',
+      mode: 'production',
+    });
   });
 });

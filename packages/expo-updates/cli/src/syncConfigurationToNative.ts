@@ -6,6 +6,7 @@ import { syncConfigurationToNativeAsync } from './syncConfigurationToNativeAsync
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
+import { getConfigEnvMode } from './utils/nodeEnv';
 
 export const syncConfigurationToNative: Command = async (argv) => {
   const args = assertArgs(
@@ -55,5 +56,6 @@ only needs to be used by the EAS CLI for generic projects that don't use continu
     projectRoot: getProjectRoot(args),
     platform,
     workflow,
+    mode: getConfigEnvMode('production'),
   });
 };
