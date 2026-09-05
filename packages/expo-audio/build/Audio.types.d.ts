@@ -157,6 +157,11 @@ export type AudioStatus = {
     didJustFinish: boolean;
     /** Whether the player is currently buffering data. */
     isBuffering: boolean;
+    /**
+     * Playback error message, or `null` if no error.
+     * Cleared when a new source is loaded or playback resumes successfully.
+     */
+    error: string | null;
     /** Whether the audio has finished loading and is ready to play. */
     isLoaded: boolean;
     /** Current playback rate (1.0 = normal speed). */

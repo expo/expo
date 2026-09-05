@@ -71,6 +71,7 @@ function getStatusFromMedia(media, id) {
         shouldCorrectPitch: true,
         mute: media.muted,
         loop: media.loop,
+        error: media.error ? `Playback error (code ${media.error.code})` : null,
     };
     return status;
 }
@@ -226,6 +227,17 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
             this.emit(PLAYBACK_STATUS_UPDATE, {
                 ...getStatusFromMedia(media, this.id),
                 isLoaded: this.loaded,
+            });
+        };
+        media.onerror = () => {
+            if (this.media !== media)
+                return;
+            this.loaded = false;
+            this.isPlaying = false;
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                isLoaded: false,
+                playing: false,
             });
         };
         return media;

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Expose playback failures through `AudioStatus.error` on Android, iOS, and web, backported from SDK 56.
+
 ### 💡 Others
 
 ## 1.1.1 — 2025-12-17
