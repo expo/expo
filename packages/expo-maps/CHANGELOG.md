@@ -14,6 +14,7 @@
 - [iOS] Stop `AppleMaps.View`'s `onMapClick` from firing when the tap landed on a marker, an annotation, or a drawn shape, as documented. ([#49193](https://github.com/expo/expo/pull/49193) by [@dennytosp](https://github.com/dennytosp))
 - [Android] Return the `Promise` from `GoogleMaps.View`'s imperative `setCameraPosition` so callers can `await` it and catch the `Animation cancelled` rejection (matches iOS). ([#46421](https://github.com/expo/expo/pull/46421) by [@chownation](https://github.com/chownation))
 - [Android] Fixed Google Maps marker info windows reserving blank snippet space when `snippet` is omitted. ([#47271](https://github.com/expo/expo/pull/47271) by [@eliotgevers](https://github.com/eliotgevers))
+- [iOS] Render `AppleMaps.Annotation` icons at the image size instead of stretching them into a fixed 50×50 frame. ([#49321](https://github.com/expo/expo/pull/49321) by [@L65FREAD](https://github.com/L65FREAD))
 
 ### 💡 Others
 
