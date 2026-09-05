@@ -388,6 +388,34 @@ internal enum AppEntityIdentifierDiagnostics {
     logger.warn(message)
     return true
   }
+
+  internal static func reportUnavailableOSVersion(to logger: Logger) {
+    reportOnce(
+      key: "unavailableOSVersion",
+      to: logger,
+      "expo-app-intents: On-screen entity association is unavailable on this device because it "
+        + "requires iOS or tvOS 18.4, or macOS 15.4."
+    )
+  }
+
+  internal static func reportUnavailableCompilerVersion(to logger: Logger) {
+    reportOnce(
+      key: "unavailableCompilerVersion",
+      to: logger,
+      "expo-app-intents: On-screen entity association is unavailable in this build because the "
+        + "required Apple APIs are available to source only in Xcode 27 or newer."
+    )
+  }
+
+  internal static func reportUnregisteredEntity(_ entity: String, to logger: Logger) {
+    reportOnce(
+      key: "unregisteredEntity:\(entity)",
+      to: logger,
+      "expo-app-intents: On-screen entity association was not applied for entity kind '\(entity)' "
+        + "because no App Entity type is registered under that name. The kind has to "
+        + "be registered in AppEntityIdentifierRegistry"
+    )
+  }
 }
 
 /// The live claims on the process-wide `appEntityIdentifier` modifier registration.
@@ -495,21 +523,12 @@ struct AppEntityIdentifierModifier: ViewModifier, Record {
     }
   }
 
-  /// The view, unchanged, plus a report that it carries no entity identifier. An unknown kind cannot be
-  /// reported to the system, and the modifier would otherwise be a no-op that looks like it worked.
+  /// The view, unchanged, plus a report that it carries no entity identifier.
   ///
   /// The reporting happens here rather than in `body` because a `ViewBuilder` block takes views and
   /// declarations, not a bare call.
   private func unregistered(_ content: Content) -> Content {
-    AppEntityIdentifierDiagnostics.reportOnce(
-      key: "unregisteredEntity:\(entity)",
-      to: jsLogger ?? log,
-      "expo-app-intents: appEntityIdentifier() did nothing for the entity kind '\(entity)', "
-        + "because no App Entity type is registered under that name. The kind has to match the "
-        + "string passed to AppEntityIdentifierRegistry.shared.register(_:as:) or "
-        + "registerIndexed(_:as:) in your app target's AppIntentsSetup module. Check the spelling "
-        + "on both sides, and make sure the registration runs in that module's OnCreate."
-    )
+    AppEntityIdentifierDiagnostics.reportUnregisteredEntity(entity, to: jsLogger ?? log)
     return content
   }
 }

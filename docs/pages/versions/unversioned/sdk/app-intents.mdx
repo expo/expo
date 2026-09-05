@@ -21,7 +21,7 @@ You cannot create App Intent types dynamically from JavaScript at runtime. Decla
 
 ## Apple Intelligence support
 
-With `expo-app-intents`, you can implement Apple Intelligence features, including [on-screen intelligence](https://developer.apple.com/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri). [`appEntityIdentifier()`](#appintentsappentityidentifierentity-id) marks the entity represented by a view so Siri can act on the visible content. You can apply it to [`@expo/ui`](/versions/latest/sdk/ui/) views on iOS 18.4 and later.
+With `expo-app-intents`, you can implement Apple Intelligence features, including [on-screen intelligence](https://developer.apple.com/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri). On iOS 18.4 and later, you can mark the entity represented by a view so Siri can act on the visible content. Apply the [`appEntityIdentifier()`](#appintentsappentityidentifierentity-id) modifier to [`@expo/ui`](/versions/latest/sdk/ui/) views, or wrap React Native views in [`AppEntityView`](#appentityview). Both require the project to be compiled with Xcode 27 or later. In a project built with an earlier Xcode, they do nothing and log a warning once.
 
 ## Installation
 
@@ -208,7 +208,7 @@ Your app is now set up to use App Intents. Depending on the selected examples, y
 
 <Collapsible summary="Connect an on-screen view to an entity">
 
-On iOS 18.4 and later, `appEntityIdentifier()` tells Siri which entity an [`@expo/ui`](/versions/latest/sdk/ui/) SwiftUI view represents. Use the same entity kind and identifier in the native registration, JavaScript catalog, and view modifier.
+On iOS 18.4 and later, `appEntityIdentifier()` tells Siri which entity an [`@expo/ui`](/versions/latest/sdk/ui/) SwiftUI view represents, and `AppEntityView` does the same for React Native views. Both require the project to be compiled with Xcode 27 or later, because the Apple APIs they use are not available in earlier SDKs. Use the same entity kind and identifier in the native registration, JavaScript catalog, and view.
 
 The `--visual-intelligence` mail example registers `mailDraft` in **AppIntentsSetup.swift**:
 
@@ -254,7 +254,22 @@ export function MailDraftCard({ draft }: { draft: { id: string; subject: string 
 }
 ```
 
-The view still renders normally on earlier iOS versions or when the kind is not registered. In these cases, the system cannot associate the view with the entity.
+To mark React Native views instead, wrap them in `AppEntityView` with the same kind and identifier:
+
+```tsx
+import { Text } from 'react-native';
+import * as AppIntents from 'expo-app-intents';
+
+export function MailDraftCard({ draft }: { draft: { id: string; subject: string } }) {
+  return (
+    <AppIntents.AppEntityView entity="mailDraft" entityId={draft.id}>
+      <Text>{draft.subject}</Text>
+    </AppIntents.AppEntityView>
+  );
+}
+```
+
+Both views still render normally on earlier iOS versions, in a project compiled with an Xcode version earlier than 27, or when the kind is not registered. In these cases, the system cannot associate the view with the entity, and `expo-app-intents` logs a warning once.
 
 </Collapsible>
 
