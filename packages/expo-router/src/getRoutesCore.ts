@@ -4,6 +4,7 @@ import {
   type MiddlewareNode,
   type RouteNode,
 } from './Route';
+import { NATIVE_INTENT_KEY_REGEX } from './constants';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -210,7 +211,7 @@ function getMiddleware(contextModule: RequireContext, options: Options): Middlew
 function getDirectoryTree(contextModule: RequireContext, options: Options) {
   const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
 
-  const ignoreList: RegExp[] = [/^\.\/\+(html|native-intent)\.[tj]sx?$/]; // Ignore the top level ./+html file
+  const ignoreList: RegExp[] = [/^(?:\+html|\.\/\+html\.[tj]sx?)$/, NATIVE_INTENT_KEY_REGEX];
 
   if (options.ignore) {
     ignoreList.push(...options.ignore);
