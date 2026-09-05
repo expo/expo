@@ -462,6 +462,17 @@ it(`removes Platform module usage on native`, () => {
   );
 });
 
+it(`does not discard impure Platform.select initializers`, () => {
+  const options = {
+    ...DEFAULT_OPTS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: false }),
+  };
+
+  expect(
+    babel.transform(`Platform.select({ ios: selected(), android: discarded() });`, options)!.code
+  ).toEqual(`Platform.select({ios:selected(),android:discarded()});`);
+});
+
 describe('__DEV__', () => {
   it(`removes __DEV__ usage`, () => {
     const options = {

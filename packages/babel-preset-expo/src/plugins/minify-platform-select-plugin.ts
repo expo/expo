@@ -64,7 +64,7 @@ export default function minifyPlatformSelectPlugin({
         const arg = node.arguments[0];
         const opts = state.opts as { platform: string };
         if (isPlatformSelect(path) && t.isObjectExpression(arg)) {
-          if (hasStaticProperties(arg)) {
+          if (hasStaticProperties(arg) && path.get('arguments.0').isPure()) {
             let fallback: any;
             if (opts.platform === 'web') {
               fallback = () => findProperty(arg, 'default', () => t.identifier('undefined'));
