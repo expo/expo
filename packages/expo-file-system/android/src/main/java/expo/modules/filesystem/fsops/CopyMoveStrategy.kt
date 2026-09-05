@@ -12,6 +12,7 @@ import expo.modules.filesystem.UnableToMoveException
 import expo.modules.filesystem.unifiedfile.AssetFile
 import expo.modules.filesystem.unifiedfile.ContentProviderFile
 import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.ResourceFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -197,6 +198,17 @@ sealed class CopyMoveStrategy(
 
     override suspend fun moveTo(spec: DestinationSpec): Uri {
       throw UnableToMoveException("Assets cannot be moved (provider-dependent)")
+    }
+  }
+
+  class Resource(override val file: ResourceFile) : CopyMoveStrategy(file) {
+    override fun prepareAsDestination(source: UnifiedFileInterface, spec: DestinationSpec): DestinationSink {
+      if (file.exists() && !spec.overwrite) throw DestinationAlreadyExistsException()
+      return DestinationSink.Resource(spec)
+    }
+
+    override suspend fun moveTo(spec: DestinationSpec): Uri {
+      throw UnableToMoveException("Resources cannot be moved")
     }
   }
 }
