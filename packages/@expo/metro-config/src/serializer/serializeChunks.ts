@@ -532,54 +532,23 @@ export class Chunk {
     }
 
     if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
-      const adjustedSource = jsAsset.source.replace(
-        /^\/\/# (sourceMappingURL)=(.*)$/gm,
-        (...props) => {
-          if (props[1] === 'sourceMappingURL') {
-            const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
-            return `//# ${props[1]}=` + mapName;
-          }
-          return '';
-        }
-      );
-
-      // TODO: Generate hbc for each chunk
-      const hermesBundleOutput = await getBuildHermesBundleAsync()({
-        projectRoot: this.options.projectRoot,
-        filename: this.name,
-        code: adjustedSource,
-        map: assets[1] ? assets[1].source : null,
-        // TODO: Maybe allow prod + no minify.
-        minify: true, //!this.options.dev,
-      });
-
-      if (hermesBundleOutput.hbc) {
-        // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
-        // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
-        // @ts-expect-error: TODO
-        jsAsset.source = hermesBundleOutput.hbc;
-        jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
-
-        // Replace mappings with hbc
-        if (jsAsset.metadata.paths) {
-          jsAsset.metadata.paths = Object.fromEntries(
-            Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
-              key,
-              Object.fromEntries(
-                Object.entries(value).map(([key, value]) => [
-                  key,
-                  value ? value.replace(/\.js$/, '.hbc') : value,
-                ])
-              ),
-            ])
-          );
-        }
-      }
-      if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = debugId
-          ? appendDebugIdToSourceMap(hermesBundleOutput.sourcemap, debugId)
-          : hermesBundleOutput.sourcemap;
-        assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
+      if (jsAsset.metadata.expoDomComponentReferences?.length) {
+        // Defer bytecode compilation: the DOM component export renames each
+        // wrapper html to its content-hashed filename inside this bundle, and
+        // that rename must be applied to the serialized JS. Patching the name
+        // into compiled bytecode is unsound (hermesc overlap-packs strings
+        // sharing suffix/prefix bytes, so a same-length in-place replacement
+        // can corrupt neighbouring strings). The export commands compile
+        // deferred assets via `transformJsAssetToHermesBytecodeAsync` after
+        // the renames.
+        jsAsset.metadata.deferredHermesBytecode = true;
+      } else {
+        await transformJsAssetToHermesBytecodeAsync({
+          projectRoot: this.options.projectRoot,
+          jsAsset,
+          mapAsset: assets[1] ?? null,
+          filename: this.name,
+        });
       }
     }
 
@@ -937,4 +906,80 @@ async function serializeChunksAsync(
 
   await Promise.all(serializeTasks);
   return jsAssets;
+}
+
+/**
+ * Compile a serialized JS asset to Hermes bytecode in place, renaming the
+ * asset (`.js` -> `.hbc`), rewriting its chunk paths metadata, and replacing
+ * the source map with the Hermes-composed one.
+ *
+ * This runs as a standalone step (rather than inline in the chunk serializer)
+ * so `expo export` can defer it until after DOM component exports have
+ * renamed the DOM html assets inside the serialized JS. Renaming inside
+ * already-compiled bytecode is unsound: hermesc overlap-packs strings that
+ * share suffix/prefix bytes, so a same-length in-place replacement can
+ * overwrite bytes belonging to a neighbouring string.
+ */
+export async function transformJsAssetToHermesBytecodeAsync({
+  projectRoot,
+  jsAsset,
+  mapAsset,
+  filename,
+}: {
+  projectRoot: string;
+  jsAsset: SerialAsset;
+  mapAsset?: SerialAsset | null;
+  filename?: string;
+}): Promise<void> {
+  const debugId = stringToUUID(
+    path.basename(jsAsset.filename, path.extname(jsAsset.filename))
+  );
+  const adjustedSource = jsAsset.source.replace(
+    /^\/\/# (sourceMappingURL)=(.*)$/gm,
+    (...props) => {
+      if (props[1] === 'sourceMappingURL') {
+        const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
+        return `//# ${props[1]}=` + mapName;
+      }
+      return '';
+    }
+  );
+
+  // TODO: Generate hbc for each chunk
+  const hermesBundleOutput = await getBuildHermesBundleAsync()({
+    projectRoot,
+    filename: filename ?? jsAsset.originFilename,
+    code: adjustedSource,
+    map: mapAsset ? mapAsset.source : null,
+    // TODO: Maybe allow prod + no minify.
+    minify: true,
+  });
+
+  if (hermesBundleOutput.hbc) {
+    // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
+    // @ts-expect-error: TODO
+    jsAsset.source = hermesBundleOutput.hbc;
+    jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+
+    // Replace mappings with hbc
+    if (jsAsset.metadata.paths) {
+      jsAsset.metadata.paths = Object.fromEntries(
+        Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
+          key,
+          Object.fromEntries(
+            Object.entries(value).map(([key, value]) => [
+              key,
+              value ? value.replace(/\.js$/, '.hbc') : value,
+            ])
+          ),
+        ])
+      );
+    }
+  }
+  if (mapAsset && hermesBundleOutput.sourcemap) {
+    mapAsset.source = debugId
+      ? appendDebugIdToSourceMap(hermesBundleOutput.sourcemap, debugId)
+      : hermesBundleOutput.sourcemap;
+    mapAsset.filename = mapAsset.filename.replace(/\.js\.map$/, '.hbc.map');
+  }
 }
