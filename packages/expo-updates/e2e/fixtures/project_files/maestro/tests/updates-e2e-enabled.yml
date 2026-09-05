@@ -15,6 +15,8 @@ appId: dev.expo.updatese2e
 - runFlow:
     file: basic_updateMultipleAssets.yml
 - runFlow:
+    file: basic_updateReusesEmbeddedAssets.yml
+- runFlow:
     file: basic_updateOldCommitTime.yml
 - runFlow:
     file: basic_rollback.yml
