@@ -15,35 +15,34 @@ afterEvaluate {
   def expoGradleExtension = gradle.extensions.findByName("expoGradle")
   def customProjectRoot = expoGradleExtension?.projectRoot
   def projectRoot = file("${customProjectRoot ?: rootProject.projectDir}")
-  def assetsDir = file("$buildDir/generated/assets/expo-constants")
 
-  def currentCreateConfigTask = tasks.register('createExpoConfig', Exec) {
-    description = 'expo-constants: Create app.config.'
+  project.android.libraryVariants.all { variant ->
+    def targetName = variant.name.capitalize()
+    def assetsDir = file("$buildDir/generated/assets/expo-constants/${variant.name}")
+    def configMode = System.getenv("__EXPO_CONFIG_MODE") ?: (variant.buildType.debuggable ? "development" : "production")
 
-    doFirst {
-      assetsDir.deleteDir()
-      assetsDir.mkdirs()
+    def createConfigTask = tasks.register("create${targetName}ExpoConfig", Exec) {
+      description = "expo-constants: Create app.config for ${targetName}."
+
+      doFirst {
+        assetsDir.deleteDir()
+        assetsDir.mkdirs()
+      }
+
+      // Regenerate app.config for every native build.
+      outputs.upToDateWhen { false }
+      outputs.dir assetsDir
+      workingDir projectRoot
+      environment "__EXPO_CONFIG_MODE", configMode
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      } else {
+        commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      }
     }
 
-    // Mark the task as always out-of-date so it always runs - ie. regenerate app.config on every build
-    outputs.upToDateWhen { false }
-
-    // Add generated assetsDir into assets.srcDirs
-    project.android.sourceSets.main.assets.srcDirs += assetsDir
-
-    // Set up outputs so gradle can cache the result
-    outputs.dir assetsDir
-
-    // Switch to project root and generate the app config
-    workingDir projectRoot
-
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-      commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
-    } else {
-      commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
-    }
+    variant.preBuildProvider.configure { it.dependsOn(createConfigTask) }
+    project.android.sourceSets.maybeCreate(variant.name).assets.srcDirs += assetsDir
   }
-
-  // Generate app.config at preBuild
-  tasks.getByName('preBuild').dependsOn(currentCreateConfigTask)
 }
