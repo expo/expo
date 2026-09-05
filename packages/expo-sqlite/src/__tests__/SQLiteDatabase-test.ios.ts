@@ -175,6 +175,28 @@ describe('Database', () => {
     expect(results.length).toBe(0);
   });
 
+  it('withTransactionAsync should not roll back an outer transaction when its own BEGIN fails', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+
+    // Another code path already owns an open transaction on this connection.
+    await db.execAsync('BEGIN');
+    await db.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'outer', 123);
+
+    // The nested BEGIN fails, so this call never started a transaction of its own.
+    await expect(
+      db.withTransactionAsync(async () => {
+        await db?.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'inner', 456);
+      })
+    ).rejects.toThrow(/cannot start a transaction within a transaction/);
+
+    const results = await db.getAllAsync<TestEntity>('SELECT * FROM test');
+    expect(results.length).toBe(1);
+    expect(results[0]?.value).toBe('outer');
+  });
+
   it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
@@ -326,6 +348,28 @@ describe('Database - Synchronous calls', () => {
 
     const results = db.getAllSync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(0);
+  });
+
+  it('withTransactionSync should not roll back an outer transaction when its own BEGIN fails', () => {
+    db = openDatabaseSync(':memory:');
+    db.execSync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+
+    // Another code path already owns an open transaction on this connection.
+    db.execSync('BEGIN');
+    db.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'outer', 123);
+
+    // The nested BEGIN fails, so this call never started a transaction of its own.
+    expect(() => {
+      db?.withTransactionSync(() => {
+        db?.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'inner', 456);
+      });
+    }).toThrow(/cannot start a transaction within a transaction/);
+
+    const results = db.getAllSync<TestEntity>('SELECT * FROM test');
+    expect(results.length).toBe(1);
+    expect(results[0]?.value).toBe('outer');
   });
 });
 
