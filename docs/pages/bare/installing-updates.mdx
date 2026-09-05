@@ -137,6 +137,36 @@ Using Xcode, add **Expo.plist** file to **ios/your-project/Supporting** with the
 </plist>
 ```
 
+## Configuring the update channel at build time
+
+The channel property on a build allows you to point updates at specific types of builds. For example, it allows you to publish updates to a preview build without impacting your production deployment.
+
+This property is also ultimately set in the **AndroidManifest.xml** and **Expo.plist** files that we modified above. It is usually set right before build, so you can flexibly switch between production and non-production builds. If you build your project with EAS Build, the channel is set in the **eas.json** build profile and then applied to these files right before the native build step.
+
+When you build locally or with another service, you will need to set the channel yourself in these files:
+
+### Android
+
+In **android/app/src/main/AndroidManifest.xml**, add the request headers `meta-data` entry:
+
+```xml android/app/src/main/AndroidManifest.xml
+<meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;your-channel-name&quot;}"/>
+```
+
+### iOS
+
+In **Expo.plist**, add the `EXUpdatesRequestHeaders` dictionary:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>EXUpdatesRequestHeaders</key>
+<dict>
+  <key>expo-channel-name</key>
+  <string>your-channel-name</string>
+</dict>
+```
+
+> **info** If you later adopt CNG, you can configure the channel with [`updates.requestHeaders`](/versions/latest/config/app/#requestheaders) in **app.json** instead. Then, your channel will be configured automatically when you run `npx expo prebuild` in your pipeline. See [Configure update channels in app.json](/eas-update/getting-started/#configure-update-channels-in-appjson).
+
 ## Next steps
 
 - To start using EAS Update with EAS Build, see the EAS Update [Get started](/eas-update/getting-started/).
