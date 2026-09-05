@@ -36,6 +36,7 @@
 - [iOS] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49504](https://github.com/expo/expo/pull/49504) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49505](https://github.com/expo/expo/pull/49505) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Pick up `rootProject.ext.ndkVersion` so the module's `android.ndkVersion` matches the host project's NDK; otherwise AGP falls back to its own preferred version and reports `[CXX1104] NDK ... disagrees with android.ndkVersion`. ([#45759](https://github.com/expo/expo/pull/45759) by [@xxih](https://github.com/xxih))
+- [iOS] Reuse an embedded asset from the app binary instead of re-downloading it when an update requires the same asset key. ([#49650](https://github.com/expo/expo/pull/49650) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

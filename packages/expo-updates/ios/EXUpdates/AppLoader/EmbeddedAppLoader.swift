@@ -205,6 +205,10 @@ public final class EmbeddedAppLoader: AppLoader {
     }
   }
 
+  /// This loader is already reading the bundle it would copy from, so the copy-enabled path keeps
+  /// resolving files through the launcher as it did before.
+  override internal var reusesEmbeddedAssets: Bool { false }
+
   override public func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
     FileDownloader.assetFilesQueue.async {
       self.handleAssetDownloadAlreadyExists(asset)
