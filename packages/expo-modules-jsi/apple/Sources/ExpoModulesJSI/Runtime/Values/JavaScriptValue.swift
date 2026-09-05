@@ -517,6 +517,24 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     return copy()
   }
 
+  /// Writes this value into a host callback's result slot. Undefined, null, booleans and numbers are
+  /// emplaced with the engine's inline constructors, so the common results skip the out-of-line
+  /// `jsi::Value` move and destroy that assigning to the slot would cost; everything else is copied
+  /// through ``asJSIValue()``. The slot must hold a value with nothing to release (see `emplaceUndefined`).
+  internal func writeJSIValue(to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
+    if pointee.isUndefined() {
+      expo.emplaceUndefined(slot)
+    } else if pointee.isNumber() {
+      expo.emplaceNumber(slot, pointee.getNumber())
+    } else if pointee.isBool() {
+      expo.emplaceBool(slot, pointee.getBool())
+    } else if pointee.isNull() {
+      expo.emplaceNull(slot)
+    } else {
+      slot.pointee = asJSIValue()
+    }
+  }
+
   internal func asJSIValue() -> facebook.jsi.Value {
     if let runtime {
       return facebook.jsi.Value(runtime.pointee, pointee)
@@ -615,21 +633,27 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   // immutable and these carry no runtime and a trivial `jsi::Value`, so one instance can be safely
   // handed out from any isolation context. Every void-returning `@JS` function returns `.undefined`,
   // so a computed getter here would allocate on every host call.
-  private static let sharedUndefined = JavaScriptValue(nil, facebook.jsi.Value.undefined())
-  private static let sharedNull = JavaScriptValue(nil, facebook.jsi.Value.null())
+  //
+  // The instances live in the module-level globals below rather than in static properties: the
+  // `undefined` and `null` accessors are `@inlinable`, and an inlined body reaches a global through its
+  // addressor alone, whereas a class static, even a `@usableFromInline` one, goes through a getter
+  // that takes the class metatype, which costs the caller a metadata accessor call (`objc_opt_self`)
+  // on every access. Every void host function call accesses `undefined`.
 
   /// This is a lightweight way to create an undefined value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value can be passed to
   /// JavaScript functions or used in comparisons.
+  @inlinable
   public static var undefined: JavaScriptValue {
-    return sharedUndefined
+    return sharedUndefinedValue
   }
 
   /// This is a lightweight way to create a null value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value represents
   /// JavaScript's `null`, which is distinct from `undefined`.
+  @inlinable
   public static var null: JavaScriptValue {
-    return sharedNull
+    return sharedNullValue
   }
 
   /// This is a lightweight way to create a boolean true value that can be used in contexts
@@ -697,3 +721,10 @@ extension JavaScriptValue {
     }
   }
 }
+
+// Shared instances behind `JavaScriptValue.undefined` and `JavaScriptValue.null`; see the comment on
+// those accessors for why these are globals.
+@usableFromInline
+internal let sharedUndefinedValue = JavaScriptValue(nil, facebook.jsi.Value.undefined())
+@usableFromInline
+internal let sharedNullValue = JavaScriptValue(nil, facebook.jsi.Value.null())

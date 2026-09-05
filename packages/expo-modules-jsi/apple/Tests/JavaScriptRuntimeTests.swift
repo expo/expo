@@ -632,6 +632,19 @@ struct JavaScriptRuntimeTests {
     #expect(result.getInt() == 42)
   }
 
+  @Test
+  func `host function results of primitive kinds reach JavaScript unchanged`() throws {
+    runtime.global().setProperty("yes", value: runtime.createFunction("yes") { _, _ in .true() }.asValue())
+    runtime.global().setProperty("no", value: runtime.createFunction("no") { _, _ in .false() }.asValue())
+    runtime.global().setProperty("nothing", value: runtime.createFunction("nothing") { _, _ in .null }.asValue())
+    runtime.global().setProperty("half", value: runtime.createFunction("half") { _, _ in .number(0.5) }.asValue())
+    let result = try runtime.eval("[yes() === true, no() === false, nothing() === null, half() === 0.5]").getArray()
+    #expect(result[0].getBool() == true)
+    #expect(result[1].getBool() == true)
+    #expect(result[2].getBool() == true)
+    #expect(result[3].getBool() == true)
+  }
+
   // MARK: - Async functions
 
   @Test
