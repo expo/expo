@@ -3935,7 +3935,7 @@ SPEC CHECKSUMS:
   ExpoTaskManager: d52427f67bf8f00fa56d52f9603919049c67cfc5
   ExpoTrackingTransparency: 43401b22cf6aed3a4a35e0c24d0b320905acc477
   ExpoUI: 62ef3713d3cce9736b063fe4edf8cb9c611a36d5
-  ExpoVideo: 9a992d457d2f856e392af6baaf092af778decf95
+  ExpoVideo: e64ef565d46be6383c34f6b5a2343c413523a76d
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 0a7d37113fe51af5c302461ad0344dc529161316
   ExpoWebBrowser: 9b98d939d5f1c5dd8f523f0a0683056fb1204434
