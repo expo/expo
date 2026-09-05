@@ -61,6 +61,11 @@ extension ExpoSwiftUI {
     private let hostingController: UIHostingController<AnyView>
 
     /**
+     The last size a content-sized axis asked for, before the safe-area insets are added.
+     */
+    private var requestedStyleSize: (width: NSNumber?, height: NSNumber?)?
+
+    /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
@@ -76,12 +81,18 @@ extension ExpoSwiftUI {
 
       super.init(appContext: appContext)
 
+      // Initialise with default props
+      if let safeAreaProps = props as? SafeAreaControllable {
+        hostingController.setSafeAreaRegions(ignoring: safeAreaProps.ignoreSafeArea)
+      }
+
       shadowNodeProxy.setViewSize = { [weak self] size in
         self?.setViewSize(size)
       }
 
       shadowNodeProxy.setStyleSize = { [weak self] width, height in
-        self?.setStyleSize(width, height: height)
+        self?.requestedStyleSize = (width, height)
+        self?.applyRequestedStyleSize()
       }
 
       props.shadowNodeProxy = shadowNodeProxy
@@ -116,8 +127,12 @@ extension ExpoSwiftUI {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
       }
 
+      let appliedContainerInsets = appliesContainerInsets
       if let safeAreaProps = props as? SafeAreaControllable {
         hostingController.setSafeAreaRegions(ignoring: safeAreaProps.ignoreSafeArea)
+      }
+      if appliesContainerInsets != appliedContainerInsets {
+        applyRequestedStyleSize()
       }
     }
 
@@ -149,6 +164,74 @@ extension ExpoSwiftUI {
       super.layoutSubviews()
       // TODO: Use updateLayoutMetrics from RN. Add support in ExpoFabricView.
       setupHostingViewConstraints()
+    }
+
+    #if os(iOS) || os(tvOS)
+    public override func safeAreaInsetsDidChange() {
+      super.safeAreaInsetsDidChange()
+      applyRequestedStyleSize()
+    }
+
+    private var movingEdges: UIRectEdge = []
+
+    public override func updateLayoutMetrics(_ frame: CGRect, oldFrame: CGRect) {
+      super.updateLayoutMetrics(frame, oldFrame: oldFrame)
+      // The first update carries React Native's empty metrics, a -1 by -1 frame, which say nothing about anchoring.
+      // `CGRect.width` never goes negative, so read the raw size.
+      guard oldFrame.size.width >= 0, oldFrame.size.height >= 0 else {
+        return
+      }
+      var edges = movingEdges
+      func set(_ edge: UIRectEdge, moving: Bool) {
+        if moving { edges.insert(edge) } else { edges.remove(edge) }
+      }
+      if abs(oldFrame.height - frame.height) >= 0.01 {
+        set(.top, moving: abs(oldFrame.minY - frame.minY) >= 0.01)
+        set(.bottom, moving: abs(oldFrame.maxY - frame.maxY) >= 0.01)
+      }
+      if abs(oldFrame.width - frame.width) >= 0.01 {
+        set(.left, moving: abs(oldFrame.minX - frame.minX) >= 0.01)
+        set(.right, moving: abs(oldFrame.maxX - frame.maxX) >= 0.01)
+      }
+      if edges != movingEdges {
+        movingEdges = edges
+        applyRequestedStyleSize()
+      }
+    }
+    #endif
+
+    private var appliesContainerInsets: Bool {
+      #if os(iOS) || os(tvOS)
+      if #available(iOS 16.4, tvOS 16.4, *) {
+        return hostingController.safeAreaRegions.contains(.container)
+      }
+      #endif
+      return false
+    }
+
+    /**
+     Applies the last requested style size along with container safe area insets
+     */
+    private func applyRequestedStyleSize() {
+      guard let requested = requestedStyleSize else {
+        return
+      }
+      var horizontal = 0.0
+      var vertical = 0.0
+      #if os(iOS) || os(tvOS)
+      if appliesContainerInsets {
+        let overlap = safeAreaInsets
+        let screen = reactViewController()?.view.safeAreaInsets ?? overlap
+        func inset(_ edge: UIRectEdge, _ overlap: CGFloat, _ screen: CGFloat) -> CGFloat {
+          return movingEdges.contains(edge) && overlap > 0 ? screen : overlap
+        }
+        horizontal = Double(inset(.left, overlap.left, screen.left) + inset(.right, overlap.right, screen.right))
+        vertical = Double(inset(.top, overlap.top, screen.top) + inset(.bottom, overlap.bottom, screen.bottom))
+      }
+      #endif
+      let width = requested.width.map { NSNumber(value: $0.doubleValue + horizontal) }
+      let height = requested.height.map { NSNumber(value: $0.doubleValue + vertical) }
+      setStyleSize(width, height: height)
     }
 
     /**
@@ -260,8 +343,6 @@ extension ExpoSwiftUI {
 }
 
 extension UIHostingController {
-  /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so
-  /// clearing the prop re-enables the safe area without an app reload.
   func setSafeAreaRegions(ignoring mode: ExpoSwiftUI.IgnoreSafeArea?) {
     // `safeAreaRegions` needs iOS 16.4+; the precompiled xcframework targets 16.0, so no-op below it.
     guard #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) else {
@@ -276,6 +357,8 @@ extension UIHostingController {
         regions.remove(.container)
       case .keyboard:
         regions.remove(.keyboard)
+      case .none:
+        break
       }
     }
     if safeAreaRegions != regions {

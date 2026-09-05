@@ -19,7 +19,8 @@ function HostIgnoreSafeAreaKeyboardScreen() {
           backgroundColor: 'green',
         }}
         offset={{ opened: bottomOffset }}>
-        <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
+        {/* KeyboardStickyView moves the host, so SwiftUI must not move the content a second time. */}
+        <Host matchContents ignoreSafeArea="all" style={{ backgroundColor: 'red' }}>
           <TextField text={text} placeholder="Enter text" axis="vertical" />
         </Host>
       </KeyboardStickyView>
