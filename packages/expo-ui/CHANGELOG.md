@@ -59,6 +59,7 @@
 - [iOS] Fix `ColorPicker` reporting every color one value too low, because `colorToHex` truncated instead of rounding. Apps feed the reported value back into `selection`, so the error compounded and each interaction moved all three channels down by one. ([#49356](https://github.com/expo/expo/pull/49356) by [@batuhandemir98](https://github.com/batuhandemir98))
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fix `Host` color scheme type errors on React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Preserve string-based child identities in `Overlay`, `Background`, and `Mask`.
 
 ### 💡 Others
 
