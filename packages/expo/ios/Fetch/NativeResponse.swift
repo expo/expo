@@ -53,6 +53,11 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
   }
 
   func cancelStreaming() {
+    // Cancelling a stream that already settled is legal consumer cleanup — WHATWG Streams defines
+    // `reader.cancel()` on a closed stream as a no-op — so it must not be reported as a state error.
+    if state == .bodyCompleted || state == .bodyStreamingCanceled || state == .errorReceived {
+      return
+    }
     if isInvalidState(.bodyStreamingStarted) {
       return
     }
