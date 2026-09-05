@@ -160,6 +160,7 @@ export function baseJSBundleWithDependencies(
     asyncRequireModulePath: options.asyncRequireModulePath,
     createModuleId: options.createModuleId,
     getRunModuleStatement: options.getRunModuleStatement,
+    getSourceUrl: options.getSourceUrl,
     globalPrefix: options.globalPrefix,
     inlineSourceMap: options.inlineSourceMap,
     runBeforeMainModule: options.runBeforeMainModule,
