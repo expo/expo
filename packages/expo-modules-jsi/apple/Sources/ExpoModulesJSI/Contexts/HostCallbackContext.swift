@@ -12,17 +12,17 @@ internal protocol HostCallbackContext: AnyObject {
 /// `_withUnsafeGuaranteedRef` promises the compiler that both objects outlive the closure, so no
 /// retain or release is emitted for either. Both promises hold for a JSI callback: the JSI owner
 /// of the context is the caller, and a synchronous callback runs while the runtime executes JS,
-/// with the wrapper owned for the runtime's whole lifetime. The body returns nothing because
-/// `_withUnsafeGuaranteedRef` needs a `Copyable` result; callbacks write their `jsi::Value`
-/// result into the slot the C++ caller provides instead.
+/// with the wrapper owned for the runtime's whole lifetime. The body's result must be `Copyable`
+/// because `_withUnsafeGuaranteedRef` requires it; callbacks write their `jsi::Value` result into the
+/// slot the C++ caller provides and return only whether an error was stored.
 @inline(__always)
-internal func withGuaranteedContext<Context: HostCallbackContext>(
+internal func withGuaranteedContext<Context: HostCallbackContext, Result>(
   _ pointer: UnsafeMutableRawPointer,
-  _ body: (_ context: Context, _ runtime: JavaScriptRuntime) -> Void
-) {
-  Unmanaged<Context>.fromOpaque(pointer)._withUnsafeGuaranteedRef { context in
-    context.runtime._withUnsafeGuaranteedRef { runtime in
-      body(context, runtime)
+  _ body: (_ context: Context, _ runtime: JavaScriptRuntime) -> Result
+) -> Result {
+  return Unmanaged<Context>.fromOpaque(pointer)._withUnsafeGuaranteedRef { context in
+    return context.runtime._withUnsafeGuaranteedRef { runtime in
+      return body(context, runtime)
     }
   }
 }
