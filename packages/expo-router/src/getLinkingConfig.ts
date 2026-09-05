@@ -1,7 +1,12 @@
 import { Platform } from 'expo';
 
 import type { RouteNode } from './Route';
-import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
+import {
+  INTERNAL_SLOT_NAME,
+  NATIVE_INTENT_KEY_REGEX,
+  NOT_FOUND_ROUTE_NAME,
+  SITEMAP_ROUTE_NAME,
+} from './constants';
 import type { State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
 import { applyRedirects } from './getRoutesRedirects';
@@ -78,9 +83,7 @@ export function getLinkingConfig(
   let hasCachedInitialUrl = false;
   let initialUrl: ReturnType<typeof getInitialURL> | undefined;
 
-  const nativeLinkingKey = context
-    .keys()
-    .find((key) => key.match(/^\.\/\+native-intent\.[tj]sx?$/));
+  const nativeLinkingKey = context.keys().find((key) => NATIVE_INTENT_KEY_REGEX.test(key));
   const nativeLinking: NativeIntent | undefined = nativeLinkingKey
     ? context(nativeLinkingKey)
     : undefined;
