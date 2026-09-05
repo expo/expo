@@ -36,6 +36,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Synchronized animation',
+    route: 'image/synchronized-animation',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSynchronizedAnimationScreen'));
+    },
+  },
+  {
     name: 'List with thousands images',
     route: 'image/flashlist',
     options: {},

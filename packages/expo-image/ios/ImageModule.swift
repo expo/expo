@@ -121,6 +121,10 @@ public final class ImageModule: Module {
         view.autoplay = autoplay ?? true
       }
 
+      Prop("synchronizedAnimation", false) { (view, synchronizedAnimation: Bool) in
+        view.synchronizedAnimation = synchronizedAnimation
+      }
+
       Prop("sfEffect") { (view, sfEffect: [SFSymbolEffect]?) in
         view.sfEffect = sfEffect
       }
@@ -150,6 +154,8 @@ public final class ImageModule: Module {
       AsyncFunction("startAnimating") { (view: ImageView) in
         if view.isSFSymbolSource {
           view.startSymbolAnimation()
+        } else if view.hasSharedAnimation {
+          view.startSharedAnimation()
         } else {
           view.sdImageView.startAnimating()
         }
@@ -158,6 +164,8 @@ public final class ImageModule: Module {
       AsyncFunction("stopAnimating") { (view: ImageView) in
         if view.isSFSymbolSource {
           view.stopSymbolAnimation()
+        } else if view.hasSharedAnimation {
+          view.stopSharedAnimation()
         } else {
           view.sdImageView.stopAnimating()
         }
@@ -205,7 +213,7 @@ public final class ImageModule: Module {
             failed = true
             promise.resolve(false)
           } else {
-            imagesLoaded = imagesLoaded + 1
+            imagesLoaded += 1
             if imagesLoaded == urls.count {
               promise.resolve(true)
             }
@@ -216,24 +224,32 @@ public final class ImageModule: Module {
 
     AsyncFunction("generateBlurhashAsync") { (source: Either<Image, URL>, numberOfComponents: CGSize, promise: Promise) in
       let parsedNumberOfComponents = (width: Int(numberOfComponents.width), height: Int(numberOfComponents.height))
-      generatePlaceholder(source: source, onFailure: {
-        promise.reject(BlurhashGenerationException())
-      }, generator: { (image: UIImage) in
-        if let blurhashString = blurhash(fromImage: image, numberOfComponents: parsedNumberOfComponents) {
-          promise.resolve(blurhashString)
-        } else {
+      generatePlaceholder(
+        source: source,
+        onFailure: {
           promise.reject(BlurhashGenerationException())
+        },
+        generator: { (image: UIImage) in
+          if let blurhashString = blurhash(fromImage: image, numberOfComponents: parsedNumberOfComponents) {
+            promise.resolve(blurhashString)
+          } else {
+            promise.reject(BlurhashGenerationException())
+          }
         }
-      })
+      )
     }
 
     AsyncFunction("generateThumbhashAsync") { (source: Either<Image, URL>, promise: Promise) in
-      generatePlaceholder(source: source, onFailure: {
-        promise.reject(ThumbhashGenerationException())
-      }, generator: { (image: UIImage) in
-        let blurhashString = thumbHash(fromImage: image)
-        promise.resolve(blurhashString.base64EncodedString())
-      })
+      generatePlaceholder(
+        source: source,
+        onFailure: {
+          promise.reject(ThumbhashGenerationException())
+        },
+        generator: { (image: UIImage) in
+          let blurhashString = thumbHash(fromImage: image)
+          promise.resolve(blurhashString.base64EncodedString())
+        }
+      )
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in
@@ -308,7 +324,7 @@ public final class ImageModule: Module {
 
     AsyncFunction("loadAsync") { [weak appContext = self.appContext] (source: ImageSource, options: ImageLoadOptions?) -> Image? in
       let image = try await ImageLoadTask(source, options: options ?? ImageLoadOptions()).load()
-      // Going through the `appContext` instead of capturing `self` keeps this `@Sendable async` closure from forcing 
+      // Going through the `appContext` instead of capturing `self` keeps this `@Sendable async` closure from forcing
       // the whole module to be Sendable.
       appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
         url: source.uri?.absoluteString ?? "",

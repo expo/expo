@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.github.penfeizhou.animation.FrameAnimationDrawable
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.records.ContentPosition
 
@@ -22,6 +23,15 @@ class ExpoImageView(
 ) : AppCompatImageView(context) {
   var currentTarget: ImageViewWrapperTarget? = null
   var isPlaceholder: Boolean = false
+
+  override fun setImageDrawable(newDrawable: Drawable?) {
+    // Take the outgoing drawable off the shared animation.
+    val previous = drawable
+    if (previous is FrameAnimationDrawable<*> && previous !== newDrawable) {
+      SharedAnimationDriver.onAnimatableReleased(previous)
+    }
+    super.setImageDrawable(newDrawable)
+  }
 
   fun recycleView(): ImageViewWrapperTarget? {
     setImageDrawable(null)
