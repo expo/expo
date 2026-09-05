@@ -2,11 +2,44 @@ import SwiftUI
 import ExpoModulesCore
 import ExpoUI
 
-// TODO(@jakex7): Hack to satisfy ExpoSwiftUI.AnyChild with random UUID value
-class NodeIdentityWrapper {
-  let id: UUID
-  init(id: UUID) {
-    self.id = id
+// SwiftUI can only animate a change when the view keeps the same identity across
+// renders, and `Children()` keys its ForEach on `AnyChild.id`. Handing out a fresh
+// identity object per render made every widget/Live Activity update a wholesale
+// remove-and-insert, which disabled system update animations, `contentTransition`,
+// and `.animation` alike. Instead, keep one identity object per logical node,
+// addressed by its position (or JSX `key`) in the tree.
+final class NodeIdentityWrapper {
+  // The cache must be bounded: Live Activity keys embed the activity id, so every
+  // activity an app starts adds a fresh set of entries, and widget extension
+  // processes are memory-limited. Oldest-first eviction is safe with respect to
+  // ObjectIdentifier reuse — every view in a live tree holds a strong reference
+  // to its wrapper, so an evicted wrapper cannot be deallocated (and its address
+  // cannot be recycled) while anything still uses it as an id. Eviction only
+  // costs such a node its animation continuity on a later re-render.
+  private static let capacity = 4096
+  private static var cache: [String: NodeIdentityWrapper] = [:]
+  private static var insertionOrder: [String] = []
+  private static let lock = NSLock()
+
+  let key: String
+
+  private init(key: String) {
+    self.key = key
+  }
+
+  static func identity(for key: String) -> NodeIdentityWrapper {
+    lock.lock()
+    defer { lock.unlock() }
+    if let existing = cache[key] {
+      return existing
+    }
+    if cache.count >= capacity, !insertionOrder.isEmpty {
+      cache.removeValue(forKey: insertionOrder.removeFirst())
+    }
+    let created = NodeIdentityWrapper(key: key)
+    cache[key] = created
+    insertionOrder.append(key)
+    return created
   }
 }
 extension ObjectIdentifier: @retroactive Encodable {
@@ -22,26 +55,53 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   let kind: WidgetsKind
   let entryIndex: Int?
   let environmentString: String?
+  // Path of this node within its layout tree, e.g. "ZStackView/2:moon/0:ImageView".
+  let path: String
 
-  let uuid = NodeIdentityWrapper(id: UUID())
+  private let identity: NodeIdentityWrapper
   public var id: ObjectIdentifier {
-    ObjectIdentifier(uuid)
+    ObjectIdentifier(identity)
   }
 
   public init(name: String, kind: WidgetsKind, node: [String: Any]) {
-    self.name = name
-    self.kind = kind
-    self.node = node
-    self.entryIndex = nil
-    self.environmentString = nil
+    self.init(name: name, kind: kind, node: node, entryIndex: nil, environmentString: nil)
   }
 
   public init(name: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?, environmentString: String?) {
+    self.init(name: name, kind: kind, node: node, entryIndex: entryIndex, environmentString: environmentString, path: node["type"] as? String ?? "root")
+  }
+
+  init(name: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?, environmentString: String?, path: String) {
     self.name = name
     self.kind = kind
     self.node = node
     self.entryIndex = entryIndex
     self.environmentString = environmentString
+    self.path = path
+    // `entryIndex` is deliberately not part of the identity key: WidgetKit renders
+    // each timeline entry into its own archive, so two entries' nodes are never
+    // siblings in one ForEach, and sharing identity across entries is what lets
+    // a timeline advance animate instead of hard-cutting.
+    self.identity = NodeIdentityWrapper.identity(for: "\(name)|\(kind)|\(path)")
+  }
+
+  // Children are addressed by their JSX `key` when present, otherwise by index,
+  // plus their type so a different component at the same slot gets a new identity.
+  // Keyed and unkeyed slots are prefixed (`k`/`i`) so a numeric JSX key (e.g.
+  // `key={0}`) can't collide with an unkeyed sibling's index, and keys are escaped
+  // so they can't forge the path separators or the `|` in the identity cache key.
+  private func childPath(for child: [String: Any], at index: Int) -> String {
+    let slot = (child["key"] as? String).map { "k\(escapeSlot($0))" } ?? "i\(index)"
+    let type = child["type"] as? String ?? "?"
+    return "\(path)/\(slot):\(type)"
+  }
+
+  private func escapeSlot(_ key: String) -> String {
+    key
+      .replacingOccurrences(of: "\\", with: "\\\\")
+      .replacingOccurrences(of: "/", with: "\\/")
+      .replacingOccurrences(of: ":", with: "\\:")
+      .replacingOccurrences(of: "|", with: "\\|")
   }
 
   @ViewBuilder
@@ -161,23 +221,45 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [Any] {
-        let validChildren = flattenChildNodes(children)
-        initialProps.children = validChildren.map { WidgetsDynamicView(name: name, kind: kind, node: $0, entryIndex: entryIndex, environmentString: environmentString) }
+        // Two siblings carrying the same JSX key (and type) would share one path
+        // and therefore one identity, but `ForEach` requires unique ids — so a
+        // path that is already taken is disambiguated with the raw slot, keeping
+        // key-based stability for the well-formed case.
+        var usedPaths = Set<String>()
+        initialProps.children = flattenChildNodes(children).map { slot, child in
+          var slotPath = childPath(for: child, at: slot)
+          while !usedPaths.insert(slotPath).inserted {
+            slotPath += "#\(slot)"
+          }
+          return WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: slotPath)
+        }
       } else if let child = props["children"] as? [String: Any] {
-        initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
+        initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: 0))]
       }
     }
   }
 
-  private func flattenChildNodes(_ children: [Any]) -> [[String: Any]] {
-    return children.flatMap { child -> [[String: Any]] in
-      if let node = child as? [String: Any] {
-        return [node]
+  // Flattens nested child arrays into (slot, node) pairs. Slots are numbered by
+  // position in the raw children structure — the `null`/`false` that conditional
+  // rendering (`{cond && <X/>}`) leaves in the array still consumes its slot, as
+  // it does in React — so an unkeyed sibling keeps its slot, and therefore its
+  // identity, when a conditional sibling appears or disappears.
+  private func flattenChildNodes(_ children: [Any]) -> [(slot: Int, node: [String: Any])] {
+    var slot = 0
+    var result: [(slot: Int, node: [String: Any])] = []
+    func walk(_ children: [Any]) {
+      for child in children {
+        if let node = child as? [String: Any] {
+          result.append((slot: slot, node: node))
+          slot += 1
+        } else if let nested = child as? [Any] {
+          walk(nested)
+        } else {
+          slot += 1
+        }
       }
-      if let nested = child as? [Any] {
-        return flattenChildNodes(nested)
-      }
-      return []
     }
+    walk(children)
+    return result
   }
 }

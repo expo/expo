@@ -25,6 +25,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Keep SwiftUI view identity stable across widget and Live Activity updates so system update animations, `contentTransition`, and `animation` modifiers work, and keep the app alive long enough for JS to handle a Live Activity button tap. ([#49244](https://github.com/expo/expo/pull/49244) by [@mahdidavoodi7](https://github.com/mahdidavoodi7))
 - [iOS] Localize widget gallery names and descriptions using the app's `Localizable.strings` files. ([#49606](https://github.com/expo/expo/pull/49606) by [@jakex7](https://github.com/jakex7))
 - [iOS] Fix widget and Live Activity `Text` modifiers being applied twice. ([#49535](https://github.com/expo/expo/pull/49535) by [@gee1k](https://github.com/gee1k))
 - Resolve deep `react-native/*` imports as empty modules when bundling widget layouts, fixing every widget failing with "Could not create context for layout evaluation" after `@expo/ui` 57.0.14 introduced such an import. ([#49491](https://github.com/expo/expo/pull/49491) by [@usmsam](https://github.com/usmsam))
