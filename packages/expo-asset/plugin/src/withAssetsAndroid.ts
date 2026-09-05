@@ -32,7 +32,8 @@ export const withAssetsAndroid: ConfigPlugin<string[]> = (config, assets) => {
 function getAssetDir(asset: string, root: string) {
   const assetPath = ['app', 'src', 'main', 'assets'];
   const resPath = ['app', 'src', 'main', 'res'];
-  const ext = path.extname(asset);
+  // Extensions are compared lowercase so `photo.JPG` is routed like `photo.jpg`.
+  const ext = path.extname(asset).toLowerCase();
 
   if (IMAGE_TYPES.includes(ext)) {
     return path.join(root, ...resPath, 'drawable');

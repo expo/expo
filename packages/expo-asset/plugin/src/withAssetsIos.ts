@@ -27,9 +27,12 @@ function addAssetsToTarget(config: ExpoConfig, assets: string[]) {
     const platformProjectRoot = config.modRequest.platformProjectRoot;
     IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
 
-    const images = validAssets.filter((asset) => IMAGE_TYPES.includes(path.extname(asset)));
+    // Extensions are compared lowercase so `photo.JPG` is routed like `photo.jpg`.
+    const images = validAssets.filter((asset) =>
+      IMAGE_TYPES.includes(path.extname(asset).toLowerCase())
+    );
     const assetsForResourcesDir = validAssets.filter(
-      (asset) => !IMAGE_TYPES.includes(path.extname(asset))
+      (asset) => !IMAGE_TYPES.includes(path.extname(asset).toLowerCase())
     );
 
     await addImageAssets(images, config.modRequest.projectRoot);
