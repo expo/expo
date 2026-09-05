@@ -16,6 +16,9 @@ struct MailDraftEntity {
   var attachments: [IntentFile]
   var account: MailAccountEntity
 
+  /// Mirrors the catalog flag for `IndexedEntity.hideInSpotlight` in the optional visual layer.
+  var isHiddenInSpotlight: Bool = false
+
   init(
     id: String,
     to: [IntentPerson],
@@ -24,7 +27,8 @@ struct MailDraftEntity {
     subject: String?,
     body: AttributedString?,
     attachments: [IntentFile],
-    account: MailAccountEntity
+    account: MailAccountEntity,
+    isHiddenInSpotlight: Bool = false
   ) {
     self.id = id
     self.to = to
@@ -34,21 +38,27 @@ struct MailDraftEntity {
     self.body = body
     self.attachments = attachments
     self.account = account
+    self.isHiddenInSpotlight = isHiddenInSpotlight
   }
 
   /// Builds a draft from a catalog record published by JavaScript with
   /// `setEntityCatalogAsync('mailDraft', drafts)`. The record's title carries the subject and its
-  /// subtitle carries the body, so Siri can resolve a draft the user names out loud.
+  /// subtitle carries the body, so Siri can resolve a draft the user names out loud. Anything with
+  /// no field of its own on the record travels in `metadata`.
   init(record: AppIntentEntityRecord) {
+    let bodyText = record.subtitle ?? ""
+    let recipients = Self.recipients(from: record.metadata["recipients"])
+
     self.init(
       id: record.id,
-      to: [],
+      to: recipients.map { IntentPerson(handle: .init(emailAddress: $0)) },
       cc: [],
       bcc: [],
       subject: record.title.isEmpty ? nil : record.title,
-      body: record.subtitle.map(AttributedString.init),
+      body: bodyText.isEmpty ? nil : AttributedString(bodyText),
       attachments: [],
-      account: MailAccountEntity.default
+      account: MailAccountEntity.default,
+      isHiddenInSpotlight: record.hideInSpotlight
     )
   }
 
@@ -84,11 +94,6 @@ struct MailDraftEntity {
 
   /// The same addresses as one string, for the places that want a single line instead of an array: a
   /// summary label, or one string to match a search term against.
-  ///
-  /// Nothing in this example reads it yet. `displayRepresentation` shows the subject and a body
-  /// preview, and `MailDraftEntityQuery` searches those two, because a draft built from a catalog
-  /// record has no recipients - `init(record:)` above leaves `to`, `cc` and `bcc` empty. Add
-  /// recipients to the records your app publishes, then search this too.
   var recipientList: String {
     return recipientAddresses.joined(separator: ", ")
   }
@@ -117,6 +122,17 @@ struct MailDraftEntity {
     @unknown default:
       return nil
     }
+  }
+
+  /// Catalog metadata is JSON so display names containing commas remain one recipient.
+  private static func recipients(from metadata: String?) -> [String] {
+    guard let metadata,
+      let data = metadata.data(using: .utf8),
+      let recipients = try? JSONDecoder().decode([String].self, from: data)
+    else {
+      return []
+    }
+    return recipients
   }
 
   private var bodyPreview: String {

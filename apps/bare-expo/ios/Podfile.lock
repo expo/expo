@@ -270,9 +270,11 @@ PODS:
     - ExpoModulesCore
   - ExpoAppIntents (0.1.0):
     - ExpoModulesCore
+    - ExpoUI
   - ExpoAppIntents/Tests (0.1.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
+    - ExpoUI
   - ExpoAppleAuthentication (57.0.1):
     - ExpoModulesCore
   - ExpoAppMetrics (57.0.7):
@@ -3867,7 +3869,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 7a59e803916fbfd1b96c75ff91ea8dddac7e722f
   ExpoAgeRange: f30bef82f1a99c097e28f50ed41ca04d5e1cab1c
   ExpoAppIntegrity: c4f6d2065674ec9744881f8c04d52ade9b6cacd8
-  ExpoAppIntents: b7c5e28a952f646080cb7df4bfb5e332ddc34c58
+  ExpoAppIntents: d429ba6637f7749597bfbf36d420202a2d313209
   ExpoAppleAuthentication: 97d113f0f2680067e6e76d3c9249e7e1fc026b42
   ExpoAppMetrics: 01565d32cd4cf39ad778e6c6cb214087748ef199
   ExpoAsset: a76534cf7b762978861dd31708308496c676166f

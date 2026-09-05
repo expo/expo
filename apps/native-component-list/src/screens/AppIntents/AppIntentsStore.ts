@@ -38,9 +38,61 @@ export type AppIntentMailDraft = {
   /** Recipient addresses, flattened from the intent's `[IntentPerson]` parameters. */
   recipients: string[];
   createdAt: number;
+  /** Keeps the draft out of the Spotlight index. Enforced by expo-app-intents. */
+  hideInSpotlight?: boolean;
+  /**
+   * Keeps the draft from being offered to Siri or matched by name. Travels in `metadata` because
+   * expo-app-intents does not know about it — the app-target query is what honours it.
+   */
+  hideInSuggestions?: boolean;
 };
 
 export type AppIntentRoute = 'counter' | 'order' | 'mail';
+
+export const appIntentSampleMailDrafts: AppIntentMailDraft[] = [
+  {
+    id: 'sample-draft-release-notes',
+    invocationId: 'sample-draft-release-notes',
+    subject: 'Release notes for review',
+    body: 'Draft of the notes for the next release. Skimming for anything that reads as a breaking change before it goes out.',
+    recipients: ['maya@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 8, 20),
+  },
+  {
+    id: 'sample-draft-standup-recap',
+    invocationId: 'sample-draft-standup-recap',
+    subject: 'Standup recap',
+    body: 'Short recap of what we covered: the entity catalog is wired up and the shortcut phrases resolve.',
+    recipients: ['team@example.com', 'ravi@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 10, 45),
+  },
+  {
+    id: 'sample-draft-design-feedback',
+    invocationId: 'sample-draft-design-feedback',
+    subject: 'Feedback on the compose screen',
+    body: 'Two notes on the compose screen: the recipient chips need more contrast, and the subject field should keep focus.',
+    recipients: ['iris@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 13, 10),
+    hideInSpotlight: true,
+  },
+  {
+    id: 'sample-draft-conference-trip',
+    invocationId: 'sample-draft-conference-trip',
+    subject: 'Conference travel details',
+    body: 'Flights are booked and the hotel is confirmed. Sending the itinerary so nobody has to ask for it twice.',
+    recipients: ['travel@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 18, 35),
+    hideInSuggestions: true,
+  },
+  {
+    id: 'sample-draft-thanks-next-steps',
+    invocationId: 'sample-draft-thanks-next-steps',
+    subject: 'Thanks and next steps',
+    body: 'Thanks for walking through the App Intents setup. Next step is confirming the draft resolves as an entity in Spotlight.',
+    recipients: ['sam@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 21, 5),
+  },
+];
 
 export const appIntentDishCatalog = [
   {
@@ -78,6 +130,7 @@ type AppIntentProcessingResult = {
    */
   route: AppIntentRoute | null;
   routeInvocationId?: string;
+  routeDraftId?: string;
 };
 
 /**
@@ -205,14 +258,11 @@ function stringArrayParam(params: Record<string, unknown>, name: string): string
  * representation. Each address stays whole, so a display name such as "Doe, John" remains one
  * recipient.
  *
- * An invocation queued by a build that sent one comma-separated string is still read, because the
- * pending queue outlives an app update.
  */
 function recipientsParam(params: Record<string, unknown>): string[] {
-  const value = params.recipients;
-  const recipients =
-    typeof value === 'string' ? value.split(',') : stringArrayParam(params, 'recipients');
-  return recipients.map((recipient) => recipient.trim()).filter(Boolean);
+  return stringArrayParam(params, 'recipients')
+    .map((recipient) => recipient.trim())
+    .filter(Boolean);
 }
 
 function latestInvocation(invocations: AppIntentInvocationLike[]): AppIntentInvocationLike | null {
@@ -315,20 +365,59 @@ export async function clearMailDrafts(): Promise<void> {
   await withSerializedStateUpdate(() => writeJson<AppIntentMailDraft[]>(mailDraftsKey, []));
 }
 
+export async function addSampleMailDrafts(): Promise<AppIntentMailDraft[]> {
+  return withSerializedStateUpdate(async () => {
+    const existingDrafts = await getMailDrafts();
+    const existingDraftIds = new Set(existingDrafts.map((draft) => draft.id));
+    const newDrafts = appIntentSampleMailDrafts.filter((draft) => !existingDraftIds.has(draft.id));
+
+    if (newDrafts.length === 0) {
+      return existingDrafts;
+    }
+
+    const drafts = [...newDrafts, ...existingDrafts];
+    await writeJson<AppIntentMailDraft[]>(mailDraftsKey, drafts);
+    return drafts;
+  });
+}
+
+/** Flips one of the visibility flags on a draft and returns the updated list. */
+export async function toggleMailDraftFlag(
+  id: string,
+  flag: 'hideInSpotlight' | 'hideInSuggestions'
+): Promise<AppIntentMailDraft[]> {
+  return withSerializedStateUpdate(async () => {
+    const drafts = await getMailDrafts();
+    const updated = drafts.map((draft) =>
+      draft.id === id ? { ...draft, [flag]: !draft[flag] } : draft
+    );
+    await writeJson<AppIntentMailDraft[]>(mailDraftsKey, updated);
+    return updated;
+  });
+}
+
 /**
- * Projects the drafts into the shape the native `MailDraftEntity.init(record:)` reads: the record's
- * title carries the subject and its subtitle carries the body.
+ * Projects the drafts into the shape the native `MailDraftEntity.init(record:)` reads: the title
+ * and subtitle carry the subject and body, while `metadata` carries the recipients and the
+ * app-specific suggestion flag.
  *
- * The recipients are deliberately left out. Nothing native reads them - `init(record:)` builds a
- * draft with no recipients, and `MailDraftEntityQuery` matches on the subject and the body - so
- * publishing them as `synonyms` would only imply that "the draft to Maya" resolves, when it does
- * not.
+ * `metadata.recipients` is what rebuilds the draft's `to` list, which is what makes "the draft to
+ * Maya" resolve: `MailDraftEntityQuery.entities(matching:)` searches `recipientList`. They are not
+ * also published as `synonyms`, because nothing reads that for a draft - `DishEntity` is the example
+ * that uses it.
  */
 export function mailDraftsToEntityCatalog(drafts: AppIntentMailDraft[]): AppIntentEntity[] {
   return drafts.map((draft) => ({
     id: draft.id,
     title: draft.subject,
     subtitle: draft.body,
+    hideInSpotlight: draft.hideInSpotlight,
+    metadata: {
+      // Metadata values are strings, so encode the array as JSON. A comma-delimited value cannot
+      // distinguish two recipients from one display name such as "Doe, John".
+      recipients: JSON.stringify(draft.recipients),
+      ...(draft.hideInSuggestions ? { hideInSuggestions: 'true' } : {}),
+    },
   }));
 }
 
@@ -404,6 +493,8 @@ const appIntentHandlers: Record<string, AppIntentHandlerDescriptor> = {
   orderFood: { route: 'order', opensApp: true },
   createMailDraft: { route: 'mail', opensApp: true },
   deleteMailDrafts: { route: 'mail', opensApp: false },
+  // `.system.open`/`.mail.openDraft` exist to bring the app forward, so this one routes.
+  openMailDraft: { route: 'mail', opensApp: true },
 };
 
 function handlerForInvocation(
@@ -505,5 +596,7 @@ async function applyAppIntentInvocations(
     ),
     route: routeForInvocation(routeSource),
     routeInvocationId: routeSource?.id,
+    routeDraftId:
+      routeSource?.name === 'openMailDraft' ? stringParam(routeSource.params, 'id') : undefined,
   };
 }
