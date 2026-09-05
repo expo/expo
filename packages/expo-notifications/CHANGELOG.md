@@ -23,6 +23,7 @@
 
 ### 💡 Others
 
+- [Android] Correct native-value lookup semantics for audio usage and content type enums. ([#49270](https://github.com/expo/expo/pull/49270) by [@vonovak](https://github.com/vonovak))
 - Drop usage of the deprecated `LegacyEventEmitter`. ([#49080](https://github.com/expo/expo/pull/49080) by [@vonovak](https://github.com/vonovak))
 
 ## 57.0.8 - 2026-07-29
