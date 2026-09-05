@@ -31,6 +31,27 @@ extension ExpoSwiftUI {
 }
 
 extension ExpoSwiftUI {
+  /**
+   A weak handle to the UIKit view that hosts a SwiftUI tree. Exposed through the environment so RNHostView
+   can convert its geometry into the coordinate space of the view Yoga laid out.
+   */
+  public final class HostingViewReference: @unchecked Sendable {
+    public internal(set) weak var view: UIView?
+  }
+
+  internal struct HostingViewEnvironmentKey: EnvironmentKey {
+    static let defaultValue: HostingViewReference? = nil
+  }
+}
+
+extension EnvironmentValues {
+  public var expoHostingView: ExpoSwiftUI.HostingViewReference? {
+    get { self[ExpoSwiftUI.HostingViewEnvironmentKey.self] }
+    set { self[ExpoSwiftUI.HostingViewEnvironmentKey.self] = newValue }
+  }
+}
+
+extension ExpoSwiftUI {
   internal typealias AnyHostingView = AnyExpoSwiftUIHostingView
 
   /**
@@ -66,11 +87,18 @@ extension ExpoSwiftUI {
     private var requestedStyleSize: (width: NSNumber?, height: NSNumber?)?
 
     /**
+     Handed to the SwiftUI root through the environment, so RNHostView content can convert its geometry
+     into this view's coordinate space.
+     */
+    private let hostingViewReference = HostingViewReference()
+
+    /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
-      self.contentView = ContentView(props: props)
-      let rootView = AnyView(contentView)
+      let content = ContentView(props: props)
+      self.contentView = content
+      let rootView = AnyView(content.environment(\.expoHostingView, hostingViewReference))
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -80,6 +108,8 @@ extension ExpoSwiftUI {
       self.hostingController = controller
 
       super.init(appContext: appContext)
+
+      hostingViewReference.view = self
 
       // Initialise with default props
       if let safeAreaProps = props as? SafeAreaControllable {

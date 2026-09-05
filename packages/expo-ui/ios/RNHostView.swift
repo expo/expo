@@ -93,18 +93,26 @@ struct RNHostView: ExpoSwiftUI.View {
 }
 
 // Publishes where SwiftUI placed this view inside its `Host`, so `measure()` reports the position
-// the hosted content actually occupies.
+// the hosted content actually occupies. The position is converted with UIKit into the `Host`
+// component view, whose frame is the one Yoga laid out. A SwiftUI coordinate space would start at
+// the safe region SwiftUI lays the root out in, which is inset from that frame whenever the host
+// touches a screen edge or the keyboard.
 private struct PublishContentOriginModifier: ViewModifier {
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   let isEnabled: Bool
+  @Environment(\.expoHostingView) private var hostingView
 
   func body(content: Content) -> some View {
     if isEnabled {
       content
-        .onGeometryChange(for: CGRect.self) { proxy in
-          proxy.frame(in: .named(expoHostCoordinateSpace))
-        } action: { frame in
-          shadowNodeProxy.setContentOrigin?(frame.origin)
+        // Track the converted origin, not the window frame: when the host moves under a fixed inset
+        // the content can stay put in the window while its position inside the host changes.
+        .onGeometryChange(for: CGPoint?.self) { proxy in
+          originInHost(of: proxy.frame(in: .global))
+        } action: { origin in
+          if let origin {
+            shadowNodeProxy.setContentOrigin?(origin)
+          }
         }
         .onDisappear {
           shadowNodeProxy.clearContentOrigin?()
@@ -112,6 +120,15 @@ private struct PublishContentOriginModifier: ViewModifier {
     } else {
       content
     }
+  }
+
+  /// SwiftUI's global space is the window, so the origin only has to be converted into the host.
+  /// `nil` while the host is not in a window, when there is no window space to convert from.
+  private func originInHost(of frameInWindow: CGRect) -> CGPoint? {
+    guard let hostView = hostingView?.view, let window = hostView.window else {
+      return nil
+    }
+    return hostView.convert(frameInWindow.origin, from: window)
   }
 }
 
