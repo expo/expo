@@ -1,16 +1,10 @@
-import { Asset } from 'expo-asset';
 import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import type {
-  FontFaceDefinition,
-  FontFamilyDefinition,
-  FontMap,
-  FontResource,
-  FontSource,
-  UnloadFontOptions,
-} from './Font.types';
+import type { FontFamilyDefinition, FontMap, FontSource, UnloadFontOptions } from './Font.types';
 import { getAssetForSource, loadFontFamilyAsync, loadSingleFontAsync } from './FontLoader';
+import { assertValidFontFaces, assertValidFontFamilyDefinitions } from './fontFaceValidation';
+import { fontSourceFromFace } from './fontSourceFromFace';
 import {
   isLoadedInCache,
   isLoadedNative,
@@ -70,6 +64,9 @@ export function isLoading(fontFamily: string): boolean {
  * > **Note**: We recommend using the [config plugin](#configuration-in-app-config) instead whenever possible.
  *
  * > **Note**: When the `fontFamily` is already loaded, this method resolves without replacing it.
+ * > This applies across the string and array APIs, and across separate calls: a `fontFamily`
+ * > loads once. Declare all of its faces in that one call. A later call for an already-loaded
+ * > `fontFamily` adds none of its faces, even if that call lists faces the first call did not.
  *
  * @param fontFamilyOrFontMap String, map of values that can be used as the `fontFamily`
  * [style prop](https://reactnative.dev/docs/text#style) with React Native `Text` elements, or an
@@ -97,7 +94,10 @@ export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Pr
     const definitions = fontFamilyOrFontMap;
 
     if (isServer) {
+      // Throw, not reject: the static render pass discards this promise, so a rejection would drop the font silently.
+      assertValidFontFamilyDefinitions(definitions);
       for (const { fontFamily, fontDefinitions } of definitions) {
+        assertValidFontFaces(fontFamily, fontDefinitions);
         for (const face of fontDefinitions) {
           registerStaticFont(fontFamily, fontSourceFromFace(face));
         }
@@ -105,9 +105,13 @@ export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Pr
       return Promise.resolve();
     }
 
-    return Promise.all(definitions.map(loadFontFamilyInNamespaceAsync)).then(() => {
-      // return void, not void[]
-    });
+    try {
+      assertValidFontFamilyDefinitions(definitions);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    return Promise.all(definitions.map(loadFontFamilyInNamespaceAsync)).then(() => {});
   }
 
   if (typeof fontFamilyOrFontMap === 'object') {
@@ -140,40 +144,19 @@ export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Pr
   return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
 
-// Merges a face's descriptors onto its `path`. Nothing gets a default: an unset property must
-// stay unset, or a variable font's face would be pinned to a single weight/style.
-function fontSourceFromFace(face: FontFaceDefinition): FontSource {
-  const { path, weight, style, display, testString } = face;
-
-  if (path instanceof Asset) {
-    return path;
-  }
-
-  const base: FontResource =
-    typeof path === 'string' || typeof path === 'number' ? { uri: path } : path;
-
-  return {
-    ...base,
-    weight: weight ?? base.weight,
-    style: style ?? base.style,
-    display: display ?? base.display,
-    testString: testString ?? base.testString,
-  };
-}
-
 async function loadFontFamilyInNamespaceAsync(definition: FontFamilyDefinition): Promise<void> {
   const { fontFamily, fontDefinitions } = definition;
+
+  assertValidFontFaces(fontFamily, fontDefinitions);
 
   if (loadPromises.hasOwnProperty(fontFamily)) {
     return loadPromises[fontFamily];
   }
 
-  // consulting the native module is slower than the cache, but avoids reloading the same font
   if (isLoaded(fontFamily)) {
     return;
   }
 
-  // Create the promise synchronously — concurrent callers must all await the same one.
   loadPromises[fontFamily] = (async () => {
     try {
       await loadFontFamilyAsync(fontFamily, fontDefinitions);

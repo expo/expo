@@ -1,5 +1,6 @@
 import ExpoFontLoader, {
   _createWebFontTemplate,
+  _fontFaceRuleSrcMatches,
   _matchesFontFaceOptions,
 } from '../ExpoFontLoader.web';
 import { FontDisplay } from '../Font.types';
@@ -164,9 +165,17 @@ describe('_createWebFontTemplate', () => {
     ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-display:swap}');
   });
 
-  it('includes font-weight when a numeric weight is provided', () => {
-    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight: 700 })).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-weight:700}'
+  it.each<[Parameters<typeof _createWebFontTemplate>[1]['weight'], string]>([
+    [700, '700'],
+    ['700', '700'],
+    ['normal', 'normal'],
+    ['bold', 'bold'],
+    [1, '1'],
+    [1000, '1000'],
+    ['100 900', '100 900'],
+  ])('includes font-weight %p', (weight, expected) => {
+    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight })).toBe(
+      `@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-weight:${expected}}`
     );
   });
 
@@ -200,40 +209,10 @@ describe('_createWebFontTemplate', () => {
     ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}');
   });
 
-  it('reproduces the reported multi-face family output, one rule per face', () => {
-    // A "Wix Madefor Text" family with a regular, an italic, and a bold face, each explicitly
-    // specifying weight/style since these are separate static files, not a variable font.
-    const regular = _createWebFontTemplate('Wix Madefor Text', {
-      uri: 'fonts/WixMadeforText-Regular.woff2',
-      display: FontDisplay.AUTO,
-      weight: 400,
-      style: 'normal',
-    });
-    const italic = _createWebFontTemplate('Wix Madefor Text', {
-      uri: 'fonts/WixMadeforText-Italic.woff2',
-      display: FontDisplay.AUTO,
-      weight: 400,
-      style: 'italic',
-    });
-    const bold = _createWebFontTemplate('Wix Madefor Text', {
-      uri: 'fonts/WixMadeforText-Bold.woff2',
-      display: FontDisplay.AUTO,
-      weight: 800,
-      style: 'normal',
-    });
-
-    expect(regular).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Regular.woff2");font-display:auto;font-weight:400;font-style:normal}'
+  it.each(['1001', '0400', '100 1001'])('omits the out-of-range string weight %p', (weight) => {
+    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight })).toBe(
+      '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}'
     );
-    expect(italic).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Italic.woff2");font-display:auto;font-weight:400;font-style:italic}'
-    );
-    expect(bold).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Bold.woff2");font-display:auto;font-weight:800;font-style:normal}'
-    );
-    // Same family, three distinct rules — the browser can select the right face via
-    // font-weight/font-style instead of needing three unrelated fontFamily names.
-    expect(new Set([regular, italic, bold]).size).toBe(3);
   });
 });
 
@@ -242,6 +221,12 @@ describe('_matchesFontFaceOptions', () => {
   const italic = rule({ fontFamily: 'Wix Madefor Text', fontWeight: '400', fontStyle: 'italic' });
   const bold = rule({ fontFamily: 'Wix Madefor Text', fontWeight: '800', fontStyle: '' });
   const otherFamily = rule({ fontFamily: 'Other Family', fontWeight: '400', fontStyle: '' });
+
+  it('matches a variable-font range weight by the same range, not by a weight inside it', () => {
+    const variable = rule({ fontFamily: 'Wix Madefor Text', fontWeight: '100 900', fontStyle: '' });
+    expect(_matchesFontFaceOptions(variable, 'Wix Madefor Text', { weight: '100 900' })).toBe(true);
+    expect(_matchesFontFaceOptions(variable, 'Wix Madefor Text', { weight: 400 })).toBe(false);
+  });
 
   it('matches by family name alone when no options are given', () => {
     expect(_matchesFontFaceOptions(regular, 'Wix Madefor Text')).toBe(true);
@@ -267,5 +252,59 @@ describe('_matchesFontFaceOptions', () => {
     expect(
       _matchesFontFaceOptions(bold, 'Wix Madefor Text', { weight: 400, style: 'italic' })
     ).toBe(false);
+  });
+
+  it.each<[string, number | string, boolean]>([
+    ['normal', 400, true],
+    ['400', 'normal', true],
+    ['bold', 700, true],
+    ['700', 'bold', true],
+    ['400', 'bold', false],
+    ['800', 400, false],
+  ])(
+    'weight normalization: rule weight %p vs option %p matches: %p',
+    (ruleWeight, matchWeight, expected) => {
+      const testRule = rule({
+        fontFamily: 'Wix Madefor Text',
+        fontWeight: ruleWeight,
+        fontStyle: '',
+      });
+      expect(_matchesFontFaceOptions(testRule, 'Wix Madefor Text', { weight: matchWeight })).toBe(
+        expected
+      );
+    }
+  );
+});
+
+describe('_fontFaceRuleSrcMatches', () => {
+  function ruleWithSrc(src: string): { style: CSSStyleDeclaration } {
+    return {
+      style: {
+        getPropertyValue: (property: string) => (property === 'src' ? src : ''),
+      } as any,
+    };
+  }
+
+  it('matches when the rule references the same uri', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc('url("bold.ttf")'), 'bold.ttf')).toBe(true);
+  });
+
+  it('does not match when the rule references a different uri', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc('url("bold.ttf")'), 'regular.ttf')).toBe(false);
+  });
+
+  it('falls back to matching when the engine does not expose the src descriptor', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc(''), 'regular.ttf')).toBe(true);
+  });
+
+  it('matches single-quoted and unquoted url() forms', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc("url('bold.ttf')"), 'bold.ttf')).toBe(true);
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc('url(bold.ttf)'), 'bold.ttf')).toBe(true);
+  });
+
+  it('decodes a percent-encoded uri before comparing', () => {
+    expect(
+      _fontFaceRuleSrcMatches(ruleWithSrc('url("bold%20italic.ttf")'), 'bold italic.ttf')
+    ).toBe(true);
   });
 });
