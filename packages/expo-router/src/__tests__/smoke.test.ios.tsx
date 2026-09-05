@@ -1,7 +1,14 @@
 import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { NativeStackView, Slot, router, useGlobalSearchParams, usePathname } from '../exports';
+import {
+  createRouteKeyMinter,
+  NativeStackView,
+  Slot,
+  router,
+  useGlobalSearchParams,
+  usePathname,
+} from '../exports';
 import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -10,6 +17,10 @@ import { renderRouter } from '../testing-library';
 
 it('exports NativeStackView', () => {
   expect(NativeStackView).toBeDefined();
+});
+
+it('exports createRouteKeyMinter', () => {
+  expect(createRouteKeyMinter).toBeDefined();
 });
 
 it('404', () => {

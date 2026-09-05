@@ -85,6 +85,7 @@ export type { RouteSource } from './react-navigation/native';
 
 // Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
 export { StackRouter, TabRouter } from './react-navigation/routers';
+export { createRouteKeyMinter } from './react-navigation/routers/stateKeys';
 export { NativeStackView } from './react-navigation/native-stack';
 export type {
   NativeStackDescriptorMap,
