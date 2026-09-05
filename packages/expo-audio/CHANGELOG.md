@@ -6,9 +6,9 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Expose playback failures through AudioStatus.error on Android, iOS, and web, backported from SDK 56. ([#49772](https://github.com/expo/expo/pull/49772) by [@Kamilbenkirane](https://github.com/Kamilbenkirane))
 
-- Expose playback failures through `AudioStatus.error` on Android, iOS, and web, backported from SDK 56.
+### 🐛 Bug fixes
 
 ### 💡 Others
 

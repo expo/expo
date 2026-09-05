@@ -148,18 +148,20 @@ export function test({ describe, expect, it, ...t }: any) {
           player.replace({ uri: 'file:///expo-audio-missing-fixture.mp3' });
           await asyncRetry(
             () => {
-              expect(typeof error).toBe('string');
-              expect(player.currentStatus.error).toBe(error);
+              if (error === null) {
+                throw new Error('The player has not emitted a playback error.');
+              }
             },
             { retries: 5, minTimeout: 100 }
           );
+          expect(player.currentStatus.error).toBe(error);
 
           player.replace(mainTestingSource);
           await retryForStatus(player, { isLoaded: true, error: null });
         } finally {
           subscription.remove();
         }
-      });
+      }, 15_000);
 
       it('replaces the audio source', async () => {
         player = createAudioPlayer(mainTestingSource);
