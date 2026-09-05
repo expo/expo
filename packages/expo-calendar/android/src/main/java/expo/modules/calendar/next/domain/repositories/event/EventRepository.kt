@@ -56,6 +56,24 @@ class EventRepository(private val contentResolver: ContentResolver) {
     ) > 0
   }
 
+  /**
+   * Flags the event as carrying local changes that still have to be pushed.
+   *
+   * Rows written through a sync adapter URI are recorded as already in sync, so a change made that
+   * way — an extended property, for instance — never leaves the device on its own. Updating the
+   * event through the plain URI is enough: the provider sets `dirty` itself on any update it did
+   * not attribute to a sync adapter, whatever the values carry, so an empty set flags the event
+   * without touching a single column of it.
+   *
+   * @return whether the event was found and flagged.
+   */
+  suspend fun markDirty(id: EventId): Boolean = withContext(Dispatchers.IO) {
+    contentResolver.safeUpdate(
+      uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id.value),
+      values = ContentValues()
+    ) > 0
+  }
+
   suspend fun insertException(id: EventId, eventExceptionInput: EventExceptionInput) = withContext(Dispatchers.IO) {
     contentResolver.safeInsert(
       uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_EXCEPTION_URI, id.value),

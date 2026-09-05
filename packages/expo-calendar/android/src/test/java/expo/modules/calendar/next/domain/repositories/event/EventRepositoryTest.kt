@@ -661,6 +661,41 @@ class EventRepositoryTest {
 
   // endregion
 
+  // region markDirty
+
+  @Test
+  fun `given an event, when markDirty, then updates it through the plain URI with no values`() = runTest {
+    // Given
+    val uriSlot = slot<Uri>()
+    val valuesSlot = slot<ContentValues>()
+    every { contentResolver.update(capture(uriSlot), capture(valuesSlot), any(), any()) } returns 1
+
+    // When
+    val result = repository.markDirty(EventId(42L))
+
+    // Then
+    // The provider sets `dirty` on any update it does not attribute to a sync adapter, so the
+    // update has to carry neither the sync adapter parameters nor a single column of the event.
+    Assert.assertTrue(result)
+    Assert.assertEquals("42", uriSlot.captured.lastPathSegment)
+    Assert.assertNull(uriSlot.captured.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
+    Assert.assertEquals(0, valuesSlot.captured.size())
+  }
+
+  @Test
+  fun `given no row was updated, when markDirty, then returns false`() = runTest {
+    // Given
+    every { contentResolver.update(any(), any(), any(), any()) } returns 0
+
+    // When
+    val result = repository.markDirty(EventId(42L))
+
+    // Then
+    Assert.assertFalse(result)
+  }
+
+  // endregion
+
   // region helpers
 
   private fun emptyCursor(): Cursor {
