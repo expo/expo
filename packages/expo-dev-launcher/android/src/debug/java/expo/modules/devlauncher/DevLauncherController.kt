@@ -20,6 +20,7 @@ import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
+import expo.modules.devlauncher.helpers.hasEnabledFlag
 import expo.modules.devlauncher.helpers.hasUrlQueryParam
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
@@ -138,6 +139,15 @@ class DevLauncherController private constructor(
 
       if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
         DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
+      }
+
+      if (hasEnabledFlag(url, "disableFab")) {
+        DependencyInjection.devMenuPreferences?.showFab = false
+      }
+
+      if (hasEnabledFlag(url, "disableAutoLaunch")) {
+        DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
+        DependencyInjection.devMenuPreferences?.showsAtLaunch = false
       }
 
       if (launchAppLoader(result.appLoader)) {

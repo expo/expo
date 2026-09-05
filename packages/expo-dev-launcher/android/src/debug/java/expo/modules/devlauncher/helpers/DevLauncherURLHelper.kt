@@ -10,6 +10,10 @@ fun hasUrlQueryParam(uri: Uri): Boolean {
   return uri.getQueryParameter("url") != null
 }
 
+fun hasEnabledFlag(uri: Uri, name: String): Boolean {
+  return uri.isHierarchical && uri.getQueryParameter(name) == "1"
+}
+
 class DevLauncherUrl(var url: Uri) {
   val queryParams = mutableMapOf<String, String>()
 

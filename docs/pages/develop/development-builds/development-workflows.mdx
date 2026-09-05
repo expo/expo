@@ -55,7 +55,15 @@ In the example above, the `scheme` is `exp+app-slug`, and the `manifestUrl` is a
 
 #### Using updates deep links in automation scenarios
 
-When launching an update URL in a development build on an emulator or simulator using automation, such as in a CI/CD workflow, you can add the `disableOnboarding=1` query parameter to the URL to skip the onboarding screen that appears on the first launch of a development build after installation.
+When launching a development build with automation, such as in a CI/CD workflow or an end-to-end test, you can add the following query parameters to the URL:
+
+| parameter             | value                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| `disableOnboarding=1` | Skips the onboarding screen that appears on the first launch of a development build after installation. |
+| `disableFab=1`        | Hides the Tools button (the floating button that opens the dev menu).                                   |
+| `disableAutoLaunch=1` | Prevents the dev menu from opening when the app starts.                                                 |
+
+`disableFab` and `disableAutoLaunch` have to be on the deep link itself, next to `url`, rather than inside the encoded `url` value. They update the saved dev menu settings, which is useful on a physical device where automation cannot change those settings from the host. You can re-enable either setting from the dev menu.
 
 #### App-specific deep links
 

@@ -423,6 +423,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   // Disable onboarding popup if "&disableOnboarding=1" is a param
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
 
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
+
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {
     runtimeVersion = _updatesInterface.runtimeVersion ?: @"";
