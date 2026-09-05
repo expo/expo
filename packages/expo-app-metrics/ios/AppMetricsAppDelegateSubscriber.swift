@@ -11,6 +11,12 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     AppMetricsActor.isolated {
       NetworkPathMonitor.shared.start()
       NetworkRequestMonitor.shared.start()
+      // From here on every completed request is written to the database, attributed to the main
+      // session. The session's row INSERT was enqueued on the actor when `mainSession` was first
+      // touched above, so it lands before any request row that references it.
+      NetworkRequestMonitor.shared.persistence = NetworkRequestPersistence(database: AppMetrics.database) {
+        return AppMetrics.mainSession.id
+      }
     }
   }
 
