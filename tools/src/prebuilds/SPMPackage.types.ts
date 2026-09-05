@@ -77,8 +77,6 @@ export interface ExternalDependencyConfig {
   path: string;
   /** Include directories relative to the xcframework path */
   includeDirectories?: string[];
-  /** Whether this dependency has a VFS overlay file */
-  hasVfsOverlay?: boolean;
   /** Absolute base path to the debug artifact folder (for computing debug include paths) */
   debugBasePath?: string;
   /** Absolute base path to the release artifact folder (for computing release include paths) */

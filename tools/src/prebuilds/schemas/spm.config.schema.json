@@ -281,10 +281,6 @@
                     "description": "Header locations within the framework bundle",
                     "default": [ ]
                 },
-                "vfsOverlayPath": {
-                    "type": "string",
-                    "description": "Path to a VFS overlay file (.yaml) for virtual filesystem mapping"
-                },
                 "linkedFrameworks": {
                     "type": "array",
                     "items": { "type": "string" },
