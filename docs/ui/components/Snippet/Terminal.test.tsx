@@ -145,7 +145,7 @@ describe(Terminal, () => {
     expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe('yarn add expo');
   });
 
-  it('adds data-md-commands only for package-manager command maps', () => {
+  it('adds data-md-commands for both command maps and plain command arrays', () => {
     render(
       <>
         <Terminal
@@ -160,8 +160,10 @@ describe(Terminal, () => {
 
     const terminals = screen.getAllByRole('generic').filter(el => el.dataset.md === 'terminal');
     expect(terminals.length).toBe(2);
-    expect(terminals[0].getAttribute('data-md-commands')).not.toBeNull();
-    expect(terminals[1].getAttribute('data-md-commands')).toBeNull();
+    expect(terminals[0].getAttribute('data-md-commands')).toBe(
+      '{"npm":["$ npm install expo"],"bun":["$ bun add expo"]}'
+    );
+    expect(terminals[1].getAttribute('data-md-commands')).toBe('["$ npx expo start"]');
   });
 
   it('renders browser action when provided', async () => {
