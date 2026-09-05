@@ -8,6 +8,7 @@ import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.LibraryGlideModule
 import com.caverock.androidsvg.SVG
 import java.io.InputStream
+import java.nio.ByteBuffer
 
 /**
  * [LibraryGlideModule] registering support for SVG to Glide.
@@ -21,6 +22,7 @@ class SVGModule : LibraryGlideModule() {
     super.registerComponents(context, glide, registry)
     registry
       .append(InputStream::class.java, SVG::class.java, SVGDecoder())
+      .append(ByteBuffer::class.java, SVG::class.java, ByteBufferSVGDecoder())
       .register(SVG::class.java, Drawable::class.java, SVGDrawableTranscoder(context))
   }
 }
