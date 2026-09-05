@@ -55,6 +55,7 @@
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
 - Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
 - Added internal `ExpoModulesProviderModuleName` lookup key for `ExpoModulesProvider` class. ([#49539](https://github.com/expo/expo/pull/49539) by [@kudo](https://github.com/kudo))
+- [iOS] Allow ExpoSwiftUI child collections to reconcile children using a string-based identity. ([#49701](https://github.com/expo/expo/pull/49701) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.8 - 2026-07-29
 

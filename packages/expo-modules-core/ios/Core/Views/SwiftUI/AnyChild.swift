@@ -16,6 +16,13 @@ extension ExpoSwiftUI {
     // The underlying UIKit view, if this child wraps one. Returns `nil` for pure SwiftUI child.
     var uiView: UIView? { get }
   }
+
+  /**
+   An `AnyChild` that provides a string-based identity for child collections.
+   */
+  public protocol StringIdentityChild: AnyChild {
+    var stringIdentity: String? { get }
+  }
 }
 
 public extension ExpoSwiftUI.AnyChild where Self == ChildViewType {
@@ -29,5 +36,15 @@ public extension ExpoSwiftUI.AnyChild where Self == ChildViewType {
 
   var uiView: UIView? {
     nil
+  }
+}
+
+public extension ExpoSwiftUI.AnyChild {
+  var childIdentity: String {
+    if let child = self as? any ExpoSwiftUI.StringIdentityChild,
+      let stringIdentity = child.stringIdentity {
+      return stringIdentity
+    }
+    return String(describing: id)
   }
 }
