@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- [iOS][Web] `Host` no longer applies the container safe area by default. Set `ignoreSafeArea="none"` to apply every region. ([#49708](https://github.com/expo/expo/pull/49708) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS][Web] `Host` no longer applies the container safe area by default. Set `ignoreSafeArea="none"` to apply every region. On iOS, a `matchContents` `Host` that still applies the container safe area (`"none"` or `"keyboard"`) now grows by those insets, so its content is no longer clipped. ([#49708](https://github.com/expo/expo/pull/49708) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `HStack`, `VStack` and `GlassEffectContainer` collapsing an unset `spacing` to `0` instead of forwarding `nil` to SwiftUI, so they now use the system default spacing like `Grid`, `LazyHStack` and `LazyVStack` already do. Pass `spacing={0}` explicitly to keep the previous layout. (by [@Den1Marshall](https://github.com/Den1Marshall))
 - [Android] Removed the `style` prop from `RNHostView`. It set a React Native style on a view that Jetpack Compose positions and sizes; use `modifiers` instead. Hosted views are now measured where Compose drew them, so a style is no longer needed to keep `measure()` and the drawn position in agreement. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
