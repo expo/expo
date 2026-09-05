@@ -25,14 +25,38 @@ open class ChannelAwareTrigger(open val channelId: String?) :
 }
 
 /**
+ * A schedulable trigger that can opt into `AlarmManager.setAlarmClock()` delivery.
+ * JS exposes the choice as `delivery: 'bestEffort' | 'alarmClock'`.
+ */
+interface AlarmClockAwareTrigger {
+  val alarmClock: Boolean
+
+  val delivery: String
+    get() = if (alarmClock) DELIVERY_ALARM_CLOCK else DELIVERY_BEST_EFFORT
+
+  companion object {
+    const val DELIVERY_BEST_EFFORT = "bestEffort"
+    const val DELIVERY_ALARM_CLOCK = "alarmClock"
+  }
+}
+
+/**
  * A schedulable trigger representing a notification to be scheduled once per day.
  */
 @Parcelize
-class DailyTrigger(override val channelId: String?, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class DailyTrigger(override val channelId: String?, val hour: Int, val minute: Int, override val alarmClock: Boolean = false) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger, AlarmClockAwareTrigger {
+
+  companion object {
+    // Pinned to the value computed for the pre-alarmClock class shape so records serialized
+    // by older versions of the library keep loading (they deserialize with alarmClock = false).
+    private const val serialVersionUID: Long = -6558627774241745821L
+  }
+
   override fun toBundle() = bundleWithChannelId(
     "type" to "daily",
     "hour" to hour,
-    "minute" to minute
+    "minute" to minute,
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -53,12 +77,23 @@ class DailyTrigger(override val channelId: String?, val hour: Int, val minute: I
  * A schedulable trigger representing notification to be scheduled only once at a given moment of time.
  */
 @Parcelize
-class DateTrigger(override val channelId: String?, val timestamp: Long) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class DateTrigger(
+  override val channelId: String?,
+  val timestamp: Long,
+  override val alarmClock: Boolean = false
+) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger, AlarmClockAwareTrigger {
+
+  companion object {
+    // Pinned to the value computed for the pre-alarmClock class shape so records serialized
+    // by older versions of the library keep loading (they deserialize with alarmClock = false).
+    private const val serialVersionUID: Long = -4200735944844450465L
+  }
 
   override fun toBundle() = bundleWithChannelId(
     "type" to "date",
     "repeats" to false,
-    "value" to timestamp
+    "value" to timestamp,
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -77,12 +112,20 @@ class DateTrigger(override val channelId: String?, val timestamp: Long) : Channe
  * A schedulable trigger representing a notification to be scheduled once per month.
  */
 @Parcelize
-class MonthlyTrigger(override val channelId: String?, val day: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class MonthlyTrigger(override val channelId: String?, val day: Int, val hour: Int, val minute: Int, override val alarmClock: Boolean = false) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger, AlarmClockAwareTrigger {
+
+  companion object {
+    // Pinned to the value computed for the pre-alarmClock class shape so records serialized
+    // by older versions of the library keep loading (they deserialize with alarmClock = false).
+    private const val serialVersionUID: Long = 4383170003413342728L
+  }
+
   override fun toBundle() = bundleWithChannelId(
     "type" to "monthly",
     "day" to day,
     "hour" to hour,
-    "minute" to minute
+    "minute" to minute,
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -145,12 +188,20 @@ class TimeIntervalTrigger(
  * A schedulable trigger representing a notification to be scheduled once per week.
  */
 @Parcelize
-class WeeklyTrigger(override val channelId: String?, val weekday: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class WeeklyTrigger(override val channelId: String?, val weekday: Int, val hour: Int, val minute: Int, override val alarmClock: Boolean = false) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger, AlarmClockAwareTrigger {
+
+  companion object {
+    // Pinned to the value computed for the pre-alarmClock class shape so records serialized
+    // by older versions of the library keep loading (they deserialize with alarmClock = false).
+    private const val serialVersionUID: Long = 924870175512348775L
+  }
+
   override fun toBundle() = bundleWithChannelId(
     "type" to "weekly",
     "weekday" to weekday,
     "hour" to hour,
-    "minute" to minute
+    "minute" to minute,
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {
@@ -172,13 +223,21 @@ class WeeklyTrigger(override val channelId: String?, val weekday: Int, val hour:
  * A schedulable trigger representing a notification to be scheduled once per year.
  */
 @Parcelize
-class YearlyTrigger(override val channelId: String?, val day: Int, val month: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class YearlyTrigger(override val channelId: String?, val day: Int, val month: Int, val hour: Int, val minute: Int, override val alarmClock: Boolean = false) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger, AlarmClockAwareTrigger {
+
+  companion object {
+    // Pinned to the value computed for the pre-alarmClock class shape so records serialized
+    // by older versions of the library keep loading (they deserialize with alarmClock = false).
+    private const val serialVersionUID: Long = -7918055586087594971L
+  }
+
   override fun toBundle() = bundleWithChannelId(
     "type" to "yearly",
     "day" to day,
     "month" to month,
     "hour" to hour,
-    "minute" to minute
+    "minute" to minute,
+    "delivery" to delivery
   )
 
   override fun nextTriggerDate(): Date? {

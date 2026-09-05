@@ -138,6 +138,21 @@ export interface TimeIntervalNotificationTrigger {
 }
 
 /**
+ * Controls which `AlarmManager` API schedules a wall-clock trigger on Android.
+ *
+ * - `'bestEffort'`: the default. Uses `setExactAndAllowWhileIdle()`, which delivers at the requested time
+ *   on most devices. Some OEM Android builds defer these alarms by minutes to save battery.
+ *   Without the exact alarm permission, the system may deliver the notification later than requested.
+ * - `'alarmClock'`: uses `setAlarmClock()`. The system delivers these alarms at the requested time
+ *   and does not defer them for battery optimization. Use only for time-critical alarms, such as
+ *   alarm clocks or medication reminders. The status bar shows an alarm icon until the notification
+ *   is delivered. Requires the `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM` permission on Android 12
+ *   and higher. Without the permission, the notification is scheduled as `'bestEffort'`.
+ * @platform android
+ */
+export type NotificationDelivery = 'bestEffort' | 'alarmClock';
+
+/**
  * A trigger related to a daily notification.
  * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
  * @platform android
@@ -146,6 +161,7 @@ export interface DailyNotificationTrigger {
   type: 'daily';
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 /**
@@ -158,6 +174,7 @@ export interface WeeklyNotificationTrigger {
   weekday: number;
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 /**
@@ -170,6 +187,7 @@ export interface MonthlyNotificationTrigger {
   day: number;
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 /**
@@ -183,6 +201,7 @@ export interface YearlyNotificationTrigger {
   month: number;
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 // @docsMissing
@@ -305,6 +324,12 @@ export type DailyTriggerInput = {
   channelId?: string;
   hour: number;
   minute: number;
+  /**
+   * How precisely Android delivers the notification. See `NotificationDelivery`.
+   * @default 'bestEffort'
+   * @platform android
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -318,6 +343,12 @@ export type WeeklyTriggerInput = {
   weekday: number;
   hour: number;
   minute: number;
+  /**
+   * How precisely Android delivers the notification. See `NotificationDelivery`.
+   * @default 'bestEffort'
+   * @platform android
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -331,6 +362,12 @@ export type MonthlyTriggerInput = {
   day: number;
   hour: number;
   minute: number;
+  /**
+   * How precisely Android delivers the notification. See `NotificationDelivery`.
+   * @default 'bestEffort'
+   * @platform android
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -345,6 +382,12 @@ export type YearlyTriggerInput = {
   month: number;
   hour: number;
   minute: number;
+  /**
+   * How precisely Android delivers the notification. See `NotificationDelivery`.
+   * @default 'bestEffort'
+   * @platform android
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -356,6 +399,12 @@ export type DateTriggerInput = {
   type: SchedulableTriggerInputTypes.DATE;
   date: Date | number;
   channelId?: string;
+  /**
+   * How precisely Android delivers the notification. See `NotificationDelivery`.
+   * @default 'bestEffort'
+   * @platform android
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
