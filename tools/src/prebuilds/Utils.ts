@@ -159,7 +159,6 @@ export const IOS_PREBUILD_PACKAGES = [
   'expo-image',
   'expo-image-manipulator',
   'expo-live-photo',
-  'expo-location',
   'expo-maps',
   'expo-media-library',
   'expo-modules-core',
