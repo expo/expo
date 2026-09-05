@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Pass `-Xclang -fno-pch-timestamp` when building the precompiled header so the `.pch` is byte-stable across checkouts and ccache can reuse it. ([#49757](https://github.com/expo/expo/pull/49757) by [@janicduplessis](https://github.com/janicduplessis))
+
 ## 57.0.16 — 2026-09-04
 
 _This version does not introduce any user-facing changes._

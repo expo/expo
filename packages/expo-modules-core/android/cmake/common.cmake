@@ -24,6 +24,14 @@ target_compile_options(
   ${ADDITIONAL_CXX_FLAGS}
 )
 
+# Drop the timestamp embedded in the .pch so it stays bit-for-bit stable across
+# rebuilds. Without this, the PCH timestamp changes every build and ccache can't reuse it.
+target_compile_options(
+  EXPO_COMMON
+  INTERFACE
+  "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
+)
+
 target_link_libraries(
   EXPO_COMMON
   INTERFACE
