@@ -14,7 +14,7 @@ struct PostalAddressMapper: ContactRecordMapper {
       postalCode: record.postcode,
       country: record.country
     )
-    return CNLabeledValue(label: record.label, value: postalAddress)
+    return CNLabeledValue(label: record.label.map(ContactLabelMapper.toCNLabel), value: postalAddress)
   }
 
   func existingRecordToCNLabeledValue(_ record: ExistingPostalAddressRecord) -> CNLabeledValue<CNPostalAddress> {
@@ -25,7 +25,7 @@ struct PostalAddressMapper: ContactRecordMapper {
       postalCode: record.postcode,
       country: record.country
     )
-    return CNLabeledValue(label: record.label, value: postalAddress)
+    return CNLabeledValue(label: record.label.map(ContactLabelMapper.toCNLabel), value: postalAddress)
   }
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<CNPostalAddress>) -> ExistingPostalAddressRecord {
@@ -33,7 +33,7 @@ struct PostalAddressMapper: ContactRecordMapper {
 
     return ExistingPostalAddressRecord(
       id: labeledValue.identifier,
-      label: labeledValue.label,
+      label: labeledValue.label.map(ContactLabelMapper.toRecordLabel),
       street: postalAddress.street,
       city: postalAddress.city,
       region: postalAddress.state,
@@ -62,7 +62,7 @@ struct PostalAddressMapper: ContactRecordMapper {
     var toModify = cnLabeledValue
 
     if case .value(let label) = patch.label {
-      toModify = toModify.settingLabel(label)
+      toModify = toModify.settingLabel(label.map(ContactLabelMapper.toCNLabel))
     }
 
     guard let mutableAddress = toModify.value.mutableCopy() as? CNMutablePostalAddress else {

@@ -9,19 +9,19 @@ struct RelationMapper: ContactRecordMapper {
 
   func newRecordToCNLabeledValue(_ record: NewRelationRecord) -> CNLabeledValue<CNContactRelation> {
     let relation = CNContactRelation(name: record.name)
-    return CNLabeledValue(label: record.label ?? CNLabelOther, value: relation)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label ?? CNLabelOther), value: relation)
   }
 
   func existingRecordToCNLabeledValue(_ record: ExistingRelationRecord) -> CNLabeledValue<CNContactRelation> {
     let relation = CNContactRelation(name: record.name)
-    return CNLabeledValue(label: record.label ?? CNLabelOther, value: relation)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label ?? CNLabelOther), value: relation)
   }
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<CNContactRelation>) -> ExistingRelationRecord {
     return ExistingRelationRecord(
       id: labeledValue.identifier,
       name: labeledValue.value.name,
-      label: labeledValue.label
+      label: labeledValue.label.map(ContactLabelMapper.toRecordLabel)
     )
   }
 
@@ -29,7 +29,7 @@ struct RelationMapper: ContactRecordMapper {
     var toModify = cnLabeledValue
 
     if case .value(let label) = patch.label {
-      toModify = toModify.settingLabel(label)
+      toModify = toModify.settingLabel(label.map(ContactLabelMapper.toCNLabel))
     }
 
     var newName = toModify.value.name
