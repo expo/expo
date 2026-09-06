@@ -11,6 +11,11 @@ public final class TaskManagerModule: Module, EXTaskManagerInterface {
   let appId: AppId = "mainApplication"
   var eventsQueue: [[String: Any]]? = []
 
+  // `eventsQueue` is appended to by `execute(withBody:)` on whichever thread the
+  // task consumer fires on (e.g. main for location updates) and drained/nil'd by
+  // `OnStartObserving` on the module queue — all access must hold this lock.
+  private let eventsQueueLock = NSLock()
+
   public func definition() -> ModuleDefinition {
     Name("ExpoTaskManager")
 
@@ -27,13 +32,18 @@ public final class TaskManagerModule: Module, EXTaskManagerInterface {
     OnStartObserving(EXECUTE_TASK_EVENT_NAME) {
       // When `OnStartObserving` is called, the app is ready to execute new tasks.
       // It sends all events that were queued before this call.
-      if let eventsQueue {
-        for eventBody in eventsQueue {
+      // Detach the queue atomically (we will not need it anymore), then send the
+      // drained events outside the lock.
+      eventsQueueLock.lock()
+      let queuedEvents = eventsQueue
+      eventsQueue = nil
+      eventsQueueLock.unlock()
+
+      if let queuedEvents {
+        for eventBody in queuedEvents {
           sendEvent(EXECUTE_TASK_EVENT_NAME, eventBody)
         }
       }
-      // We will not need the queue anymore.
-      eventsQueue = nil
     }
 
     AsyncFunction("isAvailableAsync") {
@@ -91,11 +101,14 @@ public final class TaskManagerModule: Module, EXTaskManagerInterface {
   }
 
   public func execute(withBody body: [String: Any]) {
+    eventsQueueLock.lock()
     if eventsQueue != nil {
       // The module was created, but JS is not listening for events yet.
       // In that case we need to queue them up.
       eventsQueue?.append(body)
+      eventsQueueLock.unlock()
     } else {
+      eventsQueueLock.unlock()
       // JS is already listening to the event, we can emit it straight away.
       sendEvent(EXECUTE_TASK_EVENT_NAME, body)
     }
