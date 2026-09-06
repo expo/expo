@@ -250,4 +250,41 @@ describe(SQLiteStatement, () => {
     expect(thirdRows).toEqual([789]);
     await statement.finalizeAsync();
   });
+
+  it('reading a result after the statement ran again should throw, not return the later rows', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const first = await statement.executeAsync<TestEntity>(123);
+    const second = await statement.executeAsync<TestEntity>(789);
+    // `first` no longer owns the one native cursor, so it must not step `second`'s rows.
+    await expect(first.getAllAsync()).rejects.toThrow(/prepared statement ran again/);
+    expect((await second.getAllAsync()).map((row) => row.intValue)).toEqual([789]);
+    await statement.finalizeAsync();
+  });
+
+  it('a superseded result that must step for its first row should throw', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue > ?');
+    // No row matches, so this result has no cached row and has to step the cursor.
+    const first = await statement.executeAsync<TestEntity>(1000);
+    await statement.executeAsync<TestEntity>(0);
+    await expect(first.getFirstAsync()).rejects.toThrow(/prepared statement ran again/);
+    await statement.finalizeAsync();
+  });
+
+  it('a superseded result should still serve the first row it was already given', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const first = await statement.executeAsync<TestEntity>(123);
+    const second = await statement.executeAsync<TestEntity>(789);
+    // `run` handed each result its own first row, and serving it steps no cursor.
+    expect((await first.getFirstAsync())?.intValue).toBe(123);
+    expect((await second.getFirstAsync())?.intValue).toBe(789);
+    await statement.finalizeAsync();
+  });
+
+  it('executeSync results should be guarded the same way', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const first = statement.executeSync<TestEntity>(123);
+    statement.executeSync<TestEntity>(789);
+    expect(() => first.getAllSync()).toThrow(/prepared statement ran again/);
+    await statement.finalizeAsync();
+  });
 });
