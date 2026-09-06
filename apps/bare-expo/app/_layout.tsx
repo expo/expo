@@ -2,7 +2,7 @@ import { ThemeProvider, useTheme } from 'ThemeProvider';
 import BenchmarkHelper from 'benchmark-helper';
 import * as DevMenu from 'expo-dev-menu';
 import { AppMetrics, Observe, ObserveRoot } from 'expo-observe';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as Splashscreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -19,6 +19,11 @@ try {
 
 if (process.env.EXPO_OS !== 'web') {
   DevMenu.registerDevMenuItems([
+    {
+      name: 'UI runtime primitive',
+      callback: () => router.push('/ui-runtime'),
+      shouldCollapse: true,
+    },
     {
       name: 'Action 1',
       callback: () => {

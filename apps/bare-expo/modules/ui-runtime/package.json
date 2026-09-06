@@ -1,0 +1,10 @@
+{
+  "name": "ui-runtime",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Step-by-step UI-owned JavaScript runtime experiment",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "homepage": "https://expo.dev",
+  "main": "index.ts"
+}

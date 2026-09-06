@@ -1,0 +1,26 @@
+appId: dev.expo.Payments
+name: UI runtime primitive ownership and lifecycle
+---
+- launchApp:
+    stopApp: false
+- tapOn:
+    point: '90%, 11%'
+- tapOn: 'UI runtime primitive'
+- assertVisible: 'Step 1: runtime ownership'
+- tapOn: 'Run runtime checks'
+- extendedWaitUntil:
+    visible: 'All runtime checks passed'
+    timeout: 30000
+- assertVisible: 'uiThread: PASS'
+- assertVisible: 'appIsolation: PASS'
+- assertVisible: 'persistentState: PASS'
+- assertVisible: 'independentInstances: PASS'
+- assertVisible: 'errorRecovery: PASS'
+- assertVisible: 'jsonBoundary: PASS'
+- assertVisible: 'closeAndRecreate: PASS'
+- assertVisible: 'backgroundCreationRejected: PASS'
+# Repeat to catch stale globals and lifecycle problems between invocations.
+- tapOn: 'Run runtime checks'
+- extendedWaitUntil:
+    visible: 'All runtime checks passed'
+    timeout: 30000
