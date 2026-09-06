@@ -5,7 +5,7 @@ public class TestModule: Module {
   public func definition() -> ModuleDefinition {
     Events(
       "event1",
-      "event2",
+      "event.with.dots.2",
       "event3",
       globalEventName,
       privateGlobalEventName,
@@ -117,13 +117,15 @@ public class TestModule: Module {
     }
 
 
-    Class(TestClassWithConstructor.self) { 
+    Class(TestClassWithConstructor.self) {
       Constructor { (a: Int) in
         TestClass(a)
       }
     }
 
     Class(TestBasicClass.self) { 
+      Events("EventName1", "Event.Name.with.dots")
+
       Constructor { (a: Int, b: String, c: Either<String, TestRecord>) in
         TestClass(a)
       }
@@ -160,7 +162,6 @@ public class TestModule: Module {
 
     View(ExpoWebView.self) {
       Events("onEvent1", "onEvent2")
-
       Prop("url") { (view, url: URL) in
         if view.webView.url != url {
           let urlRequest = URLRequest(url: url)

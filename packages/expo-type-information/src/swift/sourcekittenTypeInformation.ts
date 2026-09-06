@@ -642,6 +642,7 @@ async function parseModuleClassStructure(
     return {
       name,
       constructor: null,
+      events: [],
       methods: [],
       asyncMethods: [],
       properties: [],
@@ -659,6 +660,7 @@ async function parseModuleClassStructure(
   );
   return {
     name,
+    events: classTypeInfo.events,
     methods: classTypeInfo.functions,
     asyncMethods: classTypeInfo.asyncFunctions,
     properties: classTypeInfo.properties,
