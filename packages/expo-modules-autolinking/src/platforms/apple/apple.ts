@@ -14,8 +14,15 @@ import type {
   ModuleIosConfig,
   ModuleIosPodspecInfo,
   PackageRevision,
+  SearchResults,
 } from '../../types';
 import { listFilesInDirectories, fileExistsAsync } from '../../utils';
+import {
+  collectPackageRoots,
+  groupScannedModules,
+  resolveScannerPlugin,
+  scanExpoModulesAsync,
+} from './moduleScanner';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
@@ -53,11 +60,63 @@ export function getSwiftModuleNames(
   return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
 }
 
+/**
+ * Scans all packages' Swift sources for classes annotated with the `@ExpoModule` macro, in one
+ * scanner invocation for the whole dependency tree. The scan runs without a platform, so only
+ * unconditional module classes are found; a module inside a conditional compilation block is
+ * skipped with a warning and needs to be declared in the config instead. Returns the found modules
+ * per package name, or null when scanning is unavailable (non-macOS host, or no installed macros
+ * plugin with a scanner) so resolution falls back to the modules declared in each
+ * `expo-module.config.json`.
+ */
+export async function scanNativeModulesAsync(
+  searchResults: SearchResults
+): Promise<Record<string, ModuleIosConfig[]> | null> {
+  // The scanner ships as a macOS binary. Resolution on other hosts (e.g. prebuild on CI) quietly
+  // skips scanning; the modules provider itself is only ever generated on macOS.
+  if (process.platform !== 'darwin') {
+    return null;
+  }
+  // The macros plugin is resolved the way a module's build resolves it: as a dependency of the
+  // installed expo-modules-core. No expo-modules-core also means nothing consumes the macro.
+  const coreRevision = searchResults['expo-modules-core'];
+  if (!coreRevision) {
+    return null;
+  }
+  const pluginInfo = resolveScannerPlugin(coreRevision.path);
+  if (!pluginInfo) {
+    return null;
+  }
+
+  const packageRoots = collectPackageRoots(searchResults);
+  const output = await scanExpoModulesAsync(pluginInfo, packageRoots);
+  return output ? groupScannedModules(output, packageRoots) : null;
+}
+
+/**
+ * The modules to put into the generated provider: the declared config list when
+ * `expo-module.config.json` declares one at all (declaring the list, even empty, is a full
+ * override that opts the package out of scanning, so a class the config deliberately leaves out is
+ * never linked), otherwise the scanned `@ExpoModule` classes, in a stable alphabetical order.
+ */
+function pickModules(
+  declaredModules: ModuleIosConfig[] | null,
+  scannedModules: ModuleIosConfig[]
+): ModuleIosConfig[] {
+  if (declaredModules) {
+    return declaredModules;
+  }
+  return [...scannedModules].sort((a, b) => a.class.localeCompare(b.class));
+}
+
 /** Resolves module search result with additional details required for iOS platform. */
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
-  extraOutput: { flags?: Record<string, any> }
+  extraOutput: {
+    flags?: Record<string, any>;
+    scannedModules?: Record<string, ModuleIosConfig[]> | null;
+  }
 ): Promise<ModuleDescriptorIos | null> {
   const podspecFiles = await findPodspecFiles(revision);
   if (!podspecFiles.length) {
@@ -72,16 +131,20 @@ export async function resolveModuleAsync(
   const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.appleSwiftModuleNames());
   const coreFeatures = revision.config?.coreFeatures() ?? [];
 
+  const configModules =
+    revision.config
+      ?.appleModules()
+      .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ?? [];
+
   return {
     packageName,
     pods,
     swiftModuleNames,
     flags: extraOutput.flags,
-    modules:
-      revision.config
-        ?.appleModules()
-        .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ??
-      [],
+    modules: pickModules(
+      revision.config?.declaresAppleModules() ? configModules : null,
+      extraOutput.scannedModules?.[packageName] ?? []
+    ),
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
