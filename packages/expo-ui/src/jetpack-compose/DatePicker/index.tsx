@@ -264,19 +264,38 @@ export interface DateRangePickerProps {
 
 type NativeDateRangePickerProps = Omit<
   DateRangePickerProps,
-  | 'variant'
-  | 'onDateRangeSelected'
-  | 'initialStartDate'
-  | 'initialEndDate'
-  | 'elementColors'
-  | 'selectableDates'
+  'onDateRangeSelected' | 'initialStartDate' | 'initialEndDate' | 'selectableDates'
 > & {
-  variant?: AndroidVariant;
   initialStartDate?: number | null;
   initialEndDate?: number | null;
   selectableDates?: { start?: number | null; end?: number | null } | null;
-  elementColors?: DatePickerElementColors;
 } & ViewEvent<'onDateRangeSelected', { start: number | null; end: number | null }>;
+
+function transformDateRangePickerProps(
+  props: Omit<DateRangePickerProps, 'modifiers'>
+): Omit<NativeDateRangePickerProps, 'modifiers'> {
+  const {
+    initialStartDate,
+    initialEndDate,
+    selectableDates,
+    elementColors,
+    onDateRangeSelected,
+    ...rest
+  } = props;
+  return {
+    ...rest,
+    initialStartDate: initialStartDate ? new Date(initialStartDate).getTime() : null,
+    initialEndDate: initialEndDate ? new Date(initialEndDate).getTime() : null,
+    selectableDates: convertSelectableDates(selectableDates),
+    onDateRangeSelected: ({ nativeEvent: { start, end } }) => {
+      onDateRangeSelected?.({
+        start: convertTimestampToDate(start),
+        end: convertTimestampToDate(end),
+      });
+    },
+    ...(elementColors != null ? { elementColors } : undefined),
+  };
+}
 
 const DateRangePickerNativeView: React.ComponentType<NativeDateRangePickerProps> =
   requireNativeView('ExpoUI', 'DateRangePickerView');
@@ -285,30 +304,11 @@ const DateRangePickerNativeView: React.ComponentType<NativeDateRangePickerProps>
  * Renders an inline Material 3 date range picker.
  */
 export function DateRangePicker(props: DateRangePickerProps) {
-  const {
-    modifiers,
-    variant,
-    initialStartDate,
-    initialEndDate,
-    selectableDates,
-    elementColors,
-    ...rest
-  } = props;
+  const { modifiers, ...rest } = props;
   const nativeProps: NativeDateRangePickerProps = {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...rest,
-    variant,
-    initialStartDate: initialStartDate ? new Date(initialStartDate).getTime() : null,
-    initialEndDate: initialEndDate ? new Date(initialEndDate).getTime() : null,
-    selectableDates: convertSelectableDates(selectableDates),
-    onDateRangeSelected: ({ nativeEvent: { start, end } }) => {
-      props.onDateRangeSelected?.({
-        start: convertTimestampToDate(start),
-        end: convertTimestampToDate(end),
-      });
-    },
-    ...(elementColors != null ? { elementColors } : undefined),
+    ...transformDateRangePickerProps(rest),
   };
   return <DateRangePickerNativeView {...nativeProps} />;
 }
@@ -363,56 +363,21 @@ export function DatePickerDialog(props: DatePickerDialogProps) {
   return <DatePickerDialogNativeView {...nativeProps} />;
 }
 
-export interface DateRangePickerDialogProps {
-  /** The initially selected start date. */
-  initialStartDate?: string | null;
-  /** The initially selected end date. It must be on or after `initialStartDate`. */
-  initialEndDate?: string | null;
-  /**
-   * The variant of the picker, which determines its appearance and behavior.
-   * @default 'picker'
-   */
-  variant?: AndroidVariant;
-  /**
-   * Show a button to toggle between variants on Android.
-   * @default true
-   */
-  showVariantToggle?: boolean;
+export interface DateRangePickerDialogProps extends Omit<DateRangePickerProps, 'modifiers'> {
   /** The label for the button that confirms the selected range. */
   confirmButtonLabel?: string;
   /** The label for the button that dismisses the dialog. */
   dismissButtonLabel?: string;
   /** The tint color to use on the picker elements and dialog buttons. */
   color?: ColorValue;
-  /** Fine-grained color overrides for individual picker elements. */
-  elementColors?: DatePickerElementColors;
-  /**
-   * Constrains which dates can be selected. `start` is the earliest selectable date and `end` is
-   * the latest.
-   */
-  selectableDates?: { start?: Date; end?: Date };
   /** Callback function that is called when the user confirms a complete date range. */
   onDateRangeSelected?: (range: DateRangeSelection) => void;
   /** Callback function that is called when the dialog is dismissed. */
   onDismissRequest: () => void;
 }
 
-type NativeDateRangePickerDialogProps = Omit<
-  DateRangePickerDialogProps,
-  | 'variant'
-  | 'onDateRangeSelected'
-  | 'onDismissRequest'
-  | 'initialStartDate'
-  | 'initialEndDate'
-  | 'elementColors'
-  | 'selectableDates'
-> & {
-  variant?: AndroidVariant;
-  initialStartDate?: number | null;
-  initialEndDate?: number | null;
-  selectableDates?: { start?: number | null; end?: number | null } | null;
-  elementColors?: DatePickerElementColors;
-} & ViewEvent<'onDateRangeSelected', { start: number | null; end: number | null }> &
+type NativeDateRangePickerDialogProps = Omit<NativeDateRangePickerProps, 'modifiers'> &
+  Pick<DateRangePickerDialogProps, 'confirmButtonLabel' | 'dismissButtonLabel'> &
   ViewEvent<'onDismissRequest', void>;
 
 const DateRangePickerDialogNativeView: React.ComponentType<NativeDateRangePickerDialogProps> =
@@ -422,29 +387,12 @@ const DateRangePickerDialogNativeView: React.ComponentType<NativeDateRangePicker
  * Renders a modal Material 3 date range picker.
  */
 export function DateRangePickerDialog(props: DateRangePickerDialogProps) {
-  const {
-    variant,
-    initialStartDate,
-    initialEndDate,
-    selectableDates,
-    elementColors,
-    onDismissRequest,
-    ...rest
-  } = props;
+  const { confirmButtonLabel, dismissButtonLabel, onDismissRequest, ...rest } = props;
   const nativeProps: NativeDateRangePickerDialogProps = {
-    ...rest,
-    variant,
-    initialStartDate: initialStartDate ? new Date(initialStartDate).getTime() : null,
-    initialEndDate: initialEndDate ? new Date(initialEndDate).getTime() : null,
-    selectableDates: convertSelectableDates(selectableDates),
-    onDateRangeSelected: ({ nativeEvent: { start, end } }) => {
-      props.onDateRangeSelected?.({
-        start: convertTimestampToDate(start),
-        end: convertTimestampToDate(end),
-      });
-    },
+    ...transformDateRangePickerProps(rest),
+    confirmButtonLabel,
+    dismissButtonLabel,
     onDismissRequest,
-    ...(elementColors != null ? { elementColors } : undefined),
   };
   return <DateRangePickerDialogNativeView {...nativeProps} />;
 }
