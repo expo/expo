@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- [Android] Added the Jetpack Compose `DateRangePicker` and `DateRangePickerDialog` components. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
 - [iOS] Added `'default'` as a value for every edge of the `padding` modifier, so a single edge can use the system default padding while the other edges use explicit lengths. ([#48903](https://github.com/expo/expo/pull/48903) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))

@@ -1,6 +1,8 @@
 import {
   DateTimePicker,
   DateTimePickerProps,
+  DateRangePicker,
+  DateRangePickerDialog,
   SingleChoiceSegmentedButtonRow,
   SegmentedButton,
   Text as ComposeText,
@@ -9,6 +11,7 @@ import {
   Column,
   Host,
 } from '@expo/ui/jetpack-compose';
+import { height } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 import { Alert, Button, ScrollView, Switch, Text } from 'react-native';
 
@@ -28,8 +31,16 @@ export default function DatePickerScreen() {
   const [typeIndex, setTypeIndex] = React.useState(0);
 
   const [showDateDialog, setShowDateDialog] = React.useState(false);
+  const [showDateRangeDialog, setShowDateRangeDialog] = React.useState(false);
   const [showTimeDialog, setShowTimeDialog] = React.useState(false);
   const [is24Hour, setIs24Hour] = React.useState(true);
+  const [selectedRange, setSelectedRange] = React.useState<{
+    start: Date | null;
+    end: Date | null;
+  }>({
+    start: today,
+    end: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000),
+  });
 
   const [ticking, setTicking] = React.useState(false);
   React.useEffect(() => {
@@ -120,6 +131,22 @@ export default function DatePickerScreen() {
           </Host>
         </Section>
 
+        <Section title="DateRangePicker">
+          <Text>
+            {selectedRange.start?.toDateString() ?? 'No start'} –{' '}
+            {selectedRange.end?.toDateString() ?? 'No end'}
+          </Text>
+          <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+            <DateRangePicker
+              initialStartDate={selectedRange.start?.toISOString()}
+              initialEndDate={selectedRange.end?.toISOString()}
+              selectableDates={{ start: fiveDaysAgo, end: thirtyDaysFromNow }}
+              onDateRangeSelected={setSelectedRange}
+              modifiers={[height(500)]}
+            />
+          </Host>
+        </Section>
+
         <Section title="DatePickerDialog">
           <Button title="Show Date Dialog" onPress={() => setShowDateDialog(true)} />
           {showDateDialog && (
@@ -139,6 +166,26 @@ export default function DatePickerScreen() {
                     cancelable: true,
                   });
                 }}
+              />
+            </Host>
+          )}
+        </Section>
+
+        <Section title="DateRangePickerDialog">
+          <Button title="Show Date Range Dialog" onPress={() => setShowDateRangeDialog(true)} />
+          {showDateRangeDialog && (
+            <Host>
+              <DateRangePickerDialog
+                initialStartDate={selectedRange.start?.toISOString()}
+                initialEndDate={selectedRange.end?.toISOString()}
+                selectableDates={{ start: fiveDaysAgo, end: thirtyDaysFromNow }}
+                confirmButtonLabel="Select"
+                dismissButtonLabel="Never mind"
+                onDateRangeSelected={(range) => {
+                  setSelectedRange(range);
+                  setShowDateRangeDialog(false);
+                }}
+                onDismissRequest={() => setShowDateRangeDialog(false)}
               />
             </Host>
           )}

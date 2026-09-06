@@ -1,6 +1,6 @@
 ---
 title: DateTimePicker
-description: A Jetpack Compose DateTimePicker component for selecting dates and times.
+description: Jetpack Compose components for selecting dates, date ranges, and times.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android', 'expo-go']
@@ -11,9 +11,11 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-Expo UI DateTimePicker matches the official Jetpack Compose [Date Picker](https://developer.android.com/develop/ui/compose/components/datepickers) and [Time Picker](https://developer.android.com/develop/ui/compose/components/time-pickers) APIs and supports date, time, and combined selection.
+Expo UI's date and time picker components match the official Jetpack Compose [Date Picker](https://developer.android.com/develop/ui/compose/components/datepickers), [Date range picker](https://developer.android.com/develop/ui/compose/components/datepickers#range), and [Time Picker](https://developer.android.com/develop/ui/compose/components/time-pickers) APIs.
 
 > **Note:** The date variants render Material's calendar grid and input field, both of which scroll horizontally internally. The parent `Host` must provide a finite width on the horizontal axis, use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width). See [Match contents in Host reference](host/#match-contents) for details.
+
+> **Note:** `DateRangePicker` also scrolls vertically. Give the picker a finite height with a modifier such as `height(500)`.
 
 <ContentSpotlight
   variant="component"
@@ -62,6 +64,82 @@ export default function DatePickerExample() {
 ```
 
 </ComponentExample>
+
+### Date range picker
+
+```tsx
+import { useState } from 'react';
+import {
+  DateRangePicker,
+  type DateRangeSelection,
+  Host,
+} from '@expo/ui/jetpack-compose';
+import { height } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function DateRangePickerExample() {
+  const [range, setRange] = useState<DateRangeSelection>({
+    start: new Date(),
+    end: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+  });
+
+  return (
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <DateRangePicker
+        initialStartDate={range.start?.toISOString()}
+        initialEndDate={range.end?.toISOString()}
+        onDateRangeSelected={setRange}
+        modifiers={[height(500)]}
+      />
+    </Host>
+  );
+}
+```
+
+The callback's `end` value is `null` until the user finishes selecting the range.
+
+### Date range picker dialog
+
+```tsx
+import { useState } from 'react';
+import { Button } from 'react-native';
+import {
+  DateRangePickerDialog,
+  type DateRangeSelection,
+  Host,
+} from '@expo/ui/jetpack-compose';
+
+export default function DateRangePickerDialogExample() {
+  const [visible, setVisible] = useState(false);
+  const [range, setRange] = useState<DateRangeSelection>({
+    start: null,
+    end: null,
+  });
+
+  return (
+    <>
+      <Button
+        title="Select dates"
+        onPress={() => setVisible(true)}
+      />
+      {visible && (
+        <Host>
+          <DateRangePickerDialog
+            initialStartDate={range.start?.toISOString()}
+            initialEndDate={range.end?.toISOString()}
+            onDateRangeSelected={selectedRange => {
+              setRange(selectedRange);
+              setVisible(false);
+            }}
+            onDismissRequest={() => setVisible(false)}
+          />
+        </Host>
+      )}
+    </>
+  );
+}
+```
 
 ### Time picker
 
@@ -136,10 +214,24 @@ export default function InputVariantExample() {
 ## API
 
 ```tsx
-import { DateTimePicker } from '@expo/ui/jetpack-compose';
+import {
+  DateRangePicker,
+  DateRangePickerDialog,
+  DateTimePicker,
+} from '@expo/ui/jetpack-compose';
 ```
 
 <APISection
   packageName="expo-ui/jetpack-compose/datetimepicker"
   apiName="DateTimePicker"
+/>
+
+<APISection
+  packageName="expo-ui/jetpack-compose/datetimepicker"
+  apiName="DateRangePicker"
+/>
+
+<APISection
+  packageName="expo-ui/jetpack-compose/datetimepicker"
+  apiName="DateRangePickerDialog"
 />

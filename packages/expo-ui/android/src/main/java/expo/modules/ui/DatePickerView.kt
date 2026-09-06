@@ -7,6 +7,8 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
@@ -18,6 +20,7 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import android.view.WindowManager
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -29,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -45,6 +49,14 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 data class DatePickerResult(
   @Field
   val date: Long?
+) : Record
+
+@OptimizedRecord
+data class DateRangePickerResult(
+  @Field
+  val start: Long?,
+  @Field
+  val end: Long?
 ) : Record
 
 enum class DisplayedComponents(val value: String) : Enumerable {
@@ -166,8 +178,33 @@ data class DateTimePickerProps(
 ) : ComposeProps
 
 @OptimizedComposeProps
+data class DateRangePickerProps(
+  val initialStartDate: Long? = null,
+  val initialEndDate: Long? = null,
+  val variant: Variant = Variant.PICKER,
+  val showVariantToggle: Boolean = true,
+  val color: AndroidColor? = null,
+  val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
+  val selectableDates: SelectableDatesRecord? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+@OptimizedComposeProps
 data class DatePickerDialogProps(
   val initialDate: Long? = null,
+  val variant: Variant = Variant.PICKER,
+  val showVariantToggle: Boolean = true,
+  val confirmButtonLabel: String? = null,
+  val dismissButtonLabel: String? = null,
+  val color: AndroidColor? = null,
+  val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
+  val selectableDates: SelectableDatesRecord? = null
+) : ComposeProps
+
+@OptimizedComposeProps
+data class DateRangePickerDialogProps(
+  val initialStartDate: Long? = null,
+  val initialEndDate: Long? = null,
   val variant: Variant = Variant.PICKER,
   val showVariantToggle: Boolean = true,
   val confirmButtonLabel: String? = null,
@@ -242,10 +279,14 @@ fun rememberSelectableDates(selectableDatesRecord: SelectableDatesRecord?): Sele
 // https://github.com/expo/expo/issues/47206
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun rememberDatePickerYearRange(selectableDatesRecord: SelectableDatesRecord?, initialDateMillis: Long): IntRange {
+fun rememberDatePickerYearRange(
+  selectableDatesRecord: SelectableDatesRecord?,
+  initialDateMillis: Long,
+  initialEndDateMillis: Long? = null
+): IntRange {
   val start = selectableDatesRecord?.start
   val end = selectableDatesRecord?.end
-  return remember(start, end, initialDateMillis) {
+  return remember(start, end, initialDateMillis, initialEndDateMillis) {
     val defaults = DatePickerDefaults.YearRange
     val yearOf = { millis: Long ->
       Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.YEAR)
@@ -254,8 +295,9 @@ fun rememberDatePickerYearRange(selectableDatesRecord: SelectableDatesRecord?, i
     val endYear = end?.let(yearOf) ?: defaults.last
     // Keep the initially selected/displayed year inside the range so Material3 doesn't discard the
     // selection
-    val initialYear = yearOf(initialDateMillis)
-    minOf(startYear, initialYear)..maxOf(endYear, initialYear)
+    val initialStartYear = yearOf(initialDateMillis)
+    val initialEndYear = initialEndDateMillis?.let(yearOf) ?: initialStartYear
+    minOf(startYear, initialStartYear, initialEndYear)..maxOf(endYear, initialStartYear, initialEndYear)
   }
 }
 
@@ -321,6 +363,65 @@ fun buildTimePickerColors(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+private fun rememberDateRangePickerState(
+  initialStartDate: Long?,
+  initialEndDate: Long?,
+  variant: Variant,
+  selectableDatesRecord: SelectableDatesRecord?
+): DateRangePickerState {
+  val locale = LocalConfiguration.current.locales[0]
+  val displayMode = variant.toDisplayMode()
+  val selectableDates = rememberSelectableDates(selectableDatesRecord)
+  val fallbackDate = remember { Date().time }
+  val initialDisplayedMonth = initialStartDate ?: fallbackDate
+  val yearRange = rememberDatePickerYearRange(
+    selectableDatesRecord,
+    initialDisplayedMonth,
+    initialEndDate
+  )
+
+  return remember(
+    locale,
+    displayMode,
+    initialStartDate,
+    initialEndDate,
+    initialDisplayedMonth,
+    selectableDates,
+    yearRange
+  ) {
+    DateRangePickerState(
+      locale = locale,
+      initialSelectedStartDateMillis = initialStartDate,
+      initialSelectedEndDateMillis = initialEndDate,
+      initialDisplayedMonthMillis = initialDisplayedMonth,
+      yearRange = yearRange,
+      initialDisplayMode = displayMode,
+      selectableDates = selectableDates
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ApplyDatePickerDialogKeyboardBehavior(displayMode: DisplayMode) {
+  val view = LocalView.current
+  val keyboardController = LocalSoftwareKeyboardController.current
+  val originalSoftInputMode = remember(view) {
+    (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
+  }
+  SideEffect {
+    val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
+    if (displayMode == DisplayMode.Picker) {
+      window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+      keyboardController?.hide()
+    } else if (originalSoftInputMode != null) {
+      window.setSoftInputMode(originalSoftInputMode)
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (DatePickerResult) -> Unit, onDismissRequest: () -> Unit) {
   val locale = LocalConfiguration.current.locales[0]
   val variant = props.variant.toDisplayMode()
@@ -358,21 +459,8 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     },
     colors = colors
   ) {
-    val view = LocalView.current
-    val keyboardController = LocalSoftwareKeyboardController.current
     val displayMode = state.displayMode
-    val originalSoftInputMode = remember(view) {
-      (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
-    }
-    SideEffect {
-      val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
-      if (displayMode == DisplayMode.Picker) {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-        keyboardController?.hide()
-      } else if (originalSoftInputMode != null) {
-        window.setSoftInputMode(originalSoftInputMode)
-      }
-    }
+    ApplyDatePickerDialogKeyboardBehavior(displayMode)
 
     // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
     // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
@@ -383,6 +471,62 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
         } else {
           Modifier
         },
+        state = state,
+        showModeToggle = props.showVariantToggle,
+        colors = colors
+      )
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExpoDateRangePickerDialogContent(
+  props: DateRangePickerDialogProps,
+  onDateRangeSelected: (DateRangePickerResult) -> Unit,
+  onDismissRequest: () -> Unit
+) {
+  val state = rememberDateRangePickerState(
+    props.initialStartDate,
+    props.initialEndDate,
+    props.variant,
+    props.selectableDates
+  )
+  val colors = buildDatePickerColors(props.elementColors, props.color.composeOrNull, DatePickerDefaults.colors())
+  val buttonColors = props.color.composeOrNull
+    ?.let { ButtonDefaults.textButtonColors(contentColor = it) } ?: ButtonDefaults.textButtonColors()
+
+  DatePickerDialog(
+    onDismissRequest = { onDismissRequest() },
+    confirmButton = {
+      TextButton(
+        onClick = {
+          onDateRangeSelected(
+            DateRangePickerResult(
+              start = state.selectedStartDateMillis,
+              end = state.selectedEndDateMillis
+            )
+          )
+        },
+        enabled = state.selectedStartDateMillis != null && state.selectedEndDateMillis != null,
+        colors = buttonColors
+      ) {
+        Text(props.confirmButtonLabel ?: stringResource(android.R.string.ok))
+      }
+    },
+    dismissButton = {
+      TextButton(onClick = { onDismissRequest() }, colors = buttonColors) {
+        Text(props.dismissButtonLabel ?: stringResource(android.R.string.cancel))
+      }
+    },
+    colors = colors
+  ) {
+    val displayMode = state.displayMode
+    ApplyDatePickerDialogKeyboardBehavior(displayMode)
+
+    CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
+      DateRangePicker(
+        modifier = Modifier.heightIn(max = 500.dp),
         state = state,
         showModeToggle = props.showVariantToggle,
         colors = colors
@@ -454,6 +598,40 @@ fun FunctionalComposableScope.DateTimePickerContent(props: DateTimePickerProps, 
     ExpoDatePicker(props = props, modifier = modifier) {
       onDateSelected(it)
     }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.DateRangePickerContent(
+  props: DateRangePickerProps,
+  onDateRangeSelected: (DateRangePickerResult) -> Unit
+) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+  val state = rememberDateRangePickerState(
+    props.initialStartDate,
+    props.initialEndDate,
+    props.variant,
+    props.selectableDates
+  )
+
+  LaunchedEffect(state.selectedStartDateMillis, state.selectedEndDateMillis) {
+    onDateRangeSelected(
+      DateRangePickerResult(
+        start = state.selectedStartDateMillis,
+        end = state.selectedEndDateMillis
+      )
+    )
+  }
+
+  val colors = buildDatePickerColors(props.elementColors, props.color.composeOrNull)
+  CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
+    DateRangePicker(
+      modifier = modifier,
+      state = state,
+      showModeToggle = props.showVariantToggle,
+      colors = colors
+    )
   }
 }
 

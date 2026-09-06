@@ -384,12 +384,29 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<DateRangePickerProps>("DateRangePickerView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+
+      Content { props ->
+        DateRangePickerContent(props) { onDateRangeSelected(it) }
+      }
+    }
+
     ExpoUIView<DatePickerDialogProps>("DatePickerDialogView") {
       val onDateSelected by Event<DatePickerResult>()
       val onDismissRequest by Event<Unit>()
 
       Content { props ->
         ExpoDatePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
+      }
+    }
+
+    ExpoUIView<DateRangePickerDialogProps>("DateRangePickerDialogView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+      val onDismissRequest by Event<Unit>()
+
+      Content { props ->
+        ExpoDateRangePickerDialogContent(props, { onDateRangeSelected(it) }, { onDismissRequest(Unit) })
       }
     }
 
