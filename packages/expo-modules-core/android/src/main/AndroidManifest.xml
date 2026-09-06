@@ -5,10 +5,6 @@
         <meta-data
             android:name="org.unimodules.core.AppLoader#react-native-headless"
             android:value="expo.modules.adapters.react.apploader.RNHeadlessAppLoader" />
-        <meta-data
-            android:name="com.facebook.soloader.enabled"
-            android:value="true"
-            tools:replace="android:value" />
     </application>
 
 </manifest>
