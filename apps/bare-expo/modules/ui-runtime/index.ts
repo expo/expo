@@ -11,12 +11,32 @@ export type RuntimeChecks = {
   backgroundCreationRejected: boolean;
 };
 
+export type QueueChecks = {
+  immediateExecution: boolean;
+  deferredFIFO: boolean;
+  immediatePriority: boolean;
+  nestedScheduling: boolean;
+  reentrancyRejected: boolean;
+  errorRecovery: boolean;
+  mainQueueInterleaving: boolean;
+  closeAndCancellation: boolean;
+};
+
+/** Development-only checks for step 2; not an application scheduling API. */
+export async function runQueueChecks(): Promise<QueueChecks> {
+  const module = NativeModules.UIExecutionQueueChecks;
+  if (!module) throw new Error('Rebuild the iOS app to install the UI execution queue checks.');
+  return await module.run();
+}
+
 /** Development-only harness. The primitive itself is the native UIRuntime class. */
 export async function runRuntimeChecks(): Promise<RuntimeChecks> {
   const module = NativeModules.UIRuntimeChecks;
   if (!module) throw new Error('Rebuild the iOS app to install UIRuntimePrimitive.');
 
-  const appGlobal = globalThis as typeof globalThis & { __uiRuntimeStepOneAppMarker?: string };
+  const appGlobal = globalThis as typeof globalThis & {
+    __uiRuntimeStepOneAppMarker?: string;
+  };
   const previous = appGlobal.__uiRuntimeStepOneAppMarker;
   appGlobal.__uiRuntimeStepOneAppMarker = 'This belongs only to the app runtime';
   try {

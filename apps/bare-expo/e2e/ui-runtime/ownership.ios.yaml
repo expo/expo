@@ -3,8 +3,7 @@ name: UI runtime primitive ownership and lifecycle
 ---
 - launchApp:
     stopApp: false
-- tapOn:
-    point: '90%, 11%'
+# Open this app's dev menu before running the flow (see README).
 - tapOn: 'UI runtime primitive'
 - assertVisible: 'Step 1: runtime ownership'
 - tapOn: 'Run runtime checks'

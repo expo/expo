@@ -1,0 +1,44 @@
+appId: dev.expo.Payments
+name: UI runtime primitive execution queue
+---
+- launchApp:
+    stopApp: false
+# Start on the diagnostic screen, as left by ownership.ios.yaml.
+- scrollUntilVisible:
+    element: 'Run queue checks'
+    direction: DOWN
+- tapOn: 'Run queue checks'
+- extendedWaitUntil:
+    visible: 'All queue checks passed'
+    timeout: 30000
+- scrollUntilVisible:
+    element: 'closeAndCancellation: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'deferredFIFO: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'errorRecovery: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'immediateExecution: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'immediatePriority: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'mainQueueInterleaving: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'nestedScheduling: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'reentrancyRejected: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'Run queue checks'
+    direction: UP
+- tapOn: 'Run queue checks'
+- extendedWaitUntil:
+    visible: 'All queue checks passed'
+    timeout: 30000
