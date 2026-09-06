@@ -39,7 +39,7 @@ public class TestModule: Module {
     Function("TestUnicodeCharacters") { () in
       let 🎉 = "Cheers"
 
-      return "\🎉! 🎉"
+      return "\(🎉)! 🎉"
     }
 
     Function("TestUntypedFunction2") { /* Comment 3 */ () in
@@ -130,23 +130,27 @@ public class TestModule: Module {
         TestClass(a)
       }
 
-      Property("TestIntProperty") { () -> Int in
+      Property("TestIntProperty") { (basicClass: TestBasicClass) -> Int in
         1
       }
 
-      Property("TestEitherProperty") { () -> Either<Int, String> in
+      Property("TestEitherProperty") { (basicClass: TestBasicClass) -> Either<Int, String> in
         1
       }
 
-      Property("TestEnumProperty") { () -> TestEnum in
+      Property("TestEnumProperty") { (basicClass: TestBasicClass) -> TestEnum in
         .simpleCase
       }
 
-      Property("TestRecordProperty") { () -> TestRecord2 in
+      Property("TestRecordProperty") { (basicClass: TestBasicClass) -> TestRecord2 in
         TestRecord2(1, "2")
       }
 
-      AsyncFunction("TestAsyncFunction") { (a: Int) async -> String in 
+      AsyncFunction("TestAsyncMethod") { (basicClass: TestBasicClass, a: Int) -> String in 
+        "string"
+      }
+
+      Function("TestSyncMethod") { (basicClass: TestBasicClass, a: Int) -> String in 
         "string"
       }
 
