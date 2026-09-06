@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the tap that closes a SwiftUI menu still sending `touchStart`, `onPressIn` and `onPressOut` to the React Native view underneath it. React Native's touch handler is now told to skip that tap before UIKit delivers it, instead of being cancelled afterwards. ([#48419](https://github.com/expo/expo/issues/48419) by [@nahooni0511](https://github.com/nahooni0511), [#49775](https://github.com/expo/expo/pull/49775) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.16 — 2026-09-04
