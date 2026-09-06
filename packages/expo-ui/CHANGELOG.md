@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Taught the `presentationBackground` modifier to paint with any `ShapeStyle`, matching SwiftUI, so a sheet can be backed by a material, a gradient or a hierarchical style instead of only a color. iOS 26 renders a material as a flat color rather than a translucent blur. ([#49767](https://github.com/expo/expo/pull/49767) by [@Den1Marshall](https://github.com/Den1Marshall))
+
 ### 🐛 Bug fixes
 
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
