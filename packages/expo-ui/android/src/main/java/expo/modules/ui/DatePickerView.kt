@@ -20,7 +20,6 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import android.view.WindowManager
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -526,7 +524,6 @@ fun ExpoDateRangePickerDialogContent(
 
     CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
       DateRangePicker(
-        modifier = Modifier.heightIn(max = 500.dp),
         state = state,
         showModeToggle = props.showVariantToggle,
         colors = colors

@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Date Range Picker component',
+    route: 'ui/date-range-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DateRangePickerScreen'));
+    },
+  },
+  {
     name: 'ExposedDropdownMenuBox component',
     route: 'ui/exposed-dropdown-menu-box',
     options: {},
