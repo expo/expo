@@ -19,9 +19,56 @@ export type {
 type ValuesOf<T extends object> = T[keyof T][];
 
 /**
+ * A prepared statement owns a single native cursor that every execution rebinds, so a cursor's
+ * `run` and its row-fetching calls must not interleave with another execution of the same
+ * statement.
+ *
+ * Each execution takes a turn. A turn ends when the cursor has produced its rows, but a caller is
+ * free to abandon a cursor without ever reading it, so a turn also ends as soon as another
+ * execution asks for one. Waiting only for row-fetching that may never come would deadlock the
+ * statement.
+ */
+class StatementQueue {
+  private tail: Promise<void> = Promise.resolve();
+  private endCurrentTurn: (() => void) | null = null;
+
+  /**
+   * Wait for the pending turn to finish, then start one. Resolves to the callback that ends it.
+   */
+  async acquireAsync(): Promise<() => void> {
+    // Let a cursor that is still holding its turn wrap up before queuing behind it.
+    this.endCurrentTurn?.();
+
+    let endTurn!: () => void;
+    const turn = new Promise<void>((resolve) => {
+      endTurn = resolve;
+    });
+    const previous = this.tail;
+    this.tail = previous.then(() => turn);
+    await previous;
+
+    const end = () => {
+      if (this.endCurrentTurn === end) {
+        this.endCurrentTurn = null;
+      }
+      endTurn();
+    };
+    this.endCurrentTurn = end;
+    return end;
+  }
+
+  /** End the pending turn so a statement discarded mid-cursor cannot stall the queue. */
+  drain() {
+    this.endCurrentTurn?.();
+  }
+}
+
+/**
  * A prepared statement returned by [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource) or [`SQLiteDatabase.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
  */
 export class SQLiteStatement {
+  private readonly queue = new StatementQueue();
+
   constructor(
     private readonly nativeDatabase: NativeDatabase,
     private readonly nativeStatement: NativeStatement
@@ -39,10 +86,19 @@ export class SQLiteStatement {
    */
   public executeAsync<T>(...params: SQLiteVariadicBindParams): Promise<SQLiteExecuteAsyncResult<T>>;
   public async executeAsync<T>(...params: unknown[]): Promise<SQLiteExecuteAsyncResult<T>> {
-    const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(
-      this.nativeDatabase,
-      ...normalizeParams(...params)
-    );
+    const release = await this.queue.acquireAsync();
+    let lastInsertRowId: number;
+    let changes: number;
+    let firstRowValues: SQLiteColumnValues;
+    try {
+      ({ lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(
+        this.nativeDatabase,
+        ...normalizeParams(...params)
+      ));
+    } catch (e) {
+      release();
+      throw e;
+    }
     return createSQLiteExecuteAsyncResult<T>(
       this.nativeDatabase,
       this.nativeStatement,
@@ -51,7 +107,8 @@ export class SQLiteStatement {
         rawResult: false,
         lastInsertRowId,
         changes,
-      }
+      },
+      release
     );
   }
 
@@ -71,10 +128,19 @@ export class SQLiteStatement {
   public async executeForRawResultAsync<T extends object>(
     ...params: unknown[]
   ): Promise<SQLiteExecuteAsyncResult<ValuesOf<T>>> {
-    const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(
-      this.nativeDatabase,
-      ...normalizeParams(...params)
-    );
+    const release = await this.queue.acquireAsync();
+    let lastInsertRowId: number;
+    let changes: number;
+    let firstRowValues: SQLiteColumnValues;
+    try {
+      ({ lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(
+        this.nativeDatabase,
+        ...normalizeParams(...params)
+      ));
+    } catch (e) {
+      release();
+      throw e;
+    }
     return createSQLiteExecuteAsyncResult<ValuesOf<T>>(
       this.nativeDatabase,
       this.nativeStatement,
@@ -83,7 +149,8 @@ export class SQLiteStatement {
         rawResult: true,
         lastInsertRowId,
         changes,
-      }
+      },
+      release
     );
   }
 
@@ -103,6 +170,8 @@ export class SQLiteStatement {
    * > You can use the `try...finally` statement to ensure that prepared statements are finalized even if an error occurs.
    */
   public async finalizeAsync(): Promise<void> {
+    // A caller may finalize without ever reading the last cursor's rows.
+    this.queue.drain();
     await this.nativeStatement.finalizeAsync(this.nativeDatabase);
   }
 
@@ -357,13 +426,15 @@ async function createSQLiteExecuteAsyncResult<T>(
   database: SQLiteAnyDatabase,
   statement: NativeStatement,
   firstRowValues: SQLiteColumnValues | null,
-  options: SQLiteExecuteResultOptions
+  options: SQLiteExecuteResultOptions,
+  release: () => void
 ): Promise<SQLiteExecuteAsyncResult<T>> {
   const instance = new SQLiteExecuteAsyncResultImpl<T>(
     database,
     statement,
     firstRowValues ? processNativeRow(firstRowValues) : null,
-    options
+    options,
+    release
   );
   const generator = instance.generatorAsync();
   Object.defineProperties(generator, {
@@ -447,13 +518,26 @@ function createSQLiteExecuteSyncResult<T>(
 class SQLiteExecuteAsyncResultImpl<T> {
   private columnNames: string[] | null = null;
   private isStepCalled = false;
+  private isReleased = false;
 
   constructor(
     private readonly database: SQLiteAnyDatabase,
     private readonly statement: NativeStatement,
     private firstRowValues: SQLiteColumnValues | null,
-    public readonly options: SQLiteExecuteResultOptions
+    public readonly options: SQLiteExecuteResultOptions,
+    private readonly release: () => void
   ) {}
+
+  /**
+   * Let the next execution of this statement rebind the native cursor. Called once this cursor
+   * will not step again, so an abandoned cursor cannot hold the statement forever.
+   */
+  private releaseOnce() {
+    if (!this.isReleased) {
+      this.isReleased = true;
+      this.release();
+    }
+  }
 
   async getFirstAsync(): Promise<T | null> {
     if (this.isStepCalled) {
@@ -462,15 +546,19 @@ class SQLiteExecuteAsyncResultImpl<T> {
       );
     }
     this.isStepCalled = true;
-    const columnNames = await this.getColumnNamesAsync();
-    const firstRowValues = this.popFirstRowValues();
-    if (firstRowValues != null) {
-      return composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
+    try {
+      const columnNames = await this.getColumnNamesAsync();
+      const firstRowValues = this.popFirstRowValues();
+      if (firstRowValues != null) {
+        return composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
+      }
+      const firstRow = await this.statement.stepAsync(this.database);
+      return firstRow != null
+        ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(firstRow))
+        : null;
+    } finally {
+      this.releaseOnce();
     }
-    const firstRow = await this.statement.stepAsync(this.database);
-    return firstRow != null
-      ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(firstRow))
-      : null;
   }
 
   async getAllAsync(): Promise<T[]> {
@@ -480,44 +568,62 @@ class SQLiteExecuteAsyncResultImpl<T> {
       );
     }
     this.isStepCalled = true;
-    const firstRowValues = this.popFirstRowValues();
-    if (firstRowValues == null) {
-      // If the first row is empty, this SQL query may be a write operation. We should not call `statement.getAllAsync()` to write again.
-      return [];
+    try {
+      const firstRowValues = this.popFirstRowValues();
+      if (firstRowValues == null) {
+        // If the first row is empty, this SQL query may be a write operation. We should not call `statement.getAllAsync()` to write again.
+        return [];
+      }
+      const columnNames = await this.getColumnNamesAsync();
+      const nativeRows = await this.statement.getAllAsync(this.database);
+      const allRows = processNativeRows(nativeRows);
+      if (firstRowValues.length > 0) {
+        return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, [
+          firstRowValues,
+          ...allRows,
+        ]);
+      }
+      return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, allRows);
+    } finally {
+      this.releaseOnce();
     }
-    const columnNames = await this.getColumnNamesAsync();
-    const nativeRows = await this.statement.getAllAsync(this.database);
-    const allRows = processNativeRows(nativeRows);
-    if (firstRowValues != null && firstRowValues.length > 0) {
-      return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, [
-        firstRowValues,
-        ...allRows,
-      ]);
-    }
-    return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, allRows);
   }
 
   async *generatorAsync(): AsyncIterableIterator<T> {
     this.isStepCalled = true;
-    const columnNames = await this.getColumnNamesAsync();
-    const firstRowValues = this.popFirstRowValues();
-    if (firstRowValues != null) {
-      yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
-    }
-
-    let result;
-    do {
-      result = await this.statement.stepAsync(this.database);
-      if (result != null) {
-        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(result));
+    try {
+      const columnNames = await this.getColumnNamesAsync();
+      const firstRowValues = this.popFirstRowValues();
+      if (firstRowValues != null) {
+        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
       }
-    } while (result != null);
+
+      let result;
+      do {
+        result = await this.statement.stepAsync(this.database);
+        if (result != null) {
+          yield composeRowIfNeeded<T>(
+            this.options.rawResult,
+            columnNames,
+            processNativeRow(result)
+          );
+        }
+      } while (result != null);
+    } finally {
+      this.releaseOnce();
+    }
   }
 
-  resetAsync(): Promise<void> {
-    const result = this.statement.resetAsync(this.database);
+  async resetAsync(): Promise<void> {
+    if (this.isReleased) {
+      // Another execution has rebound the statement, so this cursor's rows are gone for good.
+      // Resetting now would rewind that execution's cursor instead of this one's.
+      throw new Error(
+        'This SQLite cursor can no longer be reset because the prepared statement has been executed again. Await the rows of an execution before executing the same statement another time.'
+      );
+    }
+    await this.statement.resetAsync(this.database);
     this.isStepCalled = false;
-    return result;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {
