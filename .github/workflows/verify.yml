@@ -17,6 +17,11 @@ on:
         description: "Issue or pull request number"
         type: string
         required: true
+      mode:
+        description: "Investigate or classify the target"
+        type: choice
+        options: ["verify", "triage"]
+        default: verify
       fix:
         type: choice
         options: ["auto", "yes", "no"]
@@ -55,7 +60,7 @@ jobs:
       # Same version feeds the guard and the run, so the engine that clears
       # the profile is the engine that reads it. Override with the repo
       # variable VERIFY_VERSION; the fallback pins the tested release.
-      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.3.0' }}
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.4' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -81,6 +86,7 @@ jobs:
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify mint
         env:
           VERIFY_TARGET: ${{ inputs.target }}
+          VERIFY_MODE: ${{ inputs.mode }}
           VERIFY_RETRY: ${{ inputs.retry }}
           VERIFY_RUN_ID: ${{ github.run_id }}
           VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
@@ -93,6 +99,7 @@ jobs:
         env:
           # Inputs cross as env only — never ${{ }} inside run: lines.
           VERIFY_TARGET: ${{ inputs.target }}
+          VERIFY_MODE: ${{ inputs.mode }}
           VERIFY_FIX: ${{ inputs.fix }}
           VERIFY_MODEL_OVERRIDE: ${{ inputs.model }}
           VERIFY_MODEL: ${{ vars.VERIFY_MODEL }}
@@ -135,5 +142,6 @@ jobs:
             .verify-out/denied-writes.txt
             .verify-out/publish-plan.json
             .verify-out/publish-outcome.json
+            .verify-out/triage/
           if-no-files-found: ignore
           retention-days: 14
