@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed a crash on iOS when the gradient layer is displayed with a non-finite or negative size. ([#47553](https://github.com/expo/expo/pull/47553) by [@kubilaiswf](https://github.com/kubilaiswf))
+
 ### 💡 Others
 
 ## 57.0.1 - 2026-07-15
