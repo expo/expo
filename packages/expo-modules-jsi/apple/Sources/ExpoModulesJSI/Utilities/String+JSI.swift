@@ -17,7 +17,10 @@ extension String {
   internal init(jsiString: borrowing facebook.jsi.String, in runtime: facebook.jsi.IRuntime) {
     var result = ""
     withUnsafeMutablePointer(to: &result) { resultPtr in
-      runtime.getStringData(jsiString, UnsafeMutableRawPointer(resultPtr), appendEngineStringChunk)
+      // Goes through the `expo.getStringData` wrapper rather than the runtime method: on RN older
+      // than 0.86 (e.g. react-native-macos 0.81) `Runtime::getStringData` is protected, so Swift
+      // cannot call it directly.
+      expo.getStringData(runtime, jsiString, UnsafeMutableRawPointer(resultPtr), appendEngineStringChunk)
     }
     self = result
   }
