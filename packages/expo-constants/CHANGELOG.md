@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the app config build phase failing when the project path contains a space.
+
 ### 💡 Others
 
 ## 57.0.17 — 2026-09-01
