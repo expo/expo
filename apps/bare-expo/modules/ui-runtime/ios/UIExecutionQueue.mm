@@ -53,6 +53,20 @@ void UIExecutionQueue::schedule(Job job)
   postNext(state_);
 }
 
+UIExecutionQueue::Dispatcher UIExecutionQueue::dispatcher() const
+{
+  requireUIThread();
+  std::weak_ptr<State> weakState = state_;
+  return [weakState](Job job) {
+    requireUIThread();
+    auto state = weakState.lock();
+    if (!state || state->closed) throw std::logic_error("UIExecutionQueue is closed");
+    if (!job) throw std::invalid_argument("A job is required");
+    state->pending.push_back(std::move(job));
+    postNext(state);
+  };
+}
+
 void UIExecutionQueue::runNow(Job job)
 {
   requireUIThread();

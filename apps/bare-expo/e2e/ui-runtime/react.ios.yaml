@@ -1,0 +1,46 @@
+appId: dev.expo.Payments
+name: React reconciliation in the UI-owned runtime
+---
+- launchApp:
+    stopApp: false
+# Start on the diagnostic screen, as left by ownership.ios.yaml or queue.ios.yaml.
+- scrollUntilVisible:
+    element: 'Run React checks'
+    direction: DOWN
+- tapOn: 'Run React checks'
+- scrollUntilVisible:
+    element: 'All React checks passed'
+    direction: DOWN
+    timeout: 30000
+- scrollUntilVisible:
+    element: 'appIsolation: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'conditionalChildren: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'deferredStateUpdate: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'effectCleanup: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'reactOnUI: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'remountResetsState: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'synchronousMount: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'synchronousStateUpdate: PASS'
+    direction: DOWN
+- scrollUntilVisible:
+    element: 'Run React checks'
+    direction: UP
+- tapOn: 'Run React checks'
+- scrollUntilVisible:
+    element: 'All React checks passed'
+    direction: DOWN
+    timeout: 30000

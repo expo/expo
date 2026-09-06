@@ -2,6 +2,9 @@
 #include <hermes/hermes.h>
 #include <stdexcept>
 #include "UIRuntime.h"
+#include "UIExecutionQueue.h"
+#include <chrono>
+#include <cmath>
 
 namespace expo::ui {
 namespace jsi = facebook::jsi;
@@ -57,6 +60,54 @@ void UIRuntime::close()
 {
   requireUIThread();
   runtime_.reset();
+}
+
+void UIRuntime::loadScript(const std::string &source, const std::string &sourceURL)
+{
+  requireUIThread();
+  if (!runtime_) throw std::logic_error("UIRuntime is closed");
+  runtime_->evaluateJavaScript(std::make_shared<jsi::StringBuffer>(source), sourceURL);
+}
+
+void UIRuntime::installTaskScheduling(UIExecutionQueue &queue)
+{
+  requireUIThread();
+  if (!runtime_) throw std::logic_error("UIRuntime is closed");
+  auto &runtime = *runtime_;
+  if (runtime.global().hasProperty(runtime, "__postUITask")) {
+    throw std::logic_error("Task scheduling is already installed");
+  }
+  std::weak_ptr<jsi::Runtime> weakRuntime = runtime_;
+  auto dispatch = queue.dispatcher();
+  runtime.global().setProperty(runtime, "__postUITask",
+      jsi::Function::createFromHostFunction(runtime,
+          jsi::PropNameID::forAscii(runtime, "__postUITask"), 1,
+          [weakRuntime, dispatch](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
+            requireUIThread();
+            if (count != 1 || !args[0].isNumber() || !std::isfinite(args[0].getNumber())) {
+              throw jsi::JSError(rt, "A numeric UI task ID is required");
+            }
+            double id = args[0].getNumber();
+            try {
+              dispatch([weakRuntime, id] {
+                // No JSI handle is retained by the queue. Closing the runtime
+                // releases its entire callback registry; late jobs are no-ops.
+                if (auto runtime = weakRuntime.lock()) {
+                  runtime->global().getPropertyAsFunction(*runtime, "__runUITask").call(*runtime, id);
+                }
+              });
+            } catch (const std::exception &error) {
+              throw jsi::JSError(rt, error.what());
+            }
+            return jsi::Value::undefined();
+          }));
+  runtime.global().setProperty(runtime, "__uiNow",
+      jsi::Function::createFromHostFunction(runtime,
+          jsi::PropNameID::forAscii(runtime, "__uiNow"), 0,
+          [](jsi::Runtime &, const jsi::Value &, const jsi::Value *, size_t) -> jsi::Value {
+            return std::chrono::duration<double, std::milli>(
+                std::chrono::steady_clock::now().time_since_epoch()).count();
+          }));
 }
 
 } // namespace expo::ui

@@ -1,4 +1,4 @@
-# UI runtime primitive — steps 1 and 2
+# UI runtime primitive — steps 1–3
 
 The previous list experiment is saved in git stash
 `d9f0739848e44a39bf7bbde479c073166831e49c`
@@ -63,7 +63,24 @@ or displaying the test results. This is not a concurrent-scroll isolation test.
 
 ## Run
 
-Install pods and rebuild bare-expo for iOS. Start its development client and
+First build the step-3 proof bundle using its isolated, pinned dependencies:
+
+```sh
+cd apps/bare-expo/modules/ui-runtime/react-proof
+pnpm install --ignore-workspace --frozen-lockfile
+pnpm test
+```
+
+This generates `ios/Resources/UIReactProof.js`. It is intentionally not checked
+in, and its dependencies do not change the monorepo's installed React/RN versions.
+The proof uses production React 19.2.3 and reconciler 0.33.0 even in a Debug app.
+The bundler applies Babel's block-scoping transform to the complete output,
+including generated import helpers, just as Expo's Hermes presets lower block
+scoping. Without that transform, this Hermes configuration's loop closures made
+the reconciler import resolve to the wrong property. Node-only tests did not
+catch the engine-specific difference; the simulator test did.
+
+Then install pods and rebuild bare-expo for iOS. Start its development client and
 Metro, then select **UI runtime primitive** in the development menu.
 Press **Run runtime checks**; all eight checks should pass. Repeating the test
 creates and destroys fresh engines each time.
@@ -138,8 +155,8 @@ maestro test apps/bare-expo/e2e/ui-runtime/queue.ios.yaml
 
 ## Deliberately not implemented yet
 
-- A JavaScript event loop, microtask/timer integration or frame-aware scheduling.
-- ReactInstance, React components, native-module bindings in the new engine.
+- A complete JavaScript event loop, Promise microtask/timer integration or frame-aware scheduling.
+- React Native's ReactInstance, renderer bootstrap, or native-module bindings in the new engine.
 - Fabric surfaces, mounting, list layout or TextInput.
 - Bundling, a `'use ui'` directive, live data updates or application callbacks.
 - Android support, frame-rate guarantees or arbitrary-script execution limits.
@@ -148,6 +165,57 @@ A long-running script can still block the UI. Thread ownership does not make
 arbitrary work fast or preemptible. This development harness is not a general
 application-facing eval API.
 
-**Next step:** bootstrap React and its scheduler in the UI runtime and prove a
-small component can render and update state. Then connect a Fabric surface.
-Only after those foundations should the list become a consumer.
+## Step 3: React and its scheduler inside Hermes
+
+This is a real React/reconciler bootstrap, with an intentionally diagnostic
+rendering target. It is **not** a React Native renderer and does not mount views.
+The `<row>`, `<label>` and `<badge>` tags in the proof are test host types, not a
+proposed template API. They will not become requirements for list users.
+
+Read the new code in this order:
+
+1. `react-proof/proof.jsx`: one ordinary component uses `useState`,
+   `useLayoutEffect`, `useEffect` and a conditional child. It renders count 0,
+   updates to 1 synchronously, then schedules count 2 without an explicit flush.
+   Its snapshots verify text, props and conditional child insertion/removal.
+   Finally it unmounts, verifies effect cleanup, and remounts with fresh state.
+2. `react-proof/renderer.js`: a small in-memory host config for the real
+   `react-reconciler`. It stores objects instead of mounting Fabric nodes.
+   Its internal reconciler API is version-pinned and is not a public user API.
+3. `react-proof/environment.js`: a callback registry and `setImmediate` /
+   `clearImmediate`. The actual React Scheduler uses this host scheduling path.
+   Microtasks are explicitly unsupported, not simulated using ordinary tasks.
+4. `UIRuntime::installTaskScheduling`: `__postUITask(id)` posts to step 2's
+   queue. The queued closure retains only an ID and a weak runtime reference.
+   When UI executes it, `__runUITask(id)` finds and invokes the JS callback in
+   its owning runtime. Native never retains a JSI function across dispatches.
+   `__uiNow()` supplies the scheduler's monotonic clock.
+5. `ios/UIReactChecksModule.mm`: reads the generated bundle off UI, then
+   creates and bootstraps Hermes on UI. It verifies synchronous commits and
+   lets queued React work run normally. A bounded diagnostic poll observes the
+   deferred commit; polling is not part of the production primitive.
+
+The engine now uses a **private shared pointer solely to support weak task
+references**. No caller receives it. Closing still releases the engine on UI.
+Late tasks become no-ops; a separate transient-runtime check exercises that
+case while the queue remains alive. The queue's new `dispatcher()` similarly
+holds only a weak reference and rejects calls after queue closure/destruction.
+
+This bootstrap has no dependency on the app's JS thread after setup. The app
+button and copied result display still use the ordinary asynchronous RN bridge.
+The native proof checks `__isUIThread()` on every component render. The Node test
+simulates that function and therefore proves behavior, **not** thread ownership.
+
+Press **Run React checks** on the diagnostic screen. After opening that screen:
+
+```sh
+maestro --device <ios-simulator-udid> test apps/bare-expo/e2e/ui-runtime/react.ios.yaml
+```
+
+After editing the proof's JS, run `pnpm test` in `react-proof` and rebuild the
+iOS app to copy the regenerated bundle. It is not loaded by Metro or Fast Refresh.
+
+**Next step:** bootstrap the React Native/Fabric renderer and mount a real native
+view. The in-memory host config is a diagnostic scaffold, not a replacement for
+React Native's renderer or evidence of community-library compatibility. Lists,
+native event routing, general timers, Suspense and frame-rate testing come later.

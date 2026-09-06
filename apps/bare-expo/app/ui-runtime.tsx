@@ -4,8 +4,10 @@ import { Platform, Pressable, ScrollView, StyleSheet, Text } from 'react-native'
 
 import {
   runQueueChecks,
+  runReactChecks,
   runRuntimeChecks,
   type QueueChecks,
+  type ReactChecks,
   type RuntimeChecks,
 } from '../modules/ui-runtime';
 
@@ -14,6 +16,7 @@ export default function UIRuntimeScreen() {
   const [result, setResult] = useState<RuntimeChecks>();
   const [error, setError] = useState<string>();
   const [queueResult, setQueueResult] = useState<QueueChecks>();
+  const [reactResult, setReactResult] = useState<ReactChecks>();
 
   async function run() {
     setRunning(true);
@@ -41,13 +44,26 @@ export default function UIRuntimeScreen() {
     }
   }
 
+  async function runReact() {
+    setRunning(true);
+    setReactResult(undefined);
+    setError(undefined);
+    try {
+      setReactResult(await runReactChecks());
+    } catch (error) {
+      setError(String(error));
+    } finally {
+      setRunning(false);
+    }
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.screen}>
       <Stack.Screen options={{ headerShown: true, title: 'UI runtime primitive' }} />
       <Text style={styles.title}>Step 1: runtime ownership</Text>
       <Text>
         A separate Hermes engine. JavaScript executes on the UI thread; objects and globals stay
-        inside that engine. No React renderer, Fabric surface, or list yet.
+        inside that engine. This first check does not load React.
       </Text>
       <Pressable
         accessibilityRole="button"
@@ -99,6 +115,38 @@ export default function UIRuntimeScreen() {
       <Text>
         One deferred job runs per main-queue dispatch. That allows other queued work to interleave;
         it does not guarantee a frame between jobs or make a long job interruptible.
+      </Text>
+      <Text style={styles.title}>Step 3: React on UI</Text>
+      <Text>
+        A separate React bundle renders ordinary JSX into an in-memory test tree. Hooks update a
+        counter from 0 to 1 synchronously, then to 2 through the UI queue. No Fabric or native views
+        yet.
+      </Text>
+      <Pressable
+        accessibilityRole="button"
+        disabled={running || Platform.OS !== 'ios'}
+        onPress={runReact}
+        style={styles.button}>
+        <Text style={styles.buttonText}>Run React checks</Text>
+      </Pressable>
+      {reactResult && (
+        <>
+          <Text style={styles.title}>All React checks passed</Text>
+          <Text>React {reactResult.reactVersion}: committed counts 0 → 1 → 2, then unmounted.</Text>
+          {Object.entries(reactResult.checks)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([name, passed]) => (
+              <Text key={name}>
+                {name}: {passed ? 'PASS' : 'FAIL'}
+              </Text>
+            ))}
+        </>
+      )}
+      {error && <Text selectable>{error}</Text>}
+      <Text>
+        This screen uses the app's React renderer to display copied test results. The tested
+        component, its state, effects, and React scheduler execute in the separate UI-thread Hermes
+        runtime.
       </Text>
     </ScrollView>
   );

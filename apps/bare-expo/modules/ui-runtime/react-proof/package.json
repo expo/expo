@@ -1,0 +1,17 @@
+{
+  "name": "ui-runtime-react-proof",
+  "private": true,
+  "scripts": {
+    "build": "node build.cjs",
+    "test": "node test.cjs"
+  },
+  "dependencies": {
+    "react": "19.2.3",
+    "react-reconciler": "0.33.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.29.7",
+    "@babel/plugin-transform-block-scoping": "7.29.7",
+    "esbuild": "0.28.1"
+  }
+}

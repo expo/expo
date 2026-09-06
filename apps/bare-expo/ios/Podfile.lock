@@ -4082,7 +4082,7 @@ SPEC CHECKSUMS:
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
   SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
   TestExpoUi: e376582270047f880c7e44afc7f912c97b14da54
-  UIRuntimePrimitive: 81257348150a30f49f22393c15d2da424889b2d0
+  UIRuntimePrimitive: 1a4bde66a62eb61c6a0ad7fe01a11f8aead7f2fa
   UMAppLoader: 173cb90a3039aa9c1b84bace4487e1907a4a5a39
   WorkletsTester: 232678d8eee3b5b23637008d177dc8360a874cce
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e

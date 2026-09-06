@@ -13,6 +13,7 @@ class UIExecutionQueue final {
   using Job = std::function<void()>;
   // Called on UI for queued job failures. Must not throw.
   using ErrorHandler = std::function<void(const std::string &)>;
+  using Dispatcher = std::function<void(Job)>;
 
   explicit UIExecutionQueue(ErrorHandler onError);
   ~UIExecutionQueue();
@@ -23,6 +24,9 @@ class UIExecutionQueue final {
 
   // Always deferred, FIFO. Jobs enqueued by a job go to the tail.
   void schedule(Job job);
+  // A UI-only scheduling handle that does not keep the queue alive.
+  // Calling it after close/destruction throws instead of dereferencing a wrapper.
+  Dispatcher dispatcher() const;
   // Immediate, even ahead of pending jobs. Rejects recursive execution.
   // Errors propagate to this caller rather than the queued error handler.
   void runNow(Job job);
