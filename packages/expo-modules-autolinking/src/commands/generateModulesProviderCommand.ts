@@ -4,6 +4,7 @@ import fs from 'fs';
 import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
+import type { ModuleIosConfig } from '../types';
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 
@@ -20,6 +21,52 @@ type PartialPodfileProperties = {
   'expo.inlineModules.watchedDirectories'?: string;
   'expo.inlineModules.xcodeProjectTargets'?: string;
 };
+
+/**
+ * Verifies that every package integrated at pod install (the `--packages` argument, gated back
+ * then on having something to link) still resolves with something to link. Resolving with nothing
+ * is always stale state: the `@ExpoModule` scan failed on this run, or the module config changed
+ * since pod install. Generating the provider anyway would silently drop the package's modules from
+ * the app, so the build stops early with the remedy instead. A package missing from the resolution
+ * entirely only warns, since that can have more causes (e.g. changed search paths).
+ */
+export function verifyPackagesHaveSomethingToLink(
+  expectedPackageNames: string[],
+  resolvedModules: {
+    packageName: string;
+    modules?: ModuleIosConfig[];
+    appDelegateSubscribers?: string[];
+    reactDelegateHandlers?: string[];
+  }[]
+): void {
+  const modulesByName = new Map(resolvedModules.map((module) => [module.packageName, module]));
+  const emptyPackages: string[] = [];
+
+  for (const packageName of expectedPackageNames) {
+    const module = modulesByName.get(packageName);
+    if (!module) {
+      console.warn(
+        `⚠️  Package '${packageName}' was integrated at pod install but is missing from the current resolution. Run pod install if it should still be linked.`
+      );
+      continue;
+    }
+    const hasSomethingToLink =
+      (module.modules?.length ?? 0) > 0 ||
+      (module.appDelegateSubscribers?.length ?? 0) > 0 ||
+      (module.reactDelegateHandlers?.length ?? 0) > 0;
+    if (!hasSomethingToLink) {
+      emptyPackages.push(packageName);
+    }
+  }
+
+  if (emptyPackages.length > 0) {
+    throw new Error(
+      `The following packages were integrated at pod install for their native modules, but resolve with nothing to link now: ${emptyPackages.join(', ')}. ` +
+        `Either the @ExpoModule scan failed on this run (see the warnings above) or expo-module.config.json changed since pod install. ` +
+        `Generating the modules provider anyway would build an app with these modules missing, so this build stops early instead. Run pod install to reintegrate the packages.`
+    );
+  }
+}
 
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
@@ -62,6 +109,8 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         const filteredModules = expoModulesResolveResults.filter((module) =>
           includeModules.has(module.packageName)
         );
+
+        verifyPackagesHaveSomethingToLink(commandArguments.packages ?? [], filteredModules);
 
         const podfileProperties: PartialPodfileProperties = await fs.promises
           .readFile(commandArguments.podfilePropertiesFilePath, {
