@@ -93,7 +93,7 @@ export async function withPreparedSingleFile<T>(
     typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE ||
     mapUnicodeCharacters ||
     removeRunOnQueue;
-  if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
+  if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 1) {
     return fn(input.inputFileAbsolutePaths[0] as string);
   }
 
@@ -132,7 +132,7 @@ export async function getFileTypeInformation({
     removeRunOnQueue ||
     mapUnicodeCharacters;
   const typeInferenceOn = typeInference !== TypeInferenceOption.NO_INFERENCE;
-  if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
+  if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 1) {
     return getSwiftFileTypeInformation(input.inputFileAbsolutePaths[0] as string, {
       typeInference: typeInferenceOn,
     });
