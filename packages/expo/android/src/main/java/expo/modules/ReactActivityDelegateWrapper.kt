@@ -19,7 +19,6 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
@@ -40,12 +39,8 @@ import kotlin.coroutines.suspendCoroutine
 
 class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
-  private val isNewArchitectureEnabled: Boolean, // TODO(@lukmccall): Unused since SDK 55, remove in SDK 56
   @get:VisibleForTesting internal var delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
-  constructor(activity: ReactActivity, delegate: ReactActivityDelegate) :
-    this(activity, false, delegate)
-
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
   private val reactActivityHandlers = ExpoModulesPackage.packageList
@@ -97,10 +92,6 @@ class ReactActivityDelegateWrapper(
 
   override fun getReactHost(): ReactHost? {
     return _reactHost
-  }
-
-  override fun getReactInstanceManager(): ReactInstanceManager {
-    return delegate.reactInstanceManager
   }
 
   override fun getMainComponentName(): String? {
