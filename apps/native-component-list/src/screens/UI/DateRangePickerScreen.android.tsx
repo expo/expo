@@ -11,6 +11,12 @@ const today = new Date();
 const fiveDaysAgo = new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000);
 const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
 
+function formatSelectedDate(date: Date): string {
+  const localDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+
+  return localDate.toLocaleDateString();
+}
+
 export default function DateRangePickerScreen() {
   const [showDialog, setShowDialog] = React.useState(false);
   const [selectedRange, setSelectedRange] = React.useState<DateRangeSelection>({
@@ -21,8 +27,8 @@ export default function DateRangePickerScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.selection}>
-        {selectedRange.start?.toDateString() ?? 'No start'} –{' '}
-        {selectedRange.end?.toDateString() ?? 'No end'}
+        {selectedRange.start ? formatSelectedDate(selectedRange.start) : 'No start'} –{' '}
+        {selectedRange.end ? formatSelectedDate(selectedRange.end) : 'No end'}
       </Text>
       <Button title="Show Date Range Dialog" onPress={() => setShowDialog(true)} />
 
