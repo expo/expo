@@ -107,15 +107,15 @@ export const sideEffectRequireCall = (
   source: types.StringLiteral
 ): types.Statement => t.expressionStatement(t.callExpression(t.identifier('require'), [source]));
 
-/** `var %id% = %fnName%(%source%);` */
+/** `var %id% = %fnName%(%arg%);` */
 export const varDeclaratorCallHelper = (
   t: typeof types,
   id: string,
   fn: string,
-  arg: string
+  arg: types.Expression
 ): types.Statement =>
   t.variableDeclaration('var', [
-    t.variableDeclarator(t.identifier(id), t.callExpression(t.identifier(fn), [t.identifier(arg)])),
+    t.variableDeclarator(t.identifier(id), t.callExpression(t.identifier(fn), [arg])),
   ]);
 
 // Needs to be kept in 1:1 compatibility with Babel.

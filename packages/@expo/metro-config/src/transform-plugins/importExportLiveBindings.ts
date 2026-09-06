@@ -16,6 +16,14 @@ import {
 } from './helpers';
 
 export interface Options {
+  /**
+   * Name of Metro's `importDefault` runtime helper. When set, default imports are emitted as
+   * calls to it, which Metro's inline-requires pass can defer. When unset, the output stays
+   * self-contained and needs nothing but `require`.
+   *
+   * Namespace imports deliberately have no equivalent: see `wrapNamespace` below.
+   */
+  readonly importDefault?: string;
   readonly performConstantFolding?: boolean;
   readonly resolve: boolean;
   readonly out?: {
@@ -40,6 +48,11 @@ interface ModuleSpecifiers {
   [ImportDeclarationKind.IMPORT_NAMESPACE]?: ID;
   /** Marks that the require call should be kept due to a side-effect */
   sideEffect?: boolean;
+  /**
+   * Marks that the module was imported for its side-effects alone (a bare `import 'src'`),
+   * which pins its evaluation to that import's position.
+   */
+  explicitSideEffect?: boolean;
 }
 
 /** Instruction for how to replace an expression when inlining */
@@ -104,6 +117,9 @@ export function importExportLiveBindingsPlugin({
     const moduleSpecifiers = addModuleSpecifiers(state, source);
     if (sideEffect || !state.opts.performConstantFolding) {
       moduleSpecifiers.sideEffect = true;
+    }
+    if (sideEffect) {
+      moduleSpecifiers.explicitSideEffect = true;
     }
     let id = moduleSpecifiers[ImportDeclarationKind.REQUIRE];
     if (!id) {
@@ -215,6 +231,12 @@ export function importExportLiveBindingsPlugin({
               break;
           }
 
+          // `importDefault` evaluates to the default export itself, whereas `_interopDefault`
+          // evaluates to a module-shaped wrapper that reference sites read `.default` off.
+          if (member === 'default' && state.opts.importDefault) {
+            member = undefined;
+          }
+
           state.inlineBodyRefs.set(localId, {
             parentId: importId,
             member,
@@ -302,6 +324,12 @@ export function importExportLiveBindingsPlugin({
           let importId: ID;
           let specifierLocal: string | undefined;
           let exportExpression: t.Expression;
+          // Mirrors the import side: with `importDefault` the local already holds the default
+          // export, without it the local is a wrapper carrying it under `default`.
+          const defaultExport = (id: ID): t.Expression =>
+            state.opts.importDefault
+              ? t.identifier(id)
+              : t.memberExpression(t.identifier(id), t.identifier('default'));
           switch (specifier.type) {
             case 'ExportNamespaceSpecifier':
               // The `namespaceWrapHelper` ensures a namespace object, but namespaces are accessed directly
@@ -315,23 +343,21 @@ export function importExportLiveBindingsPlugin({
               }
               specifierLocal = specifier.local.name;
               // An imported default specifier is the same as an ImportDefaultSpecifier
-              importId =
-                specifierLocal === 'default'
-                  ? addDefaultImport(path, state, source)
-                  : addImport(path, state, source);
-              exportExpression = t.memberExpression(
-                t.identifier(importId),
-                t.identifier(specifierLocal)
-              );
+              if (specifierLocal === 'default') {
+                importId = addDefaultImport(path, state, source);
+                exportExpression = defaultExport(importId);
+              } else {
+                importId = addImport(path, state, source);
+                exportExpression = t.memberExpression(
+                  t.identifier(importId),
+                  t.identifier(specifierLocal)
+                );
+              }
               break;
             case 'ExportDefaultSpecifier':
-              // The `defaultWrapHelper` works by wrapping CommonJS modules in a fake module wrapper
               specifierLocal = 'default';
               importId = addDefaultImport(path, state, source);
-              exportExpression = t.memberExpression(
-                t.identifier(importId),
-                t.identifier(specifierLocal)
-              );
+              exportExpression = defaultExport(importId);
               break;
           }
           const exportName = t.isIdentifier(specifier.exported)
@@ -490,22 +516,52 @@ export function importExportLiveBindingsPlugin({
           const preambleStatements: t.Statement[] = [];
           const esmStatements: t.Statement[] = [];
 
+          // NOTE: Metro's inline-requires pass only inlines calls it recognises, so the
+          // interop wrappers below stay eager under `inlineRequires`. Where Metro's
+          // `importDefault` helper is available we call it instead, which the pass can defer.
+          // It is equivalent to the wrapper: `exports.default` for ES modules and `exports`
+          // for CommonJS, which is what the wrapper's reference sites read off it.
+          // The source node is shared with the module's plain require declaration, so it's
+          // cloned rather than inserted twice.
+          const importDefaultName = state.opts.importDefault;
+          const importDefault = importDefaultName
+            ? (localId: string, source: ModuleRequest) =>
+                varDeclaratorCallHelper(t, localId, importDefaultName, t.cloneNode(source))
+            : null;
+
+          // A referenced default import already evaluates the module through `importDefault`,
+          // so it needs no separate side-effect require. A bare `import 'src'` is excluded: it
+          // pins evaluation to its own position, which a helper call emitted where the default
+          // import appeared wouldn't preserve.
+          const isEvaluatedByImportDefault = (moduleSpecifiers: ModuleSpecifiers) => {
+            if (!importDefault || moduleSpecifiers.explicitSideEffect) {
+              return false;
+            }
+            const defaultLocal = moduleSpecifiers[ImportDeclarationKind.IMPORT_DEFAULT];
+            return defaultLocal != null && state.referencedLocals.has(defaultLocal);
+          };
+
           let _defaultWrapName: string | null;
           const wrapDefault = (localId: string, sourceId: string) => {
             if (!_defaultWrapName) {
               _defaultWrapName = '_interopDefault';
               preambleStatements.push(defaultWrapHelper(template, _defaultWrapName));
             }
-            return varDeclaratorCallHelper(t, localId, _defaultWrapName, sourceId);
+            return varDeclaratorCallHelper(t, localId, _defaultWrapName, t.identifier(sourceId));
           };
 
+          // Namespace imports have no helper equivalent. Metro's `importAll` snapshots a
+          // CommonJS module by reading every own enumerable property, which invokes its
+          // getters; `_interopNamespace` copies their descriptors instead, so they stay lazy.
+          // `react-native`'s entry point is an object of nothing but lazy getters, several of
+          // which throw for modules the app hasn't linked, so the snapshot is not an option.
           let _namespaceWrapName: string | null;
           const wrapNamespace = (localId: string, sourceId: string) => {
             if (!_namespaceWrapName) {
               _namespaceWrapName = '_interopNamespace';
               preambleStatements.push(namespaceWrapHelper(template, _namespaceWrapName));
             }
-            return varDeclaratorCallHelper(t, localId, _namespaceWrapName, sourceId);
+            return varDeclaratorCallHelper(t, localId, _namespaceWrapName, t.identifier(sourceId));
           };
 
           // Add `__esModule` marker if we have any exports
@@ -530,7 +586,12 @@ export function importExportLiveBindingsPlugin({
             const local = addModuleSpecifiers(state, source)[importDeclaration.kind];
             if (!local || !state.referencedLocals.has(local)) {
               continue;
-            } else if (importDeclaration.local) {
+            } else if (
+              importDeclaration.local &&
+              // `importDefault` takes the module request directly, so a default import no
+              // longer needs the plain require local to feed a wrapper.
+              !(importDefault && importDeclaration.kind === ImportDeclarationKind.IMPORT_DEFAULT)
+            ) {
               state.referencedLocals.add(importDeclaration.local);
             }
           }
@@ -544,7 +605,8 @@ export function importExportLiveBindingsPlugin({
               // We check for REQUIRE, to make sure we only ever add a single side-effect require
               if (
                 importDeclaration.kind === ImportDeclarationKind.REQUIRE &&
-                moduleSpecifiers.sideEffect
+                moduleSpecifiers.sideEffect &&
+                !isEvaluatedByImportDefault(moduleSpecifiers)
               ) {
                 esmStatements.push(
                   withLocation(sideEffectRequireCall(t, source), importDeclaration.loc)
@@ -558,7 +620,9 @@ export function importExportLiveBindingsPlugin({
                 importStatement = requireCall(t, local, source);
                 break;
               case ImportDeclarationKind.IMPORT_DEFAULT:
-                importStatement = wrapDefault(local, importDeclaration.local!);
+                importStatement = importDefault
+                  ? importDefault(local, source)
+                  : wrapDefault(local, importDeclaration.local!);
                 break;
               case ImportDeclarationKind.IMPORT_NAMESPACE:
                 importStatement = wrapNamespace(local, importDeclaration.local!);

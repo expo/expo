@@ -28,11 +28,6 @@ it('correctly transforms and extracts "import" statements', () => {
   `;
 
   const expected = `
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     function _interopNamespace(e) {
       if (e && e.__esModule) return e;
       var n = {};
@@ -48,14 +43,13 @@ it('correctly transforms and extracts "import" statements', () => {
       n.default = e;
       return n;
     }
-    var _foo = require('foo');
-    var v = _interopDefault(_foo);
+    var v = _$$_IMPORT_DEFAULT('foo');
     var _bar = require('bar');
     var w = _interopNamespace(_bar);
     var _baz = require('baz');
     var _qux = require('qux');
     require('side-effect');
-    v.default;
+    v;
     w;
     _baz.x;
     _qux.y;
@@ -91,11 +85,6 @@ it('correctly transforms complex patterns', () => {
   `;
 
   const expected = `
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     function _interopNamespace(e) {
       if (e && e.__esModule) return e;
       var n = {};
@@ -113,15 +102,15 @@ it('correctly transforms complex patterns', () => {
     }
     require('first-with-side-effect');
     var _second = require('second');
-    var a = _interopDefault(_second);
+    var a = _$$_IMPORT_DEFAULT('second');
     var b = _interopNamespace(_second);
     var _third = require('third');
-    var c = _interopDefault(_third);
+    var c = _$$_IMPORT_DEFAULT('third');
     require('fourth-with-side-effect');
     var _fifth = require('fifth');
-    a.default;
+    a;
     b;
-    c.default;
+    c;
     _third.d;
     _third.f;
     _third.g;
@@ -177,19 +166,13 @@ it('exports members of another module directly from an import (as named)', () =>
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     Object.defineProperty(exports, "foo", {
       enumerable: true,
       get: function () {
-        return _bar2.default;
+        return _bar2;
       }
     });
-    var _bar = require('bar');
-    var _bar2 = _interopDefault(_bar);
+    var _bar2 = _$$_IMPORT_DEFAULT('bar');
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -388,15 +371,10 @@ it('supports `import {default as LocalName}`', () => {
   `;
 
   const expected = `
-    function _interopDefault(e) {
-      return e && e.__esModule ? e : {
-        default: e
-      };
-    }
     var _reactNative = require('react-native');
-    var ReactNative = _interopDefault(_reactNative);
+    var ReactNative = _$$_IMPORT_DEFAULT('react-native');
     _reactNative.Platform;
-    ReactNative.default;
+    ReactNative;
   `;
 
   compare([importExportPlugin], code, expected, opts);
