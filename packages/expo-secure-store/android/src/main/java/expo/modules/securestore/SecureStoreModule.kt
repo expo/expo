@@ -385,6 +385,12 @@ internal fun removeItem(
  * that path when it can't rename the backing file, for instance. The in-memory map is still updated,
  * so reads in the same process keep succeeding and the failure is invisible until the process dies.
  * Reporting it as a [WriteException] keeps a resolved `setItemAsync` meaning "persisted".
+ *
+ * Throwing alone isn't enough: `SharedPreferencesImpl` mutates the in-memory map *before* it tries
+ * the disk write, so a rejected write would otherwise leave the new value readable for the rest of
+ * the process lifetime while the disk still holds the old one. We therefore roll the in-memory map
+ * back to what was there before rethrowing, so a read after a rejected write returns the value that
+ * is actually persisted.
  */
 internal fun saveEncryptedItem(
   encryptedItem: JSONObject,
@@ -405,7 +411,25 @@ internal fun saveEncryptedItem(
     throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
   }
 
+  // Read the currently persisted value first so we can put it back if the write is rejected.
+  // This is racy in the sense that another thread writing the same key between this read and the
+  // rollback below would have its value overwritten by the old one. Concurrent writes to the same
+  // key are already last-writer-wins here, and losing a write that itself never reached disk is
+  // preferable to leaving the in-memory map claiming a value that isn't persisted.
+  val previousItemString = prefs.getString(key, null)
+
   if (!prefs.edit().putString(key, encryptedItemString).commit()) {
+    // `commit()` already mutated the in-memory map, so restore the previous entry before throwing.
+    // This restoring commit reports `false` too — the disk is still broken — and that is fine and
+    // expected: we only need its in-memory effect, which is applied regardless of the disk write.
+    val rollback = prefs.edit()
+    if (previousItemString != null) {
+      rollback.putString(key, previousItemString)
+    } else {
+      rollback.remove(key)
+    }
+    rollback.commit()
+
     throw WriteException("Could not write the encrypted item to SecureStore", key, keychainService)
   }
 }
