@@ -2,7 +2,7 @@ The e2e runner for Expo Router and Metro web.
 
 ## Contributing
 
-The runnable projects are located in the `__e2e__` directory. We use scripts in the package.json to configure the environment using environment variables such as `E2E_ROUTER_SRC=link-preview` where `link-preview` is the sub-directory in `__e2e__` containing an Expo Router routes directory named `app`.
+The runnable projects are located in the `__e2e__` directory. We use scripts in the package.json to configure the environment using environment variables such as `E2E_ROUTER_SRC=01-rsc` where `01-rsc` is the sub-directory in `__e2e__` containing an Expo Router routes directory named `app`.
 
 ### E2E Tests
 

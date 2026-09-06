@@ -78,6 +78,27 @@ if (workletsProject != null) {
 
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
 
+def expoModulesV2Version = "0.1.2"
+
+configurations {
+  // Artifact-only: the C++ sources, not something to put on any classpath.
+  expoModulesV2Cpp
+}
+
+def expoModulesV2CppDir = layout.buildDirectory.dir("expo-modules-v2-cpp").get().asFile
+
+def unpackExpoModulesV2Cpp = tasks.register("unpackExpoModulesV2Cpp", Sync) {
+  it.from(project.provider { zipTree(configurations.expoModulesV2Cpp.singleFile) })
+  it.into(expoModulesV2CppDir)
+}
+
+// CMake needs the sources on disk before it configures, not just before it builds.
+tasks.matching {
+  it.name.startsWith("configureCMake") || it.name.startsWith("buildCMake")
+}.configureEach {
+  it.dependsOn(unpackExpoModulesV2Cpp)
+}
+
 expoModule {
   canBePublished false
 }
@@ -108,7 +129,8 @@ android {
           "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
           "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
           "-DUSE_HERMES=${USE_HERMES}",
-          "-DUNIT_TEST=${isExpoModulesCoreTests}"
+          "-DUNIT_TEST=${isExpoModulesCoreTests}",
+          "-DEXPO_MODULES_V2_CPP_DIR=${expoModulesV2CppDir.absolutePath}"
         ]
 
         if (reactNativeWorkletsRootDir != null) {
@@ -229,6 +251,10 @@ dependencies {
   }
 
   implementation("io.github.expo.pika:pika-api:1.0.0")
+
+  implementation("io.github.expo.kolibri:kolibri-android")
+  api("io.github.expo:expo-modules-v2-react:${expoModulesV2Version}")
+  expoModulesV2Cpp("io.github.expo:expo-modules-v2-react:${expoModulesV2Version}:cpp@zip")
 
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'junit:junit:4.13.2'

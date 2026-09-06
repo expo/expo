@@ -24,6 +24,8 @@ const HomeIndex = () => {
         <Text>Current Path: {pathname}</Text>
       </View>
       <CaseLink href="/tabs" text="Native Tabs" />
+      <CaseLink href="/link-preview" text="Link Preview" />
+      <CaseLink href="/split-view" text="Split View" />
       <CaseLink href="/toolbar" text="Toolbar" />
       <CaseLink href="/header-items" text="Header Items" />
       <CaseLink href="/composition-lifecycle" text="Composition Lifecycle" />

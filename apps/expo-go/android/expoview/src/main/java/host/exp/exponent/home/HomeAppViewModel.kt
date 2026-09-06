@@ -19,6 +19,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import host.exp.exponent.analytics.EXL
+import host.exp.exponent.apollo.CursorPaginator
 import host.exp.exponent.apollo.Paginator
 import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.graphql.BranchDetailsQuery
@@ -353,7 +354,7 @@ class HomeAppViewModel(
       scope = viewModelScope,
       externalTrigger = selectedAccount,
       fetcher = { account ->
-        flow<Paginator<Home_AccountAppsQuery.App>> {
+        flow<CursorPaginator<Home_AccountAppsQuery.Node>> {
           val paginator = service.apps(account?.name ?: "")
 
           emit(paginator)
@@ -446,7 +447,7 @@ class HomeAppViewModel(
       scope = viewModelScope,
       externalTrigger = selectedAccount,
       fetcher = { account ->
-        flow<Paginator<Home_AccountSnacksQuery.Snack>> {
+        flow<CursorPaginator<Home_AccountSnacksQuery.Node>> {
           emit(service.snacks(account?.name ?: ""))
         }
       },

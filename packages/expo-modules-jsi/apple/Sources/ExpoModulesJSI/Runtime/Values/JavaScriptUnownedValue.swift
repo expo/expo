@@ -49,7 +49,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
       Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
       "`copied(in:)` must be passed the runtime that owns the borrowed value"
     )
-    return JavaScriptValue(runtime, pointer.pointee)
+    return JavaScriptValue(runtime, copying: pointer.pointee)
   }
 
   // MARK: - Type checks

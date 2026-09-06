@@ -90,6 +90,7 @@ jobs:
             "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-autolinking/**/android/**",
             "packages/expo/**/android/**",
+            "packages/expo-app-metrics/**/android/**",
             "packages/expo-constants/**/android/**",
             "packages/expo-crypto/**/android/**",
             "packages/expo-file-system/**/android/**",
