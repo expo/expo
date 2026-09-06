@@ -10,6 +10,7 @@
 
 - [iOS] Fixed a main-thread deadlock when notifying screen orientation listeners. ([#49367](https://github.com/expo/expo/pull/49367) by [@ryan-saffer](https://github.com/ryan-saffer))
 - [iOS] Added a development warning when the system refuses an orientation lock request, and switched to reading interface orientation from the scene's effective geometry. ([#48173](https://github.com/expo/expo/pull/48173) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed `lockAsync` throwing `UnsupportedOrientationLockException` for orientation masks containing upside-down portrait on iPad. ([#49267](https://github.com/expo/expo/pull/49267) by [@JavanPoirier](https://github.com/JavanPoirier))
 
 ### 💡 Others
 
