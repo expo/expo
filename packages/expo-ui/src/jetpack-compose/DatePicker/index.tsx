@@ -8,8 +8,17 @@ export type AndroidVariant = 'picker' | 'input';
 
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 
+/**
+ * The date range reported by `DateRangePicker` and `DateRangePickerDialog`.
+ */
 export type DateRangeSelection = {
+  /**
+   * The selected start date, or `null` when no start date is selected.
+   */
   start: Date | null;
+  /**
+   * The selected end date, or `null` until the user selects the second date of the range.
+   */
   end: Date | null;
 };
 
