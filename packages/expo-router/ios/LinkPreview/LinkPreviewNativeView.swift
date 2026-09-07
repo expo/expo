@@ -7,12 +7,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   var directChild: UIView?
-  var nextScreenId: String? {
-    didSet {
-      performUpdateOfPreloadedView()
-    }
-  }
-  var tabPath: TabPathPayload? {
+  var previewActivationPath: PreviewActivationPathPayload? {
     didSet {
       performUpdateOfPreloadedView()
     }
@@ -44,14 +39,11 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
   // MARK: - Props
 
   func performUpdateOfPreloadedView() {
-    if nextScreenId == nil && tabPath?.path.isEmpty != false {
-      // If we have no tab to change and no screen to push, then we can't update the preloaded view
+    guard let path = previewActivationPath?.path, !path.isEmpty else {
       return
     }
-    // However if one these is defined then we can perform the native update
     linkPreviewNativeNavigation.updatePreloadedView(
-      screenId: nextScreenId,
-      tabPath: tabPath,
+      path: path.map { PreviewActivationRoute(key: $0.key, name: $0.name) },
       responder: self
     )
   }

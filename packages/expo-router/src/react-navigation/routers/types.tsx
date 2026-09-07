@@ -8,6 +8,7 @@ export type NavigationRoute<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList,
 > = Route<Extract<RouteName, string>, ParamList[RouteName]> & {
+  // TODO: Remove `PartialState` once child navigation states are always complete, so consumers do not need casts.
   state?: NavigationState | PartialState<NavigationState>;
 };
 

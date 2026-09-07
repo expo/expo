@@ -12,6 +12,7 @@ import { RoutingQueueProvider } from '../../global-state/routingQueueContext';
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
+import { NativeTabs } from '../../native-tabs';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { renderRouter } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
@@ -1082,7 +1083,7 @@ describe('Preview', () => {
       warn.mockRestore();
     });
 
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    it('passes the activation path for the correct preloaded route with duplicate names', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1119,10 +1120,18 @@ describe('Preview', () => {
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       // Initial render, onWillPreviewOpen, setTimeout from prefetch
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB:[-\w]+/);
+      const props = NativeLinkPreview.mock.calls[2][0];
+      expect(props.previewActivationPath?.path.map(({ name }) => name)).toEqual([
+        '__root',
+        'slotB',
+        'test',
+      ]);
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB:[-\w]+/);
+      expect(props).not.toHaveProperty('nextScreenId');
+      expect(props).not.toHaveProperty('tabPath');
       expect(warn).not.toHaveBeenCalled();
     });
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    it('passes the activation path for the correct nested preloaded route with duplicate names', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1164,10 +1173,46 @@ describe('Preview', () => {
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       // Initial render, onWillPreviewOpen, setTimeout from prefetch
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(
-        NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB\/\[xyz\]:[-\w]+/);
+      const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
+      expect(props.previewActivationPath?.path.map(({ name }) => name)).toEqual([
+        '__root',
+        'slotB/[xyz]',
+        'test',
+      ]);
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB\/\[xyz\]:[-\w]+/);
+      expect(props).not.toHaveProperty('nextScreenId');
+      expect(props).not.toHaveProperty('tabPath');
       expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('passes a cross-tab NativeTabs activation path', async () => {
+      const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
+      const emitters = require('../preview/native').__EVENTS__;
+
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="second" />
+          </NativeTabs>
+        ),
+        index: () => (
+          <Link href="/second">
+            <Link.Trigger>Second</Link.Trigger>
+            <Link.Preview />
+          </Link>
+        ),
+        second: () => <View testID="second" />,
+      });
+
+      act(() => emitters['link-onWillPreviewOpen']());
+      await waitFor(() =>
+        expect(
+          NativeLinkPreview.mock.calls[
+            NativeLinkPreview.mock.calls.length - 1
+          ][0].previewActivationPath?.path.map(({ name }: { name: string }) => name)
+        ).toEqual(['__root', 'second'])
+      );
     });
   });
   describe('external links in preview', () => {

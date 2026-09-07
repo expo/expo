@@ -1,141 +1,137 @@
 import type { ExpoLinkingOptions } from '../../getLinkingConfig';
 import type { UrlObject } from '../../global-state/getRouteInfoFromState';
-import { findDivergentState } from '../../global-state/routing';
-import type { ReactNavigationState } from '../../global-state/types';
+import { matchDynamicName } from '../../matchers';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
-import type {
-  ParamListBase,
-  NavigationRoute,
-  NavigationState,
-  PartialState,
-  TabNavigationState,
-} from '../../react-navigation/native';
+import type { NavigationState, PartialState } from '../../react-navigation/native';
 import type { Href } from '../../types';
 import { getStateForHref } from '../getStateForHref';
 import { resolveHref } from '../href';
-import type { TabPath } from './native';
+import type { PreviewActivationRoute } from './native';
 
-export function getTabPathFromRootStateByHref(
+export function getPreviewActivationPathByHref(
   href: Href,
-  rootState: ReactNavigationState,
+  rootState: NavigationState,
   routeInfo: Pick<UrlObject, 'segments'>,
   linking: ExpoLinkingOptions | undefined
-): TabPath[] {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
-    return [];
-  }
-  // Replicating the logic from `linkTo`
-  const { navigationRoutes } = findDivergentState(hrefState, state as NavigationState, true);
-
-  if (!navigationRoutes.length) {
-    return [];
-  }
-
-  const tabPath: TabPath[] = [];
-  navigationRoutes.forEach((route, i, arr) => {
-    // TODO(ENG-22021): Fix link preview by detecting navigator type on native. https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
-    if (route.state?.type === 'tab') {
-      const tabState = route.state as TabNavigationState<ParamListBase>;
-      const oldTabKey = tabState.routes[tabState.index]!.key;
-      // The next route will be either stack inside a tab or a new tab key
-      if (!arr[i + 1]) {
-        throw new Error(
-          `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
-        );
-      }
-      const newTabKey = arr[i + 1]!.key;
-      tabPath.push({ oldTabKey, newTabKey });
-    }
-  });
-  return tabPath;
-}
-
-export function getPreloadedRouteFromRootStateByHref(
-  href: Href,
-  rootState: ReactNavigationState,
-  routeInfo: Pick<UrlObject, 'segments'>,
-  linking: ExpoLinkingOptions | undefined
-): NavigationRoute<ParamListBase, string> | undefined {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
+): PreviewActivationRoute[] | undefined {
+  const targetState = getStateForHref(resolveHref(href), routeInfo, linking);
+  if (!targetState || isCurrentlyFocused(targetState, rootState)) {
     return undefined;
   }
-  return findPreloadedRoute(hrefState, state as NavigationState);
+  return findPreviewActivationPath(targetState, rootState);
 }
 
-// TODO(@ubax):Try to simplify this logic and move it to native if possible
-// ENG-22021
-function findPreloadedRoute(
+function isCurrentlyFocused(
   targetState: PartialState<NavigationState>,
   navigationState: NavigationState
-): NavigationRoute<ParamListBase, string> | undefined {
-  const targetRoute = targetState.routes[targetState.index ?? targetState.routes.length - 1];
-  if (!targetRoute) {
-    return undefined;
-  }
-
-  // We can safely check for type here, since we are looking for preloaded route
-  // In order to create a preloaded route, an action needs to be dispatched, so type
-  // will be defined
-  if (navigationState.type === 'stack') {
-    const focusedRoute = navigationState.routes[navigationState.index]!;
-    const preloadedRoute = navigationState.routes
-      .slice(navigationState.index + 1)
-      .find((route) => routesHaveSameShape(route, targetRoute));
-    if (preloadedRoute) {
-      // A focused route with the same shape means the destination is already active.
-      return routesHaveSameShape(focusedRoute, targetRoute) ? undefined : preloadedRoute;
-    }
-  }
-
-  // TODO(ENG-22021): Resolve navigator types independently of state for the tab checks in this loop.
-  // https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
-  const navigationRoute =
-    navigationState.type === 'tab'
-      ? navigationState.routes.find((route) => route.name === targetRoute.name)
-      : navigationState.routes[navigationState.index ?? 0];
-
-  return targetRoute.state && navigationRoute?.name === targetRoute.name && navigationRoute.state
-    ? findPreloadedRoute(targetRoute.state, navigationRoute.state as NavigationState)
-    : undefined;
-}
-
-function routesHaveSameShape(
-  route: NavigationState['routes'][number] | PartialState<NavigationState>['routes'][number],
-  targetRoute: PartialState<NavigationState>['routes'][number]
 ): boolean {
-  if (
-    route.name !== targetRoute.name ||
-    !deepEqual(
-      removeInternalExpoRouterParams(route.params ?? {}),
-      removeInternalExpoRouterParams(targetRoute.params ?? {})
-    )
-  ) {
+  const targetRoute = targetState.routes[targetState.index ?? targetState.routes.length - 1];
+  const focusedRoute = navigationState.routes[navigationState.index];
+  if (!targetRoute || !focusedRoute) {
     return false;
   }
 
-  if (!route.state || !targetRoute.state) {
-    return route.state === targetRoute.state;
+  if (!routesMatchAtLevel(focusedRoute, targetRoute)) {
+    return false;
   }
 
-  const routeState = route.state;
+  if (!targetRoute.state) {
+    return true;
+  }
+  if (!focusedRoute.state) {
+    return false;
+  }
+
+  return isCurrentlyFocused(
+    targetRoute.state,
+    // The live child state is fully keyed after prefetching.
+    focusedRoute.state as NavigationState
+  );
+}
+
+function findPreviewActivationPath(
+  targetState: PartialState<NavigationState>,
+  navigationState: NavigationState
+): PreviewActivationRoute[] | undefined {
+  const targetRoute = targetState.routes[targetState.index ?? targetState.routes.length - 1];
+  const focusedRoute = navigationState.routes[navigationState.index];
+  if (!targetRoute || !focusedRoute) {
+    return undefined;
+  }
+
+  if (isCurrentlyFocused(targetState, navigationState)) {
+    return [{ key: focusedRoute.key, name: focusedRoute.name }];
+  }
+
+  const preloadedPath = navigationState.routes
+    .slice(navigationState.index + 1)
+    .map((route) => findPreviewActivationPathForRoute(targetRoute, route))
+    .find((path) => path !== undefined);
+  if (preloadedPath) {
+    return preloadedPath;
+  }
+
+  if (routesMatchAtLevel(focusedRoute, targetRoute)) {
+    return findPreviewActivationPathForRoute(targetRoute, focusedRoute);
+  }
+  if (focusedRoute.name === targetRoute.name) {
+    return undefined;
+  }
+
+  const navigationRoute = navigationState.routes.find((route) => route.name === targetRoute.name);
+  if (!navigationRoute) {
+    return undefined;
+  }
+  return findPreviewActivationPathForRoute(targetRoute, navigationRoute);
+}
+
+function findPreviewActivationPathForRoute(
+  targetRoute: PartialState<NavigationState>['routes'][number],
+  navigationRoute: NavigationState['routes'][number]
+): PreviewActivationRoute[] | undefined {
+  if (!routesMatchAtLevel(navigationRoute, targetRoute)) {
+    return undefined;
+  }
+
+  const route = { key: navigationRoute.key, name: navigationRoute.name };
+  if (!targetRoute.state || !navigationRoute.state) {
+    return [route];
+  }
+
+  const childPath = findPreviewActivationPath(
+    targetRoute.state,
+    // The live child state is fully keyed after prefetching.
+    navigationRoute.state as NavigationState
+  );
+  return childPath ? [route, ...childPath] : undefined;
+}
+
+function routesMatchAtLevel(
+  route: NavigationState['routes'][number] | PartialState<NavigationState>['routes'][number],
+  targetRoute: PartialState<NavigationState>['routes'][number]
+): boolean {
+  if (route.name !== targetRoute.name) {
+    return false;
+  }
+
+  const dynamic = matchDynamicName(targetRoute.name);
+  // React Navigation types params as object even though route params are keyed by parameter name.
+  const routeParams = route.params as Record<string, unknown> | undefined;
+  const targetParams = targetRoute.params as Record<string, unknown> | undefined;
+  if (dynamic && !deepEqual(routeParams?.[dynamic.name], targetParams?.[dynamic.name])) {
+    return false;
+  }
+
   return (
-    (routeState.index ?? routeState.routes.length - 1) ===
-      (targetRoute.state.index ?? targetRoute.state.routes.length - 1) &&
-    routeState.routes.length === targetRoute.state.routes.length &&
-    routeState.routes.every((childRoute, index) =>
-      routesHaveSameShape(childRoute, targetRoute.state!.routes[index]!)
+    !!targetRoute.state ||
+    deepEqual(
+      removeInternalExpoRouterParams(route.params ?? {}),
+      removeInternalExpoRouterParams(targetRoute.params ?? {})
     )
   );
 }
 
-export function deepEqual(
-  a: { [key: string]: any } | undefined,
-  b: { [key: string]: any } | undefined
-): boolean {
+export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true;
   }
@@ -145,6 +141,12 @@ export function deepEqual(
   if (typeof a !== 'object' || typeof b !== 'object') {
     return false;
   }
-  const keys = Object.keys(a);
-  return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
+  // The object checks narrow the values, but TypeScript does not add string index signatures.
+  const aRecord = a as Record<string, unknown>;
+  const bRecord = b as Record<string, unknown>;
+  const keys = Object.keys(aRecord);
+  return (
+    keys.length === Object.keys(bRecord).length &&
+    keys.every((key) => deepEqual(aRecord[key], bRecord[key]))
+  );
 }

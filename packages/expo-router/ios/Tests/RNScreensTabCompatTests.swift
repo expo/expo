@@ -187,6 +187,23 @@ struct RNScreensTabCompatUnitTests {
 struct RNScreensAPIContractTests {
 
   @Test
+  func `screen view responds to screenId`() throws {
+    let cls = try #require(NSClassFromString("RNSScreenView"), "RNSScreenView class not found")
+    let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate RNSScreenView")
+    #expect(view.responds(to: NSSelectorFromString("screenId")))
+  }
+
+  @Test
+  func `screen stack view responds to screenIds`() throws {
+    let cls = try #require(
+      NSClassFromString("RNSScreenStackView"),
+      "RNSScreenStackView class not found"
+    )
+    let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate RNSScreenStackView")
+    #expect(view.responds(to: NSSelectorFromString("screenIds")))
+  }
+
+  @Test
   func `tab screen class responds to screenKey`() throws {
     let cls =
       NSClassFromString("RNSTabsScreenComponentView")

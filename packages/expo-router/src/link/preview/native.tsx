@@ -71,15 +71,14 @@ export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
 // #endregion
 
 // #region Preview View
-export interface TabPath {
-  oldTabKey: string;
-  newTabKey: string;
+export interface PreviewActivationRoute {
+  key: string;
+  name: string;
 }
 export interface NativeLinkPreviewProps extends ViewProps {
-  nextScreenId: string | undefined;
-  tabPath:
+  previewActivationPath:
     | {
-        path: TabPath[];
+        path: PreviewActivationRoute[];
       }
     | undefined;
   disableForceFlatten?: boolean;
@@ -136,7 +135,10 @@ interface DismissalBoundsRect {
   maxY?: number;
 }
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
-  ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
+  ViewProps & {
+    zoomTransitionSourceIdentifier: string;
+    disableForceFlatten?: boolean;
+  }
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
   : null;
@@ -197,7 +199,11 @@ export function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps) {
 
 // #region Zoom transition rect detector
 const LinkZoomTransitionAlignmentRectDetectorNative: React.ComponentType<
-  ViewProps & { identifier: string; disableForceFlatten?: boolean; children?: React.ReactNode }
+  ViewProps & {
+    identifier: string;
+    disableForceFlatten?: boolean;
+    children?: React.ReactNode;
+  }
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
   : Fragment;
