@@ -10,6 +10,12 @@ final class NativeDatabase: SharedObject, Equatable, Hashable {
   var extraPointer: OpaquePointer?
   private var refCount = AtomicInteger(1)
 
+  // Closing a database finalizes every statement of the connection and frees
+  // the connection itself. Each module function that uses this connection or
+  // one of its statements holds this lock, so that a close cannot free objects
+  // that another thread still uses.
+  let lock = NSRecursiveLock()
+
   init(_ pointer: OpaquePointer?, databasePath: String, openOptions: OpenDatabaseOptions) {
     self.pointer = pointer
     self.databasePath = databasePath

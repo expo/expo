@@ -129,12 +129,10 @@ public final class SQLiteModule: Module {
       }
 
       AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
-        try maybeThrowForClosedDatabase(database)
-        return exsqlite3_get_autocommit(database.pointer) == 0
+        return try isInTransaction(database: database)
       }.runOnQueue(moduleQueue)
       Function("isInTransactionSync") { (database: NativeDatabase) -> Bool in
-        try maybeThrowForClosedDatabase(database)
-        return exsqlite3_get_autocommit(database.pointer) == 0
+        return try isInTransaction(database: database)
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
@@ -343,7 +341,16 @@ public final class SQLiteModule: Module {
     return db
   }
 
+  private func isInTransaction(database: NativeDatabase) throws -> Bool {
+    database.lock.lock()
+    defer { database.lock.unlock() }
+    try maybeThrowForClosedDatabase(database)
+    return exsqlite3_get_autocommit(database.pointer) == 0
+  }
+
   private func initDb(database: NativeDatabase) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     if database.openOptions.enableChangeListener {
       addUpdateHook(database)
@@ -351,6 +358,8 @@ public final class SQLiteModule: Module {
   }
 
   private func exec(database: NativeDatabase, source: String) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     var error: UnsafeMutablePointer<CChar>?
     let ret = exsqlite3_exec(database.pointer, source, nil, nil, &error)
@@ -362,6 +371,8 @@ public final class SQLiteModule: Module {
   }
 
   private func serialize(database: NativeDatabase, databaseName: String) throws -> Data {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
 
     var size: sqlite3_int64 = 0
@@ -375,17 +386,22 @@ public final class SQLiteModule: Module {
   }
 
   private func prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     let sourceString = source.cString(using: .utf8)
     if exsqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
+    statement.database = database
   }
 
   // swiftlint:disable line_length
 
   private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: any AnyArrayBuffer], shouldPassAsArray: Bool) throws -> [String: Any] {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
@@ -426,6 +442,8 @@ public final class SQLiteModule: Module {
   // swiftlint:enable line_length
 
   private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     let ret = exsqlite3_step(statement.pointer)
@@ -439,6 +457,8 @@ public final class SQLiteModule: Module {
   }
 
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     var columnValuesList: [SQLiteColumnValues] = []
@@ -457,6 +477,8 @@ public final class SQLiteModule: Module {
   }
 
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     if exsqlite3_reset(statement.pointer) != SQLITE_OK {
@@ -465,6 +487,8 @@ public final class SQLiteModule: Module {
   }
 
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
@@ -484,6 +508,8 @@ public final class SQLiteModule: Module {
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
+    db.lock.lock()
+    defer { db.lock.unlock() }
     try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)
@@ -520,6 +546,17 @@ public final class SQLiteModule: Module {
   }
 
   private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {
+    // Lock both connections in a stable order, so that two backups that run in
+    // opposite directions cannot deadlock.
+    let outerLock = ObjectIdentifier(destDatabase) <= ObjectIdentifier(sourceDatabase)
+      ? destDatabase.lock : sourceDatabase.lock
+    let innerLock = outerLock === destDatabase.lock ? sourceDatabase.lock : destDatabase.lock
+    outerLock.lock()
+    innerLock.lock()
+    defer {
+      innerLock.unlock()
+      outerLock.unlock()
+    }
     try maybeThrowForClosedDatabase(destDatabase)
     try maybeThrowForClosedDatabase(sourceDatabase)
     guard let backup = exsqlite3_backup_init(destDatabase.pointer, destDatabaseName, sourceDatabase.pointer, sourceDatabaseName) else {
@@ -558,6 +595,8 @@ public final class SQLiteModule: Module {
   }
 
   private func loadExtension(database: NativeDatabase, libPath: String, entryPoint: String?) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     exsqlite3_enable_load_extension(database.pointer, 1)
     var error: UnsafeMutablePointer<CChar>?
@@ -570,6 +609,9 @@ public final class SQLiteModule: Module {
   }
 
   private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
+    let database = statement.database
+    database?.lock.lock()
+    defer { database?.lock.unlock() }
     try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(exsqlite3_column_count(statement.pointer))
     var columnNames: SQLiteColumnNames = Array(repeating: "", count: columnCount)
@@ -728,6 +770,8 @@ public final class SQLiteModule: Module {
   // MARK: - Session Extension
 
   private func sessionCreate(database: NativeDatabase, session: NativeSession, dbName: String) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     let db = dbName.cString(using: .utf8)
     if exsqlite3session_create(database.pointer, db, &session.pointer) != SQLITE_OK {
@@ -736,6 +780,8 @@ public final class SQLiteModule: Module {
   }
 
   private func sessionAttach(database: NativeDatabase, session: NativeSession, table: String?) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     let tableName = table?.cString(using: .utf8)
     if exsqlite3session_attach(session.pointer, tableName) != SQLITE_OK {
@@ -744,16 +790,22 @@ public final class SQLiteModule: Module {
   }
 
   private func sessionEnable(database: NativeDatabase, session: NativeSession, enabled: Bool) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     exsqlite3session_enable(session.pointer, enabled ? 1 : 0)
   }
 
   private func sessionClose(database: NativeDatabase, session: NativeSession) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     exsqlite3session_delete(session.pointer)
   }
 
   private func sessionCreateChangeset(database: NativeDatabase, session: NativeSession) throws -> ArrayBuffer {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     var size: Int32 = 0
     var buffer: UnsafeMutableRawPointer?
@@ -768,6 +820,8 @@ public final class SQLiteModule: Module {
   }
 
   private func sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession) throws -> ArrayBuffer {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     do {
       let changeset = try sessionCreateChangeset(database: database, session: session)
       return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
@@ -777,6 +831,8 @@ public final class SQLiteModule: Module {
   }
 
   private func sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: some AnyArrayBuffer) throws {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     try changeset.withUnsafeBytes {
       let buffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
@@ -796,6 +852,8 @@ public final class SQLiteModule: Module {
   }
 
   private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: some AnyArrayBuffer) throws -> ArrayBuffer {
+    database.lock.lock()
+    defer { database.lock.unlock() }
     try maybeThrowForClosedDatabase(database)
     return try changeset.withUnsafeBytes {
       let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
