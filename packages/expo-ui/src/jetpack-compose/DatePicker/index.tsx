@@ -230,15 +230,15 @@ export function DateTimePicker(props: DateTimePickerProps) {
 
 export interface DateRangePickerProps {
   /**
-   * The initially selected start date.
+   * The initially selected start date, as an ISO 8601 string.
    */
   initialStartDate?: string | null;
   /**
-   * The initially selected end date. It must be on or after `initialStartDate`.
+   * The initially selected end date, as an ISO 8601 string. It must be on or after `initialStartDate`.
    */
   initialEndDate?: string | null;
   /**
-   * Callback function that is called when the selected date range changes.
+   * Called once when the component mounts with the initial range, and again whenever the selected date range changes.
    * The end date is `null` while the user is selecting a range.
    */
   onDateRangeSelected?: (range: DateRangeSelection) => void;
@@ -373,9 +373,15 @@ export function DatePickerDialog(props: DatePickerDialogProps) {
 }
 
 export interface DateRangePickerDialogProps extends Omit<DateRangePickerProps, 'modifiers'> {
-  /** The label for the button that confirms the selected range. */
+  /**
+   * The label for the button that confirms the selected range.
+   * Defaults to the system "Ok" string.
+   */
   confirmButtonLabel?: string;
-  /** The label for the button that dismisses the dialog. */
+  /**
+   * The label for the button that dismisses the dialog.
+   * Defaults to the system "Cancel" string.
+   */
   dismissButtonLabel?: string;
   /** The tint color to use on the picker elements and dialog buttons. */
   color?: ColorValue;

@@ -76,15 +76,7 @@ private fun rememberDateRangePickerState(
     initialEndDate
   )
 
-  return remember(
-    locale,
-    displayMode,
-    initialStartDate,
-    initialEndDate,
-    initialDisplayedMonth,
-    selectableDates,
-    yearRange
-  ) {
+  val state = remember(locale, displayMode, selectableDates, yearRange) {
     DateRangePickerState(
       locale = locale,
       initialSelectedStartDateMillis = initialStartDate,
@@ -95,6 +87,18 @@ private fun rememberDateRangePickerState(
       selectableDates = selectableDates
     )
   }
+
+  LaunchedEffect(state, initialStartDate, initialEndDate) {
+    if (state.selectedStartDateMillis != initialStartDate || state.selectedEndDateMillis != initialEndDate) {
+      try {
+        state.setSelection(initialStartDate, initialEndDate)
+      } catch (e: IllegalArgumentException) {
+        // Material 3 rejects a range outside the year range or an end date before the start date.
+      }
+    }
+  }
+
+  return state
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
