@@ -15,7 +15,7 @@ Expo UI's date and time picker components match the official Jetpack Compose [Da
 
 > **Note:** The date variants render Material's calendar grid and input field, both of which scroll horizontally internally. The parent `Host` must provide a finite width on the horizontal axis, use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width). See [Match contents in Host reference](host/#match-contents) for details.
 
-> **Note:** `DateRangePicker` also scrolls vertically and fills the finite height provided by its parent. Place its `Host` in a bounded layout, such as one using `flex: 1`, and don't use `matchContents` on the vertical axis.
+> **Note:** `DateRangePicker` also scrolls vertically and fills the finite height provided by its parent. Place its `Host` in a bounded layout, such as one using `flex: 1`. Do not use `matchContents` on the vertical axis.
 
 <ContentSpotlight
   variant="component"
