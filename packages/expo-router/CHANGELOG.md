@@ -70,7 +70,7 @@
 
 ### 🐛 Bug fixes
 
-- Support extension-free `+native-intent` overrides in the testing library.
+- Support extension-free `+native-intent` overrides in the testing library. ([#49768](https://github.com/expo/expo/pull/49768) by [@Fnine59](https://github.com/Fnine59))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))
 - Re-export the vendored JavaScript stack API from `expo-router/js-stack`. ([#49657](https://github.com/expo/expo/pull/49657) by [@davidmokos](https://github.com/davidmokos))
 - Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
