@@ -2,30 +2,23 @@ import SwiftUI
 import ExpoModulesCore
 import ExpoUI
 
-// TODO(@jakex7): Hack to satisfy ExpoSwiftUI.AnyChild with random UUID value
-class NodeIdentityWrapper {
-  let id: UUID
-  init(id: UUID) {
-    self.id = id
-  }
-}
-extension ObjectIdentifier: @retroactive Encodable {
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try container.encode(String(describing: self))
-  }
-}
+private final class FallbackIdentity {}
 
-public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
+public struct WidgetsDynamicView: View, ExpoSwiftUI.StringIdentityChild {
   let node: [String: Any]
   let name: String
   let kind: WidgetsKind
   let entryIndex: Int?
   let environmentString: String?
 
-  let uuid = NodeIdentityWrapper(id: UUID())
+  private let fallbackIdentity = FallbackIdentity()
+
   public var id: ObjectIdentifier {
-    ObjectIdentifier(uuid)
+    ObjectIdentifier(fallbackIdentity)
+  }
+
+  public var stringIdentity: String? {
+    node["__expoWidgetIdentity"] as? String
   }
 
   public init(name: String, kind: WidgetsKind, node: [String: Any]) {
@@ -44,8 +37,13 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
     self.environmentString = environmentString
   }
 
-  @ViewBuilder
   public var body: some View {
+    // Roots are not inside Children()'s ForEach, so consume their identity here as well.
+    content.id(childIdentity)
+  }
+
+  @ViewBuilder
+  private var content: some View {
     switch node["type"] as? String {
     case "TextView":
       // TextView applies common modifiers internally so concatenated text keeps
@@ -142,11 +140,10 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         if let rawProps = node["props"] as? [String: Any] {
           let props = try propsType.init(rawProps: rawProps, context: WidgetsContext.shared.context)
           try updateProps?(props)
-          // TODO(@jakex7): Prevent unwanted transition when view is updated with new props - we want to have the same view instance recreated with new props instead of creating a new view instance and transitioning to it
           if wrapInUIBaseView {
-            return AnyView(UIBaseView<P, V>(props: props).transition(.identity))
+            return AnyView(UIBaseView<P, V>(props: props))
           }
-          return AnyView(V(props: props).transition(.identity))
+          return AnyView(V(props: props))
         }
         return AnyView(EmptyView())
       } catch {
