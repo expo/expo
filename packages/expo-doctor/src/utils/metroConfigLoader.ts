@@ -19,13 +19,16 @@ function importMetroConfigFromProject(projectDir: string): typeof import('metro-
   }
   try {
     // NOTE(@kitten): We need to use the version of metro-config that Expo uses
-    // Luckily, we can import `@expo/metro` via `expo` to get to the same version
-    const expoMetro = dynamicRequire.resolve('metro-config', {
+    // Luckily, we can import `@expo/metro-config` via `expo` to get to the same version
+    const expoMetroConfig = dynamicRequire.resolve('@expo/metro-config/package.json', {
       paths: [path.dirname(expoResolved)],
+    });
+    const expoMetro = dynamicRequire.resolve('metro-config', {
+      paths: [path.dirname(expoMetroConfig)],
     });
     return dynamicRequire(expoMetro);
   } catch {
-    // NOTE(@kitten): Older versions of expo will not have `@expo/metro`. Let's try to
+    // NOTE(@kitten): Older versions of expo will not resolve `metro-config` this way. Let's try to
     // require `metro-config` directly
     const metroConfig = resolveFrom.silent(projectDir, 'metro-config');
     if (!metroConfig) {

@@ -34,21 +34,22 @@ const dependencyChains: [...string[], string, string][] = [
   // keep a previous SDK's version installed after an upgrade, which breaks the Android build
   ['expo', '@expo/dom-webview'],
 
-  // metro packages are commonly resolved, and this will cause issues
-  ['expo', '@expo/metro', 'metro'],
-  ['expo', '@expo/metro', 'metro-babel-transformer'],
-  ['expo', '@expo/metro', 'metro-cache'],
-  ['expo', '@expo/metro', 'metro-cache-key'],
-  ['expo', '@expo/metro', 'metro-config'],
-  ['expo', '@expo/metro', 'metro-core'],
-  ['expo', '@expo/metro', 'metro-file-map'],
-  ['expo', '@expo/metro', 'metro-minify-terser'],
-  ['expo', '@expo/metro', 'metro-resolver'],
-  ['expo', '@expo/metro', 'metro-runtime'],
-  ['expo', '@expo/metro', 'metro-source-map'],
-  ['expo', '@expo/metro', 'metro-symbolicate'],
-  ['expo', '@expo/metro', 'metro-transform-plugins'],
-  ['expo', '@expo/metro', 'metro-transform-worker'],
+  // metro packages are commonly resolved, and this will cause issues. `@expo/metro-config` pins
+  // every Metro package Expo uses, so each chain is checked through it.
+  ['expo', '@expo/metro-config', 'metro'],
+  ['expo', '@expo/metro-config', 'metro-babel-transformer'],
+  ['expo', '@expo/metro-config', 'metro-cache'],
+  ['expo', '@expo/metro-config', 'metro-cache-key'],
+  ['expo', '@expo/metro-config', 'metro-config'],
+  ['expo', '@expo/metro-config', 'metro-core'],
+  ['expo', '@expo/metro-config', 'metro-file-map'],
+  ['expo', '@expo/metro-config', 'metro-resolver'],
+  ['expo', '@expo/metro-config', 'metro-runtime'],
+  ['expo', '@expo/metro-config', 'metro-source-map'],
+  ['expo', '@expo/metro-config', 'metro-transform-plugins'],
+  ['expo', '@expo/metro-config', 'metro-transform-worker'],
+  ['expo', '@expo/metro-config', 'metro', 'metro-symbolicate'],
+  ['expo', '@expo/metro-config', 'metro-transform-worker', 'metro-minify-terser'],
 ];
 
 interface ResolvedPackage {

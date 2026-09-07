@@ -207,12 +207,12 @@ describe('runAsync', () => {
 
   it('traverses multi-step chains resolving each package from its parent', async () => {
     const expoDir = `${projectRoot}/node_modules/expo`;
-    const metroWrapperDir = `${projectRoot}/node_modules/@expo/metro`;
+    const metroConfigDir = `${projectRoot}/node_modules/@expo/metro-config`;
 
     setupNodeModules(
       {
-        expo: { version: '53.0.0', dependencies: { '@expo/metro': '^1.0.0' } },
-        '@expo/metro': {
+        expo: { version: '53.0.0', dependencies: { '@expo/metro-config': '^1.0.0' } },
+        '@expo/metro-config': {
           version: '1.0.0',
           dependencies: { metro: '^0.81.0', 'metro-resolver': '^0.81.0' },
         },
@@ -221,9 +221,9 @@ describe('runAsync', () => {
       },
       {
         [`${projectRoot} > expo`]: expoDir,
-        [`${expoDir} > @expo/metro`]: metroWrapperDir,
-        [`${metroWrapperDir} > metro`]: `${projectRoot}/node_modules/metro`,
-        [`${metroWrapperDir} > metro-resolver`]: `${projectRoot}/node_modules/metro-resolver`,
+        [`${expoDir} > @expo/metro-config`]: metroConfigDir,
+        [`${metroConfigDir} > metro`]: `${projectRoot}/node_modules/metro`,
+        [`${metroConfigDir} > metro-resolver`]: `${projectRoot}/node_modules/metro-resolver`,
       }
     );
 
@@ -234,7 +234,7 @@ describe('runAsync', () => {
     });
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toHaveLength(3);
-    expect(result.issues[1]).toContain('@expo/metro');
+    expect(result.issues[1]).toContain('@expo/metro-config');
     expect(result.issues[1]).toContain('metro');
     expect(result.issues[2]).toContain('metro-resolver');
   });
@@ -264,12 +264,12 @@ describe('runAsync', () => {
     setupNodeModules(
       {
         expo: { version: '53.0.0', dependencies: {} },
-        '@expo/metro': { version: '1.0.0', dependencies: { metro: '^0.81.0' } },
+        '@expo/metro-config': { version: '1.0.0', dependencies: { metro: '^0.81.0' } },
         metro: { version: '0.76.0' },
       },
       {
         [`${projectRoot} > expo`]: expoDir,
-        [`${expoDir} > @expo/metro`]: `${projectRoot}/node_modules/@expo/metro`,
+        [`${expoDir} > @expo/metro-config`]: `${projectRoot}/node_modules/@expo/metro-config`,
       }
     );
 
@@ -359,15 +359,15 @@ describe('runAsync', () => {
 
   it('resolves packages from isolated node_modules (pnpm-style)', async () => {
     const expoDir = `${projectRoot}/node_modules/.pnpm/expo@53.0.0/node_modules/expo`;
-    const metroWrapperDir = `${projectRoot}/node_modules/.pnpm/@expo+metro@1.0.0/node_modules/@expo/metro`;
+    const metroConfigDir = `${projectRoot}/node_modules/.pnpm/@expo+metro-config@1.0.0/node_modules/@expo/metro-config`;
     const metroDir = `${projectRoot}/node_modules/.pnpm/metro@0.76.0/node_modules/metro`;
 
     const files: Record<string, string> = {};
     files[`${expoDir}/package.json`] = JSON.stringify({
       version: '53.0.0',
-      dependencies: { '@expo/metro': '^1.0.0' },
+      dependencies: { '@expo/metro-config': '^1.0.0' },
     });
-    files[`${metroWrapperDir}/package.json`] = JSON.stringify({
+    files[`${metroConfigDir}/package.json`] = JSON.stringify({
       version: '1.0.0',
       dependencies: { metro: '^0.81.0' },
     });
@@ -384,8 +384,8 @@ describe('runAsync', () => {
 
       const graph: Record<string, string | undefined> = {
         [`${projectRoot} > expo`]: expoDir,
-        [`${expoDir} > @expo/metro`]: metroWrapperDir,
-        [`${metroWrapperDir} > metro`]: metroDir,
+        [`${expoDir} > @expo/metro-config`]: metroConfigDir,
+        [`${metroConfigDir} > metro`]: metroDir,
         // metro is NOT resolvable from the project root
       };
 
