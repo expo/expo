@@ -62,17 +62,8 @@ struct AppIntentEntityStoreTests {
     let identicalWrite = try await store.setCatalog(kind: "trail", entities: records)
     #expect(!identicalWrite, "republishing the same catalog is not a change")
 
-    // Built from scratch rather than copied and mutated: `@Field` is a class, so assigning through
-    // a copy of the array would write into `records` as well and leave nothing to compare against.
-    let changed = [
-      AppIntentEntityRecord(
-        id: "t1",
-        title: "Eagle Peak Trail",
-        subtitle: "5 km",
-        synonyms: ["eagle"],
-        metadata: ["difficulty": "moderate", "region": "north"]
-      )
-    ]
+    var changed = records
+    changed[0].title = "Eagle Peak Trail"
     let changedWrite = try await store.setCatalog(kind: "trail", entities: changed)
     #expect(changedWrite, "a different catalog is a change")
     #expect(records.map(\.title) == ["Eagle Peak"], "the original records are untouched")
