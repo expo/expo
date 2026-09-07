@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Read the status bar from its scene, so `statusBarHeight` isn't NaN in apps built with the iOS 27 SDK. ([#49851](https://github.com/expo/expo/pull/49851) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
