@@ -1,4 +1,4 @@
-import type { SerializerConfigT } from '@expo/metro/metro-config';
+import type { SerializerConfigT } from 'metro-config';
 
 import type { Chunk } from './serializeChunks';
 

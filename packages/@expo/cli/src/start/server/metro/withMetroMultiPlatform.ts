@@ -7,17 +7,13 @@
 import type { ExpoConfig, Platform } from '@expo/config';
 import { getPlatformsFromConfig } from '@expo/config';
 import { getPlatformExtensions } from '@expo/config/paths';
-import type { ConfigT } from '@expo/metro/metro-config';
-import type {
-  Resolution,
-  ResolutionContext,
-  CustomResolutionContext,
-} from '@expo/metro/metro-resolver';
-import { resolve as resolver } from '@expo/metro/metro-resolver';
-import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
-import type Bundler from '@expo/metro/metro/Bundler';
 import { resolveFrom } from '@expo/require-utils';
 import fs from 'fs';
+import type { ConfigT } from 'metro-config';
+import type { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
+import { resolve as resolver } from 'metro-resolver';
+import type { SourceFileResolution } from 'metro-resolver/private/types';
+import type Bundler from 'metro/private/Bundler';
 import path from 'path';
 
 import { Log } from '../../../log';
@@ -1043,7 +1039,7 @@ export async function withMetroMultiPlatformAsync(
 
   // Change the default metro-runtime to a custom one that supports bundle splitting.
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
-  const metroDefaults: typeof import('@expo/metro/metro-config/defaults/defaults') = require('@expo/metro/metro-config/defaults/defaults');
+  const metroDefaults: typeof import('metro-config/private/defaults/defaults') = require('metro-config/private/defaults/defaults');
   const metroRequirePolyfill = require.resolve('@expo/cli/build/metro-require/require');
   asWritable(metroDefaults).moduleSystem = metroRequirePolyfill;
   watchFolders.push(path.dirname(metroRequirePolyfill));

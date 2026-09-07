@@ -6,11 +6,7 @@ describe(createModuleMapper, () => {
 
     expect(moduleMapper('@expo/metro-config')).toBe(require.resolve('@expo/metro-config'));
 
-    expect(moduleMapper('metro')).toBe(
-      require.resolve('metro', {
-        paths: [require.resolve('@expo/metro/package.json')],
-      })
-    );
+    expect(moduleMapper('metro')).toBe(require.resolve('metro'));
 
     // Leaves unrelated modules alone
     expect(moduleMapper('@expo/cli')).toBe(null);

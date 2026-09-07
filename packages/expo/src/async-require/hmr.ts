@@ -8,7 +8,11 @@
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
-import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
+// `metro-runtime` only publishes generated types for `modules/types`, so its HMR client is
+// described by `MetroHMRClientConstructor` below and asserted at this import.
+// @ts-expect-error: `metro-runtime/modules/HMRClient` has no declaration file.
+import MetroHMRClientModule from 'metro-runtime/modules/HMRClient';
+import type { HmrUpdate } from 'metro-runtime/private/modules/types';
 import prettyFormat, { plugins } from 'pretty-format';
 
 import type { MarshalledProps } from '../dom/dom-entry';
@@ -32,6 +36,35 @@ const pendingEntryPoints: string[] = [];
 
 // @ts-expect-error: Account for multiple versions of pretty-format inside of a monorepo.
 const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
+
+type MetroHMRClientEventMap = {
+  open: [];
+  close: [closeEvent?: { code: number; reason: string }];
+  'connection-error': [error: Error];
+  error: [error: unknown];
+  update: [update: HmrUpdate];
+  'update-start': [update: { isInitialUpdate: boolean }];
+  'update-done': [];
+};
+
+interface MetroHMRClient {
+  on<Event extends keyof MetroHMRClientEventMap>(
+    event: Event,
+    listener: (...args: MetroHMRClientEventMap[Event]) => void
+  ): this;
+  close(): void;
+  send(message: string): void;
+  enable(): void;
+  disable(): void;
+  isEnabled(): boolean;
+  hasPendingUpdates(): boolean;
+}
+
+interface MetroHMRClientConstructor {
+  new (url: string): MetroHMRClient;
+}
+
+const MetroHMRClient: MetroHMRClientConstructor = MetroHMRClientModule;
 
 let hmrClient: MetroHMRClient | null = null;
 let hmrUnavailableReason: string | null = null;
@@ -200,11 +233,11 @@ const HMRClient = {
       })
     );
 
-    client.on('connection-error', (e: Error) => {
+    client.on('connection-error', (e) => {
       setHMRUnavailableReason(getConnectionError(serverHost, e));
     });
 
-    client.on('update-start', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
+    client.on('update-start', ({ isInitialUpdate }) => {
       buildErrorQueue.clear();
       didConnect = true;
 
@@ -213,26 +246,13 @@ const HMRClient = {
       }
     });
 
-    client.on(
-      'update',
-      ({
-        isInitialUpdate,
-        added,
-        modified,
-        deleted,
-      }: {
-        isInitialUpdate?: boolean;
-        added: unknown[];
-        modified: unknown[];
-        deleted: unknown[];
-      }) => {
-        // NOTE(@krystofwoldrich): I don't know why sometimes empty updates are sent. But they should not reset the overlay.
-        const isEmpty = added.length === 0 && modified.length === 0 && deleted.length === 0;
-        if (client.isEnabled() && !isInitialUpdate && !isEmpty) {
-          resetErrorOverlay();
-        }
+    client.on('update', ({ isInitialUpdate, added, modified, deleted }) => {
+      // NOTE(@krystofwoldrich): I don't know why sometimes empty updates are sent. But they should not reset the overlay.
+      const isEmpty = added.length === 0 && modified.length === 0 && deleted.length === 0;
+      if (client.isEnabled() && !isInitialUpdate && !isEmpty) {
+        resetErrorOverlay();
       }
-    );
+    });
 
     client.on('update-done', () => {
       hideLoading();
@@ -240,7 +260,7 @@ const HMRClient = {
 
     client.on('error', (data) => this._onMetroError(data));
 
-    client.on('close', (closeEvent?: { code: number; reason: string }) => {
+    client.on('close', (closeEvent) => {
       hideLoading();
       const reason = closeEvent?.reason;
       const code = closeEvent?.code || 1000;

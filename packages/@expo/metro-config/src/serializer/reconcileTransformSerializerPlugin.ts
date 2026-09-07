@@ -6,18 +6,18 @@
  */
 import type { types as t } from '@babel/core';
 import generate from '@babel/generator';
-import type { SerializerConfigT } from '@expo/metro/metro-config';
-import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
+import assert from 'assert';
+import type { SerializerConfigT } from 'metro-config';
+import { normalizePseudoGlobals } from 'metro-transform-plugins';
 import type {
   MixedOutput,
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from '@expo/metro/metro/DeltaBundler/types';
-import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
-import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
-import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import assert from 'assert';
+} from 'metro/private/DeltaBundler/types';
+import * as JsFileWrapping from 'metro/private/ModuleGraph/worker/JsFileWrapping';
+import { locToKey } from 'metro/private/ModuleGraph/worker/importLocationsPlugin';
+import { isResolvedDependency } from 'metro/private/lib/isResolvedDependency';
 
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {

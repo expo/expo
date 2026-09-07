@@ -5,10 +5,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getAssetData, type AssetData } from '@expo/metro/metro/Assets';
+import { getAssetData, type AssetData } from 'metro/private/Assets';
 // NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
-import { getJsOutput, isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js';
-import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
+import { getJsOutput, isJsModule } from 'metro/private/DeltaBundler/Serializers/helpers/js';
+import type { Module, ReadOnlyDependencies } from 'metro/private/DeltaBundler/types';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';

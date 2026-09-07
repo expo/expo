@@ -10,18 +10,6 @@ import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
-import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
-import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
-import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
-import type { DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types';
-import type {
-  default as MetroHmrServer,
-  Client as MetroHmrClient,
-} from '@expo/metro/metro/HmrServer';
-import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
-import type MetroServer from '@expo/metro/metro/Server';
-import bundleToString from '@expo/metro/metro/lib/bundleToString';
-import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
@@ -33,6 +21,15 @@ import {
   type ImmutableRequest,
   resolveLoaderContextKey,
 } from 'expo-server/private';
+import type { TransformProfile } from 'metro-babel-transformer';
+import type { CustomResolverOptions } from 'metro-resolver';
+import baseJSBundle from 'metro/private/DeltaBundler/Serializers/baseJSBundle';
+import type { DeltaResult, TransformInputOptions } from 'metro/private/DeltaBundler/types';
+import type { default as MetroHmrServer, Client as MetroHmrClient } from 'metro/private/HmrServer';
+import type { GraphRevision } from 'metro/private/IncrementalBundler';
+import type MetroServer from 'metro/private/Server';
+import bundleToString from 'metro/private/lib/bundleToString';
+import getGraphId from 'metro/private/lib/getGraphId';
 import path from 'path';
 
 import type {

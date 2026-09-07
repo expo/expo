@@ -1,4 +1,4 @@
-import UpstreamFileStore, { type Options } from '@expo/metro/metro-cache/stores/FileStore';
+import UpstreamFileStore, { type Options } from 'metro-cache/private/stores/FileStore';
 import fs from 'node:fs';
 import path from 'node:path';
 

@@ -17,7 +17,8 @@ declare module 'node:module' {
 
 const requireResolveBasepath = (request: string, params?: { paths?: string[] }) =>
   path.dirname(require.resolve(`${request}/package.json`, params));
-const expoMetroBasepath = requireResolveBasepath('@expo/metro');
+/** This package's own directory: it pins every Metro package the map below redirects. */
+const expoMetroConfigBasepath = __dirname;
 
 /** Modules that should be mapped to a different resolution path.
  * @remarks
@@ -27,24 +28,24 @@ const expoMetroBasepath = requireResolveBasepath('@expo/metro');
  * `createModuleMapper()` resolves these modules as if we were requiring
  * them from the paths below.
  *
- * For example, for `expoMetroBasepath`, we're
- * requiring this module as if we were inside `@expo/metro`.
+ * For example, for `expoMetroConfigBasepath`, we're
+ * requiring this module as if we were inside `@expo/metro-config`.
  *
  * This means we'll always get that path's dependency.
  */
 const MODULE_RESOLUTIONS: Record<string, string> = {
-  metro: expoMetroBasepath,
-  'metro-babel-transformer': expoMetroBasepath,
-  'metro-cache': expoMetroBasepath,
-  'metro-cache-key': expoMetroBasepath,
-  'metro-config': expoMetroBasepath,
-  'metro-core': expoMetroBasepath,
-  'metro-file-map': expoMetroBasepath,
-  'metro-resolver': expoMetroBasepath,
-  'metro-runtime': expoMetroBasepath,
-  'metro-source-map': expoMetroBasepath,
-  'metro-transform-plugins': expoMetroBasepath,
-  'metro-transform-worker': expoMetroBasepath,
+  metro: expoMetroConfigBasepath,
+  'metro-babel-transformer': expoMetroConfigBasepath,
+  'metro-cache': expoMetroConfigBasepath,
+  'metro-cache-key': expoMetroConfigBasepath,
+  'metro-config': expoMetroConfigBasepath,
+  'metro-core': expoMetroConfigBasepath,
+  'metro-file-map': expoMetroConfigBasepath,
+  'metro-resolver': expoMetroConfigBasepath,
+  'metro-runtime': expoMetroConfigBasepath,
+  'metro-source-map': expoMetroConfigBasepath,
+  'metro-transform-plugins': expoMetroConfigBasepath,
+  'metro-transform-worker': expoMetroConfigBasepath,
   '@expo/metro-config': requireResolveBasepath('expo'),
 };
 
@@ -127,7 +128,7 @@ export const patchNodeModuleResolver = () => {
           // 1. the user's transform-worker imports `metro-transform-worker`
           // 2. this matches in `moduleMapper` and we get a replacement path
           // 3. we return this redirect path here
-          // 4. the user's transform-worker now imports `metro-transform-worker` from `@expo/metro`'s dependencies instead
+          // 4. the user's transform-worker now imports `metro-transform-worker` from this package's dependencies instead
           const redirectedRequest = moduleMapper(request);
           if (redirectedRequest) {
             debugEvent('module_mapper:request_redirected', {

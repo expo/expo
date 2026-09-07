@@ -1,7 +1,7 @@
 import * as generator from '@babel/generator';
-import { getAssetData, type AssetData } from '@expo/metro/metro/Assets';
 import * as fs from 'fs';
 import { vol } from 'memfs';
+import { getAssetData, type AssetData } from 'metro/private/Assets';
 
 import { transform } from '../asset-transformer';
 
@@ -57,7 +57,7 @@ function getMockImageExport(): AssetData {
 
 jest.mock('fs');
 
-jest.mock('@expo/metro/metro/Assets', () => ({ getAssetData: jest.fn() }));
+jest.mock('metro/private/Assets', () => ({ getAssetData: jest.fn() }));
 
 beforeEach(() => {
   jest.resetModules();

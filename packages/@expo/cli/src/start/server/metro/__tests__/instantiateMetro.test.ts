@@ -2,10 +2,7 @@ import { Log } from '../../../../log';
 import { event, isWatchEnabled, prewarmTransformPool } from '../instantiateMetro';
 
 jest.mock('../../../../log');
-jest.mock(
-  '@expo/metro/metro-config/defaults/getMaxWorkers',
-  () => (workers?: number) => workers ?? 2
-);
+jest.mock('metro-config/private/defaults/getMaxWorkers', () => (workers?: number) => workers ?? 2);
 
 describe(prewarmTransformPool, () => {
   afterEach(() => {

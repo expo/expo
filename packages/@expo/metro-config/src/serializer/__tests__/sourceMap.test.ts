@@ -457,8 +457,8 @@ describe('composeSourceMaps', () => {
     it('resolves the same source positions as Metro for a multi-source fixture', () => {
       const { bundler, hermes } = buildFixture();
 
-      const metroCompose: typeof import('@expo/metro/metro-source-map').composeSourceMaps =
-        require('@expo/metro/metro-source-map').composeSourceMaps;
+      const metroCompose: typeof import('metro-source-map').composeSourceMaps =
+        require('metro-source-map').composeSourceMaps;
 
       const ours = composeSourceMaps([bundler, hermes]);
       const metro = metroCompose([bundler, hermes] as any);
@@ -643,8 +643,8 @@ describe('sourceMapString', () => {
     // so the serialized output should match byte-for-byte. Tests cover
     // adjacents on the same line, sourceless mappings, named mappings,
     // and module-boundary transitions.
-    const metroSourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString =
-      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString;
+    const metroSourceMapString: typeof import('metro/private/DeltaBundler/Serializers/sourceMapString').sourceMapString =
+      require('metro/private/DeltaBundler/Serializers/sourceMapString').sourceMapString;
 
     const modules = [
       fakeJsModule({
@@ -736,9 +736,9 @@ describe('sourceMapString', () => {
     });
   });
 
-  describe('CI guard: @expo/metro/metro-source-map/Generator import shape', () => {
+  describe('CI guard: metro-source-map/private/Generator import shape', () => {
     it('exposes Generator via .default and the prototype methods we use', () => {
-      const Generator: any = require('@expo/metro/metro-source-map/Generator').default;
+      const Generator: any = require('metro-source-map/private/Generator').default;
       expect(typeof Generator).toBe('function');
       const proto = Generator.prototype;
       for (const m of [
@@ -756,7 +756,7 @@ describe('sourceMapString', () => {
   });
 
   describe('patchMetroSourceMapStringForPackedMaps', () => {
-    const STOCK_PATH = '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+    const STOCK_PATH = 'metro/private/DeltaBundler/Serializers/sourceMapString';
 
     afterEach(() => {
       // Repair the live module so other tests asserting against Metro's

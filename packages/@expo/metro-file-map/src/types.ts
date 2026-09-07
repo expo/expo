@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { PerfLogger, RootPerfLogger } from '@expo/metro/metro-config';
+import type { PerfLogger, RootPerfLogger } from 'metro-config';
 
 import type { HType, HTypeValue } from './constants';
 
 export type { HType, HTypeValue };
 
-export type { PerfLoggerFactory, PerfLogger } from '@expo/metro/metro-config';
+export type { PerfLoggerFactory, PerfLogger } from 'metro-config';
 
 // These inputs affect the internal data collected for a given filesystem
 // state, and changes may invalidate a cache.

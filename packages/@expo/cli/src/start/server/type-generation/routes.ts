@@ -1,4 +1,4 @@
-import type Server from '@expo/metro/metro/Server';
+import type Server from 'metro/private/Server';
 import path from 'path';
 
 import { unsafeTemplate } from '../../../utils/template';

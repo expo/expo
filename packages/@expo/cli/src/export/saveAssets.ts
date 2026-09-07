@@ -6,9 +6,9 @@
  */
 import type { Platform } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import type { AssetData } from '@expo/metro/metro';
 import chalk from 'chalk';
 import fs from 'fs';
+import type { AssetData } from 'metro';
 import path from 'path';
 
 import { Log } from '../log';

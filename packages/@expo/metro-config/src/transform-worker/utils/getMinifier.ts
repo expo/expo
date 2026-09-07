@@ -2,7 +2,7 @@ import path from 'path';
 
 import { createModuleMapper } from './moduleMapper';
 
-export { default as getMinifier } from '@expo/metro/metro-transform-worker/utils/getMinifier';
+export { default as getMinifier } from 'metro-transform-worker/private/utils/getMinifier';
 
 export function resolveMinifier(request: string) {
   // We have to imitate how `getMinifier` resolves the minifier

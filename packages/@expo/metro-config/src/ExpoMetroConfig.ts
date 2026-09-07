@@ -1,17 +1,17 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
-import { stableHash } from '@expo/metro/metro-cache';
-import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
-import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
+import chalk from 'chalk';
+import { stableHash } from 'metro-cache';
+import type { InputConfigT, ConfigT as MetroConfig } from 'metro-config';
+import exclusionList from 'metro-config/private/defaults/exclusionList';
+import type { Graph, Result as GraphResult } from 'metro/private/DeltaBundler/Graph';
 import type {
   MixedOutput,
   Module,
   ReadOnlyGraph,
   Options as GraphOptions,
-} from '@expo/metro/metro/DeltaBundler/types';
-import chalk from 'chalk';
+} from 'metro/private/DeltaBundler/types';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -84,7 +84,7 @@ function getReactNativeHostPath(projectRoot: string, platform?: string | null): 
 function patchMetroGraphToSupportUncachedModules() {
   const {
     Graph,
-  }: typeof import('@expo/metro/metro/DeltaBundler/Graph') = require('@expo/metro/metro/DeltaBundler/Graph');
+  }: typeof import('metro/private/DeltaBundler/Graph') = require('metro/private/DeltaBundler/Graph');
 
   interface TraverseDependencies {
     (paths: readonly string[], options: GraphOptions<any>): Promise<GraphResult<any>>;
@@ -211,7 +211,7 @@ export function getDefaultConfig(
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig,
-  }: typeof import('@expo/metro/metro-config') = require('@expo/metro/metro-config');
+  }: typeof import('metro-config') = require('metro-config');
 
   if (isCSSEnabled) {
     patchMetroGraphToSupportUncachedModules();

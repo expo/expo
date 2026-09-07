@@ -9,13 +9,13 @@ import { convertEntryPointToRelative } from '@expo/config/paths';
 import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
 import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
-import Server from '@expo/metro/metro/Server';
-import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
-import * as output from '@expo/metro/metro/shared/output/bundle';
-import type { BundleOptions } from '@expo/metro/metro/shared/types';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
+import Server from 'metro/private/Server';
+import splitBundleOptions from 'metro/private/lib/splitBundleOptions';
+import * as output from 'metro/private/shared/output/bundle';
+import type { BundleOptions } from 'metro/private/shared/types';
 import path from 'path';
 
 import { Log } from '../../log';

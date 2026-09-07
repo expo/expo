@@ -1,4 +1,4 @@
-import { mergeConfig, type ConfigT } from '@expo/metro/metro-config';
+import { mergeConfig, type ConfigT } from 'metro-config';
 
 import { getDefaultConfig } from '../ExpoMetroConfig';
 import { resolveBabelrcName } from '../loadBabelConfig';

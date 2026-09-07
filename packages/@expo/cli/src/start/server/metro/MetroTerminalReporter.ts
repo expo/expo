@@ -1,8 +1,8 @@
 import { events } from '2g';
 import type { SpanEnd } from '2g';
 import type { ExpoCustomTransformOptions } from '@expo/metro-config';
-import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
+import type { Terminal } from 'metro-core';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
 

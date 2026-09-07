@@ -1,5 +1,5 @@
 import { parse } from '@babel/core';
-import type { Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
+import type { Module, ReadOnlyGraph } from 'metro/private/DeltaBundler/types';
 
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
 import { isModuleEmptyFor } from '../treeShakeSerializerPlugin';

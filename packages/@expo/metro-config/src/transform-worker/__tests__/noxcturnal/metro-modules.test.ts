@@ -1,6 +1,6 @@
 import * as babel from '@babel/core';
-import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
+import type { JsTransformOptions } from 'metro-transform-worker';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import {
@@ -1004,9 +1004,7 @@ it.each([
   ['unsafe call preservation', `const value = (sideEffect(), 1 + 2); module.exports = value;`],
   ['string comparison', `module.exports = ["b" < "c", "10" < "2", "1" === 1, "1" == 1];`],
 ])("matches Metro's Babel optimization for %s", (_name, source) => {
-  const metroOptimization = requireFromMetroConfig(
-    '@expo/metro/metro-transform-plugins'
-  ).constantFoldingPlugin;
+  const metroOptimization = requireFromMetroConfig('metro-transform-plugins').constantFoldingPlugin;
   const babelResult = babel.transformSync(source, {
     babelrc: false,
     configFile: false,

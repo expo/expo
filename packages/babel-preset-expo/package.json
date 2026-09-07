@@ -86,7 +86,6 @@
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.26.0",
     "@expo/config": "workspace:*",
-    "@expo/metro": "~56.1.0",
     "@expo/metro-config": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/babel__code-frame": "^7.0.1",
@@ -98,6 +97,9 @@
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "jest": "^29.2.1",
+    "metro-config": "0.84.6",
+    "metro-minify-terser": "0.84.6",
+    "metro-transform-plugins": "0.84.6",
     "react-refresh": "^0.14.2"
   },
   "peerDependencies": {

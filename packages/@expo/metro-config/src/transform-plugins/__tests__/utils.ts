@@ -7,8 +7,8 @@
 
 import { codeFrameColumns } from '@babel/code-frame';
 import type { types as t } from '@babel/core';
-import type { Dependency } from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
-import collectDependencies from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
+import type { Dependency } from 'metro/private/ModuleGraph/worker/collectDependencies';
+import collectDependencies from 'metro/private/ModuleGraph/worker/collectDependencies';
 
 import { importExportPlugin } from '../index';
 import { transformToAst } from './__mocks__/test-helpers-upstream';

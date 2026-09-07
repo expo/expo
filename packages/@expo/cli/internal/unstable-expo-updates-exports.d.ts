@@ -2,8 +2,8 @@
 // NOTE for Expo Maintainers: Do not add to this file. We want to remove this
 
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
-import type Server from '@expo/metro/metro/Server';
-import type { BundleOptions } from '@expo/metro/metro/shared/types.flow';
+import type Server from 'metro/private/Server';
+import type { BundleOptions } from 'metro/private/shared/types';
 
 export const drawableFileTypes: Set<string>;
 

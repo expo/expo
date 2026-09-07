@@ -1,6 +1,6 @@
 import JsonFile, { JSONObject } from '@expo/json-file';
-import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import { resolveFrom, loadModuleSync } from '@expo/require-utils';
+import type { ConfigT as MetroConfig } from 'metro-config';
 import fs from 'node:fs';
 import path from 'node:path';
 

@@ -1,3 +1,4 @@
+import fs from 'fs';
 /**
  * Copyright © 2023 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -8,8 +9,7 @@
  * Based on the community asset persisting for Metro but with base path and web support:
  * https://github.com/facebook/react-native/blob/d6e0bc714ad4d215ede4949d3c4f44af6dea5dd3/packages/community-cli-plugin/src/commands/bundle/saveAssets.js#L1
  */
-import type { AssetData } from '@expo/metro/metro';
-import fs from 'fs';
+import type { AssetData } from 'metro';
 import path from 'path';
 
 import { Log } from '../log';

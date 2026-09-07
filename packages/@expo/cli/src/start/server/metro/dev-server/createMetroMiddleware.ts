@@ -1,8 +1,8 @@
 import { getMetroServerRoot } from '@expo/config/paths';
-import type { MetroConfig } from '@expo/metro/metro';
-import type MetroBundler from '@expo/metro/metro/Bundler';
 import connect from 'connect';
 import { Body } from 'fetch-nodeshim';
+import type { MetroConfig } from 'metro';
+import type MetroBundler from 'metro/private/Bundler';
 import fs from 'node:fs';
 import path from 'node:path';
 

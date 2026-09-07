@@ -1,5 +1,5 @@
-import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import type { ResolutionContext } from '@expo/metro/metro-resolver';
+import type { ConfigT as MetroConfig } from 'metro-config';
+import type { ResolutionContext } from 'metro-resolver';
 import { stripVTControlCharacters } from 'node:util';
 
 import { createMutateResolutionError, type DepGraph } from '../withMetroErrorReportingResolver';

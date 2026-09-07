@@ -143,8 +143,6 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
     for (const importRef of source.importRefs) {
       if (importRef.type !== 'external' || pkg.packageName === importRef.packageName) {
         continue;
-      } else if (isDisallowedImport(importRef)) {
-        invalidImports.push({ file: source.file, importRef, kind: undefined });
       } else if (isIgnoredPackage) {
         continue;
       }
@@ -197,8 +195,7 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
     invalidImports.forEach(({ file, importRef }) => {
       logger.verbose(
         `     > ${path.relative(pkg.packagePath, file.path)} - ${importRef.importValue}` +
-          `${importRef.isTypeOnly ? ' (types only)' : ''}` +
-          `${isDisallowedImport(importRef) ? ' (disallowed)' : ''}`
+          `${importRef.isTypeOnly ? ' (types only)' : ''}`
       );
     });
 
@@ -211,15 +208,6 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
     logger.warn(`📦 Risky versions: ${invalidDependencyRanges.join(', ')} are pinned!`);
     throw new Error(`${pkg.packageName} has invalid pinned versions.`);
   }
-}
-
-/**
- * @param {SourceFileImportRef} ref
- * @returns {boolean}
- */
-function isDisallowedImport(ref) {
-  const packageName = getPackageName(ref.packageName);
-  return packageName === 'metro' || packageName.startsWith('metro-');
 }
 
 /**
@@ -281,6 +269,9 @@ function createExternalImportValidator(packageName, packageJson) {
         return null;
       } else if (ref.packageName.startsWith('@react-native/')) {
         // Sub-deps on react-native, fine to pin
+        return null;
+      } else if (ref.packageName === 'metro' || ref.packageName.startsWith('metro-')) {
+        // Every Expo package must resolve to one copy of Metro, so its packages are pinned exactly
         return null;
       } else if (ref.packageName === 'xml2js') {
         // TODO: Unpin

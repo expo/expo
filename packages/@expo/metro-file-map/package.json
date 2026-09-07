@@ -44,13 +44,13 @@
     "walker": "^1.0.8"
   },
   "devDependencies": {
-    "@expo/metro": "~56.1.0",
     "@types/debug": "^4.1.7",
     "@types/fb-watchman": "^2.0.6",
     "@types/invariant": "^2.2.37",
     "@types/micromatch": "^4.0.10",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.6.0"
+    "memfs": "^3.6.0",
+    "metro-config": "0.84.6"
   }
 }

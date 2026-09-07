@@ -1,15 +1,15 @@
+import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 /**
  * Copyright © 2022 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { MetroConfig } from '@expo/metro/metro';
-import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
-import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
-import type { ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
-import bundleToString from '@expo/metro/metro/lib/bundleToString';
-import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
+import type { MetroConfig } from 'metro';
+import type { ConfigT, InputConfigT } from 'metro-config';
+import type { Module, ReadOnlyGraph, MixedOutput } from 'metro/private/DeltaBundler';
+import type { ReadOnlyDependencies } from 'metro/private/DeltaBundler/types';
+import bundleToString from 'metro/private/lib/bundleToString';
 
 import { env } from '../env';
 import { stringToUUID } from './debugId';

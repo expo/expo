@@ -1,12 +1,12 @@
-import type { FileSystem } from '@expo/metro/metro-file-map';
+import type { FileSystem } from 'metro-file-map';
 /**
  * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type Bundler from '@expo/metro/metro/Bundler';
-import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
+import type Bundler from 'metro/private/Bundler';
+import type DependencyGraph from 'metro/private/node-haste/DependencyGraph';
 
 type ExpoPatchedFileSystem = Omit<FileSystem, 'getSha1'> & {
   getSha1: FileSystem['getSha1'] & { __patched?: boolean };

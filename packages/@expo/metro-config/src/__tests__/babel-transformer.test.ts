@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
-import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import { vol } from 'memfs';
+import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
 
 import * as babel from '../babel-core';
 // eslint-disable-next-line import/namespace
@@ -175,7 +175,7 @@ describe('getCacheKey', () => {
       const actual = jest.requireActual('../babel-core');
       return { ...actual, loadPartialConfigSync: mockLoadPartialConfigSync };
     });
-    jest.doMock('@expo/metro/metro-cache-key', () => ({
+    jest.doMock('metro-cache-key', () => ({
       getCacheKey: mockGetFileCacheKey,
     }));
     if (mockConfigName !== undefined) {

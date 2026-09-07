@@ -1,9 +1,9 @@
 import { getBareExtensions } from '@expo/config/paths';
-import type { ConfigT } from '@expo/metro/metro-config';
-import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver';
-import type Bundler from '@expo/metro/metro/Bundler';
 import { resolveFrom } from '@expo/require-utils';
 import { vol } from 'memfs';
+import type { ConfigT } from 'metro-config';
+import type { CustomResolutionContext, Resolution } from 'metro-resolver';
+import type Bundler from 'metro/private/Bundler';
 import assert from 'node:assert';
 
 import type { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
@@ -35,7 +35,7 @@ class FailedToResolveNameError extends Error {
     super('Failed to resolve name');
   }
 }
-jest.mock('@expo/metro/metro-resolver', () => {
+jest.mock('metro-resolver', () => {
   const resolve = jest.fn(() => ({ type: 'empty' }));
   return {
     resolve,
@@ -116,7 +116,7 @@ function getNodeResolverContext({
 }
 
 function getResolveFunc() {
-  const metroResolver: typeof import('@expo/metro/metro-resolver') = require('@expo/metro/metro-resolver');
+  const metroResolver: typeof import('metro-resolver') = require('metro-resolver');
   return metroResolver.resolve;
 }
 

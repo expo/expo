@@ -1,10 +1,10 @@
 import type { MetroConfig } from '@expo/metro-config';
-// NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
-import { getJsOutput, isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js';
-import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
-import type IncrementalBundler from '@expo/metro/metro/IncrementalBundler';
-import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import crypto from 'crypto';
+// NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
+import { getJsOutput, isJsModule } from 'metro/private/DeltaBundler/Serializers/helpers/js';
+import type { Module, ReadOnlyDependencies } from 'metro/private/DeltaBundler/types';
+import type IncrementalBundler from 'metro/private/IncrementalBundler';
+import splitBundleOptions from 'metro/private/lib/splitBundleOptions';
 import path from 'path';
 
 type Options = {

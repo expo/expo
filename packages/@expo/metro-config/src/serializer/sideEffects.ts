@@ -1,3 +1,4 @@
+import fs from 'fs';
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -9,9 +10,8 @@ import type {
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from '@expo/metro/metro/DeltaBundler/types';
-import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import fs from 'fs';
+} from 'metro/private/DeltaBundler/types';
+import { isResolvedDependency } from 'metro/private/lib/isResolvedDependency';
 import path from 'path';
 import picomatch from 'picomatch';
 

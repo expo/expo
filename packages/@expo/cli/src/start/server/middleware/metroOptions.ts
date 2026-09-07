@@ -1,6 +1,6 @@
 import type { ExpoConfig } from '@expo/config';
-import Server from '@expo/metro/metro/Server';
-import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types';
+import Server from 'metro/private/Server';
+import type { BundleOptions as MetroBundleOptions } from 'metro/private/shared/types';
 
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';

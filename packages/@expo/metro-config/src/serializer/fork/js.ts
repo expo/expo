@@ -9,12 +9,12 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/helpers/js.js#L1
  */
 
-import { addParamsToDefineCall } from '@expo/metro/metro-transform-plugins';
-import type { JsOutput } from '@expo/metro/metro-transform-worker';
-import type { MixedOutput, Module } from '@expo/metro/metro/DeltaBundler';
-import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import assert from 'assert';
 import jscSafeUrl from 'jsc-safe-url';
+import { addParamsToDefineCall } from 'metro-transform-plugins';
+import type { JsOutput } from 'metro-transform-worker';
+import type { MixedOutput, Module } from 'metro/private/DeltaBundler';
+import { isResolvedDependency } from 'metro/private/lib/isResolvedDependency';
 import path from 'path';
 
 import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';

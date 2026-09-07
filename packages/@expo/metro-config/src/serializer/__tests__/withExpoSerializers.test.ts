@@ -1,4 +1,4 @@
-import type { Module } from '@expo/metro/metro/DeltaBundler';
+import type { Module } from 'metro/private/DeltaBundler';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {

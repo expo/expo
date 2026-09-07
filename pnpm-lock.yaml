@@ -1923,9 +1923,6 @@ importers:
       '@expo/log-box-utils':
         specifier: workspace:^
         version: link:../log-box-utils
-      '@expo/metro':
-        specifier: ~56.1.0
-        version: 56.1.0
       '@expo/metro-config':
         specifier: workspace:~
         version: link:../metro-config
@@ -2016,6 +2013,24 @@ importers:
       lan-network:
         specifier: ^0.2.1
         version: 0.2.1
+      metro:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-babel-transformer:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-config:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-core:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-file-map:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-resolver:
+        specifier: 0.84.6
+        version: 0.84.6
       multitars:
         specifier: ^1.0.2
         version: 1.0.2
@@ -2200,6 +2215,9 @@ importers:
       memfs:
         specifier: ^3.2.0
         version: 3.6.0
+      metro-source-map:
+        specifier: 0.84.6
+        version: 0.84.6
       nock:
         specifier: ^14.0.10
         version: 14.0.11
@@ -2700,9 +2718,6 @@ importers:
       '@expo/json-file':
         specifier: workspace:~
         version: link:../json-file
-      '@expo/metro':
-        specifier: ~56.1.0
-        version: 56.1.0
       '@expo/require-utils':
         specifier: workspace:^
         version: link:../require-utils
@@ -2748,6 +2763,42 @@ importers:
       lightningcss:
         specifier: ^1.30.1
         version: 1.32.0
+      metro:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-babel-transformer:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-cache:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-cache-key:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-config:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-core:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-file-map:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-resolver:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-runtime:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-source-map:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-transform-plugins:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-transform-worker:
+        specifier: 0.84.6
+        version: 0.84.6
       noxcturnal:
         specifier: ^0.1.0
         version: 0.1.0
@@ -2798,8 +2849,8 @@ importers:
         specifier: ^3.2.0
         version: 3.6.0
       metro-minify-terser:
-        specifier: ^0.84.2
-        version: 0.84.5
+        specifier: 0.84.6
+        version: 0.84.6
       sass:
         specifier: ^1.60.0
         version: 1.98.0
@@ -2828,9 +2879,6 @@ importers:
         specifier: ^1.0.8
         version: 1.0.8
     devDependencies:
-      '@expo/metro':
-        specifier: ~56.1.0
-        version: 56.1.0
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
@@ -2852,6 +2900,9 @@ importers:
       memfs:
         specifier: ^3.6.0
         version: 3.6.0
+      metro-config:
+        specifier: 0.84.6
+        version: 0.84.6
 
   packages/@expo/metro-runtime:
     dependencies:
@@ -3313,9 +3364,6 @@ importers:
       '@expo/config':
         specifier: workspace:*
         version: link:../@expo/config
-      '@expo/metro':
-        specifier: ~56.1.0
-        version: 56.1.0
       '@expo/metro-config':
         specifier: workspace:*
         version: link:../@expo/metro-config
@@ -3349,6 +3397,15 @@ importers:
       jest:
         specifier: ^29.2.1
         version: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
+      metro-config:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-minify-terser:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-transform-plugins:
+        specifier: 0.84.6
+        version: 0.84.6
       react-refresh:
         specifier: ^0.14.2
         version: 0.14.2
@@ -3680,9 +3737,6 @@ importers:
       '@expo/log-box-utils':
         specifier: workspace:^
         version: link:../@expo/log-box-utils
-      '@expo/metro':
-        specifier: ~56.1.0
-        version: 56.1.0
       '@expo/metro-config':
         specifier: workspace:~
         version: link:../@expo/metro-config
@@ -3713,6 +3767,12 @@ importers:
       expo-modules-core:
         specifier: workspace:~
         version: link:../expo-modules-core
+      metro-runtime:
+        specifier: 0.84.6
+        version: 0.84.6
+      metro-source-map:
+        specifier: 0.84.6
+        version: 0.84.6
       pretty-format:
         specifier: ^29.7.0
         version: 29.7.0
@@ -4511,9 +4571,6 @@ importers:
       '@expo/json-file':
         specifier: workspace:*
         version: link:../@expo/json-file
-      '@expo/metro':
-        specifier: ~56.1.0
-        version: 56.1.0
       '@expo/schemer':
         specifier: workspace:*
         version: link:../@expo/schemer
@@ -4562,6 +4619,9 @@ importers:
       memfs:
         specifier: ^3.2.0
         version: 3.6.0
+      metro-config:
+        specifier: 0.84.6
+        version: 0.84.6
       ora:
         specifier: 3.4.0
         version: 3.4.0
@@ -5185,9 +5245,6 @@ importers:
       '@babel/core':
         specifier: ^7.26.0
         version: 7.29.7
-      '@expo/metro':
-        specifier: ~56.1.0
-        version: 56.1.0
 
   packages/expo-module-template:
     devDependencies:
@@ -7872,9 +7929,6 @@ packages:
     resolution: {integrity: sha512-hxFzqdUNKCt+8pbGV3oGcd/aBNA1mmhwh3DSeXoHReypxzsiLYLITJs1OctglaPecfMA9qFb+6z/RIkRSf5S4g==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.26.0
-
-  '@expo/metro@56.1.0':
-    resolution: {integrity: sha512-nHJNWRMkZffytNiikCWJ/ufVY2FP2vIFrp9Y+kl8rl88de0zYT9OX3WuEJUGry7TGWl94TYZqHSDbRU+8qK9Yw==}
 
   '@expo/multipart-body-parser@1.1.0':
     resolution: {integrity: sha512-XOaS79wFIJgx0J7oUzRb+kZsnZmFqGpisu0r8RPO3b0wjbW7xpWgiXmRR4RavKeGiVAPauZOi4vad7cJ3KCspg==}
@@ -13201,10 +13255,6 @@ packages:
     resolution: {integrity: sha512-Dc57t8jsINwA90bbVlqaeDlxf1rVGgj5SmOEnOMbaHNUM/HCYYTJxPV8SRdOBwh7qTz/biO9vaQvBTjRBgbbsg==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-minify-terser@0.84.5:
-    resolution: {integrity: sha512-BJoFwCEDsYnagPqarayInv2+diCDNDdLlaof/p6s9w4gh+gc9HXYM+pDvsKGKKUumpZswNF3Z/ftTMqKl/5IBg==}
-    engines: {node: ^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0}
-
   metro-minify-terser@0.84.6:
     resolution: {integrity: sha512-SqhB/Kxrw0XfyW0k8mEscqX/CQopm6Fp3EpdSIPzvKfGgQp9bTMahg9PAdVsXUmIWwErbmFw1VqB+VFBOKksUw==}
     engines: {node: ^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0}
@@ -16908,27 +16958,6 @@ snapshots:
       zod-to-json-schema: 3.25.2(zod@3.25.76)
     transitivePeerDependencies:
       - bufferutil
-      - utf-8-validate
-
-  '@expo/metro@56.1.0':
-    dependencies:
-      metro: 0.84.6
-      metro-babel-transformer: 0.84.6
-      metro-cache: 0.84.6
-      metro-cache-key: 0.84.6
-      metro-config: 0.84.6
-      metro-core: 0.84.6
-      metro-file-map: 0.84.6
-      metro-minify-terser: 0.84.6
-      metro-resolver: 0.84.6
-      metro-runtime: 0.84.6
-      metro-source-map: 0.84.6
-      metro-symbolicate: 0.84.6
-      metro-transform-plugins: 0.84.6
-      metro-transform-worker: 0.84.6
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
       - utf-8-validate
 
   '@expo/multipart-body-parser@1.1.0':
@@ -22788,11 +22817,6 @@ snapshots:
       walker: 1.0.8
     transitivePeerDependencies:
       - supports-color
-
-  metro-minify-terser@0.84.5:
-    dependencies:
-      flow-enums-runtime: 0.0.6
-      terser: 5.49.0
 
   metro-minify-terser@0.84.6:
     dependencies:

@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
-import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { ImmutableRequest } from 'expo-server/private';
 import { vol } from 'memfs';
+import type { ChangeEvent } from 'metro-file-map/private/flow-types';
 
 import type { ExportAssetMap } from '../../../../export/saveAssets';
 import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';

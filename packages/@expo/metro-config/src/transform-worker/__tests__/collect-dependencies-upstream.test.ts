@@ -12,11 +12,11 @@ import { codeFrameColumns } from '@babel/code-frame';
 import { transformFromAstSync, parse, types as t } from '@babel/core';
 import type { NodePath } from '@babel/core';
 import generate from '@babel/generator';
+import dedent from 'dedent';
 import {
   importLocationsPlugin,
   locToKey,
-} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
-import dedent from 'dedent';
+} from 'metro/private/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
 import { importExportPlugin } from '../../transform-plugins/index';
@@ -1500,7 +1500,7 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
 
   const {
     inlineRequiresPlugin,
-  }: typeof import('@expo/metro/metro-transform-plugins') = require('@expo/metro/metro-transform-plugins');
+  }: typeof import('metro-transform-plugins') = require('metro-transform-plugins');
   const { ast: transformedAst } = transformFromAstSync(ast, code, {
     ast: true,
     plugins: [

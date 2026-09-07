@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type NodePath, traverse, types } from '@babel/core';
-import type { SerializerConfigT } from '@expo/metro/metro-config';
+import assert from 'assert';
+import type { SerializerConfigT } from 'metro-config';
 import type {
   AsyncDependencyType,
   MixedOutput,
   Module,
   ReadOnlyGraph,
-} from '@expo/metro/metro/DeltaBundler/types';
-import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import assert from 'assert';
+} from 'metro/private/DeltaBundler/types';
+import { isResolvedDependency } from 'metro/private/lib/isResolvedDependency';
 
 import type {
   DependencyData,

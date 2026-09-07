@@ -1,4 +1,4 @@
-import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
+import type { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
 
 import { debugEvent } from '../events';
 import {

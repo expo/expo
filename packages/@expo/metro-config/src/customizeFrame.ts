@@ -1,5 +1,5 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import type { SymbolicatorConfigT } from '@expo/metro/metro-config';
+import type { SymbolicatorConfigT } from 'metro-config';
 import path from 'node:path';
 import { URL } from 'node:url';
 

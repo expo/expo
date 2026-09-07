@@ -1,20 +1,20 @@
+import assert from 'assert';
 /**
  * Copyright © 2023 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { MetroConfig, AssetData } from '@expo/metro/metro';
-import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
+import type { MetroConfig, AssetData } from 'metro';
+import type { ConfigT, SerializerConfigT } from 'metro-config';
 import type {
   MixedOutput,
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from '@expo/metro/metro/DeltaBundler/types';
-import bundleToString from '@expo/metro/metro/lib/bundleToString';
-import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import assert from 'assert';
+} from 'metro/private/DeltaBundler/types';
+import bundleToString from 'metro/private/lib/bundleToString';
+import { isResolvedDependency } from 'metro/private/lib/isResolvedDependency';
 import path from 'path';
 
 import type { AsyncDependencyType } from '../transform-worker/collect-dependencies';

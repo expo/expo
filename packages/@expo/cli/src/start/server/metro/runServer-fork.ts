@@ -1,17 +1,17 @@
+import assert from 'assert';
+import http from 'http';
+import https from 'https';
 // Copyright © 2023 650 Industries.
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 //
 // Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
 // and adds the ability to access the bundler instance.
-import { createConnectMiddleware } from '@expo/metro/metro';
-import type { RunServerOptions } from '@expo/metro/metro';
-import type { ConfigT } from '@expo/metro/metro-config';
-import MetroHmrServer, { type Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
-import type Server from '@expo/metro/metro/Server';
-import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
-import assert from 'assert';
-import http from 'http';
-import https from 'https';
+import { createConnectMiddleware } from 'metro';
+import type { RunServerOptions } from 'metro';
+import type { ConfigT } from 'metro-config';
+import MetroHmrServer, { type Client as MetroHmrClient } from 'metro/private/HmrServer';
+import type Server from 'metro/private/Server';
+import createWebsocketServer from 'metro/private/lib/createWebsocketServer';
 import type { WebSocketServer } from 'ws';
 
 import { Log } from '../../../log';

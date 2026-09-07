@@ -1,4 +1,4 @@
-import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
+import type { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
 
 import { tryTransformJSWithNoxcturnal } from '../../noxcturnal/metro-transform-worker';
 import { transformFileFullyWithNoxcturnalSync } from '../../noxcturnal/noxcturnal-transformer';

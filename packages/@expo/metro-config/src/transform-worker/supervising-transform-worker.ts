@@ -1,4 +1,4 @@
-import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
+import type { JsTransformOptions } from 'metro-transform-worker';
 import path from 'path';
 
 import { event } from './events';

@@ -5,19 +5,19 @@ import type { createStableModuleIdFactory, ExpoCustomTransformOptions } from '@e
 import { loadUserConfig } from '@expo/metro-config';
 import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
 import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
-import type { Reporter } from '@expo/metro/metro';
-import getMaxWorkers from '@expo/metro/metro-config/defaults/getMaxWorkers';
-import { Terminal } from '@expo/metro/metro-core';
-import type Bundler from '@expo/metro/metro/Bundler';
-import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
-import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
-import type { Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
-import type MetroHmrServer from '@expo/metro/metro/HmrServer';
-import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
-import type MetroServer from '@expo/metro/metro/Server';
-import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
 import chalk from 'chalk';
 import type http from 'http';
+import type { Reporter } from 'metro';
+import getMaxWorkers from 'metro-config/private/defaults/getMaxWorkers';
+import { Terminal } from 'metro-core';
+import type Bundler from 'metro/private/Bundler';
+import type { ReadOnlyGraph } from 'metro/private/DeltaBundler';
+import type { TransformOptions } from 'metro/private/DeltaBundler/Worker';
+import type { Client as MetroHmrClient } from 'metro/private/HmrServer';
+import type MetroHmrServer from 'metro/private/HmrServer';
+import RevisionNotFoundError from 'metro/private/IncrementalBundler/RevisionNotFoundError';
+import type MetroServer from 'metro/private/Server';
+import formatBundlingError from 'metro/private/lib/formatBundlingError';
 import path from 'path';
 
 import { Log } from '../../../log';
@@ -465,7 +465,7 @@ export async function instantiateMetroAsync(
   });
 
   // Support HTTPS based on the metro's tls server config
-  // TODO(@kitten): Remove cast once `@expo/metro` is updated to a Metro version that supports the tls config
+  // TODO(@kitten): Remove cast once Metro is updated to a version that supports the tls config
   const tls = (metroConfig.server as typeof metroConfig.server & { tls?: SecureServerOptions })
     ?.tls;
   const secureServerOptions = tls
@@ -569,14 +569,14 @@ export async function instantiateMetroAsync(
   if (hmrServer) {
     let hmrJSBundle:
       | typeof import('@expo/metro-config/build/serializer/fork/hmrJSBundle').default
-      | typeof import('@expo/metro/metro/DeltaBundler/Serializers/hmrJSBundle').default;
+      | typeof import('metro/private/DeltaBundler/Serializers/hmrJSBundle').default;
 
     try {
       hmrJSBundle = require('@expo/metro-config/build/serializer/fork/hmrJSBundle').default;
     } catch {
       // TODO: Add fallback for monorepo tests up until the fork is merged.
       Log.warn('Failed to load HMR serializer from @expo/metro-config, using fallback version.');
-      hmrJSBundle = require('@expo/metro/metro/DeltaBundler/Serializers/hmrJSBundle');
+      hmrJSBundle = require('metro/private/DeltaBundler/Serializers/hmrJSBundle');
     }
 
     // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs and add support for serializing HMR updates the same as all other bundles.

@@ -9,9 +9,9 @@ import type {
   MixedOutput,
   Module,
   SerializerOptions,
-} from '@expo/metro/metro/DeltaBundler/types';
-import CountingSet from '@expo/metro/metro/lib/CountingSet';
-import countLines from '@expo/metro/metro/lib/countLines';
+} from 'metro/private/DeltaBundler/types';
+import CountingSet from 'metro/private/lib/CountingSet';
+import countLines from 'metro/private/lib/countLines';
 
 import { installPackedMap } from './packedMap';
 import type { SerializerParameters } from './withExpoSerializers';

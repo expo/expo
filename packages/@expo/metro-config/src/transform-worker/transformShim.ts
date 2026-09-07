@@ -1,7 +1,7 @@
 import { parse, type ParseResult } from '@babel/core';
 import generate from '@babel/generator';
-import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
-import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import type { JsTransformerConfig } from 'metro-transform-worker';
+import * as JsFileWrapping from 'metro/private/ModuleGraph/worker/JsFileWrapping';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { countLinesAndTerminateSourceMap, emptySourceMap } from '../serializer/packedMap';

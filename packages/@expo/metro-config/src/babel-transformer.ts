@@ -11,8 +11,8 @@ import type {
   BabelTransformer,
   BabelTransformerArgs,
   BabelTransformerCacheKeyOptions,
-} from '@expo/metro/metro-babel-transformer';
-import { getCacheKey as getFileCacheKey } from '@expo/metro/metro-cache-key';
+} from 'metro-babel-transformer';
+import { getCacheKey as getFileCacheKey } from 'metro-cache-key';
 import assert from 'node:assert';
 import path from 'node:path';
 

@@ -1,7 +1,7 @@
-import type { Module, MixedOutput, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
-import CountingSet from '@expo/metro/metro/lib/CountingSet';
-import countLines from '@expo/metro/metro/lib/countLines';
 import assert from 'assert';
+import type { Module, MixedOutput, ReadOnlyGraph } from 'metro/private/DeltaBundler';
+import CountingSet from 'metro/private/lib/CountingSet';
+import countLines from 'metro/private/lib/countLines';
 
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';

@@ -9,16 +9,16 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 
-import { fromRawMappings } from '@expo/metro/metro-source-map';
-import type {
-  JsTransformerConfig,
-  JsTransformOptions,
-  MinifierOptions,
-} from '@expo/metro/metro-transform-worker';
 import { TraceMap, originalPositionFor, generatedPositionFor } from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
 import { vol } from 'memfs';
+import { fromRawMappings } from 'metro-source-map';
+import type {
+  JsTransformerConfig,
+  JsTransformOptions,
+  MinifierOptions,
+} from 'metro-transform-worker';
 import * as path from 'path';
 
 import type { ExpoJsOutput } from '../../serializer/jsOutput';
@@ -57,7 +57,7 @@ afterEach(() => {
 
 jest
   .mock(
-    '@expo/metro/metro-transform-worker/utils/getMinifier',
+    'metro-transform-worker/private/utils/getMinifier',
     () =>
       () =>
       ({ code, map, config }: MinifierOptions) => {
@@ -69,8 +69,8 @@ jest
         };
       }
   )
-  .mock('@expo/metro/metro-transform-plugins', () => ({
-    ...jest.requireActual('@expo/metro/metro-transform-plugins'),
+  .mock('metro-transform-plugins', () => ({
+    ...jest.requireActual('metro-transform-plugins'),
     inlinePlugin: () => ({}),
     constantFoldingPlugin: () => ({}),
   }))
@@ -1447,12 +1447,12 @@ it('allows the constantFoldingPlugin to not remove used helpers when `dev: false
   // NOTE(kitten): The `constantFoldingPlugin` removes used, inlined Babel helpers, unless
   // the AST path has been re-crawled. If this regressed, check whether `programPath.scope.crawl()`
   // is called before this plugin is run.
-  jest.mock('@expo/metro/metro-transform-plugins', () => ({
-    ...jest.requireActual('@expo/metro/metro-transform-plugins'),
+  jest.mock('metro-transform-plugins', () => ({
+    ...jest.requireActual('metro-transform-plugins'),
     inlinePlugin: () => ({}),
-    constantFoldingPlugin: jest.requireActual<typeof import('@expo/metro/metro-transform-plugins')>(
-      '@expo/metro/metro-transform-plugins'
-    ).constantFoldingPlugin,
+    constantFoldingPlugin:
+      jest.requireActual<typeof import('metro-transform-plugins')>('metro-transform-plugins')
+        .constantFoldingPlugin,
   }));
 
   const contents = ['import * as test from "test-module";', 'export { test };'].join('\n');

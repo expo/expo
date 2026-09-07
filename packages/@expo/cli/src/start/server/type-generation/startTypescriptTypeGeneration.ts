@@ -1,7 +1,7 @@
 import { events } from '2g';
 import { getConfig } from '@expo/config';
-import type Server from '@expo/metro/metro/Server';
 import fs from 'fs/promises';
+import type Server from 'metro/private/Server';
 import path from 'path';
 
 import { upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';

@@ -1,8 +1,8 @@
 import type {
   CustomTransformOptions as MetroCustomTransformOptions,
   MetroBabelFileMetadata,
-} from '@expo/metro/metro-babel-transformer';
-import type { JsTransformerConfig as MetroJsTransformerConfig } from '@expo/metro/metro-transform-worker';
+} from 'metro-babel-transformer';
+import type { JsTransformerConfig as MetroJsTransformerConfig } from 'metro-transform-worker';
 
 /**
  * Metro custom transform options plus fields owned and consumed by Expo.

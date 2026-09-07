@@ -217,7 +217,6 @@
     "@expo/local-build-cache-provider": "workspace:^",
     "@expo/log-box": "workspace:^",
     "@expo/log-box-utils": "workspace:^",
-    "@expo/metro": "~56.1.0",
     "@expo/metro-config": "workspace:~",
     "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "workspace:~",
@@ -228,6 +227,8 @@
     "expo-keep-awake": "workspace:~",
     "expo-modules-autolinking": "workspace:~",
     "expo-modules-core": "workspace:~",
+    "metro-runtime": "0.84.6",
+    "metro-source-map": "0.84.6",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
     "whatwg-url-minimum": "^0.2.0"

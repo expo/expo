@@ -1,6 +1,6 @@
 import type { Platform } from '@expo/config';
-import type { ResolutionContext } from '@expo/metro/metro-resolver';
 import type { ResolutionResult as AutolinkingResolutionResult } from 'expo-modules-autolinking/exports';
+import type { ResolutionContext } from 'metro-resolver';
 
 import { event } from './resolveEvents';
 import type { StrictResolverFactory } from './withMetroMultiPlatform';

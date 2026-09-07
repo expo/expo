@@ -19,10 +19,7 @@
 // Workers emit it across IPC and `metro-cache` writes it to disk;
 // `PackedMap.deserialize` rehydrates it on the main thread.
 
-import type {
-  BabelSourceMapSegment,
-  MetroSourceMapSegmentTuple,
-} from '@expo/metro/metro-source-map';
+import type { BabelSourceMapSegment, MetroSourceMapSegmentTuple } from 'metro-source-map';
 
 // Layout per segment, starting at `i * STRIDE`. Fixed stride so segments
 // are indexable in O(1); missing fields use sentinel `-1`. Lines are

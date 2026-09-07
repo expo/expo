@@ -1,4 +1,4 @@
-import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
+import type { JsTransformerConfig } from 'metro-transform-worker';
 
 import { transformShim } from '../transformShim';
 

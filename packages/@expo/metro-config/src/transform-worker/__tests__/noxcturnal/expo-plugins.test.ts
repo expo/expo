@@ -1,6 +1,6 @@
 import * as babel from '@babel/core';
-import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
+import type { JsTransformOptions } from 'metro-transform-worker';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import {

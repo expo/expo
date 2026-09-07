@@ -1,5 +1,5 @@
-import type { ChangeEvent, ChangedFileMetadata } from '@expo/metro/metro-file-map/flow-types';
-import type MetroServer from '@expo/metro/metro/Server';
+import type { ChangeEvent, ChangedFileMetadata } from 'metro-file-map/private/flow-types';
+import type MetroServer from 'metro/private/Server';
 
 import type { ServerLike } from '../../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metroWatchTypeScriptFiles';

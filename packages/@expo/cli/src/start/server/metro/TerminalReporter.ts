@@ -1,9 +1,9 @@
-import type { Terminal } from '@expo/metro/metro-core';
-import type { WatcherStatus } from '@expo/metro/metro-file-map';
+import chalk from 'chalk';
+import type { Terminal } from 'metro-core';
+import type { WatcherStatus } from 'metro-file-map';
 // This file represents an abstraction on the metro TerminalReporter.
 // We use this abstraction to safely extend the TerminalReporter for our own custom logging.
-import UpstreamTerminalReporter from '@expo/metro/metro/lib/TerminalReporter';
-import chalk from 'chalk';
+import UpstreamTerminalReporter from 'metro/private/lib/TerminalReporter';
 import util from 'util';
 
 import { stripAnsi } from '../../../utils/ansi';

@@ -1,6 +1,6 @@
 import JsonFile from '@expo/json-file';
-import type { BasicSourceMap } from '@expo/metro/metro-source-map';
 import fs from 'fs';
+import type { BasicSourceMap } from 'metro-source-map';
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';

@@ -5,8 +5,8 @@
 // and redirects to `@expo/metro-file-map`
 
 import FileMap, { DependencyPlugin, DiskCacheManager, HastePlugin } from '@expo/metro-file-map';
-import type MetroServer from '@expo/metro/metro/Server';
 import ciInfo from 'ci-info';
+import type MetroServer from 'metro/private/Server';
 import path from 'node:path';
 
 import { composeMetroIgnorePatterns } from '../../../utils/composeMetroIgnorePatterns';
@@ -130,7 +130,7 @@ function assertMetroFileMapPatched(metro: { getBundler(): any }): void {
 export async function replaceMetroFileMap<T extends { readonly metro: MetroServer }>(
   immediate: () => T | PromiseLike<T>
 ): Promise<T> {
-  const createFileMapModule = require('@expo/metro/metro/node-haste/DependencyGraph/createFileMap');
+  const createFileMapModule = require('metro/private/node-haste/DependencyGraph/createFileMap');
   Object.defineProperty(createFileMapModule, 'default', {
     enumerable: true,
     configurable: false,

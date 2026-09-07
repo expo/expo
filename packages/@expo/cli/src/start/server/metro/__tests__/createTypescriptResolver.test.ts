@@ -1,7 +1,7 @@
-import type { FileData, FileMetadata } from '@expo/metro/metro-file-map/flow-types';
-import TreeFS from '@expo/metro/metro-file-map/lib/TreeFS';
-import type { Resolution } from '@expo/metro/metro-resolver';
 import { vol } from 'memfs';
+import type { FileData, FileMetadata } from 'metro-file-map/private/flow-types';
+import TreeFS from 'metro-file-map/private/lib/TreeFS';
+import type { Resolution } from 'metro-resolver';
 import path from 'path';
 
 import {

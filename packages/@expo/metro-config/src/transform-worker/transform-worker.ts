@@ -6,8 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
-import countLines from '@expo/metro/metro/lib/countLines';
+import type { JsTransformOptions } from 'metro-transform-worker';
+import countLines from 'metro/private/lib/countLines';
 import { relative, dirname } from 'node:path';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';

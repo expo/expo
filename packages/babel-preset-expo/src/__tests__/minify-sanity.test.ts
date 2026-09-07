@@ -1,6 +1,6 @@
 // Run a number of basic operations on the minifier to ensure it works as expected
 import * as babel from '@babel/core';
-import constantFoldingPlugin from '@expo/metro/metro-transform-plugins/constant-folding-plugin';
+import constantFoldingPlugin from 'metro-transform-plugins/private/constant-folding-plugin';
 
 import preset from '..';
 import { minifyLikeMetroAsync } from './minify-util';

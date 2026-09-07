@@ -1,4 +1,4 @@
-import type { InputConfigT } from '@expo/metro/metro-config';
+import type { InputConfigT } from 'metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -12,9 +12,7 @@ const notFoundError = (basePackage: string): Error =>
       'and run `yarn` or `npm install`.'
   );
 
-function importMetroConfigFromProject(
-  projectDir: string
-): typeof import('@expo/metro/metro-config') {
+function importMetroConfigFromProject(projectDir: string): typeof import('metro-config') {
   const expoResolved = resolveFrom.silent(projectDir, 'expo/package.json');
   if (!expoResolved) {
     throw notFoundError('expo');
@@ -22,7 +20,7 @@ function importMetroConfigFromProject(
   try {
     // NOTE(@kitten): We need to use the version of metro-config that Expo uses
     // Luckily, we can import `@expo/metro` via `expo` to get to the same version
-    const expoMetro = dynamicRequire.resolve('@expo/metro/metro-config', {
+    const expoMetro = dynamicRequire.resolve('metro-config', {
       paths: [path.dirname(expoResolved)],
     });
     return dynamicRequire(expoMetro);

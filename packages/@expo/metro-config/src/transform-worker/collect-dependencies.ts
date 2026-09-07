@@ -8,7 +8,7 @@
 import { traverse, template, types as t } from '@babel/core';
 import type { NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import type { AsyncDependencyType as MetroAsyncDependencyType } from '@expo/metro/metro/DeltaBundler/types';
+import type { AsyncDependencyType as MetroAsyncDependencyType } from 'metro/private/DeltaBundler/types';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 

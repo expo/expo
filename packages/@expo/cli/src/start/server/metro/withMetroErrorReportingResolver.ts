@@ -1,7 +1,7 @@
-import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import canonicalize from '@expo/metro/metro-core/canonicalize';
-import type { ResolutionContext } from '@expo/metro/metro-resolver';
 import chalk from 'chalk';
+import type { ConfigT as MetroConfig } from 'metro-config';
+import canonicalize from 'metro-core/private/canonicalize';
+import type { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import { stripVTControlCharacters } from 'util';
 

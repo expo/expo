@@ -4,13 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import type {
-  ResolutionContext,
-  CustomResolutionContext,
-  CustomResolver,
-} from '@expo/metro/metro-resolver';
-import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import type { ConfigT as MetroConfig } from 'metro-config';
+import type { ResolutionContext, CustomResolutionContext, CustomResolver } from 'metro-resolver';
+import { resolve as metroResolver } from 'metro-resolver';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { event } from './resolveEvents';

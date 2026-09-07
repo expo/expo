@@ -1,5 +1,5 @@
-import UpstreamFileStore from '@expo/metro/metro-cache/stores/FileStore';
 import fs from 'fs';
+import UpstreamFileStore from 'metro-cache/private/stores/FileStore';
 import os from 'os';
 import path from 'path';
 

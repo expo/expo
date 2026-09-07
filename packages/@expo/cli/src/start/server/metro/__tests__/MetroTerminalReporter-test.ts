@@ -1,4 +1,4 @@
-import type { Terminal } from '@expo/metro/metro-core';
+import type { Terminal } from 'metro-core';
 import { stripVTControlCharacters } from 'node:util';
 
 import { stripAnsi } from '../../../../utils/ansi';

@@ -1,5 +1,5 @@
-import FailedToResolveNameError from '@expo/metro/metro-resolver/errors/FailedToResolveNameError';
-import FailedToResolvePathError from '@expo/metro/metro-resolver/errors/FailedToResolvePathError';
+import FailedToResolveNameError from 'metro-resolver/private/errors/FailedToResolveNameError';
+import FailedToResolvePathError from 'metro-resolver/private/errors/FailedToResolvePathError';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from '../metroErrors';
 

@@ -21,7 +21,7 @@ jest.mock('../hmrUtils', () => ({
   showLoading: jest.fn(),
 }));
 
-jest.mock('@expo/metro/metro-runtime/modules/HMRClient', () => ({
+jest.mock('metro-runtime/modules/HMRClient', () => ({
   __esModule: true,
   default: class {
     on(event: string, handler: (...args: any[]) => void) {

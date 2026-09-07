@@ -1,4 +1,4 @@
-import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
+import type { ReadOnlyGraph } from 'metro/private/DeltaBundler/types';
 import vm from 'node:vm';
 
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
