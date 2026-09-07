@@ -229,4 +229,97 @@ describe(SQLiteStatement, () => {
     expect((await second.getAllAsync()).map((row) => row.intValue)).toEqual([789]);
     await statement.finalizeAsync();
   });
+
+  it('a superseded result should throw from the async generator mid-iteration', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test ORDER BY intValue ASC');
+    const first = await statement.executeAsync<TestEntity>();
+    const iterator = first[Symbol.asyncIterator]();
+    expect((await iterator.next()).value?.intValue).toBe(123);
+    // Supersede the result while it is still part-way through its rows.
+    await statement.executeAsync<TestEntity>();
+    await expect(iterator.next()).rejects.toThrow(/prepared statement ran again/);
+    await statement.finalizeAsync();
+  });
+
+  it('a superseded result should throw from the sync generator mid-iteration', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test ORDER BY intValue ASC');
+    const first = statement.executeSync<TestEntity>();
+    const iterator = first[Symbol.iterator]();
+    expect(iterator.next().value?.intValue).toBe(123);
+    statement.executeSync<TestEntity>();
+    expect(() => iterator.next()).toThrow(/prepared statement ran again/);
+    await statement.finalizeAsync();
+  });
+
+  it('getFirstSync on a superseded result should throw', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue > ?');
+    // No row matches, so this result has no cached row and has to step the cursor.
+    const first = statement.executeSync<TestEntity>(1000);
+    statement.executeSync<TestEntity>(0);
+    expect(() => first.getFirstSync()).toThrow(/prepared statement ran again/);
+    await statement.finalizeAsync();
+  });
+
+  it('resetSync on a superseded result should throw', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const first = statement.executeSync<TestEntity>(123);
+    const second = statement.executeSync<TestEntity>(789);
+    // Resetting the stale result would rewind the cursor that `second` owns now.
+    expect(() => first.resetSync()).toThrow(/prepared statement ran again/);
+    expect(second.getAllSync().map((row) => row.intValue)).toEqual([789]);
+    await statement.finalizeAsync();
+  });
+
+  it('executeForRawResultAsync results should be guarded the same way', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const first = await statement.executeForRawResultAsync<TestEntity>(123);
+    const second = await statement.executeForRawResultAsync<TestEntity>(789);
+    await expect(first.getAllAsync()).rejects.toThrow(/prepared statement ran again/);
+    expect(await second.getAllAsync()).toEqual([[789]]);
+    await statement.finalizeAsync();
+  });
+
+  it('only the last of several executions should own the cursor', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const first = await statement.executeAsync<TestEntity>(123);
+    const second = await statement.executeAsync<TestEntity>(456);
+    const third = await statement.executeAsync<TestEntity>(789);
+    await expect(first.getAllAsync()).rejects.toThrow(/prepared statement ran again/);
+    await expect(second.getAllAsync()).rejects.toThrow(/prepared statement ran again/);
+    expect((await third.getAllAsync()).map((row) => row.intValue)).toEqual([789]);
+    await statement.finalizeAsync();
+  });
+
+  it('executions queued with no read between them should all settle', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    // A result left unread must not keep later executions from resolving.
+    await statement.executeAsync<TestEntity>(123);
+    const queued = [
+      statement.executeAsync<TestEntity>(456),
+      statement.executeAsync<TestEntity>(789),
+      statement.executeAsync<TestEntity>(123),
+    ];
+    await expect(Promise.all(queued)).resolves.toHaveLength(3);
+    await statement.finalizeAsync();
+  });
+
+  it('a sync execution should supersede an earlier async result', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const asyncResult = await statement.executeAsync<TestEntity>(123);
+    const syncResult = statement.executeSync<TestEntity>(789);
+    await expect(asyncResult.getAllAsync()).rejects.toThrow(/prepared statement ran again/);
+    expect(syncResult.getAllSync().map((row) => row.intValue)).toEqual([789]);
+    await statement.finalizeAsync();
+  });
+
+  it('a statement should stay usable across many executions', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const values = [123, 456, 789] as const;
+    for (let index = 0; index < 60; index++) {
+      const intValue = values[index % values.length] as number;
+      const result = await statement.executeAsync<TestEntity>(intValue);
+      expect((await result.getAllAsync()).map((row) => row.intValue)).toEqual([intValue]);
+    }
+    await statement.finalizeAsync();
+  });
 });

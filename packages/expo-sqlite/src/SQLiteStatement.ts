@@ -657,9 +657,10 @@ class SQLiteExecuteSyncResultImpl<T> {
   }
 
   resetSync(): void {
-    const result = this.statement.resetSync(this.database);
+    // Resetting a superseded result would rewind the cursor of the run that owns it now.
+    this.assertCursorOwner();
+    this.statement.resetSync(this.database);
     this.isStepCalled = false;
-    return result;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {
