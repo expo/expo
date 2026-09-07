@@ -48,7 +48,7 @@
 
 ### 🎉 New features
 
-- Add `LocaleProvider` to customize navigation direction at runtime. (by [@Ubax](https://github.com/Ubax)) ([#49815](https://github.com/expo/expo/pull/49815) by [@Ubax](https://github.com/Ubax))
+- Add `LocaleProvider` to customize navigation direction at runtime. ([#49815](https://github.com/expo/expo/pull/49815) by [@Ubax](https://github.com/Ubax))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
 - Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Add unstable `NavigationAwareActivity` component. ([#49164](https://github.com/expo/expo/pull/49164) by [@Ubax](https://github.com/Ubax))
