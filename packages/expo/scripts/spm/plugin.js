@@ -48,6 +48,7 @@ const {
 const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
 const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
 const { PodspecSyntaxError, readPodspecs } = require('./podspec');
+const { scriptPhasesForModules } = require('./script-phases');
 
 module.exports = function expoSpmPlugin(context) {
   const { react, outputDir } = context;
@@ -301,11 +302,19 @@ module.exports = function expoSpmPlugin(context) {
   }
   const watchPaths = collectWatchPaths([...moduleRoots]);
 
+  const scriptPhases = scriptPhasesForModules(modules.map((m) => m.packageName));
+  if (scriptPhases.length > 0) {
+    console.log(
+      `[expo-spm-plugin] script phases (${scriptPhases.length}): ${scriptPhases.map((p) => p.id).join(', ')}`
+    );
+  }
+
   return {
     packageDependencies,
     productDependencies,
     generatedSources,
     flavoredFrameworks,
     watchPaths,
+    scriptPhases,
   };
 };

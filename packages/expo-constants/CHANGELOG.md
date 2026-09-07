@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Generate the embedded `app.config` in apps built with SwiftPM instead of CocoaPods, fixing the "Unable to find the embedded app config" warning there. The generator no longer requires the Pods project, can be pointed at another destination, and creates `EXConstants.bundle` itself rather than relying on CocoaPods' `resource_bundles`. ([#47649](https://github.com/expo/expo/pull/47649) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
