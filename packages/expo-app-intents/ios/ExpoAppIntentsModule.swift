@@ -9,7 +9,7 @@ internal final class ShortcutsRefreshUnavailableException: Exception, @unchecked
     "App Shortcuts could not be refreshed because no refresh handler is registered. "
       + "Only your app target can call AppShortcuts.updateAppShortcutParameters(), so the "
       + "'AppIntentsSetup' inline module has to hand that call to "
-      + "AppIntentDispatcher.shared.setShortcutsRefreshHandler(...) — and it only does so for an "
+      + "AppIntentDispatcher.shared.setShortcutsRefreshHandler(...). It only does so for an "
       + "app that has an AppShortcutsProvider. If your app declares no App Shortcut phrases there "
       + "is nothing to re-train, so drop the refreshShortcutsAsync() call. If it does declare "
       + "them, add this to the OnCreate of your AppIntentsSetup module: "
