@@ -31,7 +31,8 @@ public final class ImageModule: Module {
         "onProgress",
         "onError",
         "onLoad",
-        "onDisplay"
+        "onDisplay",
+        "onPlaceholderDisplay"
       )
 
       Prop("source") { (view: ImageView, sources: Either<[ImageSource], SharedRef<UIImage>>?) in
