@@ -3,7 +3,8 @@ import type { ParamListBase, StackNavigationState } from '../react-navigation/na
 import type { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation").DefaultRouterOptions<string> & ({
+export * from '../react-navigation/stack';
+declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("./JSStack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -23,7 +24,7 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
         beforeRemove: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
         route: import("../react-navigation").RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
+        navigation: import("./JSStack").StackNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
         transitionStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
         transitionEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
@@ -37,10 +38,10 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     }>) | undefined;
     screenOptions?: StackNavigationOptions | ((props: {
         route: import("../react-navigation").RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
+        navigation: import("./JSStack").StackNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => StackNavigationOptions) | undefined;
-    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("./JSStack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
@@ -52,7 +53,7 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     id?: undefined;
 } | {
     id: string;
-})), "children"> & Partial<Pick<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation").DefaultRouterOptions<string> & ({
+})), "children"> & Partial<Pick<Omit<import("./JSStack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -72,7 +73,7 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
         beforeRemove: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
         route: import("../react-navigation").RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
+        navigation: import("./JSStack").StackNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
         transitionStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
         transitionEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
@@ -86,10 +87,10 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     }>) | undefined;
     screenOptions?: StackNavigationOptions | ((props: {
         route: import("../react-navigation").RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
+        navigation: import("./JSStack").StackNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => StackNavigationOptions) | undefined;
-    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("./JSStack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
