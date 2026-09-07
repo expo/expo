@@ -910,6 +910,21 @@ struct JavaScriptRuntimeTests {
   }
 }
 
+/// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
+/// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).
+/// Safe without synchronization: the dispatch always runs synchronously on the test's thread.
+nonisolated(unsafe) private var heldSchedulerTasks: [() -> Void] = []
+
+/// A `dispatch` trampoline for `JavaScriptRuntime.init(unsafePointer:scheduler:dispatch:)` that
+/// holds the scheduled tasks instead of running them, so a test controls when (and whether) they
+/// are released. Matches `expo.RuntimeScheduler.ScheduleFn`.
+private let holdSchedulerTask:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { _, _, callback in
+    heldSchedulerTasks.append(callback)
+  }
+
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the
 /// async test. The thread has a real run loop, which the cross-thread `execute` path pumps.
 private func onSyncOffThread<R: Sendable>(
