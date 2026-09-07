@@ -30,7 +30,7 @@ describe('transformToModifiers (iOS)', () => {
         { backgroundColor: nativeColor, borderColor: nativeColor, borderWidth: 1 },
         {}
       )
-    ).toEqual([background(nativeColor), border({ color: nativeColor, width: 1 })]);
+    ).toEqual([background(nativeColor), border({ content: nativeColor, width: 1 })]);
   });
 
   it('drops textStyle-derived modifiers the user overrides', () => {

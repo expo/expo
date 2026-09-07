@@ -32,6 +32,7 @@
 - [iOS] Taught the `background` modifier to paint with any `ShapeStyle`, so a view can be filled with a material, a gradient or a hierarchical style instead of only a color, and added the `ignoresSafeAreaEdges` option from SwiftUI's signature. Deprecated `backgroundOverlay` in favor of the `background` modifier and the `Background` component. ([#49621](https://github.com/expo/expo/pull/49621) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Taught the `presentationBackground` modifier to paint with any `ShapeStyle`, matching SwiftUI, so a sheet can be backed by a material, a gradient or a hierarchical style instead of only a color. iOS 26 renders a material as a flat color rather than a translucent blur. ([#49767](https://github.com/expo/expo/pull/49767) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `scrollClipDisabled` modifier, which lets content that draws outside a scrollable view's bounds, such as a shadow or a scaled-up card, stay visible instead of being clipped. ([#49780](https://github.com/expo/expo/pull/49780) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Taught the `tint`, `border`, `strokeBorder` and `containerBackground` modifiers to paint with any `ShapeStyle`, matching SwiftUI, where all four take a `ShapeStyle` rather than a color. The `color` parameter of `border` and `strokeBorder` is deprecated in favor of `content`, the name SwiftUI gives it. ([#49838](https://github.com/expo/expo/pull/49838) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🐛 Bug fixes
 

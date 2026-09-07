@@ -136,7 +136,7 @@ export function transformToModifiers(
 
     // Border (before clip so the clip rounds the border corners too)
     if (style.borderWidth != null && style.borderColor != null) {
-      mods.push(border({ color: style.borderColor, width: style.borderWidth }));
+      mods.push(border({ content: style.borderColor, width: style.borderWidth }));
     }
 
     // Clip (border radius — rounds both background and border)

@@ -288,12 +288,37 @@ export const clipShape = (
 ) => createModifier('clipShape', { shape, cornerRadius });
 
 /**
+ * The parameters of the `border` modifier.
+ */
+export type BorderParams =
+  | {
+      /**
+       * The style painted along the border. No border is drawn when the style is not available on
+       * the running platform, unlike `strokeBorder`, which falls back to the foreground style.
+       */
+      content: ShapeStyle;
+      /** The border width. @default 1 */
+      width?: number;
+    }
+  | {
+      /**
+       * @deprecated Use `content`, which takes any `ShapeStyle` and not only a color.
+       */
+      color: Color;
+      /** The border width. @default 1 */
+      width?: number;
+    };
+
+/**
  * Adds a border to a view.
- * @param params - The border parameters. Color and width.
+ * @param params - The border parameters. The style painted along the border, and its width.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/border(_:width:)).
  */
-export const border = (params: { color: Color; width?: number }) =>
-  createModifier('border', params);
+export const border = (params: BorderParams) =>
+  createModifier('border', {
+    content: resolveShapeStyle('content' in params ? params.content : params.color),
+    width: params.width,
+  });
 
 /**
  * The characteristics of a stroke that traces a path.
@@ -316,10 +341,15 @@ export type StrokeStyle = {
 
 /**
  * Strokes an inset border along the view's shape.
- * @param params - The stroke parameters. Color (omit for the foreground style), style, antialiased, shape and cornerRadius.
+ * @param params - The stroke parameters. The style painted along the stroke (omit for the foreground style), the stroke style, antialiased, shape and cornerRadius.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/insettableshape/strokeborder(_:style:antialiased:)).
  */
 export const strokeBorder = (params: {
+  /** The style painted along the stroke. Omit to use the foreground style. */
+  content?: ShapeStyle;
+  /**
+   * @deprecated Use `content`, which takes any `ShapeStyle` and not only a color.
+   */
   color?: Color;
   style?: StrokeStyle;
   antialiased?: boolean;
@@ -331,7 +361,14 @@ export const strokeBorder = (params: {
     | 'roundedRectangle'
     | 'containerRelativeShape';
   cornerRadius?: number;
-}) => createModifier('strokeBorder', params);
+}) => {
+  const { content, color, ...rest } = params;
+  const shapeStyle = content ?? color;
+  return createModifier('strokeBorder', {
+    ...rest,
+    content: shapeStyle === undefined ? undefined : resolveShapeStyle(shapeStyle),
+  });
+};
 
 /**
  * Applies scaling transformation.
@@ -495,11 +532,11 @@ export const italic = () => createModifier('italic', {});
 export const monospacedDigit = () => createModifier('monospacedDigit', {});
 
 /**
- * Sets the tint color of a view.
- * @param color - The tint color (hex string). For example, `#FF0000`.
+ * Sets the tint of a view.
+ * @param tint - Any [`ShapeStyle`](#shapestyle): a color, a hierarchical style, a material, or a gradient.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/tint(_:)).
  */
-export const tint = (color: Color) => createModifier('tint', { color });
+export const tint = (tint: ShapeStyle) => createModifier('tint', { tint: resolveShapeStyle(tint) });
 
 /**
  * Hides or shows a view.
