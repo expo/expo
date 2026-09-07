@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `LocaleProvider` to customize navigation direction at runtime. ([#49815](https://github.com/expo/expo/pull/49815) by [@Ubax](https://github.com/Ubax))
 - Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
 - Expose `unstable_nativeProps` props from Stack component ([#48152](https://github.com/expo/expo/pull/48152) by [@Ubax](https://github.com/Ubax))
 

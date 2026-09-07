@@ -1,0 +1,1 @@
+{"version":3,"file":"LocaleProvider.d.ts","sourceRoot":"","sources":["../src/LocaleProvider.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,iBAAiB,EAAE,MAAM,OAAO,CAAC;AAG/C,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,iCAAiC,CAAC;AAEvE,MAAM,MAAM,mBAAmB,GAAG,iBAAiB,CAAC;IAClD,SAAS,EAAE,eAAe,CAAC;CAC5B,CAAC,CAAC;AAEH,wBAAgB,cAAc,CAAC,EAAE,SAAS,EAAE,QAAQ,EAAE,EAAE,mBAAmB,2CAE1E"}
