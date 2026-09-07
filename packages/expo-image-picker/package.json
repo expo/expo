@@ -36,7 +36,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "expo-image-loader": "workspace:~56.0.3"
+    "expo-image-loader": "workspace:~"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0",

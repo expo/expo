@@ -1,0 +1,71 @@
+import { Link, usePathname, useRouter, type Href } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Text, Pressable, ScrollView, View } from 'react-native';
+
+const HomeIndex = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log(
+      'globalThis.expo.router',
+      globalThis.expo?.router?.currentPathname,
+      globalThis.expo?.router?.currentParams
+    );
+  }, []);
+
+  return (
+    <ScrollView
+      style={{ flex: 1, backgroundColor: '#fff' }}
+      contentContainerStyle={{ alignItems: 'center', gap: 16 }}
+      contentInsetAdjustmentBehavior="automatic">
+      <View>
+        <Text>Native navigation - Index</Text>
+        <Text>Current Path: {pathname}</Text>
+      </View>
+      <CaseLink href="/tabs" text="Native Tabs" />
+      <CaseLink href="/link-preview" text="Link Preview" />
+      <CaseLink href="/split-view" text="Split View" />
+      <CaseLink href="/toolbar" text="Toolbar" />
+      <CaseLink href="/header-items" text="Header Items" />
+      <CaseLink href="/composition-lifecycle" text="Composition Lifecycle" />
+      <CaseLink href="/composition-conflicts" text="Composition Conflicts" />
+      <CaseLink href="/composition-rerenders" text="Composition Rerenders" />
+      <CaseLink href="/modals" text="Modals" />
+      <CaseLink href="/params" text="Params" />
+      <CaseLink href="/suspense" text="Suspense" />
+      <CaseLink href="/js-stack" text="JS Stack" />
+      <CaseLink href="/js-tabs" text="JS Tabs" />
+      <CaseLink href="/top-tabs" text="JS Top Tabs" />
+      <CaseLink href="/experimental-stack" text="Experimental Stack" />
+      <CaseLink href="/navigation-aware-activity" text="Navigation Aware Activity" />
+      <CaseLink href="/drawer" text="Drawer" />
+      <CaseLink href="/drawer-open" text="Drawer (default open)" />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Error boundaries"
+        onPress={() => router.push('/error-boundaries')}
+        style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+        <Text style={{ color: '#fff' }}>Error boundaries</Text>
+      </Pressable>
+    </ScrollView>
+  );
+};
+
+function CaseLink({ href, text }: { href: Href; text: string }) {
+  return (
+    <Link href={href} asChild>
+      <Link.Trigger>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={text}
+          style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+          <Text style={{ color: '#fff' }}>{text}</Text>
+        </Pressable>
+      </Link.Trigger>
+      <Link.Preview />
+    </Link>
+  );
+}
+
+export default HomeIndex;

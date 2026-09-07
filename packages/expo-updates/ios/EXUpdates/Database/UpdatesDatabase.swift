@@ -168,10 +168,16 @@ public final class UpdatesDatabase: NSObject {
 
   private func addNewAssetsInternal(_ assets: [UpdateAsset], toUpdateWithId updateId: UUID) throws {
     let assetInsertSql = """
-      INSERT OR REPLACE INTO "assets" ("key", "url", "headers", "extra_request_headers", "type", "metadata", "download_time", "relative_path", "hash", "hash_type", "expected_hash", "marked_for_deletion")
+      INSERT INTO "assets" ("key", "url", "headers", "extra_request_headers", "type", "metadata", "download_time", "relative_path", "hash", "hash_type", "expected_hash", "marked_for_deletion")
       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0);
     """
     for asset in assets {
+      // A row with this key may have appeared since the caller classified the asset as new.
+      // Adopt it: replacing it would cascade-delete every update that references it.
+      if try addExistingAsset(asset, toUpdateWithId: updateId) {
+        continue
+      }
+
       _ = try execute(
         sql: assetInsertSql,
         withArgs: [

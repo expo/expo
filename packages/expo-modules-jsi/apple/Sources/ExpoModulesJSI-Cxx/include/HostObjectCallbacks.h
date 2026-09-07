@@ -16,7 +16,9 @@ class HostObjectCallbacks final {
 public:
   using Context = void *_Nonnull;
   using PropNameIds = std::vector<facebook::jsi::PropNameID>;
-  using Getter = facebook::jsi::Value(Context, const char *_Nonnull name);
+  // The getter writes its result through an out-parameter, like `HostFunctionClosure`, so the
+  // Swift side can fill the caller's slot from inside its guaranteed-reference scope.
+  using Getter = void(Context, const char *_Nonnull name, facebook::jsi::Value *_Nonnull result);
   using Setter = void(Context, const char *_Nonnull name, void *_Nonnull value);
   using PropertyNamesGetter = PropNameIds(Context);
   using Deallocator = void(Context);
@@ -24,8 +26,8 @@ public:
   explicit HostObjectCallbacks(Context context, Getter getter, Setter *_Nullable setter, PropertyNamesGetter propertyNamesGetter, Deallocator deallocator)
   : _context(context), _getter(getter), _setter(setter), _propertyNamesGetter(propertyNamesGetter), _deallocator(deallocator) {}
 
-  inline facebook::jsi::Value get(const char *_Nonnull name) const {
-    return _getter(_context, name);
+  inline void get(const char *_Nonnull name, facebook::jsi::Value &result) const {
+    _getter(_context, name, &result);
   }
 
   /**

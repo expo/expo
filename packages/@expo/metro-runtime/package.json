@@ -45,7 +45,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/log-box": "workspace:^56.0.12",
+    "@expo/log-box": "workspace:^",
     "anser": "^1.4.9",
     "pretty-format": "^29.7.0",
     "stacktrace-parser": "^0.1.10",
@@ -58,7 +58,7 @@
     "react-dom": "19.2.3"
   },
   "peerDependencies": {
-    "@expo/log-box": "workspace:^56.0.12",
+    "@expo/log-box": "workspace:^",
     "expo": "*",
     "react": "*",
     "react-dom": "*",

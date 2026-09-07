@@ -459,6 +459,157 @@ class UpdatesDatabaseTests {
     }
   }
 
+  @Suite("asset key conflicts", .serialized)
+  struct AssetKeyConflictTests {
+    var testDatabaseDir: URL
+    var db: UpdatesDatabase
+    var config: UpdatesConfig
+
+    init() throws {
+      let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
+      testDatabaseDir = applicationSupportDir!.appendingPathComponent("AssetKeyConflictTests")
+
+      try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
+
+      if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
+        try FileManager.default.createDirectory(atPath: testDatabaseDir.path, withIntermediateDirectories: true)
+      }
+
+      db = UpdatesDatabase()
+
+      config = try UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      ])
+
+      db.databaseQueue.sync {
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
+      }
+    }
+
+    private func makeUpdate(id: String, createdAt: String) -> Update {
+      let manifest = ExpoUpdatesManifest(rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": id,
+        "createdAt": createdAt,
+        "launchAsset": ["url": "https://url.to/bundle.js", "contentType": "application/javascript"]
+      ])
+      return ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: manifest,
+        extensions: [:],
+        config: config,
+        database: db
+      )
+    }
+
+    private func makeAsset(key: String, isLaunchAsset: Bool = false) -> UpdateAsset {
+      let asset = UpdateAsset(key: key, type: "js")
+      asset.downloadTime = Date()
+      asset.contentHash = key
+      asset.filename = "\(key).js"
+      asset.isLaunchAsset = isLaunchAsset
+      return asset
+    }
+
+    private func joinRowCount(forUpdateId updateId: UUID) -> Int {
+      db.databaseQueue.sync {
+        try! db.execute(sql: "SELECT asset_id FROM updates_assets WHERE update_id = ?1;", withArgs: [updateId]).count
+      }
+    }
+
+    private func assetRowCount(forKey key: String) -> Int {
+      db.databaseQueue.sync {
+        try! db.execute(sql: "SELECT id FROM assets WHERE \"key\" = ?1;", withArgs: [key]).count
+      }
+    }
+
+    private func assetId(forKey key: String) -> NSNumber? {
+      db.databaseQueue.sync {
+        let rows = try! db.execute(sql: "SELECT id FROM assets WHERE \"key\" = ?1;", withArgs: [key])
+        guard let row = rows.first else {
+          return nil
+        }
+        let id: NSNumber = row.requiredValue(forKey: "id")
+        return id
+      }
+    }
+
+    private func launchAssetId(forUpdateId updateId: UUID) -> NSNumber? {
+      db.databaseQueue.sync {
+        let rows = try! db.execute(sql: "SELECT launch_asset_id FROM updates WHERE id = ?1;", withArgs: [updateId])
+        guard let row = rows.first else {
+          return nil
+        }
+        let launchAssetId: NSNumber? = row.optionalValue(forKey: "launch_asset_id")
+        return launchAssetId
+      }
+    }
+
+    @Test
+    func `adopts the existing asset row instead of cascade-deleting its update`() throws {
+      let update1 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f1a0", createdAt: "2020-11-11T00:18:00.797Z")
+      let update2 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f1a1", createdAt: "2020-11-11T00:18:01.797Z")
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update1, config: config)
+        try! db.finishUpdateRegistration(
+          update1,
+          newAssets: [makeAsset(key: "shared-bundle", isLaunchAsset: true)],
+          existingAssets: [],
+          markFinished: true
+        )
+
+        // a second update registers the same key as a new asset, as happens when
+        // two loaders classify it before either has inserted it
+        try! db.addUpdate(update2, config: config)
+        try! db.addNewAssets([makeAsset(key: "shared-bundle", isLaunchAsset: true)], toUpdateWithId: update2.updateId)
+      }
+
+      db.databaseQueue.sync {
+        let survivor = try! db.update(withId: update1.updateId, config: config)
+        #expect(survivor != nil)
+        #expect(survivor?.status == .StatusReady)
+      }
+      #expect(assetRowCount(forKey: "shared-bundle") == 1)
+      #expect(joinRowCount(forUpdateId: update1.updateId) == 1)
+      #expect(joinRowCount(forUpdateId: update2.updateId) == 1)
+
+      // both updates must launch from the one surviving asset row
+      let sharedAssetId = assetId(forKey: "shared-bundle")
+      #expect(sharedAssetId != nil)
+      #expect(launchAssetId(forUpdateId: update1.updateId) == sharedAssetId)
+      #expect(launchAssetId(forUpdateId: update2.updateId) == sharedAssetId)
+    }
+
+    @Test
+    func `keeps other updates linked to the conflicting asset`() throws {
+      let update1 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f1a2", createdAt: "2020-11-11T00:18:02.797Z")
+      let update2 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f1a3", createdAt: "2020-11-11T00:18:03.797Z")
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update1, config: config)
+        try! db.finishUpdateRegistration(
+          update1,
+          newAssets: [makeAsset(key: "bundle-1", isLaunchAsset: true), makeAsset(key: "shared-image")],
+          existingAssets: [],
+          markFinished: true
+        )
+
+        try! db.addUpdate(update2, config: config)
+        try! db.addNewAssets([makeAsset(key: "shared-image")], toUpdateWithId: update2.updateId)
+      }
+
+      // update1 must keep both of its asset links and its launch asset
+      #expect(joinRowCount(forUpdateId: update1.updateId) == 2)
+      #expect(assetRowCount(forKey: "shared-image") == 1)
+      #expect(joinRowCount(forUpdateId: update2.updateId) == 1)
+      #expect(launchAssetId(forUpdateId: update1.updateId) == assetId(forKey: "bundle-1"))
+
+      // adopting a non-launch asset must not set the new update's launch asset
+      #expect(launchAssetId(forUpdateId: update2.updateId) == nil)
+    }
+  }
+
   // MARK: - setExtraClientParams
 
   @Suite("setExtraClientParams", .serialized)

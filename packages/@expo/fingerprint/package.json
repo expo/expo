@@ -46,7 +46,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@expo/env": "workspace:^2.3.0",
+    "@expo/env": "workspace:^",
     "@expo/spawn-async": "^1.8.0",
     "arg": "^5.0.2",
     "chalk": "^4.1.2",
@@ -59,8 +59,8 @@
     "semver": "^7.6.0"
   },
   "devDependencies": {
-    "@expo/config": "workspace:~55.0.8",
-    "@expo/require-utils": "workspace:~55.0.2",
+    "@expo/config": "workspace:~",
+    "@expo/require-utils": "workspace:~",
     "@types/debug": "^4.1.5",
     "@types/getenv": "^1.0.0",
     "@types/node": "^22.14.0",

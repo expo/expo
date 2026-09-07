@@ -33,6 +33,10 @@
 - [iOS] Report a specific launch asset not found error when a launchable update has no linked launch asset, instead of failing silently or, for an update with no assets at all, hanging on the splash screen. ([#49459](https://github.com/expo/expo/pull/49459) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Preserve the cached update's launch failure as the emergency launch reason when the remote check finds no new update, instead of replacing it with the generic AppLoaderTask error. ([#49460](https://github.com/expo/expo/pull/49460) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Skip and repair updates that are missing their launch asset instead of selecting them for launch, which previously failed every cold start with "Launch asset not found for update". ([#49470](https://github.com/expo/expo/pull/49470) by [@alanjhughes](https://github.com/alanjhughes), based on [#48733](https://github.com/expo/expo/pull/48733) by [@martintreurnicht](https://github.com/martintreurnicht))
+- [iOS] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49504](https://github.com/expo/expo/pull/49504) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49505](https://github.com/expo/expo/pull/49505) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Pick up `rootProject.ext.ndkVersion` so the module's `android.ndkVersion` matches the host project's NDK; otherwise AGP falls back to its own preferred version and reports `[CXX1104] NDK ... disagrees with android.ndkVersion`. ([#45759](https://github.com/expo/expo/pull/45759) by [@xxih](https://github.com/xxih))
+- [iOS] Reuse an embedded asset from the app binary instead of re-downloading it when an update requires the same asset key. ([#49650](https://github.com/expo/expo/pull/49650) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -44,6 +48,9 @@
 - [iOS] Resolved the reload screen's window through the shared scene geometry helper. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Link `libc++` in the test spec so the unit test bundle resolves the C++ symbols it pulls from `ExpoModulesCore`. ([#48762](https://github.com/expo/expo/pull/48762) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Run the build data consistency check inside the startup procedure so it no longer queries the database on the main thread. ([#49374](https://github.com/expo/expo/pull/49374) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Disallow main thread queries on the updates database. ([#49375](https://github.com/expo/expo/pull/49375) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Remove the `DatabaseHolder` wrapper and pass `UpdatesDatabase` directly, since its lock released before any query ran and provided no real serialization. ([#49376](https://github.com/expo/expo/pull/49376) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.11 - 2026-07-29
 

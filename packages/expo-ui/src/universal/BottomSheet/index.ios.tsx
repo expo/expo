@@ -2,6 +2,7 @@ import { BottomSheet as SwiftUIBottomSheet, Group, Host } from '@expo/ui/swift-u
 import {
   frame,
   padding,
+  presentationBackground,
   presentationDetents,
   presentationDragIndicator,
   type ModifierConfig,
@@ -26,6 +27,7 @@ export function BottomSheet({
   testID,
   modifiers,
   contentPadding,
+  containerColor,
 }: BottomSheetProps) {
   const { top, bottom, left, right } = resolveContentPadding(contentPadding, {
     top: 16,
@@ -40,6 +42,9 @@ export function BottomSheet({
   ];
   if (snapPoints && snapPoints.length > 0) {
     presentationModifiers.push(presentationDetents(snapPoints.map(snapPointToDetent)));
+  }
+  if (containerColor) {
+    presentationModifiers.push(presentationBackground(containerColor));
   }
   if (modifiers?.length) {
     presentationModifiers.push(...modifiers);

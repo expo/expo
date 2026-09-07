@@ -49,6 +49,7 @@ function NativeTabsContent({
   emitter,
   preload,
   navigateSync,
+  tabConfigurationKey,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -94,11 +95,6 @@ function NativeTabsContent({
       ),
     [descriptors, visibleRoutes]
   );
-  const visibleTabNames = useMemo(
-    () => visibleTabs.map((tab) => tab.name).join(';'),
-    [visibleTabs]
-  );
-
   usePreloadPlaceholderRoutes({
     routes: visibleRoutes,
     descriptors,
@@ -170,7 +166,7 @@ function NativeTabsContent({
     <NativeTabsContext value>
       <NativeTabsView
         {...nativeTabsViewProps}
-        key={visibleTabNames}
+        key={tabConfigurationKey}
         focusedIndex={focusedIndex}
         // Provenance should only be sent with updates, and updates
         // on JS side are only triggered by rerender, so passing ref
@@ -210,6 +206,7 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
     [props.children]
   );
+  const tabConfigurationKey = triggerChildren.map((child) => child.props.name).join(';');
 
   const {
     backBehavior = defaultBackBehavior,
@@ -279,6 +276,7 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
       {...props}
       children={triggerChildren}
       nonTriggerChildren={nonTriggerChildren}
+      tabConfigurationKey={tabConfigurationKey}
       screenOptions={screenOptions}
       // Passed to TabRouter
       backBehavior={backBehavior}

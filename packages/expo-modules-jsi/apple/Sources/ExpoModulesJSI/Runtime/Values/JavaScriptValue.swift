@@ -10,14 +10,26 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   internal weak let runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Value
 
-  /// Initializer from the existing JSI value.
+  /// Takes ownership of the given JSI value. Only runtime-free values (undefined, null, booleans and
+  /// numbers) pass `nil` here.
   internal init(_ runtime: JavaScriptRuntime?, _ pointee: consuming facebook.jsi.Value) {
     self.runtime = runtime
     self.pointee = pointee
   }
 
-  /// Copy initializer from the existing JSI value.
-  internal init(_ runtime: JavaScriptRuntime, _ pointee: borrowing facebook.jsi.Value) {
+  /// Takes ownership of the given JSI value. Same as the optional-runtime overload, but the exact
+  /// parameter type keeps the caller from promoting its runtime to an optional, which costs a
+  /// retain/release pair around every call on the hot paths (property reads, function results).
+  internal init(_ runtime: JavaScriptRuntime, _ pointee: consuming facebook.jsi.Value) {
+    self.runtime = runtime
+    self.pointee = pointee
+  }
+
+  /// Copies the given JSI value, which asks the engine to clone the handle for pointer values.
+  /// The `copying:` label keeps this initializer from being picked for temporaries: with a plain
+  /// second argument, a non-optional runtime used to win overload resolution over the consuming
+  /// initializer above, cloning every freshly returned value instead of taking it over.
+  internal init(_ runtime: JavaScriptRuntime, copying pointee: borrowing facebook.jsi.Value) {
     self.runtime = runtime
     self.pointee = facebook.jsi.Value(runtime.pointee, pointee)
   }
@@ -31,10 +43,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// Creates a string JS value.
   public init(_ runtime: JavaScriptRuntime, _ string: String) {
     self.runtime = runtime
-    self.pointee = facebook.jsi.Value(
-      runtime.pointee,
-      facebook.jsi.String.createFromUtf8(runtime.pointee, std.string(string))
-    )
+    self.pointee = string.toJSIValue(in: runtime.pointee)
   }
 
   /// Creates a BigInt JS value from an Int64.
@@ -253,7 +262,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(pointee.getString(jsiRuntime).utf8(jsiRuntime))
+    return String(jsiString: pointee.getString(jsiRuntime), in: jsiRuntime)
   }
 
   /// Returns the value as a BigInt, or asserts if not a BigInt.
@@ -420,7 +429,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return String(pointee.toString(jsiRuntime).utf8(jsiRuntime))
+    return String(jsiString: pointee.toString(jsiRuntime), in: jsiRuntime)
   }
 
   /// Converts the JavaScript value to a JSON string representation.
@@ -602,18 +611,25 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   // MARK: - Runtime-free initializers
 
+  // Shared immortal instances for the runtime-free `undefined`/`null` kinds. The class is fully
+  // immutable and these carry no runtime and a trivial `jsi::Value`, so one instance can be safely
+  // handed out from any isolation context. Every void-returning `@JS` function returns `.undefined`,
+  // so a computed getter here would allocate on every host call.
+  private static let sharedUndefined = JavaScriptValue(nil, facebook.jsi.Value.undefined())
+  private static let sharedNull = JavaScriptValue(nil, facebook.jsi.Value.null())
+
   /// This is a lightweight way to create an undefined value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value can be passed to
   /// JavaScript functions or used in comparisons.
   public static var undefined: JavaScriptValue {
-    JavaScriptValue(nil, facebook.jsi.Value.undefined())
+    return sharedUndefined
   }
 
   /// This is a lightweight way to create a null value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value represents
   /// JavaScript's `null`, which is distinct from `undefined`.
   public static var null: JavaScriptValue {
-    JavaScriptValue(nil, facebook.jsi.Value.null())
+    return sharedNull
   }
 
   /// This is a lightweight way to create a boolean true value that can be used in contexts

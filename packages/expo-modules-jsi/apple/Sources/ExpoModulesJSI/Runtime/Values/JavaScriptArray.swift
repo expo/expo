@@ -404,9 +404,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
       guard let runtime else {
         FatalError.runtimeLost()
       }
-      // `std.string` carries the exact UTF-8 byte length; the `(pointer, length)` overload with
-      // `key.count` would pass the grapheme-cluster count and truncate non-ASCII keys.
-      let jsiValue = expo.getProperty(runtime.pointee, pointee, .forUtf8(runtime.pointee, std.string(key)))
+      let jsiValue = expo.getProperty(runtime.pointee, pointee, key.toJSIPropNameID(in: runtime.pointee))
       return JavaScriptValue(runtime, jsiValue)
     }
     nonmutating set(newValue) {
@@ -414,7 +412,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
         FatalError.runtimeLost()
       }
       let jsiValue = newValue.toJSIValue(in: runtime.pointee)
-      expo.setProperty(runtime.pointee, pointee, key, jsiValue)
+      expo.setProperty(runtime.pointee, pointee, key.toJSIPropNameID(in: runtime.pointee), jsiValue)
     }
   }
 

@@ -19,16 +19,14 @@ describe(foregroundStyle, () => {
   it('treats top-level React Native color values as color styles', () => {
     expect(foregroundStyle(nativeColor)).toEqual({
       $type: 'foregroundStyle',
-      styleType: 'color',
-      color: nativeColor,
+      style: { type: 'color', color: nativeColor },
     });
   });
 
   it('accepts React Native color values in explicit color styles', () => {
     expect(foregroundStyle({ type: 'color', color: nativeColor })).toEqual({
       $type: 'foregroundStyle',
-      styleType: 'color',
-      color: nativeColor,
+      style: { type: 'color', color: nativeColor },
     });
   });
 
@@ -42,10 +40,26 @@ describe(foregroundStyle, () => {
       })
     ).toEqual({
       $type: 'foregroundStyle',
-      styleType: 'linearGradient',
-      colors: [nativeColor, '#0000FF'],
-      startPoint: { x: 0, y: 0 },
-      endPoint: { x: 1, y: 1 },
+      style: {
+        type: 'linearGradient',
+        colors: [nativeColor, '#0000FF'],
+        startPoint: { x: 0, y: 0 },
+        endPoint: { x: 1, y: 1 },
+      },
+    });
+  });
+
+  it('renames the hierarchical style to the field the native side reads', () => {
+    expect(foregroundStyle({ type: 'hierarchical', style: 'secondary' })).toEqual({
+      $type: 'foregroundStyle',
+      style: { type: 'hierarchical', hierarchical: 'secondary' },
+    });
+  });
+
+  it('accepts materials', () => {
+    expect(foregroundStyle({ type: 'material', material: 'ultraThin' })).toEqual({
+      $type: 'foregroundStyle',
+      style: { type: 'material', material: 'ultraThin' },
     });
   });
 });

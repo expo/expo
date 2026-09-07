@@ -5,6 +5,7 @@ package expo.modules.appmetrics.networkrequests
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 /** Event names emitted by `NetworkRequestObserver`, matching the keys in the JS `NetworkRequestObserverEvents` type. */
@@ -14,27 +15,45 @@ internal const val REQUEST_COMPLETED_EVENT = "requestCompleted"
 /**
  * JS-facing `SharedObject` that bridges per-instance JS subscriptions to the singleton
  * `NetworkRequestMonitor`. Each JS `new NetworkRequestObserver()` allocates one of these and
- * registers it as a delegate; the native instance is released when JS drops the reference, at
- * which point `sharedObjectDidRelease` removes the delegate registration.
+ * registers it as a delegate right away, whether or not JS has attached listeners yet; the
+ * registration is dropped when the shared object is released. This matches the iOS observer.
+ *
+ * Because registration doesn't track JS listeners, an observer whose listeners were all removed
+ * still pays one `emit` per matching request until JS releases it. Gating on listener count would
+ * need `onStartListeningToEvent`/`onStopListeningToEvent`, and the runtime only wires those up for
+ * classes that declare `Events(...)` in their module definition, which this one deliberately
+ * doesn't.
  *
  * The class only forwards events — it doesn't store request history. Use
  * `NetworkRequestMonitor.shared.recent` for that.
  */
-class NetworkRequestObserver(appContext: AppContext, filter: NetworkRequestFilter? = null) :
+class NetworkRequestObserver private constructor(
+  appContext: AppContext,
+  filter: NetworkRequestFilter?,
+  private val monitor: NetworkRequestMonitor // Set for testing, otherwise default singleton
+) :
   SharedObject(appContext),
   NetworkRequestObserverDelegate {
+
+  constructor(appContext: AppContext, filter: NetworkRequestFilter? = null) :
+    this(appContext, filter, NetworkRequestMonitor.shared)
 
   // The active filter, or null to observe every request. An `AtomicReference` so the read from the
   // monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
   // `setFilter` call never leaves a request observed under a half-applied filter.
   private val filter = AtomicReference(filter)
 
+  // Flipped once on release. The monitor holds delegates weakly and prunes them on the next
+  // fan-out, so a request evaluated in that window must still be rejected here.
+  private val released = AtomicBoolean(false)
+
   init {
-    NetworkRequestMonitor.shared.addDelegate(this)
+    monitor.addDelegate(this)
   }
 
   override fun sharedObjectDidRelease() {
-    NetworkRequestMonitor.shared.removeDelegate(this)
+    released.set(true)
+    monitor.removeDelegate(this)
     super.sharedObjectDidRelease()
   }
 
@@ -46,7 +65,7 @@ class NetworkRequestObserver(appContext: AppContext, filter: NetworkRequestFilte
   }
 
   override fun shouldObserveRequest(url: String, method: String): Boolean {
-    return filter.get()?.matches(url, method) ?: true
+    return !released.get() && (filter.get()?.matches(url, method) ?: true)
   }
 
   override fun onNetworkRequestStarted(request: NetworkRequestStarted) {
@@ -58,6 +77,12 @@ class NetworkRequestObserver(appContext: AppContext, filter: NetworkRequestFilte
   }
 
   companion object {
+    internal fun forTesting(
+      appContext: AppContext,
+      monitor: NetworkRequestMonitor,
+      filter: NetworkRequestFilter? = null
+    ) = NetworkRequestObserver(appContext, filter, monitor)
+
     /**
      * Internal so tests can assert the payload shape without going through `emit`, which needs a
      * live JS runtime. The keys here are part of the public JS contract — additions are safe but

@@ -8,7 +8,7 @@ import HeadingText from '../../components/HeadingText';
 const modifiers = [
   padding({ all: 16 }),
   background('#f8f9fa'),
-  border({ color: '#e1e5e9', width: 1 }),
+  border({ content: '#e1e5e9', width: 1 }),
 ];
 
 export default function StepperScreen() {

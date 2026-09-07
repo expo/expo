@@ -44,6 +44,7 @@ export default function DropdownMenuScreen() {
   const [longPressTapCount, setLongPressTapCount] = React.useState(0);
   const [rnTriggerMenuExpanded, setRnTriggerMenuExpanded] = React.useState(false);
   const [rnTriggerTapCount, setRnTriggerTapCount] = React.useState(0);
+  const [roundedMenuExpanded, setRoundedMenuExpanded] = React.useState(false);
 
   React.useEffect(() => {
     if (sectionsMenuExpanded === false) {
@@ -402,6 +403,27 @@ export default function DropdownMenuScreen() {
                 onClick={() => setRnTriggerMenuExpanded(false)}>
                 <DropdownMenuItem.Text>
                   <ComposeText>Destructive item</ComposeText>
+                </DropdownMenuItem.Text>
+              </DropdownMenuItem>
+            </DropdownMenu.Items>
+          </DropdownMenu>
+        </Host>
+      </Section>
+      <Section title="Custom cornerRadius">
+        <Host matchContents>
+          <DropdownMenu
+            expanded={roundedMenuExpanded}
+            onDismissRequest={() => setRoundedMenuExpanded(false)}
+            cornerRadius={16}>
+            <DropdownMenu.Trigger>
+              <Button onClick={() => setRoundedMenuExpanded(true)}>
+                <ComposeText>Open rounded menu</ComposeText>
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
+              <DropdownMenuItem onClick={() => setRoundedMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Item 1</ComposeText>
                 </DropdownMenuItem.Text>
               </DropdownMenuItem>
             </DropdownMenu.Items>

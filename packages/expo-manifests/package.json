@@ -43,7 +43,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "expo-json-utils": "workspace:~56.0.0"
+    "expo-json-utils": "workspace:~"
   },
   "devDependencies": {
     "expo-module-scripts": "workspace:*"

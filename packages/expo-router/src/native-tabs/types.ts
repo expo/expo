@@ -229,6 +229,13 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   >;
 }
 
+/**
+ * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
+ * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
+ * @platform ios
+ */
+export type IconRenderingMode = 'template' | 'original';
+
 export type SymbolOrImageSource =
   | {
       /**
@@ -257,7 +264,7 @@ export type SymbolOrImageSource =
        * @platform ios
        * @default 'template'
        */
-      renderingMode?: 'template' | 'original';
+      renderingMode?: IconRenderingMode;
     };
 
 export type NativeTabsLabelStyle = Pick<
@@ -491,6 +498,7 @@ export interface NativeTabsProps extends PropsWithChildren {
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
+  tabConfigurationKey: string;
 }
 export interface OnTabChangeEventPayload {
   /**
@@ -529,6 +537,7 @@ export interface NativeTabsViewProps extends Omit<
   | 'rippleColor'
   | 'disableIndicator'
   | 'labelVisibilityMode'
+  | 'tabConfigurationKey'
 > {
   focusedIndex: number;
   /**

@@ -231,11 +231,11 @@ internal struct MonospacedDigitModifier: ViewModifier, Record {
 }
 
 internal struct TintModifier: ViewModifier, Record {
-  @Field var color: Color?
+  @Field var tint: ShapeStyleValue?
 
   func body(content: Content) -> some View {
-    if let color = color {
-      content.tint(color)
+    if let shapeStyle = tint?.toAnyShapeStyle() {
+      content.tint(shapeStyle)
     } else {
       content
     }
@@ -384,11 +384,16 @@ internal struct GrayscaleModifier: ViewModifier, Record {
 }
 
 internal struct BorderModifier: ViewModifier, Record {
-  @Field var color: Color = .white
+  // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
+  @Field("content") var shapeStyle: ShapeStyleValue?
   @Field var width: CGFloat = 1.0
 
   func body(content: Content) -> some View {
-    content.border(color, width: width)
+    if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
+      content.border(resolvedStyle, width: width)
+    } else {
+      content
+    }
   }
 }
 
@@ -418,7 +423,8 @@ internal struct ClipShapeModifier: ViewModifier, Record {
 }
 
 internal struct StrokeBorderModifier: ViewModifier, Record {
-  @Field var color: Color?
+  // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
+  @Field("content") var shapeStyle: ShapeStyleValue?
   @Field var style: StrokeStyleConfig?
   @Field var antialiased: Bool = true
   @Field var shape: ShapeType = .rectangle
@@ -451,8 +457,8 @@ internal struct StrokeBorderModifier: ViewModifier, Record {
 
   @ViewBuilder
   private func applyStrokeBorder<S: InsettableShape>(_ shape: S, _ strokeStyle: StrokeStyle) -> some View {
-    if let color {
-      shape.strokeBorder(color, style: strokeStyle, antialiased: antialiased)
+    if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
+      shape.strokeBorder(resolvedStyle, style: strokeStyle, antialiased: antialiased)
     } else {
       shape.strokeBorder(style: strokeStyle, antialiased: antialiased)
     }
@@ -907,6 +913,26 @@ internal struct AnyViewModifier: ViewModifier {
 
   func body(content: Content) -> some View {
     _body(content)
+  }
+}
+
+/**
+ * Prunability-stable wrapper for `AnyViewModifier`
+ */
+internal struct StableViewModifier: ViewModifier {
+  let params: [String: Any]
+  weak var appContext: AppContext?
+  let dispatcher: EventDispatcher
+
+  func body(content: Content) -> some View {
+    if let type = params["$type"] as? String,
+      let appContext,
+      let factory = ViewModifierRegistry.shared.modifierFactories[type],
+      let modifier = try? factory(params, appContext, dispatcher) {
+      content.modifier(AnyViewModifier(modifier))
+    } else {
+      content
+    }
   }
 }
 
@@ -1562,10 +1588,14 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard let viewModifier = try? modifierFactories[type]?(params, appContext, globalEventDispatcher) else {
+    guard modifierFactories[type] != nil else {
       return view
     }
-    return AnyView(view.modifier(AnyViewModifier(viewModifier)))
+    return AnyView(view.modifier(StableViewModifier(
+      params: params,
+      appContext: appContext,
+      dispatcher: globalEventDispatcher
+    )))
   }
 
   /**
@@ -1595,9 +1625,9 @@ public class ViewModifierRegistry {
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
       if #available(iOS 17.0, tvOS 17.0, *) {
         return applyForegroundStyle(modifier, to: text)
-      } else if modifier.styleType == .color, let color = modifier.color {
-          return text.foregroundColor(color)
-      } 
+      } else if modifier.style?.type == .color, let color = modifier.style?.color {
+        return text.foregroundColor(color)
+      }
       return text
     default:
       #if DEBUG
@@ -2248,6 +2278,10 @@ extension ViewModifierRegistry {
 
     register("scrollDisabled") { params, appContext, _ in
       return try ScrollDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollClipDisabled") { params, appContext, _ in
+      return try ScrollClipDisabledModifier(from: params, appContext: appContext)
     }
 
     register("scrollIndicators") { params, appContext, _ in

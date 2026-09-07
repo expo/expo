@@ -1,6 +1,9 @@
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.kotlin.AppContext
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -14,6 +17,28 @@ import java.util.UUID
  * see. These tests pin that shape down so renames require a deliberate change.
  */
 class NetworkRequestObserverTest {
+  @Test
+  fun `registers with the monitor on construction, regardless of JS listeners`() {
+    val appContext = mockk<AppContext>(relaxed = true)
+    val monitor = NetworkRequestMonitor()
+    val observer = NetworkRequestObserver.forTesting(appContext, monitor)
+
+    assertEquals(1, monitor.delegateCount)
+    assertTrue(observer.shouldObserveRequest("https://expo.dev", "GET"))
+  }
+
+  @Test
+  fun `release unregisters the observer`() {
+    val appContext = mockk<AppContext>(relaxed = true)
+    val monitor = NetworkRequestMonitor()
+    val observer = NetworkRequestObserver.forTesting(appContext, monitor)
+
+    observer.sharedObjectDidRelease()
+
+    assertEquals(0, monitor.delegateCount)
+    assertFalse(observer.shouldObserveRequest("https://expo.dev", "GET"))
+  }
+
   @Test
   fun `startedPayload contains the started-event keys`() {
     val id = UUID.randomUUID()

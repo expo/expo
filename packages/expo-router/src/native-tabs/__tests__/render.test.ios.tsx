@@ -104,6 +104,44 @@ it('does not rerender the focused screen while preloading other tabs', () => {
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
+it('does not remount the focused screen while preloading other tabs after a deep link', () => {
+  const mount = jest.fn();
+  const unmount = jest.fn();
+
+  function Run() {
+    React.useEffect(() => {
+      mount();
+      return unmount;
+    }, []);
+
+    return <View testID="run" />;
+  }
+
+  renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="test-suite" />
+          <NativeTabs.Trigger name="apis" />
+          <NativeTabs.Trigger name="playground" />
+          <NativeTabs.Trigger name="components" />
+        </NativeTabs>
+      ),
+      'test-suite/_layout': () => <Stack />,
+      'test-suite/index': () => <View testID="test-suite" />,
+      'test-suite/run': Run,
+      apis: () => <View testID="apis" />,
+      playground: () => <View testID="playground" />,
+      components: () => <View testID="components" />,
+    },
+    { initialUrl: '/test-suite/run?tests=AppMetrics' }
+  );
+
+  expect(screen.getByTestId('run')).toBeVisible();
+  expect(mount).toHaveBeenCalledTimes(1);
+  expect(unmount).not.toHaveBeenCalled();
+});
+
 describe('Tabs visibility', () => {
   it('does not render tab, when not specified', () => {
     renderRouter({
@@ -578,8 +616,8 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across three screens.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      // Initial render mounts each screen once.
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
       expect(onMount).toHaveBeenCalledWith('third');
@@ -629,8 +667,8 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across index, stack-index, and third.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      // Initial render mounts each screen once.
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('stack-index');
       expect(onMount).toHaveBeenCalledWith('third');

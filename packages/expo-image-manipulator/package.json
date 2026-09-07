@@ -43,7 +43,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "expo-image-loader": "workspace:~56.0.3"
+    "expo-image-loader": "workspace:~"
   },
   "devDependencies": {
     "expo": "workspace:*",

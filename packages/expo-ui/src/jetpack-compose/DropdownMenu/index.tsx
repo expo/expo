@@ -44,6 +44,14 @@ export interface DropdownMenuProps {
   color?: ColorValue;
 
   /**
+   * Corner radius in dp for the dropdown menu container. Defaults to the Material3
+   * `MenuDefaults.shape` corner radius.
+   *
+   * @platform android
+   */
+  cornerRadius?: number;
+
+  /**
    * Optional styles to apply to the `DropdownMenu`.
    */
   style?: StyleProp<ViewStyle>;
@@ -58,6 +66,7 @@ type NativeMenuProps = {
   expanded?: boolean;
   onDismissRequest?: () => void;
   color?: ColorValue;
+  cornerRadius?: number;
   style?: StyleProp<ViewStyle>;
   modifiers?: ModifierConfig[];
   children?: ReactNode;

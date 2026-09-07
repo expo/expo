@@ -35,7 +35,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "unimodules-app-loader": "workspace:~56.0.0"
+    "unimodules-app-loader": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

@@ -45,7 +45,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/config": "workspace:~56.0.9",
+    "@expo/config": "workspace:~",
     "chalk": "^4.1.2"
   },
   "devDependencies": {

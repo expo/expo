@@ -35,11 +35,11 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "expo-dev-launcher": "workspace:~56.0.16",
-    "expo-dev-menu": "workspace:~56.0.15",
-    "expo-dev-menu-interface": "workspace:~56.0.0",
-    "expo-manifests": "workspace:~56.0.4",
-    "expo-updates-interface": "workspace:~56.0.1"
+    "expo-dev-launcher": "workspace:~",
+    "expo-dev-menu": "workspace:~",
+    "expo-dev-menu-interface": "workspace:~",
+    "expo-manifests": "workspace:~",
+    "expo-updates-interface": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

@@ -25,6 +25,7 @@
 - Exclude the manifest parser requests from app metrics, so the bundler reachability check no longer skews the observed network summary. ([#48616](https://github.com/expo/expo/pull/48616) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Remove an unused `RCTRootContentView.h` import. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed a crash when a key event arrived after the launcher had invalidated the current activity, e.g. while switching to another app. ([#49565](https://github.com/expo/expo/pull/49565) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

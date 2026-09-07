@@ -23,7 +23,8 @@ public:
   }
 
   inline jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override {
-    auto result = _callbacks.get(name.utf8(runtime).c_str());
+    jsi::Value result;
+    _callbacks.get(name.utf8(runtime).c_str(), result);
     // If the Swift getter stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
     if (auto *error = CppError::getCurrent()) {

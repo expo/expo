@@ -34,7 +34,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/config-plugins": "workspace:~56.0.8"
+    "@expo/config-plugins": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

@@ -37,7 +37,7 @@ export function NativeUpgradePromptCallout({
     <div
       data-md="skip"
       className={mergeClasses(
-        'mb-4 flex flex-col gap-3 rounded-md border border-info bg-info px-4 py-3 shadow-xs',
+        'mb-4 flex flex-col gap-3 rounded-3xl border border-info bg-info px-4 py-3 shadow-xs',
         'sm:flex-row sm:items-center sm:gap-4'
       )}>
       <div className="flex gap-3 sm:flex-1">

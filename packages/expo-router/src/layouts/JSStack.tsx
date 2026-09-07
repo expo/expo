@@ -10,6 +10,8 @@ import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 import { withLayoutContext } from './withLayoutContext';
 
+export * from '../react-navigation/stack';
+
 const JSStackNavigator = createStackNavigator().Navigator;
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.

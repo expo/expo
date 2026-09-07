@@ -5,8 +5,9 @@ import { vol } from 'memfs';
 import * as babel from '../babel-core';
 // eslint-disable-next-line import/namespace
 import * as untypedTransformer from '../babel-transformer';
+import type { ExpoBabelTransformer } from '../babel-transformer';
 
-const transformer = untypedTransformer as BabelTransformer;
+const transformer = untypedTransformer as ExpoBabelTransformer;
 
 jest.mock('../babel-core', () => {
   const babel = jest.requireActual('../babel-core');
@@ -185,7 +186,7 @@ describe('getCacheKey', () => {
     }
     return {
       loadPartialConfigSync: mockLoadPartialConfigSync,
-      transformer: require('../babel-transformer') as BabelTransformer,
+      transformer: require('../babel-transformer') as ExpoBabelTransformer,
     };
   }
 

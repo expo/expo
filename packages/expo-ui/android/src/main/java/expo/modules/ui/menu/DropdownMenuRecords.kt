@@ -16,5 +16,6 @@ data class DropdownMenuProps(
   val activationMethod: ActivationMethod = ActivationMethod.SINGLE_PRESS,
   val expanded: Boolean = false,
   val color: Color? = null,
+  val cornerRadius: Float? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps

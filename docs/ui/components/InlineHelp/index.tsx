@@ -5,6 +5,7 @@ import { InfoCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/InfoCircle
 import { XSquareDuotoneIcon } from '@expo/styleguide-icons/duotone/XSquareDuotoneIcon';
 import {
   Children,
+  cloneElement,
   HTMLAttributes,
   isValidElement,
   ReactElement,
@@ -38,7 +39,8 @@ const extractType = (childrenArray: ReactNode[]) => {
 };
 
 export const InlineHelp = ({ type = 'default', size = 'md', icon, children, className }: Props) => {
-  const content = Children.toArray(children).filter(child => isValidElement(child))[0];
+  const childrenArray = Children.toArray(children);
+  const content = childrenArray.find(child => isValidElement(child));
   const contentChildren = Children.toArray(
     isValidElement<PropsWithChildren>(content) && content?.props?.children
   );
@@ -49,10 +51,23 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
     : type;
   const Icon = icon ?? getCalloutIcon(finalType);
 
+  // A type marker sits inside the first child, so drop the marker from that child and keep
+  // every later child. Rendering only the first child's remainder loses the rest of the callout.
+  const renderedChildren =
+    type === finalType
+      ? children
+      : childrenArray.map(child =>
+          child === content && isValidElement<PropsWithChildren>(child)
+            ? cloneElement(child, {
+                children: contentChildren.filter((_, index) => index !== 0),
+              })
+            : child
+        );
+
   return (
     <blockquote
       className={mergeClasses(
-        'mb-4 flex gap-2.5 rounded-md border border-default bg-subtle py-3 pr-4 pl-3.5 shadow-xs',
+        'mb-4 flex gap-2.5 rounded-3xl border border-default bg-subtle py-3 pr-4 pl-3.5 shadow-xs',
         size === 'sm' && 'gap-2 px-3 py-2.5',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
@@ -79,7 +94,7 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
           'last:mb-0',
           size === 'sm' && 'text-sm [&_code]:text-[90%] [&_p]:text-sm'
         )}>
-        {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
+        {renderedChildren}
       </div>
     </blockquote>
   );

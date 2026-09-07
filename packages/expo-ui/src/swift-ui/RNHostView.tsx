@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import type { LayoutChangeEvent } from 'react-native';
 
 import { PresentedContentContext, useIsPresentedInOwnWindow } from '../PresentedContentContext';
 
@@ -13,6 +14,7 @@ export interface RNHostViewProps {
    * @default false
    */
   matchContents?: boolean;
+  onLayout?: (event: LayoutChangeEvent) => void;
   /**
    * The RN View to be hosted.
    */
@@ -30,6 +32,7 @@ export function RNHostView(props: RNHostViewProps) {
     <RNHostNativeView
       {...props}
       layoutRoot={layoutRoot}
+      expoInternalSizeFromChildren={props.matchContents}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}>

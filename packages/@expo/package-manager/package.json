@@ -40,7 +40,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/json-file": "workspace:^10.2.0",
+    "@expo/json-file": "workspace:^",
     "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.0.0",
     "npm-package-arg": "^11.0.0",

@@ -51,10 +51,6 @@ const INITIAL_METRICS =
       }
     : undefined;
 
-const documentTitle = {
-  enabled: false,
-};
-
 /**
  * @hidden
  */
@@ -150,7 +146,6 @@ function ContextNavigator({
           <UpstreamNavigationContainer
             ref={navigationRef}
             linking={linkingConfig as LinkingOptions<any>}
-            documentTitle={documentTitle}
             onReady={onNavigationReady}>
             <WrapperComponent>
               <Content rootComponent={rootComponent} />

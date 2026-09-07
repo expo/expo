@@ -140,12 +140,26 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                                                                  initialProperties:[self initialPropertiesForRootView]
                                                                                      launchOptions:nil
                                                                                bundleConfiguration:[EXBundleConfiguration configurationWithBundleURL:[self bundleUrl]]
-                                                                              devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
+                                                                              devMenuConfiguration:[self _devMenuConfiguration]];
     }
 
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
   }
+}
+
+- (RCTDevMenuConfiguration *)_devMenuConfiguration
+{
+#if RCT_DEV_MENU
+  // Expo Go presents its own dev menu, and expo-dev-menu owns the shake gesture and keyboard
+  // shortcuts. RN's dev menu stays constructed so it can be opened programmatically, but must not
+  // respond to those gestures itself.
+  return [[RCTDevMenuConfiguration alloc] initWithDevMenuEnabled:YES
+                                            shakeGestureEnabled:NO
+                                       keyboardShortcutsEnabled:NO];
+#else
+  return [RCTDevMenuConfiguration defaultConfiguration];
+#endif
 }
 
 - (void)_createAppInstance

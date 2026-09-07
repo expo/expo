@@ -44,7 +44,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/schema-utils": "workspace:^56.0.0",
+    "@expo/schema-utils": "workspace:^",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },

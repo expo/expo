@@ -39,11 +39,13 @@ inline jsi::Value valueFromFunction(jsi::IRuntime &runtime, const jsi::Function 
 }
 
 // `jsi::Object::setProperty` is a template function that Swift does not support. We need to provide specialized versions.
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const char *name, const jsi::Value value) {
+// They take a `jsi::PropNameID` rather than a `const char *`: JSI treats a `const char *` name as ASCII,
+// which mangles non-ASCII property names coming from Swift strings.
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const jsi::PropNameID &name, const jsi::Value &value) {
   object.setProperty(runtime, name, value);
 }
 
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const char *name, const jsi::Value &value) {
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const jsi::PropNameID &name, const jsi::Value &value) {
   array.setProperty(runtime, name, value);
 }
 
@@ -100,7 +102,8 @@ inline std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::stri
 inline jsi::Function createHostFunction(jsi::IRuntime &runtime, const jsi::PropNameID &propName, HostFunctionClosure *closure) {
   auto closurePtr = std::shared_ptr<HostFunctionClosure>(closure);
   return jsi::Function::createFromHostFunction(runtime, propName, 0, [closurePtr](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
-    auto result = closurePtr->call(thisValue, args, count);
+    jsi::Value result;
+    closurePtr->call(thisValue, args, count, result);
 
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
@@ -165,6 +168,35 @@ inline jsi::Value callAsConstructor(jsi::IRuntime &runtime, const jsi::Function 
   return expo::CppError::tryCatch(runtime, [&] {
     return function.callAsConstructor(runtime, args, count);
   });
+}
+
+// MARK: - String
+
+/**
+ Invokes `callback` with the engine's internal representation of `string`, chunk by chunk
+ (see `jsi::Runtime::getStringData` docs). On RN 0.86+ the method is public on `IRuntime` and is
+ called directly. On older versions (e.g. react-native-macos 0.81) it is a protected member of
+ `jsi::Runtime`, which Swift cannot call, so this wrapper routes through the public
+ `jsi::String::getStringData` template helper instead. That adds one extra indirect call per chunk,
+ negligible next to the copy/transcode of the chunk itself.
+ The callback's pointer parameters mirror the unannotated `jsi.h` signature, so the same Swift
+ function can be passed to either.
+ */
+inline void getStringData(
+  jsi::IRuntime &runtime,
+  const jsi::String &string,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  runtime.getStringData(string, ctx, callback);
+#else
+  auto forward = [ctx, callback](bool ascii, const void *data, size_t num) {
+    callback(ctx, ascii, data, num);
+  };
+  string.getStringData(runtime, forward);
+#endif
 }
 
 // MARK: - ArrayBuffer

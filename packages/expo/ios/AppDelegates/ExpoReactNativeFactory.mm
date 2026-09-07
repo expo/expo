@@ -39,7 +39,15 @@
 // [JS thread]
 - (void)host:(nonnull RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
-  _appContext = [[EXAppContext alloc] init];
+  // Bind this callback to the context it creates. The factory is created once in
+  // `application:didFinishLaunchingWithOptions:` and outlives any single `RCTHost`,
+  // so a reload can run this callback for the incoming host while the outgoing
+  // host's callback is still in flight on its own JS thread. Reading the shared ivar
+  // back after that point can hand this callback the other callback's context, and
+  // decorating objects created for one Hermes runtime against another runtime's
+  // `AppContext.runtime` faults inside JSI.
+  EXAppContext *appContext = [[EXAppContext alloc] init];
+  _appContext = appContext;
 
   // Resolve the React runtime scheduler so ExpoModulesJSI can dispatch work onto
   // the JS thread. Doing it here (rather than inside the xcframework) keeps
@@ -59,12 +67,12 @@
   auto scheduler = binding ? binding->getRuntimeScheduler() : nullptr;
   void *schedulerHandle = expo::createReactSchedulerHandle(scheduler);
 
-  [_appContext setRuntime:&runtime
-                scheduler:schedulerHandle
-                 dispatch:schedulerHandle ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
-  [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
+  [appContext setRuntime:&runtime
+               scheduler:schedulerHandle
+                dispatch:schedulerHandle ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
+  [appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
-  [_appContext registerNativeModules];
+  [appContext registerNativeModules];
 }
 
 @end
