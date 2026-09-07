@@ -22,7 +22,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed async functions rejecting with `Cannot use shared object that was already released` when the garbage collector took the shared object receiver or argument before the function converted its arguments on another queue. Those JS objects are now kept alive until the conversion is done.
+- [Android] Fixed async functions rejecting with `Cannot use shared object that was already released` when the garbage collector took the shared object receiver or argument before the function converted its arguments on another queue. Those JS objects are now kept alive until the conversion is done. ([#49807](https://github.com/expo/expo/pull/49807) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fixed the tap that closes a SwiftUI menu still sending `touchStart`, `onPressIn` and `onPressOut` to the React Native view underneath it. React Native's touch handler is now told to skip that tap before UIKit delivers it, instead of being cancelled afterwards. ([#48419](https://github.com/expo/expo/issues/48419) by [@nahooni0511](https://github.com/nahooni0511), [#49775](https://github.com/expo/expo/pull/49775) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fix Expo module views not receiving props with React Native 0.87.
 - [iOS][Android] Fixed a `matchContents` `RNHostView` and the `matchContents` host around it feeding each other's size back and forth, which grew the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
