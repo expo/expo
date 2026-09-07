@@ -1,0 +1,26 @@
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
+
+<AgentPrompt
+  title="Set up EAS Update with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Set up EAS Update in my Expo project so I can ship JavaScript and asset changes without a new build. Work through these steps in order.
+
+1. Install or upgrade EAS CLI with `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. Run `eas login` if I am not.
+3. If this project was not created with `create-expo-app`:
+   - Run `npx install-expo-modules@latest` so it uses Expo CLI and Metro config.
+   - Make sure it calls `registerRootComponent` instead of `AppRegistry.registerComponent`.
+4. Run `eas update:configure`. It writes `runtimeVersion` and `updates.url` to the app config and adds `extra.eas.projectId` if it is missing.
+5. Set the update channel:
+   - With EAS Build: set `channel` on the `preview` and `production` profiles in eas.json, or on the profiles this project uses.
+   - Without EAS Build: set the channel with `updates.requestHeaders` in the app config and tell me.
+6. Stop and ask me: "Everything is configured. Do you have a preview build on a device or simulator?" If I say no, ask before running `eas build --profile preview --platform <platform>` for the platform I name.
+7. Stop and ask me: "Everything is set up. Do you want to publish an update now?" If I say yes, ask me for the channel, a message, and the environment, then run `eas update --channel <channel> --message "<message>" --environment <environment>`.
+8. Tell me how to test the update: load it from the Extensions tab of a development build, or force close and reopen a release build twice.
+
+Match the package manager this project already uses, and report what you ran.
+```
+
+</AgentPrompt>
