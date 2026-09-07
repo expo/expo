@@ -2,20 +2,59 @@ import { jest } from '@jest/globals';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import mockRouter from 'next-router-mock';
 import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+import type { ReactNode } from 'react';
 
 import { axe } from '~/common/test-utilities';
 
-import { AgentPrompt } from '.';
-import { AGENT_PROMPTS } from './prompts';
+import { AgentPrompt, AgentPromptOption } from '.';
 
 jest.mock('next/router', () => mockRouter);
 
-const PAGE = '/develop/development-builds/introduction/';
+const SINGLE_PROMPT_PAGE = '/eas-update/getting-started/';
+const DEVELOPMENT_BUILDS_PAGE = '/develop/development-builds/introduction/';
+const DESCRIPTION = 'Paste this into Claude, Cursor, Codex, or another agent.';
 
-const { title, description, options } = AGENT_PROMPTS['development-builds'];
+const SINGLE_PROMPT =
+  'Set up EAS Update in my Expo project.\n\nRun `npx expo install expo-updates`, then run `eas update:configure`.';
+const LOCAL_PROMPT = 'Set up a development build and compile it on my machine.';
+const EAS_PROMPT = 'Set up a development build and build it on EAS.';
 
-function promptFor(id: string) {
-  return options.find(option => option.id === id)!.prompt;
+function fence(text: string) {
+  return (
+    <div className="code-block-wrapper">
+      <pre data-md-lang="text">
+        <div>
+          <code>{text}</code>
+        </div>
+      </pre>
+    </div>
+  );
+}
+
+function singlePrompt() {
+  return (
+    <AgentPrompt title="Set up EAS Update with an AI agent" description={DESCRIPTION}>
+      {fence(SINGLE_PROMPT)}
+    </AgentPrompt>
+  );
+}
+
+function developmentBuildsPrompt() {
+  return (
+    <AgentPrompt
+      title="Create a development build with an AI agent"
+      description={DESCRIPTION}
+      selectorLabel="Build method"
+      queryParam="buildenv"
+      defaultOption="build-locally">
+      <AgentPromptOption id="build-locally" label="Build locally">
+        {fence(LOCAL_PROMPT)}
+      </AgentPromptOption>
+      <AgentPromptOption id="build-with-eas" label="Build with EAS">
+        {fence(EAS_PROMPT)}
+      </AgentPromptOption>
+    </AgentPrompt>
+  );
 }
 
 function setupClipboard() {
@@ -27,12 +66,8 @@ function setupClipboard() {
   return writeText;
 }
 
-function renderAt(url: string) {
-  return render(
-    <MemoryRouterProvider url={url}>
-      <AgentPrompt page="development-builds" />
-    </MemoryRouterProvider>
-  );
+function renderAt(url: string, ui: ReactNode) {
+  return render(<MemoryRouterProvider url={url}>{ui}</MemoryRouterProvider>);
 }
 
 async function copiedTextAsync(writeText: ReturnType<typeof setupClipboard>) {
@@ -44,102 +79,135 @@ async function copiedTextAsync(writeText: ReturnType<typeof setupClipboard>) {
 }
 
 describe('AgentPrompt', () => {
-  it('renders the title and description from the registry', () => {
+  it('renders the title as a heading and the description', () => {
     setupClipboard();
 
-    renderAt(PAGE);
+    renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
 
-    expect(screen.getByText(title)).toBeInTheDocument();
-    expect(screen.getByText(description)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Set up EAS Update with an AI agent' })
+    ).toBeInTheDocument();
+    expect(screen.getByText(DESCRIPTION)).toBeInTheDocument();
   });
 
-  it('never renders the prompt text', () => {
+  it('hides the prompt until the reader asks for it', () => {
     setupClipboard();
 
-    renderAt(PAGE);
+    renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
+    const code = screen.getByText(SINGLE_PROMPT, { normalizer: text => text });
 
-    for (const option of options) {
-      for (const paragraph of option.prompt.split('\n\n')) {
-        expect(screen.queryByText(paragraph)).not.toBeInTheDocument();
-      }
-    }
+    expect(code).not.toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: /show prompt/i }));
+
+    expect(code).toBeVisible();
+    expect(screen.getByRole('button', { name: /hide prompt/i })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    );
   });
 
-  it('copies the default prompt when no build method is in the URL', async () => {
+  it('copies the fenced prompt', async () => {
     const writeText = setupClipboard();
 
-    renderAt(PAGE);
+    renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
 
-    expect(await copiedTextAsync(writeText)).toBe(promptFor('build-locally'));
-  });
-
-  it('copies the EAS Build prompt for buildenv=build-with-eas', async () => {
-    const writeText = setupClipboard();
-
-    renderAt(`${PAGE}?buildenv=build-with-eas`);
-
-    expect(await copiedTextAsync(writeText)).toBe(promptFor('build-with-eas'));
-  });
-
-  it('copies the local EAS CLI prompt for buildenv=eas-cli-local', async () => {
-    const writeText = setupClipboard();
-
-    renderAt(`${PAGE}?buildenv=eas-cli-local`);
-
-    expect(await copiedTextAsync(writeText)).toBe(promptFor('eas-cli-local'));
-  });
-
-  it('falls back to the default prompt for an unknown build method', async () => {
-    const writeText = setupClipboard();
-
-    renderAt(`${PAGE}?buildenv=nonsense`);
-
-    expect(await copiedTextAsync(writeText)).toBe(promptFor('build-locally'));
-  });
-
-  it('copies the prompt with its paragraph breaks intact', async () => {
-    const writeText = setupClipboard();
-
-    renderAt(PAGE);
-
-    expect(await copiedTextAsync(writeText)).toContain('\n\n');
+    expect(await copiedTextAsync(writeText)).toBe(SINGLE_PROMPT);
   });
 
   it('shows copied feedback after copying', async () => {
     setupClipboard();
 
-    renderAt(PAGE);
+    renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
     fireEvent.click(screen.getByRole('button', { name: /copy prompt/i }));
 
     expect(await screen.findByText('Copied!')).toBeInTheDocument();
   });
 
-  it('offers the selector from the registry', () => {
+  it('renders no selector for a single prompt', () => {
     setupClipboard();
 
-    renderAt(PAGE);
+    renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
 
-    expect(screen.getByRole('combobox', { name: /build method/i })).toBeInTheDocument();
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
   });
 
-  it('carries every option to the markdown twin', () => {
+  it('keeps the toggle out of the markdown twin', () => {
     setupClipboard();
 
-    renderAt(PAGE);
-    const block = screen.getByTestId('agent-prompt');
+    renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
 
-    expect(block).toHaveAttribute('data-md', 'agent-prompt');
-    expect(JSON.parse(block.getAttribute('data-md-agent-prompt')!)).toEqual({
-      title,
-      description,
-      prompts: options.map(({ label, prompt }) => ({ label, prompt })),
-    });
+    expect(screen.getByRole('button', { name: /show prompt/i })).toHaveAttribute('data-md', 'skip');
   });
 
   it('has no axe violations', async () => {
     setupClipboard();
 
-    const { container } = renderAt(PAGE);
+    const { container } = renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
+
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('AgentPrompt with options', () => {
+  it('offers the options in a selector', () => {
+    setupClipboard();
+
+    renderAt(DEVELOPMENT_BUILDS_PAGE, developmentBuildsPrompt());
+
+    expect(screen.getByRole('combobox', { name: /build method/i })).toBeInTheDocument();
+  });
+
+  it('shows the default option and hides the others', () => {
+    setupClipboard();
+
+    renderAt(DEVELOPMENT_BUILDS_PAGE, developmentBuildsPrompt());
+    fireEvent.click(screen.getByRole('button', { name: /show prompt/i }));
+
+    expect(screen.getByText(LOCAL_PROMPT)).toBeVisible();
+    expect(screen.getByText(EAS_PROMPT)).not.toBeVisible();
+  });
+
+  it('copies the default option when the URL names none', async () => {
+    const writeText = setupClipboard();
+
+    renderAt(DEVELOPMENT_BUILDS_PAGE, developmentBuildsPrompt());
+
+    expect(await copiedTextAsync(writeText)).toBe(LOCAL_PROMPT);
+  });
+
+  it('copies the option named in the URL', async () => {
+    const writeText = setupClipboard();
+
+    renderAt(`${DEVELOPMENT_BUILDS_PAGE}?buildenv=build-with-eas`, developmentBuildsPrompt());
+
+    expect(await copiedTextAsync(writeText)).toBe(EAS_PROMPT);
+  });
+
+  it('falls back to the default for an unknown option', async () => {
+    const writeText = setupClipboard();
+
+    renderAt(`${DEVELOPMENT_BUILDS_PAGE}?buildenv=nonsense`, developmentBuildsPrompt());
+
+    expect(await copiedTextAsync(writeText)).toBe(LOCAL_PROMPT);
+  });
+
+  it('labels every option with a heading for the markdown twin', () => {
+    setupClipboard();
+
+    renderAt(DEVELOPMENT_BUILDS_PAGE, developmentBuildsPrompt());
+
+    for (const label of ['Build locally', 'Build with EAS']) {
+      expect(
+        screen.getByRole('heading', { level: 3, name: label, hidden: true })
+      ).toBeInTheDocument();
+    }
+  });
+
+  it('has no axe violations', async () => {
+    setupClipboard();
+
+    const { container } = renderAt(DEVELOPMENT_BUILDS_PAGE, developmentBuildsPrompt());
 
     expect(await axe(container)).toHaveNoViolations();
   });
