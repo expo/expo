@@ -46,8 +46,7 @@ internal final class KeyedSerialQueue: @unchecked Sendable {
     let task: Task<Void, Never>
   }
 
-  private let lock = NSLock()
-  private var tails: [String: Tail] = [:]
+  private let tails = Mutex<[String: Tail]>([:])
 
   /// Runs `work` after every earlier call for `key` has finished, and returns or rethrows what it does.
   ///
@@ -65,7 +64,7 @@ internal final class KeyedSerialQueue: @unchecked Sendable {
     _ work: @escaping @Sendable () async throws -> T
   ) async throws -> T {
     let id = UUID()
-    let task: Task<T, any Error> = lock.withLock {
+    let task: Task<T, any Error> = tails.withLock { tails in
       let previous = tails[key]?.task
       let next = Task {
         _ = await previous?.value
@@ -75,7 +74,7 @@ internal final class KeyedSerialQueue: @unchecked Sendable {
       return next
     }
     defer {
-      lock.withLock {
+      tails.withLock { tails in
         if tails[key]?.id == id {
           tails.removeValue(forKey: key)
         }
@@ -104,19 +103,21 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   private typealias EntityIdentifierFactory = (String) -> EntityIdentifier?
   internal typealias EntityIndexer = ([AppIntentEntityRecord], IndexUpdate) async throws -> Void
 
-  /// Guards everything below. The registry is reached from the main actor - `register` from the setup
+  private struct State {
+    var factories: [String: EntityIdentifierFactory] = [:]
+    var indexers: [String: EntityIndexer] = [:]
+  }
+
+  /// Guards the factories and indexers. The registry is reached from the main actor - `register` from the setup
   /// module's `OnCreate`, `identifier(for:id:)` from a SwiftUI `body` - and from arbitrary async
   /// contexts at the same time: `setEntityCatalogAsync` off the module queue, and the
   /// `IndexedEntityQuery` witnesses on the system's own schedule. A `Dictionary` mutated from one
   /// while another reads it is a data race, not just a stale read.
   ///
-  /// A lock rather than an actor because `identifier(for:id:)` is called from a view's `body`, which
-  /// cannot await, and because registration has to take effect synchronously: an `await` in
-  /// `registerIndexed` would let a catalog published moments after launch find no indexer yet. Same
-  /// reason `AppEntityIdentifierModifierClaims` uses one a layer down.
-  private let lock = NSLock()
-  private var factories: [String: EntityIdentifierFactory] = [:]
-  private var indexers: [String: EntityIndexer] = [:]
+  /// A mutex keeps lookup and registration synchronous. `identifier(for:id:)` is called from a view's
+  /// `body`, which cannot await, and registration must take effect before a catalog published moments
+  /// after launch can start indexing. `AppEntityIdentifierModifierClaims` uses one for the same reason.
+  private let state = Mutex(State())
   private let indexing = KeyedSerialQueue()
   private let entityStore: AppIntentEntityStore
 
@@ -131,7 +132,7 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
       }
       return EntityIdentifier(for: entityType, identifier: identifier)
     }
-    lock.withLock { factories[entity] = factory }
+    state.withLock { $0.factories[entity] = factory }
   }
 
   /// Registers an entity that is also Spotlight-indexable. On top of what `register(_:as:)` does,
@@ -176,14 +177,14 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   }
 
   internal func register(kind: String, indexer: @escaping EntityIndexer) {
-    lock.withLock { indexers[kind] = indexer }
+    state.withLock { $0.indexers[kind] = indexer }
   }
 
   public func unregister(_ entity: String) async throws {
     try await indexing.run(key: entity) {
-      self.lock.withLock {
-        self.factories.removeValue(forKey: entity)
-        self.indexers.removeValue(forKey: entity)
+      self.state.withLock { state in
+        state.factories.removeValue(forKey: entity)
+        state.indexers.removeValue(forKey: entity)
       }
       // Wait for earlier indexing before removing its recovery state.
       try await self.entityStore.clearIndexStale(kind: entity)
@@ -191,12 +192,12 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   }
 
   func identifier(for entity: String, id: String) -> EntityIdentifier? {
-    lock.withLock { factories[entity] }?(id)
+    state.withLock { $0.factories[entity] }?(id)
   }
 
   /// Kinds registered as indexable.
   var indexedKinds: [String] {
-    return lock.withLock { Array(indexers.keys) }
+    return state.withLock { Array($0.indexers.keys) }
   }
 
   /// Stores a catalog and brings the kind's Spotlight index in line with it, and returns whether the
@@ -279,7 +280,7 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   }
 
   private func hasIndexer(kind: String) -> Bool {
-    return lock.withLock { indexers[kind] != nil }
+    return state.withLock { $0.indexers[kind] != nil }
   }
 
   /// Reads the catalog a reindex is to be built from.
@@ -320,7 +321,7 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
     records: [AppIntentEntityRecord],
     update: IndexUpdate
   ) async throws {
-    guard let indexer = lock.withLock({ indexers[kind] }) else {
+    guard let indexer = state.withLock({ $0.indexers[kind] }) else {
       return
     }
 
@@ -379,23 +380,22 @@ internal enum AppEntityIdentifierDiagnostics {
 internal final class AppEntityIdentifierModifierClaims: @unchecked Sendable {
   internal static let shared = AppEntityIdentifierModifierClaims()
 
-  private let lock = NSLock()
-  private var count = 0
+  private let count = Mutex(0)
 
   /// Takes a claim, reporting whether it is the first one and so has to install the factory.
   internal func claim() -> Bool {
-    lock.lock()
-    defer { lock.unlock() }
-    count += 1
-    return count == 1
+    return count.withLock { count in
+      count += 1
+      return count == 1
+    }
   }
 
   /// Gives up a claim, reporting whether the last one is now gone.
   internal func release() -> Bool {
-    lock.lock()
-    defer { lock.unlock() }
-    count -= 1
-    return count == 0
+    return count.withLock { count in
+      count -= 1
+      return count == 0
+    }
   }
 }
 
@@ -414,8 +414,7 @@ internal final class AppEntityIdentifierModifierClaims: @unchecked Sendable {
 /// `ViewModifierRegistry` hands it the `AppContext` on each call.
 internal final class AppEntityIdentifierModifierRegistration: @unchecked Sendable {
   private let claims: AppEntityIdentifierModifierClaims
-  private let lock = NSLock()
-  private var isReleased = false
+  private let isReleased = Mutex(false)
 
   /// Whether this claim is the one that has to install the factory. It is false while another context
   /// still holds a claim, and registering again then would only make `ViewModifierRegistry` log
@@ -431,13 +430,13 @@ internal final class AppEntityIdentifierModifierRegistration: @unchecked Sendabl
   /// standing does. Releasing the same claim twice changes nothing, so a context torn down in two
   /// steps cannot take the factory away from another one.
   internal func release() -> Bool {
-    lock.lock()
-    defer { lock.unlock() }
-    guard !isReleased else {
-      return false
+    return isReleased.withLock { isReleased in
+      guard !isReleased else {
+        return false
+      }
+      isReleased = true
+      return claims.release()
     }
-    isReleased = true
-    return claims.release()
   }
 }
 
