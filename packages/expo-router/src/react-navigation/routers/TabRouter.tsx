@@ -4,6 +4,7 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
+import { normalizeRouterStates } from './normalizeRouterStates';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
@@ -103,6 +104,22 @@ type TabNavigationStateWithHistory = TabNavigationState<ParamListBase> &
   Required<Pick<TabNavigationState<ParamListBase>, 'history'>>;
 
 const TYPE_ROUTE = 'route' as const;
+
+function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
+  state: TabNavigationState<ParamList>
+) {
+  const route = state.routes[state.index];
+  if (!route?.isPreloaded) {
+    return state;
+  }
+
+  const { isPreloaded, ...focusedRoute } = route;
+  const routes = [...state.routes];
+  // Removing an optional field preserves the route's conditional params type, which TypeScript
+  // cannot infer through the `Route` intersection.
+  routes[state.index] = focusedRoute as typeof route;
+  return { ...state, routes };
+}
 
 const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
@@ -623,7 +640,10 @@ export function TabRouter({
 
           if (routeIndex === -1) {
             const route = attachRouteState(
-              createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+              {
+                ...createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+                isPreloaded: true,
+              },
               action
             );
             routes = [...state.routes, route];
@@ -636,7 +656,14 @@ export function TabRouter({
             const key = currentId === nextId ? route.key : minter.mint(route.name);
             const params = action.payload.params;
             const newRoute = attachRouteState(
-              params !== route.params ? { ...route, key, params } : route,
+              params !== route.params
+                ? {
+                    ...route,
+                    key,
+                    params,
+                    ...(key !== route.key && { isPreloaded: true }),
+                  }
+                : route,
               action
             );
 
@@ -720,7 +747,7 @@ export function TabRouter({
     actionCreators: TabActions,
   };
 
-  return router;
+  return normalizeRouterStates(router, clearFocusedPreloadedRoute);
 }
 
 function removeReplacedRouteFromHistory(

@@ -1101,7 +1101,7 @@ test('replaces focused screen with replace', () => {
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'qux:0', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
@@ -1144,7 +1144,7 @@ test('replaces active screen with replace', () => {
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'qux:0', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
@@ -1185,7 +1185,7 @@ test("handles replace if source key isn't present but target is not specified", 
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'qux:0', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     stale: false,
     routeKeySeq: 1,
@@ -1997,7 +1997,7 @@ test("handles popTo if source key isn't present but target is not specified", ()
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'qux:0', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     stale: false,
     routeKeySeq: 1,
@@ -2118,7 +2118,7 @@ test('adds route to preloaded list with preload', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar', params: { answer: 42 } },
       { key: 'qux', name: 'qux' },
-      { key: 'bar:0', name: 'bar', params: undefined },
+      { key: 'bar:0', name: 'bar', params: undefined, isPreloaded: true },
     ],
   });
 
@@ -2197,7 +2197,7 @@ test('adds route to preloaded list with preload', () => {
         params: { answer: 42, toBe: 'notMerged' },
       },
       { key: 'baz', name: 'baz' },
-      { key: 'bar:0', name: 'bar', params: { answer: 43 } },
+      { key: 'bar:0', name: 'bar', params: { answer: 43 }, isPreloaded: true },
     ],
   });
 });
@@ -2250,6 +2250,7 @@ test('uses preloaded route when pushing a route with the same name', () => {
       {
         key: 'bar-preloaded',
         name: 'bar',
+        isPreloaded: true,
       },
     ],
   });
@@ -2300,10 +2301,42 @@ test('uses preloaded route when pushing a route with the same name', () => {
       {
         key: 'bar-preloaded',
         name: 'bar',
+        isPreloaded: true,
       },
     ],
   });
 });
+
+test.each([StackActions.push('bar'), CommonActions.navigate('bar')])(
+  '$type clears the marker when promoting a preloaded route',
+  (action) => {
+    const router = StackRouter({});
+    const state: StackNavigationState<ParamListBase> = {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 0,
+      routeNames: ['baz', 'bar'],
+      routes: [
+        { key: 'baz', name: 'baz' },
+        { key: 'bar-preloaded', name: 'bar', isPreloaded: true },
+      ],
+    };
+
+    const result = router.getStateForAction(state, action, {
+      routeNames: state.routeNames,
+      routeGetIdList: {},
+    })!;
+
+    expect(result.state.routes[result.state.index]).toEqual({
+      key: 'bar-preloaded',
+      name: 'bar',
+      path: undefined,
+      params: undefined,
+    });
+  }
+);
 
 test('uses preloaded route when pushing a route with the same ID', () => {
   const router = StackRouter({});
@@ -2387,7 +2420,12 @@ test('partitions active history from multiple preloaded routes', () => {
   ).toEqual({
     ...state,
     index: 2,
-    routes: [state.routes[0], state.routes[1], state.routes[3], state.routes[2]],
+    routes: [
+      state.routes[0],
+      state.routes[1],
+      { ...state.routes[3], path: undefined },
+      { ...state.routes[2], isPreloaded: true },
+    ],
   });
 
   expect(
@@ -2399,7 +2437,12 @@ test('partitions active history from multiple preloaded routes', () => {
   ).toEqual({
     ...state,
     index: 2,
-    routes: [state.routes[0], state.routes[1], state.routes[3], state.routes[2]],
+    routes: [
+      state.routes[0],
+      state.routes[1],
+      { ...state.routes[3], path: undefined },
+      { ...state.routes[2], isPreloaded: true },
+    ],
   });
 
   expect(router.getStateForAction(state, StackActions.push('c'), options)?.state).toEqual({
@@ -2410,15 +2453,19 @@ test('partitions active history from multiple preloaded routes', () => {
       state.routes[0],
       state.routes[1],
       { key: 'c:0', name: 'c', params: undefined },
-      state.routes[2],
-      state.routes[3],
+      { ...state.routes[2], isPreloaded: true },
+      { ...state.routes[3], isPreloaded: true },
     ],
   });
 
   expect(router.getStateForAction(state, StackActions.pop(), options)?.state).toEqual({
     ...state,
     index: 0,
-    routes: [state.routes[0], state.routes[2], state.routes[3]],
+    routes: [
+      state.routes[0],
+      { ...state.routes[2], isPreloaded: true },
+      { ...state.routes[3], isPreloaded: true },
+    ],
   });
 });
 
@@ -2474,6 +2521,7 @@ test('does not use preloaded route when pushing a route with different ID', () =
           answer: 41,
         },
         name: 'bar',
+        path: undefined,
       },
       {
         key: 'bar-some',
@@ -2482,6 +2530,7 @@ test('does not use preloaded route when pushing a route with different ID', () =
           toBe: 'notMerged',
         },
         name: 'bar',
+        isPreloaded: true,
       },
     ],
   });
@@ -2632,6 +2681,7 @@ test('does not use preloaded route with different ID when replacing current rout
         key: 'bar-preloaded',
         name: 'bar',
         params: { answer: 99 },
+        isPreloaded: true,
       },
     ],
   });
@@ -2782,6 +2832,7 @@ test('does not use preloaded route with different ID when popTo replaces current
         key: 'bar-preloaded',
         name: 'bar',
         params: { answer: 99 },
+        isPreloaded: true,
       },
     ],
   });
@@ -3071,6 +3122,30 @@ test('getStateForDeclaredRoutes returns the same state when every route is decla
   });
 
   expect(router.getStateForDeclaredRoutes(state, ['bar', 'baz'])).toBe(state);
+});
+
+test('returns the same action result when preload markers are already normalized', () => {
+  const router = StackRouter({});
+  const state: StackNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'navigator:stack',
+    index: 0,
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', isPreloaded: true },
+    ],
+  };
+
+  const result = router.getStateForAction(
+    state,
+    { type: 'REMOVE_ROUTES', payload: { routeNames: ['missing'] } },
+    { routeNames: state.routeNames, routeGetIdList: {} }
+  )!;
+
+  expect(result.state).toBe(state);
 });
 
 test('does not reuse popped route keys', () => {

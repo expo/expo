@@ -3,6 +3,7 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
+import { normalizeRouterStates } from './normalizeRouterStates';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
@@ -69,6 +70,31 @@ export function getStackRoutes<ParamList extends ParamListBase>(
     activeRoutes: state.routes.slice(0, state.index + 1),
     preloadedRoutes: state.routes.slice(state.index + 1),
   };
+}
+
+function markPreloadedRoutes<ParamList extends ParamListBase>(
+  state: StackNavigationState<ParamList>
+) {
+  let changed = false;
+  const routes = state.routes.map((route, index) => {
+    if (index > state.index) {
+      if (route.isPreloaded) {
+        return route;
+      }
+      changed = true;
+      return { ...route, isPreloaded: true as const };
+    }
+
+    if (route.isPreloaded) {
+      changed = true;
+      const { isPreloaded, ...activeRoute } = route;
+      return activeRoute;
+    }
+
+    return route;
+  });
+
+  return changed ? { ...state, routes } : state;
 }
 
 function reconcileStackRoutes<ParamList extends ParamListBase>(
@@ -662,5 +688,5 @@ export function StackRouter(options: StackRouterOptions) {
     actionCreators: StackActions,
   };
 
-  return router;
+  return normalizeRouterStates(router, markPreloadedRoutes);
 }

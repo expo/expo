@@ -94,6 +94,7 @@
 ### 💡 Others
 
 - Resolve queued navigation actions against render-time state. ([#49846](https://github.com/expo/expo/pull/49846) by [@Ubax](https://github.com/Ubax))
+- Mark preloaded routes with `isPreloaded: true` on the route object and clear it when the route becomes active. (by [@Ubax](https://github.com/Ubax))
 - Replace latest-value refs with `useLatestCallback` and `useEffectEvent`. ([#49643](https://github.com/expo/expo/pull/49643) by [@Ubax](https://github.com/Ubax))
 - Remove the root `options` event, `DocumentTitleOptions`, and the `documentTitle` prop from `expo-router/react-navigation`. ([#49590](https://github.com/expo/expo/pull/49590) by [@Ubax](https://github.com/Ubax))
 - Remove `onStateChange` from `BaseNavigationContainer` and `NavigationContainerProps` in `expo-router/react-navigation` ([#49588](https://github.com/expo/expo/pull/49588) by [@Ubax](https://github.com/Ubax))
