@@ -207,7 +207,11 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   /// An index failure is reported rather than thrown, because the catalog write has already succeeded by
   /// then and failing the call would report a write that did happen as an error. The kind stays marked
   /// stale instead, so the next publish rebuilds the index even if it carries the same records.
-  func publishCatalog(kind: String, records: [AppIntentEntityRecord]) async throws -> Bool {
+  func publishCatalog(
+    kind: String,
+    records: [AppIntentEntityRecord],
+    logger: Logger = log
+  ) async throws -> Bool {
     return try await indexing.run(key: kind) {
       let didChangeCatalog = try await self.entityStore.setCatalog(
         kind: kind,
@@ -226,7 +230,7 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
       do {
         try await self.performIndex(kind: kind, records: records, update: .replaceEverything)
       } catch {
-        log.error("expo-app-intents: could not update the Spotlight index for '\(kind)': \(error)")
+        logger.error("expo-app-intents: could not update the Spotlight index for '\(kind)': \(error)")
       }
       return didChangeCatalog
     }

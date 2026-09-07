@@ -97,7 +97,8 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
       // already replaced.
       let didChangeCatalog = try await AppEntityIdentifierRegistry.shared.publishCatalog(
         kind: kind,
-        records: entities
+        records: entities,
+        logger: self.appContext?.jsLogger ?? log
       )
 
       // Nothing else downstream of the catalog can have changed if the catalog itself did not.
