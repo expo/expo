@@ -33,8 +33,9 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.{m,swift}'
-    # ExpoUI pulls in C++ through React, so the test target has to link the C++ runtime or the
-    # link step fails on operator new and the __cxa_* personality symbols.
+    # The test bundle links C++ code from ExpoModulesCore but does not inherit its
+    # user_target_xcconfig (-lc++). Clean builds fail on operator new and __cxa_* symbols
+    # without explicitly linking the C++ runtime here.
     test_spec.libraries = 'c++'
   end
 end
