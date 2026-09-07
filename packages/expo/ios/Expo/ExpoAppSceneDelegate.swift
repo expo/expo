@@ -3,6 +3,9 @@
 import Foundation
 import ExpoModulesCore
 import React
+#if canImport(ExpoObjC)
+import ExpoObjC
+#endif
 
 #if os(iOS) || os(tvOS)
 
