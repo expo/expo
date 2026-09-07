@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExperimentalStack = exports.Tabs = exports.unstable_navigationEvents = exports.TabRouter = exports.StackRouter = exports.unstable_integrateWithRouter = exports.unstable_createStandardRouterNavigator = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useRoute = exports.useScrollToTop = exports.useRoutePath = exports.useTheme = exports.ThemeProvider = exports.DefaultTheme = exports.DarkTheme = exports.useIsFocused = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.SuspenseFallback = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.router = exports.useCurrentRouteInfo = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.ExperimentalStack = exports.Tabs = exports.unstable_navigationEvents = exports.TabRouter = exports.StackRouter = exports.unstable_integrateWithRouter = exports.unstable_createStandardRouterNavigator = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useRoute = exports.useScrollToTop = exports.useRoutePath = exports.LocaleProvider = exports.useTheme = exports.ThemeProvider = exports.DefaultTheme = exports.DarkTheme = exports.useIsFocused = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.SuspenseFallback = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.router = exports.useCurrentRouteInfo = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -87,6 +87,8 @@ var ThemeProvider_1 = require("./react-navigation/core/theming/ThemeProvider");
 Object.defineProperty(exports, "ThemeProvider", { enumerable: true, get: function () { return ThemeProvider_1.ThemeProvider; } });
 var useTheme_1 = require("./react-navigation/core/theming/useTheme");
 Object.defineProperty(exports, "useTheme", { enumerable: true, get: function () { return useTheme_1.useTheme; } });
+var LocaleProvider_1 = require("./LocaleProvider");
+Object.defineProperty(exports, "LocaleProvider", { enumerable: true, get: function () { return LocaleProvider_1.LocaleProvider; } });
 var useRoutePath_1 = require("./react-navigation/native/useRoutePath");
 Object.defineProperty(exports, "useRoutePath", { enumerable: true, get: function () { return useRoutePath_1.useRoutePath; } });
 var useScrollToTop_1 = require("./react-navigation/native/useScrollToTop");
