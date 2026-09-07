@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Added `none` to `ExpoSwiftUI.IgnoreSafeArea`. Content-sized hosting views grow by the container insets SwiftUI applies. A `switch` over `IgnoreSafeArea` with no `default` arm needs a `case .none` to keep compiling. ([#49708](https://github.com/expo/expo/pull/49708) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Removed the deprecated `AppContext.hostingRuntimeContext` property. Use `AppContext.runtime` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
 - [Android] Removed the deprecated `AppContext.errorManager` property. Use `AppContext.jsLogger` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
 - [Android] Replaced the old `ArrayBuffer` interface with a concrete class, so `NativeArrayBuffer` and `JavaScriptArrayBuffer` no longer share a common `ArrayBuffer` supertype. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
@@ -12,6 +13,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added `updateLayoutMetrics(_:oldFrame:)` to `ExpoFabricView`, called after React Native applies a new frame. ([#49708](https://github.com/expo/expo/pull/49708) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))

@@ -92,7 +92,9 @@ export default function ExplicitSizingExample() {
 
 ### Ignoring keyboard safe area
 
-Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard avoidance (for example, with `react-native-keyboard-controller`), to prevent the SwiftUI host from applying its own keyboard inset.
+Use `ignoreSafeArea="all"` when React Native is already positioning the host, for example with `react-native-keyboard-controller`. It stops the SwiftUI host from applying its own keyboard inset and moving the content a second time.
+
+`ignoreSafeArea="keyboard"` removes only the keyboard inset and still applies the container inset. A `matchContents` host pinned over the home indicator therefore grows by the bottom inset, which leaves empty space below the content.
 
 ```tsx IgnoreKeyboardExample.tsx
 import { Host, TextField } from '@expo/ui/swift-ui';
@@ -117,7 +119,7 @@ export default function IgnoreKeyboardExample() {
           }}>
           <Host
             matchContents
-            ignoreSafeArea="keyboard"
+            ignoreSafeArea="all"
             style={{ backgroundColor: 'red' }}>
             <TextField placeholder="Enter text" axis="vertical" />
           </Host>
@@ -130,7 +132,7 @@ export default function IgnoreKeyboardExample() {
 
 ### Ignoring the container safe area
 
-Use `ignoreSafeArea="container"` to remove only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
+Use `ignoreSafeArea="container"` to remove only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies. This is the default, so the example below sets a value it would get anyway. Use `ignoreSafeArea="none"` to apply every safe area region instead.
 
 ```tsx IgnoreContainerSafeAreaExample.tsx
 import { Button, Host, HStack, Spacer } from '@expo/ui/swift-ui';

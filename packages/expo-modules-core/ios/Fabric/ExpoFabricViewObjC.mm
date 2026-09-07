@@ -10,6 +10,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewFactory.h>
+#import <React/RCTConversions.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 #include <cmath>
@@ -218,6 +219,12 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   }
 }
 
+- (void)updateLayoutMetrics:(const react::LayoutMetrics &)layoutMetrics oldLayoutMetrics:(const react::LayoutMetrics &)oldLayoutMetrics
+{
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+  [self updateLayoutMetrics:RCTCGRectFromRect(layoutMetrics.frame) oldFrame:RCTCGRectFromRect(oldLayoutMetrics.frame)];
+}
+
 #pragma mark - Events
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
@@ -247,6 +254,11 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 - (void)viewDidUpdateProps
 {
   // Implemented in `ExpoFabricView.swift`
+}
+
+- (void)updateLayoutMetrics:(CGRect)frame oldFrame:(CGRect)oldFrame
+{
+  // Overridden in Swift by views that react to layout changes
 }
 
 - (void)setShadowNodeSize:(float)width height:(float)height

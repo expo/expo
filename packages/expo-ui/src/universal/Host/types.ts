@@ -50,15 +50,15 @@ export interface UniversalHostProps extends ViewProps {
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
   /**
-   * Controls which safe area regions the hosting view should ignore.
-   * - `'all'`- ignores all safe area insets.
-   * - `'keyboard'` - ignores only the keyboard safe area.
+   * Controls which safe area regions the hosting view does not apply.
+   * On Android, Compose never applies the container region, and the keyboard region only affects hosts with `useViewportSizeMeasurement`.
+   * @default 'container'
    *
    * @platform android
    * @platform ios
    * @platform web
    */
-  ignoreSafeArea?: 'all' | 'keyboard';
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard' | 'none';
 
   /**
    * When true and no explicit size is provided, the host will use the viewport size as the proposed size for layout.
