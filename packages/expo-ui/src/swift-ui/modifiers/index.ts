@@ -750,6 +750,18 @@ export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
 /**
+ * Disables or enables clipping of a scrollable view's content to its bounds.
+ * Content drawn outside those bounds, such as a shadow or a view scaled up past the edge, is
+ * cut off by default and stays visible once clipping is disabled.
+ * @param disabled - Whether clipping should be disabled (default: true).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrollclipdisabled(_:)).
+ */
+export const scrollClipDisabled = (disabled: boolean = true) =>
+  createModifier('scrollClipDisabled', { disabled });
+
+/**
  * Controls the visibility of scroll indicators for scrollable views.
  * Mirrors SwiftUI's `scrollIndicators(_:axes:)` modifier.
  * @param visibility - Indicator visibility:
@@ -1725,6 +1737,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof scrollIndicators>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
