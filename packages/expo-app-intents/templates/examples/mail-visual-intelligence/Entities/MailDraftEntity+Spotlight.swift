@@ -46,7 +46,7 @@ extension MailDraftEntity: IndexedEntity {
     attributes.contentDescription = bodyText
     attributes.recipientEmailAddresses = to.compactMap(\.emailAddress)
     attributes.authorEmailAddresses = [account.emailAddress]
-    attributes.userCreated = NSNumber(value: true)
+    attributes.userCreated = true
     attributes.domainIdentifier = Self.spotlightDomainIdentifier
     attributes.keywords = ["mail", "email", "draft", displaySubject]
     return attributes

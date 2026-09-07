@@ -16,11 +16,7 @@ struct OpenMailDraftIntent {
   func perform() async throws -> some IntentResult {
     await AppIntentDispatcher.shared.dispatch(
       name: "openMailDraft",
-      params: [
-        "id": .string(target.id),
-        "subject": .string(target.displaySubject),
-        "body": .string(target.bodyText),
-      ]
+      params: ["id": .string(target.id), "subject": .string(target.displaySubject), "body": .string(target.bodyText)]
     )
 
     return .result()

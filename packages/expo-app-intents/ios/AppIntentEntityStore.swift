@@ -99,6 +99,22 @@ public actor AppIntentEntityStore {
     return "dev.expo.appintents.entities.\(kind)"
   }
 
+  private func staleIndexKey(kind: String) -> String {
+    return "dev.expo.appintents.index.stale.\(kind)"
+  }
+
+  internal func isIndexStale(kind: String) throws -> Bool {
+    return try requireDefaults().bool(forKey: staleIndexKey(kind: kind))
+  }
+
+  internal func markIndexStale(kind: String) throws {
+    try requireDefaults().set(true, forKey: staleIndexKey(kind: kind))
+  }
+
+  internal func clearIndexStale(kind: String) throws {
+    try requireDefaults().removeObject(forKey: staleIndexKey(kind: kind))
+  }
+
   private func isBlank(_ value: String) -> Bool {
     return value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
@@ -205,8 +221,8 @@ public actor AppIntentEntityStore {
 internal final class AppIntentEntityStoreUnavailableException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     return """
-      expo-app-intents could not access the '\(param)' UserDefaults suite, so entity catalogs cannot \
-      be read or written. Try again later.
+      expo-app-intents could not access the '\(param)' UserDefaults suite, so entity catalogs and \
+      Spotlight recovery state cannot be read or written. Try again later.
       """
   }
 }

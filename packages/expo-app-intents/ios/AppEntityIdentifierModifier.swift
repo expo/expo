@@ -118,24 +118,11 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   private var factories: [String: EntityIdentifierFactory] = [:]
   private var indexers: [String: EntityIndexer] = [:]
   private let indexing = KeyedSerialQueue()
+  private let entityStore: AppIntentEntityStore
 
-  /// Where the "this kind's Spotlight index does not match its catalog" flag is kept.
-  ///
-  /// On disk rather than in memory because the drift outlives the process that caused it: indexing
-  /// fails, the app is killed, and the next launch republishes the same catalog — which the entity store
-  /// short-circuits, because the catalog itself did not change. An in-memory flag would be gone by
-  /// then, and the index would stay stale until something called `reindexEntitiesAsync`.
-  ///
-  /// A key of the registry's own, not one `AppIntentEntityStore` hands out, because staleness is a fact
-  /// about the Spotlight index and the store knows nothing about Spotlight. It does mean that moving
-  /// the store to an App Group suite has to move this too.
-  private let defaults = UserDefaults.standard
-
-  private func staleIndexKey(kind: String) -> String {
-    return "dev.expo.appintents.index.stale.\(kind)"
+  internal init(entityStore: AppIntentEntityStore = .shared) {
+    self.entityStore = entityStore
   }
-
-  private init() {}
 
   public func register<Entity: AppEntity>(_ entity: String, as entityType: Entity.Type) {
     let factory: EntityIdentifierFactory = { rawIdentifier in
@@ -188,13 +175,15 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
     lock.withLock { indexers[entity] = indexer }
   }
 
-  public func unregister(_ entity: String) {
-    lock.withLock {
-      factories.removeValue(forKey: entity)
-      indexers.removeValue(forKey: entity)
+  public func unregister(_ entity: String) async throws {
+    try await indexing.run(key: entity) {
+      self.lock.withLock {
+        self.factories.removeValue(forKey: entity)
+        self.indexers.removeValue(forKey: entity)
+      }
+      // Wait for earlier indexing before removing its recovery state.
+      try await self.entityStore.clearIndexStale(kind: entity)
     }
-    // Nothing left to index, so there is nothing left to retry either.
-    clearIndexStale(kind: entity)
   }
 
   func identifier(for entity: String, id: String) -> EntityIdentifier? {
@@ -204,23 +193,6 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   /// Kinds registered as indexable.
   var indexedKinds: [String] {
     return lock.withLock { Array(indexers.keys) }
-  }
-
-  /// Whether a kind's Spotlight index is known not to match its catalog.
-  ///
-  /// `setEntityCatalogAsync` reads this so that republishing an unchanged catalog retries an indexing
-  /// attempt that failed, instead of short-circuiting on the catalog and leaving the index stale until
-  /// something calls `reindexEntitiesAsync`.
-  func isIndexStale(kind: String) -> Bool {
-    return defaults.bool(forKey: staleIndexKey(kind: kind))
-  }
-
-  private func markIndexStale(kind: String) {
-    defaults.set(true, forKey: staleIndexKey(kind: kind))
-  }
-
-  private func clearIndexStale(kind: String) {
-    defaults.removeObject(forKey: staleIndexKey(kind: kind))
   }
 
   /// Stores a catalog and brings the kind's Spotlight index in line with it, and returns whether the
@@ -237,7 +209,7 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   /// stale instead, so the next publish rebuilds the index even if it carries the same records.
   func publishCatalog(kind: String, records: [AppIntentEntityRecord]) async throws -> Bool {
     return try await indexing.run(key: kind) {
-      let didChangeCatalog = try await AppIntentEntityStore.shared.setCatalog(
+      let didChangeCatalog = try await self.entityStore.setCatalog(
         kind: kind,
         entities: records
       )
@@ -246,7 +218,8 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
       // catalog is committed before the index is built, so otherwise the index would stay stale for
       // as long as JavaScript kept republishing the same records - and republishing an identical
       // catalog on every app start is the normal case.
-      guard didChangeCatalog || self.isIndexStale(kind: kind) else {
+      let isIndexStale = try await self.entityStore.isIndexStale(kind: kind)
+      guard didChangeCatalog || isIndexStale else {
         return didChangeCatalog
       }
 
@@ -313,11 +286,11 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   ) async throws -> [AppIntentEntityRecord] {
     do {
       if let identifiers {
-        return try await AppIntentEntityStore.shared.entities(ofKind: kind, matching: identifiers)
+        return try await entityStore.entities(ofKind: kind, matching: identifiers)
       }
-      return try await AppIntentEntityStore.shared.entities(ofKind: kind)
+      return try await entityStore.entities(ofKind: kind)
     } catch {
-      markIndexStale(kind: kind)
+      try await entityStore.markIndexStale(kind: kind)
       log.error("expo-app-intents: could not read the '\(kind)' entity catalog to reindex: \(error)")
       throw error
     }
@@ -343,8 +316,8 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
       return
     }
 
-    let wasStale = isIndexStale(kind: kind)
-    markIndexStale(kind: kind)
+    let wasStale = try await entityStore.isIndexStale(kind: kind)
+    try await entityStore.markIndexStale(kind: kind)
     try await indexer(records, update)
 
     // A partial refresh only wrote the identifiers it was asked about, so it cannot vouch for the
@@ -353,10 +326,10 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
     // the flag it set itself is cleared.
     switch update {
     case .replaceEverything:
-      clearIndexStale(kind: kind)
+      try await entityStore.clearIndexStale(kind: kind)
     case .refreshOnly:
       if !wasStale {
-        clearIndexStale(kind: kind)
+        try await entityStore.clearIndexStale(kind: kind)
       }
     }
   }
