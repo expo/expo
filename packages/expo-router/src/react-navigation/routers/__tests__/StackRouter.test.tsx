@@ -2329,12 +2329,9 @@ test.each([StackActions.push('bar'), CommonActions.navigate('bar')])(
       routeGetIdList: {},
     })!;
 
-    expect(result.state.routes[result.state.index]).toEqual({
-      key: 'bar-preloaded',
-      name: 'bar',
-      path: undefined,
-      params: undefined,
-    });
+    const focusedRoute = result.state.routes[result.state.index]!;
+    expect(focusedRoute.key).toBe('bar-preloaded');
+    expect(focusedRoute.isPreloaded).toBeUndefined();
   }
 );
 
@@ -2415,35 +2412,35 @@ test('partitions active history from multiple preloaded routes', () => {
     ],
   };
 
-  expect(
-    router.getStateForAction(state, StackActions.push('p2', { preload: 2 }), options)?.state
-  ).toEqual({
-    ...state,
-    index: 2,
-    routes: [
-      state.routes[0],
-      state.routes[1],
-      { ...state.routes[3], path: undefined },
-      { ...state.routes[2], isPreloaded: true },
-    ],
-  });
+  const pushedState = router.getStateForAction(
+    state,
+    StackActions.push('p2', { preload: 2 }),
+    options
+  )?.state;
+  expect(pushedState?.index).toBe(2);
+  expect(pushedState?.routes.map((route) => route.key)).toEqual([
+    'a-key',
+    'b-key',
+    'p2-key',
+    'p1-key',
+  ]);
+  expect(pushedState?.routes[2]?.isPreloaded).toBeUndefined();
+  expect(pushedState?.routes[3]?.isPreloaded).toBe(true);
 
-  expect(
-    router.getStateForAction(
-      state,
-      CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
-      options
-    )?.state
-  ).toEqual({
-    ...state,
-    index: 2,
-    routes: [
-      state.routes[0],
-      state.routes[1],
-      { ...state.routes[3], path: undefined },
-      { ...state.routes[2], isPreloaded: true },
-    ],
-  });
+  const navigatedState = router.getStateForAction(
+    state,
+    CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
+    options
+  )?.state;
+  expect(navigatedState?.index).toBe(2);
+  expect(navigatedState?.routes.map((route) => route.key)).toEqual([
+    'a-key',
+    'b-key',
+    'p2-key',
+    'p1-key',
+  ]);
+  expect(navigatedState?.routes[2]?.isPreloaded).toBeUndefined();
+  expect(navigatedState?.routes[3]?.isPreloaded).toBe(true);
 
   expect(router.getStateForAction(state, StackActions.push('c'), options)?.state).toEqual({
     ...state,

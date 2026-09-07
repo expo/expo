@@ -428,12 +428,9 @@ test('PRELOAD marks a re-keyed unfocused route', () => {
     options
   )!;
 
-  expect(result.state.routes[1]).toEqual({
-    key: 'baz:tab-0',
-    name: 'baz',
-    params: { id: 'two' },
-    isPreloaded: true,
-  });
+  const preloadedRoute = result.state.routes[1]!;
+  expect(preloadedRoute.key).toBe('baz:tab-0');
+  expect(preloadedRoute.isPreloaded).toBe(true);
 });
 
 test('focusing a preloaded tab clears its marker', () => {

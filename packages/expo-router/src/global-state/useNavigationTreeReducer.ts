@@ -427,11 +427,9 @@ function visitRoutes(
   excludePreloaded: boolean,
   visit: (routeKey: string) => void
 ) {
-  // TODO(@ubax): find a universal way to exclude preloaded routes.
-  const routes =
-    excludePreloaded && state.type === 'stack'
-      ? state.routes.slice(0, state.index + 1)
-      : state.routes;
+  const routes = excludePreloaded
+    ? state.routes.filter((route) => !route.isPreloaded)
+    : state.routes;
   for (let index = routes.length - 1; index >= 0; index--) {
     const route = routes[index]!;
     if (route.state?.stale === false) {

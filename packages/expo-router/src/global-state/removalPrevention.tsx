@@ -177,12 +177,11 @@ export function isRouteRemovalPrevented(
   }
 
   const visitState = (state: NavigationState): boolean => {
-    // TODO(@ubax): Add more generic way of filtering preloaded routes
-    const routes = state.type === 'stack' ? state.routes.slice(0, state.index + 1) : state.routes;
-    return routes.some(
+    return state.routes.some(
       (route) =>
-        preventedRouteKeys.has(route.key) ||
-        (route.state?.stale === false && visitState(route.state))
+        !route.isPreloaded &&
+        (preventedRouteKeys.has(route.key) ||
+          (route.state?.stale === false && visitState(route.state)))
     );
   };
 

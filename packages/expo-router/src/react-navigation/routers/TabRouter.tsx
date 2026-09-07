@@ -4,7 +4,6 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
-import { normalizeRouterStates } from './normalizeRouterStates';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
@@ -747,7 +746,26 @@ export function TabRouter({
     actionCreators: TabActions,
   };
 
-  return normalizeRouterStates(router, clearFocusedPreloadedRoute);
+  const routerWithClearedFocusedPreloadedRoute: typeof router = {
+    ...router,
+    getStateForDeclaredRoutes(state, routeNames) {
+      return clearFocusedPreloadedRoute(router.getStateForDeclaredRoutes(state, routeNames));
+    },
+    getStateForRouteFocus(state, key) {
+      return clearFocusedPreloadedRoute(router.getStateForRouteFocus(state, key));
+    },
+    getStateForAction(state, action, options) {
+      const result = router.getStateForAction(state, action, options);
+      if (result === null) {
+        return null;
+      }
+
+      const normalizedState = clearFocusedPreloadedRoute(result.state);
+      return normalizedState === result.state ? result : { ...result, state: normalizedState };
+    },
+  };
+
+  return routerWithClearedFocusedPreloadedRoute;
 }
 
 function removeReplacedRouteFromHistory(

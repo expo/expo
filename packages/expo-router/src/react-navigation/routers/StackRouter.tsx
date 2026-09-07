@@ -3,7 +3,6 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
-import { normalizeRouterStates } from './normalizeRouterStates';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
@@ -688,5 +687,24 @@ export function StackRouter(options: StackRouterOptions) {
     actionCreators: StackActions,
   };
 
-  return normalizeRouterStates(router, markPreloadedRoutes);
+  const routerWithMarkedPreloadedRoutes: typeof router = {
+    ...router,
+    getStateForDeclaredRoutes(state, routeNames) {
+      return markPreloadedRoutes(router.getStateForDeclaredRoutes(state, routeNames));
+    },
+    getStateForRouteFocus(state, key) {
+      return markPreloadedRoutes(router.getStateForRouteFocus(state, key));
+    },
+    getStateForAction(state, action, options) {
+      const result = router.getStateForAction(state, action, options);
+      if (result === null) {
+        return null;
+      }
+
+      const normalizedState = markPreloadedRoutes(result.state);
+      return normalizedState === result.state ? result : { ...result, state: normalizedState };
+    },
+  };
+
+  return routerWithMarkedPreloadedRoutes;
 }
