@@ -38,6 +38,11 @@ export default function ExamplesIndex() {
         description="Generate high-volume log events"
         onPress={() => router.push('/examples/event-flood')}
       />
+      <Button
+        title="Trace spans"
+        description="Custom spans (startSpan / withSpan / recordSpan) and network span capture"
+        onPress={() => router.push('/examples/traces')}
+      />
     </ScrollView>
   );
 }
