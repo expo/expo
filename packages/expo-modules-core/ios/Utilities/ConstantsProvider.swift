@@ -48,7 +48,7 @@ private func getBuildVersion() -> String? {
 @MainActor
 private func getStatusBarHeight() -> Double {
   #if os(iOS)
-  let statusBarSize = UIApplication.shared.statusBarFrame.size
+  let statusBarSize = SceneGeometry.statusBarFrame().size
   return min(statusBarSize.width, statusBarSize.height)
   #else
   return 0

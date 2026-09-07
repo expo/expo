@@ -79,6 +79,25 @@ public extension SceneGeometry {
   static func interfaceOrientation(for view: UIView? = nil) -> UIInterfaceOrientation {
     return windowScene(for: view)?.effectiveGeometry.interfaceOrientation ?? .unknown
   }
+
+  /**
+   The status bar belongs to a scene, so it has to be read from one. The `UIApplication` accessors
+   return NaN or null in apps built with the iOS 27 SDK, and they can't describe a resizable window
+   anyway. Nil when no scene is connected.
+   */
+  static func statusBarManager(for view: UIView? = nil) -> UIStatusBarManager? {
+    return windowScene(for: view)?.statusBarManager
+  }
+
+  /// `.zero` when the status bar is hidden or no scene is connected.
+  static func statusBarFrame(for view: UIView? = nil) -> CGRect {
+    return statusBarManager(for: view)?.statusBarFrame ?? .zero
+  }
+
+  /// Treats a missing scene as hidden, so callers don't try to restore a status bar that isn't shown.
+  static func isStatusBarHidden(for view: UIView? = nil) -> Bool {
+    return statusBarManager(for: view)?.isStatusBarHidden ?? true
+  }
 }
 #endif
 
