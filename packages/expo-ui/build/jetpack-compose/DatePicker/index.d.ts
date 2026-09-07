@@ -3,6 +3,19 @@ import type { ModifierConfig } from '../../types';
 export type AndroidVariant = 'picker' | 'input';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 /**
+ * The date range reported by `DateRangePicker` and `DateRangePickerDialog`.
+ */
+export type DateRangeSelection = {
+    /**
+     * The selected start date, or `null` when no start date is selected.
+     */
+    start: Date | null;
+    /**
+     * The selected end date, or `null` until the user selects the second date of the range.
+     */
+    end: Date | null;
+};
+/**
  * Color overrides for the Material 3 DatePicker component.
  * All properties are optional — unset values use Material 3 theme defaults.
  */
@@ -154,6 +167,55 @@ export interface DateTimePickerProps {
  * Renders an inline `DateTimePicker` component.
  */
 export declare function DateTimePicker(props: DateTimePickerProps): import("react/jsx-runtime").JSX.Element;
+export interface DateRangePickerProps {
+    /**
+     * The initially selected start date, as an ISO 8601 string.
+     */
+    initialStartDate?: string | null;
+    /**
+     * The initially selected end date, as an ISO 8601 string. It must be on or after `initialStartDate`.
+     */
+    initialEndDate?: string | null;
+    /**
+     * Called once when the component mounts with the initial range, and again whenever the selected date range changes.
+     * The end date is `null` while the user is selecting a range.
+     */
+    onDateRangeSelected?: (range: DateRangeSelection) => void;
+    /**
+     * The variant of the picker, which determines its appearance and behavior.
+     * @default 'picker'
+     */
+    variant?: AndroidVariant;
+    /**
+     * Show a button to toggle between variants on Android.
+     * @default true
+     */
+    showVariantToggle?: boolean;
+    /**
+     * The tint color to use on the picker elements.
+     */
+    color?: ColorValue;
+    /**
+     * Fine-grained color overrides for individual picker elements.
+     */
+    elementColors?: DatePickerElementColors;
+    /**
+     * Constrains which dates can be selected. `start` is the earliest selectable date and `end` is
+     * the latest.
+     */
+    selectableDates?: {
+        start?: Date;
+        end?: Date;
+    };
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+}
+/**
+ * Renders an inline Material 3 date range picker.
+ */
+export declare function DateRangePicker(props: DateRangePickerProps): import("react/jsx-runtime").JSX.Element;
 export interface DatePickerDialogProps {
     initialDate?: string | null;
     variant?: AndroidVariant;
@@ -170,6 +232,28 @@ export interface DatePickerDialogProps {
     onDismissRequest: () => void;
 }
 export declare function DatePickerDialog(props: DatePickerDialogProps): import("react/jsx-runtime").JSX.Element;
+export interface DateRangePickerDialogProps extends Omit<DateRangePickerProps, 'modifiers'> {
+    /**
+     * The label for the button that confirms the selected range.
+     * Defaults to the system "Ok" string.
+     */
+    confirmButtonLabel?: string;
+    /**
+     * The label for the button that dismisses the dialog.
+     * Defaults to the system "Cancel" string.
+     */
+    dismissButtonLabel?: string;
+    /** The tint color to use on the picker elements and dialog buttons. */
+    color?: ColorValue;
+    /** Callback function that is called when the user confirms a complete date range. */
+    onDateRangeSelected?: (range: DateRangeSelection) => void;
+    /** Callback function that is called when the dialog is dismissed. */
+    onDismissRequest: () => void;
+}
+/**
+ * Renders a modal Material 3 date range picker.
+ */
+export declare function DateRangePickerDialog(props: DateRangePickerDialogProps): import("react/jsx-runtime").JSX.Element;
 export interface TimePickerDialogProps {
     initialDate?: string | null;
     is24Hour?: boolean;
