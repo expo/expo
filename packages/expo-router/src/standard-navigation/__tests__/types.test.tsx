@@ -90,7 +90,6 @@ const TypelessRouter: RouterFactory<
   NavigationAction,
   DefaultRouterOptions
 > = () => ({
-  getStateForDeclaredRoutes: (state) => state,
   getStateForRouteFocus: (state) => state,
   getStateForAction: (state) => ({
     state,

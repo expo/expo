@@ -7,7 +7,6 @@ import { isValidElementType } from 'react-is';
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
-import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { resetNavigatorState } from '../../global-state/stateUtils';
 import { findStateByKey } from '../../global-state/useNavigationTreeReducer';
 import {
@@ -28,7 +27,6 @@ import { NavigationStateContext } from './NavigationStateContext';
 import { NavigatorTypeContext } from './NavigatorTypeContext';
 import { RootNavigationStateContext } from './RootNavigationStateContext';
 import { Screen } from './Screen';
-import { isSetEqual } from './isSetEqual';
 import {
   type DefaultNavigatorOptions,
   type DescriptorRouteProp,
@@ -254,7 +252,6 @@ export function useNavigationBuilder<
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
-  const enqueue = useEnqueueRoutingIntent();
 
   const {
     children,
@@ -346,10 +343,7 @@ export function useNavigationBuilder<
   const committedState = (
     isForeignType ? resetNavigatorState(treeState, router.type) : treeState
   ) as State;
-  const state = React.useMemo(
-    () => router.getStateForDeclaredRoutes(committedState, routeNames),
-    [committedState, routeNamesKey, router]
-  );
+  const state = committedState;
   // TODO(@ubax): Check whether this ref can be safely removed.
   const stateKeyRef = React.useRef(committedState.key);
 
@@ -461,33 +455,6 @@ export function useNavigationBuilder<
   useClientLayoutEffect(() => {
     if (isForeignType) {
       resetNavigator(committedState.key, router.type);
-    }
-  });
-
-  const pendingRouteNamesRef = React.useRef<string[] | undefined>(undefined);
-
-  useClientLayoutEffect(() => {
-    // Wait for the type reset to commit so route-name changes use the mounting router's registry entry.
-    if (isForeignType) {
-      return;
-    }
-    const committed = committedState;
-
-    if (isSetEqual(committed.routeNames, routeNames)) {
-      pendingRouteNamesRef.current = undefined;
-    } else if (!isSetEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
-      pendingRouteNamesRef.current = routeNames;
-      enqueue({
-        type: 'ACTION',
-        payload: {
-          action: {
-            type: 'ROUTE_NAMES_CHANGED',
-            payload: { routeNames },
-            target: committed.key,
-          },
-          originKey: committed.key,
-        },
-      });
     }
   });
 

@@ -17,7 +17,17 @@ beforeEach(() => {
 test('describes absent routes on demand', () => {
   const barOptions = jest.fn(() => ({ title: 'Bar' }));
   const wrapper = ({ children }: React.PropsWithChildren) => (
-    <BaseNavigationContainer>{children}</BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false,
+        routeKeySeq: 0,
+        key: 'navigator:test',
+        index: 0,
+        routeNames: ['foo', 'bar'],
+        routes: [{ key: 'foo:test-0', name: 'foo' }],
+      }}>
+      {children}
+    </BaseNavigationContainer>
   );
   const { result } = renderHook(
     () =>

@@ -813,7 +813,10 @@ test('emits option events when options change with stack router', () => {
         routeNames: ['foo', 'bar', 'baz'],
         routes: [
           { name: 'foo' },
-          { name: 'baz', state: { type: 'stack', routes: [{ name: 'qux' }] } },
+          {
+            name: 'baz',
+            state: { type: 'stack', routeNames: ['qux', 'quxx'], routes: [{ name: 'qux' }] },
+          },
         ],
       }}>
       <TestNavigator>

@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
 
+import type { RouteNode } from '../../Route';
 import type { NavigationAction, NavigationState } from '../../react-navigation/routers';
 import { getNavigateAction } from '../getNavigationAction';
 import type { RouterRegistry } from '../routerRegistry';
@@ -29,10 +30,12 @@ const initialState: NavigationState = {
 
 function renderReducer({
   state = initialState,
+  routeNode,
   registry,
   routesWithRemovalPrevented = new Set(),
 }: {
   state?: NavigationState;
+  routeNode?: RouteNode;
   registry: RouterRegistry;
   routesWithRemovalPrevented?: ReadonlySet<string>;
 }) {
@@ -41,12 +44,14 @@ function renderReducer({
     ReturnType<typeof useNavigationTreeReducer>,
     {
       registry: RouterRegistry;
+      routeNode?: RouteNode;
       routesWithRemovalPrevented: ReadonlySet<string>;
     }
   >(
-    ({ registry, routesWithRemovalPrevented }) => {
+    ({ registry, routeNode, routesWithRemovalPrevented }) => {
       const reducer = useNavigationTreeReducer({
         initialState: state,
+        routeNode,
         registry,
         routesWithRemovalPrevented,
       });
@@ -55,7 +60,7 @@ function renderReducer({
       }
       return reducer;
     },
-    { initialProps: { registry, routesWithRemovalPrevented } }
+    { initialProps: { registry, routeNode, routesWithRemovalPrevented } }
   );
   return { ...result, reports };
 }
@@ -175,27 +180,103 @@ test('prevents moving an active route into the preloaded region', () => {
   ]);
 });
 
-test('does not veto route name changes', () => {
-  const action = { type: 'ROUTE_NAMES_CHANGED' };
+test('reconciles route node changes without vetoing or reporting preloaded routes', () => {
+  const previousRouteNode = node('root', [node('first'), node('second'), node('third')]);
+  const nextRouteNode = node('root', [node('first')]);
+  const reduce = jest.fn(() => null);
+  const appState: NavigationState = {
+    ...initialState,
+    key: 'navigator:0',
+    type: 'stack',
+    index: 1,
+  };
+  const state: NavigationState = {
+    stale: false,
+    routeKeySeq: 1,
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['__root'],
+    routes: [{ key: '__root:0', name: '__root', state: appState }],
+  };
+  const registry = new Map([['navigator:0', entry(reduce)]]) as RouterRegistry;
   const result = renderReducer({
-    registry: new Map([
-      [
-        'root',
-        entry((state) => ({
-          state: { ...state, index: 0, routes: state.routes.slice(0, 1) },
-          affectedRouteKey: state.routes[0]!.key,
-        })),
-      ],
-    ]),
-    routesWithRemovalPrevented: new Set(['third']),
+    state,
+    routeNode: previousRouteNode,
+    registry,
+    routesWithRemovalPrevented: new Set(['second']),
   });
 
-  act(() => result.result.current.handleAction(action));
+  result.rerender({
+    routeNode: nextRouteNode,
+    registry,
+    routesWithRemovalPrevented: new Set(['second']),
+  });
 
-  expect(result.result.current.state.routes).toHaveLength(1);
+  expect(reduce).not.toHaveBeenCalled();
+  expect(result.result.current.state.routes[0]!.state).toMatchObject({
+    index: 0,
+    routeNames: ['first'],
+    routes: [{ key: 'first', name: 'first' }],
+  });
   expect(result.reports.at(-1)?.events).toEqual([
-    { id: 0, type: 'removed-routes', routeKeys: ['third', 'second'], action },
-    expect.objectContaining({ id: 1, type: 'action-dispatched', action }),
+    {
+      id: 0,
+      type: 'removed-routes',
+      routeKeys: ['second'],
+      action: { type: 'ROUTE_NODE_CHANGED' },
+    },
+  ]);
+});
+
+test('removes nested state when a route loses its children', () => {
+  const previousRouteNode = node('root', [node('account', [node('index')])]);
+  const nextRouteNode = node('root', [node('account')]);
+  const nestedState: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'navigator:0-0',
+    index: 0,
+    routeNames: ['index'],
+    routes: [{ key: 'index:0-0-0', name: 'index' }],
+  };
+  const appState: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'navigator:0',
+    index: 0,
+    routeNames: ['account'],
+    routes: [{ key: 'account:0-0', name: 'account', state: nestedState }],
+  };
+  const state: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['__root'],
+    routes: [{ key: '__root:0', name: '__root', state: appState }],
+  };
+  const registry = new Map() as RouterRegistry;
+  const routesWithRemovalPrevented = new Set<string>();
+  const result = renderReducer({
+    state,
+    routeNode: previousRouteNode,
+    registry,
+    routesWithRemovalPrevented,
+  });
+
+  result.rerender({ routeNode: nextRouteNode, registry, routesWithRemovalPrevented });
+
+  expect(result.result.current.state.routes[0]!.state!.routes[0]).toEqual({
+    key: 'account:0-0',
+    name: 'account',
+  });
+  expect(result.reports.at(-1)?.events).toEqual([
+    {
+      id: 0,
+      type: 'removed-routes',
+      routeKeys: ['index:0-0-0'],
+      action: { type: 'ROUTE_NODE_CHANGED' },
+    },
   ]);
 });
 

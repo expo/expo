@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Reconcile route file changes once at the navigation root. Remove `Router.getStateForDeclaredRoutes` and supersede the `ROUTE_NAMES_CHANGED` action introduced below; runtime declaration-only changes no longer prune navigation state.
 - Store tab back state in `routes` outside `fullHistory`, move drawer status to `drawerStatus`, and reserve `ROUTE_NAMES_CHANGED` for route set changes. `backBehavior: 'order'` preloads every declared tab. ([#49586](https://github.com/expo/expo/pull/49586) by [@Ubax](https://github.com/Ubax))
 - Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Remove `beforeRemove`, `__unsafe_action__`, `PreventRemoveContext`, and `usePreventRemoveContext` from `expo-router/react-navigation`. ([#49408](https://github.com/expo/expo/pull/49408) by [@Ubax](https://github.com/Ubax))

@@ -63,15 +63,6 @@ type PreloadAction = {
 /**
  * @internal
  */
-export type InternalRouteNamesChangedAction = {
-  type: 'ROUTE_NAMES_CHANGED';
-  payload: { routeNames: string[] };
-  target?: string;
-};
-
-/**
- * @internal
- */
 export type InternalRouteNamesOrderChangedAction = {
   type: 'ROUTE_NAMES_ORDER_CHANGED';
   payload: { routeNames: string[] };

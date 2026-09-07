@@ -177,69 +177,9 @@ describe('full history', () => {
     }).getStateForRouteFocus(state(['one', 'two'], 0), 'two-key');
     expect(next.history?.map((entry) => entry.key)).toEqual(['one-key', 'two-key']);
   });
-
-  test('keeps visit history aligned when the focused route is removed', () => {
-    const router = TabRouter({ backBehavior: 'fullHistory' });
-    const reconciled = router.getStateForAction(
-      state(['one', 'two', 'three'], 2, {
-        history: [
-          { type: 'route', key: 'one-key' },
-          { type: 'route', key: 'two-key' },
-          { type: 'route', key: 'three-key' },
-        ],
-      }),
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['one', 'two'] } },
-      { ...options, routeNames: ['one', 'two'] }
-    )!.state;
-
-    expect(reconciled.history?.at(-1)?.key).toBe('one-key');
-
-    const next = router.getStateForAction(reconciled, CommonActions.goBack(), {
-      ...options,
-      routeNames: ['one', 'two'],
-    })!.state;
-    expect(next.routes[next.index]?.name).toBe('two');
-  });
 });
 
 describe('route name reconciliation', () => {
-  test('ROUTE_NAMES_CHANGED ignores an order-only update', () => {
-    const current = state(['one', 'two'], 1);
-    const next = TabRouter({ backBehavior: 'history' }).getStateForAction(
-      current,
-      {
-        type: 'ROUTE_NAMES_CHANGED',
-        payload: { routeNames: ['four', 'three', 'two', 'one'] },
-      },
-      { ...options, routeNames: ['four', 'three', 'two', 'one'] }
-    )!.state;
-
-    expect(next).toBe(current);
-  });
-
-  test('ROUTE_NAMES_CHANGED filters removed routes and preserves surviving focus', () => {
-    const next = TabRouter({ backBehavior: 'history' }).getStateForAction(
-      state(['one', 'two', 'three'], 1),
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['two', 'four'] } },
-      { ...options, routeNames: ['two', 'four'] }
-    )!.state;
-
-    expect(next.routeNames).toEqual(['two', 'four']);
-    expect(names(next)).toEqual(['two']);
-    expect(next.index).toBe(0);
-  });
-
-  test('ROUTE_NAMES_CHANGED creates a fallback when no route survives', () => {
-    const next = TabRouter({}).getStateForAction(
-      state(['one']),
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['four'] } },
-      { ...options, routeNames: ['four'] }
-    )!.state;
-    expect(next.routes).toEqual([{ key: 'four:tab-0', name: 'four' }]);
-    expect(next.index).toBe(0);
-    expect(next.routeKeySeq).toBe(1);
-  });
-
   test('GO_BACK uses the route names stored in state for its anchor', () => {
     const next = TabRouter({ backBehavior: 'firstRoute' }).getStateForAction(
       state(['two'], 0, { routeNames: ['one', 'two'] }),
@@ -885,28 +825,6 @@ describe('additional reconciliation coverage', () => {
 
     expect(next.history).toEqual([]);
     expect(router.getStateForAction(next, CommonActions.goBack(), options)).toBeNull();
-  });
-
-  test('ROUTE_NAMES_CHANGED handles an empty declared set', () => {
-    const next = TabRouter({}).getStateForAction(
-      state(['one']),
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: [] } },
-      { ...options, routeNames: [] }
-    )!.state;
-
-    expect(next).toMatchObject({ routeNames: [], routes: [], index: -1 });
-    expect(next.history).toBeUndefined();
-  });
-
-  test('ROUTE_NAMES_CHANGED falls back to the first surviving route in state order', () => {
-    const next = TabRouter({}).getStateForAction(
-      state(['one', 'two', 'three'], 1),
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['three', 'one'] } },
-      { ...options, routeNames: ['three', 'one'] }
-    )!.state;
-
-    expect(names(next)).toEqual(['one', 'three']);
-    expect(next.routes[next.index]?.name).toBe('one');
   });
 
   test('ROUTE_NAMES_ORDER_CHANGED preserves the affected focused route key', () => {

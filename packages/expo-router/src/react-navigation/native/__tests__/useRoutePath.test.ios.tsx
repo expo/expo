@@ -96,6 +96,25 @@ test('gets path for route in nested navigator screen', () => {
   const StackB = createStackNavigator<BStackParamList>();
 
   const navigation = createNavigationContainerRef<AStackParamList>();
+  const nestedInitialState = createTestState(['a'], { a: ['b', 'c'] });
+  const aRoute = nestedInitialState.routes[0];
+  if (aRoute?.state?.stale !== false) {
+    throw new Error('Expected a complete nested state.');
+  }
+  const completeInitialState = {
+    ...nestedInitialState,
+    routes: [
+      {
+        ...aRoute,
+        state: {
+          ...aRoute.state,
+          routes: aRoute.state.routes.map((route) =>
+            route.name === 'b' ? { ...route, params: { id: 'apple' } } : route
+          ),
+        },
+      },
+    ],
+  };
   let navigateToC: () => void;
   const NestedTest = () => {
     const navigation = useNavigation<StackNavigationProp<BStackParamList>>();
@@ -104,9 +123,7 @@ test('gets path for route in nested navigator screen', () => {
   };
 
   render(
-    <NavigationContainer
-      ref={navigation}
-      linking={{ ...config, getInitialURL: () => 'https://example.com/foo/bar/apple' }}>
+    <NavigationContainer ref={navigation} initialState={completeInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="a">
           {() => (

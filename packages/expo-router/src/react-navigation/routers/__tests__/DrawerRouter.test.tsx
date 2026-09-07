@@ -1,6 +1,5 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { createInitialState } from '../../core/createInitialState';
 import {
   CommonActions,
   DrawerActions,
@@ -140,14 +139,13 @@ describe('history migration', () => {
     expect(next.drawerStatus).toBe('open');
   });
 
-  test('preserves drawerStatus during route-name reconciliation and preload', () => {
+  test('preserves drawerStatus during preload', () => {
     const router = DrawerRouter({ backBehavior: 'history' });
-    let next = router.getStateForAction(
+    const next = router.getStateForAction(
       state(['one'], 0, { drawerStatus: 'open' }),
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['one', 'two'] } },
-      { ...options, routeNames: ['one', 'two'] }
+      CommonActions.preload('two'),
+      options
     )!.state;
-    next = router.getStateForAction(next, CommonActions.preload('two'), options)!.state;
     expect(next.drawerStatus).toBe('open');
   });
 });
@@ -226,40 +224,6 @@ test('warns and ignores a partial RESET state', () => {
     expect.stringContaining('The RESET action payload must contain a complete navigation state.')
   );
   warn.mockRestore();
-});
-
-test('keeps drawer status when the active route is removed', () => {
-  const router = DrawerRouter({ backBehavior: 'history' });
-  const routeOptions: RouterConfigOptions = {
-    routeNames: ['bar', 'baz'],
-    routeGetIdList: {},
-  };
-  const initialState = createInitialState<DrawerNavigationState<ParamListBase>>({
-    ...routeOptions,
-    parentChain: 'test',
-  });
-  const openState = router.getStateForAction(
-    initialState,
-    DrawerActions.openDrawer(),
-    routeOptions
-  )!.state;
-
-  const result = router.getStateForAction(
-    openState,
-    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz'] } },
-    { ...routeOptions, routeNames: ['baz'] }
-  );
-
-  expect(result?.state).toEqual({
-    stale: false,
-    routeKeySeq: 2,
-    type: 'drawer',
-    key: 'navigator:test',
-    index: 0,
-    routeNames: ['baz'],
-    routes: [{ key: 'baz:test-1', name: 'baz' }],
-    drawerStatus: 'open',
-  });
 });
 
 test('PRELOAD keeps ordered routes and drawer status', () => {

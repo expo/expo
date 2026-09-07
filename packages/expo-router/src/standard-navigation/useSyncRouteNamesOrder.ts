@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import { use } from 'react';
 
+import { RouterRegistryContext } from '../global-state/routerRegistry';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
-import { isSetEqual } from '../react-navigation/core/isSetEqual';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 
 export function useSyncRouteNamesOrder({
@@ -12,30 +12,28 @@ export function useSyncRouteNamesOrder({
 }: {
   backBehavior: string | undefined;
   routeNames: string[];
-  state: { key: string; routeNames: string[] };
+  state: { key: string; routes: { name: string }[] };
   dispatch: (action: {
     type: 'ROUTE_NAMES_ORDER_CHANGED';
     payload: { routeNames: string[] };
     target: string;
   }) => void;
 }) {
-  const previousRouteNamesRef = useRef(routeNames);
+  const registry = backBehavior === 'order' ? use(RouterRegistryContext) : undefined;
 
   useClientLayoutEffect(() => {
-    const previousRouteNames = previousRouteNamesRef.current;
-    previousRouteNamesRef.current = routeNames;
-    // The router registry is not available during this component's first layout effect.
+    const currentRouteNames = state.routes.map((route) => route.name);
+    const declaredRouteNames = routeNames.filter((name) => currentRouteNames.includes(name));
     if (
       backBehavior === 'order' &&
-      !isArrayEqual(previousRouteNames, routeNames) &&
-      isSetEqual(state.routeNames, routeNames) &&
-      !isArrayEqual(state.routeNames, routeNames)
+      registry?.has(state.key) &&
+      !isArrayEqual(currentRouteNames, declaredRouteNames)
     ) {
       dispatch({
         type: 'ROUTE_NAMES_ORDER_CHANGED',
-        payload: { routeNames },
+        payload: { routeNames: declaredRouteNames },
         target: state.key,
       });
     }
-  }, [backBehavior, dispatch, routeNames, state.key, state.routeNames]);
+  }, [backBehavior, dispatch, registry, routeNames, state.key, state.routes]);
 }

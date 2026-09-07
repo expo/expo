@@ -553,80 +553,6 @@ test('does not reseed state when a raw navigator without a route node unmounts',
   expect(onStateChange).toHaveBeenCalledTimes(1);
 });
 
-test('reconciles state when a conditional navigator changes', () => {
-  const TestNavigatorA = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
-
-  const TestNavigatorB = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
-
-  const onStateChange = jest.fn();
-
-  const navigation = createNavigationContainerRef<ParamListBase>();
-
-  const Test = ({ condition }: { condition: boolean }) => {
-    return (
-      <BaseNavigationContainer
-        ref={navigation}
-        initialState={{
-          index: 0,
-          routes: [{ name: 'foo' }, { name: 'bar' }],
-        }}
-        onStateChange={onStateChange}>
-        {condition ? (
-          <TestNavigatorA>
-            <Screen name="foo">{() => null}</Screen>
-            <Screen name="bar">{() => null}</Screen>
-          </TestNavigatorA>
-        ) : (
-          <TestNavigatorB>
-            <Screen name="bar">{() => null}</Screen>
-            <Screen name="baz">{() => null}</Screen>
-          </TestNavigatorB>
-        )}
-      </BaseNavigationContainer>
-    );
-  };
-
-  const root = render(<Test condition />);
-
-  expect(onStateChange).toHaveBeenCalledTimes(0);
-  expect(navigation.getRootState()).toEqual({
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-    index: 0,
-    key: '2',
-    routeNames: ['foo', 'bar'],
-    routes: [
-      { key: 'foo-0', name: 'foo' },
-      { key: 'bar-1', name: 'bar' },
-    ],
-  });
-
-  root.update(<Test condition={false} />);
-
-  expect(navigation.getRootState()).toEqual({
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-    index: 0,
-    key: '2',
-    routeNames: ['bar', 'baz'],
-    routes: [{ key: 'bar-1', name: 'bar' }],
-  });
-});
-
 test('resets state when a conditional navigator changes router type', () => {
   const createMockRouter =
     (type: string): typeof MockRouter =>
@@ -643,7 +569,6 @@ test('resets state when a conditional navigator changes router type', () => {
               state: {
                 ...result.state,
                 type,
-                ...(action.type === 'ROUTE_NAMES_CHANGED' ? { history: [type] } : null),
               },
             }
           );
@@ -683,8 +608,8 @@ test('resets state when a conditional navigator changes router type', () => {
         </TestNavigatorA>
       ) : (
         <TestNavigatorB>
+          <Screen name="foo">{() => null}</Screen>
           <Screen name="bar">{() => null}</Screen>
-          <Screen name="baz">{() => null}</Screen>
         </TestNavigatorB>
       )}
     </BaseNavigationContainer>
@@ -699,9 +624,8 @@ test('resets state when a conditional navigator changes router type', () => {
     key: 'navigator',
     type: 'test-b',
     index: 0,
-    routeNames: ['bar', 'baz'],
+    routeNames: ['foo', 'bar'],
     routes: [{ key: 'bar-key', name: 'bar', params: { id: '123' } }],
-    history: ['test-b'],
   });
 });
 
@@ -849,80 +773,6 @@ test('updates route params with setParams applied to parent', () => {
     ],
     stale: false,
     routeKeySeq: 0,
-  });
-});
-
-test('handles change in route names', () => {
-  const TestNavigator = (props: any): any => {
-    useNavigationBuilder(MockRouter, props);
-    return null;
-  };
-
-  const onStateChange = jest.fn();
-
-  const root = render(
-    <BaseNavigationContainer>
-      <TestNavigator initialRouteName="bar">
-        <Screen name="foo" component={React.Fragment} />
-        <Screen name="bar" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  root.update(
-    <BaseNavigationContainer onStateChange={onStateChange}>
-      <TestNavigator>
-        <Screen name="foo" component={React.Fragment} />
-        <Screen name="baz" component={React.Fragment} />
-        <Screen name="qux" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'baz', 'qux'],
-    routes: [{ key: 'foo-0', name: 'foo' }],
-  });
-});
-
-test('reconciles route names when no previous route survives', () => {
-  const TestNavigator = (props: any): any => {
-    useNavigationBuilder(MockRouter, props);
-    return null;
-  };
-
-  const onStateChange = jest.fn();
-  const root = render(
-    <BaseNavigationContainer>
-      <TestNavigator initialRouteName="bar">
-        <Screen name="foo" component={React.Fragment} />
-        <Screen name="bar" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  root.update(
-    <BaseNavigationContainer onStateChange={onStateChange}>
-      <TestNavigator>
-        <Screen name="baz" component={React.Fragment} />
-        <Screen name="qux" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['baz', 'qux'],
-    routes: [{ key: 'baz-0', name: 'baz' }],
   });
 });
 

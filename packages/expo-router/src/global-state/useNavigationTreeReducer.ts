@@ -15,6 +15,7 @@ import {
   createSeededNavigationState,
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
+import { reconcileRoutes } from './reconcileRoutes';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import type { RoutingIntent } from './routingQueue';
@@ -31,6 +32,10 @@ type ReducerConfig = {
 
 type TreeOperation =
   | RoutingIntent
+  | {
+      type: 'ROUTE_NODE_CHANGED';
+      routeNode: RouteNode;
+    }
   | {
       type: 'NAVIGATOR_UNMOUNTED';
       stateKey: string;
@@ -82,15 +87,13 @@ export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
 
 type NavigationTreeResult = {
   state: NavigationState;
+  routeNode: RouteNode | undefined;
   report: NavigationTreeReport | undefined;
   eventSeq: number;
 };
 
 const warnedActions = new WeakSet<NavigationAction>();
-const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set([
-  'ROUTE_NAMES_CHANGED',
-  'ROUTE_NAMES_ORDER_CHANGED',
-]);
+const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_ORDER_CHANGED']);
 
 function warnIfStaleState(state: NavigationState) {
   if (process.env.NODE_ENV !== 'development') {
@@ -154,6 +157,32 @@ function navigationTreeReducer(
   const state = result.state;
 
   switch (operation.type) {
+    case 'ROUTE_NODE_CHANGED': {
+      const reconciledState = reconcileRoutes(state, operation.routeNode);
+      const nextState = completeNavigationState(reconciledState, operation.routeNode);
+      const removedRoutes = getRemovedRouteKeys(state, nextState);
+      const events: NavigationTreeReportEvent[] =
+        removedRoutes.length === 0
+          ? []
+          : [
+              {
+                id: result.eventSeq,
+                type: 'removed-routes',
+                routeKeys: removedRoutes,
+                action: { type: 'ROUTE_NODE_CHANGED' },
+              },
+            ];
+      return {
+        ...result,
+        state: nextState === state ? state : deepFreeze(nextState),
+        routeNode: operation.routeNode,
+        report:
+          events.length === 0
+            ? result.report
+            : { events: result.report ? [...result.report.events, ...events] : events },
+        eventSeq: result.eventSeq + events.length,
+      };
+    }
     case 'NAVIGATE_TO_HREF': {
       const { href, options } = operation.payload;
       let resolution: ReturnType<typeof getNavigateAction>;
@@ -263,6 +292,7 @@ function navigationTreeReducer(
 
       return {
         state: committedState,
+        routeNode: result.routeNode,
         report,
         eventSeq: result.eventSeq + events.length,
       };
@@ -327,9 +357,21 @@ export function useNavigationTreeReducer({
         );
       }
       // TODO(@ubax): check if deepFreeze is needed here.
-      return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
+      return { state: deepFreeze(value), routeNode, report: undefined, eventSeq: 0 };
     }
   );
+  if (routeNode !== undefined && routeNode !== result.routeNode) {
+    reactDispatch({
+      operation: { type: 'ROUTE_NODE_CHANGED', routeNode },
+      config: {
+        registry,
+        routesWithRemovalPrevented,
+        routeNode,
+        linking,
+        redirects,
+      },
+    });
+  }
   const previousRegistryRef = React.useRef(registry);
 
   const processAction = React.useCallback(
@@ -346,7 +388,6 @@ export function useNavigationTreeReducer({
       }),
     [linking, redirects, registry, routeNode, routesWithRemovalPrevented]
   );
-  const process = React.useEffectEvent(processAction);
   const processIntent = React.useCallback(
     (intent: RoutingIntent) => processAction(intent),
     [processAction]
@@ -380,14 +421,14 @@ export function useNavigationTreeReducer({
     previousRegistryRef.current = registry;
     for (const [stateKey, entry] of previousRegistry) {
       if (!registry.has(stateKey) && entry.routeNode) {
-        process({
+        processAction({
           type: 'NAVIGATOR_UNMOUNTED',
           stateKey,
           routeNode: entry.routeNode,
         });
       }
     }
-  }, [registry]);
+  }, [processAction, registry]);
 
   return {
     state: result.state,

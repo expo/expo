@@ -79,10 +79,7 @@ it('does not crash when a route file is added and the app re-renders', () => {
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
-// TODO(@ubax): seed the new nested navigator before it renders; intent deduplication alone
-// cannot repair the missing child state synchronously.
-// https://linear.app/expo/issue/ENG-26163/fix-hot-module-reloading-by-utilizing-global-state
-it.skip('seeds state when a route gains a nested layout', () => {
+it('seeds state when a route gains a nested layout', () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
@@ -432,4 +429,112 @@ it('focuses the surviving top route when the focused stack route is removed', ()
 
   // A stack focuses the survivor below the removed route, so `index` must never be focused.
   expect(focusEvents).toStrictEqual(['blur:third', 'focus:details']);
+});
+
+it('reconciles a renamed route in an unmounted nested layout', () => {
+  const AccountLayout = jest.fn(() => <Stack />);
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Tabs />,
+    index: () => <Text testID="index">Index</Text>,
+    'account/_layout': AccountLayout,
+    'account/index': () => <Text testID="account-index">Account</Text>,
+    'account/old': () => <Text testID="old">Old</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/account' });
+  expect(AccountLayout).not.toHaveBeenCalled();
+
+  delete routes['account/old'];
+  routes['account/new'] = () => <Text testID="new">New</Text>;
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+
+  expect(AccountLayout).not.toHaveBeenCalled();
+  const appState = result.getRouterState()!.routes[0]!.state!;
+  const accountState = appState.routes.find((route) => route.name === 'account')?.state;
+  expect(accountState).toMatchObject({
+    routeNames: ['index', 'new'],
+    routes: [expect.objectContaining({ name: 'index' })],
+  });
+});
+
+it('restores declared tab order after a route is renamed', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => {
+      const screens = [];
+      if (routes.second) screens.push(<Tabs.Screen key="second" name="second" />);
+      if (routes.fourth) screens.push(<Tabs.Screen key="fourth" name="fourth" />);
+      screens.push(<Tabs.Screen key="index" name="index" />);
+      screens.push(<Tabs.Screen key="third" name="third" />);
+      return <Tabs backBehavior="order">{screens}</Tabs>;
+    },
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+    third: () => <Text testID="third">Third</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/' });
+  expect(result.getRouterState()!.routes[0]!.state!.routes.map(({ name }) => name)).toEqual([
+    'second',
+    'index',
+    'third',
+  ]);
+  delete routes.second;
+  routes.fourth = () => <Text testID="fourth">Fourth</Text>;
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+
+  const state = result.getRouterState()!.routes[0]!.state!;
+  expect(state.routes.map(({ name }) => name)).toEqual(['fourth', 'index', 'third']);
+  expect(state.routes[state.index ?? -1]?.name).toBe('index');
+});
+
+it('repairs full tab history when the focused route is removed', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Tabs backBehavior="fullHistory" />,
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+    third: () => <Text testID="third">Third</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/' });
+  act(() => router.navigate('/second'));
+  act(() => router.navigate('/third'));
+  const removedKey = result
+    .getRouterState()!
+    .routes[0]!.state!.routes.find(({ name }) => name === 'third')!.key;
+
+  delete routes.third;
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+
+  const state = result.getRouterState()!.routes[0]!.state!;
+  const focusedRoute = state.routes[state.index ?? -1];
+  expect(focusedRoute?.name).toBe('index');
+  expect(state.history).not.toEqual(
+    expect.arrayContaining([expect.objectContaining({ key: removedKey })])
+  );
+  expect(state.history?.at(-1)).toMatchObject({
+    type: 'route',
+    key: focusedRoute!.key,
+  });
+
+  act(() => router.back());
+  const backedState = result.getRouterState()!.routes[0]!.state!;
+  expect(backedState.routes[backedState.index ?? -1]?.name).toBe('second');
+});
+
+it('commits one navigation state update when a stack route tree reloads', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+  const result = renderRouter(routes, { initialUrl: '/' });
+  const listener = jest.fn();
+  const unsubscribe = navigationRef.addListener('state', listener);
+
+  delete routes.second;
+  routes.third = () => <Text testID="third">Third</Text>;
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+
+  expect(listener).toHaveBeenCalledTimes(1);
+  unsubscribe();
 });

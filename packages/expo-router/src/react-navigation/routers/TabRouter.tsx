@@ -104,23 +104,6 @@ type TabNavigationStateWithHistory = TabNavigationState<ParamListBase> &
 
 const TYPE_ROUTE = 'route' as const;
 
-const addFallbackRouteIfEmpty = (
-  routes: Route<string>[],
-  routeNames: string[],
-  initialRouteName: string | undefined,
-  mintRouteKey: (name: string) => string
-) => {
-  if (routes.length > 0 || routeNames.length === 0) {
-    return routes;
-  }
-
-  const name =
-    initialRouteName !== undefined && routeNames.includes(initialRouteName)
-      ? initialRouteName
-      : routeNames[0]!;
-  return [{ name, key: mintRouteKey(name) }];
-};
-
 const addRouteIfMissing = (
   routes: Route<string>[],
   name: string,
@@ -328,51 +311,6 @@ export function TabRouter({
       const minter = createRouteKeyMinter(state);
 
       switch (action.type) {
-        case 'ROUTE_NAMES_CHANGED': {
-          const routeNames = action.payload.routeNames;
-
-          if (isSetEqual(state.routeNames, routeNames)) {
-            return { state, affectedRouteKey: state.routes[state.index]?.key };
-          }
-
-          let routes = addFallbackRouteIfEmpty(
-            state.routes.filter((route) => routeNames.includes(route.name)),
-            routeNames,
-            initialRouteName,
-            minter.mint
-          );
-
-          if (backBehavior === 'order') {
-            routes = orderRoutesByRouteNames(routes, routeNames);
-          }
-
-          const focusedKey = state.routes[state.index]?.key;
-          const focusedIndex = routes.findIndex((route) => route.key === focusedKey);
-          const index = routes.length === 0 ? -1 : Math.max(focusedIndex, 0);
-          const history =
-            backBehavior === 'fullHistory'
-              ? state.history!.filter((item) => routes.some((route) => route.key === item.key))
-              : undefined;
-          const nextState =
-            backBehavior === 'fullHistory' && focusedIndex === -1 && routes.length > 0
-              ? changeFullHistoryIndex({ ...state, routes, history: history! }, index)
-              : {
-                  ...state,
-                  routes,
-                  index,
-                  ...(history === undefined ? undefined : { history }),
-                };
-
-          return {
-            state: {
-              ...nextState,
-              routeNames,
-              routeKeySeq: minter.routeKeySeq,
-            },
-            affectedRouteKey: routes[index]?.key,
-          };
-        }
-
         case 'ROUTE_NAMES_ORDER_CHANGED': {
           const routeNames = action.payload.routeNames;
           if (backBehavior !== 'order' || !isSetEqual(state.routeNames, routeNames)) {

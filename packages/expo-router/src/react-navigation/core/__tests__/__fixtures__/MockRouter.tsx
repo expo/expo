@@ -10,22 +10,9 @@ export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
 
 export const MockRouterKey = { current: 0 };
 
-function getStateForRouteNamesChange(state: NavigationState, routeNames: string[]) {
-  const routes = state.routes.filter((route) => routeNames.includes(route.name));
-
-  return {
-    ...state,
-    routeNames,
-    routes,
-    index: Math.min(state.index, routes.length - 1),
-  };
-}
-
 export function MockRouter(_options: DefaultRouterOptions) {
   const router: Router<NavigationState, MockActions> = {
     type: 'test',
-
-    getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
 
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
@@ -39,31 +26,6 @@ export function MockRouter(_options: DefaultRouterOptions) {
 
     getStateForAction(state, action) {
       switch (action.type) {
-        case 'ROUTE_NAMES_CHANGED': {
-          const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
-
-          if (nextState.routes.length !== 0) {
-            const result = { ...nextState, type: 'test' };
-            return {
-              state: result,
-              affectedRouteKey: result.routes[result.index]?.key,
-            };
-          }
-
-          const result = {
-            ...nextState,
-            type: 'test',
-            index: 0,
-            routes: [
-              {
-                name: action.payload.routeNames[0]!,
-                key: `${action.payload.routeNames[0]}-${MockRouterKey.current++}`,
-              },
-            ],
-          };
-          return { state: result, affectedRouteKey: result.routes[result.index]?.key };
-        }
-
         case 'UPDATE':
           return {
             state: { ...state, type: 'test' },
