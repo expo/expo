@@ -3,6 +3,7 @@
 import Foundation
 import ExpoModulesCore
 import React
+import ExpoObjC
 
 #if os(iOS) || os(tvOS)
 

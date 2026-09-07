@@ -18,6 +18,14 @@
 #import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
 #elif __has_include(<React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h>)
 #import <React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h>
+#else
+// SwiftPM: React Native ships ONE consolidated React.framework rather than a
+// separate React_RCTAppDelegate pod, so neither umbrella above exists. The
+// app-delegate headers are in React.framework/Headers but deliberately absent
+// from React-umbrella.h, so import them individually.
+#import <React/RCTReactNativeFactory.h>
+#import <React/RCTDefaultReactNativeFactoryDelegate.h>
+#import <React/RCTRootViewFactory.h>
 #endif
 
 

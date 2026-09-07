@@ -1,4 +1,7 @@
 import React
+// SwiftPM compiles Expo and ExpoObjC as separate modules; CocoaPods builds them
+// as one pod target where Swift saw the ObjC half implicitly.
+import ExpoObjC
 
 open class ExpoReactNativeFactoryDelegate: RCTDefaultReactNativeFactoryDelegate {
   open override func customize(_ rootView: UIView) {
