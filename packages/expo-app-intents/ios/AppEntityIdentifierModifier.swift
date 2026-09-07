@@ -96,13 +96,13 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   /// because the records alone cannot name what is gone: an identifier with no record left in the
   /// catalog belongs to a deleted entity, whose index entry has to go with it. A replacement needs no
   /// identifiers, since it starts by deleting every entity of the type.
-  private enum IndexUpdate {
+  internal enum IndexUpdate: Sendable {
     case replaceEverything
     case refreshOnly(requested: [String])
   }
 
   private typealias EntityIdentifierFactory = (String) -> EntityIdentifier?
-  private typealias EntityIndexer = ([AppIntentEntityRecord], IndexUpdate) async throws -> Void
+  internal typealias EntityIndexer = ([AppIntentEntityRecord], IndexUpdate) async throws -> Void
 
   /// Guards everything below. The registry is reached from the main actor - `register` from the setup
   /// module's `OnCreate`, `identifier(for:id:)` from a SwiftUI `body` - and from arbitrary async
@@ -172,7 +172,11 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
         try await index.indexAppEntities(batch)
       }
     }
-    lock.withLock { indexers[entity] = indexer }
+    register(kind: entity, indexer: indexer)
+  }
+
+  internal func register(kind: String, indexer: @escaping EntityIndexer) {
+    lock.withLock { indexers[kind] = indexer }
   }
 
   public func unregister(_ entity: String) async throws {

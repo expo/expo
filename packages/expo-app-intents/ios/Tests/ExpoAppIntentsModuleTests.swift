@@ -188,6 +188,29 @@ struct KeyedSerialQueueTests {
   }
 }
 
+private actor RecordingEntityIndexer {
+  struct Call: Sendable {
+    let ids: [String]
+    let update: AppEntityIdentifierRegistry.IndexUpdate
+  }
+
+  struct IndexingFailure: Error {}
+
+  private let failFirstCall: Bool
+  private(set) var calls: [Call] = []
+
+  init(failFirstCall: Bool) {
+    self.failFirstCall = failFirstCall
+  }
+
+  func index(records: [AppIntentEntityRecord], update: AppEntityIdentifierRegistry.IndexUpdate) throws {
+    calls.append(Call(ids: records.map(\.id), update: update))
+    if failFirstCall && calls.count == 1 {
+      throw IndexingFailure()
+    }
+  }
+}
+
 @Suite("AppEntityIdentifierRegistry")
 struct AppEntityIdentifierRegistryTests {
   @Test
@@ -201,6 +224,81 @@ struct AppEntityIdentifierRegistryTests {
     defer { defaults.removeObject(forKey: key) }
 
     try await AppEntityIdentifierRegistry.shared.replaceIndexFromCatalog(kind: kind)
+  }
+
+  @Test
+  func `an unchanged catalog retries a failed index and clears the stale flag`() async throws {
+    let suiteName = "AppEntityIdentifierRegistryTests-\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let store = AppIntentEntityStore(userDefaultsSuiteName: suiteName)
+    let registry = AppEntityIdentifierRegistry(entityStore: store)
+    let indexer = RecordingEntityIndexer(failFirstCall: true)
+    let kind = "trail"
+    let records = [AppIntentEntityRecord(id: "t1", title: "Eagle Peak")]
+    registry.register(kind: kind) { records, update in
+      #expect(try await store.isIndexStale(kind: kind), "mark stale before starting index work")
+      try await indexer.index(records: records, update: update)
+    }
+
+    #expect(try await registry.publishCatalog(kind: kind, records: records))
+    #expect(try await store.entities(ofKind: kind).map(\.id) == ["t1"])
+    #expect(try await store.isIndexStale(kind: kind))
+    #expect(await indexer.calls.count == 1)
+
+    #expect(try await !registry.publishCatalog(kind: kind, records: records))
+    #expect(try await !store.isIndexStale(kind: kind))
+    let calls = await indexer.calls
+    #expect(calls.map(\.ids) == [["t1"], ["t1"]])
+    for call in calls {
+      switch call.update {
+      case .replaceEverything:
+        break
+      case .refreshOnly:
+        Issue.record("publishing must replace the whole index")
+      }
+    }
+
+    #expect(try await !registry.publishCatalog(kind: kind, records: records))
+    #expect(await indexer.calls.count == 2, "a clean unchanged catalog skips indexing")
+  }
+
+  @Test(arguments: [false, true])
+  func `a successful partial refresh preserves the previous stale state`(initiallyStale: Bool) async throws {
+    let suiteName = "AppEntityIdentifierRegistryTests-\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let store = AppIntentEntityStore(userDefaultsSuiteName: suiteName)
+    let registry = AppEntityIdentifierRegistry(entityStore: store)
+    let indexer = RecordingEntityIndexer(failFirstCall: initiallyStale)
+    let kind = "trail"
+    let records = [
+      AppIntentEntityRecord(id: "t1", title: "Eagle Peak"),
+      AppIntentEntityRecord(id: "t2", title: "Lake Loop"),
+    ]
+    registry.register(kind: kind) { records, update in
+      #expect(try await store.isIndexStale(kind: kind), "mark stale before starting index work")
+      try await indexer.index(records: records, update: update)
+    }
+
+    #expect(try await registry.publishCatalog(kind: kind, records: records))
+    #expect(try await store.isIndexStale(kind: kind) == initiallyStale)
+
+    try await registry.updateIndexFromCatalog(kind: kind, matching: ["t1", "deleted"])
+
+    #expect(try await store.isIndexStale(kind: kind) == initiallyStale)
+    let calls = await indexer.calls
+    #expect(calls.count == 2)
+    let refresh = try #require(calls.last)
+    #expect(refresh.ids == ["t1"])
+    switch refresh.update {
+    case .refreshOnly(let requested):
+      #expect(requested == ["t1", "deleted"])
+    case .replaceEverything:
+      Issue.record("a partial refresh must preserve the requested identifiers")
+    }
   }
 }
 
