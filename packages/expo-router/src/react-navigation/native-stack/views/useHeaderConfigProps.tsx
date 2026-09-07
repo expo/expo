@@ -200,6 +200,7 @@ export function useHeaderConfigProps({
 }: Props): ScreenStackHeaderConfigProps {
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
+
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
   const headerNativeProps = unstable_nativeProps?.headerConfig;
 
@@ -218,6 +219,15 @@ export function useHeaderConfigProps({
   const headerStyleFlattened = StyleSheet.flatten(headerStyle) || {};
   const headerLargeStyleFlattened = StyleSheet.flatten(headerLargeStyle) || {};
 
+  const headerBackgroundColor =
+    headerStyleFlattened.backgroundColor ??
+    (headerBackground != null ||
+    headerTransparent ||
+    // The title becomes invisible if background color is set with large title on iOS 26
+    (Platform.OS === 'ios' && headerLargeTitleEnabled)
+      ? 'transparent'
+      : colors.card);
+
   const [backTitleFontFamily, largeTitleFontFamily, titleFontFamily] = processFonts([
     headerBackTitleStyleFlattened.fontFamily,
     headerLargeTitleStyleFlattened.fontFamily,
@@ -233,7 +243,11 @@ export function useHeaderConfigProps({
   const titleColor =
     'color' in headerTitleStyleFlattened
       ? headerTitleStyleFlattened.color
-      : (headerTintColor ?? colors.text);
+      : Platform.OS === 'ios' && (headerTransparent || headerBackgroundColor === 'transparent')
+        ? // On iOS 26, we want header title to change color based on content underneath
+          // So we don't set an explicit color when header is transparent
+          undefined
+        : (headerTintColor ?? colors.text);
   const titleFontSize =
     'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
   const titleFontWeight = headerTitleStyleFlattened.fontWeight;
@@ -260,15 +274,6 @@ export function useHeaderConfigProps({
   if (titleFontWeight != null) {
     headerTitleStyleSupported.fontWeight = titleFontWeight;
   }
-
-  const headerBackgroundColor =
-    headerStyleFlattened.backgroundColor ??
-    (headerBackground != null ||
-    headerTransparent ||
-    // The title becomes invisible if background color is set with large title on iOS 26
-    (Platform.OS === 'ios' && headerLargeTitleEnabled)
-      ? 'transparent'
-      : colors.card);
 
   const canGoBack = headerBack != null;
 
