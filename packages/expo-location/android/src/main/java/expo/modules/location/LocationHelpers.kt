@@ -4,7 +4,9 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import com.google.android.gms.location.ActivityRecognitionResult
 import com.google.android.gms.location.CurrentLocationRequest
+import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Granularity
 import com.google.android.gms.location.LocationRequest
@@ -15,6 +17,11 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.records.LocationLastKnownOptions
 import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationResponse
+import expo.modules.location.records.MotionActivitiesRecord
+import expo.modules.location.records.MotionActivityConfidence
+import expo.modules.location.records.MotionActivityObjectRecord
+import expo.modules.location.records.MotionActivityStateRecord
+import expo.modules.location.records.MotionActivityType
 import expo.modules.location.records.PermissionRequestResponse
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -188,6 +195,51 @@ class LocationHelpers {
           *permissionStrings
         )
       }
+    }
+
+    /**
+     * Converts a Google Play Services activity recognition result into a [MotionActivityObjectRecord],
+     * shared by the foreground motion activity watch and [expo.modules.location.taskConsumers.MotionActivityTaskConsumer].
+     */
+    internal fun motionActivityRecordFromResult(result: ActivityRecognitionResult): MotionActivityObjectRecord {
+      // When multiple Android types map to the same unified type
+      // (e.g. WALKING + ON_FOOT -> walking), take the highest confidence.
+      val confidenceByType = result.probableActivities
+        .groupBy { it.toMotionActivityType() }
+        .mapValues { (_, activities) -> activities.maxOf { it.confidence } }
+
+      return MotionActivityObjectRecord(
+        activities = MotionActivitiesRecord(
+          automotive = confidenceByType.stateFor(MotionActivityType.AUTOMOTIVE),
+          cycling = confidenceByType.stateFor(MotionActivityType.CYCLING),
+          running = confidenceByType.stateFor(MotionActivityType.RUNNING),
+          walking = confidenceByType.stateFor(MotionActivityType.WALKING),
+          stationary = confidenceByType.stateFor(MotionActivityType.STATIONARY),
+          unknown = confidenceByType.stateFor(MotionActivityType.UNKNOWN)
+        ),
+        timestamp = System.currentTimeMillis().toDouble()
+      )
+    }
+
+    private fun DetectedActivity.toMotionActivityType(): MotionActivityType = when (type) {
+      DetectedActivity.IN_VEHICLE -> MotionActivityType.AUTOMOTIVE
+      DetectedActivity.ON_BICYCLE -> MotionActivityType.CYCLING
+      DetectedActivity.RUNNING -> MotionActivityType.RUNNING
+      DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> MotionActivityType.WALKING
+      DetectedActivity.STILL -> MotionActivityType.STATIONARY
+      else -> MotionActivityType.UNKNOWN
+    }
+
+    private fun Map<MotionActivityType, Int>.stateFor(type: MotionActivityType): MotionActivityStateRecord {
+      val raw = getOrDefault(type, 0)
+      return MotionActivityStateRecord(
+        detected = raw >= 50,
+        confidence = when {
+          raw >= 75 -> MotionActivityConfidence.HIGH
+          raw >= 50 -> MotionActivityConfidence.MEDIUM
+          else -> MotionActivityConfidence.LOW
+        }
+      )
     }
   }
 }

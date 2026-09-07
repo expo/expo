@@ -27,6 +27,12 @@ public class TaskManagerPackage extends BasePackage implements TaskServiceProvid
   public TaskServiceInterface getTaskServiceImpl(Context context) {
     if (mTaskService == null) {
       mTaskService = new TaskService(context);
+    } else if (mTaskService instanceof TaskService) {
+      // The context we were created with may have since been garbage collected (e.g. the
+      // Activity/ReactContext that first built this singleton was destroyed when the app was
+      // killed and reopened, while this process survived). Refresh it so callers don't hit a
+      // dead WeakReference.
+      ((TaskService) mTaskService).updateContext(context);
     }
     return mTaskService;
   }
