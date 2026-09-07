@@ -19,11 +19,7 @@ internal class MotionActivityStateRecord(
   @Field var detected: Boolean,
   @Field var confidence: MotionActivityConfidence
 ) : Record, Serializable {
-  internal fun toBundle() = Bundle().apply { putMotionActivityStateFields() }
-
-  internal fun toPersistableBundle() = PersistableBundle().apply { putMotionActivityStateFields() }
-
-  private fun BaseBundle.putMotionActivityStateFields() {
+  internal fun toPersistableBundle() = PersistableBundle().apply {
     putBoolean("detected", detected)
     putInt("confidence", confidence.value)
   }
@@ -38,15 +34,6 @@ internal class MotionActivitiesRecord(
   @Field var stationary: MotionActivityStateRecord,
   @Field var unknown: MotionActivityStateRecord
 ) : Record, Serializable {
-  internal fun toBundle() = Bundle().apply {
-    putBundle("automotive", automotive.toBundle())
-    putBundle("cycling", cycling.toBundle())
-    putBundle("running", running.toBundle())
-    putBundle("walking", walking.toBundle())
-    putBundle("stationary", stationary.toBundle())
-    putBundle("unknown", unknown.toBundle())
-  }
-
   internal fun toPersistableBundle() = PersistableBundle().apply {
     putPersistableBundle("automotive", automotive.toPersistableBundle())
     putPersistableBundle("cycling", cycling.toPersistableBundle())
@@ -62,11 +49,6 @@ internal class MotionActivityObjectRecord(
   @Field var activities: MotionActivitiesRecord,
   @Field var timestamp: Double
 ) : Record, Serializable {
-  internal fun toBundle() = Bundle().apply {
-    putBundle("activities", activities.toBundle())
-    putDouble("timestamp", timestamp)
-  }
-
   internal fun toPersistableBundle() = PersistableBundle().apply {
     putPersistableBundle("activities", activities.toPersistableBundle())
     putDouble("timestamp", timestamp)
