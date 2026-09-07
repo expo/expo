@@ -375,6 +375,9 @@ export function convertMdxInstructionToMarkdown(
  * Clean up the HTML before conversion: remove non-content elements,
  * normalize terminal blocks, and strip decorative artifacts.
  */
+const DARK_IMAGE_VARIANTS =
+  'img[class~="light:hidden"], picture[class~="light:hidden"] img, img[class~="hidden"][class~="dark:block"]';
+
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
   // Must run before the button removal below, since labels live in the buttons.
@@ -457,17 +460,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     $button.remove();
   });
 
-  // Light and dark variants of one image repeat the same alt text; keep the first.
-  let previousImageAlt = '';
-  main.find('img').each((_, el) => {
-    const $img = $(el);
-    const alt = ($img.attr('alt') ?? '').trim();
-    if (alt && alt === previousImageAlt) {
-      $img.remove();
-      return;
-    }
-    previousImageAlt = alt;
-  });
+  main.find(DARK_IMAGE_VARIANTS).remove();
   main.find('style').remove();
 
   // Preserve semantic SVG icons as text before blanket SVG removal.
