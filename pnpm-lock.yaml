@@ -805,6 +805,21 @@ importers:
 
   apps/expo-workflow-testing: {}
 
+  apps/minimal-swiftpm:
+    dependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../../packages/expo
+      expo-constants:
+        specifier: workspace:*
+        version: link:../../packages/expo-constants
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-native:
+        specifier: 0.87.1
+        version: 0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+
   apps/minimal-tester:
     dependencies:
       expo:
