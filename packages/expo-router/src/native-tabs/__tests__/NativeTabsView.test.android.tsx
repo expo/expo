@@ -1,7 +1,7 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
-import { Tabs, type TabsHostProps } from 'react-native-screens';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -66,12 +66,9 @@ it('mounts deep-linked tabs in Trigger order without remounting', () => {
 
   expect(mockTabsHostMount).toHaveBeenCalledTimes(1);
   expect(mockTabsHostUnmount).not.toHaveBeenCalled();
-  expect(TabsScreen.mock.calls.slice(0, 4).map(([props]) => props.screenKey)).toEqual([
-    'test-suite',
-    'playground',
-    'apis',
-    'components',
-  ]);
+  expect(
+    TabsScreen.mock.calls.slice(0, 4).map(([props]: [TabsScreenProps]) => props.screenKey)
+  ).toEqual(['test-suite', 'playground', 'apis', 'components']);
   expect(mockScreenMount.mock.calls.map(([name]) => name)).toEqual([
     // The deep-linked route has real content before the other tabs finish preloading.
     'apis',
