@@ -5491,8 +5491,8 @@ importers:
         specifier: ^2.2.4
         version: 2.2.4
       nanoid:
-        specifier: ^3.3.8
-        version: 3.3.16
+        specifier: ^3.3.18
+        version: 3.3.18
       query-string:
         specifier: ^7.1.3
         version: 7.1.3
@@ -13395,6 +13395,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@3.3.18:
+    resolution: {integrity: sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
   napi-postinstall@0.3.4:
     resolution: {integrity: sha512-PHI5f1O0EP5xJ9gQmFGMS6IZcrVvTjpXjz7Na41gTE7eE2hK11lg04CECCYEEjdc17EV4DO+fkGEtt7TpTaTiQ==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
@@ -18258,7 +18263,7 @@ snapshots:
       '@react-navigation/routers': 7.5.3
       escape-string-regexp: 4.0.0
       fast-deep-equal: 3.1.3
-      nanoid: 3.3.16
+      nanoid: 3.3.18
       query-string: 7.1.3
       react: 19.2.3
       react-is: 19.2.4
@@ -18303,7 +18308,7 @@ snapshots:
 
   '@react-navigation/routers@7.5.3':
     dependencies:
-      nanoid: 3.3.16
+      nanoid: 3.3.18
 
   '@rtsao/scc@1.1.0': {}
 
@@ -23107,6 +23112,8 @@ snapshots:
       thenify-all: 1.6.0
 
   nanoid@3.3.16: {}
+
+  nanoid@3.3.18: {}
 
   napi-postinstall@0.3.4: {}
 
