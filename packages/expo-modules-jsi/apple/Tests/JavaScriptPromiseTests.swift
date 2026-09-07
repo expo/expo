@@ -23,6 +23,32 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
+  func `deferred promises from separate runtimes settle independently`() async throws {
+    let first = JavaScriptRuntime()
+    let second = JavaScriptRuntime()
+    let firstPromise = try JavaScriptPromise(first)
+    let secondPromise = try JavaScriptPromise(second)
+    firstPromise.resolve(1.0)
+    secondPromise.resolve(2.0)
+    #expect(try await firstPromise.await().getDouble() == 1.0)
+    #expect(try await secondPromise.await().getDouble() == 2.0)
+  }
+
+  @Test
+  func `creating many deferred promises reuses one runtime-level helper`() throws {
+    let runtime = JavaScriptRuntime()
+    for _ in 0..<1_000 {
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(42.0)
+    }
+    // The only object the wrapper may leave on `globalThis` is the long-lived-objects anchor; a
+    // per-promise helper leaking into the global scope would show up as extra own properties.
+    let ownGlobals = try runtime.eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    let freshGlobals = try JavaScriptRuntime().eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    #expect(ownGlobals - freshGlobals <= 1)
+  }
+
+  @Test
   func `deferred promise construction throws when Promise constructor is unavailable`() throws {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Promise = undefined")
