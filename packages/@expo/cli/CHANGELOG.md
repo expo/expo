@@ -66,6 +66,7 @@
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
 - [Internal] Align local annotations in the Metro integration with Metro's own types. ([#49669](https://github.com/expo/expo/pull/49669) by [@robhogan](https://github.com/robhogan))
 - [Internal] Import Expo's Metro type extensions from `@expo/metro-config` instead of relying on global type augmentations. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.11 - 2026-07-29
 

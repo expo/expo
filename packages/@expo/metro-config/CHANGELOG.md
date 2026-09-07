@@ -23,6 +23,7 @@
 - Expand `skipCache` flag to data and support `prewarm` custom transform option ([#48836](https://github.com/expo/expo/pull/48836) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
 - Point Metro's `assetRegistryPath` at `react-native/asset-registry`, which replaces the `@react-native/assets-registry` package as of React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.7 - 2026-07-22
 
