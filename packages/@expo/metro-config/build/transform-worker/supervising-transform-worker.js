@@ -48,12 +48,14 @@ const getCustomTransform = (() => {
     let _transformer;
     return (config, projectRoot) => {
         // The user's original `transformerPath` is stored on `config.transformer.expo_customTransformerPath`
-        // by @expo/cli in `withMetroSupervisingTransformWorker()`
+        // by @expo/cli in `withMetroSupervisingTransformWorker()`. `false` opts out of the
+        // supervising transformer, in which case @expo/cli never installs us in the first
+        // place, so it means the same thing as an absent path here.
+        const customTransformerPath = config.expo_customTransformerPath === false ? undefined : config.expo_customTransformerPath;
         if (_transformer == null && _transformerPath == null) {
-            _transformerPath = config.expo_customTransformerPath;
+            _transformerPath = customTransformerPath;
         }
-        else if (config.expo_customTransformerPath != null &&
-            _transformerPath !== config.expo_customTransformerPath) {
+        else if (customTransformerPath != null && _transformerPath !== customTransformerPath) {
             throw new Error('expo_customTransformerPath must not be modified after initialization');
         }
         // We override require calls in the user transformer to use *our* version

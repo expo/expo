@@ -28,7 +28,15 @@ export declare function createStableModuleIdFactory(root: string): (path: string
     platform: string;
     environment?: string | null;
 }) => number;
-export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): MetroConfig & {
+export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): Readonly<import("@expo/metro/metro-config/types").MetalConfigT & {
+    cacheStores: import("@expo/metro/metro-config/types").CacheStoresConfigT;
+    resolver: Readonly<import("@expo/metro/metro-config/types").ResolverConfigT>;
+    server: Readonly<import("@expo/metro/metro-config/types").ServerConfigT>;
+    serializer: Readonly<import("@expo/metro/metro-config/types").SerializerConfigT>;
+    symbolicator: Readonly<import("@expo/metro/metro-config/types").SymbolicatorConfigT>;
+    transformer: Readonly<import("@expo/metro/metro-config/types").TransformerConfigT>;
+    watcher: Readonly<import("@expo/metro/metro-config/types").WatcherConfigT>;
+}> & {
     reporter: {
         update(): void;
     };
@@ -53,16 +61,16 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         additionalExts: string[];
     };
     serializer: {
-        isThirdPartyModule(module: {
-            readonly path: string;
-        }): boolean;
+        isThirdPartyModule(module: Readonly<{
+            path: string;
+        }>): boolean;
         createModuleIdFactory: () => (path: string, context?: {
             platform: string;
             environment?: string | null;
         }) => number;
         getModulesRunBeforeMainModule: () => string[];
         getPolyfills: ({ platform }: {
-            platform?: null | string;
+            platform: null | undefined | string;
         }) => any;
     };
     server: {
@@ -71,11 +79,11 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         unstable_serverRoot: string;
     };
     symbolicator: {
-        customizeFrame: ($$PARAM_0$$: {
-            readonly file?: null | string;
-            readonly lineNumber?: null | number;
-            readonly column?: null | number;
-            readonly methodName?: null | string;
+        customizeFrame: (frame: {
+            readonly file: null | undefined | string;
+            readonly lineNumber: null | undefined | number;
+            readonly column: null | undefined | number;
+            readonly methodName: null | undefined | string;
         }) => (null | undefined | {
             readonly collapse?: boolean;
         }) | Promise<null | undefined | {

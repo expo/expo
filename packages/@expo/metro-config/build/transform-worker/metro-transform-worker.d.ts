@@ -12,6 +12,7 @@ import { types as t } from '@babel/core';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import type { CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
 import { InvalidRequireCallError as InternalInvalidRequireCallError } from './collect-dependencies';
+import type { ExpoJsTransformerConfig } from './types';
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { type SerializableSourceMap } from '../serializer/packedMap';
 import { type BabelSourceMapSegment } from '../serializer/sourceMap';
@@ -40,8 +41,8 @@ export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { f
     ast: TFile;
     metadata?: any;
 };
-export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
-export declare function getCacheKey(config: JsTransformerConfig, opts?: Readonly<{
+export declare function transform(config: ExpoJsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
+export declare function getCacheKey(config: ExpoJsTransformerConfig, opts?: Readonly<{
     projectRoot: string;
 }>): string;
 export declare function collectDependenciesForShaking(ast: t.File, options: CollectDependenciesOptions): Readonly<{
