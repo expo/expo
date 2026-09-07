@@ -1,4 +1,13 @@
-import { background, disabled, font, onTapGesture, padding } from '../../swift-ui/modifiers';
+import type { ColorValue } from 'react-native';
+
+import {
+  background,
+  border,
+  disabled,
+  font,
+  onTapGesture,
+  padding,
+} from '../../swift-ui/modifiers';
 import { transformToModifiers } from '../transformStyle';
 
 describe('transformToModifiers (iOS)', () => {
@@ -12,6 +21,16 @@ describe('transformToModifiers (iOS)', () => {
     expect(
       transformToModifiers({ backgroundColor: 'red', padding: 8 }, {}, [padding({ top: 4 })])
     ).toEqual([background('red'), padding({ top: 4 })]);
+  });
+
+  it('forwards object colors untouched, so PlatformColor values survive', () => {
+    const nativeColor = { semantic: ['systemBackground'] } as unknown as ColorValue;
+    expect(
+      transformToModifiers(
+        { backgroundColor: nativeColor, borderColor: nativeColor, borderWidth: 1 },
+        {}
+      )
+    ).toEqual([background(nativeColor), border({ color: nativeColor, width: 1 })]);
   });
 
   it('drops textStyle-derived modifiers the user overrides', () => {

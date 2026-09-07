@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `PlatformColor` and `DynamicColorIOS` values dropping the `backgroundColor` and `borderColor` of a universal component. Both were stringified to `"[object Object]"`, which the native color converter rejects, so the modifier was discarded without a trace. ([#49746](https://github.com/expo/expo/pull/49746) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 💡 Others
 
