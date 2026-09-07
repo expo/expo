@@ -4,6 +4,7 @@
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
 #include "JavaCallback.h"
+#include "CallbackContext.h"
 #include "types/JNIToJSIConverter.h"
 #include "JSReferencesCache.h"
 
@@ -25,7 +26,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
   JSIContext *jsiContext = getJSIContext(rt);
   std::shared_ptr<react::CallInvoker> jsInvoker = jsiContext->runtimeHolder->jsInvoker;
 
-  std::shared_ptr<JavaCallback::CallbackContext> callbackContext = std::make_shared<JavaCallback::CallbackContext>(
+  std::shared_ptr<CallbackContext> callbackContext = std::make_shared<CallbackContext>(
     rt,
     std::move(jsInvoker),
     std::move(resolveFunction),
