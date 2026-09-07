@@ -218,6 +218,21 @@ export default function ModifiersScreen() {
                   ]}>
                   linearGradient
                 </Text>
+                <Text
+                  modifiers={[
+                    padding(),
+                    border({
+                      content: {
+                        type: 'linearGradient',
+                        colors: ['#FF6B35', '#9B59B6'],
+                        startPoint: { x: 0, y: 0 },
+                        endPoint: { x: 1, y: 1 },
+                      },
+                      width: 3,
+                    }),
+                  ]}>
+                  gradient border
+                </Text>
               </VStack>
             </ZStack>
           </Section>
@@ -506,7 +521,7 @@ export default function ModifiersScreen() {
                   modifiers={[
                     font({ size: 12 }),
                     padding({ all: 8 }),
-                    strokeBorder({ color: '#45B7B8', style: { lineWidth: 2 } }),
+                    strokeBorder({ content: '#45B7B8', style: { lineWidth: 2 } }),
                   ]}>
                   solid
                 </Text>
@@ -514,7 +529,7 @@ export default function ModifiersScreen() {
                   modifiers={[
                     font({ size: 12 }),
                     padding({ all: 8 }),
-                    strokeBorder({ color: '#3498DB', style: { lineWidth: 2, dash: [6, 3] } }),
+                    strokeBorder({ content: '#3498DB', style: { lineWidth: 2, dash: [6, 3] } }),
                   ]}>
                   dash
                 </Text>
@@ -523,7 +538,7 @@ export default function ModifiersScreen() {
                     font({ size: 12 }),
                     padding({ all: 8 }),
                     strokeBorder({
-                      color: '#16A085',
+                      content: '#16A085',
                       style: { lineWidth: 2, dash: [0.5, 4], lineCap: 'round' },
                     }),
                   ]}>
@@ -534,13 +549,30 @@ export default function ModifiersScreen() {
                     font({ size: 12 }),
                     padding({ all: 8 }),
                     strokeBorder({
-                      color: '#9B59B6',
+                      content: '#9B59B6',
                       style: { lineWidth: 2, dash: [6, 3] },
                       shape: 'roundedRectangle',
                       cornerRadius: 10,
                     }),
                   ]}>
                   rounded
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      content: {
+                        type: 'linearGradient',
+                        colors: ['#FF6B35', '#9B59B6'],
+                        startPoint: { x: 0, y: 0 },
+                        endPoint: { x: 1, y: 1 },
+                      },
+                      style: { lineWidth: 3 },
+                      shape: 'capsule',
+                    }),
+                  ]}>
+                  gradient
                 </Text>
               </HStack>
             </VStack>
@@ -809,7 +841,7 @@ export default function ModifiersScreen() {
                 blur(0.5),
                 brightness(0.1),
                 saturation(1.3),
-                border({ color: '#45B7B8', width: 1 }),
+                border({ content: '#45B7B8', width: 1 }),
                 onLongPressGesture(() => console.log('Teal card long pressed!'), 1.0),
               ]}>
               🌊 Long press me! Teal with effects
@@ -838,7 +870,7 @@ export default function ModifiersScreen() {
                 padding({ all: 16 }),
                 grayscale(1.0),
                 opacity(0.8),
-                border({ color: '#000000', width: 2 }),
+                border({ content: '#000000', width: 2 }),
               ]}>
               ⚫ Grayscale orange card
             </Text>
@@ -892,7 +924,7 @@ export default function ModifiersScreen() {
                       aspectRatio({ ratio: 1, contentMode: 'fit' }),
                       frame({ width: 140, height: 90 }),
                       background('#EAF4FF'),
-                      border({ color: '#3498DB', width: 1 }),
+                      border({ content: '#3498DB', width: 1 }),
                     ]}
                   />
                 </VStack>
@@ -906,7 +938,7 @@ export default function ModifiersScreen() {
                       aspectRatio({ contentMode: 'fit' }),
                       frame({ width: 140, height: 90 }),
                       background('#E8F8F5'),
-                      border({ color: '#16A085', width: 1 }),
+                      border({ content: '#16A085', width: 1 }),
                     ]}
                   />
                 </VStack>
@@ -972,7 +1004,7 @@ export default function ModifiersScreen() {
                 padding({ all: 12 }),
                 fixedSize(),
                 frame({ width: 100, height: 60 }),
-                border({ color: '#D35400', width: 2 }),
+                border({ content: '#D35400', width: 2 }),
                 offset({ x: 100, y: 0 }),
                 shadow({ radius: 3, y: 2 }),
               ]}>
@@ -992,7 +1024,7 @@ export default function ModifiersScreen() {
                 scaleEffect(0.95),
                 offset({ x: -5, y: 0 }),
                 foregroundStyle({ type: 'color', color: '#FFFFFF' }),
-                border({ color: '#9B59B6', width: 1 }),
+                border({ content: '#9B59B6', width: 1 }),
                 accessibilityLabel('Complex styled card with multiple effects'),
                 accessibilityIdentifier('complex-styled-card'),
                 onTapGesture(() => alert('Complex card with multiple modifiers tapped!')),
