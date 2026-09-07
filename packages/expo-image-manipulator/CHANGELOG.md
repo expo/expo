@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed `release()` not releasing image manipulation resources.
 - Fixed `ImageManipulator.Image` being typed as an `ImageRef` instance rather than the class it holds at runtime, which rejected `instanceof` checks and made instance members appear to exist on it. ([#48613](https://github.com/expo/expo/pull/48613) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others

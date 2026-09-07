@@ -2,10 +2,11 @@ import { SharedRef } from 'expo';
 
 import type { ImageResult, SaveOptions } from '../ImageManipulator.types';
 import { SaveFormat } from '../ImageManipulator.types';
-import { blobToBase64String } from './utils.web';
+import { blobToBase64String, releaseCanvas } from './utils.web';
 
 export default class ImageManipulatorImageRef extends SharedRef<'image'> {
   readonly nativeRefType: string = 'image';
+  private isReleased = false;
 
   readonly uri: string;
   readonly canvas: HTMLCanvasElement;
@@ -17,14 +18,19 @@ export default class ImageManipulatorImageRef extends SharedRef<'image'> {
   }
 
   get width() {
+    this.ensureNotReleased();
     return this.canvas.width;
   }
 
   get height() {
+    this.ensureNotReleased();
     return this.canvas.height;
   }
 
   async saveAsync(options: SaveOptions = { base64: false }): Promise<ImageResult> {
+    this.ensureNotReleased();
+    const width = this.width;
+    const height = this.height;
     return new Promise((resolve, reject) => {
       const requestedType = `image/${options.format ?? SaveFormat.JPEG}`;
       this.canvas.toBlob(
@@ -44,8 +50,8 @@ export default class ImageManipulatorImageRef extends SharedRef<'image'> {
 
           resolve({
             uri,
-            width: this.width,
-            height: this.height,
+            width,
+            height,
             base64,
           });
         },
@@ -53,5 +59,24 @@ export default class ImageManipulatorImageRef extends SharedRef<'image'> {
         options.compress
       );
     });
+  }
+
+  release(): void {
+    if (this.isReleased) {
+      return;
+    }
+    this.isReleased = true;
+
+    if (this.uri.startsWith('blob:')) {
+      URL.revokeObjectURL(this.uri);
+    }
+    releaseCanvas(this.canvas);
+    super.release();
+  }
+
+  private ensureNotReleased(): void {
+    if (this.isReleased) {
+      throw new Error('Cannot use shared object that was already released');
+    }
   }
 }

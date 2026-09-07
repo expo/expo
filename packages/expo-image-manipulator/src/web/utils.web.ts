@@ -21,6 +21,11 @@ export async function blobToBase64String(blob: Blob): Promise<string> {
   return dataURL.replace(/^data:image\/\w+;base64,/, '');
 }
 
+export function releaseCanvas(canvas: HTMLCanvasElement): void {
+  canvas.width = 0;
+  canvas.height = 0;
+}
+
 export function loadImageAsync(
   uri: string,
   options?: ImageLoadOptions

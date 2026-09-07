@@ -3,14 +3,17 @@ import { SharedObject } from 'expo';
 import type { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
 import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
 import { crop, extent, flip, resize, rotate } from './actions/index.web';
+import { releaseCanvas } from './utils.web';
 
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 
 export default class ImageManipulatorContext extends SharedObject {
   private loader: ContextLoader;
+  private isReleased = false;
 
   private _currentTask: Promise<HTMLCanvasElement> | undefined;
   get currentTask() {
+    this.ensureNotReleased();
     if (this._currentTask) {
       return this._currentTask;
     }
@@ -18,6 +21,7 @@ export default class ImageManipulatorContext extends SharedObject {
     return this._currentTask;
   }
   set currentTask(task) {
+    this.ensureNotReleased();
     this._currentTask = task;
   }
 
@@ -47,8 +51,25 @@ export default class ImageManipulatorContext extends SharedObject {
   }
 
   reset(): ImageManipulatorContext {
+    this.ensureNotReleased();
+    const previousTask = this._currentTask;
     this.currentTask = new Promise((resolve) => resolve(this.loader()));
+    this.releaseTask(previousTask);
     return this;
+  }
+
+  release(): void {
+    if (this.isReleased) {
+      return;
+    }
+    this.isReleased = true;
+
+    this.releaseTask(this._currentTask);
+    this._currentTask = undefined;
+    this.loader = () => {
+      throw new Error('Cannot use shared object that was already released');
+    };
+    super.release();
   }
 
   async renderAsync(): Promise<ImageManipulatorImageRef> {
@@ -67,7 +88,7 @@ export default class ImageManipulatorContext extends SharedObject {
       // Create a full-sized, full-quality blob from the original canvas.
       canvas.toBlob(
         (blob) => {
-          const url = blob ? URL.createObjectURL(blob) : canvas.toDataURL();
+          const url = blob ? URL.createObjectURL(blob) : clonedCanvas.toDataURL();
           const image = new ImageManipulatorImageRef(url, clonedCanvas);
 
           resolve(image);
@@ -82,9 +103,32 @@ export default class ImageManipulatorContext extends SharedObject {
   private addTask(
     task: (canvas: HTMLCanvasElement) => HTMLCanvasElement | Promise<HTMLCanvasElement>
   ): ImageManipulatorContext {
-    this.currentTask = this.currentTask.then((canvas) => {
-      return task(canvas);
+    this.currentTask = this.currentTask.then(async (canvas) => {
+      try {
+        const result = await task(canvas);
+        if (result !== canvas) {
+          releaseCanvas(canvas);
+        }
+        return result;
+      } catch (error) {
+        releaseCanvas(canvas);
+        throw error;
+      }
     });
     return this;
+  }
+
+  private ensureNotReleased(): void {
+    if (this.isReleased) {
+      throw new Error('Cannot use shared object that was already released');
+    }
+  }
+
+  private releaseTask(task: Promise<HTMLCanvasElement> | undefined): void {
+    task?.then(releaseCanvas, (reason) => {
+      if (typeof HTMLCanvasElement !== 'undefined' && reason instanceof HTMLCanvasElement) {
+        releaseCanvas(reason);
+      }
+    });
   }
 }
