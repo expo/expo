@@ -728,7 +728,7 @@ concurrency:
   # @end #
 ```
 
-The expressions can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. They support all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Job-level contexts such as `needs`, `after`, `steps`, and `env` are not available. EAS rejects a template that references any other name, such as a job-level context, `success()`, or a misspelled context, when it validates the workflow file, before it creates a run. [`eas workflow:validate`](/eas/workflows/troubleshooting/#validate-the-workflow-file) reports the same errors. See [Context availability](#context-availability).
+The expressions can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. They support all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Job-level contexts such as `needs`, `after`, `steps`, and `env` are not available. EAS rejects a template that references any other name, such as a job-level context, `success()`, or a misspelled context. It does this when it validates the workflow file, before it creates a run. [`eas workflow:validate`](/eas/workflows/troubleshooting/#validate-the-workflow-file) reports the same errors. See [Context availability](#context-availability).
 
 When EAS renders the key:
 
@@ -743,7 +743,7 @@ If rendering fails, EAS creates the run, marks it as failed, and shows the error
 
 Whether a new run cancels the runs of its group instead of waiting for them. The value is a boolean or a single `${{ }}` expression. Defaults to `false`.
 
-- `true`, or an expression that evaluates to a truthy value: the new run starts right away, and EAS cancels the active run and all waiting runs of its group. The new run does not wait for the canceled runs to stop.
+- `true`, or an expression that evaluates to a truthy value: the new run starts right away. EAS cancels the active run and all waiting runs of its group. The new run does not wait for the canceled runs to stop.
 - `false`, or an expression that evaluates to a falsy value: the new run waits until the group is free. `false` behaves the same as omitting the property.
 
 For deploys, leave `cancel_in_progress` out. The active deploy always finishes. The newest run waits for it, and EAS replaces the runs in between.
@@ -787,9 +787,9 @@ You cannot combine `queue: max` with `cancel_in_progress: true`. EAS rejects the
 ### Waiting and canceled runs
 
 - A run that waits for its group shows as **Queued** in the EAS dashboard, with a link to the run it waits for. `eas workflow:run --wait` prints "Workflow run is queued" with the name of that run. For runs triggered from GitHub, the commit status reads "Workflow run is waiting for another run in its concurrency group."
-- A waiting run has no jobs. It does not use build minutes or one of your account's concurrencies until it starts.
+- A waiting run has no jobs. It does not use build minutes or a concurrency slot on your account until it starts.
 - When the active run finishes, fails, or is canceled, the next waiting run starts. A run that needs a user action, such as an approval in a [`require-approval`](#require-approval) job, holds its group until it succeeds, fails, or is canceled.
-- A waiting run fails instead of starting if it waited more than 30 days, if its uploaded project sources expired, or if the user who started it lost access to the project. EAS then starts the next waiting run.
+- A waiting run fails instead of starting if it waited more than 30 days. It also fails if its uploaded project sources expired or if the user who started it lost access to the project. EAS then starts the next waiting run.
 - A run that `cancel_in_progress` canceled, whether it was active or waiting, shows as canceled with "Canceled by" and a link to the newer run.
 - A waiting run that a newer run replaced under `queue: single` shows as canceled with "Replaced by" and a link to the newer run. A run that EAS canceled because a `queue: max` group already had 100 waiting runs shows "Queue was full (limit 100)".
 - The GitHub commit status and `eas workflow:run --wait` show these runs as canceled without the reason. Open the run in the EAS dashboard to see it.
@@ -884,7 +884,11 @@ In [`on.<trigger>.if`](#ontriggerif), the `workflow` context has only `name` and
 
 `app_store_connect` has values only for runs that an App Store Connect event triggered. In steps, only `build` jobs receive it.
 
-At the job level, `env` is available only after EAS resolves the job's [`environment`](#jobsjob_idenvironment) (`production`, `preview`, or `development`). The fields EAS reads to resolve it cannot use `env`: `jobs.<job_id>.environment` itself, and the `params` of a `build` job that has no explicit `environment`. In [`jobs.<job_id>.if`](#jobsjob_idif), a condition that references `env` fails the job when EAS cannot resolve the environment, for example because the job's params are invalid. To make `env` available regardless of the job's params, set `environment` on the job.
+At the job level, `env` becomes available after EAS determines the job's [`environment`](#jobsjob_idenvironment). You cannot use `env` in `jobs.<job_id>.environment` itself.
+
+If a `build`, `repack`, `submit`, or `testflight` job has no explicit `environment`, EAS first evaluates its `params` to determine which environment to use. These parameters cannot use `env`. For example, a `submit` job inherits its source build's environment, but EAS must evaluate `params.build_id` before it can find that build. Set `environment` explicitly on the job to use `env` in its parameters.
+
+A condition in [`jobs.<job_id>.if`](#jobsjob_idif) that references `env` fails the job if EAS cannot determine the environment, for example because the job's parameters are invalid. Set `environment` explicitly to make `env` available to the condition without relying on those parameters.
 
 For `on.<trigger>.if` and `concurrency`, EAS rejects a reference to an unavailable context or function when it validates the workflow file. EAS does not check `run_name` at that time. A `run_name` template that references an unavailable context or function fails the run when EAS renders the title.
 
@@ -1114,7 +1118,7 @@ Information about the project the workflow run belongs to.
 ```ts
 type AppContext = {
   id: string;
-  slug: string; // e.g. my-app
+  slug: string; // For example, my-app
 };
 ```
 
@@ -1138,7 +1142,7 @@ Information about the account that owns the project.
 ```ts
 type AccountContext = {
   id: string;
-  name: string; // e.g. my-account
+  name: string; // For example, my-account
 };
 ```
 
