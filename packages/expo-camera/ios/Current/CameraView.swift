@@ -299,6 +299,15 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     return try await photoCapture.takePicturePromise(options: options, photoOutput: photoOutput)
   }
 
+  func playShutterAnimation() {
+    Task { @MainActor in
+      self.previewLayer.opacity = 0
+      UIView.animate(withDuration: 0.25) {
+        self.previewLayer.opacity = 1
+      }
+    }
+  }
+
   func record(options: CameraRecordingOptions, promise: Promise) async {
     guard let videoFileOutput = sessionManager.currentVideoFileOutput else {
       promise.reject(CameraOutputNotReadyException())

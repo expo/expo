@@ -2274,6 +2274,10 @@ extension ViewModifierRegistry {
       return try ScrollDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("scrollClipDisabled") { params, appContext, _ in
+      return try ScrollClipDisabledModifier(from: params, appContext: appContext)
+    }
+
     register("scrollIndicators") { params, appContext, _ in
       return try ScrollIndicatorsModifier(from: params, appContext: appContext)
     }

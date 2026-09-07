@@ -86,4 +86,132 @@ extension JSIBenchmarks {
       }
     }
   }
+
+  // MARK: - Unowned-this form with string arguments
+
+  @Test
+  func `concat two strings unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("concat") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try String.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try String.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        """
+        (function(n) { for (var i = 0; i < n; i++) benchFn('expo ', 'modules'); })
+        """
+      ).getFunction()
+      try benchmark("host function: concat two strings unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  /// Like `concat two strings unowned-this`, with inputs and result longer than libc++'s 22-byte
+  /// `std::string` inline capacity, so every `std::string` on the path has to allocate.
+  @Test
+  func `concat two long strings unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("concat") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try String.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try String.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        """
+        (function(n) {
+          for (var i = 0; i < n; i++) benchFn('expo modules are quite fast, ', 'and this string is also long');
+        })
+        """
+      ).getFunction()
+      try benchmark("host function: concat two long strings unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `concat two 256B strings unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("concat") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try String.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try String.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { var a = 'a'.repeat(128); var b = 'b'.repeat(128); for (var i = 0; i < n; i++) benchFn(a, b); })"
+      ).getFunction()
+      try benchmark("host function: concat two 256B strings unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `concat two 4KB strings unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("concat") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try String.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try String.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        """
+        (function(n) { var a = 'a'.repeat(2048); var b = 'b'.repeat(2048); for (var i = 0; i < n; i++) benchFn(a, b); })
+        """
+      ).getFunction()
+      try benchmark("host function: concat two 4KB strings unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `concat two 4KB non-ASCII strings unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("concat") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try String.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try String.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        """
+        (function(n) { var a = 'ą'.repeat(2048); var b = 'ą'.repeat(2048); for (var i = 0; i < n; i++) benchFn(a, b); })
+        """
+      ).getFunction()
+      try benchmark("host function: concat two 4KB non-ASCII strings unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `concat two 12B non-ASCII strings unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("concat") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try String.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try String.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { var a = 'ąęó'.repeat(2); var b = 'ąęó'.repeat(2); for (var i = 0; i < n; i++) benchFn(a, b); })"
+      ).getFunction()
+      try benchmark("host function: concat two 12B non-ASCII strings unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
 }

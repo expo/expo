@@ -350,6 +350,14 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
+      Events("onValueChange", "onValueChangeFinished")
+
+      Content { props ->
+        VerticalSliderContent(props)
+      }
+    }
+
     ExpoUIView<ShapeProps>("ShapeView") {
       Content { props ->
         ShapeContent(props)

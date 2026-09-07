@@ -801,12 +801,14 @@ test('fires onReady after navigator is rendered', () => {
     );
   };
 
-  const onReady = jest.fn();
+  const initialOnReady = jest.fn();
+  const latestOnReady = jest.fn();
+  const changedAfterReady = jest.fn();
 
   const element = (
     <BaseNavigationContainer
       ref={ref}
-      onReady={onReady}
+      onReady={initialOnReady}
       initialState={{ routes: [{ name: 'foo' }] }}>
       {null}
     </BaseNavigationContainer>
@@ -814,13 +816,13 @@ test('fires onReady after navigator is rendered', () => {
 
   const root = render(element);
 
-  expect(onReady).not.toHaveBeenCalled();
+  expect(initialOnReady).not.toHaveBeenCalled();
   expect(ref.current?.isReady()).toBe(false);
 
   root.rerender(
     <BaseNavigationContainer
       ref={ref}
-      onReady={onReady}
+      onReady={latestOnReady}
       initialState={{ routes: [{ name: 'foo' }] }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
@@ -828,8 +830,23 @@ test('fires onReady after navigator is rendered', () => {
     </BaseNavigationContainer>
   );
 
-  expect(onReady).toHaveBeenCalledTimes(1);
+  expect(initialOnReady).not.toHaveBeenCalled();
+  expect(latestOnReady).toHaveBeenCalledTimes(1);
   expect(ref.current?.isReady()).toBe(true);
+
+  root.rerender(
+    <BaseNavigationContainer
+      ref={ref}
+      onReady={changedAfterReady}
+      initialState={{ routes: [{ name: 'foo' }] }}>
+      <TestNavigator>
+        <Screen name="foo">{() => null}</Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(latestOnReady).toHaveBeenCalledTimes(1);
+  expect(changedAfterReady).not.toHaveBeenCalled();
 });
 
 // TODO(@ubax): restore when unhandled actions are wired to the reducer. https://linear.app/expo/issue/ENG-26123

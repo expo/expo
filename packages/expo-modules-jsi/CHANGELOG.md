@@ -16,12 +16,14 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the build against React Native older than 0.86 (e.g. react-native-macos 0.81), where `jsi::Runtime::getStringData` is a protected member that Swift cannot call. String decoding now goes through a C++ wrapper that uses the public `jsi::String::getStringData` helper on those versions. ([#49790](https://github.com/expo/expo/pull/49790) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed `dateFromMilliseconds` failing to compile with "type of expression is ambiguous" under newer toolchains: the unqualified `abs(_:)` in the `Double` overflow guard is ambiguous once C++ interop brings the C `abs` overloads into scope, so use `Double.magnitude` instead. ([#49039](https://github.com/expo/expo/pull/49039) by [@kraenhansen](https://github.com/kraenhansen))
 - [iOS] Fixed `JavaScriptPropNameID(_:string:)` and the array's string-keyed subscript truncating non-ASCII property keys: they passed `String.count` (the grapheme-cluster count) as the UTF-8 byte length to `PropNameID::forUtf8`, so keys like `"café"` or `"🎉"` were built from mangled bytes and no longer matched the intended property. ([#48329](https://github.com/expo/expo/pull/48329) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed the xcframework prebuild failing under Xcode 27 due to new foreign reference ownership warnings emitted for `RuntimeScheduler` constructors. ([#49120](https://github.com/expo/expo/pull/49120) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed the prebuilt `ExpoModulesJSI.xcframework` shipping with code coverage instrumentation: building through the auto-generated SwiftPM scheme made Xcode pass `-profile-generate -profile-coverage-mapping` to swiftc even for a plain Release `build`, adding a counter increment to every function on the host function call path and about 40% to the binary size. The benchmark target had the same instrumentation and now runs without it. ([#49637](https://github.com/expo/expo/pull/49637) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed property names with non-ASCII characters being mangled when accessed by name from Swift, such as `getProperty`, `setProperty`, `hasProperty`, the array string subscript and dictionary conversions. ([#49679](https://github.com/expo/expo/pull/49679) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
@@ -30,6 +32,9 @@
 - [iOS] `JavaScriptValue.undefined` and `JavaScriptValue.null` now return shared immortal instances instead of allocating a new value on each access, removing one allocation from every void-returning host call. ([#49545](https://github.com/expo/expo/pull/49545) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added an opt-in benchmark target that measures value access, host function calls, and JS function calls; run it with `pnpm benchmark`. ([#49579](https://github.com/expo/expo/pull/49579) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Reduced the native overhead of synchronous host function calls and host object property accessors by removing the per-call weak and unowned runtime reference traffic on the call path. ([#49631](https://github.com/expo/expo/pull/49631) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Made passing strings between JavaScript and Swift faster, up to ~3.8× for long strings. ([#49678](https://github.com/expo/expo/pull/49678) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Values returned to Swift from property reads, array reads and function calls are now taken over instead of cloned through the engine, making `toJavaScriptValue(in:)` ~1.16× faster. ([#49688](https://github.com/expo/expo/pull/49688) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Made decoding non-ASCII JS strings up to 512 UTF-16 code units long ~1.5× faster. ([#49691](https://github.com/expo/expo/pull/49691) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.4 — 2026-07-22
 

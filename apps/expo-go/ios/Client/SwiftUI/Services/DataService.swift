@@ -56,8 +56,8 @@ class DataService: ObservableObject {
       }
 
       let accountData = response.data.account.byName
-      let newProjects = accountData.apps.map { $0.toExpoProject() }
-      let newSnacks = accountData.snacks
+      let newProjects = accountData.appsPaginated.edges.map { $0.node.toExpoProject() }
+      let newSnacks = accountData.snacksPaginated.edges.map { $0.node }
 
       if newProjects != self.projects {
         self.projects = newProjects

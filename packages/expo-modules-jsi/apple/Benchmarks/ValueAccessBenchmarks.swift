@@ -66,6 +66,32 @@ extension JSIBenchmarks {
     }
   }
 
+  /// Unlike a number, a string or object property is a pointer value: wrapping it in a
+  /// ``JavaScriptValue`` must not clone the engine handle it already owns.
+  @Test
+  func `object string property by name`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer: 'forty-two' })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:): string value", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("answer")
+        }
+      }
+    }
+  }
+
+  @Test
+  func `object object property by name`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer: { value: 42 } })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:): object value", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("answer")
+        }
+      }
+    }
+  }
+
   @Test
   func `nested property traversal`() async throws {
     try await benchmarkCase { runtime in

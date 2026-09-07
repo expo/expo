@@ -1,0 +1,6 @@
+{
+  "platforms": ["android"],
+  "android": {
+    "modulesV2": ["expo.modules.v2demo.ExpoV2Demo"]
+  }
+}

@@ -23,7 +23,7 @@ final class ActorDecodingTests: XCTestCase {
     XCTAssertEqual(actor.typename, "PartnerActor")
     XCTAssertEqual(actor.username, "partner-private-test")
     XCTAssertNil(actor.firstName)
-    XCTAssertNil(actor.profilePhoto)
+    XCTAssertNil(actor.primaryAccountProfileImageUrl)
     XCTAssertNil(actor.bestContactEmail)
     XCTAssertEqual(actor.accounts.count, 1)
     XCTAssertEqual(actor.accounts[0].name, "partner-private-test")
@@ -38,10 +38,10 @@ final class ActorDecodingTests: XCTestCase {
       "username":"alanhughes",
       "firstName":"Alan",
       "lastName":"Hughes",
-      "profilePhoto":"https://example.test/a.png",
+      "primaryAccountProfileImageUrl":"https://example.test/a.png",
       "bestContactEmail":"alan@expo.dev",
       "accounts":[{"id":"acc-2","name":"alanhughes","profileImageUrl":"https://example.test/b.png",
-        "ownerUserActor":{"id":"actor-2","username":"alanhughes","profilePhoto":null,
+        "ownerUserActor":{"id":"actor-2","username":"alanhughes","primaryAccountProfileImageUrl":null,
           "firstName":"Alan","fullName":"Alan Hughes","lastName":"Hughes"}}]
     }}}
     """)
@@ -50,6 +50,7 @@ final class ActorDecodingTests: XCTestCase {
     XCTAssertEqual(actor.username, "alanhughes")
     XCTAssertEqual(actor.firstName, "Alan")
     XCTAssertEqual(actor.accounts[0].ownerUserActor?.username, "alanhughes")
+    XCTAssertEqual(actor.primaryAccountProfileImageUrl, "https://example.test/a.png")
   }
 
   func testDecodesNullActor() throws {
@@ -63,5 +64,10 @@ final class ActorDecodingTests: XCTestCase {
     XCTAssertTrue(query.contains("... on UserActor"))
     XCTAssertTrue(query.contains("... on PartnerActor"))
     XCTAssertFalse(query.contains("meUserActor"))
+  }
+
+  func testQueriesDoNotSelectDeprecatedProfilePhoto() {
+    XCTAssertFalse(Queries.getCurrentUser().contains("profilePhoto"))
+    XCTAssertTrue(Queries.getCurrentUser().contains("primaryAccountProfileImageUrl"))
   }
 }

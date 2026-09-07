@@ -1,0 +1,41 @@
+{
+  "name": "router-tester",
+  "version": "1.0.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && (cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz) && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "lint": "expo lint",
+    "test:e2e": "./maestro/test.sh"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-dev-client": "workspace:*",
+    "expo-image": "workspace:*",
+    "expo-linking": "workspace:*",
+    "expo-router": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "expo-status-bar": "workspace:*",
+    "expo-symbols": "workspace:*",
+    "expo-system-ui": "workspace:*",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.87.0",
+    "react-native-gesture-handler": "~3.1.0",
+    "react-native-pager-view": "^8.0.2",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "5.7.0",
+    "react-native-screens": "4.27.0",
+    "react-native-tab-view": "^4.3.0",
+    "react-native-worklets": "0.10.1",
+    "sf-symbols-typescript": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.10"
+  }
+}

@@ -273,12 +273,10 @@
 /workflow/build/building-on-ci/ /build/building-on-ci 301
 /task-manager /versions/latest/sdk/task-manager 301
 /task-manager/ /versions/latest/sdk/task-manager 301
-/versions/latest/sdk/filesystem.md /versions/latest/sdk/filesystem 301
 /guides/how-expo-works /faq 301
 /guides/how-expo-works/ /faq 301
 /config/app /workflow/configuration 301
 /config/app/ /workflow/configuration 301
-/guides/authentication.md /guides/authentication 301
 /versions/latest/workflow/linking /guides/linking 301
 /versions/latest/workflow/linking/ /guides/linking 301
 /versions/latest/sdk/overview /versions/latest 301
