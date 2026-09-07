@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- [iOS] Add a `JavaScriptEncodable` conformance for `Task` that encodes it to a JS `Promise` settling with the task's result, so native code can hand JavaScript a promise as a value. ([#47861](https://github.com/expo/expo/pull/47861) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Split the `Array`, `Optional`, and `Dictionary` `JavaScriptCodable` conformances into separate `JavaScriptDecodable` and `JavaScriptEncodable` halves so an encode-only element type such as `Task` can be carried through a container's encode. ([#47861](https://github.com/expo/expo/pull/47861) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add a `JavaScriptPromise.resolve` overload that takes a `JavaScriptEncodable` value, encoding it on the JavaScript thread and rejecting the promise if encoding or the resolver call throws. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+- [iOS] Made creating a deferred `JavaScriptPromise` ~1.2× faster by building it from a cached JavaScript closure instead of a host function executor. ([#49714](https://github.com/expo/expo/pull/49714) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the native overhead of synchronous host function calls and host object property accessors that return `undefined`, `null`, a boolean or a number: the result is written into the engine's slot without engine calls, and errors are reported only when one was actually thrown instead of being checked on every call. ([#49761](https://github.com/expo/expo/pull/49761) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the native overhead of synchronous host function calls whose closure receives `this` as a `JavaScriptValue`, by letting the calling module destroy the arguments buffer directly. ([#49769](https://github.com/expo/expo/pull/49769) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.8 — 2026-09-04
 
@@ -30,7 +41,6 @@
 - [iOS] Made passing strings between JavaScript and Swift faster, up to ~3.8× for long strings. ([#49678](https://github.com/expo/expo/pull/49678) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Values returned to Swift from property reads, array reads and function calls are now taken over instead of cloned through the engine, making `toJavaScriptValue(in:)` ~1.16× faster. ([#49688](https://github.com/expo/expo/pull/49688) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Made decoding non-ASCII JS strings up to 512 UTF-16 code units long ~1.5× faster. ([#49691](https://github.com/expo/expo/pull/49691) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Made creating a deferred `JavaScriptPromise` ~1.2× faster by building it from a cached JavaScript closure instead of a host function executor. ([#49714](https://github.com/expo/expo/pull/49714) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.7 — 2026-09-01
 
@@ -138,7 +148,6 @@ _This version does not introduce any user-facing changes._
 - [iOS] Preserve the `code` on the JavaScript error when an async function rejects with a `JavaScriptThrowable` (e.g. an `Exception`), instead of stringifying it and dropping the `code` — mirroring the synchronous throw path. ([#47259](https://github.com/expo/expo/pull/47259) by [@wwdrew](https://github.com/wwdrew))
 - [iOS] Return `NSNull` instead of trapping in the deprecated `JavaScriptValue.getAny()` when it encounters a unrepresentable value. ([#47381](https://github.com/expo/expo/pull/47381) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed the `Build ExpoModulesJSI xcframework` build phase intermittently failing on Xcode 27 when clearing stale build state raced Xcode's background indexer writing into the SwiftPM index store. ([#47914](https://github.com/expo/expo/pull/47914) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
