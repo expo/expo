@@ -322,4 +322,33 @@ describe(SQLiteStatement, () => {
     }
     await statement.finalizeAsync();
   });
+
+  it('concurrent writes over one shared statement should all apply', async () => {
+    // A write takes one native call and caches no rows, so the ownership check must not reject
+    // the reuse pattern that write-heavy callers rely on.
+    const statement = await db.prepareAsync('INSERT INTO test (value, intValue) VALUES (?, ?)');
+    await Promise.all([
+      statement.executeAsync('written', 1),
+      statement.executeAsync('written', 2),
+      statement.executeAsync('written', 3),
+    ]);
+    await statement.finalizeAsync();
+    const written = await db.getAllAsync<TestEntity>(
+      'SELECT intValue FROM test WHERE value = ? ORDER BY intValue ASC',
+      'written'
+    );
+    expect(written.map((row) => row.intValue)).toEqual([1, 2, 3]);
+  });
+
+  it('a write statement reused in a loop should keep returning its own row', async () => {
+    const statement = await db.prepareAsync(
+      'INSERT INTO test (value, intValue) VALUES (?, ?) RETURNING intValue'
+    );
+    for (const intValue of [11, 22, 33]) {
+      const result = await statement.executeAsync<TestEntity>('looped', intValue);
+      // `run` cached this row, so reading it steps no cursor even once superseded.
+      expect((await result.getFirstAsync())?.intValue).toBe(intValue);
+    }
+    await statement.finalizeAsync();
+  });
 });
