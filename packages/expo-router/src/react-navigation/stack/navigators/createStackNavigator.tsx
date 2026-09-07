@@ -6,7 +6,6 @@ import type { NavigatorContentProps } from '../../../standard-navigation';
 import { type Route, useLocale } from '../../native';
 import type {
   StackNavigationEventMap,
-  StackDescriptorMap,
   StackNavigationConfig,
   StackNavigationOptions,
 } from '../types';
@@ -53,8 +52,7 @@ function StackNavigatorContent({
       {...rest}
       direction={direction}
       state={state}
-      // Standard descriptors have the same runtime shape as stack descriptors.
-      descriptors={descriptors as unknown as StackDescriptorMap}
+      descriptors={descriptors}
       emit={emitter.emit}
       pop={pop}
       restoreRoute={restoreRoute}
@@ -62,7 +60,10 @@ function StackNavigatorContent({
   );
 }
 
-export const createStandardStackNavigator = createStandardNavigator<
+/**
+ * Creates a JavaScript stack navigator compatible with `standard-navigation`.
+ */
+export const unstable_createStandardStackNavigator = createStandardNavigator<
   StackNavigationOptions,
   StandardStackNavigationEventMap,
   StackNavigatorCreateProps

@@ -17,7 +17,6 @@ export { NativeStackView } from './views/NativeStackView';
  * Hooks
  */
 export { useAnimatedHeaderHeight } from './utils/useAnimatedHeaderHeight';
-export { makePopAction } from './utils/makePopAction';
 
 /**
  * Types

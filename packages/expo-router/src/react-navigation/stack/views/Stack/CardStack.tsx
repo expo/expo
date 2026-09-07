@@ -26,9 +26,9 @@ import type {
   Scene,
   StackAnimationName,
   StackCardStyleInterpolator,
-  StackDescriptorMap,
   StackHeaderMode,
   StackNavigationOptions,
+  StackViewDescriptorMap,
   StackViewState,
   TransitionPreset,
 } from '../../types';
@@ -47,7 +47,7 @@ type Props = {
   direction: LocaleDirection;
   insets: EdgeInsets;
   state: StackViewState;
-  descriptors: StackDescriptorMap;
+  descriptors: StackViewDescriptorMap;
   routes: Route<string>[];
   openingRouteKeys: string[];
   closingRouteKeys: string[];
@@ -67,7 +67,7 @@ type Props = {
 
 type State = {
   routes: Route<string>[];
-  descriptors: StackDescriptorMap;
+  descriptors: StackViewDescriptorMap;
   scenes: Scene[];
   gestures: GestureValues;
   layout: Layout;
@@ -97,9 +97,7 @@ const STATE_INACTIVE = 0;
 const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
 const STATE_ON_TOP = 2;
 
-const FALLBACK_DESCRIPTOR = Object.freeze({
-  options: {} as StackNavigationOptions,
-});
+const FALLBACK_DESCRIPTOR = Object.freeze({ options: {} as StackNavigationOptions });
 
 const getInterpolationIndex = (scenes: Scene[], index: number) => {
   const { cardStyleInterpolator } = scenes[index]!.descriptor.options;

@@ -11,7 +11,6 @@ import {
   useRouteNode,
 } from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
-import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
@@ -128,17 +127,10 @@ export function useNavigatorContext() {
   return context;
 }
 
-const SlotOuterLayoutContext = React.createContext(false);
-
 function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
   const focusedRouteKey = state.routes[state.index]?.key;
-  const outerLayoutContext = React.use(SlotOuterLayoutContext);
 
-  return focusedRouteKey ? (
-    <IsWithinLayoutContext value={outerLayoutContext}>
-      {descriptors[focusedRouteKey]?.render() ?? null}
-    </IsWithinLayoutContext>
-  ) : null;
+  return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
 
 const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter);
@@ -157,15 +149,10 @@ const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRout
 export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
   const contextKey = useContextKey();
   const context = React.use(NavigatorContext);
-  const outerLayoutContext = React.use(IsWithinLayoutContext);
 
   if (context?.contextKey !== contextKey) {
     // The _layout has changed since the last navigator
-    return (
-      <SlotOuterLayoutContext value={outerLayoutContext}>
-        <RouterSlot {...props} />
-      </SlotOuterLayoutContext>
-    );
+    return <RouterSlot {...props} />;
   }
 
   /*

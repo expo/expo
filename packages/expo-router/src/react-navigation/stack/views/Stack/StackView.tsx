@@ -6,8 +6,8 @@ import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import { HeaderShownContext, SafeAreaProviderCompat } from '../../../elements';
 import { type LocaleDirection, type Route } from '../../../native';
 import type {
-  StackDescriptorMap,
   StackNavigationConfig,
+  StackViewDescriptorMap,
   StackViewEmit,
   StackViewState,
 } from '../../types';
@@ -22,7 +22,7 @@ type Props = StackNavigationConfig & {
   emit: StackViewEmit;
   pop: (count: number, sourceRouteKey: string) => void;
   restoreRoute: (route: Route<string>) => boolean;
-  descriptors: StackDescriptorMap;
+  descriptors: StackViewDescriptorMap;
 };
 
 type State = {
@@ -31,7 +31,7 @@ type State = {
   // Previous navigation state for comparison
   previousState: StackViewState | undefined;
   // Previous descriptors, to compare whether descriptors have changed or not
-  previousDescriptors: StackDescriptorMap;
+  previousDescriptors: StackViewDescriptorMap;
   // List of routes being opened, we need to animate pushing of these new routes
   openingRouteKeys: string[];
   // List of routes being closed, we need to animate popping of these routes
@@ -40,7 +40,7 @@ type State = {
   replacingRouteKeys: string[];
   // Since the local routes can vary from the routes from props, we need to keep the descriptors for old routes
   // Otherwise we won't be able to access the options for routes that were removed
-  descriptors: StackDescriptorMap;
+  descriptors: StackViewDescriptorMap;
 };
 
 const GestureHandlerWrapper = GestureHandlerRootView ?? View;
@@ -102,7 +102,7 @@ export class StackView extends React.Component<Props, State> {
       let previousDescriptors = state.previousDescriptors;
 
       if (props.descriptors !== state.previousDescriptors) {
-        descriptors = routes.reduce<StackDescriptorMap>((acc, route) => {
+        descriptors = routes.reduce<StackViewDescriptorMap>((acc, route) => {
           acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key])!;
 
           return acc;
@@ -261,7 +261,7 @@ export class StackView extends React.Component<Props, State> {
     const descriptors = [
       ...routes,
       ...allRoutes.filter((route) => !routeKeys.has(route.key)),
-    ].reduce<StackDescriptorMap>((acc, route) => {
+    ].reduce<StackViewDescriptorMap>((acc, route) => {
       acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key])!;
 
       return acc;

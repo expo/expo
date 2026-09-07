@@ -24,6 +24,17 @@ export type StandardNavigatorEventMapBase = Record<
   { data: object | undefined; canPreventDefault: boolean }
 >;
 
+export type StandardNavigatorEmit<EventMap extends Record<string, { data: object | undefined }>> = (
+  event: {
+    [Event in keyof EventMap]: {
+      type: Event;
+      target?: string;
+    } & (undefined extends EventMap[Event]['data']
+      ? { data?: EventMap[Event]['data'] }
+      : { data: EventMap[Event]['data'] });
+  }[keyof EventMap]
+) => void;
+
 export type StandardNavigationAction = NavigateAction | GoBackAction;
 
 export type PlaceholderDescriptorMap = Record<

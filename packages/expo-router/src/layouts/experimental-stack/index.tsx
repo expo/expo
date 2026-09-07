@@ -4,8 +4,8 @@ import { Children, useMemo } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { StackRouter } from '../../react-navigation/native';
-import { makePopAction } from '../../react-navigation/native-stack';
-import { unstable_integrateWithRouter } from '../../standard-navigation';
+import { makePopAction } from '../../react-navigation/native-stack/utils/makePopAction';
+import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../../standard-navigation';
 import { subscribePopToTopOnParentTabPress } from '../../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../../utils/children';
 import { Protected } from '../../views/Protected';
@@ -51,7 +51,13 @@ const ExperimentalStack = Object.assign(
     }, [props.children]);
 
     return (
-      <RNExperimentalStack {...props} children={rnChildren} UNSTABLE_router={stackRouterOverride} />
+      <IsWithinNativeNavigator value>
+        <RNExperimentalStack
+          {...props}
+          children={rnChildren}
+          UNSTABLE_router={stackRouterOverride}
+        />
+      </IsWithinNativeNavigator>
     );
   },
   {

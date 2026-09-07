@@ -2,6 +2,8 @@ import { screen } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 import { Text } from 'react-native';
 
+import { IsWithinNativeNavigator } from '../../exports';
+import JSStack from '../../layouts/JSStack';
 import Stack from '../../layouts/StackClient';
 import { renderRouter } from '../../testing-library';
 import { Slot } from '../../views/Navigator';
@@ -60,7 +62,7 @@ it('renders a SplitView nested under the default navigator', () => {
   expect(screen.getByTestId('child')).toBeVisible();
 });
 
-it('rejects a SplitView nested under another navigator', () => {
+it('rejects a SplitView nested under a native navigator', () => {
   expect(() =>
     renderRouter(
       {
@@ -70,5 +72,51 @@ it('rejects a SplitView nested under another navigator', () => {
       },
       { initialUrl: '/nested' }
     )
-  ).toThrow('SplitView cannot be used inside another navigator, except for Slot.');
+  ).toThrow('SplitView cannot be used inside another native navigator.');
+});
+
+it('rejects a SplitView nested under a custom native navigator', () => {
+  expect(() =>
+    renderRouter(
+      {
+        _layout: () => (
+          <IsWithinNativeNavigator value>
+            <Slot />
+          </IsWithinNativeNavigator>
+        ),
+        'nested/_layout': SplitLayout,
+        'nested/index': () => <Text>Child</Text>,
+      },
+      { initialUrl: '/nested' }
+    )
+  ).toThrow('SplitView cannot be used inside another native navigator.');
+});
+
+it('rejects a SplitView nested inside a SplitView column', () => {
+  expect(() =>
+    renderRouter({
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column>
+            <SplitLayout />
+          </SplitView.Column>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    })
+  ).toThrow('SplitView cannot be used inside another native navigator.');
+});
+
+it('renders a SplitView nested under a JavaScript navigator', () => {
+  renderRouter(
+    {
+      _layout: () => <JSStack />,
+      'nested/_layout': SplitLayout,
+      'nested/index': () => <Text testID="child">Child</Text>,
+    },
+    { initialUrl: '/nested' }
+  );
+
+  expect(screen.getByTestId('Split.Host')).toBeVisible();
+  expect(screen.getByTestId('child')).toBeVisible();
 });

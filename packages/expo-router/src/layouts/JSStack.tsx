@@ -1,26 +1,42 @@
 'use client';
 
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ComponentType } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import { StackRouter } from '../react-navigation/native';
-import { makePopAction } from '../react-navigation/native-stack';
+import { makePopAction } from '../react-navigation/native-stack/utils/makePopAction';
 import {
-  createStandardStackNavigator,
+  type StackNavigationConfig,
+  type StackNavigatorCreateProps,
   type StackNavigationOptions,
+  type StandardStackNavigationEventMap,
+  unstable_createStandardStackNavigator,
 } from '../react-navigation/stack';
-import type {
-  StackNavigatorCreateProps,
-  StandardStackNavigationEventMap,
-} from '../react-navigation/stack/navigators/createStackNavigator';
-import type { StackNavigationConfig } from '../react-navigation/stack/types';
 import { makeRestoreRouteAction } from '../react-navigation/stack/utils/makeRestoreRouteAction';
 import { unstable_integrateWithRouter } from '../standard-navigation';
 import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
+import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
 export * from '../react-navigation/stack';
+
+/**
+ * Creates the adapter props required to integrate the JavaScript stack with Expo Router.
+ */
+export function unstable_createPropsForJSStack({
+  dispatchSync,
+  navigation,
+  state,
+}: StandardNavigatorCreatePropsFactoryDeps<
+  StackNavigationState<ParamListBase>
+>): StackNavigatorCreateProps {
+  return {
+    pop: makePopAction(dispatchSync, state.key),
+    restoreRoute: makeRestoreRouteAction(dispatchSync, state),
+    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
+  };
+}
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
 const JSStack = unstable_integrateWithRouter<
@@ -30,12 +46,8 @@ const JSStack = unstable_integrateWithRouter<
   StackNavigationConfig,
   object,
   StackNavigatorCreateProps
->(createStandardStackNavigator, StackRouter, {
-  createProps: ({ dispatchSync, navigation, state }) => ({
-    pop: makePopAction(dispatchSync, state.key),
-    restoreRoute: makeRestoreRouteAction(dispatchSync, state),
-    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
-  }),
+>(unstable_createStandardStackNavigator, StackRouter, {
+  createProps: unstable_createPropsForJSStack,
 });
 
 /**
@@ -44,7 +56,8 @@ const JSStack = unstable_integrateWithRouter<
  * @hideType
  */
 const Stack = Object.assign(
-  (props: Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>) => <JSStack {...props} />,
+  // `initialRouteName` is configured from the route node by the integration, not by layout props.
+  JSStack as ComponentType<Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>>,
   {
     Screen,
     Protected,
