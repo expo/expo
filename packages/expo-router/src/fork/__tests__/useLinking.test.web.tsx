@@ -5,7 +5,6 @@ import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState'
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import { completeParsedState } from '../../global-state/createSeededNavigationState';
 import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
-import { RouterRegistryProvider } from '../../global-state/routerRegistry';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { getStateFromPath } from '../../link/linking';
 import { Screen } from '../../react-navigation/core/Screen';
@@ -344,21 +343,19 @@ test('does not add browser history when preloading a stack route', async () => {
   const onStateChange = jest.fn();
 
   render(
-    <RouterRegistryProvider>
-      <NavigationContainer
-        ref={ref}
-        linking={{
-          prefixes: [],
-          config: { screens: { home: 'home', details: 'details' } },
-          getInitialURL: () => 'http://localhost/home',
-          getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
-        }}>
-        <Stack>
-          <Screen name="home" component={EmptyScreen} />
-          <Screen name="details" component={EmptyScreen} />
-        </Stack>
-      </NavigationContainer>
-    </RouterRegistryProvider>
+    <NavigationContainer
+      ref={ref}
+      linking={{
+        prefixes: [],
+        config: { screens: { home: 'home', details: 'details' } },
+        getInitialURL: () => 'http://localhost/home',
+        getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
+      }}>
+      <Stack>
+        <Screen name="home" component={EmptyScreen} />
+        <Screen name="details" component={EmptyScreen} />
+      </Stack>
+    </NavigationContainer>
   );
 
   await waitFor(() => expect(ref.current).not.toBeNull());

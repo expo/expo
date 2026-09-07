@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
+import { createContext, use } from 'react';
 
 import type { RouteNode } from '../Route';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
@@ -23,49 +23,14 @@ export type RouterRegistryEntry = {
 // Entries appear after the first commit and state keys can change when navigation state is reset.
 export type RouterRegistry = ReadonlyMap<string, RouterRegistryEntry>;
 
-type RouterRegistrySetters = {
+export type RouterRegistrySetters = {
   register: (stateKey: string, entry: RouterRegistryEntry) => void;
   unregister: (stateKey: string, entry: RouterRegistryEntry) => void;
 };
 
-// React components read this map during render, so React state is intentional.
-export const RouterRegistryContext = createContext<RouterRegistry | undefined>(undefined);
-const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(undefined);
-
-export function RouterRegistryProvider({ children }: PropsWithChildren) {
-  const [registry, setRegistry] = useState<RouterRegistry>(() => new Map());
-  const setters = useMemo<RouterRegistrySetters>(
-    () => ({
-      register(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) === entry) {
-            return previous;
-          }
-
-          return new Map(previous).set(stateKey, entry);
-        });
-      },
-      unregister(stateKey, entry) {
-        setRegistry((previous) => {
-          if (previous.get(stateKey) !== entry) {
-            return previous;
-          }
-
-          const next = new Map(previous);
-          next.delete(stateKey);
-          return next;
-        });
-      },
-    }),
-    []
-  );
-
-  return (
-    <RouterRegistrySettersContext.Provider value={setters}>
-      <RouterRegistryContext.Provider value={registry}>{children}</RouterRegistryContext.Provider>
-    </RouterRegistrySettersContext.Provider>
-  );
-}
+export const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(
+  undefined
+);
 
 export function useRegisterRouter(stateKey: string, entry: RouterRegistryEntry): void {
   const setters = use(RouterRegistrySettersContext);

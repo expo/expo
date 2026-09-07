@@ -10,7 +10,7 @@ function actionIntent(type: string): RoutingIntent {
 }
 
 function actionType(intent: RoutingIntent): string {
-  if (intent.type === 'NAVIGATE_TO_HREF') {
+  if (intent.type !== 'ACTION') {
     throw new Error('Expected an action intent.');
   }
   return intent.payload.action.type;

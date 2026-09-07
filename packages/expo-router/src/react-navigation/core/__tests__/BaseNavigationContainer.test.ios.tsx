@@ -2,7 +2,6 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RemovalPreventionProvider } from '../../../global-state/removalPrevention';
-import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import { RoutingQueueProvider } from '../../../global-state/routingQueueContext';
 import {
   CommonActions,
@@ -35,9 +34,7 @@ beforeEach(() => {
 function RootProviders({ children }: React.PropsWithChildren) {
   return (
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 }
@@ -169,15 +166,13 @@ test('preserves a complete initial state by identity', () => {
 
   render(
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <RawBaseNavigationContainer ref={ref} initialState={initialState}>
-            <Stack>
-              <Screen name="home">{() => null}</Screen>
-            </Stack>
-          </RawBaseNavigationContainer>
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <RawBaseNavigationContainer ref={ref} initialState={initialState}>
+          <Stack>
+            <Screen name="home">{() => null}</Screen>
+          </Stack>
+        </RawBaseNavigationContainer>
+      </RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 
@@ -240,18 +235,16 @@ test('handle dispatching with ref', () => {
 
   const element = (
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <RawBaseNavigationContainer ref={ref} initialState={initialState}>
-            <RootNavigator>
-              <Screen name="foo">{() => null}</Screen>
-              <Screen name="foo2">{() => null}</Screen>
-              <Screen name="bar">{() => null}</Screen>
-              <Screen name="baz">{() => null}</Screen>
-            </RootNavigator>
-          </RawBaseNavigationContainer>
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <RawBaseNavigationContainer ref={ref} initialState={initialState}>
+          <RootNavigator>
+            <Screen name="foo">{() => null}</Screen>
+            <Screen name="foo2">{() => null}</Screen>
+            <Screen name="bar">{() => null}</Screen>
+            <Screen name="baz">{() => null}</Screen>
+          </RootNavigator>
+        </RawBaseNavigationContainer>
+      </RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 
@@ -818,8 +811,7 @@ test('warns for duplicate route names nested inside each other', () => {
         </Screen>
         <Screen name="bar" component={TestScreen} />
       </TestNavigator>
-    </BaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    </BaseNavigationContainer>
   );
 
   expect(spy.mock.calls[0]![0]).toMatch(
@@ -846,8 +838,7 @@ test('warns for duplicate route names nested inside each other', () => {
           )}
         </Screen>
       </TestNavigator>
-    </BaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    </BaseNavigationContainer>
   );
 
   expect(spy.mock.calls[1]![0]).toMatch(
@@ -868,8 +859,7 @@ test('warns for duplicate route names nested inside each other', () => {
           )}
         </Screen>
       </TestNavigator>
-    </BaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    </BaseNavigationContainer>
   );
 
   expect(spy).toHaveBeenCalledTimes(2);

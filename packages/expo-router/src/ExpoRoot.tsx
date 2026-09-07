@@ -11,7 +11,6 @@ import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { navigationRef } from './global-state/navigationRef';
 import { RemovalPreventionProvider } from './global-state/removalPrevention';
 import { RouterConfigContext } from './global-state/routerConfigContext';
-import { RouterRegistryProvider } from './global-state/routerRegistry';
 import { RoutingQueueProvider } from './global-state/routingQueueContext';
 import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
@@ -136,17 +135,15 @@ function ContextNavigator({
 
   return (
     <RouterConfigContext.Provider value={routerConfig}>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <UpstreamNavigationContainer
-            ref={navigationRef}
-            linking={linkingConfig as LinkingOptions<any>}>
-            <WrapperComponent>
-              <Content rootComponent={rootComponent} />
-            </WrapperComponent>
-          </UpstreamNavigationContainer>
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <UpstreamNavigationContainer
+          ref={navigationRef}
+          linking={linkingConfig as LinkingOptions<any>}>
+          <WrapperComponent>
+            <Content rootComponent={rootComponent} />
+          </WrapperComponent>
+        </UpstreamNavigationContainer>
+      </RemovalPreventionProvider>
     </RouterConfigContext.Provider>
   );
 }

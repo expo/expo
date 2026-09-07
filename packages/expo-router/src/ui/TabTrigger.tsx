@@ -5,7 +5,8 @@ import type { View, PressableProps } from 'react-native';
 import { StyleSheet, Pressable } from 'react-native';
 
 import { appendBaseUrl } from '../fork/getPathFromState';
-import { RouterRegistryContext } from '../global-state/routerRegistry';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
+import { findStateByKey } from '../global-state/stateUtils';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
@@ -150,7 +151,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
   const navigatorStates = use(TabNavigatorStatesContext);
-  const registry = use(RouterRegistryContext);
+  const enqueue = useEnqueueRoutingIntent();
 
   const getTrigger = useCallback(
     (name: string) => {
@@ -200,30 +201,40 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         if (config.type === 'external') {
           return router.navigate(config.href);
         } else {
-          if (!registry) {
-            throw new Error('Router registry is unavailable. This is likely a bug in expo-router.');
-          }
           const owningState = navigatorStates[config.contextKey];
           if (!owningState) {
             return;
           }
-          const action = buildTabAction(config, owningState, registry, options?.resetOnFocus);
-          return navigation?.dispatchSync(
-            config.contextKey !== contextKey
-              ? { ...action, target: action.target ?? owningState.key }
-              : action
-          );
+          return enqueue({
+            type: 'COMPUTED_ACTION',
+            payload: {
+              originKey: state.key,
+              compute(rootState, registry) {
+                const currentOwningState = findStateByKey(rootState, owningState.key);
+                if (!currentOwningState) {
+                  return;
+                }
+                const action = buildTabAction(
+                  config,
+                  currentOwningState,
+                  registry,
+                  options?.resetOnFocus
+                );
+                return config.contextKey !== contextKey
+                  ? { ...action, target: action.target ?? currentOwningState.key }
+                  : action;
+              },
+            },
+          });
         }
       } else {
-        return navigation?.dispatchSync({
+        return navigation?.dispatch({
           type: 'JUMP_TO',
-          payload: {
-            name,
-          },
+          payload: { name },
         });
       }
     },
-    [contextKey, navigation, navigatorStates, registry, triggerMap]
+    [contextKey, enqueue, navigation, navigatorStates, state.key, triggerMap]
   );
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
