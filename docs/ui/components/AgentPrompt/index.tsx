@@ -94,12 +94,12 @@ export function AgentPrompt({
   return (
     <div
       data-testid="agent-prompt"
-      className="mb-4 rounded-3xl border border-default bg-element px-4 py-3.5 shadow-xs">
+      className="mb-4 rounded-3xl border border-palette-purple7 bg-palette-purple3 px-4 py-3.5 shadow-xs">
       <div className={mergeClasses('flex flex-wrap items-center gap-3', 'sm:gap-4')}>
         <div className="flex min-w-0 flex-1 basis-80 gap-3">
           <MagicWand01Icon
             aria-hidden="true"
-            className="mt-0.5 icon-md shrink-0 text-icon-secondary"
+            className="mt-0.5 icon-md shrink-0 text-palette-purple11"
           />
           <div>
             <HEADLINE tag="h2">{title}</HEADLINE>
@@ -134,7 +134,7 @@ export function AgentPrompt({
           {copiedIsVisible ? 'Prompt copied to clipboard' : ''}
         </span>
       </div>
-      <div className="mt-3 border-t border-default pt-3">
+      <div className="mt-3 border-t border-palette-purple6 pt-3">
         <button
           type="button"
           data-md="skip"
