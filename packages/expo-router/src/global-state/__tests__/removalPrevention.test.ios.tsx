@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react-native';
+import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 import { use } from 'react';
 
@@ -48,70 +48,50 @@ test('aggregates prevention across routes', () => {
 });
 
 test('propagates prevention from a child route to its parent route', () => {
-  let setChildPrevented: React.ContextType<typeof ScreenRemovalPreventionSetterContext>;
-  const routes: ReadonlySet<string>[] = [];
-  function CaptureChildSetter() {
-    setChildPrevented = use(ScreenRemovalPreventionSetterContext);
-    return null;
-  }
-  function RoutesCapture() {
-    routes.push(use(GlobalRoutesWithRemovalPreventedContext)!);
-    return null;
-  }
-  render(
+  const wrapper = ({ children }: React.PropsWithChildren) => (
     <RemovalPreventionProvider>
       <PreventRemovalProvider routeKey="parent">
-        <PreventRemovalProvider routeKey="child">
-          <CaptureChildSetter />
-        </PreventRemovalProvider>
+        <PreventRemovalProvider routeKey="child">{children}</PreventRemovalProvider>
       </PreventRemovalProvider>
-      <RoutesCapture />
     </RemovalPreventionProvider>
   );
 
-  act(() => setChildPrevented!('guard', true));
-  expect(routes.at(-1)).toEqual(new Set(['child', 'parent']));
+  const { result } = renderHook(
+    () => ({
+      setPrevented: use(ScreenRemovalPreventionSetterContext)!,
+      preventedRoutes: use(GlobalRoutesWithRemovalPreventedContext)!,
+    }),
+    { wrapper }
+  );
 
-  act(() => setChildPrevented!('guard', false));
-  expect(routes.at(-1)).toEqual(new Set());
+  act(() => result.current.setPrevented('guard', true));
+  expect(result.current.preventedRoutes).toEqual(new Set(['child', 'parent']));
+
+  act(() => result.current.setPrevented('guard', false));
+  expect(result.current.preventedRoutes).toEqual(new Set());
 });
 
-test('does not register prevention for a preloaded child route and re-registers when active', () => {
-  const routes: ReadonlySet<string>[] = [];
-  function Guard() {
-    const setPrevented = use(ScreenRemovalPreventionSetterContext)!;
-    React.useLayoutEffect(() => {
-      setPrevented('guard', true);
-      return () => setPrevented('guard', false);
-    }, [setPrevented]);
-    return null;
-  }
-  function RoutesCapture() {
-    routes.push(use(GlobalRoutesWithRemovalPreventedContext)!);
-    return null;
-  }
-  function Tree({ isPreloaded }: { isPreloaded: boolean }) {
-    return (
-      <RemovalPreventionProvider>
-        <PreventRemovalProvider routeKey="parent">
-          <IsPreloadedContext value={isPreloaded}>
-            <PreventRemovalProvider routeKey="child">
-              <Guard />
-            </PreventRemovalProvider>
-          </IsPreloadedContext>
-        </PreventRemovalProvider>
-        <RoutesCapture />
-      </RemovalPreventionProvider>
-    );
-  }
-  const result = render(<Tree isPreloaded />);
-  expect(routes.at(-1)).toEqual(new Set());
+test('does not register prevention for a preloaded child route', () => {
+  const wrapper = ({ children }: React.PropsWithChildren) => (
+    <RemovalPreventionProvider>
+      <PreventRemovalProvider routeKey="parent">
+        <IsPreloadedContext value>
+          <PreventRemovalProvider routeKey="child">{children}</PreventRemovalProvider>
+        </IsPreloadedContext>
+      </PreventRemovalProvider>
+    </RemovalPreventionProvider>
+  );
 
-  result.rerender(<Tree isPreloaded={false} />);
-  expect(routes.at(-1)).toEqual(new Set(['child', 'parent']));
+  const { result } = renderHook(
+    () => ({
+      setPrevented: use(ScreenRemovalPreventionSetterContext)!,
+      preventedRoutes: use(GlobalRoutesWithRemovalPreventedContext)!,
+    }),
+    { wrapper }
+  );
 
-  result.rerender(<Tree isPreloaded />);
-  expect(routes.at(-1)).toEqual(new Set());
+  act(() => result.current.setPrevented('guard', true));
+  expect(result.current.preventedRoutes).toEqual(new Set());
 });
 
 test('keeps a route emitter until the end of the task after its provider unmounts', async () => {
