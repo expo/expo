@@ -349,42 +349,6 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       });
   });
 
-  // Agent prompt blocks are UI-only on the page: the prompt text lives in the payload attribute
-  // rather than the DOM. Render it into the markdown twin as an H2 section, one H3 per variant.
-  // Must run before the button removal below, since the block is built around a copy button.
-  main.find('[data-md="agent-prompt"]').each((_, el) => {
-    const $el = $(el);
-    const payload = $el.attr('data-md-agent-prompt');
-
-    if (!payload) {
-      $el.remove();
-      return;
-    }
-
-    const { title, description, prompts } = JSON.parse(payload) as {
-      title: string;
-      description?: string;
-      prompts: { label?: string; prompt: string }[];
-    };
-
-    const $section = $('<div></div>');
-    $section.append($('<h2></h2>').text(title));
-
-    if (description) {
-      $section.append($('<p></p>').text(description));
-    }
-
-    for (const { label, prompt } of prompts) {
-      if (label) {
-        $section.append($('<h3></h3>').text(label));
-      }
-      const $code = $('<code class="language-text"></code>').text(prompt);
-      $section.append($('<pre></pre>').append($code));
-    }
-
-    $el.replaceWith($section.children());
-  });
-
   main.find('[data-md="collapsible"]').each((_, el) => {
     const $details = $(el);
     const $summary = $details.children('summary').first();
