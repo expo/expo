@@ -60,7 +60,7 @@ jobs:
       # Same version feeds the guard and the run, so the engine that clears
       # the profile is the engine that reads it. Override with the repo
       # variable VERIFY_VERSION; the fallback pins the tested release.
-      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.4' }}
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.6' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
