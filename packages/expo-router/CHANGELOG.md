@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Bump `nanoid` to `^3.3.18`. ([#49816](https://github.com/expo/expo/pull/49816) by [@Ubax](https://github.com/Ubax))
+
 ## 56.2.22 — 2026-10-21
 
 ### 🐛 Bug fixes
