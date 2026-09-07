@@ -166,11 +166,11 @@ describe('titleColor', () => {
     expect(result.current.titleColor).toBe('orange');
   });
 
-  test('headerTintColor is ignored when headerTransparent is true (falls back to undefined, not the tint)', () => {
+  test('headerTintColor is respected even when headerTransparent is true', () => {
     const { result } = renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true, headerTintColor: 'purple' }))
     );
-    expect(result.current.titleColor).toBeUndefined();
+    expect(result.current.titleColor).toBe('purple');
   });
 });
 
