@@ -3,8 +3,9 @@
 import * as React from 'react';
 import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
 
+import { IsPreloadedContext } from '../react-navigation/core/IsPreloadedContext';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
-import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
+import type { NavigationAction } from '../react-navigation/routers';
 
 type RemovalEventType = 'removePrevented' | 'removed';
 type RemovalEventEmitter = (type: RemovalEventType, action: NavigationAction) => void;
@@ -134,9 +135,17 @@ function useRegisterRouteEmitter(routeKey: string, emitRemovalEvent?: RouteRemov
 
 function useRouteRemovalPreventionSetter(routeKey: string) {
   const preventionSetter = use(GlobalRouteRemovalPreventionSetterContext);
+  const parentPreventionSetter = use(ScreenRemovalPreventionSetterContext);
+  const isPreloaded = use(IsPreloadedContext);
   return React.useCallback(
-    (id: string, isPrevented: boolean) => preventionSetter?.(routeKey, id, isPrevented),
-    [preventionSetter, routeKey]
+    (id: string, isPrevented: boolean) => {
+      if (isPreloaded) {
+        return;
+      }
+      preventionSetter?.(routeKey, id, isPrevented);
+      parentPreventionSetter?.(id, isPrevented);
+    },
+    [isPreloaded, parentPreventionSetter, preventionSetter, routeKey]
   );
 }
 
@@ -164,26 +173,3 @@ export function useRoutesWithRemovalPrevented() {
 }
 
 const EMPTY_SET: ReadonlySet<string> = new Set();
-
-export function isRouteRemovalPrevented(
-  route: {
-    key: string | undefined;
-    state?: NavigationState | PartialState<NavigationState>;
-  },
-  preventedRouteKeys: ReadonlySet<string>
-): boolean {
-  if (route.key !== undefined && preventedRouteKeys.has(route.key)) {
-    return true;
-  }
-
-  const visitState = (state: NavigationState): boolean => {
-    return state.routes.some(
-      (route) =>
-        !route.isPreloaded &&
-        (preventedRouteKeys.has(route.key) ||
-          (route.state?.stale === false && visitState(route.state)))
-    );
-  };
-
-  return route.state?.stale === false && visitState(route.state);
-}

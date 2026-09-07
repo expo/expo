@@ -10,10 +10,7 @@ import {
   ScreenStackItem,
 } from 'react-native-screens';
 
-import {
-  isRouteRemovalPrevented,
-  useRoutesWithRemovalPrevented,
-} from '../../../global-state/removalPrevention';
+import { useRoutesWithRemovalPrevented } from '../../../global-state/removalPrevention';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -252,7 +249,7 @@ const SceneView = ({
     return undefined;
   }, [canGoBack, backTitle]);
 
-  const isRemovePrevented = isRouteRemovalPrevented(route, routesWithRemovalPrevented);
+  const isRemovePrevented = routesWithRemovalPrevented.has(route.key);
 
   const headerConfig = useHeaderConfigProps({
     ...options,

@@ -3,10 +3,7 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
-import {
-  isRouteRemovalPrevented,
-  useRoutesWithRemovalPrevented,
-} from '../../global-state/removalPrevention';
+import { useRoutesWithRemovalPrevented } from '../../global-state/removalPrevention';
 import {
   type ParamListBase,
   StackActions,
@@ -44,7 +41,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
           const descriptor = descriptors[route.key]!;
           const isPreloaded = index > state.index;
           const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
-          const preventFromContext = isRouteRemovalPrevented(route, routesWithRemovalPrevented);
+          const preventFromContext = routesWithRemovalPrevented.has(route.key);
 
           return (
             <ScreenView
