@@ -20,6 +20,13 @@ export function getChainFromStateKey(stateKey: string): string {
   return stateKey.slice('navigator:'.length);
 }
 
+/**
+ * Creates a route key minter for a navigation state.
+ * The returned `routeKeySeq` must be written back to the state returned by the router.
+ *
+ * @param state Navigation state whose key sequence is used to mint route keys.
+ * @return A route key minter and its updated route key sequence.
+ */
 export function createRouteKeyMinter(state: Pick<NavigationState, 'key' | 'routeKeySeq'>): {
   mint: (name: string) => string;
   readonly routeKeySeq: number;

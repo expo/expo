@@ -1,0 +1,532 @@
+---
+title: Migrate from SDK 57 to SDK 58
+description: Learn how to migrate your Expo Router application from SDK 57 to SDK 58
+sidebar_title: Migrate from SDK 57 to 58
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { DiffBlock } from '~/ui/components/Snippet';
+
+SDK 58 changes how Expo Router constructs navigation state and integrates with navigators. Apps that use `Stack`, `Link`, and `useRouter` may need a few changes. Apps that import from `expo-router/react-navigation`, access navigation state, or implement custom routers and navigators require closer review.
+
+Use this checklist to find the sections that apply to your app:
+
+- For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and review the [layout and navigation changes](#move-initialroutename-to-unstable_settings).
+- For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
+- Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
+
+> **info** This guide covers the changes most likely to require application updates. See the [`expo-router` changelog](https://github.com/expo/expo/blob/main/packages/expo-router/CHANGELOG.md#unpublished) for the complete list of SDK 58 changes.
+
+## Common migrations
+
+### Prefer `useRouter` in components
+
+Prefer the router returned by `useRouter()` over `useNavigation().navigate()` or the module-level `router` for href-based navigation from a component. The hook is bound to the Expo Router root that rendered the component.
+
+The module-level `router` is still available, but it throws before the first router render and cannot distinguish between multiple router roots. Continue to use `useNavigation` when you need navigator-specific APIs, such as events, options, or action dispatching.
+
+`useRouter()` includes the common navigation methods, such as `push`, `navigate`, `replace`, `back`, `dismiss`, `dismissTo`, `dismissAll`, `canGoBack`, `canDismiss`, `setParams`, `reload`, and `prefetch`. If a required navigation method is missing, [open an issue](https://github.com/expo/expo/issues).
+
+### Navigate with complete hrefs
+
+In SDK 57, React Navigation could interpret `screen`, `params`, and `initial` as instructions for building nested state. In SDK 58, they are ordinary user parameters. Navigate to a complete href instead:
+
+```tsx app/profile.tsx
+// Before (SDK 57)
+import { useNavigation } from 'expo-router';
+
+const navigation = useNavigation();
+
+navigation.navigate('(tabs)', {
+  screen: 'feed',
+  params: { id: '42' },
+});
+```
+
+```tsx app/profile.tsx
+// After (SDK 58)
+import { useRouter } from 'expo-router';
+
+const router = useRouter();
+
+router.push({
+  pathname: '/(tabs)/feed/[id]',
+  params: { id: '42' },
+});
+```
+
+See [Navigate to a screen in a nested navigator](/router/advanced/nesting-navigators/#navigate-to-a-screen-in-a-nested-navigator) for more examples.
+
+Ancestor route params are also no longer copied into descendant routes during imperative navigation. If your app relies on a descendant receiving a parameter from its parent route, include the value in the destination href. This makes imperative navigation consistent with opening the same href from a deep link or cold start.
+
+### Show progress during navigation
+
+Every queued JavaScript navigation, including the first navigation to a route, runs in a React transition. When the destination suspends, the current screen stays visible instead of showing `SuspenseFallback`. Consecutive navigation calls are processed by the same queue.
+
+Use `unstable_useIsNavigating` to show a progress indicator while navigation is queued or pending:
+
+```tsx app/_layout.tsx
+import { Stack, unstable_useIsNavigating } from 'expo-router';
+import { ActivityIndicator, StyleSheet } from 'react-native';
+
+export default function RootLayout() {
+  const isNavigating = unstable_useIsNavigating();
+
+  return (
+    <>
+      <Stack />
+      {isNavigating && <ActivityIndicator style={styles.progress} />}
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  progress: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+  },
+});
+```
+
+The hook reports queued calls such as `router.back()`, but it does not report synchronous dispatches or native back gestures. It returns `false` outside an Expo Router root.
+
+### Move `initialRouteName` to `unstable_settings`
+
+The `initialRouteName` navigator prop is removed. Export `unstable_settings.initialRouteName` from the layout that owns the initial route:
+
+```tsx app/(tabs)/_layout.tsx
+// Before (SDK 57)
+import { Stack } from 'expo-router';
+
+export default function FeedLayout() {
+  return <Stack initialRouteName="index" />;
+}
+```
+
+```tsx app/(tabs)/_layout.tsx
+// After (SDK 58)
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+
+export default function FeedLayout() {
+  return <Stack />;
+}
+```
+
+Expo Router now builds complete initial state from the URL. For example, a stack nested in tabs reads the setting from that stack's own **\_layout.tsx** file. During imperative navigation, pass `{ withAnchor: true }` when the initial route should be inserted below the destination.
+
+See [Router settings](/router/advanced/router-settings/) for initial route and anchor behavior.
+
+### Replace `redirect` and `initialParams`
+
+Layout `Screen` components no longer accept `redirect` or `initialParams`.
+
+Render a `Redirect` from the route file instead of configuring `redirect` on a screen:
+
+```tsx app/legacy.tsx
+import { Redirect } from 'expo-router';
+
+export default function LegacyRoute() {
+  return <Redirect href="/replacement" />;
+}
+```
+
+For access control, use a protected route with `redirectTo`:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+import { useAuth } from '../context/auth';
+
+export default function RootLayout() {
+  const isSignedIn = useAuth();
+
+  return (
+    <Stack>
+      <Stack.Protected guard={isSignedIn} redirectTo="/sign-in">
+        <Stack.Screen name="account" />
+      </Stack.Protected>
+      <Stack.Screen name="sign-in" />
+    </Stack>
+  );
+}
+```
+
+Replace `initialParams` with defaults where the screen reads its params:
+
+```tsx app/feed.tsx
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Feed() {
+  const { sort = 'latest' } = useLocalSearchParams<{ sort?: string }>();
+  // ...
+}
+```
+
+### Declare tabs and drawer screens
+
+JS Tabs, Top Tabs, Drawer, headless tabs, and Native Tabs now show only screens declared in the layout. Declare every route that should appear in the navigator UI:
+
+```tsx app/(tabs)/_layout.tsx
+import { Tabs } from 'expo-router';
+
+export default function TabLayout() {
+  return (
+    <Tabs>
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="feed" />
+      <Tabs.Screen name="hidden" options={{ href: null }} />
+    </Tabs>
+  );
+}
+```
+
+For JS Tabs, `href: null` hides the tab, makes its route unreachable through that navigator, and redirects navigation attempts to the initial visible tab. The removed `useOnlyUserDefinedScreens` option is no longer necessary.
+
+### Update protected routes
+
+Most apps that use protected routes do not need to make changes. Protected routes remain registered in their navigator in SDK 58, and a route whose guard fails renders a redirect instead of being removed from the route tree.
+
+Set `redirectTo` on the navigator's `Protected` component only when you want to control the redirect destination. Without it, Expo Router uses the navigator's accessible anchor or initial route, then its first accessible route.
+
+See [Protected routes](/router/advanced/protected/) for guard patterns.
+
+### Replace web modals
+
+The experimental web modal implementation is removed. Follow [Build custom web modals](/router/advanced/web-modals/) to render modal overlays with a custom navigator. Custom implementations can import `NativeStackView` from `expo-router` for the native stack view.
+
+### Replace `freezeOnBlur`
+
+The `freezeOnBlur` option has no effect in SDK 58. Remove it from your screen configuration. To preserve state while cleaning up effects after a screen loses focus, wrap the screen contents in the unstable `NavigationAwareActivity` component:
+
+```tsx app/feed.tsx
+import { NavigationAwareActivity } from 'expo-router';
+
+export default function Feed() {
+  return (
+    <NavigationAwareActivity hideWhenNestedAtLevel={1}>
+      {/* Screen contents */}
+    </NavigationAwareActivity>
+  );
+}
+```
+
+The `hideWhenNestedAtLevel` value of `1` hides the activity when the screen loses focus. Its default value of `2` keeps the previous screen visible and hides it when another screen is pushed on top.
+
+{/* TODO: Replace the manual wrapper when a navigator option for NavigationAwareActivity is available. */}
+
+### Prevent a screen from being removed
+
+Existing `usePreventRemove` calls only need changes when their callback repeats or replaces the blocked action. In that case, set the prevention condition to `false` and call the returned `disablePrevention` function before navigating again.
+
+Use `usePreventRemove` from `expo-router/react-navigation` to block removal while a screen has unsaved data:
+
+```tsx app/edit-profile.tsx
+import { usePreventRemove } from 'expo-router/react-navigation';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Button } from 'react-native';
+
+export default function EditProfile() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const router = useRouter();
+
+  const disablePrevention = usePreventRemove(hasUnsavedChanges, () => {
+    Alert.alert('Discard changes?', 'Your changes have not been saved.', [
+      { text: 'Keep editing', style: 'cancel' },
+      {
+        text: 'Discard',
+        style: 'destructive',
+        onPress: () => {
+          setHasUnsavedChanges(false);
+          disablePrevention();
+          router.back();
+        },
+      },
+    ]);
+  });
+
+  return <Button title="Save" onPress={() => setHasUnsavedChanges(false)} />;
+}
+```
+
+To continue with the exact prevented action, retain `data.action`, set the prevention condition to `false`, call `disablePrevention()`, and then pass the action to `navigation.dispatch`. Do not dispatch from a raw `removePrevented` listener while prevention is still active because the action can be blocked again.
+
+> **warning** Always update the boolean passed to `usePreventRemove` when calling `disablePrevention()`. If it remains `true`, the hook warns and does not re-enable prevention until the boolean changes.
+
+## Advanced migrations
+
+### Update `navigation.dispatch`
+
+`navigation.dispatch` and navigation helper actions are now queued until after the current React commit. Use `navigation.dispatchSync(action)` only when an integration must apply an action immediately.
+
+Dispatch functions are no longer supported. Read the state first, compute an action, and dispatch the action object:
+
+```tsx
+// Before (SDK 57)
+navigation.dispatch(state =>
+  CommonActions.reset({
+    ...state,
+    index: 0,
+    routes: [state.routes[0]],
+  })
+);
+
+// After (SDK 58)
+const state = navigation.getState();
+const action = CommonActions.reset({
+  ...state,
+  index: 0,
+  routes: [state.routes[0]],
+});
+
+navigation.dispatch(action);
+```
+
+The read and deferred dispatch are not atomic. Use `dispatchSync(action)` deliberately if other navigation work cannot happen between them.
+
+### Replace `navigationKey`
+
+Layout `Screen` and `Group` components no longer accept `navigationKey`. There is no direct replacement. Use route and layout identity, protected routes, or explicit href navigation based on why the key was used.
+
+### Replace `beforeRemove` and `__unsafe_action__`
+
+The `beforeRemove` and `__unsafe_action__` events are removed. Use `removed` to observe a completed removal and `removePrevented` to observe an action blocked by `usePreventRemove`.
+
+The `removed` event fires after the route unmounts. Defer cleanup of its listener so it can receive that event:
+
+```tsx
+useEffect(() => {
+  const unsubscribe = navigation.addListener('removed', event => {
+    logRemoval(event.data.action);
+  });
+
+  return () => queueMicrotask(unsubscribe);
+}, [navigation]);
+```
+
+Do not update the removed screen's state from this listener because the screen has already unmounted.
+
+### Move `useNavigation` inside a navigator
+
+`useNavigation` now throws when it is called outside a navigator. If you render `ExpoRoot` manually, this includes components rendered by its `wrapper` prop. Move the hook into a route or layout rendered inside the navigation tree.
+
+### Read navigation state
+
+Navigation state is an implementation detail. Prefer `usePathname`, `useSegments`, and `useGlobalSearchParams` when you need URL or route information.
+
+#### Handle optional `type` and `history`
+
+The navigation state `type` is optional for custom routers. `history` is optional in tab and drawer state. Add fallback values before reading them:
+
+```ts
+const history = state.history ?? [];
+
+if (state.type === 'tab') {
+  // Handle tab-specific state.
+}
+```
+
+#### Read stack preloaded routes from `routes`
+
+`StackNavigationState.preloadedRoutes` is removed. Preloaded routes are appended to `state.routes` after the focused index:
+
+```ts
+const activeRoutes = state.routes.slice(0, state.index + 1);
+const preloadedRoutes = state.routes.slice(state.index + 1);
+```
+
+#### Use `routeNames` for tab order
+
+`TabNavigationState.preloadedRouteKeys` is removed. Preloaded tabs are ordinary, unfocused entries in `state.routes`, and lazy routes may be absent from that array. Iterate over `state.routeNames` when you need the declared tab order:
+
+```ts
+for (const routeName of state.routeNames) {
+  const route = state.routes.find(route => route.name === routeName);
+  // `route` is undefined when the lazy route has not been created.
+}
+```
+
+#### Remove drawer `default`
+
+`DrawerNavigationState.default` is removed. In a component, use `useDrawerStatus` from `expo-router/drawer` to read whether the drawer is open or closed. `getDrawerStatusFromState` is deprecated and now requires the router's default status as its second argument.
+
+#### Include `routeKeySeq` in complete state
+
+Complete navigation state from persisted data, custom routers, or `CommonActions.reset` must include `routeKeySeq`. Every complete nested state also needs a state key, route keys, `routeNames`, `index`, and `stale: false`.
+
+Preserve the current navigator's keys, route names, and key sequence when resetting its state:
+
+```tsx
+const state = navigation.getState();
+
+navigation.dispatch(
+  CommonActions.reset({
+    ...state,
+    index: 0,
+    routes: [state.routes[0]],
+  })
+);
+```
+
+Persisted state must retain valid keys and route names at every nested level. Expo Router warns and ignores an invalid complete state.
+
+### Update custom routers
+
+SDK 58 removes state initialization and rehydration from custom routers. Expo Router now creates the complete initial state.
+
+#### Update the router interface
+
+Update each custom router for these interface changes:
+
+| SDK 57 API                    | SDK 58 migration                                                            |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| `getInitialState`             | Remove it. Expo Router constructs initial state.                            |
+| `getRehydratedState`          | Remove it. Custom routers and persisted data must provide complete state.   |
+| `getStateForRouteNamesChange` | Handle the `ROUTE_NAMES_CHANGED` action in `getStateForAction`.             |
+| `routeParamList`              | Remove it from `RouterConfigOptions`. Put parameter defaults in route code. |
+| `RouterActionOptions`         | Use `RouterConfigOptions` in `getStateForAction`.                           |
+| `getStateForDeclaredRoutes`   | Return the render-phase state for the currently declared route names.       |
+| `getStateForRouteFocus`       | Return state with the route identified by its key focused.                  |
+| `shouldActionChangeFocus`     | Return whether an action should also focus its parent navigator.            |
+
+Custom routers must also handle `PUSH` when the action targets one of their routes. Fall back to `BaseRouter.getStateForAction` for common actions that the custom router does not handle itself.
+
+#### Return the affected route key
+
+`getStateForAction` now returns the next state together with the key of the route affected by the action:
+
+```ts
+// Before (SDK 57)
+return nextState;
+
+// After (SDK 58)
+// `affectedRoute` is selected by this action's handling logic.
+return {
+  state: nextState,
+  affectedRouteKey: affectedRoute?.key,
+};
+```
+
+Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `null` when the router cannot handle an action.
+
+#### Generate deterministic route keys
+
+Use `createRouteKeyMinter` from `expo-router` whenever a custom router adds routes. Write its updated `routeKeySeq` back into the returned state:
+
+```ts
+import { createRouteKeyMinter } from 'expo-router';
+
+const minter = createRouteKeyMinter(state);
+const route = {
+  key: minter.mint(action.payload.name),
+  name: action.payload.name,
+};
+
+const nextState = {
+  ...state,
+  routeKeySeq: minter.routeKeySeq,
+  index: state.routes.length,
+  routes: [...state.routes, route],
+};
+
+return {
+  state: nextState,
+  affectedRouteKey: route.key,
+};
+```
+
+Omitting the write-back can mint duplicate keys on the next action.
+
+#### Make the router type optional when appropriate
+
+A custom router can omit its `type` only when its state type is also optional. A router with a required state `type` must continue to define the matching router `type`.
+
+### Update custom navigators
+
+For new custom integrations, use `unstable_createStandardRouterNavigator` in an app or `unstable_integrateWithRouter` in a reusable library. These APIs keep custom navigator state, descriptors, actions, and events aligned with Expo Router.
+
+<DiffBlock
+  raw={`diff --git a/src/expo-router.ts b/src/expo-router.ts
+--- a/src/expo-router.ts
++++ b/src/expo-router.ts
+@@ -1,5 +1,5 @@
+-import { withLayoutContext } from 'expo-router';
+-import { createNavigator } from './navigator';
++import { TabRouter, unstable_integrateWithRouter } from 'expo-router';
++import { standardNavigator } from './navigator';
+ 
+-export const Tabs = withLayoutContext(createNavigator().Navigator);
++export const Tabs = unstable_integrateWithRouter(standardNavigator, TabRouter);
+`}
+/>
+
+`withLayoutContext` remains supported. Remove its former third `useOnlyUserDefinedScreens` argument if your existing integration uses it. Filesystem routes remain registered; use descriptor `routeSource` when navigator UI needs to distinguish layout-declared routes from filesystem routes.
+
+The `key` on `descriptor.route` can be `undefined` for a declared route that does not yet have a live state route. Update custom navigator code to handle that case.
+
+See [Custom navigators](/router/advanced/custom-navigators/) for standard navigator concepts. Its options example applies to SDK 57: omit `useOnlyUserDefinedScreens` in SDK 58.
+
+### Review removed `expo-router/react-navigation` exports
+
+The following compatibility APIs are removed or changed in SDK 58. Imports that remain supported are listed by the [`expo-router/react-navigation` entry point](https://github.com/expo/expo/blob/main/packages/expo-router/src/react-navigation/index.ts).
+
+| Removed API                                                                        | Replacement                                                                                         | Change                                                                                               |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `UNSTABLE_UnhandledLinkingContext`                                                 | No app-level replacement. Expo Router owns unhandled link processing.                               | [#49616](https://github.com/expo/expo/pull/49616)                                                    |
+| `BaseNavigationContainer`, `NavigationContainer`                                   | Let Expo Router or `ExpoRoot` own the navigation container.                                         | [#49587](https://github.com/expo/expo/pull/49587), [#48760](https://github.com/expo/expo/pull/48760) |
+| Root `options` event, `DocumentTitleOptions`, `documentTitle`                      | Use Expo Router `Head` or a `<title>` element for web metadata.                                     | [#49590](https://github.com/expo/expo/pull/49590)                                                    |
+| `onStateChange` on container props                                                 | Prefer Expo Router state hooks, or listen for the navigation ref's `state` event.                   | [#49588](https://github.com/expo/expo/pull/49588)                                                    |
+| `NavigationIndependentTree`, `useNavigationIndependentTree`                        | Use `NavigationContainer` from `@react-navigation/native` for an isolated embedded navigation tree. | [#49172](https://github.com/expo/expo/pull/49172)                                                    |
+| React Navigation `Link`, `LinkProps`, `useLinkProps`                               | Use `Link` and `LinkProps` from `expo-router` with an `href`.                                       | [#48895](https://github.com/expo/expo/pull/48895)                                                    |
+| `navigateDeprecated`, `navigationInChildEnabled`                                   | Navigate to a complete href with `useRouter`.                                                       | [#49102](https://github.com/expo/expo/pull/49102)                                                    |
+| `NavigatorScreenParams`, `getActionFromState`, `LinkingOptions.getActionFromState` | Use complete hrefs and let Expo Router resolve navigation state.                                    | [#49297](https://github.com/expo/expo/pull/49297)                                                    |
+| `resetRoot` on navigation container refs                                           | Use `router.replace` or dispatch `CommonActions.reset` with complete state.                         | [#49297](https://github.com/expo/expo/pull/49297)                                                    |
+| `beforeRemove`, `__unsafe_action__`                                                | Use `usePreventRemove`, `removePrevented`, and `removed`.                                           | [#49408](https://github.com/expo/expo/pull/49408)                                                    |
+| `PreventRemoveContext`, `usePreventRemoveContext`, `PreventRemoveProvider`         | Use `usePreventRemove`. Expo Router owns the provider.                                              | [#49408](https://github.com/expo/expo/pull/49408), [#48347](https://github.com/expo/expo/pull/48347) |
+| `Router.getInitialState`, `Router.getRehydratedState`                              | Let Expo Router create initial state and return complete state from custom routers.                 | [#48783](https://github.com/expo/expo/pull/48783), [#49297](https://github.com/expo/expo/pull/49297) |
+| `Router.getStateForRouteNamesChange`                                               | Handle `ROUTE_NAMES_CHANGED` in `getStateForAction`.                                                | [#48479](https://github.com/expo/expo/pull/48479)                                                    |
+| `RouterActionOptions`, `RouterConfigOptions.routeParamList`                        | Use `RouterConfigOptions` without `routeParamList`.                                                 | [#48783](https://github.com/expo/expo/pull/48783)                                                    |
+| `DrawerNavigationState.default`                                                    | Use `useDrawerStatus`, or pass a default status to the deprecated `getDrawerStatusFromState`.       | [#48750](https://github.com/expo/expo/pull/48750)                                                    |
+| Static navigation APIs and types                                                   | Use Expo Router file routes and layouts.                                                            | [#48071](https://github.com/expo/expo/pull/48071)                                                    |
+| `LinkingOptions.enabled`                                                           | Remove the option. Expo Router owns linking.                                                        | [#49103](https://github.com/expo/expo/pull/49103)                                                    |
+| `UNSTABLE_routeNamesChangeBehavior`                                                | Use protected route redirects and explicit href navigation.                                         | [#47985](https://github.com/expo/expo/pull/47985)                                                    |
+| `useOnlyUserDefinedScreens`                                                        | Remove the option. All filesystem routes remain registered.                                         | [#47983](https://github.com/expo/expo/pull/47983)                                                    |
+
+## Next steps
+
+> **warning** The custom navigator guide's options example applies to SDK 57. Omit `useOnlyUserDefinedScreens` when using it with SDK 58.
+
+<BoxLink
+  title="Custom navigators"
+  description="Create an app navigator or integrate a reusable navigator library with Expo Router."
+  href="/router/advanced/custom-navigators/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Build custom web modals"
+  description="Build stack-like modal overlays for web with a custom navigator."
+  href="/router/advanced/web-modals/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Protected routes"
+  description="Redirect users away from routes that fail an access guard."
+  href="/router/advanced/protected/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Router settings"
+  description="Configure initial routes and deep-link anchors from a route layout."
+  href="/router/advanced/router-settings/"
+  Icon={BookOpen02Icon}
+/>

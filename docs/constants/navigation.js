@@ -761,7 +761,11 @@ const preview = [
       ],
       { expanded: true }
     ),
-    makeGroup('Expo Router', [makePage('preview/singular.mdx'), { expanded: true }]),
+    makeGroup(
+      'Expo Router',
+      [makePage('preview/singular.mdx'), makePage('preview/router/sdk-57-58-migration.mdx')],
+      { expanded: true }
+    ),
   ]),
 ];
 
