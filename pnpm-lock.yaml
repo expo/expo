@@ -5185,9 +5185,6 @@ importers:
       '@babel/core':
         specifier: ^7.26.0
         version: 7.29.7
-      '@expo/metro':
-        specifier: ~56.0.2
-        version: 56.0.2
 
   packages/expo-module-template:
     devDependencies:
