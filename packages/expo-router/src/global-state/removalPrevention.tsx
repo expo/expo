@@ -36,7 +36,7 @@ export const GlobalRemovalEventEmitterRegistryContext =
 
 /** Registers independent prevention requests with the nearest route provider. */
 export const ScreenRemovalPreventionSetterContext = createContext<
-  ((id: string, isPrevented: boolean) => void) | undefined
+  ((id: string, isPrevented: boolean, preventInPreloadedRoutes?: boolean) => void) | undefined
 >(undefined);
 
 function RemovalEventEmitterRegistryProvider({ children }: PropsWithChildren) {
@@ -138,12 +138,12 @@ function useRouteRemovalPreventionSetter(routeKey: string) {
   const parentPreventionSetter = use(ScreenRemovalPreventionSetterContext);
   const isPreloaded = use(IsPreloadedContext);
   return React.useCallback(
-    (id: string, isPrevented: boolean) => {
-      if (isPreloaded) {
+    (id: string, isPrevented: boolean, preventInPreloadedRoutes = false) => {
+      if (isPreloaded && !preventInPreloadedRoutes) {
         return;
       }
       preventionSetter?.(routeKey, id, isPrevented);
-      parentPreventionSetter?.(id, isPrevented);
+      parentPreventionSetter?.(`${routeKey}:${id}`, isPrevented, preventInPreloadedRoutes);
     },
     [isPreloaded, parentPreventionSetter, preventionSetter, routeKey]
   );
