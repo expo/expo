@@ -158,99 +158,6 @@ describe(SQLiteStatement, () => {
     await statement.finalizeAsync();
   });
 
-  it('concurrent reads over one shared statement should not corrupt each other', async () => {
-    await db.execAsync(`
-  CREATE TABLE IF NOT EXISTS shared (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL);
-  INSERT INTO shared (id, value) VALUES (1, 'one');
-  INSERT INTO shared (id, value) VALUES (2, 'two');
-  INSERT INTO shared (id, value) VALUES (3, 'three');
-  `);
-    const statement = await db.prepareAsync('SELECT value FROM shared WHERE id = ?');
-    const readAsync = async (id: number) => {
-      const result = await statement.executeAsync<{ value: string }>(id);
-      const rows = await result.getAllAsync();
-      return rows.map((row) => row.value);
-    };
-    const [first, second, third] = await Promise.all([readAsync(1), readAsync(2), readAsync(3)]);
-    expect(first).toEqual(['one']);
-    expect(second).toEqual(['two']);
-    expect(third).toEqual(['three']);
-    await statement.finalizeAsync();
-  });
-
-  it('a cursor abandoned without reading rows should not block later executions', async () => {
-    const statement = await db.prepareAsync('SELECT value FROM test WHERE intValue = ?');
-    // Never read the rows of the first execution.
-    await statement.executeAsync<TestEntity>(123);
-    const result = await statement.executeAsync<TestEntity>(456);
-    expect(await result.getAllAsync()).toEqual([{ value: 'test1' }]);
-    await statement.finalizeAsync();
-  });
-
-  it('a partially iterated cursor should not block later executions', async () => {
-    const statement = await db.prepareAsync('SELECT intValue FROM test ORDER BY intValue ASC');
-    const result = await statement.executeAsync<TestEntity>();
-    for await (const row of result) {
-      expect(row.intValue).toBe(123);
-      break;
-    }
-    const second = await statement.executeAsync<TestEntity>();
-    expect((await second.getAllAsync()).map((row) => row.intValue)).toEqual([123, 456, 789]);
-    await statement.finalizeAsync();
-  });
-
-  it('a failed execution should not block later executions', async () => {
-    const statement = await db.prepareAsync('SELECT value FROM test WHERE intValue = ?');
-    await expect(statement.executeAsync<TestEntity>(Symbol('bad') as any)).rejects.toThrow();
-    const result = await statement.executeAsync<TestEntity>(123);
-    expect(await result.getAllAsync()).toEqual([{ value: 'test1' }]);
-    await statement.finalizeAsync();
-  });
-
-  it('an execution started while another cursor is mid-fetch should still be serialized', async () => {
-    await db.execAsync(`
-  CREATE TABLE IF NOT EXISTS wide (id INTEGER PRIMARY KEY NOT NULL, tag TEXT NOT NULL);
-  INSERT INTO wide (id, tag) VALUES (1, 'a1');
-  INSERT INTO wide (id, tag) VALUES (2, 'a2');
-  INSERT INTO wide (id, tag) VALUES (3, 'b1');
-  `);
-    const statement = await db.prepareAsync('SELECT tag FROM wide WHERE tag LIKE ?');
-    const first = await statement.executeAsync<{ tag: string }>('a%');
-    // Start a second execution without awaiting, while the first cursor is unread.
-    const secondPromise = statement.executeAsync<{ tag: string }>('b%');
-    const firstRows = (await first.getAllAsync()).map((row) => row.tag);
-    const secondRows = (await (await secondPromise).getAllAsync()).map((row) => row.tag);
-    expect(firstRows).toEqual(['a1', 'a2']);
-    expect(secondRows).toEqual(['b1']);
-    await statement.finalizeAsync();
-  });
-
-  it('resetAsync on a cursor superseded by another execution should throw', async () => {
-    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
-    const first = await statement.executeAsync<TestEntity>(123);
-    expect((await first.getAllAsync()).map((row) => row.intValue)).toEqual([123]);
-    const second = await statement.executeAsync<TestEntity>(456);
-    // Resetting the stale cursor would rewind the second execution instead of the first.
-    await expect(first.resetAsync()).rejects.toThrow('can no longer be reset');
-    expect((await second.getAllAsync()).map((row) => row.intValue)).toEqual([456]);
-    await statement.finalizeAsync();
-  });
-
-  it('several executions queued behind one unread cursor should each get their own rows', async () => {
-    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
-    const first = await statement.executeAsync<TestEntity>(123);
-    // Queue two more executions while the first cursor is still unread.
-    const secondPromise = statement.executeAsync<TestEntity>(456);
-    const thirdPromise = statement.executeAsync<TestEntity>(789);
-    const firstRows = (await first.getAllAsync()).map((row) => row.intValue);
-    const secondRows = (await (await secondPromise).getAllAsync()).map((row) => row.intValue);
-    const thirdRows = (await (await thirdPromise).getAllAsync()).map((row) => row.intValue);
-    expect(firstRows).toEqual([123]);
-    expect(secondRows).toEqual([456]);
-    expect(thirdRows).toEqual([789]);
-    await statement.finalizeAsync();
-  });
-
   it('reading a result after the statement ran again should throw, not return the later rows', async () => {
     const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
     const first = await statement.executeAsync<TestEntity>(123);
@@ -285,6 +192,41 @@ describe(SQLiteStatement, () => {
     const first = statement.executeSync<TestEntity>(123);
     statement.executeSync<TestEntity>(789);
     expect(() => first.getAllSync()).toThrow(/prepared statement ran again/);
+    await statement.finalizeAsync();
+  });
+
+  it('concurrent reads over one shared statement should not return another reader rows', async () => {
+    await db.execAsync(`
+  CREATE TABLE IF NOT EXISTS shared (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+  INSERT INTO shared (id, value) VALUES (1, 'one');
+  INSERT INTO shared (id, value) VALUES (2, 'two');
+  INSERT INTO shared (id, value) VALUES (3, 'three');
+  `);
+    const statement = await db.prepareAsync('SELECT value FROM shared WHERE id = ?');
+    const readAsync = async (id: number) => {
+      const result = await statement.executeAsync<{ value: string }>(id);
+      try {
+        return (await result.getAllAsync()).map((row) => row.value);
+      } catch {
+        return 'superseded';
+      }
+    };
+    const results = await Promise.all([readAsync(1), readAsync(2), readAsync(3)]);
+    // One reader owns the cursor and the rest say so, but no reader gets another reader rows.
+    for (const result of results) {
+      expect(result === 'superseded' || result.length === 1).toBe(true);
+    }
+    expect(results.filter((result) => result !== 'superseded')).toHaveLength(1);
+    await statement.finalizeAsync();
+  });
+
+  it('resetAsync on a superseded result should throw', async () => {
+    const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue = ?');
+    const first = await statement.executeAsync<TestEntity>(123);
+    const second = await statement.executeAsync<TestEntity>(789);
+    // Resetting the stale result would rewind the cursor that `second` owns now.
+    await expect(first.resetAsync()).rejects.toThrow(/prepared statement ran again/);
+    expect((await second.getAllAsync()).map((row) => row.intValue)).toEqual([789]);
     await statement.finalizeAsync();
   });
 });

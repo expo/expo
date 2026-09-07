@@ -14,7 +14,7 @@
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
 - Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
 - Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
-- Fixed concurrent reads of a shared prepared statement returning each other's rows, and made a result whose statement has run again throw instead of returning the later run's rows. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
+- Fixed reading a prepared statement result after the same statement ran again returning the later run's rows instead of throwing. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
