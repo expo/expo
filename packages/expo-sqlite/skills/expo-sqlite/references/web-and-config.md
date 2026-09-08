@@ -103,14 +103,20 @@ For an iOS App Group, configure `ios.entitlements['com.apple.security.applicatio
 
 ```ts
 import { Paths } from 'expo-file-system';
+import { defaultDatabaseDirectory } from 'expo-sqlite';
+import { Platform } from 'react-native';
 
-const directory = Paths.appleSharedContainers['group.com.example.app']?.uri;
-if (!directory) {
-  throw new Error('App Group container is unavailable; check the entitlement and native build');
+let directory = defaultDatabaseDirectory;
+if (Platform.OS === 'ios') {
+  const sharedDirectory = Paths.appleSharedContainers['group.com.example.app']?.uri;
+  if (!sharedDirectory) {
+    throw new Error('App Group container is unavailable; check the entitlement and native build');
+  }
+  directory = sharedDirectory;
 }
 ```
 
-Use this lookup on iOS and pass `directory` to `SQLiteProvider` or the third argument of `openDatabaseAsync()`. Select the specific group rather than the first container returned. Verify that both the app and extension use the same group and database name. On tvOS the default database location is the caches directory, so do not assume its contents are permanent.
+Pass `directory` to `SQLiteProvider` or the third argument of `openDatabaseAsync()`. The snippet selects the specific App Group on iOS and keeps SQLite's default directory on other platforms. Verify that both the app and extension use the same group and database name. On tvOS the default database location is the caches directory, so do not assume its contents are permanent.
 
 ## Change listeners
 
