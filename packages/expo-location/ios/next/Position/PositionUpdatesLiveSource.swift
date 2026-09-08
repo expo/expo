@@ -2,8 +2,10 @@ import CoreLocation
 
 @available(iOS 17.0, *)
 final class PositionUpdatesLiveSource {
-  func updates(for profile: Profile) -> PositionUpdatesSource {
+  func updates(for profile: Profile, allowsBackgroundUpdates: Bool = false) -> PositionUpdatesSource {
     let (stream, continuation) = AsyncThrowingStream.makeStream(of: CLLocation?.self)
+    let backgroundSession = allowsBackgroundUpdates ? CLBackgroundActivitySession() : nil
+    let invalidateServiceSession = allowsBackgroundUpdates ? Self.holdAlwaysServiceSession() : {}
     let providerTask = Task {
       do {
         for try await update in CLLocationUpdate.liveUpdates(profile.clLocationUpdateProfile()) {
@@ -27,6 +29,18 @@ final class PositionUpdatesLiveSource {
     }
     return PositionUpdatesSource(stream: stream, continuation: continuation) {
       providerTask.cancel()
+      backgroundSession?.invalidate()
+      invalidateServiceSession()
+    }
+  }
+
+  private static func holdAlwaysServiceSession() -> () -> Void {
+    guard #available(iOS 18.0, *) else {
+      return {}
+    }
+    let session = CLServiceSession(authorization: .always)
+    return {
+      session.invalidate()
     }
   }
 }
