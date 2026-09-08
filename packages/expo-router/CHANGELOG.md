@@ -93,7 +93,7 @@
 
 ### 💡 Others
 
-- Replace the internal `color` dependency with `@react-native/normalize-colors`. (by [@jakub-tkacz](https://github.com/jakub-tkacz))
+- Replace the internal `color` dependency with `@react-native/normalize-colors`. ([#49876](https://github.com/expo/expo/pull/49876) by [@Ubax](https://github.com/Ubax))
 - Resolve queued navigation actions against render-time state. ([#49846](https://github.com/expo/expo/pull/49846) by [@Ubax](https://github.com/Ubax))
 - Replace latest-value refs with `useLatestCallback` and `useEffectEvent`. ([#49643](https://github.com/expo/expo/pull/49643) by [@Ubax](https://github.com/Ubax))
 - Remove the root `options` event, `DocumentTitleOptions`, and the `documentTitle` prop from `expo-router/react-navigation`. ([#49590](https://github.com/expo/expo/pull/49590) by [@Ubax](https://github.com/Ubax))
