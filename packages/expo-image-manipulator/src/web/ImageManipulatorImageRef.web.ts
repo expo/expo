@@ -1,4 +1,4 @@
-import { SharedRef } from 'expo';
+import { CodedError, SharedRef } from 'expo';
 
 import type { ImageResult, SaveOptions } from '../ImageManipulator.types';
 import { SaveFormat } from '../ImageManipulator.types';
@@ -76,7 +76,10 @@ export default class ImageManipulatorImageRef extends SharedRef<'image'> {
 
   private ensureNotReleased(): void {
     if (this.isReleased) {
-      throw new Error('Cannot use shared object that was already released');
+      throw new CodedError(
+        'ERR_IMAGE_MANIPULATOR_RELEASED',
+        'This image was released by release(). Render a new image with ImageManipulatorContext.renderAsync().'
+      );
     }
   }
 }

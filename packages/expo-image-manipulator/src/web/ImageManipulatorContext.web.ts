@@ -1,4 +1,4 @@
-import { SharedObject } from 'expo';
+import { CodedError, SharedObject } from 'expo';
 
 import type { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
 import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
@@ -118,7 +118,10 @@ export default class ImageManipulatorContext extends SharedObject {
 
   private ensureNotReleased(): void {
     if (this.isReleased) {
-      throw new Error('Cannot use shared object that was already released');
+      throw new CodedError(
+        'ERR_IMAGE_MANIPULATOR_RELEASED',
+        'This image manipulation context was released by release() or by useImageManipulator when its source changed or its component unmounted. Create a new context with ImageManipulator.manipulate(...).'
+      );
     }
   }
 

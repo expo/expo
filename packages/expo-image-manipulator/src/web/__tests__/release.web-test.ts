@@ -43,7 +43,12 @@ describe('release', () => {
 
     expect(canvas.width).toBe(0);
     expect(canvas.height).toBe(0);
-    expect(() => context.reset()).toThrow('Cannot use shared object that was already released');
+    expect(() => context.reset()).toThrow(
+      expect.objectContaining({ code: 'ERR_IMAGE_MANIPULATOR_RELEASED' })
+    );
+    await expect(context.renderAsync()).rejects.toMatchObject({
+      code: 'ERR_IMAGE_MANIPULATOR_RELEASED',
+    });
   });
 
   it('releases the previous context canvas when resetting', async () => {
@@ -113,7 +118,9 @@ describe('release', () => {
     expect(revokeObjectURL).toHaveBeenCalledWith(uri);
     expect(canvas.width).toBe(0);
     expect(canvas.height).toBe(0);
-    expect(() => image.width).toThrow('Cannot use shared object that was already released');
+    expect(() => image.width).toThrow(
+      expect.objectContaining({ code: 'ERR_IMAGE_MANIPULATOR_RELEASED' })
+    );
   });
 
   it('does not revoke a data URL', () => {
