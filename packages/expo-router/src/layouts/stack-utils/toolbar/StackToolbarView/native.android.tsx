@@ -9,7 +9,9 @@ export const NativeToolbarView: React.FC<NativeToolbarViewProps> = ({ children, 
   const {
     expoUI: { Box, RNHostView },
     modifiers: { fillMaxHeight },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const placement = useToolbarPlacement();
   const modifiers = placement === 'bottom' ? [fillMaxHeight()] : undefined;
 

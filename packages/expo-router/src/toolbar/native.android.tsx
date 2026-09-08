@@ -9,7 +9,9 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
   const {
     expoUI: { Host, HorizontalFloatingToolbar, Box },
     modifiers: { fillMaxWidth, height, padding, imePadding },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const insets = useSafeAreaInsets();
 
   const modifiers = useMemo(() => {

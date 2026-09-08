@@ -105,6 +105,9 @@ describe('processHeaderItemsForPlatform', () => {
     expect(() => processHeaderItemsForPlatform(<></>, 'left')).toThrow(
       "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
     );
+    expect(mockedRequireExpoUI).toHaveBeenCalledWith(
+      "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+    );
   });
 
   it('returns null for bottom placement', () => {

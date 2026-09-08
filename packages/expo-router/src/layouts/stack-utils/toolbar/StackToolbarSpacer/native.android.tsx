@@ -15,7 +15,9 @@ export const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps> = (props) =
   const {
     expoUI: { Box },
     modifiers: { width },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
   return (
     <AnimatedItemContainer visible={!props.hidden}>

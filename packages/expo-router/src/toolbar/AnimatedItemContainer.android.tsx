@@ -14,7 +14,9 @@ export function AnimatedItemContainer({
 }) {
   const {
     expoUI: { AnimatedVisibility, EnterTransition, ExitTransition },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
   return (
     <AnimatedVisibility

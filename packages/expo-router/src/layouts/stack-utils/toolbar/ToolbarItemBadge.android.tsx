@@ -47,7 +47,9 @@ export function ToolbarItemBadge({
   const {
     expoUI: { Badge, Box, Text: ComposeText },
     modifiers: { alpha: alphaModifier },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   return (
     <Box contentAlignment="topEnd">
       {children}

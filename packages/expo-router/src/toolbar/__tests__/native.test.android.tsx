@@ -55,6 +55,9 @@ describe('RouterToolbarHost (Android bottom toolbar)', () => {
     expect(() => render(<RouterToolbarHost />)).toThrow(
       "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
     );
+    expect(mockedRequireExpoUI).toHaveBeenCalledWith(
+      "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+    );
   });
 
   it('does not cover the full screen so touches above the toolbar pass through', () => {

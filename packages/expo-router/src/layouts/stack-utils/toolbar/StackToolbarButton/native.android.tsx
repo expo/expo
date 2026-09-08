@@ -24,7 +24,9 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
   }
   const {
     expoUI: { Icon, IconButton },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
   // `tint={null}` tells `<Icon>` to draw the source in its original colors.
   // `undefined` would fall back to `LocalContentColor`, i.e. the IconButton's

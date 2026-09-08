@@ -27,7 +27,9 @@ export function processHeaderItemsForPlatform(
   if (placement !== 'left' && placement !== 'right') {
     return null;
   }
-  requireExpoUI();
+  requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
   const headerContent = (props: NativeStackHeaderItemProps) => (
     <HeaderToolbarHostBase placement={placement} colors={colors} headerProps={props}>
@@ -61,7 +63,9 @@ function HeaderToolbarHostBase({
 }) {
   const {
     expoUI: { Host, Row },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const stableColors = useMemo(
     () => ({
       tintColor: colors?.tintColor ?? headerProps?.tintColor,

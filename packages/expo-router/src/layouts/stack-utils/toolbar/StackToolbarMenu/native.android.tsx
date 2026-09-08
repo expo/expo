@@ -39,7 +39,9 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
       Text: ComposeText,
     },
     modifiers: { background },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const [expanded, setExpanded] = useState(false);
   const parentClose = use(ToolbarMenuCloseContext);
   const isNested = parentClose !== null;
@@ -174,7 +176,9 @@ export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (
   const {
     expoUI: { DropdownMenuItem, Icon, Text: ComposeText },
     modifiers: { background },
-  } = requireExpoUI();
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const closeMenu = use(ToolbarMenuCloseContext);
   const toolbarColors = useToolbarColors();
   const tintColor = props.destructive
