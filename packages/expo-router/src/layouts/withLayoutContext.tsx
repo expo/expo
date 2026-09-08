@@ -17,7 +17,6 @@ import { useSortedScreens } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
 import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
-import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
 export function useFilterScreenChildren<
   TOptions extends object = Record<string, any>,
@@ -194,11 +193,9 @@ export function withLayoutContext<
       }
 
       return (
-        <IsWithinLayoutContext value>
-          <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
-          </GuardContextProvider>
-        </IsWithinLayoutContext>
+        <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+        </GuardContextProvider>
       );
     }),
     {
