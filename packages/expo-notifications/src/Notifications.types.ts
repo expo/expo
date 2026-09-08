@@ -325,9 +325,7 @@ export type DailyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * How precisely Android delivers the notification. See `NotificationDelivery`.
    * @default 'bestEffort'
-   * @platform android
    */
   delivery?: NotificationDelivery;
 };
@@ -344,9 +342,7 @@ export type WeeklyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * How precisely Android delivers the notification. See `NotificationDelivery`.
    * @default 'bestEffort'
-   * @platform android
    */
   delivery?: NotificationDelivery;
 };
@@ -363,9 +359,7 @@ export type MonthlyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * How precisely Android delivers the notification. See `NotificationDelivery`.
    * @default 'bestEffort'
-   * @platform android
    */
   delivery?: NotificationDelivery;
 };
@@ -383,9 +377,7 @@ export type YearlyTriggerInput = {
   hour: number;
   minute: number;
   /**
-   * How precisely Android delivers the notification. See `NotificationDelivery`.
    * @default 'bestEffort'
-   * @platform android
    */
   delivery?: NotificationDelivery;
 };
@@ -400,9 +392,7 @@ export type DateTriggerInput = {
   date: Date | number;
   channelId?: string;
   /**
-   * How precisely Android delivers the notification. See `NotificationDelivery`.
    * @default 'bestEffort'
-   * @platform android
    */
   delivery?: NotificationDelivery;
 };
