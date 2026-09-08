@@ -8,8 +8,7 @@ import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
-import { resetNavigatorState } from '../../global-state/stateUtils';
-import { findStateByKey } from '../../global-state/useNavigationTreeReducer';
+import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -321,7 +320,7 @@ export function useNavigationBuilder<
     );
   }
 
-  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
+  // Track screen-list changes without recalculating state when only the array identity changes.
   const routeNamesKey = routeNames.join('\0');
 
   const { state: currentState } = use(NavigationStateContext);
@@ -347,10 +346,13 @@ export function useNavigationBuilder<
   const committedState = (
     isForeignType ? resetNavigatorState(treeState, router.type) : treeState
   ) as State;
-  const state = React.useMemo(
-    () => router.getStateForDeclaredRoutes(committedState, routeNames),
-    [committedState, routeNamesKey, router]
-  );
+  const state = React.useMemo(() => {
+    const declaredState = router.getStateForDeclaredRoutes(committedState, routeNames);
+    // The seeded state cannot know the order declared by mounted screens yet.
+    return isArrayEqual(declaredState.routeNames, routeNames)
+      ? declaredState
+      : { ...declaredState, routeNames };
+  }, [committedState, routeNamesKey, router]);
   const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
     // The registry stores states from different router types; this entry only receives its own state key.
     router.getStateForAction(registryState as State, action, {
@@ -440,7 +442,7 @@ export function useNavigationBuilder<
         router.getStateForRouteFocus(registryState as State, routeKey),
       routeNode: routeNode ?? undefined,
     }),
-    [reduce, routeNode, routeNamesKey, router]
+    [reduce, routeNode, router]
   );
 
   useRegisterRouter(committedState.key, registryEntry);

@@ -12,8 +12,15 @@ import {
 import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/removalPrevention';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
-import { RouterRegistryContext } from '../../global-state/routerRegistry';
-import { RoutingQueueApiContext } from '../../global-state/routingQueueContext';
+import {
+  RouterRegistrySettersContext,
+  type RouterRegistry,
+  type RouterRegistrySetters,
+} from '../../global-state/routerRegistry';
+import {
+  ImperativeRoutingQueueBridge,
+  RoutingQueueApiContext,
+} from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import { useNavigationTreeReportEvents } from '../../global-state/useNavigationTreeReportEvents';
 import useLatestCallback from '../../utils/useLatestCallback';
@@ -57,19 +64,17 @@ const duplicateNameWarnings: string[] = [];
  * This should be rendered at the root wrapping the whole app.
  *
  * @param props.initialState Initial state object for the navigation tree.
- * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
-  const { ref, initialState, onReady, UNSTABLE_routeNode, theme, children } = props;
+  const { ref, initialState, UNSTABLE_routeNode, theme, children } = props;
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
   const routingQueue = use(RoutingQueueApiContext);
-  const registry = use(RouterRegistryContext);
   const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   if (!parent.isDefault) {
@@ -78,17 +83,14 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     );
   }
 
-  if (
-    routingQueue === undefined ||
-    registry === undefined ||
-    routesWithRemovalPrevented === undefined
-  ) {
+  if (routingQueue === undefined || routesWithRemovalPrevented === undefined) {
     throw new Error(
       'The navigation container requires the shared routing state provided by `ExpoRoot`. Render the navigation container inside `ExpoRoot`.'
     );
   }
 
   const emitter = useEventEmitter<NavigationContainerEventMap>();
+  const [registry, setRegistry] = React.useState<RouterRegistry>(() => new Map());
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
   const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
@@ -101,6 +103,29 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       redirects: routerConfig?.redirects,
     });
   useNavigationTreeReportEvents(report, consumeReportEvents);
+  const registrySetters = React.useMemo<RouterRegistrySetters>(
+    () => ({
+      register(stateKey, entry) {
+        setRegistry((previous) => {
+          if (previous.get(stateKey) === entry) {
+            return previous;
+          }
+          return new Map(previous).set(stateKey, entry);
+        });
+      },
+      unregister(stateKey, entry) {
+        setRegistry((previous) => {
+          if (previous.get(stateKey) !== entry) {
+            return previous;
+          }
+          const next = new Map(previous);
+          next.delete(stateKey);
+          return next;
+        });
+      },
+    }),
+    []
+  );
 
   const { listeners, addListener } = useChildListeners();
 
@@ -147,9 +172,6 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     return route as Route<string> | undefined;
   });
 
-  // TODO(@ubax): check if this is still needed anywhere
-  const isReady = useLatestCallback(() => listeners.focus[0] != null && registry.has(state.key));
-
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
   const navigation: NavigationContainerRef<ParamListBase> = React.useMemo(
@@ -170,21 +192,13 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       getRootState,
       getCurrentRoute,
       getCurrentOptions,
-      isReady,
+      // Kept for compatibility. There is no ready state to report.
+      isReady: () => true,
       setOptions: () => {
         throw new Error('Cannot call setOptions outside a screen');
       },
     }),
-    [
-      canGoBack,
-      dispatch,
-      dispatchSync,
-      emitter,
-      getCurrentOptions,
-      getCurrentRoute,
-      getRootState,
-      isReady,
-    ]
+    [canGoBack, dispatch, dispatchSync, emitter, getCurrentOptions, getCurrentRoute, getRootState]
   );
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
@@ -215,17 +229,6 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   if (!areUrlObjectsEqual(routeInfo, nextRouteInfo)) {
     setRouteInfo(nextRouteInfo);
   }
-
-  const onReadyCalledRef = React.useRef(false);
-  const notifyReady = React.useEffectEvent(() => onReady?.());
-
-  React.useEffect(() => {
-    if (!onReadyCalledRef.current && isReady()) {
-      onReadyCalledRef.current = true;
-      notifyReady();
-      emitter.emit({ type: 'ready' });
-    }
-  }, [state, registry, isReady, emitter]);
 
   React.useEffect(() => {
     const hydratedState = getRootState();
@@ -303,10 +306,13 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
         <NavigationStateContext.Provider value={context}>
           <RouteInfoContext.Provider value={routeInfo}>
             <RootNavigationStateContext.Provider value={state}>
-              <EnsureSingleNavigator>
-                <ThemeProvider value={theme}>{children}</ThemeProvider>
-              </EnsureSingleNavigator>
-              <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+              <RouterRegistrySettersContext.Provider value={registrySetters}>
+                <EnsureSingleNavigator>
+                  <ThemeProvider value={theme}>{children}</ThemeProvider>
+                </EnsureSingleNavigator>
+              </RouterRegistrySettersContext.Provider>
+              <ImperativeRoutingQueueBridge enqueue={routingQueue.enqueue} />
+              <RoutingQueueDrainer processIntent={processIntent} />
             </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>

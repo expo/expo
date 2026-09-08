@@ -428,6 +428,13 @@ public final class SQLiteModule: Module {
   private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+
+    // Guard the stateful statement, see `run` above.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     let ret = exsqlite3_step(statement.pointer)
     if ret == SQLITE_ROW {
       return try getColumnValues(statement: statement)
@@ -441,6 +448,13 @@ public final class SQLiteModule: Module {
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+
+    // Guard the stateful statement, see `run` above.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     var columnValuesList: [SQLiteColumnValues] = []
     while true {
       let ret = exsqlite3_step(statement.pointer)
@@ -459,6 +473,13 @@ public final class SQLiteModule: Module {
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+
+    // Guard the stateful statement, see `run` above.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     if exsqlite3_reset(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
@@ -467,6 +488,13 @@ public final class SQLiteModule: Module {
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+
+    // Guard the stateful statement, see `run` above.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }

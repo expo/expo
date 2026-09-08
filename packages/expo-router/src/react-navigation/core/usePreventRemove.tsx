@@ -10,6 +10,14 @@ import { useNavigation } from './useNavigation';
 
 const NOOP = () => {};
 
+export type PreventRemoveOptions = {
+  /**
+   * Whether removal prevention remains active while the screen is preloaded.
+   * @default false
+   */
+  preventInPreloadedRoutes?: boolean;
+};
+
 function useWarnOnStalePreventRemoveDev(preventRemove: boolean) {
   const [shouldCheck, setShouldCheck] = React.useState(false);
 
@@ -64,15 +72,18 @@ const useWarnOnStalePreventRemove: (preventRemove: boolean) => () => void =
  *
  * @param preventRemove Boolean indicating whether to prevent screen from being removed.
  * @param callback Optional function called when the screen was prevented from being removed.
+ * @param options Options that configure removal prevention.
  */
 export function usePreventRemove(
   preventRemove: boolean,
-  callback?: (options: { data: { action: NavigationAction } }) => void
+  callback?: (options: { data: { action: NavigationAction } }) => void,
+  options?: PreventRemoveOptions
 ) {
   const id = React.useId();
   const navigation = useNavigation();
   const setPreventRemove = React.use(ScreenRemovalPreventionSetterContext);
   const markDisabled = useWarnOnStalePreventRemove(preventRemove);
+  const preventInPreloadedRoutes = options?.preventInPreloadedRoutes ?? false;
 
   if (setPreventRemove === undefined) {
     throw new Error(
@@ -81,11 +92,11 @@ export function usePreventRemove(
   }
 
   useClientLayoutEffect(() => {
-    setPreventRemove(id, preventRemove);
+    setPreventRemove(id, preventRemove, preventInPreloadedRoutes);
     return () => {
-      setPreventRemove(id, false);
+      setPreventRemove(id, false, preventInPreloadedRoutes);
     };
-  }, [id, preventRemove, setPreventRemove]);
+  }, [id, preventInPreloadedRoutes, preventRemove, setPreventRemove]);
 
   const removePreventedListener = useLatestCallback<
     EventListenerCallback<EventMapCore<any>, 'removePrevented'>
@@ -102,7 +113,7 @@ export function usePreventRemove(
   // TODO(@ubax): use standard useCallback if possible
   // TODO(@ubax): add repeat function which will call this and repeat the action
   return useLatestCallback(() => {
-    setPreventRemove(id, false);
+    setPreventRemove(id, false, preventInPreloadedRoutes);
     markDisabled();
   });
 }

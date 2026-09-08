@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `onReady` container prop and the `ready` container event. ([#49845](https://github.com/expo/expo/pull/49845) by [@Ubax](https://github.com/Ubax))
+- Remove `createStackNavigator` from `expo-router/js-stack`. Use `unstable_createStandardStackNavigator` with `unstable_integrateWithRouter` instead. ([#49209](https://github.com/expo/expo/pull/49209) by [@Ubax](https://github.com/Ubax))
 - Remove `UNSTABLE_UnhandledLinkingContext` from `expo-router/react-navigation`. ([#49616](https://github.com/expo/expo/pull/49616) by [@Ubax](https://github.com/Ubax))
 - Remove `BaseNavigationContainer` export from `expo-router/react-navigation`. ([#49587](https://github.com/expo/expo/pull/49587) by [@Ubax](https://github.com/Ubax))
 - Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
@@ -48,6 +50,7 @@
 
 ### 🎉 New features
 
+- Add unstable APIs for integrating custom native and JavaScript stack navigators with `standard-navigation`. ([#49209](https://github.com/expo/expo/pull/49209) by [@Ubax](https://github.com/Ubax))
 - Add `LocaleProvider` to customize navigation direction at runtime. ([#49815](https://github.com/expo/expo/pull/49815) by [@Ubax](https://github.com/Ubax))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
 - Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
@@ -71,6 +74,7 @@
 
 ### 🐛 Bug fixes
 
+- Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))
 - Re-export the vendored JavaScript stack API from `expo-router/js-stack`. ([#49657](https://github.com/expo/expo/pull/49657) by [@davidmokos](https://github.com/davidmokos))
 - Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
@@ -91,6 +95,9 @@
 
 ### 💡 Others
 
+- Resolve queued navigation actions against render-time state. ([#49846](https://github.com/expo/expo/pull/49846) by [@Ubax](https://github.com/Ubax))
+- Propagate prevent-remove guards to ancestors. ([#49829](https://github.com/expo/expo/pull/49829) by [@Ubax](https://github.com/Ubax))
+- Mark preloaded routes with `isPreloaded: true` on the route object. ([#49826](https://github.com/expo/expo/pull/49826) by [@Ubax](https://github.com/Ubax))
 - Replace latest-value refs with `useLatestCallback` and `useEffectEvent`. ([#49643](https://github.com/expo/expo/pull/49643) by [@Ubax](https://github.com/Ubax))
 - Remove the root `options` event, `DocumentTitleOptions`, and the `documentTitle` prop from `expo-router/react-navigation`. ([#49590](https://github.com/expo/expo/pull/49590) by [@Ubax](https://github.com/Ubax))
 - Remove `onStateChange` from `BaseNavigationContainer` and `NavigationContainerProps` in `expo-router/react-navigation` ([#49588](https://github.com/expo/expo/pull/49588) by [@Ubax](https://github.com/Ubax))

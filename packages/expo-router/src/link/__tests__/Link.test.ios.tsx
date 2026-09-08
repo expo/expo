@@ -649,6 +649,7 @@ describe('prefetch', () => {
                 key: expect.any(String),
                 name: 'test',
                 params: {},
+                isPreloaded: true,
               },
             ],
             stale: false,
@@ -697,6 +698,7 @@ describe('prefetch', () => {
         key: expect.stringMatching(/^test:/),
         name: 'test',
         params: {},
+        isPreloaded: true,
       },
     ]);
   });

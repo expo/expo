@@ -98,6 +98,7 @@ jobs:
             "packages/expo-image/**/android/**",
             "packages/expo-keep-awake/**/android/**",
             "packages/expo-localization/**/android/**",
+            "packages/expo-router/**/android/**",
             "packages/expo-sqlite/**/android/**",
             "packages/expo-video/**/android/**",
             "apps/bare-expo/**/android/**"
@@ -114,6 +115,7 @@ jobs:
             "packages/expo-image/**/ios/**",
             "packages/expo-keep-awake/**/ios/**",
             "packages/expo-localization/**/ios/**",
+            "packages/expo-router/**/ios/**",
             "packages/expo-sqlite/**/ios/**",
             "packages/expo-video/**/ios/**",
             "apps/bare-expo/**/ios/**"
@@ -135,6 +137,7 @@ jobs:
             "packages/expo-image/**",
             "packages/expo-keep-awake/**",
             "packages/expo-localization/**",
+            "packages/expo-router/**",
             "packages/expo-sqlite/**",
             "packages/expo-video/**",
             pnpm-lock.yaml,

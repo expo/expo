@@ -1,11 +1,36 @@
 import { act, screen } from '@testing-library/react-native';
-import { type ReactNode } from 'react';
-import { Text } from 'react-native';
+import { use, type ReactNode } from 'react';
+import { Text, type NativeSyntheticEvent } from 'react-native';
+import type { TabSelectedEvent, TabsHostProps } from 'react-native-screens';
 
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
+import { NativeTabs } from '../native-tabs';
 import { usePreventRemove } from '../react-navigation/native';
+import { IsWithinNativeNavigator } from '../standard-navigation';
 import { renderRouter } from '../testing-library';
+
+jest.mock('react-native-screens', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actual: typeof import('react-native-screens') = jest.requireActual('react-native-screens');
+  let triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = () => {};
+
+  return {
+    ...actual,
+    Tabs: {
+      ...actual.Tabs,
+      Host: jest.fn(({ children, onTabSelected }: { children?: ReactNode } & TabsHostProps) => {
+        triggerTabSelected = onTabSelected ?? (() => {});
+        return <View testID="Tabs.Host">{children}</View>;
+      }),
+      Screen: jest.fn(({ children }: { children?: ReactNode }) => (
+        <View testID="Tabs.Screen">{children}</View>
+      )),
+    },
+    __triggerTabSelected: (event: Parameters<NonNullable<TabsHostProps['onTabSelected']>>[0]) =>
+      triggerTabSelected(event),
+  };
+});
 
 jest.mock('react-native-screens/experimental', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -39,6 +64,10 @@ const MockedHost = MockedStackV5.Host as unknown as jest.Mock;
 const MockedScreen = MockedStackV5.Screen as unknown as jest.Mock;
 const MockedHeaderConfig = MockedStackV5.HeaderConfig as unknown as jest.Mock;
 
+function NativeNavigatorContextProbe() {
+  return <Text>{String(use(IsWithinNativeNavigator))}</Text>;
+}
+
 const screenPropsByKey = (): Record<string, any> => {
   const map: Record<string, any> = {};
   for (const call of MockedScreen.mock.calls) {
@@ -68,6 +97,15 @@ beforeEach(() => {
 });
 
 describe('ExperimentalStack — basic navigation', () => {
+  it('marks its routes as nested inside a native navigator', () => {
+    renderRouter({
+      _layout: () => <ExperimentalStack />,
+      index: NativeNavigatorContextProbe,
+    });
+
+    expect(screen.getByText('true')).toBeVisible();
+  });
+
   it('renders Stack.Host and pushes new routes', () => {
     renderRouter(
       {
@@ -123,6 +161,45 @@ describe('ExperimentalStack — basic navigation', () => {
     act(() => router.replace('/b'));
     expect(screen).toHavePathname('/b');
     expect(router.canDismiss()).toBe(false);
+  });
+
+  it('does not pop to top for native tabPress events', () => {
+    renderRouter(
+      {
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="home" />
+          </NativeTabs>
+        ),
+        'home/_layout': () => <ExperimentalStack />,
+        'home/index': () => null,
+        'home/second': () => null,
+      },
+      { initialUrl: '/home' }
+    );
+
+    act(() => router.push('/home/second'));
+    const mockedScreens: typeof import('react-native-screens') & {
+      __triggerTabSelected: (event: NativeSyntheticEvent<TabSelectedEvent>) => void;
+      Tabs: {
+        Screen: jest.MockedFunction<typeof import('react-native-screens').Tabs.Screen>;
+      };
+    } = jest.requireMock('react-native-screens');
+    const homeTabKey = mockedScreens.Tabs.Screen.mock.calls.at(-1)![0].screenKey!;
+    act(() =>
+      mockedScreens.__triggerTabSelected({
+        nativeEvent: {
+          selectedScreenKey: homeTabKey,
+          provenance: 0,
+          isRepeated: false,
+          hasTriggeredSpecialEffect: false,
+          actionOrigin: 'user',
+        },
+        // React Native's synthetic event has runtime fields irrelevant to this callback.
+      } as NativeSyntheticEvent<TabSelectedEvent>)
+    );
+    act(() => jest.runAllTimers());
+    expect(screen).toHavePathname('/home/second');
   });
 });
 

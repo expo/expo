@@ -9,11 +9,14 @@ export function useStandardState(builderState: NavigationState): NavigatorState 
   return useMemo<NavigatorState>(() => {
     return {
       index: builderState.index,
-      routes: builderState.routes.map<NavigatorState['routes'][number]>((route) => ({
+      routes: builderState.routes.map((route) => ({
         href: buildHref(route),
         key: route.key,
         name: route.name,
         params: route.params,
+        // `makeRestoreRouteAction` needs these to restore cancelled nested transitions.
+        path: route.path,
+        state: route.state,
       })),
     };
   }, [builderState, buildHref]);
