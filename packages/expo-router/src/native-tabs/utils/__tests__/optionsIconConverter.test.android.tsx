@@ -28,6 +28,9 @@ describe(appendIconOptions, () => {
     expect(() => appendIconOptions({}, { md: 'home' })).toThrow(
       "NativeTabs.Trigger.Icon `md` icons on Android require 'expo-symbols'. Install it with `npx expo install expo-symbols` or use the `src` or `drawable` prop."
     );
+    expect(mockedRequireExpoSymbols).toHaveBeenCalledWith(
+      "NativeTabs.Trigger.Icon `md` icons on Android require 'expo-symbols'. Install it with `npx expo install expo-symbols` or use the `src` or `drawable` prop."
+    );
   });
 
   it("doesn't require expo-symbols for src or drawable icons", () => {
