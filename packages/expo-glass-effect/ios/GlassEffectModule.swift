@@ -2,22 +2,6 @@
 
 import ExpoModulesCore
 
-/**
- Major version of the SDK the app was built with, read from the `DTPlatformVersion` that Xcode
- stamps into the app's Info.plist. Returns 0 for a bundle Xcode didn't stamp, so callers fall back
- to the behavior of the older SDK.
-
- Read at runtime rather than through `#if compiler(...)` because the Swift version and the SDK
- version don't move together: Xcode 26.6 already ships Swift 6.3.
- */
-private func buildSDKMajorVersion() -> Int {
-  guard let platformVersion = Bundle.main.infoDictionary?["DTPlatformVersion"] as? String,
-    let major = Int(platformVersion.prefix { $0.isNumber }) else {
-    return 0
-  }
-  return major
-}
-
 public final class GlassEffectModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoGlassEffect")
@@ -123,4 +107,20 @@ public final class GlassEffectModule: Module {
       }
     }
   }
+}
+
+/**
+ Major version of the SDK the app was built with, read from the `DTPlatformVersion` that Xcode
+ stamps into the app's Info.plist. Returns 0 for a bundle Xcode didn't stamp, so callers fall back
+ to the behavior of the older SDK.
+
+ Read at runtime rather than through `#if compiler(...)` because the Swift version and the SDK
+ version don't move together: Xcode 26.6 already ships Swift 6.3.
+ */
+private func buildSDKMajorVersion() -> Int {
+  guard let platformVersion = Bundle.main.infoDictionary?["DTPlatformVersion"] as? String,
+    let major = Int(platformVersion.prefix { $0.isNumber }) else {
+    return 0
+  }
+  return major
 }
