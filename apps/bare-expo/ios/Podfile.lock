@@ -24,6 +24,8 @@ PODS:
     - Yoga
   - boost (1.84.0):
     - ReactNativeDependencies
+  - CallbackTest (0.0.1):
+    - ExpoModulesCore
   - DoubleConversion (1.1.6):
     - ReactNativeDependencies
   - EASClient (57.0.1):
@@ -3126,6 +3128,7 @@ PODS:
 DEPENDENCIES:
   - BenchmarkingModule (from `../modules/benchmarking/ios`)
   - boost (from `build/rndeps-facades/boost`)
+  - CallbackTest (from `../modules/callback-test/ios`)
   - DoubleConversion (from `build/rndeps-facades/DoubleConversion`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
   - EASClient/Tests (from `../../../packages/expo-eas-client/ios`)
@@ -3374,6 +3377,9 @@ EXTERNAL SOURCES:
     :path: "../modules/benchmarking/ios"
   boost:
     :path: build/rndeps-facades/boost
+  CallbackTest:
+    inhibit_warnings: false
+    :path: "../modules/callback-test/ios"
   DoubleConversion:
     :path: build/rndeps-facades/DoubleConversion
   EASClient:
@@ -3854,6 +3860,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   BenchmarkingModule: 28a242d7f54570f29850c119f57253540fb9bfa9
   boost: 8502bfdc46e2804408af2e163049ece181009af4
+  CallbackTest: 15f7b0e19f6a6453758558e8c72a8c9886607fe6
   DoubleConversion: 501a575c40c0b50c89685762dd3e415e6bb26fb0
   EASClient: 81f44ce9f07ec3d01606507213d21510a5f97388
   EXApplication: bbd517d50878ca1d121fb3843392beb210181e28
