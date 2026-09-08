@@ -8,7 +8,7 @@ import { releaseCanvas } from './utils.web';
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 
 export default class ImageManipulatorContext extends SharedObject {
-  private loader: ContextLoader;
+  private loader: ContextLoader | undefined;
   private isReleased = false;
 
   private _currentTask: Promise<HTMLCanvasElement> | undefined;
@@ -17,7 +17,7 @@ export default class ImageManipulatorContext extends SharedObject {
     if (this._currentTask) {
       return this._currentTask;
     }
-    this._currentTask = new Promise((resolve) => resolve(this.loader()));
+    this._currentTask = new Promise((resolve) => resolve(this.loader!()));
     return this._currentTask;
   }
   set currentTask(task) {
@@ -53,7 +53,7 @@ export default class ImageManipulatorContext extends SharedObject {
   reset(): ImageManipulatorContext {
     this.ensureNotReleased();
     const previousTask = this._currentTask;
-    this.currentTask = new Promise((resolve) => resolve(this.loader()));
+    this.currentTask = new Promise((resolve) => resolve(this.loader!()));
     this.releaseTask(previousTask);
     return this;
   }
@@ -66,9 +66,7 @@ export default class ImageManipulatorContext extends SharedObject {
 
     this.releaseTask(this._currentTask);
     this._currentTask = undefined;
-    this.loader = () => {
-      throw new Error('Cannot use shared object that was already released');
-    };
+    this.loader = undefined;
     super.release();
   }
 
