@@ -2,8 +2,10 @@ package expo.modules.notifications.notifications.model
 
 import android.app.Notification
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -11,6 +13,8 @@ import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
+import com.google.firebase.messaging.RemoteMessage
+import java.io.File
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Assert.assertArrayEquals
@@ -122,6 +126,35 @@ class ExpoNotificationBuilderTest {
     assertNull(androidNotification.actions)
     assertEquals(androidNotification.number, 0)
     assertIsNotSilent(androidNotification)
+  }
+
+  @Test
+  fun remoteNotificationImageUsesBigPictureStyleWhenEnabled() = runBlocking {
+    val imageFile = File(context.cacheDir, "big-picture-style-test.png")
+    val bitmap = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888)
+    imageFile.outputStream().use { stream ->
+      bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    }
+
+    try {
+      val remoteMessage = RemoteMessage(
+        Bundle().apply {
+          putString("gcm.n.e", "1")
+          putString("gcm.n.title", "Test Title")
+          putString("gcm.n.body", "Test Text")
+          putString("gcm.n.image", imageFile.toURI().toString())
+        }
+      )
+      val notificationContent = RemoteNotificationContent(remoteMessage)
+      val androidNotification = createTestNotificationBuilder(notificationContent).build()
+
+      assertNotNull(androidNotification.getLargeIcon())
+      assertTrue(androidNotification.extras.containsKey(NotificationCompat.EXTRA_PICTURE))
+      assertFalse(androidNotification.extras.containsKey(NotificationCompat.EXTRA_BIG_TEXT))
+    } finally {
+      bitmap.recycle()
+      imageFile.delete()
+    }
   }
 
   @Test

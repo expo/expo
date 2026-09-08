@@ -48,6 +48,8 @@ export const META_DATA_LOCAL_NOTIFICATION_ICON_COLOR =
   'expo.modules.notifications.default_notification_color';
 export const META_DATA_LOCAL_NOTIFICATION_LARGE_ICON =
   'expo.modules.notifications.large_notification_icon';
+export const META_DATA_ENABLE_BIG_PICTURE_STYLE =
+  'expo.modules.notifications.enable_big_picture_style';
 
 export const NOTIFICATION_ICON = 'notification_icon';
 export const NOTIFICATION_ICON_RESOURCE = `@drawable/${NOTIFICATION_ICON}`;
@@ -86,10 +88,11 @@ export const withNotificationManifest: ConfigPlugin<{
   largeIcon: string | null;
   color: string | null;
   defaultChannel: string | null;
-}> = (config, { icon, largeIcon, color, defaultChannel }) => {
+  enableBigPictureStyle: boolean;
+}> = (config, { icon, largeIcon, color, defaultChannel, enableBigPictureStyle }) => {
   return withAndroidManifest(config, (config) => {
     config.modResults = setNotificationConfig(
-      { icon, largeIcon, color, defaultChannel },
+      { icon, largeIcon, color, defaultChannel, enableBigPictureStyle },
       config.modResults
     );
     return config;
@@ -148,12 +151,13 @@ async function setDrawableIconAsync(
   }
 }
 
-function setNotificationConfig(
+export function setNotificationConfig(
   props: {
     icon: string | null;
     largeIcon?: string | null;
     color: string | null;
     defaultChannel?: string | null;
+    enableBigPictureStyle?: boolean;
   },
   manifest: AndroidConfig.Manifest.AndroidManifest
 ) {
@@ -215,6 +219,16 @@ function setNotificationConfig(
       mainApplication,
       META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID
     );
+  }
+  if (props.enableBigPictureStyle) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      META_DATA_ENABLE_BIG_PICTURE_STYLE,
+      'true',
+      'value'
+    );
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, META_DATA_ENABLE_BIG_PICTURE_STYLE);
   }
   return manifest;
 }
@@ -312,11 +326,30 @@ function writeNotificationSoundFile(soundFileRelativePath: string, projectRoot: 
 
 export const withNotificationsAndroid: ConfigPlugin<NotificationsPluginProps> = (
   config,
-  { icon = null, largeIcon = null, color = null, sounds = [], defaultChannel = null }
+  {
+    icon = null,
+    largeIcon = null,
+    color = null,
+    sounds = [],
+    defaultChannel = null,
+    enableBigPictureStyle = false,
+  }
 ) => {
+  if (typeof enableBigPictureStyle !== 'boolean') {
+    throw new Error(
+      ERROR_MSG_PREFIX +
+        `"enableBigPictureStyle" has an invalid value: ${enableBigPictureStyle}. Expected a boolean.`
+    );
+  }
   config = withNotificationIconColor(config, { color });
   config = withNotificationIcons(config, { icon, largeIcon });
-  config = withNotificationManifest(config, { icon, largeIcon, color, defaultChannel });
+  config = withNotificationManifest(config, {
+    icon,
+    largeIcon,
+    color,
+    defaultChannel,
+    enableBigPictureStyle,
+  });
   config = withNotificationSounds(config, { sounds });
   return config;
 };

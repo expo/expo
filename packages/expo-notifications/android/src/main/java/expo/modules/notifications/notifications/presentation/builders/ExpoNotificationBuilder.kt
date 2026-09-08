@@ -19,6 +19,7 @@ import expo.modules.notifications.notifications.model.NotificationAction
 import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.notifications.model.RemoteNotificationContent
 import expo.modules.notifications.notifications.model.TextInputNotificationAction
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.createNotificationResponseIntent
@@ -149,7 +150,16 @@ open class ExpoNotificationBuilder(
 
     if (notificationContent.containsImage()) {
       val bitmap = notificationContent.getImage(context)
-      bitmap?.let { builder.setLargeIcon(it) }
+      bitmap?.let {
+        builder.setLargeIcon(it)
+        if (isBigPictureStyleEnabled && notificationContent is RemoteNotificationContent) {
+          builder.setStyle(
+            NotificationCompat.BigPictureStyle()
+              .bigPicture(it)
+              .bigLargeIcon(null as Bitmap?)
+          )
+        }
+      }
     } else {
       builder.setLargeIcon(largeIcon)
     }
@@ -339,6 +349,20 @@ open class ExpoNotificationBuilder(
       return null
     }
 
+  private val isBigPictureStyleEnabled: Boolean
+    get() {
+      return try {
+        val ai = context.packageManager.getApplicationInfo(
+          context.packageName,
+          PackageManager.GET_META_DATA
+        )
+        ai.metaData?.getBoolean(META_DATA_ENABLE_BIG_PICTURE_STYLE_KEY, false) ?: false
+      } catch (e: Exception) {
+        Log.e("expo-notifications", "Could not read BigPictureStyle configuration.", e)
+        false
+      }
+    }
+
   protected open val icon: Int
     /**
      * The method first tries to get the icon from the manifest's meta-data [.META_DATA_DEFAULT_ICON_KEY].
@@ -403,6 +427,8 @@ open class ExpoNotificationBuilder(
       "expo.modules.notifications.large_notification_icon"
     const val META_DATA_DEFAULT_COLOR_KEY: String =
       "expo.modules.notifications.default_notification_color"
+    const val META_DATA_ENABLE_BIG_PICTURE_STYLE_KEY: String =
+      "expo.modules.notifications.enable_big_picture_style"
     const val EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY: String = "expo.notification_request"
     const val EXTRAS_BODY_KEY = "body"
   }

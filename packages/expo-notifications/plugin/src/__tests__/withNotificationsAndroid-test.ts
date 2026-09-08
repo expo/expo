@@ -1,7 +1,10 @@
+import { AndroidConfig, type AndroidManifest } from 'expo/config-plugins';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
 
 import {
+  META_DATA_ENABLE_BIG_PICTURE_STYLE,
+  setNotificationConfig,
   setNotificationIconAsync,
   setNotificationLargeIconAsync,
   setNotificationSounds,
@@ -59,6 +62,25 @@ const iconPath = path.resolve(__dirname, './fixtures/icon.png');
 const soundPath = path.resolve(__dirname, './fixtures/cat.wav');
 
 const projectRoot = '/app';
+
+function createAndroidManifest(): AndroidManifest {
+  return {
+    manifest: {
+      $: {
+        'xmlns:android': 'http://schemas.android.com/apk/res/android',
+        package: 'com.example.app',
+      },
+      queries: [],
+      application: [
+        {
+          $: {
+            'android:name': '.MainApplication',
+          },
+        },
+      ],
+    },
+  };
+}
 
 describe('Android notifications configuration', () => {
   beforeEach(async () => {
@@ -126,6 +148,42 @@ describe('Android notifications configuration', () => {
 
     const final = getDirFromFS(vol.toJSON(), projectRoot);
     expect(before).toMatchObject(final);
+  });
+
+  it('adds and removes the BigPictureStyle manifest flag idempotently', () => {
+    const manifest = createAndroidManifest();
+    const props = {
+      icon: null,
+      largeIcon: null,
+      color: null,
+      defaultChannel: null,
+      enableBigPictureStyle: true,
+    };
+
+    setNotificationConfig(props, manifest);
+    setNotificationConfig(props, manifest);
+
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(manifest);
+    expect(
+      mainApplication['meta-data']?.filter(
+        (item) => item.$['android:name'] === META_DATA_ENABLE_BIG_PICTURE_STYLE
+      )
+    ).toEqual([
+      {
+        $: {
+          'android:name': META_DATA_ENABLE_BIG_PICTURE_STYLE,
+          'android:value': 'true',
+        },
+      },
+    ]);
+
+    setNotificationConfig({ ...props, enableBigPictureStyle: false }, manifest);
+
+    expect(
+      mainApplication['meta-data']?.find(
+        (item) => item.$['android:name'] === META_DATA_ENABLE_BIG_PICTURE_STYLE
+      )
+    ).toBeUndefined();
   });
 });
 

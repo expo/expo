@@ -32,6 +32,14 @@ export type NotificationsPluginProps = {
    */
   defaultChannel?: string;
   /**
+   * Whether remote notification images should be displayed using Android's
+   * `NotificationCompat.BigPictureStyle` when the notification is expanded.
+   *
+   * @default false
+   * @platform android
+   */
+  enableBigPictureStyle?: boolean;
+  /**
    * Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
    */
   sounds?: string[];
