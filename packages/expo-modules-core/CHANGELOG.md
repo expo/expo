@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `BadParcelableException` at startup when an activity-result launch was interrupted. `DataPersistor` read the persisted `Bundle` with no `ClassLoader`, so the boot `ClassLoader` could not resolve `androidx.activity.result.ActivityResult`. ([#49836](https://github.com/expo/expo/pull/49836) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 57.0.17 — 2026-09-08
