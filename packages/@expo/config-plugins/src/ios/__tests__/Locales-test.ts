@@ -95,6 +95,8 @@ describe('e2e: iOS locales', () => {
       {
         locales: {
           fr: 'lang/fr.json',
+          // no Info.plist keys, must not stop the locales listed after it
+          de: 'lang/de.json',
           // doesn't exist
           xx: 'lang/xx.json',
 
@@ -104,8 +106,6 @@ describe('e2e: iOS locales', () => {
           // support backwards compatibility for `locales` structure without platform keys.
           en: 'lang/en.json',
           ar: 'lang/ar.json',
-          // shouldn't have an infoPlist
-          de: 'lang/de.json',
         },
       },
       { project, projectRoot }
@@ -155,55 +155,5 @@ describe('e2e: iOS locales', () => {
       'Failed to parse JSON of locale file for language: xx',
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
-  });
-});
-
-describe('e2e: iOS locales with no Info.plist keys', () => {
-  const projectRoot = '/app';
-  beforeAll(async () => {
-    vol.fromJSON(
-      {
-        'ios/testproject.xcodeproj/project.pbxproj':
-          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
-        'ios/testproject/AppDelegate.m': '',
-        // Android-only, so this resolves to an empty map on iOS.
-        'lang/de.json': JSON.stringify({
-          android: {
-            app_name: 'de-name',
-          },
-        }),
-        'lang/fr.json': JSON.stringify({
-          ios: {
-            CFBundleDisplayName: 'french-name',
-          },
-        }),
-      },
-      projectRoot
-    );
-  });
-
-  afterAll(() => {
-    vol.reset();
-  });
-
-  it('writes locales listed after one that has no Info.plist keys', async () => {
-    let project = getPbxproj(projectRoot);
-
-    project = await setLocalesAsync(
-      {
-        locales: {
-          de: 'lang/de.json',
-          fr: 'lang/fr.json',
-        },
-      },
-      { project, projectRoot }
-    );
-    fs.writeFileSync(project.filepath, project.writeSync());
-
-    const after = getDirFromFS(vol.toJSON(), projectRoot);
-    const infoPlists = Object.keys(after).filter((value) => value.endsWith('InfoPlist.strings'));
-
-    expect(infoPlists).toStrictEqual(['ios/testproject/Supporting/fr.lproj/InfoPlist.strings']);
-    expect(after[infoPlists[0]!]).toMatchInlineSnapshot(`""CFBundleDisplayName" = "french-name";"`);
   });
 });
