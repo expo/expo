@@ -20,8 +20,9 @@ describe('requireExpoSymbols', () => {
       const { requireExpoSymbols } = require('../expo-symbols');
 
       expect(requireExpoSymbols).toThrow(
-        "NativeTabs.Trigger.Icon `md` icons on Android require 'expo-symbols'. Install it with `npx expo install expo-symbols` or use the `src` or `drawable` prop."
+        "The 'expo-symbols' package needs to be installed in order to use this feature."
       );
+      expect(() => requireExpoSymbols('Custom error message')).toThrow('Custom error message');
     });
   });
 });

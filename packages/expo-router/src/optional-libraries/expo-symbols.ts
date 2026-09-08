@@ -6,11 +6,11 @@ try {
   expoSymbols = require('expo-symbols');
 } catch {}
 
-export function requireExpoSymbols(): ExpoSymbols {
+export function requireExpoSymbols(
+  errorMessage = "The 'expo-symbols' package needs to be installed in order to use this feature."
+): ExpoSymbols {
   if (!expoSymbols) {
-    throw new Error(
-      "NativeTabs.Trigger.Icon `md` icons on Android require 'expo-symbols'. Install it with `npx expo install expo-symbols` or use the `src` or `drawable` prop."
-    );
+    throw new Error(errorMessage);
   }
   return expoSymbols;
 }
