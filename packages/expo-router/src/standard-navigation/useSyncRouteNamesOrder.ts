@@ -5,12 +5,10 @@ import { isSetEqual } from '../react-navigation/core/isSetEqual';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 
 export function useSyncRouteNamesOrder({
-  backBehavior,
   routeNames,
   state,
   dispatch,
 }: {
-  backBehavior: string | undefined;
   routeNames: string[];
   state: { key: string; routeNames: string[] };
   dispatch: (action: {
@@ -26,7 +24,6 @@ export function useSyncRouteNamesOrder({
     previousRouteNamesRef.current = routeNames;
     // The router registry is not available during this component's first layout effect.
     if (
-      backBehavior === 'order' &&
       !isArrayEqual(previousRouteNames, routeNames) &&
       isSetEqual(state.routeNames, routeNames) &&
       !isArrayEqual(state.routeNames, routeNames)
@@ -37,5 +34,5 @@ export function useSyncRouteNamesOrder({
         target: state.key,
       });
     }
-  }, [backBehavior, dispatch, routeNames, state.key, state.routeNames]);
+  }, [dispatch, routeNames, state.key, state.routeNames]);
 }

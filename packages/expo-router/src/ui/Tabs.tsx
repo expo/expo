@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactElement, ReactNode, PropsWithChildren } from 'react';
-import { Children, Fragment, isValidElement, use, useMemo } from 'react';
+import { Children, Fragment, isValidElement, use, useCallback, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
@@ -200,7 +200,6 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
   useSyncRouteNamesOrder({
-    backBehavior: rest.backBehavior,
     routeNames,
     state,
     dispatch: navigation.dispatchSync,
@@ -238,7 +237,6 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
         routeNames={routeNames}
         descriptors={descriptors}
         navigation={navigation}
-        preloadAll={rest.backBehavior === 'order'}
       />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
@@ -258,24 +256,25 @@ function TabVisibilityRedirect({
   routeNames,
   descriptors,
   navigation,
-  preloadAll,
 }: {
   state: TabNavigationState<any>;
   routeNames: string[];
   descriptors: PlaceholderDescriptorMap;
   navigation: { dispatch: (action: ReturnType<typeof CommonActions.preload>) => void };
-  preloadAll: boolean;
 }) {
   const stateWithPlaceholders = useMemo(
-    () => appendMissingPlaceholderTabRoutes(state, descriptors, undefined, routeNames),
+    () => appendMissingPlaceholderTabRoutes(state, descriptors, routeNames),
     [descriptors, routeNames, state]
+  );
+  const preload = useCallback(
+    (name: string) => navigation.dispatch(CommonActions.preload(name)),
+    [navigation]
   );
   usePreloadPlaceholderRoutes({
     routes: stateWithPlaceholders.routes,
     descriptors,
-    preload: (name) => navigation.dispatch(CommonActions.preload(name)),
+    preload,
     lazyByDefault: true,
-    preloadAll,
   });
   useVisibleTabsWithRedirect({
     routes: stateWithPlaceholders.routes,

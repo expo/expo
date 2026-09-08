@@ -54,15 +54,34 @@ describe('drawer status', () => {
     expect(toggled.drawerStatus).toBe('closed');
   });
 
-  test('navigation to another route resets status to default', () => {
-    const router = DrawerRouter({ backBehavior: 'history' });
+  test.each([
+    ['closed', 'open'],
+    ['open', undefined],
+  ] satisfies ['closed' | 'open', 'open' | undefined][])(
+    'navigation to another route closes the drawer with %s default',
+    (defaultStatus, drawerStatus) => {
+      const router = DrawerRouter({ backBehavior: 'history', defaultStatus });
+      const next = router.getStateForAction(
+        state(['one', 'two'], 0, { drawerStatus }),
+        TabActions.jumpTo('two'),
+        options
+      )!.state;
+      expect(next.drawerStatus).toBe(defaultStatus === 'open' ? 'closed' : undefined);
+      expect(next.routes[next.index]?.name).toBe('two');
+    }
+  );
+
+  test('navigation closes the drawer when history reordering preserves the index', () => {
+    const router = DrawerRouter({ backBehavior: 'history', defaultStatus: 'open' });
     const next = router.getStateForAction(
-      state(['one', 'two'], 0, { drawerStatus: 'open' }),
-      TabActions.jumpTo('two'),
+      state(['one', 'two', 'three'], 1),
+      TabActions.jumpTo('one'),
       options
     )!.state;
-    expect(next.drawerStatus).toBeUndefined();
-    expect(next.routes[next.index]?.name).toBe('two');
+
+    expect(next.index).toBe(1);
+    expect(next.routes[next.index]?.name).toBe('one');
+    expect(next.drawerStatus).toBe('closed');
   });
 
   test('navigation to the focused route preserves status', () => {
@@ -75,12 +94,19 @@ describe('drawer status', () => {
     expect(next.drawerStatus).toBe('open');
   });
 
-  test('route focus closes the drawer', () => {
-    const router = DrawerRouter({ backBehavior: 'history' });
-    const current = state(['one', 'two'], 0, { drawerStatus: 'open' });
-    expect(router.getStateForRouteFocus(current, 'one-key').drawerStatus).toBeUndefined();
-    expect(router.getStateForRouteFocus(current, 'two-key').drawerStatus).toBeUndefined();
-  });
+  test.each([
+    ['closed', 'open'],
+    ['open', undefined],
+  ] satisfies ['closed' | 'open', 'open' | undefined][])(
+    'route focus closes the drawer with %s default',
+    (defaultStatus, drawerStatus) => {
+      const router = DrawerRouter({ backBehavior: 'history', defaultStatus });
+      const current = state(['one', 'two'], 0, { drawerStatus });
+      const expectedStatus = defaultStatus === 'open' ? 'closed' : undefined;
+      expect(router.getStateForRouteFocus(current, 'one-key').drawerStatus).toBe(expectedStatus);
+      expect(router.getStateForRouteFocus(current, 'two-key').drawerStatus).toBe(expectedStatus);
+    }
+  );
 });
 
 describe('back behavior', () => {

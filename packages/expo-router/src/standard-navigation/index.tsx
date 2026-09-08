@@ -195,7 +195,6 @@ export function unstable_integrateWithRouter<
       >(router, useNavigationBuilderProps);
 
     useSyncRouteNamesOrder({
-      backBehavior: (extraProps as { backBehavior?: string }).backBehavior,
       routeNames,
       state,
       dispatch: navigation.dispatchSync,

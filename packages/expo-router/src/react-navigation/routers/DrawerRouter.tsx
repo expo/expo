@@ -126,7 +126,7 @@ export function DrawerRouter({
     getStateForRouteFocus(state, key) {
       const normalizedState = normalizeState(state);
       const result = router.getStateForRouteFocus(normalizedState, key);
-      return setDrawerStatus(result, defaultStatus);
+      return setDrawerStatus(result, 'closed');
     },
 
     getStateForAction(inputState, action, options) {
@@ -157,16 +157,13 @@ export function DrawerRouter({
 
           if (actionResult !== null) {
             const nextState = actionResult.state;
-            if (nextState.index === state.index) {
+            if (nextState.routes[nextState.index]?.key === focusedRouteKey) {
               return actionResult;
             }
 
             return {
               ...actionResult,
-              state: setDrawerStatus(
-                nextState as DrawerNavigationState<ParamListBase>,
-                defaultStatus
-              ),
+              state: setDrawerStatus(nextState as DrawerNavigationState<ParamListBase>, 'closed'),
             };
           }
 

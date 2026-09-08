@@ -402,7 +402,6 @@ it('does not reset tab content when only a trigger href changes', () => {
 });
 
 it('does not reset tab content when triggers are reordered', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   let appleMounts = 0;
   let tabState: { routeNames: string[]; routes: string[] } | undefined;
 
@@ -447,15 +446,11 @@ it('does not reset tab content when triggers are reordered', () => {
   fireEvent.press(screen.getByTestId('reorder'));
   expect(appleMounts).toBe(1);
   expect(tabState).toEqual({
-    routeNames: ['apple', 'orange'],
+    routeNames: ['orange', 'apple'],
     routes: ['apple'],
   });
   act(() => router.back());
-  expect(screen).toHaveSegments(['apple']);
-  expect(error).toHaveBeenCalledWith(
-    expect.stringContaining("The action 'GO_BACK' was not handled")
-  );
-  error.mockRestore();
+  expect(screen).toHaveSegments(['orange']);
 });
 
 it('uses the new trigger order for order back behavior', () => {

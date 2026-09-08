@@ -47,7 +47,7 @@ export type TabRouterOptions = DefaultRouterOptions & {
    * Control how going back should behave
    * - `firstRoute` - return to the first defined route
    * - `initialRoute` - return to the route from `initialRouteName`
-   * - `order` - return to the route defined before the focused route; all declared routes are preloaded
+   * - `order` - return to the route defined before the focused route
    * - `history` - return to last visited route; if the same route is visited multiple times, the older entries are dropped from the history
    * - `fullHistory` - return to last visited route; doesn't drop duplicate entries unlike `history` - matches behavior of web pages
    * - `none` - do not handle going back
@@ -375,9 +375,17 @@ export function TabRouter({
 
         case 'ROUTE_NAMES_ORDER_CHANGED': {
           const routeNames = action.payload.routeNames;
-          if (backBehavior !== 'order' || !isSetEqual(state.routeNames, routeNames)) {
+          if (!isSetEqual(state.routeNames, routeNames)) {
             return null;
           }
+
+          if (backBehavior !== 'order') {
+            return {
+              state: { ...state, routeNames },
+              affectedRouteKey: state.routes[state.index]?.key,
+            };
+          }
+
           const focusedKey = state.routes[state.index]?.key;
           const routes = orderRoutesByRouteNames(state.routes, routeNames);
           const index =
@@ -463,7 +471,7 @@ export function TabRouter({
             );
           }
           return {
-            state: updatedState,
+            state: { ...updatedState, routeKeySeq: minter.routeKeySeq },
             affectedRouteKey: updatedState.routes[updatedState.index]?.key,
           };
         }
@@ -515,6 +523,26 @@ export function TabRouter({
             return null;
           }
           if (backBehavior !== 'fullHistory') {
+            if (backBehavior === 'order') {
+              const declaredIndex = declaredRouteNames.indexOf(focusedRoute.name);
+              if (declaredIndex <= 0) {
+                return null;
+              }
+
+              const previousName = declaredRouteNames[declaredIndex - 1]!;
+              let routes = state.routes;
+              let previousRoute = routes.find((route) => route.name === previousName);
+              if (!previousRoute) {
+                previousRoute = { name: previousName, key: minter.mint(previousName) };
+                routes = orderRoutesByRouteNames([...routes, previousRoute], declaredRouteNames);
+              }
+              const index = routes.indexOf(previousRoute);
+              return {
+                state: { ...state, routes, index, routeKeySeq: minter.routeKeySeq },
+                affectedRouteKey: previousRoute.key,
+              };
+            }
+
             if (state.index > 0) {
               const index = state.index - 1;
               return {

@@ -11,7 +11,7 @@ import {
 import { unstable_createStandardRouterNavigator } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
-  appendMissingPlaceholderTabRoutes,
+  processStateWithPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { StandardNavigatorContentProps } from '../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
@@ -63,7 +63,8 @@ function NativeTabsContent({
   rippleColor,
   disableIndicator,
   labelVisibilityMode,
-  backBehavior,
+  // Consume this router option so it is not forwarded to `NativeTabsView`.
+  backBehavior: _backBehavior,
   ...viewProps
 }: StandardNavigatorContentProps<
   NativeTabOptions,
@@ -101,7 +102,6 @@ function NativeTabsContent({
     descriptors,
     preload,
     lazyByDefault: false,
-    preloadAll: backBehavior === 'order',
   });
 
   const provenanceRef = useRef(0);
@@ -190,7 +190,7 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
   NativeTabsNavigatorCreateProps
 >(NativeTabsContent, NativeBottomTabsRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
-  processState: appendMissingPlaceholderTabRoutes,
+  processState: processStateWithPlaceholderTabRoutes,
   createProps: ({ state, dispatch, dispatchSync }) => ({
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),

@@ -89,6 +89,46 @@ describe('route storage by back behavior', () => {
     expect(next.routes[next.index]?.name).toBe('two');
   });
 
+  test('order back mints missing routes in declared order', () => {
+    const router = TabRouter({ backBehavior: 'order' });
+    const firstBack = router.getStateForAction(state(['three']), CommonActions.goBack(), options)!;
+
+    expect(firstBack.state.routes).toEqual([
+      { key: 'two:tab-0', name: 'two' },
+      { key: 'three-key', name: 'three' },
+    ]);
+    expect(firstBack.state.index).toBe(0);
+    expect(firstBack.state.routeKeySeq).toBe(1);
+    expect(firstBack.affectedRouteKey).toBe('two:tab-0');
+
+    const secondBack = router.getStateForAction(firstBack.state, CommonActions.goBack(), options)!;
+    expect(secondBack.state.routes).toEqual([
+      { key: 'one:tab-1', name: 'one' },
+      { key: 'two:tab-0', name: 'two' },
+      { key: 'three-key', name: 'three' },
+    ]);
+    expect(secondBack.state.index).toBe(0);
+    expect(secondBack.state.routeKeySeq).toBe(2);
+    expect(secondBack.affectedRouteKey).toBe('one:tab-1');
+    expect(router.getStateForAction(secondBack.state, CommonActions.goBack(), options)).toBeNull();
+  });
+
+  test('order back reuses an existing previous declared route', () => {
+    const result = TabRouter({ backBehavior: 'order' }).getStateForAction(
+      state(['two', 'three'], 1),
+      CommonActions.goBack(),
+      options
+    )!;
+
+    expect(result.state.routes).toEqual([
+      { key: 'two-key', name: 'two' },
+      { key: 'three-key', name: 'three' },
+    ]);
+    expect(result.state.index).toBe(0);
+    expect(result.state.routeKeySeq).toBe(0);
+    expect(result.affectedRouteKey).toBe('two-key');
+  });
+
   test.each([
     ['firstRoute', undefined, 'one'],
     ['initialRoute', 'two', 'two'],
@@ -276,6 +316,27 @@ describe('route name reconciliation', () => {
     expect(names(next)).toEqual(['four', 'three', 'two', 'one']);
     expect(next.index).toBe(2);
     expect(next.routes[next.index]?.name).toBe('two');
+  });
+
+  test('ROUTE_NAMES_ORDER_CHANGED updates the anchor outside order behavior', () => {
+    const router = TabRouter({ backBehavior: 'firstRoute' });
+    const current = state(['two']);
+    const reordered = router.getStateForAction(
+      current,
+      {
+        type: 'ROUTE_NAMES_ORDER_CHANGED',
+        payload: { routeNames: ['four', 'three', 'two', 'one'] },
+      },
+      options
+    )!.state;
+
+    expect(reordered.routeNames).toEqual(['four', 'three', 'two', 'one']);
+    expect(reordered.routes).toBe(current.routes);
+    expect(reordered.index).toBe(current.index);
+
+    const backed = router.getStateForAction(reordered, CommonActions.goBack(), options)!.state;
+    expect(names(backed)).toEqual(['four', 'two']);
+    expect(backed.index).toBe(0);
   });
 });
 
@@ -590,6 +651,35 @@ describe('route creation and child state', () => {
 });
 
 describe('navigation updates', () => {
+  test.each([
+    ['firstRoute', undefined],
+    ['initialRoute', 'one'],
+  ] satisfies ['firstRoute' | 'initialRoute', string | undefined][])(
+    '%s preserves route key sequence after minting an anchor',
+    (backBehavior, initialRouteName) => {
+      const router = TabRouter({ backBehavior, initialRouteName });
+      const navigated = router.getStateForAction(
+        state(['three']),
+        CommonActions.navigate('two'),
+        options
+      )!.state;
+
+      expect(navigated.routes).toEqual([
+        { key: 'one:tab-1', name: 'one' },
+        { key: 'two:tab-0', name: 'two' },
+        { key: 'three-key', name: 'three' },
+      ]);
+      expect(navigated.routeKeySeq).toBe(2);
+
+      const next = router.getStateForAction(
+        navigated,
+        CommonActions.navigate('four'),
+        options
+      )!.state;
+      expect(next.routes.find((route) => route.name === 'four')?.key).toBe('four:tab-2');
+    }
+  );
+
   test('navigate replaces params unless merge is true', () => {
     const router = TabRouter({});
     const current = state(['one', 'two'], 1, {

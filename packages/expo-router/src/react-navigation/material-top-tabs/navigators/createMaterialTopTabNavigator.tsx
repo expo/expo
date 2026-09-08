@@ -42,7 +42,8 @@ function MaterialTopTabNavigatorContent({
   routeNames,
   preload,
   navigateToTabSync,
-  backBehavior,
+  // Consume this router option so it is not forwarded to `MaterialTopTabView`.
+  backBehavior: _backBehavior,
   ...viewProps
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
@@ -71,7 +72,6 @@ function MaterialTopTabNavigatorContent({
     descriptors: topTabDescriptors,
     preload,
     lazyByDefault: false,
-    preloadAll: backBehavior === 'order',
   });
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {

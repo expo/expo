@@ -146,7 +146,7 @@ describe('Drawer backBehavior', () => {
     renderTabs('order');
     expectFocused('/', 'index');
     expect(router.canGoBack()).toBe(false);
-    expectRenders({ index: 1, second: 1, third: 1 });
+    expectRenders({ index: 1, second: 0, third: 0 });
     act(() => router.push('/third'));
     expectFocused('/third', 'third');
     expect(router.canGoBack()).toBe(true);
@@ -154,7 +154,7 @@ describe('Drawer backBehavior', () => {
     act(() => router.back());
     expectFocused('/second', 'second');
     expect(router.canGoBack()).toBe(true);
-    expectRenders({ index: 0, second: 0, third: 0 });
+    expectRenders({ index: 0, second: 1, third: 0 });
     act(() => router.back());
     expectFocused('/', 'index');
     expect(router.canGoBack()).toBe(false);

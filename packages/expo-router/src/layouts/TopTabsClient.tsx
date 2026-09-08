@@ -21,7 +21,7 @@ import {
 import { unstable_integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
-  appendMissingPlaceholderTabRoutes,
+  processStateWithPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
@@ -36,7 +36,7 @@ const TopTabs = unstable_integrateWithRouter<
   MaterialTopTabNavigatorCreateProps
 >(createStandardMaterialTopTabNavigator, TabRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
-  processState: appendMissingPlaceholderTabRoutes,
+  processState: processStateWithPlaceholderTabRoutes,
   createProps: ({ state, dispatch, dispatchSync }) => ({
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),

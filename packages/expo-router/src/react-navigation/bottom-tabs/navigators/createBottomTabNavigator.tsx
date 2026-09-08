@@ -42,7 +42,8 @@ function BottomTabNavigatorContent({
   routeNames,
   popNestedStackToTop,
   preload,
-  backBehavior,
+  // Consume this router option so it is not forwarded to `BottomTabView`.
+  backBehavior: _backBehavior,
   ...viewProps
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
@@ -71,7 +72,6 @@ function BottomTabNavigatorContent({
     descriptors: bottomTabDescriptors,
     preload,
     lazyByDefault: true,
-    preloadAll: backBehavior === 'order',
   });
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {

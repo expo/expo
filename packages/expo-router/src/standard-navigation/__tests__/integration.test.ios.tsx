@@ -19,6 +19,7 @@ import { act, fireEvent, renderRouter, screen } from '../../testing-library';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
+  processStateWithPlaceholderTabRoutes,
 } from '../appendMissingPlaceholderTabRoutes';
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
 import type { NavigatorContentProps, StandardNavigatorDescriptor } from '../types';
@@ -754,7 +755,7 @@ describe('custom-navigators guide example', () => {
 
   const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
     processDescriptors: appendMissingPlaceholderTabDescriptors,
-    processState: appendMissingPlaceholderTabRoutes,
+    processState: processStateWithPlaceholderTabRoutes,
   });
 
   const renderExample = () =>

@@ -23,11 +23,7 @@ const state: NavigationState = {
 };
 
 test('always projects routes in declared order and preserves focus', () => {
-  const next = appendMissingPlaceholderTabRoutes(state, descriptors, undefined, [
-    'one',
-    'two',
-    'three',
-  ]);
+  const next = appendMissingPlaceholderTabRoutes(state, descriptors, ['one', 'two', 'three']);
   expect(next.routes.map((route) => route.name)).toEqual(['one', 'two', 'three']);
   expect(next.routes[next.index]?.key).toBe('three-key');
   expect(next.routes[0]).toBe(state.routes[1]);
@@ -37,7 +33,6 @@ test('uses builder route names instead of stale state route names', () => {
   const next = appendMissingPlaceholderTabRoutes(
     { ...state, routes: [...state.routes, { name: 'two', key: 'two-key' }] },
     descriptors,
-    undefined,
     ['three', 'two', 'one']
   );
   expect(next.routes.map((route) => route.name)).toEqual(['three', 'two', 'one']);
@@ -48,7 +43,6 @@ test('keeps empty routes at index -1', () => {
   const next = appendMissingPlaceholderTabRoutes(
     { ...state, routeNames: [], routes: [], index: -1 },
     {},
-    undefined,
     []
   );
   expect(next.routes).toEqual([]);

@@ -28,7 +28,6 @@ export function appendMissingPlaceholderTabDescriptors<State extends NavigationS
 export function appendMissingPlaceholderTabRoutes<State extends NavigationState>(
   state: State,
   descriptors: PlaceholderDescriptorMap,
-  _describe?: DescribePlaceholderRoute,
   routeNames = state.routeNames
 ): State {
   const focusedKey = state.routes[state.index]?.key;
@@ -48,6 +47,15 @@ export function appendMissingPlaceholderTabRoutes<State extends NavigationState>
         );
 
   return { ...state, routeNames, index, routes };
+}
+
+export function processStateWithPlaceholderTabRoutes<State extends NavigationState>(
+  state: State,
+  descriptors: PlaceholderDescriptorMap,
+  _describe: DescribePlaceholderRoute,
+  routeNames: string[]
+): State {
+  return appendMissingPlaceholderTabRoutes(state, descriptors, routeNames);
 }
 
 function createPlaceholderRoute<State extends NavigationState>(

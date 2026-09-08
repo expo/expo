@@ -23,7 +23,7 @@ import {
 import { unstable_integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
-  appendMissingPlaceholderTabRoutes,
+  processStateWithPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { Href } from '../types';
 
@@ -49,7 +49,7 @@ const Tabs = unstable_integrateWithRouter<
   BottomTabNavigatorCreateProps
 >(createStandardBottomTabNavigator, TabRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
-  processState: appendMissingPlaceholderTabRoutes,
+  processState: processStateWithPlaceholderTabRoutes,
   createProps: ({ state, dispatch }) => ({
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
