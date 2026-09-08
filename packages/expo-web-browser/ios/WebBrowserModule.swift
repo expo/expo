@@ -21,9 +21,7 @@ final public class WebBrowserModule: Module {
         self.currentWebBrowserSession = nil
         vcDidPresent = false
       } else if let session = currentWebBrowserSession, !session.isPresented {
-        // The previous session never reached the screen, so neither `didPresent` nor any of the
-        // delegate callbacks can fire for it. Resolve its promise and release it here, otherwise the
-        // module answers "locked" to every later call until `dismissBrowser` runs or the app restarts.
+        // The presentation was dropped, so no delegate callback will ever release this session.
         session.onDismiss("cancel")
       }
 

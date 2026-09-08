@@ -36,9 +36,6 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
     }
 
     guard let currentViewController else {
-      // Without a presenter nothing will call `didPresent` or any of the delegate methods, so report
-      // the session as finished here. Staying silent leaves the module holding a session it can
-      // never release.
       onDismiss("cancel")
       return
     }
@@ -59,8 +56,6 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
     }
   }
 
-  /// Whether the browser is on screen. A controller whose presentation never went through, or that
-  /// has already been dismissed, has no presenting controller.
   var isPresented: Bool {
     return viewController.presentingViewController != nil
   }
@@ -147,8 +142,6 @@ internal class WebBrowserSession: NSObject, WKNavigationDelegate, WKUIDelegate, 
     completion?(type)
   }
 
-  /// Whether the browser is on screen. Mirrors the iOS session so the module can drop a session that
-  /// never opened.
   var isPresented: Bool {
     return window?.isVisible == true
   }
