@@ -309,4 +309,115 @@ describe('BottomSheetDialog drag cancel', () => {
     expect(onOpenChange).not.toHaveBeenCalled();
     expect(nextOnOpenChange).toHaveBeenCalledWith(false);
   });
+
+  it('should not capture the pointer until the drag passes the threshold', async () => {
+    render(
+      <BottomSheetDialog open onOpenChange={() => {}} height={400} minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    const capture = jest.fn();
+    (panel as HTMLElement).setPointerCapture = capture;
+
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+    });
+    expect(capture).not.toHaveBeenCalled();
+
+    act(() => {
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 104 });
+    });
+    expect(capture).not.toHaveBeenCalled();
+
+    act(() => {
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 120 });
+    });
+    expect(capture).toHaveBeenCalledWith(1);
+  });
+
+  it('should fire click on a non-button child when the pointer does not drag', async () => {
+    const onClick = jest.fn();
+    const onOpenChange = jest.fn();
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog
+        open
+        onOpenChange={onOpenChange}
+        onDragEnd={onDragEnd}
+        height={400}
+        minSnapHeight={200}>
+        <div onClick={onClick}>Row</div>
+      </BottomSheetDialog>
+    );
+
+    const row = await waitFor(() => screen.getByText('Row'));
+    act(() => {
+      dispatchPointer(row, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 100 });
+      row.click();
+    });
+
+    expect(onClick).toHaveBeenCalled();
+    expect(onDragEnd).not.toHaveBeenCalled();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('should translate the sheet instead of changing height while dragging down', async () => {
+    render(
+      <BottomSheetDialog open onOpenChange={() => {}} height={400} minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    expect(panel.style.height).toBe('400px');
+
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
+    });
+
+    expect(panel.style.height).toBe('400px');
+    expect(panel.style.transform).toContain('translateY(80px)');
+  });
+
+  it('should dismiss a sheet without snap points after dragging past half its height', async () => {
+    const onOpenChange = jest.fn();
+    render(
+      <BottomSheetDialog open onOpenChange={onOpenChange} height={400}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 320 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 320 });
+    });
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('should not dismiss a sheet without snap points after a short drag', async () => {
+    const onOpenChange = jest.fn();
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog open onOpenChange={onOpenChange} onDragEnd={onDragEnd} height={400}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 180 });
+    });
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(onDragEnd).toHaveBeenCalledWith(320);
+  });
 });

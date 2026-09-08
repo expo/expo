@@ -19,6 +19,7 @@ export const BOTTOM_SHEET_TEST_IDS = {
 
 const DRAG_THRESHOLD_PX = 8;
 const CLOSE_HEIGHT_PX = 48;
+const CLOSE_HEIGHT_FRACTION = 0.5;
 const ENTER_MS = 300;
 const SHEET_EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
 const REST_TRANSFORM = 'translateY(0)';
@@ -40,7 +41,8 @@ export type BottomSheetDialogProps = {
   /**
    * Lowest snap height in pixels.
    * A drag closes once it ends far enough below this value (a small px margin).
-   * Without it, that same margin is measured from 0.
+   * Without it, a content-sized sheet closes when the drag ends below half
+   * its start height.
    */
   minSnapHeight?: number;
   /** Called after a drag that did not dismiss, with the predicted pixel height. */
@@ -59,6 +61,19 @@ type DragSession = {
   startHeight: number;
   active: boolean;
 };
+
+type DragVisual = {
+  live: boolean;
+  translateY: number;
+  height: number | null;
+};
+
+function dismissBelowHeight(startHeight: number, minSnapHeight?: number): number {
+  if (minSnapHeight != null) {
+    return Math.max(0, minSnapHeight - CLOSE_HEIGHT_PX);
+  }
+  return startHeight * CLOSE_HEIGHT_FRACTION;
+}
 
 function asHTMLElement(value: unknown): HTMLElement | null {
   return value instanceof HTMLElement ? value : null;
@@ -197,9 +212,16 @@ const sheetCss = css`
   [data-expo-ui-bottom-sheet-panel] {
     transform: ${REST_TRANSFORM};
     max-height: 85dvh;
+    touch-action: none;
+    transition:
+      height ${ENTER_MS}ms ${SHEET_EASE},
+      transform ${ENTER_MS}ms ${SHEET_EASE};
   }
   [data-expo-ui-bottom-sheet-panel][data-sized='true'] {
     max-height: 100dvh;
+  }
+  [data-expo-ui-bottom-sheet-panel][data-dragging='true'] {
+    transition: none;
   }
   [data-expo-ui-bottom-sheet-handle] {
     cursor: grab;
@@ -207,6 +229,9 @@ const sheetCss = css`
   }
   [data-expo-ui-bottom-sheet-handle][data-grabbing='true'] {
     cursor: grabbing;
+  }
+  [data-expo-ui-bottom-sheet-body] {
+    touch-action: pan-y;
   }
 `;
 
@@ -282,7 +307,7 @@ export function BottomSheetDialog({
   const dragRef = useRef<DragSession | null>(null);
   const playedEnterRef = useRef(false);
   const [mounted, setMounted] = useState(open);
-  const [dragHeight, setDragHeight] = useState<number | null>(null);
+  const [dragVisual, setDragVisual] = useState<DragVisual | null>(null);
 
   useEffect(() => {
     if (open) setMounted(true);
@@ -301,17 +326,20 @@ export function BottomSheetDialog({
       if (prefersReducedMotion()) {
         sheet.style.animation = 'none';
         overlay.style.animation = 'none';
+        sheet.style.transition = 'none';
         sheet.style.transform = REST_TRANSFORM;
         overlay.style.opacity = '1';
         return;
       }
       sheet.style.animation = 'none';
       overlay.style.animation = 'none';
+      sheet.style.transition = 'none';
       sheet.style.transform = HIDDEN_TRANSFORM;
       overlay.style.opacity = '0';
       sheet.getBoundingClientRect();
       sheet.style.animation = SHEET_IN;
       overlay.style.animation = OVERLAY_IN;
+      sheet.style.transition = '';
       return;
     }
 
@@ -394,11 +422,13 @@ export function BottomSheetDialog({
         startHeight: resolveStartHeightRef.current(),
         active: false,
       };
-      if (typeof sheet.setPointerCapture === 'function') {
-        try {
-          sheet.setPointerCapture(event.pointerId);
-        } catch {}
-      }
+    };
+
+    const capturePointer = (pointerId: number) => {
+      if (typeof sheet.setPointerCapture !== 'function') return;
+      try {
+        sheet.setPointerCapture(pointerId);
+      } catch {}
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -409,10 +439,20 @@ export function BottomSheetDialog({
       if (!drag.active) {
         if (Math.abs(deltaY) < DRAG_THRESHOLD_PX) return;
         drag.active = true;
+        capturePointer(event.pointerId);
       }
       event.preventDefault();
       const maxHeight = window.innerHeight;
-      setDragHeight(Math.min(maxHeight, Math.max(0, drag.startHeight - deltaY)));
+      const predicted = Math.min(maxHeight, Math.max(0, drag.startHeight - deltaY));
+      if (predicted >= drag.startHeight) {
+        setDragVisual({ live: true, translateY: 0, height: predicted });
+      } else {
+        setDragVisual({
+          live: true,
+          translateY: drag.startHeight - predicted,
+          height: null,
+        });
+      }
     };
 
     const finishDrag = (clientY: number) => {
@@ -420,19 +460,18 @@ export function BottomSheetDialog({
       if (!drag) return;
       dragRef.current = null;
       if (!drag.active) {
-        setDragHeight(null);
+        setDragVisual(null);
         return;
       }
       const predicted = Math.max(0, drag.startHeight - (clientY - drag.startY));
-      setDragHeight(null);
-      const closeBelow =
-        minSnapHeightRef.current != null
-          ? Math.max(0, minSnapHeightRef.current - CLOSE_HEIGHT_PX)
-          : CLOSE_HEIGHT_PX;
+      const closeBelow = dismissBelowHeight(drag.startHeight, minSnapHeightRef.current);
       if (dismissibleRef.current && predicted < closeBelow) {
+        // Keep the sheet short so the close animation starts from the drag position.
+        setDragVisual({ live: false, translateY: 0, height: Math.max(predicted, 1) });
         commitCloseRef.current();
         return;
       }
+      setDragVisual(null);
       onDragEndRef.current?.(predicted);
     };
 
@@ -446,7 +485,7 @@ export function BottomSheetDialog({
       const drag = dragRef.current;
       if (!drag || drag.pointerId !== event.pointerId) return;
       dragRef.current = null;
-      setDragHeight(null);
+      setDragVisual(null);
     };
 
     const onLostPointerCapture = (event: PointerEvent) => {
@@ -476,7 +515,7 @@ export function BottomSheetDialog({
       window.removeEventListener('pointercancel', abortDrag, windowPointerOptions);
       sheet.removeEventListener('lostpointercapture', onLostPointerCapture);
       dragRef.current = null;
-      setDragHeight(null);
+      setDragVisual(null);
     };
   }, [open, mounted]);
 
@@ -492,8 +531,8 @@ export function BottomSheetDialog({
   if (!mounted) return null;
 
   const dataState = open ? 'open' : 'closed';
-  const renderedHeight = dragHeight ?? height;
-  const dragging = dragHeight != null;
+  const renderedHeight = dragVisual?.height ?? height;
+  const dragging = dragVisual?.live === true;
   const flatStyle = StyleSheet.flatten(style);
   const sheetBackground = flatStyle?.backgroundColor ?? styles.sheet.backgroundColor;
   const handleBackground = isDarkCssColor(sheetBackground) ? HANDLE_ON_DARK : HANDLE_ON_LIGHT;
@@ -520,12 +559,14 @@ export function BottomSheetDialog({
           expoUiBottomSheetPanel: '',
           state: dataState,
           sized: renderedHeight != null ? 'true' : undefined,
+          dragging: dragging ? 'true' : undefined,
         }}
         style={[
           styles.sheet,
           style,
           renderedHeight != null && { height: renderedHeight },
-          renderedHeight != null && !dragging && styles.sheetHeightTransition,
+          dragVisual != null &&
+            dragVisual.translateY > 0 && { transform: [{ translateY: dragVisual.translateY }] },
         ]}>
         {showHandle ? (
           <View
@@ -540,6 +581,7 @@ export function BottomSheetDialog({
         ) : null}
         <View
           testID={innerTestID}
+          dataSet={{ expoUiBottomSheetBody: '' }}
           style={[styles.body, renderedHeight != null && styles.bodyFlex, bodyStyle]}>
           {children}
         </View>
@@ -568,11 +610,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     paddingBottom: 'env(safe-area-inset-bottom)',
     zIndex: 1,
-  },
-  sheetHeightTransition: {
-    transitionDuration: `${ENTER_MS}ms`,
-    transitionProperty: 'height',
-    transitionTimingFunction: 'ease',
   },
   handleHit: {
     alignSelf: 'center',
