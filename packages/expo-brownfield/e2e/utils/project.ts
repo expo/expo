@@ -143,15 +143,15 @@ const installPackage = async (projectRoot: string) => {
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
 
-  packageJson.resolutions ??= {};
   packageJson.dependencies ??= {};
+  const overrides: Record<string, string> = {};
 
   // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
   // as it blocks recently published packages without the matching exclusion list.
   const { npm_config_minimum_release_age, ...processEnv } = process.env;
 
   const packageRoot = path.join(__dirname, '../../');
-  packageJson.resolutions['expo-brownfield'] = `link:${path.relative(projectRoot, packageRoot)}`;
+  overrides['expo-brownfield'] = `link:${path.relative(projectRoot, packageRoot)}`;
   packageJson.dependencies['expo-brownfield'] = '*';
 
   // NOTE(@kitten): Forcefully links all monorepo packages
@@ -160,18 +160,24 @@ const installPackage = async (projectRoot: string) => {
   const workspaces = await listWorkspaces();
   for (const name in packageJson.dependencies) {
     if (workspaces[name]) {
-      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      overrides[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
       packageJson.dependencies[name] = '*';
     }
   }
   for (const name in packageJson.devDependencies) {
     if (workspaces[name]) {
-      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      overrides[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
       packageJson.dependencies[name] = '*';
     }
   }
 
   await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  await fs.promises.appendFile(
+    path.join(projectRoot, 'pnpm-workspace.yaml'),
+    `\noverrides:\n${Object.entries(overrides)
+      .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
+      .join('\n')}\n`
+  );
 
   await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,

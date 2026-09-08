@@ -116,7 +116,7 @@ export async function createFromFixtureAsync(
 
       const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
       const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
-      const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
+      const overrides = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
 
       if (dependencies['expo']) linkExpoPackages.push('expo');
       if (dependencies['expo-router']) linkExpoPackages.push('expo-router');
@@ -125,14 +125,14 @@ export async function createFromFixtureAsync(
         const link = createPackageLink(projectRoot, `packages/${pkg}`);
         log('Linked into dependencies', pkg);
         dependencies[pkg] = '*';
-        resolutions[pkg] = link;
+        overrides[pkg] = link;
       }
 
       for (const pkg of linkExpoPackagesDev) {
         const link = createPackageLink(projectRoot, `packages/${pkg}`);
         log('Linked into devDependencies', pkg);
         devDependencies[pkg] = '*';
-        resolutions[pkg] = link;
+        overrides[pkg] = link;
       }
 
       await JsonFile.writeAsync(pkgPath, {
@@ -140,9 +140,18 @@ export async function createFromFixtureAsync(
         ...fixturePkg,
         dependencies,
         devDependencies,
-        resolutions,
+        resolutions: undefined,
         scripts: Object.assign({}, fixturePkg.scripts, pkg.scripts),
       });
+
+      if (Object.keys(overrides).length > 0) {
+        await fs.promises.appendFile(
+          path.join(projectRoot, 'pnpm-workspace.yaml'),
+          `\noverrides:\n${Object.entries(overrides)
+            .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
+            .join('\n')}\n`
+        );
+      }
     }
 
     // Add additional modifications to the Expo config
@@ -164,11 +173,10 @@ export async function createFromFixtureAsync(
       await JsonFile.writeAsync(staticConfigPath, modifiedConfig as any);
     }
 
-    // Reuse virtual store installs and prefer offline artifacts to speed up repeated installs
+    // Prefer offline artifacts to speed up repeated installs
     await executePnpmAsync(projectRoot, ['install', '--prefer-offline'], {
       env: {
         NODE_ENV: 'development',
-        npm_config_enable_global_virtual_store: 'true',
       },
     });
   } catch (error) {
