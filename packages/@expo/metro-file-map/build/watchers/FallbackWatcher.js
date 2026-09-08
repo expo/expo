@@ -161,9 +161,24 @@ class FallbackWatcher extends AbstractWatcher_1.AbstractWatcher {
         if (this.#watched[dir]) {
             return false;
         }
-        const watcher = fs_1.default.watch(dir, { persistent: true }, (event, filename) => this.#normalizeChange(dir, event, filename));
+        let watcher;
+        try {
+            watcher = fs_1.default.watch(dir, { persistent: true }, (event, filename) => this.#normalizeChange(dir, event, filename));
+        }
+        catch (error) {
+            // Directory can vanish before watch; filterDir must not throw.
+            this.#checkedEmitError(error);
+            return false;
+        }
         this.#watched[dir] = watcher;
-        watcher.on('error', this.#checkedEmitError);
+        watcher.on('error', (error) => {
+            // Node emits no `close` after `error`.
+            if (this.#watched[dir] === watcher) {
+                delete this.#watched[dir];
+            }
+            watcher.close();
+            this.#checkedEmitError(error);
+        });
         if (this.root !== dir) {
             this.#register(dir, 'd');
         }
@@ -174,13 +189,15 @@ class FallbackWatcher extends AbstractWatcher_1.AbstractWatcher {
      */
     async #stopWatching(dir) {
         const watcher = this.#watched[dir];
-        if (watcher) {
-            await new Promise((resolve) => {
-                watcher.once('close', () => process.nextTick(resolve));
-                watcher.close();
-                delete this.#watched[dir];
-            });
+        if (!watcher) {
+            return;
         }
+        delete this.#watched[dir];
+        await new Promise((resolve) => {
+            watcher.once('close', () => process.nextTick(resolve));
+            watcher.once('error', () => process.nextTick(resolve));
+            watcher.close();
+        });
     }
     /**
      * End watching.
@@ -232,6 +249,13 @@ class FallbackWatcher extends AbstractWatcher_1.AbstractWatcher {
      */
     #normalizeChange(dir, event, file) {
         if (!file) {
+            if (!this.#dirRegistry[dir]) {
+                // Windows may omit filename; list the new directory.
+                this.#processChange(dir, event === 'change' ? 'rename' : event, '').catch((error) => {
+                    this.emitError(error);
+                });
+                return;
+            }
             this.#detectChangedFile(dir, event, (actualFile) => {
                 if (actualFile) {
                     this.#processChange(dir, event, actualFile).catch((error) => {
@@ -385,11 +409,15 @@ function isIgnorableFileError(error) {
  */
 function recReaddir(dir, dirCallback, fileCallback, symlinkCallback, endCallback, errorCallback, ignored) {
     const walk = walker(dir);
-    if (ignored) {
-        walk.filterDir((currentDir) => !common.posixPathMatchesPattern(ignored, currentDir));
-    }
+    // Watch before readdir so a file written in between is not missed.
+    walk.filterDir((currentDir, stats) => {
+        if (ignored && common.posixPathMatchesPattern(ignored, currentDir)) {
+            return false;
+        }
+        normalizeProxy(dirCallback)(currentDir, stats);
+        return true;
+    });
     walk
-        .on('dir', normalizeProxy(dirCallback))
         .on('file', normalizeProxy(fileCallback))
         .on('symlink', normalizeProxy(symlinkCallback))
         .on('error', errorCallback)
