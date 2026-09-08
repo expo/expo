@@ -37,7 +37,6 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 var import_react4 = __toESM(require("react"));
 var import_react_fast_compare = __toESM(require("react-fast-compare"));
-var import_invariant = __toESM(require("invariant"));
 
 // src/Provider.tsx
 var import_react2 = __toESM(require("react"));
@@ -775,16 +774,18 @@ var Helmet = class extends import_react4.Component {
     return newFlattenedProps;
   }
   warnOnInvalidChildren(child, nestedChildren) {
-    (0, import_invariant.default)(
-      VALID_TAG_NAMES.some((name) => child.type === name),
-      typeof child.type === "function" ? `You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.` : `Only elements types ${VALID_TAG_NAMES.join(
+    if (!VALID_TAG_NAMES.some((name) => child.type === name)) {
+      throw new Error(
+        typeof child.type === "function" ? `You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.` : `Only elements types ${VALID_TAG_NAMES.join(
         ", "
       )} are allowed. Helmet does not support rendering <${child.type}> elements. Refer to our API for more information.`
-    );
-    (0, import_invariant.default)(
-      !nestedChildren || typeof nestedChildren === "string" || Array.isArray(nestedChildren) && !nestedChildren.some((nestedChild) => typeof nestedChild !== "string"),
-      `Helmet expects a string as a child of <${child.type}>. Did you forget to wrap your children in braces? ( <${child.type}>{\`\`}</${child.type}> ) Refer to our API for more information.`
-    );
+      );
+    }
+    if (nestedChildren && typeof nestedChildren !== "string" && (!Array.isArray(nestedChildren) || nestedChildren.some((nestedChild) => typeof nestedChild !== "string"))) {
+      throw new Error(
+        `Helmet expects a string as a child of <${child.type}>. Did you forget to wrap your children in braces? ( <${child.type}>{\`\`}</${child.type}> ) Refer to our API for more information.`
+      );
+    }
     return true;
   }
   mapChildrenToProps(children, newProps) {
