@@ -399,25 +399,19 @@ it('can use replace navigation', () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
-          index: 1,
+          index: 0,
           key: expect.any(String),
           routeNames: ['one', 'two'],
           routes: [
             {
               key: expect.any(String),
-              name: 'one',
-              path: '/one',
+              name: 'two',
+              params: {},
             },
             {
               key: expect.any(String),
-              name: 'two',
-              params: {},
+              name: 'one',
+              path: '/one',
             },
           ],
           stale: false,

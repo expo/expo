@@ -21,7 +21,7 @@ import {
 import { unstable_integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
-  appendMissingPlaceholderTabRoutes,
+  processStateWithPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 
 export const Drawer = unstable_integrateWithRouter<
@@ -33,7 +33,7 @@ export const Drawer = unstable_integrateWithRouter<
   DrawerNavigatorCreateProps
 >(createStandardDrawerNavigator, DrawerRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
-  processState: appendMissingPlaceholderTabRoutes,
+  processState: processStateWithPlaceholderTabRoutes,
   createProps: ({ state, navigation, dispatch }) => ({
     drawerState: state,
     // `createProps` exposes base helpers, but `DrawerRouter` adds drawer action helpers at runtime.

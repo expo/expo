@@ -416,9 +416,12 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * The behavior when navigating back with the back button.
    *
-   * @platform android
+   * - `none`: Back navigation is not handled.
+   * - `initialRoute`: Returns to the initial tab.
+   * - `history`: Returns to the last visited tab.
+   * - `order`: Returns to the previous tab in the declared order. This preloads every declared tab.
    */
-  backBehavior?: 'none' | 'initialRoute' | 'history';
+  backBehavior?: 'none' | 'initialRoute' | 'history' | 'order';
   /**
    * The visibility mode of the tab item label.
    *

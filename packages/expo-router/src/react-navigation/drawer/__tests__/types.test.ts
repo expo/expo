@@ -1,7 +1,12 @@
 import type { ComponentProps } from 'react';
 
 import type { Drawer, DrawerNavigatorProps } from '../../../layouts/Drawer';
-import type { DescriptorRouteProp, DrawerNavigationState, ParamListBase } from '../../native';
+import type {
+  DescriptorRouteProp,
+  DrawerNavigationState,
+  ParamListBase,
+  TabRouterOptions,
+} from '../../native';
 import type { DrawerNavigatorContentProps } from '../navigators/createDrawerNavigator';
 import type { DrawerNavigationHelpers, DrawerOptionsArgs } from '../types';
 
@@ -32,6 +37,9 @@ export type _ContentRequiresDrawerState = Expect<
 >;
 export type _ContentRequiresNavigation = Expect<
   Equal<DrawerNavigatorContentProps['navigation'], DrawerNavigationHelpers>
+>;
+export type _ContentIncludesBackBehavior = Expect<
+  Equal<DrawerNavigatorContentProps['backBehavior'], TabRouterOptions['backBehavior']>
 >;
 
 describe('drawer types', () => {

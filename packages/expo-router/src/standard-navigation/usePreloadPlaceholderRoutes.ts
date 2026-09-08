@@ -19,6 +19,7 @@ export function usePreloadPlaceholderRoutes({
   lazyByDefault: boolean;
 }) {
   useEffect(() => {
+    // TODO(ENG-26318): Preload routes into state without rendering screens instead of PRELOAD.
     for (const route of routes) {
       const descriptor = descriptors[route.key];
       // Options stay generic so navigators without `lazy` remain assignable; tab options may define it.

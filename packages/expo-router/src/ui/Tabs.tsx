@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactElement, ReactNode, PropsWithChildren } from 'react';
-import { Children, Fragment, isValidElement, use, useMemo } from 'react';
+import { Children, Fragment, isValidElement, use, useCallback, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
@@ -8,19 +8,23 @@ import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
-import type {
-  DefaultNavigatorOptions,
-  ParamListBase,
-  TabActionHelpers,
-  TabNavigationState,
-  TabRouterOptions,
+import {
+  CommonActions,
+  LinkingContext,
+  useNavigationBuilder,
+  type DefaultNavigatorOptions,
+  type ParamListBase,
+  type TabActionHelpers,
+  type TabNavigationState,
+  type TabRouterOptions,
 } from '../react-navigation/native';
-import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
+import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
+import { useSyncRouteNamesOrder } from '../standard-navigation/useSyncRouteNamesOrder';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -189,19 +193,26 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
   const {
     state,
+    routeNames,
     describe,
     descriptors: sparseDescriptors,
     navigation,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+  useSyncRouteNamesOrder({
+    routeNames,
+    state,
+    dispatch: navigation.dispatchSync,
+  });
   const descriptors = useMemo(
     () =>
       appendMissingPlaceholderTabDescriptors(
         sparseDescriptors,
         state,
-        describe
+        describe,
+        routeNames
       ) as typeof sparseDescriptors,
-    [describe, sparseDescriptors, state]
+    [describe, routeNames, sparseDescriptors, state]
   );
   const navigatorStates = useMemo(
     () => ({ ...parentNavigatorStates, [contextKey]: state }),
@@ -221,7 +232,12 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const NavigationContent = useComponent((children: React.ReactNode) => (
     // Headless tabs have no guards, so shadow parent guards whose route names may collide.
     <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
-      <TabVisibilityRedirect state={state} descriptors={descriptors} />
+      <TabVisibilityRedirect
+        state={state}
+        routeNames={routeNames}
+        descriptors={descriptors}
+        navigation={navigation}
+      />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
           <NavigatorContext.Provider value={navigatorContextValue}>
@@ -232,20 +248,34 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     </GuardContextProvider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, describe, descriptors, navigation, NavigationContent };
+  return { state, routeNames, describe, descriptors, navigation, NavigationContent };
 }
 
 function TabVisibilityRedirect({
   state,
+  routeNames,
   descriptors,
+  navigation,
 }: {
   state: TabNavigationState<any>;
+  routeNames: string[];
   descriptors: PlaceholderDescriptorMap;
+  navigation: { dispatch: (action: ReturnType<typeof CommonActions.preload>) => void };
 }) {
   const stateWithPlaceholders = useMemo(
-    () => appendMissingPlaceholderTabRoutes(state, descriptors),
-    [descriptors, state]
+    () => appendMissingPlaceholderTabRoutes(state, descriptors, routeNames),
+    [descriptors, routeNames, state]
   );
+  const preload = useCallback(
+    (name: string) => navigation.dispatch(CommonActions.preload(name)),
+    [navigation]
+  );
+  usePreloadPlaceholderRoutes({
+    routes: stateWithPlaceholders.routes,
+    descriptors,
+    preload,
+    lazyByDefault: true,
+  });
   useVisibleTabsWithRedirect({
     routes: stateWithPlaceholders.routes,
     routeNames: stateWithPlaceholders.routeNames,

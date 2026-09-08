@@ -11,7 +11,7 @@ import {
 import { renderRouter } from '../../testing-library';
 import {
   appendMissingPlaceholderTabDescriptors,
-  appendMissingPlaceholderTabRoutes,
+  processStateWithPlaceholderTabRoutes,
 } from '../appendMissingPlaceholderTabRoutes';
 import { unstable_createStandardRouterNavigator } from '../index';
 
@@ -39,7 +39,7 @@ const StandardTabs = unstable_createStandardRouterNavigator<
   TabRouterOptions
 >(NavigatorContent, TabRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
-  processState: appendMissingPlaceholderTabRoutes,
+  processState: processStateWithPlaceholderTabRoutes,
 });
 
 describe('useBuildHref (integration)', () => {

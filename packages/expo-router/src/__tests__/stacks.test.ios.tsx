@@ -198,17 +198,7 @@ test('dismissAll nested', () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
-          index: 2,
+          index: 1,
           key: expect.any(String),
           routeNames: ['a', 'b', 'one'],
           routes: [
@@ -216,11 +206,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'a',
               path: '/a',
-            },
-            {
-              key: expect.any(String),
-              name: 'b',
-              params: {},
             },
             {
               key: expect.any(String),
@@ -289,6 +274,11 @@ test('dismissAll nested', () => {
                 type: 'stack',
               },
             },
+            {
+              key: expect.any(String),
+              name: 'b',
+              params: {},
+            },
           ],
           stale: false,
           routeKeySeq: expect.any(Number),
@@ -313,17 +303,7 @@ test('dismissAll nested', () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
-          index: 2,
+          index: 1,
           key: expect.any(String),
           routeNames: ['a', 'b', 'one'],
           routes: [
@@ -331,11 +311,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'a',
               path: '/a',
-            },
-            {
-              key: expect.any(String),
-              name: 'b',
-              params: {},
             },
             {
               key: expect.any(String),
@@ -392,6 +367,11 @@ test('dismissAll nested', () => {
                 type: 'stack',
               },
             },
+            {
+              key: expect.any(String),
+              name: 'b',
+              params: {},
+            },
           ],
           stale: false,
           routeKeySeq: expect.any(Number),
@@ -416,17 +396,7 @@ test('dismissAll nested', () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
-          index: 2,
+          index: 1,
           key: expect.any(String),
           routeNames: ['a', 'b', 'one'],
           routes: [
@@ -434,11 +404,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'a',
               path: '/a',
-            },
-            {
-              key: expect.any(String),
-              name: 'b',
-              params: {},
             },
             {
               key: expect.any(String),
@@ -460,6 +425,11 @@ test('dismissAll nested', () => {
                 routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
+            },
+            {
+              key: expect.any(String),
+              name: 'b',
+              params: {},
             },
           ],
           stale: false,

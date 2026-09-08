@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 
 import type { JSTabsProps, Tabs, TabsScreenOptions } from '../../../layouts/Tabs';
-import type { DescriptorRouteProp, ParamListBase, RouteProp } from '../../native';
+import type { DescriptorRouteProp, ParamListBase, RouteProp, TabRouterOptions } from '../../native';
 import type { BottomTabNavigatorContentProps } from '../navigators/createBottomTabNavigator';
 import type { BottomTabOptionsArgs } from '../types';
 
@@ -34,6 +34,9 @@ export type _ContentRequiresRouteNames = Expect<
 >;
 export type _ContentRequiresPopNestedStackToTop = Expect<
   Equal<BottomTabNavigatorContentProps['popNestedStackToTop'], (routeKey: string) => void>
+>;
+export type _ContentIncludesBackBehavior = Expect<
+  Equal<BottomTabNavigatorContentProps['backBehavior'], TabRouterOptions['backBehavior']>
 >;
 
 // The tab bar config stays a public navigator prop.
