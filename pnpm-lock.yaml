@@ -5585,9 +5585,6 @@ importers:
       expo-server:
         specifier: workspace:^
         version: link:../expo-server
-      invariant:
-        specifier: ^2.2.4
-        version: 2.2.4
       nanoid:
         specifier: ^3.3.18
         version: 3.3.18
