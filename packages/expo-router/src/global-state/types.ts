@@ -28,6 +28,7 @@ export type LinkToOptions = {
   dangerouslySingular?: SingularOptions;
 
   __internal__PreviewKey?: string;
+  __internal__previewId?: string;
 };
 
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;

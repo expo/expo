@@ -186,6 +186,7 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[0][0].nativeID).toMatch(/^expo-router-tab:index:/);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
     expect(TabsHost).toHaveBeenCalledTimes(2);

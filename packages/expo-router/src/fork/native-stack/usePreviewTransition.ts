@@ -18,7 +18,7 @@ export function usePreviewTransition(
   state: NativeStackViewState,
   originalEmit: NativeStackViewEmit
 ) {
-  const { openPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
+  const { openPreviewKeyRef, setOpenPreviewKey } = useLinkPreviewContext();
 
   // Track the preview screen currently transitioning on the native side
   const [previewTransitioningScreenId, setPreviewTransitioningScreenId] = React.useState<
@@ -38,29 +38,21 @@ export function usePreviewTransition(
     }
   }, [state, previewTransitioningScreenId]);
 
-  const emit = React.useMemo(() => {
-    if (openPreviewKey) {
-      const emit: NativeStackViewEmit = (event) => {
-        const { target, type, data } = event;
-        if (target === openPreviewKey && data && 'closing' in data && !data.closing) {
-          // onWillAppear
-          if (type === 'transitionStart') {
-            // The screen from preview will appear, so we need to start tracking it
-            setPreviewTransitioningScreenId(openPreviewKey);
-          }
-          // onAppear
-          else if (type === 'transitionEnd') {
-            // The screen from preview appeared.
-            // We can now restore the stack animation
-            setOpenPreviewKey(undefined);
-          }
+  const emit = React.useCallback<NativeStackViewEmit>(
+    (event) => {
+      const { target, type, data } = event;
+      const key = openPreviewKeyRef.current;
+      if (key !== undefined && target === key && data && 'closing' in data && !data.closing) {
+        if (type === 'transitionStart') {
+          setPreviewTransitioningScreenId(key);
+        } else if (type === 'transitionEnd') {
+          setOpenPreviewKey(undefined);
         }
-        return originalEmit(event);
-      };
-      return emit;
-    }
-    return originalEmit;
-  }, [openPreviewKey, originalEmit, setOpenPreviewKey]);
+      }
+      return originalEmit(event);
+    },
+    [openPreviewKeyRef, originalEmit, setOpenPreviewKey]
+  );
 
   const computedState: NativeStackViewState = React.useMemo(() => {
     // The preview screen was pushed on the native side, but react-navigation state was not updated yet

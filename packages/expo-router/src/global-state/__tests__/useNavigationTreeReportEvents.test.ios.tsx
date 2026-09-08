@@ -1,9 +1,15 @@
-import { renderHook } from '@testing-library/react-native';
+import { act, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 import type { PropsWithChildren } from 'react';
+import { Text } from 'react-native';
 
+import { router } from '../../imperative-api';
+import Stack from '../../layouts/Stack';
+import { NativeTabs } from '../../native-tabs';
 import { unstable_navigationEvents } from '../../navigationEvents';
+import { INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME } from '../../navigationParams';
 import type { NavigationState } from '../../react-navigation/routers';
+import { renderRouter } from '../../testing-library';
 import { PreventRemovalProvider, RemovalPreventionProvider } from '../removalPrevention';
 import type { NavigationTreeReport } from '../useNavigationTreeReducer';
 import { useNavigationTreeReportEvents } from '../useNavigationTreeReportEvents';
@@ -132,3 +138,68 @@ test('keeps emitting the remaining events when a listener throws', () => {
   unsubscribe();
   warn.mockRestore();
 });
+
+test('prefetch emits the preloaded stack route and state with the preview id', () => {
+  const events: { routeKey: string; state: NavigationState }[] = [];
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text>Index</Text>,
+    details: () => <Text>Details</Text>,
+  });
+  const unsubscribe = unstable_navigationEvents.addListener('routePreloaded', (event) =>
+    events.push(event)
+  );
+
+  act(() => router.prefetch('/details', { __internal__previewId: 'preview' }));
+
+  expect(events).toHaveLength(1);
+  const event = events[0]!;
+  expect(event.routeKey).toMatch(/^details:/);
+  expect(findRoute(event.state, event.routeKey)?.params).toMatchObject({
+    [INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME]: 'preview',
+  });
+  unsubscribe();
+});
+
+test('prefetch emits the tab route while navigate emits no preload event', () => {
+  const routeKeys: string[] = [];
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+        <NativeTabs.Trigger name="second" />
+      </NativeTabs>
+    ),
+    index: () => <Text>Index</Text>,
+    second: () => <Text>Second</Text>,
+  });
+  const unsubscribe = unstable_navigationEvents.addListener('routePreloaded', ({ routeKey }) =>
+    routeKeys.push(routeKey)
+  );
+
+  act(() => router.prefetch('/second'));
+  expect(routeKeys).toHaveLength(1);
+  expect(routeKeys[0]).toMatch(/^second:/);
+
+  act(() => router.navigate('/second'));
+  expect(routeKeys).toHaveLength(1);
+  unsubscribe();
+});
+
+function findRoute(
+  state: NavigationState,
+  routeKey: string
+): NavigationState['routes'][number] | undefined {
+  for (const route of state.routes) {
+    if (route.key === routeKey) {
+      return route;
+    }
+    if (route.state?.stale === false) {
+      const childRoute = findRoute(route.state, routeKey);
+      if (childRoute) {
+        return childRoute;
+      }
+    }
+  }
+  return undefined;
+}

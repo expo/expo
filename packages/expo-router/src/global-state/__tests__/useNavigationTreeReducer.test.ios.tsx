@@ -326,7 +326,9 @@ it('logs an error for focused state without an index after commit', () => {
     } as unknown as NavigationState;
     return { state: incompleteState, affectedRouteKey: state.routes[0]!.key };
   });
-  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  const result = renderReducer({
+    registry: new Map([['root', entry(reduce)]]),
+  });
 
   act(() => result.result.current.handleAction({ type: 'INCOMPLETE' }));
 
@@ -580,7 +582,7 @@ describe('NAVIGATE_TO_HREF', () => {
       'PUSH',
       true,
       dangerouslySingular,
-      true,
+      'preview',
       initialState
     );
   });

@@ -87,6 +87,7 @@ it('bubbles from the deepest focused navigator to its parent', () => {
   expect(result).toMatchObject({ handled: true });
   if (result.handled) {
     expect(result.nextState.index).toBe(1);
+    expect(result.affectedRouteKey).toBe('other');
   }
 });
 

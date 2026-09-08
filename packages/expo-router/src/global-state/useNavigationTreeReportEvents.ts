@@ -53,6 +53,12 @@ export function useNavigationTreeReportEvents(
               state: event.state,
             });
             break;
+          case 'route-preloaded':
+            unstable_navigationEvents.emit('routePreloaded', {
+              routeKey: event.routeKey,
+              state: event.state,
+            });
+            break;
         }
       } catch (error) {
         const message =

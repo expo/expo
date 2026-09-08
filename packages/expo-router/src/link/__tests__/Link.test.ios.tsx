@@ -65,6 +65,12 @@ jest.mock('../preview/native', () => {
   };
 });
 
+jest.mock('../../hooks/useRouter', () => {
+  const actual =
+    jest.requireActual<typeof import('../../hooks/useRouter')>('../../hooks/useRouter');
+  return { ...actual, useRouter: jest.fn(actual.useRouter) };
+});
+
 jest.mock('../zoom/ZoomTransitionEnabler', () => {
   const originalModule = jest.requireActual(
     '../zoom/ZoomTransitionEnabler'
@@ -704,6 +710,15 @@ describe('prefetch', () => {
 });
 
 describe('Preview', () => {
+  afterEach(() => {
+    jest
+      .mocked(useRouter)
+      .mockImplementation(
+        jest.requireActual<typeof import('../../hooks/useRouter')>('../../hooks/useRouter')
+          .useRouter
+      );
+  });
+
   it('when Link.Preview is not used, then does not render LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
     renderRouter({
       index: () => {
@@ -729,6 +744,44 @@ describe('Preview', () => {
     });
     expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
     expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+  });
+  it('navigates with the preloaded screen id reported by native', () => {
+    const emitters = require('../preview/native').__EVENTS__;
+    const navigate = jest.fn();
+    const mockUseRouter = jest.mocked(useRouter);
+    mockUseRouter.mockReturnValue({ ...router, navigate, prefetch: jest.fn() });
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger />
+          <Link.Preview />
+        </Link>
+      ),
+      test: () => null,
+    });
+
+    act(() => emitters['link-onPreviewTapped']({ nativeEvent: { screenId: 'test-key' } }));
+
+    expect(navigate).toHaveBeenCalledWith('/test', { __internal__PreviewKey: 'test-key' });
+  });
+  it('navigates without a preview key when native reports no preloaded screen', () => {
+    const emitters = require('../preview/native').__EVENTS__;
+    const navigate = jest.fn();
+    const mockUseRouter = jest.mocked(useRouter);
+    mockUseRouter.mockReturnValue({ ...router, navigate, prefetch: jest.fn() });
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger />
+          <Link.Preview />
+        </Link>
+      ),
+      test: () => null,
+    });
+
+    act(() => emitters['link-onPreviewTapped']({ nativeEvent: {} }));
+
+    expect(navigate).toHaveBeenCalledWith('/test', { __internal__PreviewKey: undefined });
   });
   it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
     expect(() => {
@@ -1118,14 +1171,14 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByText('Preload A and C')));
       act(() => emitters['link-onWillPreviewOpen']());
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen, setTimeout from prefetch
-      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      const props = NativeLinkPreview.mock.calls[2][0];
-      expect(props.previewActivationPath?.path.map(({ name }) => name)).toEqual([
-        '__root',
-        'slotB',
-        'test',
-      ]);
+      await waitFor(() =>
+        expect(
+          NativeLinkPreview.mock.calls[
+            NativeLinkPreview.mock.calls.length - 1
+          ][0].previewActivationPath?.path.map(({ name }: { name: string }) => name)
+        ).toEqual(['__root', 'slotB'])
+      );
+      const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
       expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB:[-\w]+/);
       expect(props).not.toHaveProperty('nextScreenId');
       expect(props).not.toHaveProperty('tabPath');
@@ -1171,14 +1224,14 @@ describe('Preview', () => {
       act(() => emitters['link-onWillPreviewOpen']());
 
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen, setTimeout from prefetch
-      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
+      await waitFor(() =>
+        expect(
+          NativeLinkPreview.mock.calls[
+            NativeLinkPreview.mock.calls.length - 1
+          ][0].previewActivationPath?.path.map(({ name }: { name: string }) => name)
+        ).toEqual(['__root', 'slotB/[xyz]'])
+      );
       const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
-      expect(props.previewActivationPath?.path.map(({ name }) => name)).toEqual([
-        '__root',
-        'slotB/[xyz]',
-        'test',
-      ]);
       expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB\/\[xyz\]:[-\w]+/);
       expect(props).not.toHaveProperty('nextScreenId');
       expect(props).not.toHaveProperty('tabPath');

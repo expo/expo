@@ -23,7 +23,7 @@ final class LinkPreviewPathWalker {
   private static let reactSubviewsSelector = NSSelectorFromString(reactSubviewsName)
 
   func walk(path: [PreviewActivationRoute], responder: UIView) -> LinkPreviewPathWalkResult {
-    guard !path.isEmpty, let (stackView, cursor) = findAnchor(path: path, responder: responder) else {
+    guard !path.isEmpty, let (anchorView, cursor) = findAnchor(path: path, responder: responder) else {
       // The path cannot be resolved without a route shared by the responder hierarchy.
       return LinkPreviewPathWalkResult(
         preloadedScreenView: nil,
@@ -33,7 +33,7 @@ final class LinkPreviewPathWalker {
     }
 
     var commands: [TabChangeCommand] = []
-    let match = descend(view: stackView, cursor: cursor, path: path, commands: &commands)
+    let match = descend(view: anchorView, cursor: cursor, path: path, commands: &commands)
     // A match contains the screen to activate and any tab changes needed to reach it.
     return LinkPreviewPathWalkResult(
       preloadedScreenView: match?.screenView,
@@ -50,19 +50,36 @@ final class LinkPreviewPathWalker {
     var bestMatch: (view: UIView, cursor: Int)?
 
     while let nextResponder = currentResponder?.next {
-      if let view = nextResponder as? UIView, let screenIds = screenIds(from: view) {
-        for (index, route) in path.enumerated() where screenIds.contains(route.key) {
-          if bestMatch.map({ index < $0.cursor }) ?? true {
-            bestMatch = (view, index)
-          }
-          break
-        }
+      if let view = nextResponder as? UIView,
+        let cursor = anchorCursor(for: view, path: path),
+        bestMatch.map({ cursor < $0.cursor }) ?? true
+      {
+        bestMatch = (view, cursor)
       }
       currentResponder = nextResponder
     }
 
     // The earliest path match is the highest usable anchor in the responder hierarchy.
     return bestMatch
+  }
+
+  private func anchorCursor(for view: UIView, path: [PreviewActivationRoute]) -> Int? {
+    var cursor: Int?
+    if let screenIds = screenIds(from: view) {
+      cursor = path.firstIndex(where: { screenIds.contains($0.key) })
+    }
+
+    if let tabBarController = tabBarController(from: view) {
+      let tabViews = tabBarController.viewControllers?.compactMap(\.view) ?? []
+      if let tabCursor = path.firstIndex(where: { route in
+        tabViews.contains(where: { RNScreensTabCompat.routeKey(from: $0) == route.key })
+      }) {
+        if cursor.map({ tabCursor < $0 }) ?? true {
+          cursor = tabCursor
+        }
+      }
+    }
+    return cursor
   }
 
   private func descend(
@@ -119,7 +136,7 @@ final class LinkPreviewPathWalker {
       for routeIndex in path.indices.dropFirst(cursor) {
         guard
           let tabIndex = tabViews.firstIndex(where: {
-            RNScreensTabCompat.screenKey(from: $0) == path[routeIndex].name
+            RNScreensTabCompat.routeKey(from: $0) == path[routeIndex].key
           })
         else {
           continue

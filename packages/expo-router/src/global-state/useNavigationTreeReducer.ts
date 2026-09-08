@@ -74,6 +74,11 @@ type NavigationTreeReportEventData =
       type: 'action-dispatched';
       action: NavigationAction;
       state: NavigationState;
+    }
+  | {
+      type: 'route-preloaded';
+      routeKey: string;
+      state: NavigationState;
     };
 
 export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
@@ -162,7 +167,7 @@ function navigationTreeReducer(
           options.event,
           options.withAnchor,
           options.dangerouslySingular,
-          !!options.__internal__PreviewKey,
+          options.__internal__PreviewKey,
           state
         );
       } catch (error) {
@@ -241,6 +246,16 @@ function navigationTreeReducer(
                       type: 'removed-routes',
                       routeKeys: removedRoutes,
                       action: operation.payload.action,
+                    },
+                  ] satisfies NavigationTreeReportEventData[])
+                : []),
+              ...(operation.payload.action.type === 'PRELOAD' &&
+              reduction.affectedRouteKey !== undefined
+                ? ([
+                    {
+                      type: 'route-preloaded',
+                      routeKey: reduction.affectedRouteKey,
+                      state: committedState,
                     },
                   ] satisfies NavigationTreeReportEventData[])
                 : []),

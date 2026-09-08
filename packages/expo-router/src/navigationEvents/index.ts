@@ -6,6 +6,7 @@ import type {
   PageBlurredEvent,
   PageRemoved,
   ActionDispatchedEvent,
+  RoutePreloadedEvent,
 } from './types';
 
 export type {
@@ -14,6 +15,7 @@ export type {
   PageBlurredEvent,
   PageRemoved,
   ActionDispatchedEvent,
+  RoutePreloadedEvent,
 } from './types';
 
 export type AnalyticsEvent =
@@ -21,7 +23,8 @@ export type AnalyticsEvent =
   | PageFocusedEvent
   | PageBlurredEvent
   | PageRemoved
-  | ActionDispatchedEvent;
+  | ActionDispatchedEvent
+  | RoutePreloadedEvent;
 
 const availableEvents: AnalyticsEvent['type'][] = [
   'pagePreloaded',
@@ -29,6 +32,7 @@ const availableEvents: AnalyticsEvent['type'][] = [
   'pageBlurred',
   'pageRemoved',
   'actionDispatched',
+  'routePreloaded',
 ];
 
 type EventTypeName = AnalyticsEvent['type'];

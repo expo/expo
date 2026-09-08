@@ -10,7 +10,7 @@ public class LinkPreviewNativeModule: Module {
 
     View(NativeLinkPreviewView.self) {
       Prop("previewActivationPath") {
-        (view: NativeLinkPreviewView, previewActivationPath: PreviewActivationPathPayload) in
+        (view: NativeLinkPreviewView, previewActivationPath: PreviewActivationPathPayload?) in
         view.previewActivationPath = previewActivationPath
       }
 

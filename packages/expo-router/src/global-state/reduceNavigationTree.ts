@@ -16,6 +16,7 @@ type Handler = {
   node: TreeNode;
   nextSlice: NavigationState;
   shouldFocus: boolean;
+  affectedRouteKey: string | undefined;
 };
 
 export type NavigationTreeReduction =
@@ -23,6 +24,7 @@ export type NavigationTreeReduction =
   | {
       handled: true;
       nextState: NavigationState;
+      affectedRouteKey: string | undefined;
     };
 
 export function indexNavigationTree(root: NavigationState): NavigationTreeIndex {
@@ -104,6 +106,7 @@ function findActionHandler(
       node,
       nextSlice,
       shouldFocus: entry.shouldActionChangeFocus?.(action) ?? false,
+      affectedRouteKey: result?.affectedRouteKey,
     };
     return true;
   };
@@ -164,6 +167,7 @@ export function reduceNavigationTree(
   return {
     handled: true,
     nextState: rebuildTreeWithSlice(handler, registry),
+    affectedRouteKey: handler.affectedRouteKey,
   };
 }
 
