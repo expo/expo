@@ -12,8 +12,15 @@ public class EXDevLauncherUrl: NSObject {
   public var queryParams: [String: String]
 
   @objc
+  public var initialUrl: URL?
+
+  @objc
   public init(_ url: URL) {
     self.queryParams = EXDevLauncherURLHelper.getQueryParamsForUrl(url)
+    let initialUrlParam = queryParams["initialUrl"] ?? queryParams["initialURL"]
+    if let initialUrlParam, !initialUrlParam.isEmpty {
+      self.initialUrl = URL(string: initialUrlParam)
+    }
 
     if EXDevLauncherURLHelper.isDevLauncherURL(url),
       let urlParam = queryParams["url"],

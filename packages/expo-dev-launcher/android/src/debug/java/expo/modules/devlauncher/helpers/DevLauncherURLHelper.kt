@@ -12,11 +12,16 @@ fun hasUrlQueryParam(uri: Uri): Boolean {
 
 class DevLauncherUrl(var url: Uri) {
   val queryParams = mutableMapOf<String, String>()
+  val initialUrl: Uri?
 
   init {
     url.queryParameterNames.forEach { name ->
       queryParams[name] = url.getQueryParameter(name) ?: ""
     }
+
+    initialUrl = (queryParams["initialUrl"] ?: queryParams["initialURL"])
+      ?.takeIf { it.isNotEmpty() }
+      ?.let(Uri::parse)
 
     if (isDevLauncherUrl(url)) {
       if (queryParams["url"] != null) {
