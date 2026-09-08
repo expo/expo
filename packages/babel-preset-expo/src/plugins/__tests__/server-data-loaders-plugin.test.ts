@@ -386,6 +386,7 @@ describe('client', () => {
         { bundleType: 'client' }
       );
 
+      expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.code).toMatchInlineSnapshot(`
         "import { useLoaderData } from 'expo-router';
         import { jsx as _jsx } from "react/jsx-runtime";
@@ -413,6 +414,7 @@ describe('client', () => {
         { bundleType: 'client' }
       );
 
+      expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.code).toMatchInlineSnapshot(`
         "import { formatName } from '../format';
         import { jsx as _jsx } from "react/jsx-runtime";
@@ -440,6 +442,7 @@ describe('client', () => {
         { bundleType: 'client' }
       );
 
+      expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.code).toMatchInlineSnapshot(`
         "import { fetchThings, formatName } from '../api';
         import { jsx as _jsx } from "react/jsx-runtime";
@@ -468,6 +471,7 @@ describe('client', () => {
         { bundleType: 'client' }
       );
 
+      expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.code).toMatchInlineSnapshot(`
         "import '../polyfill';
         import { jsx as _jsx } from "react/jsx-runtime";
@@ -488,13 +492,40 @@ describe('client', () => {
         return fetchThings();
       }
     `,
-        { bundleType: 'client', filename: '/src/data' }
+        { bundleType: 'client', filename: '/components/MyComponent' }
       );
 
+      expect(res.metadata.performConstantFolding).toBeUndefined();
       expect(res.code).toMatchInlineSnapshot(`
         "import { fetchThings } from '../api';
         export async function loader() {
           return fetchThings();
+        }"
+      `);
+    });
+
+    it('keeps the React import under the classic JSX runtime', () => {
+      const res = transformTest(
+        `
+      import React from 'react';
+      import { fetchThings } from '../api';
+
+      export async function loader() {
+        return fetchThings();
+      }
+
+      export default function Index() {
+        return <div>Index</div>;
+      }
+    `,
+        { bundleType: 'client', presets: [[preset, { jsxRuntime: 'classic' }]] }
+      );
+
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.code).toMatchInlineSnapshot(`
+        "import React from 'react';
+        export default function Index() {
+          return /*#__PURE__*/React.createElement("div", null, "Index");
         }"
       `);
     });
