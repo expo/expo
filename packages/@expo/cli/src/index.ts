@@ -4,6 +4,8 @@ import arg from 'arg';
 import chalk from 'chalk';
 import { boolish } from 'getenv';
 
+import { emitClaudeCodePluginHint } from './utils/claudeCodePluginHint';
+
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG` so existing
 // muscle memory keeps surfacing debug events. This must run before `installEventLogger()` so the
 // debug flag is honored when the session activates.
@@ -77,6 +79,10 @@ installEventLogger({
       : `expo ${command}`,
   version: process.env.__EXPO_VERSION,
 });
+
+// When Claude Code runs any Expo CLI command, let it offer the Expo plugin (Expo Skills and the
+// Expo MCP Server). Claude Code shows the prompt once per plugin, so every command can emit it.
+emitClaudeCodePluginHint();
 
 if (args['--version']) {
   // Version is added in the build script.
