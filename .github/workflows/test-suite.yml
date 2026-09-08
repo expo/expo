@@ -205,20 +205,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Diff the fingerprint against the last main commit whose ios-build completed:
-          # only completed main builds store their fingerprint and build artifact in the
+          # Diff the fingerprint against the newest main commit that uploaded an iOS build
+          # artifact: only main builds store their fingerprint and artifact in the
           # fingerprint database, so any other base commit misses the database and forces
-          # a full rebuild even for JS-only changes.
-          base_commit=''
-          while read -r run_id head_sha; do
-            conclusion=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" \
-              --jq '.jobs[] | select(.name == "ios-build") | .conclusion' || true)
-            if [ "$conclusion" = 'success' ]; then
-              base_commit="$head_sha"
-              break
-            fi
-          done < <(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/test-suite.yml/runs?branch=main&event=push&status=success&per_page=20" \
-            --jq '.workflow_runs | sort_by(.created_at) | reverse | .[] | "\(.id) \(.head_sha)"' || true)
+          # a full rebuild even for JS-only changes. The artifacts API is used because it
+          # also finds builds from runs that were cancelled after ios-build finished, and
+          # unlike the workflow-runs listing it does not serve stale pages.
+          base_commit=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=bare-expo-ios-builds&per_page=100" \
+            --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "main" and .workflow_run.head_repository_id == .workflow_run.repository_id)]
+              | sort_by(.created_at) | reverse | .[0].workflow_run.head_sha // ""' || true)
           echo "base-commit=$base_commit" >> "$GITHUB_OUTPUT"
       - name: 📹 Check fingerprint
         id: fingerprint
