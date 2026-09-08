@@ -129,6 +129,7 @@
 - [Internal] Isolate the loader's Suspense store from `LoaderClient` ([#48563](https://github.com/expo/expo/pull/48563) by [@hassankhan](https://github.com/hassankhan))
 - [Internal] Remove legacy root entrypoint shims ([#49001](https://github.com/expo/expo/pull/49001) by [@hassankhan](https://github.com/hassankhan))
 - Drop `fast-deep-equal` and `shallowequal` dependencies ([#49875](https://github.com/expo/expo/pull/49875) by [@kitten](https://github.com/kitten))
+- Drop `invariant` dependency ([#49882](https://github.com/expo/expo/pull/49882) by [@kitten](https://github.com/kitten))
 
 ## 57.0.9 - 2026-07-29
 
