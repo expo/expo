@@ -25,14 +25,14 @@ jest.mock('expo-constants', () => ({
   },
 }));
 
-const mockedExpoHead = ExpoHead as jest.Mocked<NonNullable<typeof ExpoHead>>;
+const mockedExpoHead = jest.mocked(ExpoHead!);
 
 beforeEach(() => {
   mockedExpoHead.createActivity.mockClear();
   mockedExpoHead.suspendActivity.mockClear();
 });
 
-it('registers focused route metadata with the native head module', async () => {
+it('maps focused route metadata to a native activity and suspends it on unmount', async () => {
   const result = renderRouter(
     {
       index: () => (
@@ -43,8 +43,8 @@ it('registers focused route metadata with the native head module', async () => {
             <meta property="expo:handoff" content="true" />
             <meta property="expo:spotlight" content="true" />
             <meta property="og:url" content="/custom-home" />
+            <Text testID="screen">Home</Text>
           </Head>
-          <Text testID="screen">Home</Text>
         </>
       ),
     },
@@ -55,6 +55,7 @@ it('registers focused route metadata with the native head module', async () => {
 
   await waitFor(() => expect(mockedExpoHead.createActivity).toHaveBeenCalled());
 
+  expect(mockedExpoHead.createActivity).toHaveBeenCalledTimes(1);
   expect(mockedExpoHead.createActivity).toHaveBeenCalledWith(
     expect.objectContaining({
       id: '-',
@@ -72,10 +73,11 @@ it('registers focused route metadata with the native head module', async () => {
   );
 
   result.unmount();
+  expect(mockedExpoHead.suspendActivity).toHaveBeenCalledTimes(1);
   expect(mockedExpoHead.suspendActivity).toHaveBeenCalledWith('-');
 });
 
-it('uses Open Graph title metadata and the route URL as fallbacks', async () => {
+it('uses og:title and the current route when title and og:url are omitted', async () => {
   renderRouter(
     {
       article: () => (
@@ -90,6 +92,7 @@ it('uses Open Graph title metadata and the route URL as fallbacks', async () => 
 
   await waitFor(() => expect(mockedExpoHead.createActivity).toHaveBeenCalled());
 
+  expect(mockedExpoHead.createActivity).toHaveBeenCalledTimes(1);
   expect(mockedExpoHead.createActivity).toHaveBeenCalledWith(
     expect.objectContaining({
       id: '-article',

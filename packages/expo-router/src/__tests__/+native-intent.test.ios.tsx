@@ -3,21 +3,22 @@ import { View } from 'react-native';
 
 import { renderRouter } from '../testing-library';
 
-it('can use redirectSystemPath initial', () => {
-  renderRouter({
-    index: () => <View testID="index" />,
-    page: () => <View testID="page" />,
-    '+native-intent': {
-      redirectSystemPath({ path, initial }) {
-        if (initial) {
-          return '/page';
-        }
-        return path;
+it('redirects the initial URL with redirectSystemPath', () => {
+  renderRouter(
+    {
+      rewritten: () => <View testID="rewritten" />,
+      '+native-intent': {
+        redirectSystemPath({ path, initial }) {
+          expect(path).toBe('/incoming');
+          expect(initial).toBe(true);
+          return '/rewritten';
+        },
       },
     },
-  });
+    { initialUrl: '/incoming' }
+  );
 
-  expect(screen.getByTestId('page')).toBeVisible();
+  expect(screen.getByTestId('rewritten')).toBeVisible();
 });
 
 it('can use async redirectSystemPath', async () => {
@@ -44,27 +45,7 @@ it('can use async redirectSystemPath', async () => {
   expect(screen.getByTestId('page')).toBeVisible();
 });
 
-it('legacy_subscribe', () => {
-  let listener: (url: string) => void = () => {};
-
-  renderRouter({
-    index: () => <View testID="index" />,
-    apple: () => <View testID="apple" />,
-    '+native-intent': {
-      legacy_subscribe(listenerFn) {
-        listener = listenerFn;
-        return () => {};
-      },
-    },
-  });
-
-  expect(screen.getByTestId('index')).toBeVisible();
-
-  act(() => listener('/apple'));
-  expect(screen.getByTestId('apple')).toBeVisible();
-});
-
-it('navigates to deep links received while the app is running', () => {
+it('navigates to URLs received from legacy_subscribe with path and query params', () => {
   let listener: (url: string) => void = () => {};
 
   renderRouter({
@@ -84,24 +65,4 @@ it('navigates to deep links received while the app is running', () => {
 
   expect(screen.getByTestId('fruit')).toBeVisible();
   expect(screen).toHavePathnameWithParams('/fruit/apple?color=red');
-});
-
-it('applies redirectSystemPath to the initial deep link', () => {
-  renderRouter(
-    {
-      index: () => <View testID="index" />,
-      rewritten: () => <View testID="rewritten" />,
-      '+native-intent': {
-        redirectSystemPath({ path }) {
-          if (path === '/incoming') {
-            return '/rewritten';
-          }
-          return path;
-        },
-      },
-    },
-    { initialUrl: '/incoming' }
-  );
-
-  expect(screen.getByTestId('rewritten')).toBeVisible();
 });

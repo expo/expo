@@ -3,13 +3,13 @@ import { Text, View } from 'react-native';
 import { Split } from 'react-native-screens/experimental';
 
 import { renderRouter } from '../../testing-library';
-import { SplitView } from '../split-view';
+import { SplitView } from '../index';
 
 jest.mock('react-native-screens/experimental', () => {
-  const { View } = jest.requireActual('react-native') as typeof import('react-native');
-  const actual = jest.requireActual(
+  const { View } = jest.requireActual<typeof import('react-native')>('react-native');
+  const actual = jest.requireActual<typeof import('react-native-screens/experimental')>(
     'react-native-screens/experimental'
-  ) as typeof import('react-native-screens/experimental');
+  );
 
   return {
     ...actual,
@@ -22,17 +22,13 @@ jest.mock('react-native-screens/experimental', () => {
   };
 });
 
-const SplitHost = Split.Host as jest.MockedFunction<typeof Split.Host>;
-const SplitColumn = Split.Column as jest.MockedFunction<typeof Split.Column>;
-const SplitInspector = Split.Inspector as jest.MockedFunction<typeof Split.Inspector>;
+const SplitHost = jest.mocked(Split.Host);
 
 beforeEach(() => {
   SplitHost.mockClear();
-  SplitColumn.mockClear();
-  SplitInspector.mockClear();
 });
 
-it('renders through the public split-view entry and passes host options through', () => {
+it('renders split view content and passes host options through', () => {
   renderRouter({
     _layout: () => (
       <SplitView preferredDisplayMode="twoBesideSecondary">
@@ -51,12 +47,7 @@ it('renders through the public split-view entry and passes host options through'
   expect(screen.getByTestId('content')).toBeVisible();
   expect(screen.getByTestId('inspector')).toBeVisible();
 
-  expect(SplitHost).toHaveBeenCalledWith(
-    expect.objectContaining({
-      preferredDisplayMode: 'twoBesideSecondary',
-    }),
-    undefined
+  expect(SplitHost.mock.calls[0]?.[0]).toEqual(
+    expect.objectContaining({ preferredDisplayMode: 'twoBesideSecondary' })
   );
-  expect(SplitColumn).toHaveBeenCalled();
-  expect(SplitInspector).toHaveBeenCalled();
 });

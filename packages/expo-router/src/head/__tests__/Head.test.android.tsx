@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { Head } from '../ExpoHead';
 
-it('renders as a no-op on Android', () => {
+it('does not render Head children on Android', () => {
   const { toJSON } = render(
     <Head>
       <Text>Ignored child</Text>
@@ -11,5 +11,14 @@ it('renders as a no-op on Android', () => {
   );
 
   expect(toJSON()).toBeNull();
-  expect(Head.Provider).toBeDefined();
+});
+
+it('renders children through Head.Provider on Android', () => {
+  const { getByText } = render(
+    <Head.Provider>
+      <Text>Provider child</Text>
+    </Head.Provider>
+  );
+
+  expect(getByText('Provider child')).toBeVisible();
 });

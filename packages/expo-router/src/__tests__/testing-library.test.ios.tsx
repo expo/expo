@@ -29,17 +29,13 @@ describe('toHavePathname', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() =>
-      expect(screen).toHavePathname('/xyz')
-    );
+    const message = getThrownMessage(() => expect(screen).toHavePathname('/xyz'));
     expect(message).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() =>
-      expect(screen).not.toHavePathname('/home')
-    );
+    const message = getThrownMessage(() => expect(screen).not.toHavePathname('/home'));
     expect(message).toMatchSnapshot();
   });
 });
@@ -52,9 +48,7 @@ describe('toHavePathnameWithParams', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() =>
-      expect(screen).toHavePathnameWithParams('/xyz')
-    );
+    const message = getThrownMessage(() => expect(screen).toHavePathnameWithParams('/xyz'));
     expect(message).toMatchSnapshot();
   });
 
@@ -75,17 +69,13 @@ describe('toHaveSegments', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() =>
-      expect(screen).toHaveSegments(['xyz'])
-    );
+    const message = getThrownMessage(() => expect(screen).toHaveSegments(['xyz']));
     expect(message).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() =>
-      expect(screen).not.toHaveSegments(['[slug]'])
-    );
+    const message = getThrownMessage(() => expect(screen).not.toHaveSegments(['[slug]']));
     expect(message).toMatchSnapshot();
   });
 });
@@ -104,18 +94,14 @@ describe('toHaveSearchParams', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() =>
-      expect(screen).toHaveSearchParams({ slug: 'xyz' })
-    );
+    const message = getThrownMessage(() => expect(screen).toHaveSearchParams({ slug: 'xyz' }));
     expect(message).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
     const params = { slug: 'home', test: 'true' };
-    const message = getThrownMessage(() =>
-      expect(screen).not.toHaveSearchParams(params)
-    );
+    const message = getThrownMessage(() => expect(screen).not.toHaveSearchParams(params));
     expect(message).toMatchSnapshot();
   });
 });
@@ -156,18 +142,14 @@ describe('toHaveRouterState', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() =>
-      expect(screen).toHaveRouterState({ routes: [] })
-    );
+    const message = getThrownMessage(() => expect(screen).toHaveRouterState({ routes: [] }));
     expect(normalizeStateKeys(message)).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     const result = renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
     const state = result.getRouterState();
-    const message = getThrownMessage(() =>
-      expect(screen).not.toHaveRouterState(state)
-    );
+    const message = getThrownMessage(() => expect(screen).not.toHaveRouterState(state));
     expect(normalizeStateKeys(message)).toMatchSnapshot();
   });
 });
@@ -205,27 +187,17 @@ describe('fake timers', () => {
       ),
     });
 
-    expect(screen.getByTestId('now-iso')).toHaveTextContent(
-      mockNow.toISOString()
-    );
-    expect(screen.getByTestId('now-num')).toHaveTextContent(
-      String(mockNow.getTime())
-    );
+    expect(screen.getByTestId('now-iso')).toHaveTextContent(mockNow.toISOString());
+    expect(screen.getByTestId('now-num')).toHaveTextContent(String(mockNow.getTime()));
   });
 
   it('does not crash when setSystemTime is unavailable (legacy fake timers)', () => {
     // Legacy fake timers throw on `setSystemTime`. `renderRouter` must still work for those users.
-    const setSystemTime = jest
-      .spyOn(jest, 'setSystemTime')
-      .mockImplementation(() => {
-        throw new TypeError(
-          'jest.setSystemTime() is not available when using legacy fake timers'
-        );
-      });
+    const setSystemTime = jest.spyOn(jest, 'setSystemTime').mockImplementation(() => {
+      throw new TypeError('jest.setSystemTime() is not available when using legacy fake timers');
+    });
 
-    expect(() =>
-      renderRouter(['[slug]'], { initialUrl: '/home' })
-    ).not.toThrow();
+    expect(() => renderRouter(['[slug]'], { initialUrl: '/home' })).not.toThrow();
 
     setSystemTime.mockRestore();
   });

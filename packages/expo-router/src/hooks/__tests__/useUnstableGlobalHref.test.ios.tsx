@@ -5,7 +5,7 @@ import { useUnstableGlobalHref } from '../useUnstableGlobalHref';
 import { renderHook } from './renderHook';
 
 describe(useUnstableGlobalHref, () => {
-  it('returns the global href including search params', () => {
+  it('returns the current global href with search params after navigation', () => {
     const { result } = renderHook(() => useUnstableGlobalHref(), ['[fruit]', 'profile/[id]'], {
       initialUrl: '/apple?color=red',
     });

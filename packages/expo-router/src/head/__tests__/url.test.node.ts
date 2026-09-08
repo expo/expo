@@ -1,10 +1,11 @@
 describe('head URL helpers', () => {
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.resetModules();
     jest.dontMock('expo-constants');
   });
 
-  it('builds static URLs from the configured head origin', () => {
+  it('sanitizes headOrigin before appending the route URL', () => {
     jest.doMock('expo-constants', () => ({
       expoConfig: {
         extra: {
@@ -15,8 +16,7 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } =
-      require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
 
     expect(getStaticUrlFromExpoRouter('/profile/evan?tab=posts')).toBe(
       'https://example.com/profile/evan?tab=posts'
@@ -34,8 +34,7 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } =
-      require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
 
     expect(getStaticUrlFromExpoRouter('/profile/evan?tab=posts')).toBe(
       'https://router.example.com/profile/evan?tab=posts'
@@ -53,8 +52,7 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } =
-      require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
 
     expect(getStaticUrlFromExpoRouter('/profile/evan?tab=posts')).toBe(
       'https://generated.example.com/profile/evan?tab=posts'
@@ -70,15 +68,15 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } =
-      require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
 
     expect(() => getStaticUrlFromExpoRouter('/missing')).toThrow(
       'Expo Head: Add the handoff origin'
     );
   });
 
-  it('throws for unsupported origin protocols', () => {
+  it('throws for an unsupported origin protocol', () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.doMock('expo-constants', () => ({
       expoConfig: {
         extra: {
@@ -89,8 +87,7 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } =
-      require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
 
     expect(() => getStaticUrlFromExpoRouter('/invalid')).toThrow(
       'Expo Head: Native origin has invalid protocol'

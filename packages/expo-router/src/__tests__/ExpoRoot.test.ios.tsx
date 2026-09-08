@@ -3,11 +3,7 @@ import type { PropsWithChildren } from 'react';
 import { Text } from 'react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
-import {
-  useLocalSearchParams,
-  usePathname,
-  useUnstableGlobalHref,
-} from '../exports';
+import { useLocalSearchParams, usePathname, useUnstableGlobalHref } from '../exports';
 import { getMockContext } from '../testing-library';
 import { maybeHideSplashScreen } from '../utils/splash';
 
@@ -66,17 +62,15 @@ function renderExpoRoot(location: string | URL) {
   );
 }
 
-it('uses a string location prop to initialize SSR route state', () => {
+it('initializes route state from a string location', () => {
   renderExpoRoot('https://example.com/profile/evan?query=hello#section');
 
   expect(screen.getByTestId('pathname')).toHaveTextContent('/profile/evan');
-  expect(screen.getByTestId('href')).toHaveTextContent(
-    '/profile/evan?query=hello#section'
-  );
+  expect(screen.getByTestId('href')).toHaveTextContent('/profile/evan?query=hello#section');
   expect(screen.getByTestId('query')).toHaveTextContent('hello');
 });
 
-it('uses a URL location prop to initialize SSR route state', () => {
+it('initializes route state from a URL location', () => {
   renderExpoRoot(new URL('https://example.com/docs?query=world'));
 
   expect(screen.getByTestId('pathname')).toHaveTextContent('/docs');
