@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-09-01T08:14:26.549Z",
+    "fetchedAt": "2026-09-08T08:13:41.979Z",
     "cliVersion": "23.2.0"
   },
-  "totalCommands": 149,
+  "totalCommands": 150,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -435,6 +435,11 @@
       "command": "eas new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
       "usage": "USAGE\n  $ eas new [PATH] [-p bun|npm|pnpm|yarn] [--sdk-version <value>]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n      --sdk-version=<value>       Expo SDK version to use for the new project (e.g. 57, or \"latest\")\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
+    },
+    {
+      "command": "eas observe:errors",
+      "description": "display error and exception issue groups (grouped by fingerprint) for the app",
+      "usage": "USAGE\n  $ eas observe:errors [--platform android|ios|ipados|macos|tvos|apple] [--fingerprint <value>] [--severity\n    fatal|error] [--after <value>] [--limit <value>] [--start <value> | --days <value>] [--end <value> | ]\n    [--app-version <value>] [--build-number <value>] [--update-id <value>] [--environment <value>] [--project-id\n    <value>] [--json] [--non-interactive]\n\nFLAGS\n  --after=<value>         Cursor for pagination. Use the endCursor from a previous query to fetch the next page.\n  --app-version=<value>   Filter by app version\n  --build-number=<value>  Filter by app build number\n  --days=<value>          Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>           End of time range (ISO date)\n  --environment=<value>   Filter by environment (e.g. production, development)\n  --fingerprint=<value>   Show individual occurrences (with stack traces) for this error group fingerprint instead of\n                          the grouped summary\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --limit=<value>         The number of items to fetch each query. Defaults to 10 and is capped at 100.\n  --non-interactive       Run the command in non-interactive mode.\n  --platform=<option>     Filter by platform (\"apple\" covers iOS, iPadOS, tvOS, and macOS)\n                          <options: android|ios|ipados|macos|tvos|apple>\n  --project-id=<value>    EAS project ID (defaults to the project ID of the current directory)\n  --severity=<option>     Filter by severity (ignored when --fingerprint is set)\n                          <options: fatal|error>\n  --start=<value>         Start of time range (ISO date)\n  --update-id=<value>     Filter by EAS update ID\n\nDESCRIPTION\n  display error and exception issue groups (grouped by fingerprint) for the app"
     },
     {
       "command": "eas observe:events [EVENTNAME]",
