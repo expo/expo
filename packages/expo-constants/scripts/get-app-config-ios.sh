@@ -32,4 +32,11 @@ else
   exit 1
 fi
 
-"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST"
+# Embed the project fingerprint in debug builds only (same configuration test as expo-updates).
+# Release builds skip the computation and never ship the file.
+EMBED_FINGERPRINT="false"
+if [[ "$CONFIGURATION" == *Debug* ]]; then
+  EMBED_FINGERPRINT="true"
+fi
+
+"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST" "ios" "$EMBED_FINGERPRINT"

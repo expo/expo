@@ -6,6 +6,7 @@ import MonoTextWithCountdown from '../MonoTextWithCountdown';
 import ActionButton from './ActionButton';
 import Configurator from './Configurator';
 import Divider from './Divider';
+import { FunctionNameContext } from './FunctionNameContext';
 import FunctionSignature, { generateFunctionSignature } from './FunctionSignature';
 import Platforms from './Platforms';
 import {
@@ -158,7 +159,7 @@ function FunctionDemoContent({
   );
 
   return (
-    <>
+    <FunctionNameContext.Provider value={name}>
       <Configurator parameters={parameters} onChange={updateArgument} value={args} />
       {additionalParameters.length > 0 && (
         <>
@@ -199,7 +200,7 @@ function FunctionDemoContent({
           {`${name} = ${errorToString(result.error)}`}
         </MonoTextWithCountdown>
       ) : null}
-    </>
+    </FunctionNameContext.Provider>
   );
 }
 
