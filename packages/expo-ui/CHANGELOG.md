@@ -11,6 +11,7 @@
 ### 🎉 New features
 
 - [Android] Added the `enabled` and `colors` props to the Jetpack Compose `RadioButton` component. (by [@felipe-software](https://github.com/felipe-software))
+- [Android] Added the Jetpack Compose `DateRangePicker` and `DateRangePickerDialog` components. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
 - [iOS] Added `'default'` as a value for every edge of the `padding` modifier, so a single edge can use the system default padding while the other edges use explicit lengths. ([#48903](https://github.com/expo/expo/pull/48903) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))
@@ -32,6 +33,8 @@
 - [iOS] Added the `ShapeStyle` type, shared by the modifiers that paint an area, and taught `foregroundStyle` to accept materials (`ultraThin`, `thin`, `regular`, `thick`, `ultraThick` and `bar`). ([#48905](https://github.com/expo/expo/pull/48905) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Taught the `background` modifier to paint with any `ShapeStyle`, so a view can be filled with a material, a gradient or a hierarchical style instead of only a color, and added the `ignoresSafeAreaEdges` option from SwiftUI's signature. Deprecated `backgroundOverlay` in favor of the `background` modifier and the `Background` component. ([#49621](https://github.com/expo/expo/pull/49621) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Taught the `presentationBackground` modifier to paint with any `ShapeStyle`, matching SwiftUI, so a sheet can be backed by a material, a gradient or a hierarchical style instead of only a color. iOS 26 renders a material as a flat color rather than a translucent blur. ([#49767](https://github.com/expo/expo/pull/49767) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Added the `scrollClipDisabled` modifier, which lets content that draws outside a scrollable view's bounds, such as a shadow or a scaled-up card, stay visible instead of being clipped. ([#49780](https://github.com/expo/expo/pull/49780) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Taught the `tint`, `border`, `strokeBorder` and `containerBackground` modifiers to paint with any `ShapeStyle`, matching SwiftUI, where all four take a `ShapeStyle` rather than a color. The `color` parameter of `border` and `strokeBorder` is deprecated in favor of `content`, the name SwiftUI gives it. ([#49838](https://github.com/expo/expo/pull/49838) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🐛 Bug fixes
 
@@ -61,6 +64,7 @@
 - [iOS] Fix `ColorPicker` reporting every color one value too low, because `colorToHex` truncated instead of rounding. Apps feed the reported value back into `selection`, so the error compounded and each interaction moved all three channels down by one. ([#49356](https://github.com/expo/expo/pull/49356) by [@batuhandemir98](https://github.com/batuhandemir98))
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fix `Host` color scheme type errors on React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fixed `PlatformColor` and `DynamicColorIOS` values dropping the `backgroundColor` and `borderColor` of a universal component. Both were stringified to `"[object Object]"`, which the native color converter rejects, so the modifier was discarded without a trace. ([#49746](https://github.com/expo/expo/pull/49746) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 💡 Others
 

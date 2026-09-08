@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the build against React Native older than 0.86 (e.g. react-native-macos 0.81), where `jsi::Runtime::getStringData` is a protected member that Swift cannot call. String decoding now goes through a C++ wrapper that uses the public `jsi::String::getStringData` helper on those versions. ([#49790](https://github.com/expo/expo/pull/49790) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed `dateFromMilliseconds` failing to compile with "type of expression is ambiguous" under newer toolchains: the unqualified `abs(_:)` in the `Double` overflow guard is ambiguous once C++ interop brings the C `abs` overloads into scope, so use `Double.magnitude` instead. ([#49039](https://github.com/expo/expo/pull/49039) by [@kraenhansen](https://github.com/kraenhansen))
 - [iOS] Fixed `JavaScriptPropNameID(_:string:)` and the array's string-keyed subscript truncating non-ASCII property keys: they passed `String.count` (the grapheme-cluster count) as the UTF-8 byte length to `PropNameID::forUtf8`, so keys like `"café"` or `"🎉"` were built from mangled bytes and no longer matched the intended property. ([#48329](https://github.com/expo/expo/pull/48329) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
@@ -34,6 +35,10 @@
 - [iOS] Made passing strings between JavaScript and Swift faster, up to ~3.8× for long strings. ([#49678](https://github.com/expo/expo/pull/49678) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Values returned to Swift from property reads, array reads and function calls are now taken over instead of cloned through the engine, making `toJavaScriptValue(in:)` ~1.16× faster. ([#49688](https://github.com/expo/expo/pull/49688) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Made decoding non-ASCII JS strings up to 512 UTF-16 code units long ~1.5× faster. ([#49691](https://github.com/expo/expo/pull/49691) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Made creating a deferred `JavaScriptPromise` ~1.2× faster by building it from a cached JavaScript closure instead of a host function executor. ([#49714](https://github.com/expo/expo/pull/49714) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptPromise` now installs its `then` callbacks on the first `await()` instead of at construction, making promises returned by async functions ~2.5× cheaper to create and ~3.9× cheaper to settle. ([#49718](https://github.com/expo/expo/pull/49718) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the native overhead of synchronous host function calls and host object property accessors that return `undefined`, `null`, a boolean or a number: the result is written into the engine's slot without engine calls, and errors are reported only when one was actually thrown instead of being checked on every call. ([#49761](https://github.com/expo/expo/pull/49761) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the native overhead of synchronous host function calls whose closure receives `this` as a `JavaScriptValue`, by letting the calling module destroy the arguments buffer directly. ([#49769](https://github.com/expo/expo/pull/49769) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.4 — 2026-07-22
 

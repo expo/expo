@@ -42,6 +42,7 @@
 - [Internal] Derive `getDevServer` from the bundle URL internally and expose `getBundleUrl` helper ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 - Rewrite the `TextDecoder` implementation to increase decoding performance ([#48877](https://github.com/expo/expo/pull/48877) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.9 - 2026-07-29
 

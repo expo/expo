@@ -990,6 +990,46 @@ jobs:
         View details: ${{ workflow.url }}
 ```
 
+#### `app`
+
+Information about the EAS project the workflow runs for. This context is available in every workflow run.
+
+```ts
+type AppContext = {
+  id: string;
+  slug: string;
+};
+```
+
+Example:
+
+```yaml
+jobs:
+  print_context:
+    steps:
+      - run: echo "Project ${{ app.slug }} (${{ app.id }})"
+```
+
+#### `account`
+
+Information about the account that owns the project. This context is available in every workflow run.
+
+```ts
+type AccountContext = {
+  id: string;
+  name: string;
+};
+```
+
+Example:
+
+```yaml
+jobs:
+  print_context:
+    steps:
+      - run: echo "Account ${{ account.name }} (${{ account.id }})"
+```
+
 #### `app_store_connect`
 
 Information about App Store Connect entities associated with the workflow run. This context is available only for workflows triggered by an App Store Connect event. See [`on.app_store_connect`](#onapp_store_connect).

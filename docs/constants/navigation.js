@@ -614,21 +614,6 @@ export const eas = [
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
     ]),
   ]),
-  makeSection('EAS Metadata', [
-    makePage('eas/metadata/index.mdx'),
-    makePage('eas/metadata/getting-started.mdx'),
-    makeGroup(
-      'Reference',
-      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
-      { expanded: false }
-    ),
-  ]),
-  makeSection('EAS Insights', [
-    makePage('eas-insights/introduction.mdx'),
-    makePage('eas-insights/app-usage.mdx'),
-    makePage('eas-insights/workflows.mdx'),
-    makePage('eas-insights/maestro.mdx'),
-  ]),
   makeSection('EAS Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
@@ -649,6 +634,21 @@ export const eas = [
       makePage('eas/observe/reference/client-id.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
+  ]),
+  makeSection('EAS Metadata', [
+    makePage('eas/metadata/index.mdx'),
+    makePage('eas/metadata/getting-started.mdx'),
+    makeGroup(
+      'Reference',
+      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
+      { expanded: false }
+    ),
+  ]),
+  makeSection('EAS Insights', [
+    makePage('eas-insights/introduction.mdx'),
+    makePage('eas-insights/app-usage.mdx'),
+    makePage('eas-insights/workflows.mdx'),
+    makePage('eas-insights/maestro.mdx'),
   ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),

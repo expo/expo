@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+
 ## 1.20.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

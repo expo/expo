@@ -64,7 +64,7 @@
     "@expo/json-file": "workspace:^",
     "@expo/log-box": "workspace:^",
     "@expo/log-box-utils": "workspace:^",
-    "@expo/metro": "~56.0.2",
+    "@expo/metro": "~56.1.0",
     "@expo/metro-config": "workspace:~",
     "@expo/metro-file-map": "workspace:^",
     "@expo/osascript": "workspace:^",

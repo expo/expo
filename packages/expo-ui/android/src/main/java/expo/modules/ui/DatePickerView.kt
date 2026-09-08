@@ -242,10 +242,14 @@ fun rememberSelectableDates(selectableDatesRecord: SelectableDatesRecord?): Sele
 // https://github.com/expo/expo/issues/47206
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun rememberDatePickerYearRange(selectableDatesRecord: SelectableDatesRecord?, initialDateMillis: Long): IntRange {
+fun rememberDatePickerYearRange(
+  selectableDatesRecord: SelectableDatesRecord?,
+  initialDateMillis: Long,
+  initialEndDateMillis: Long? = null
+): IntRange {
   val start = selectableDatesRecord?.start
   val end = selectableDatesRecord?.end
-  return remember(start, end, initialDateMillis) {
+  return remember(start, end, initialDateMillis, initialEndDateMillis) {
     val defaults = DatePickerDefaults.YearRange
     val yearOf = { millis: Long ->
       Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.YEAR)
@@ -254,8 +258,9 @@ fun rememberDatePickerYearRange(selectableDatesRecord: SelectableDatesRecord?, i
     val endYear = end?.let(yearOf) ?: defaults.last
     // Keep the initially selected/displayed year inside the range so Material3 doesn't discard the
     // selection
-    val initialYear = yearOf(initialDateMillis)
-    minOf(startYear, initialYear)..maxOf(endYear, initialYear)
+    val initialStartYear = yearOf(initialDateMillis)
+    val initialEndYear = initialEndDateMillis?.let(yearOf) ?: initialStartYear
+    minOf(startYear, initialStartYear, initialEndYear)..maxOf(endYear, initialStartYear, initialEndYear)
   }
 }
 
@@ -321,6 +326,25 @@ fun buildTimePickerColors(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+internal fun ApplyDatePickerDialogKeyboardBehavior(displayMode: DisplayMode) {
+  val view = LocalView.current
+  val keyboardController = LocalSoftwareKeyboardController.current
+  val originalSoftInputMode = remember(view) {
+    (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
+  }
+  SideEffect {
+    val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
+    if (displayMode == DisplayMode.Picker) {
+      window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+      keyboardController?.hide()
+    } else if (originalSoftInputMode != null) {
+      window.setSoftInputMode(originalSoftInputMode)
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (DatePickerResult) -> Unit, onDismissRequest: () -> Unit) {
   val locale = LocalConfiguration.current.locales[0]
   val variant = props.variant.toDisplayMode()
@@ -358,21 +382,8 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     },
     colors = colors
   ) {
-    val view = LocalView.current
-    val keyboardController = LocalSoftwareKeyboardController.current
     val displayMode = state.displayMode
-    val originalSoftInputMode = remember(view) {
-      (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
-    }
-    SideEffect {
-      val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
-      if (displayMode == DisplayMode.Picker) {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-        keyboardController?.hide()
-      } else if (originalSoftInputMode != null) {
-        window.setSoftInputMode(originalSoftInputMode)
-      }
-    }
+    ApplyDatePickerDialogKeyboardBehavior(displayMode)
 
     // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
     // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
