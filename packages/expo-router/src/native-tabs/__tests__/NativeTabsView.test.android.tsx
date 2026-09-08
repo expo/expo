@@ -67,7 +67,7 @@ it('mounts deep-linked tabs in Trigger order without remounting', () => {
   expect(mockTabsHostMount).toHaveBeenCalledTimes(1);
   expect(mockTabsHostUnmount).not.toHaveBeenCalled();
   expect(
-    TabsScreen.mock.calls.slice(0, 4).map(([props]: [TabsScreenProps]) => props.screenKey)
+    TabsScreen.mock.calls.slice(0, 4).map((call: [TabsScreenProps]) => call[0].screenKey)
   ).toEqual(['test-suite', 'playground', 'apis', 'components']);
   expect(mockScreenMount.mock.calls.map(([name]) => name)).toEqual([
     // The deep-linked route has real content before the other tabs finish preloading.

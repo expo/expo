@@ -4,6 +4,7 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
+import { unstable_useIsNavigating } from '../exports';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { useGuardRedirect } from '../layouts/GuardContext';
@@ -18,6 +19,14 @@ import { useNavigation } from '../useNavigation';
 import { useNavigatorContext } from '../views/Navigator';
 import type { PressableProps } from '../views/Pressable';
 import { Pressable } from '../views/Pressable';
+
+function createDeferred() {
+  let resolve!: (value: string) => void;
+  const promise = new Promise<string>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
 
 const renderFruitApp = (options: RenderRouterOptions = {}) =>
   renderRouter(
@@ -90,6 +99,51 @@ const renderFruitApp = (options: RenderRouterOptions = {}) =>
     },
     options
   );
+
+it('keeps the current tab visible while a queued tab switch suspends', async () => {
+  const deferred = createDeferred();
+
+  function Layout() {
+    const isNavigating = unstable_useIsNavigating();
+    return (
+      <>
+        <Text testID="is-navigating">{String(isNavigating)}</Text>
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" testID="goto-index" />
+            <TabTrigger name="slow" href="/slow" testID="goto-slow" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      </>
+    );
+  }
+
+  function SlowScreen() {
+    return <Text testID="slow">{React.use(deferred.promise)}</Text>;
+  }
+
+  renderRouter({
+    _layout: Layout,
+    index: () => <Text testID="index">Index</Text>,
+    slow: {
+      default: SlowScreen,
+      SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
+    },
+  });
+
+  const navigationAct = act(() => fireEvent.press(screen.getByTestId('goto-slow')));
+
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('fallback')).toBeNull();
+
+  deferred.resolve('Slow');
+  await navigationAct;
+
+  await waitFor(() => expect(screen.getByTestId('is-navigating')).toHaveTextContent('false'));
+  expect(screen.getByTestId('slow')).toBeVisible();
+});
 
 it('should render the correct screen with nested navigators', () => {
   renderFruitApp({ initialUrl: '/apple' });

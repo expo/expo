@@ -8,8 +8,7 @@ import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
-import { resetNavigatorState } from '../../global-state/stateUtils';
-import { findStateByKey } from '../../global-state/useNavigationTreeReducer';
+import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -321,7 +320,7 @@ export function useNavigationBuilder<
     );
   }
 
-  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
+  // Track screen-list changes without recalculating state when only the array identity changes.
   const routeNamesKey = routeNames.join('\0');
 
   const { state: currentState } = use(NavigationStateContext);
@@ -443,7 +442,7 @@ export function useNavigationBuilder<
         router.getStateForRouteFocus(registryState as State, routeKey),
       routeNode: routeNode ?? undefined,
     }),
-    [reduce, routeNode, routeNamesKey, router]
+    [reduce, routeNode, router]
   );
 
   useRegisterRouter(committedState.key, registryEntry);
