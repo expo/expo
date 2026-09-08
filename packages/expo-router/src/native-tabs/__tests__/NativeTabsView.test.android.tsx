@@ -1,13 +1,19 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
-import { Tabs, type TabsHostProps } from 'react-native-screens';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabsProps } from '../types';
 
+const mockTabsHostMount = jest.fn();
+const mockTabsHostUnmount = jest.fn();
+const mockScreenMount = jest.fn();
+const mockScreenUnmount = jest.fn();
+
 jest.mock('react-native-screens', () => {
+  const React: typeof import('react') = jest.requireActual('react');
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actualModule = jest.requireActual(
     'react-native-screens'
@@ -16,7 +22,13 @@ jest.mock('react-native-screens', () => {
     ...actualModule,
     Tabs: {
       ...actualModule.Tabs,
-      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Host: jest.fn(({ children }) => {
+        React.useEffect(() => {
+          mockTabsHostMount();
+          return () => mockTabsHostUnmount();
+        }, []);
+        return <View testID="TabsHost">{children}</View>;
+      }),
       Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
     },
   };
@@ -24,6 +36,49 @@ jest.mock('react-native-screens', () => {
 
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+
+it('mounts deep-linked tabs in Trigger order without remounting', () => {
+  function TrackedScreen({ name }: { name: string }) {
+    React.useEffect(() => {
+      mockScreenMount(name);
+      return () => mockScreenUnmount(name);
+    }, [name]);
+    return <View testID={name} />;
+  }
+
+  renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="test-suite" />
+          <NativeTabs.Trigger name="playground" />
+          <NativeTabs.Trigger name="apis" />
+          <NativeTabs.Trigger name="components" />
+        </NativeTabs>
+      ),
+      'test-suite': () => <TrackedScreen name="test-suite" />,
+      playground: () => <TrackedScreen name="playground" />,
+      apis: () => <TrackedScreen name="apis" />,
+      components: () => <TrackedScreen name="components" />,
+    },
+    { initialUrl: '/apis' }
+  );
+
+  expect(mockTabsHostMount).toHaveBeenCalledTimes(1);
+  expect(mockTabsHostUnmount).not.toHaveBeenCalled();
+  expect(
+    TabsScreen.mock.calls.slice(0, 4).map(([props]: [TabsScreenProps]) => props.screenKey)
+  ).toEqual(['test-suite', 'playground', 'apis', 'components']);
+  expect(mockScreenMount.mock.calls.map(([name]) => name)).toEqual([
+    // The deep-linked route has real content before the other tabs finish preloading.
+    'apis',
+    'test-suite',
+    'playground',
+    'components',
+  ]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
+  expect(TabsHost.mock.calls[0][0].navStateRequest?.selectedScreenKey).toBe('apis');
+});
 
 it.each([
   { value: undefined, expected: false },

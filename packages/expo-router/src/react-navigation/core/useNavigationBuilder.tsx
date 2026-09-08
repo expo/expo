@@ -347,10 +347,13 @@ export function useNavigationBuilder<
   const committedState = (
     isForeignType ? resetNavigatorState(treeState, router.type) : treeState
   ) as State;
-  const state = React.useMemo(
-    () => router.getStateForDeclaredRoutes(committedState, routeNames),
-    [committedState, routeNamesKey, router]
-  );
+  const state = React.useMemo(() => {
+    const declaredState = router.getStateForDeclaredRoutes(committedState, routeNames);
+    // The seeded state cannot know the order declared by mounted screens yet.
+    return isArrayEqual(declaredState.routeNames, routeNames)
+      ? declaredState
+      : { ...declaredState, routeNames };
+  }, [committedState, routeNamesKey, router]);
   const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
     // The registry stores states from different router types; this entry only receives its own state key.
     router.getStateForAction(registryState as State, action, {
