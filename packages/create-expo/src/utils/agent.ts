@@ -4,6 +4,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import type { PackageManagerName } from '../resolvePackageManager';
+
 const debug = require('debug')('expo:init:agent') as typeof console.log;
 
 /** A coding agent that is running this CLI, as reported by `agent-cli-detector`. */
@@ -72,8 +74,31 @@ export function detectCodingAgent(): CodingAgent | null {
   }
 }
 
-/** Resolve how to set up Expo Skills (and the Expo MCP Server, when available) for an agent. */
-export function getAgentSetup(agent: CodingAgent | null): AgentSetup {
+/**
+ * The command that runs the `skills` CLI for the package manager that created the project.
+ * Yarn classic has no `dlx`, and `npx` ships with Node, so npm and yarn share the default.
+ */
+function getSkillsCliRunner(packageManager?: PackageManagerName): string {
+  switch (packageManager) {
+    case 'bun':
+      return 'bunx';
+    case 'pnpm':
+      return 'pnpm dlx';
+    case 'nub':
+      return 'nubx';
+    default:
+      return 'npx';
+  }
+}
+
+/**
+ * Resolve how to set up Expo Skills (and the Expo MCP Server, when available) for an agent.
+ * `packageManager` only picks the runner for the skills CLI; the official plugins ignore it.
+ */
+export function getAgentSetup(
+  agent: CodingAgent | null,
+  packageManager?: PackageManagerName
+): AgentSetup {
   switch (agent?.id) {
     case 'claude-code':
       return {
@@ -89,10 +114,13 @@ export function getAgentSetup(agent: CodingAgent | null): AgentSetup {
       };
     default: {
       const skillsAgent = agent ? SKILLS_CLI_AGENT_NAMES[agent.id] : undefined;
+      const agentFlag = skillsAgent ? ` --agent ${skillsAgent}` : '';
       return {
         plugin: false,
-        // `--skill '*'` and `-y` keep the skills CLI from prompting, so an agent can run this itself.
-        command: `npx skills add expo/skills --skill '*'${skillsAgent ? ` --agent ${skillsAgent}` : ''} -y`,
+        // `--skill "*"` and `-y` keep the skills CLI from prompting, so an agent can run this itself.
+        // Double quotes work in POSIX shells, PowerShell, and cmd.exe alike; single quotes are
+        // not quoting in cmd.exe.
+        command: `${getSkillsCliRunner(packageManager)} skills add expo/skills --skill "*"${agentFlag} -y`,
         learnMoreUrl:
           agent?.id === 'cursor'
             ? 'https://docs.expo.dev/agents/cursor/'
@@ -113,17 +141,14 @@ function readJsonFile(filePath: string): any {
 /**
  * Claude Code records installs in `plugins/installed_plugins.json` under its config directory.
  * Only a `user` scope entry applies to a new project; `project` and `local` entries belong to
- * another project path. A user-level `enabledPlugins` entry counts as well.
+ * another project path. `enabledPlugins` in `settings.json` is deliberately not consulted: it only
+ * enables a plugin, and Claude Code reports an enabled-but-not-installed plugin as missing.
  */
 function isClaudeCodePluginInstalled(): boolean {
   const configDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
   const installed = readJsonFile(path.join(configDir, 'plugins', 'installed_plugins.json'));
   const entries = installed?.plugins?.[CLAUDE_CODE_PLUGIN];
-  if (Array.isArray(entries) && entries.some((entry) => entry?.scope === 'user')) {
-    return true;
-  }
-  const settings = readJsonFile(path.join(configDir, 'settings.json'));
-  return settings?.enabledPlugins?.[CLAUDE_CODE_PLUGIN] === true;
+  return Array.isArray(entries) && entries.some((entry) => entry?.scope === 'user');
 }
 
 /** Codex records installed plugins as `[plugins."name@marketplace"]` tables in `config.toml`. */
@@ -165,6 +190,12 @@ export function emitClaudeCodePluginHint(agent: CodingAgent | null): void {
   if (agent?.id !== 'claude-code') {
     return;
   }
+  // Claude Code also sets its environment in IDE terminals where a person runs commands directly,
+  // and there the raw tag would be visible. Claude Code itself runs commands with piped output,
+  // so only write the hint when stderr is not a terminal.
+  if (process.stderr.isTTY) {
+    return;
+  }
   // Written to stderr, on its own line, as the hint protocol requires.
   process.stderr.write(`${CLAUDE_CODE_PLUGIN_HINT}\n`);
 }
@@ -172,13 +203,13 @@ export function emitClaudeCodePluginHint(agent: CodingAgent | null): void {
 /** Print how to set up Expo Skills and the Expo MCP Server for the detected agent. */
 export function logAgentSetupHint(
   agent: CodingAgent | null,
-  { installed }: { installed: boolean }
+  { installed, packageManager }: { installed: boolean; packageManager?: PackageManagerName }
 ): void {
   console.log();
 
   if (!agent) {
     console.log(
-      chalk`Using an AI coding agent? Install Expo Skills and the Expo MCP Server: {underline https://docs.expo.dev/agents/}`
+      chalk`{gray Using an AI coding agent? Install Expo Skills and the Expo MCP Server: {underline https://docs.expo.dev/agents/}}`
     );
     return;
   }
@@ -188,7 +219,7 @@ export function logAgentSetupHint(
     return;
   }
 
-  const { plugin, command, learnMoreUrl } = getAgentSetup(agent);
+  const { plugin, command, learnMoreUrl } = getAgentSetup(agent, packageManager);
   console.log(chalk.bold(`Set up ${agent.name} for Expo`));
   console.log(
     plugin

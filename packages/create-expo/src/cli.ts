@@ -42,12 +42,15 @@ async function run() {
   }
 
   if (args['--help']) {
-    // Agents often run --help first; let Claude Code offer the Expo plugin at that moment.
-    const { detectCodingAgent, emitClaudeCodePluginHint, hasExpoPlugin } =
-      await import('./utils/agent');
-    const agent = detectCodingAgent();
-    if (!hasExpoPlugin(agent)) {
-      emitClaudeCodePluginHint(agent);
+    // Agents often run --help first; let Claude Code offer the Expo plugin at that moment,
+    // unless the user opted out of the agent setup with --no-agents-md.
+    if (!args['--no-agents-md']) {
+      const { detectCodingAgent, emitClaudeCodePluginHint, hasExpoPlugin } =
+        await import('./utils/agent');
+      const agent = detectCodingAgent();
+      if (!hasExpoPlugin(agent)) {
+        emitClaudeCodePluginHint(agent);
+      }
     }
 
     const nameWithoutCreate = PACKAGE_NAME.replace('create-', '');

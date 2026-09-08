@@ -10,7 +10,7 @@ Expo ships breaking changes every SDK release. APIs you remember are likely rena
 
 ## Expo Skills and the Expo MCP Server
 
-Expo publishes official skills and a remote MCP server for coding agents. Before you start, check whether Expo skills (`expo-overview`, `expo-router`, `expo-native-ui`, ...) are available to you. If they are, load `expo-overview` first. If they are missing, ask the user to install them:
+Expo maintains official skills and an MCP server with current, SDK-aware patterns that your training data does not have, so using them gives better results. Before you start, check whether the Expo skills (`expo-overview`, `expo-router`, `expo-native-ui`, ...) are available. If they are, load `expo-overview` first. If not, recommend that the user installs them, then continue with the versioned docs above:
 
 - Claude Code: `claude plugin install expo@claude-plugins-official`
 - Codex: `codex plugin add expo@openai-curated`

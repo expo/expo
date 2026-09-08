@@ -12,12 +12,25 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 describe(emitClaudeCodePluginHint, () => {
   let stderrWrite: jest.SpyInstance;
 
+  const originalIsTTY = Object.getOwnPropertyDescriptor(process.stderr, 'isTTY');
+
+  function setStderrIsTTY(value: boolean | undefined) {
+    Object.defineProperty(process.stderr, 'isTTY', { value, configurable: true, writable: true });
+  }
+
   beforeEach(() => {
     stderrWrite = jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    // Claude Code runs commands with piped output, so stderr is not a terminal there.
+    setStderrIsTTY(undefined);
   });
 
   afterEach(() => {
     stderrWrite.mockRestore();
+    if (originalIsTTY) {
+      Object.defineProperty(process.stderr, 'isTTY', originalIsTTY);
+    } else {
+      delete (process.stderr as any).isTTY;
+    }
   });
 
   it('writes the hint on its own stderr line when running inside Claude Code', () => {
@@ -33,6 +46,18 @@ describe(emitClaudeCodePluginHint, () => {
     expect(CLAUDE_CODE_PLUGIN_HINT).toBe(
       '<claude-code-hint v="1" type="plugin" value="expo@claude-plugins-official" />'
     );
+  });
+
+  it('writes nothing when stderr is a terminal, where a person would see the raw tag', () => {
+    asMock(detectAgent).mockReturnValue({
+      detected: true,
+      agent: { id: 'claude-code', name: 'Claude Code' },
+    } as any);
+    setStderrIsTTY(true);
+
+    emitClaudeCodePluginHint();
+
+    expect(stderrWrite).not.toHaveBeenCalled();
   });
 
   it('writes nothing for other agents', () => {

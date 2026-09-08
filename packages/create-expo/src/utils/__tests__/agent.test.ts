@@ -71,17 +71,17 @@ describe(getAgentSetup, () => {
   it('uses a non-interactive skills CLI command for Cursor', () => {
     expect(getAgentSetup(CURSOR)).toEqual({
       plugin: false,
-      command: "npx skills add expo/skills --skill '*' --agent cursor -y",
+      command: 'npx skills add expo/skills --skill "*" --agent cursor -y',
       learnMoreUrl: 'https://docs.expo.dev/agents/cursor/',
     });
   });
 
   it('maps agent ids to the names the skills CLI uses', () => {
     expect(getAgentSetup(GEMINI).command).toBe(
-      "npx skills add expo/skills --skill '*' --agent gemini-cli -y"
+      'npx skills add expo/skills --skill "*" --agent gemini-cli -y'
     );
     expect(getAgentSetup(COPILOT).command).toBe(
-      "npx skills add expo/skills --skill '*' --agent github-copilot -y"
+      'npx skills add expo/skills --skill "*" --agent github-copilot -y'
     );
     expect(getAgentSetup(GEMINI).learnMoreUrl).toBe('https://docs.expo.dev/skills/');
   });
@@ -89,9 +89,35 @@ describe(getAgentSetup, () => {
   it('omits --agent for agents the skills CLI does not know', () => {
     expect(getAgentSetup(BOLT)).toEqual({
       plugin: false,
-      command: "npx skills add expo/skills --skill '*' -y",
+      command: 'npx skills add expo/skills --skill "*" -y',
       learnMoreUrl: 'https://docs.expo.dev/skills/',
     });
+  });
+
+  it('uses the runner of the package manager that created the project', () => {
+    expect(getAgentSetup(CURSOR, 'bun').command).toBe(
+      'bunx skills add expo/skills --skill "*" --agent cursor -y'
+    );
+    expect(getAgentSetup(CURSOR, 'pnpm').command).toBe(
+      'pnpm dlx skills add expo/skills --skill "*" --agent cursor -y'
+    );
+    expect(getAgentSetup(CURSOR, 'nub').command).toBe(
+      'nubx skills add expo/skills --skill "*" --agent cursor -y'
+    );
+    // Yarn classic has no `dlx`, and `npx` ships with Node, so npm and yarn share the default.
+    expect(getAgentSetup(CURSOR, 'yarn').command).toBe(
+      'npx skills add expo/skills --skill "*" --agent cursor -y'
+    );
+    expect(getAgentSetup(CURSOR, 'npm').command).toBe(
+      'npx skills add expo/skills --skill "*" --agent cursor -y'
+    );
+  });
+
+  it('ignores the package manager for agents with an official plugin', () => {
+    expect(getAgentSetup(CLAUDE_CODE, 'bun').command).toBe(
+      'claude plugin install expo@claude-plugins-official'
+    );
+    expect(getAgentSetup(CODEX, 'bun').command).toBe('codex plugin add expo@openai-curated');
   });
 });
 
@@ -157,13 +183,13 @@ describe(hasExpoPlugin, () => {
       expect(hasExpoPlugin(CLAUDE_CODE)).toBe(false);
     });
 
-    it('detects the plugin enabled in the user settings', () => {
+    it('ignores a plugin that is only enabled, not installed, in the user settings', () => {
       write(
         '.claude/settings.json',
         JSON.stringify({ enabledPlugins: { 'expo@claude-plugins-official': true } })
       );
 
-      expect(hasExpoPlugin(CLAUDE_CODE)).toBe(true);
+      expect(hasExpoPlugin(CLAUDE_CODE)).toBe(false);
     });
 
     it('honours CLAUDE_CONFIG_DIR', () => {
@@ -216,13 +242,25 @@ describe(hasExpoPlugin, () => {
 
 describe(emitClaudeCodePluginHint, () => {
   let stderrWrite: jest.SpyInstance;
+  const originalIsTTY = Object.getOwnPropertyDescriptor(process.stderr, 'isTTY');
+
+  function setStderrIsTTY(value: boolean | undefined) {
+    Object.defineProperty(process.stderr, 'isTTY', { value, configurable: true, writable: true });
+  }
 
   beforeEach(() => {
     stderrWrite = jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    // Claude Code runs commands with piped output, so stderr is not a terminal there.
+    setStderrIsTTY(undefined);
   });
 
   afterEach(() => {
     stderrWrite.mockRestore();
+    if (originalIsTTY) {
+      Object.defineProperty(process.stderr, 'isTTY', originalIsTTY);
+    } else {
+      delete (process.stderr as any).isTTY;
+    }
   });
 
   it('writes the plugin hint to stderr on its own line for Claude Code', () => {
@@ -233,6 +271,14 @@ describe(emitClaudeCodePluginHint, () => {
     expect(CLAUDE_CODE_PLUGIN_HINT).toBe(
       '<claude-code-hint v="1" type="plugin" value="expo@claude-plugins-official" />'
     );
+  });
+
+  it('writes nothing when stderr is a terminal, where a person would see the raw tag', () => {
+    setStderrIsTTY(true);
+
+    emitClaudeCodePluginHint(CLAUDE_CODE);
+
+    expect(stderrWrite).not.toHaveBeenCalled();
   });
 
   it('writes nothing for other agents or without an agent', () => {
@@ -273,8 +319,14 @@ describe(logAgentSetupHint, () => {
 
     const output = getOutput();
     expect(output).toContain('Set up Cursor for Expo');
-    expect(output).toContain("npx skills add expo/skills --skill '*' --agent cursor -y");
+    expect(output).toContain('npx skills add expo/skills --skill "*" --agent cursor -y');
     expect(output).not.toContain('Expo MCP Server');
+  });
+
+  it('uses the runner of the package manager that created the project', () => {
+    logAgentSetupHint(CURSOR, { installed: false, packageManager: 'bun' });
+
+    expect(getOutput()).toContain('bunx skills add expo/skills --skill "*" --agent cursor -y');
   });
 
   it('says the plugin is already installed instead of nudging', () => {

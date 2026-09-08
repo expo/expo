@@ -14,7 +14,10 @@ export const CLAUDE_CODE_PLUGIN_HINT =
 export function emitClaudeCodePluginHint(): void {
   try {
     const { detected, agent } = detectAgent();
-    if (detected && agent?.id === 'claude-code') {
+    // Claude Code also sets its environment in IDE terminals where a person runs commands
+    // directly, and there the raw tag would be visible. Claude Code itself runs commands with
+    // piped output, so only write the hint when stderr is not a terminal.
+    if (detected && agent?.id === 'claude-code' && !process.stderr.isTTY) {
       // Written to stderr, on its own line, as the hint protocol requires.
       process.stderr.write(`${CLAUDE_CODE_PLUGIN_HINT}\n`);
     }

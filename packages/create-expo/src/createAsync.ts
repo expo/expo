@@ -119,7 +119,7 @@ async function finalizeProjectAsync(projectRoot: string, props: Pick<Options, 'a
     // unless the agent already has the plugin.
     const agent = detectCodingAgent();
     const installed = hasExpoPlugin(agent);
-    logAgentSetupHint(agent, { installed });
+    logAgentSetupHint(agent, { installed, packageManager: resolvePackageManager() });
     if (!installed) {
       emitClaudeCodePluginHint(agent);
     }
