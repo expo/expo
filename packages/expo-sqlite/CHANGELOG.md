@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Ship an agent skill for SQLite queries, migrations, storage, and platform configuration in the npm package.
+
 ### 🐛 Bug fixes
 
 - [Android][iOS] Fix `deleteDatabaseAsync` and `deleteDatabaseSync` leaving `-journal`, `-wal` and `-shm` sidecar files behind. ([#49125](https://github.com/expo/expo/pull/49125) by [@sbaiahmed1](https://github.com/sbaiahmed1))
