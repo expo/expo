@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Cache the resolved manifest runtime version per platform for the dev-server session, instead of recomputing it (including a full `@expo/fingerprint` computation under `runtimeVersion: { policy: 'fingerprint' }`) on every manifest request, which could take longer than a dev client's connection timeout and surface as "failed to connect".
 - Stop writing DOM component source maps into the app binary during `expo export:embed`, so Android release builds no longer ship `www.bundle` source maps with the original app source. ([#49480](https://github.com/expo/expo/pull/49480) by [@expo-bot](https://github.com/expo-bot))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
