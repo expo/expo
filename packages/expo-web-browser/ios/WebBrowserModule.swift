@@ -20,11 +20,11 @@ final public class WebBrowserModule: Module {
       if vcDidPresent {
         self.currentWebBrowserSession = nil
         vcDidPresent = false
-      } else if currentWebBrowserSession?.isPresented == false {
+      } else if let session = currentWebBrowserSession, !session.isPresented {
         // The previous session never reached the screen, so neither `didPresent` nor any of the
-        // delegate callbacks can fire for it and nothing else will ever release it. Without this the
-        // module answers "locked" to every later call for the lifetime of the process.
-        self.currentWebBrowserSession = nil
+        // delegate callbacks can fire for it. Resolve its promise and release it here, otherwise the
+        // module answers "locked" to every later call until `dismissBrowser` runs or the app restarts.
+        session.onDismiss("cancel")
       }
 
       guard self.currentWebBrowserSession == nil else {
