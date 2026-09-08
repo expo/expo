@@ -38,6 +38,10 @@ export function isLight(value: ColorValue): boolean | undefined {
 export function alpha(value: ColorValue): number | undefined;
 export function alpha(value: ColorValue, opacity: number): string | undefined;
 export function alpha(value: ColorValue, opacity?: number): number | string | undefined {
+  if (Number.isNaN(opacity)) {
+    return undefined;
+  }
+
   const channels = rgba(value);
 
   if (!channels) {
@@ -53,6 +57,10 @@ export function alpha(value: ColorValue, opacity?: number): number | string | un
 }
 
 export function darken(value: ColorValue, ratio: number): string | undefined {
+  if (Number.isNaN(ratio)) {
+    return undefined;
+  }
+
   const channels = rgba(value);
 
   if (!channels) {

@@ -28,6 +28,11 @@ describe('color', () => {
     expect(darken(color, 0.5)).toBeUndefined();
   });
 
+  it('returns undefined for NaN numeric arguments', () => {
+    expect(alpha('red', NaN)).toBeUndefined();
+    expect(darken('red', NaN)).toBeUndefined();
+  });
+
   it('uses the existing luminance boundary', () => {
     expect(isDark('#7f7f7f')).toBe(true);
     expect(isLight('#7f7f7f')).toBe(false);
