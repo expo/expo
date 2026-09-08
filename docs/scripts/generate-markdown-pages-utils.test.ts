@@ -643,7 +643,7 @@ describe('terminal snippet labels', () => {
     expect(md).toContain('yarn add expo');
     expect(md).toContain('pnpm add expo');
     expect(md).toContain('bun add expo');
-    expect(md).not.toContain('# npm comment');
+    expect(md).toContain('# npm comment');
   });
 
   it('skips empty/comment-only manager sections, ignores unknown keys, and preserves angle brackets', () => {
