@@ -3,9 +3,10 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { Package } from '../Packages';
-import { runPrebuildPackagesAsync } from './PrebuildPackages';
 import { getPackageLocalBuildPath } from '../prebuilds/PackageLocalBuild';
+import { ensureSupportedToolchainAsync } from '../prebuilds/Toolchain';
 import { resolveHermesVersion } from '../prebuilds/Utils';
+import { runPrebuildPackagesAsync } from './PrebuildPackages';
 
 async function resolveNativePeerVersions(packagePath: string): Promise<{
   reactNativeVersion: string;
@@ -31,6 +32,7 @@ async function resolveNativePeerVersions(packagePath: string): Promise<{
 }
 
 async function actionAsync() {
+  await ensureSupportedToolchainAsync();
   const packagePath = process.cwd();
   const pkg = new Package(packagePath);
   const versions = await resolveNativePeerVersions(packagePath);
