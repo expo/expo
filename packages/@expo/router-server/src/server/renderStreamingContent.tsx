@@ -29,10 +29,8 @@ import {
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
-// Outlining a completed Suspense boundary moves its markup after `bootstrapScriptContent`
-// without revealing it any sooner, so size-based outlining only delays the first paint here.
-// Not `Infinity`: this value is serialised into `PostponedState`, where it would become `null`.
-// React also derives its blocking-render limit from it, as `progressiveChunkSize * 40`.
+// NOTE(@kev-flex): not `Infinity`, which `PostponedState` serialises to `null`. React also
+// derives its blocking-render limit from this value, as `progressiveChunkSize * 40`.
 const DISABLE_SIZE_BASED_OUTLINING = Number.MAX_SAFE_INTEGER;
 
 function resetReactNavigationContexts() {
