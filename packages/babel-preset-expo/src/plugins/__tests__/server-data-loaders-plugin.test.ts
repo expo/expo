@@ -368,6 +368,138 @@ describe('client', () => {
     });
   });
 
+  describe('prunes imports left unreferenced by the removed loader', () => {
+    it('removes an import only the loader used', () => {
+      const res = transformTest(
+        `
+      import { fetchThings } from '../api';
+      import { useLoaderData } from 'expo-router';
+
+      export async function loader() {
+        return fetchThings();
+      }
+
+      export default function Index() {
+        return <div>{useLoaderData().name}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.code).toMatchInlineSnapshot(`
+        "import { useLoaderData } from 'expo-router';
+        import { jsx as _jsx } from "react/jsx-runtime";
+        export default function Index() {
+          return /*#__PURE__*/_jsx("div", {
+            children: useLoaderData().name
+          });
+        }"
+      `);
+    });
+
+    it('keeps an import the component still references', () => {
+      const res = transformTest(
+        `
+      import { formatName } from '../format';
+
+      export async function loader() {
+        return { name: formatName('a') };
+      }
+
+      export default function Index() {
+        return <div>{formatName('b')}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.code).toMatchInlineSnapshot(`
+        "import { formatName } from '../format';
+        import { jsx as _jsx } from "react/jsx-runtime";
+        export default function Index() {
+          return /*#__PURE__*/_jsx("div", {
+            children: formatName('b')
+          });
+        }"
+      `);
+    });
+
+    it('keeps an import when only some of its specifiers became unreferenced', () => {
+      const res = transformTest(
+        `
+      import { fetchThings, formatName } from '../api';
+
+      export async function loader() {
+        return fetchThings();
+      }
+
+      export default function Index() {
+        return <div>{formatName('a')}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.code).toMatchInlineSnapshot(`
+        "import { fetchThings, formatName } from '../api';
+        import { jsx as _jsx } from "react/jsx-runtime";
+        export default function Index() {
+          return /*#__PURE__*/_jsx("div", {
+            children: formatName('a')
+          });
+        }"
+      `);
+    });
+
+    it('keeps a side-effect import', () => {
+      const res = transformTest(
+        `
+      import '../polyfill';
+      import { fetchThings } from '../api';
+
+      export async function loader() {
+        return fetchThings();
+      }
+
+      export default function Index() {
+        return <div>Index</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.code).toMatchInlineSnapshot(`
+        "import '../polyfill';
+        import { jsx as _jsx } from "react/jsx-runtime";
+        export default function Index() {
+          return /*#__PURE__*/_jsx("div", {
+            children: "Index"
+          });
+        }"
+      `);
+    });
+
+    it('leaves imports alone in files outside the app directory', () => {
+      const res = transformTest(
+        `
+      import { fetchThings } from '../api';
+
+      export async function loader() {
+        return fetchThings();
+      }
+    `,
+        { bundleType: 'client', filename: '/src/data' }
+      );
+
+      expect(res.code).toMatchInlineSnapshot(`
+        "import { fetchThings } from '../api';
+        export async function loader() {
+          return fetchThings();
+        }"
+      `);
+    });
+  });
+
   describe('edge cases', () => {
     it('handles files with no loader export', () => {
       const res = transformTest(
