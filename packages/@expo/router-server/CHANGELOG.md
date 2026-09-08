@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Stop outlining completed Suspense boundaries during streaming SSR, so visible markup is written before the bootstrap script rather than after it ([#49878](https://github.com/expo/expo/pull/49878) by [@kev-flex](https://github.com/kev-flex))
+- Write the page's markup before the bootstrap script during streaming SSR, instead of outlining completed Suspense boundaries behind it ([#49878](https://github.com/expo/expo/pull/49878) by [@kev-flex](https://github.com/kev-flex))
 
 ### 💡 Others
 
