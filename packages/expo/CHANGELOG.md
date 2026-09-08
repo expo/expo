@@ -30,6 +30,7 @@
 
 ### 💡 Others
 
+- [iOS] Split the mixed Swift/Objective-C sources into `Expo` and `ExpoObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#45906](https://github.com/expo/expo/pull/45906) by [@tsapeta](https://github.com/tsapeta))
 - Re-export `useReleasingSharedObjectWithLifecycle` from `expo-modules-core`. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] `ExpoReactHostFactory` now passes host handlers' `DevSupportManagerFactory` to `ReactHostImpl`. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build by guarding the `bundleConfiguration` override, which requires react-native 0.84+. ([#48494](https://github.com/expo/expo/pull/48494) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
