@@ -13,7 +13,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed useImage not releasing loaded images when the source changes or the component unmounts.
+- Fixed useImage not releasing loaded images when the source changes or the component unmounts. ([#49857](https://github.com/expo/expo/pull/49857) by [@hirbod](https://github.com/hirbod))
 - [Android] Fixed a URL staying permanently broken after the server answered an image request with `200 OK` and a non-image body, such as an HTML error page. ([#48442](https://github.com/expo/expo/issues/48442) by [@julian-dueck](https://github.com/julian-dueck), [#48456](https://github.com/expo/expo/pull/48456) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
 - [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
