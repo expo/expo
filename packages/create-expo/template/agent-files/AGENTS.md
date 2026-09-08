@@ -8,6 +8,16 @@ Expo ships breaking changes every SDK release. APIs you remember are likely rena
 2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
 3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
 
+## Expo Skills and the Expo MCP Server
+
+Expo publishes official skills and a remote MCP server for coding agents. Before you start, check whether Expo skills (`expo-overview`, `expo-router`, `expo-native-ui`, ...) are available to you. If they are, load `expo-overview` first. If they are missing, ask the user to install them:
+
+- Claude Code: `claude plugin install expo@claude-plugins-official`
+- Codex: `codex plugin add expo@openai-curated`
+- Cursor and other agents: `npx skills add expo/skills`
+
+The Claude Code and Codex plugins also register the Expo MCP Server (`https://mcp.expo.dev/mcp`), which searches the current docs, installs SDK-compatible packages, reads EAS build logs, and takes simulator screenshots. Docs: https://docs.expo.dev/agents.md
+
 ## Commands
 
 Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
@@ -25,7 +35,7 @@ Run lint and typecheck before declaring any task done.
 
 ## Navigation & Routing
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
+- Use **Expo Router** for all navigation. Routes live in `app/` or `src/app/` (use whichever exists) — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside the routes directory.
 - Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
 - Docs: https://docs.expo.dev/router/introduction.md
 

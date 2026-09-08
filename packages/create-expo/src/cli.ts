@@ -42,6 +42,14 @@ async function run() {
   }
 
   if (args['--help']) {
+    // Agents often run --help first; let Claude Code offer the Expo plugin at that moment.
+    const { detectCodingAgent, emitClaudeCodePluginHint, hasExpoPlugin } =
+      await import('./utils/agent');
+    const agent = detectCodingAgent();
+    if (!hasExpoPlugin(agent)) {
+      emitClaudeCodePluginHint(agent);
+    }
+
     const nameWithoutCreate = PACKAGE_NAME.replace('create-', '');
     printHelp(
       `Creates a new Expo project`,
@@ -49,7 +57,7 @@ async function run() {
       [
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
-        `    --no-agents-md    Skip generating AGENTS.md, CLAUDE.md, and .claude/settings.json`,
+        `    --no-agents-md    Skip generating AGENTS.md, CLAUDE.md, and other AI agent config files`,
         chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
         chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
         `-v, --version         Version number`,
