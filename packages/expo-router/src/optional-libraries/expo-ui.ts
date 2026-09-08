@@ -11,11 +11,11 @@ try {
   modifiers = loadedModifiers;
 } catch {}
 
-export function requireExpoUI(): { expoUI: ExpoUI; modifiers: ExpoUIModifiers } {
+export function requireExpoUI(
+  errorMessage = "The '@expo/ui' package needs to be installed in order to use this feature."
+): { expoUI: ExpoUI; modifiers: ExpoUIModifiers } {
   if (!expoUI || !modifiers) {
-    throw new Error(
-      "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
-    );
+    throw new Error(errorMessage);
   }
   return { expoUI, modifiers };
 }

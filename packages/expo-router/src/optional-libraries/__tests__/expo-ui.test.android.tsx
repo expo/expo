@@ -23,8 +23,9 @@ describe('requireExpoUI', () => {
       const { requireExpoUI } = require('../expo-ui');
 
       expect(requireExpoUI).toThrow(
-        "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+        "The '@expo/ui' package needs to be installed in order to use this feature."
       );
+      expect(() => requireExpoUI('Custom error message')).toThrow('Custom error message');
     });
   });
 });
