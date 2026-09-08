@@ -67,7 +67,7 @@ export default class ImageManipulatorImageRef extends SharedRef<'image'> {
     }
     this.isReleased = true;
 
-    if (this.uri.startsWith('blob:')) {
+    if (this.uri.toLowerCase().startsWith('blob:')) {
       URL.revokeObjectURL(this.uri);
     }
     releaseCanvas(this.canvas);

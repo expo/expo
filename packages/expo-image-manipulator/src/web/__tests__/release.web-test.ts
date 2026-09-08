@@ -102,15 +102,15 @@ describe('release', () => {
     expect(canvas.height).toBe(0);
   });
 
-  it('releases an image ref only once', () => {
+  it.each(['blob:image', 'BLOB:image', 'Blob:image'])('releases %s only once', (uri) => {
     const canvas = { width: 100, height: 50 } as HTMLCanvasElement;
-    const image = new ImageManipulatorImageRef('blob:image', canvas);
+    const image = new ImageManipulatorImageRef(uri, canvas);
 
     image.release();
     image.release();
 
     expect(revokeObjectURL).toHaveBeenCalledTimes(1);
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:image');
+    expect(revokeObjectURL).toHaveBeenCalledWith(uri);
     expect(canvas.width).toBe(0);
     expect(canvas.height).toBe(0);
     expect(() => image.width).toThrow('Cannot use shared object that was already released');
