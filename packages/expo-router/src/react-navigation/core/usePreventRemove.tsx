@@ -4,6 +4,7 @@ import * as React from 'react';
 import { ScreenRemovalPreventionSetterContext } from '../../global-state/removalPrevention';
 import useLatestCallback from '../../utils/useLatestCallback';
 import type { NavigationAction } from '../routers';
+import { IsPreloadedContext } from './IsPreloadedContext';
 import type { EventListenerCallback, EventMapCore } from './types';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useNavigation } from './useNavigation';
@@ -71,6 +72,7 @@ export function usePreventRemove(
 ) {
   const id = React.useId();
   const navigation = useNavigation();
+  const isPreloaded = React.use(IsPreloadedContext);
   const setPreventRemove = React.use(ScreenRemovalPreventionSetterContext);
   const markDisabled = useWarnOnStalePreventRemove(preventRemove);
 
@@ -81,11 +83,11 @@ export function usePreventRemove(
   }
 
   useClientLayoutEffect(() => {
-    setPreventRemove(id, preventRemove);
+    setPreventRemove(id, preventRemove && !isPreloaded);
     return () => {
       setPreventRemove(id, false);
     };
-  }, [id, preventRemove, setPreventRemove]);
+  }, [id, isPreloaded, preventRemove, setPreventRemove]);
 
   const removePreventedListener = useLatestCallback<
     EventListenerCallback<EventMapCore<any>, 'removePrevented'>

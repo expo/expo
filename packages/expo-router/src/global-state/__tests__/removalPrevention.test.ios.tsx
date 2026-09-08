@@ -47,28 +47,31 @@ test('aggregates prevention across routes', () => {
   expect(routes.at(-1)).toEqual(new Set());
 });
 
-test('detects prevention in an active descendant but not a preloaded route', () => {
-  const route = {
-    key: 'parent',
-    name: 'parent',
-    state: {
-      stale: false as const,
-      type: 'stack',
-      key: 'stack',
-      routeKeySeq: 0,
-      index: 0,
-      routeNames: ['active', 'preloaded'],
-      routes: [
-        { key: 'active', name: 'active' },
-        { key: 'preloaded', name: 'preloaded' },
-      ],
-    },
-  };
+test.each(['stack', 'tab'] as const)(
+  'detects prevention in an active descendant but not a preloaded %s route',
+  (type) => {
+    const route = {
+      key: 'parent',
+      name: 'parent',
+      state: {
+        stale: false as const,
+        type,
+        key: type,
+        routeKeySeq: 0,
+        index: 0,
+        routeNames: ['active', 'preloaded'],
+        routes: [
+          { key: 'active', name: 'active' },
+          { key: 'preloaded', name: 'preloaded', isPreloaded: true as const },
+        ],
+      },
+    };
 
-  expect(isRouteRemovalPrevented(route, new Set(['active']))).toBe(true);
-  expect(isRouteRemovalPrevented(route, new Set(['preloaded']))).toBe(false);
-  expect(isRouteRemovalPrevented(route, new Set(['parent']))).toBe(true);
-});
+    expect(isRouteRemovalPrevented(route, new Set(['active']))).toBe(true);
+    expect(isRouteRemovalPrevented(route, new Set(['preloaded']))).toBe(false);
+    expect(isRouteRemovalPrevented(route, new Set(['parent']))).toBe(true);
+  }
+);
 
 test('keeps a route emitter until the end of the task after its provider unmounts', async () => {
   const action = { type: 'POP' };

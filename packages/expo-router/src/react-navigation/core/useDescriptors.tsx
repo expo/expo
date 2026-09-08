@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { isRoutePreloadedInStack } from '../../utils/stack';
 import type {
   NavigationAction,
   NavigationState,
@@ -250,7 +249,7 @@ export function useDescriptors<
   >;
 
   const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
-    const navigation = getNavigation(route, isRoutePreloadedInStack(state, route));
+    const navigation = getNavigation(route, route.isPreloaded === true);
 
     if (screens[route.name] === undefined) {
       acc[route.key] = {

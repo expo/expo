@@ -116,14 +116,17 @@ test('commits removal and reports removed routes when none are prevented', () =>
   });
 });
 
-test('does not let a preloaded stack route prevent removal', () => {
-  const stackState: NavigationState = {
+test('does not let a preloaded route prevent removal', () => {
+  const tabState: NavigationState = {
     ...initialState,
-    type: 'stack',
+    type: 'tab',
     index: 0,
+    routes: initialState.routes
+      .slice(0, 2)
+      .map((route, index) => (index === 1 ? { ...route, isPreloaded: true } : route)),
   };
   const result = renderReducer({
-    state: stackState,
+    state: tabState,
     registry: new Map([
       [
         'root',
@@ -159,7 +162,13 @@ test('prevents moving an active route into the preloaded region', () => {
       [
         'root',
         entry((state) => ({
-          state: { ...state, index: 0 },
+          state: {
+            ...state,
+            index: 0,
+            routes: state.routes.map((route, index) =>
+              index > 0 ? { ...route, isPreloaded: true } : route
+            ),
+          },
           affectedRouteKey: state.routes[0]!.key,
         })),
       ],
