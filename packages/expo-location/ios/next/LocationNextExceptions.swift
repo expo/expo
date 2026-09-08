@@ -6,6 +6,41 @@ final class InvalidLocationTimeoutException: Exception, @unchecked Sendable {
   }
 }
 
+final class LocationAuthorizationDenied: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Location access for this app has been turned off, so the updates stopped. The user changed it " +
+    "in Settings while the app was running, and requesting the permission again will not prompt " +
+    "them - iOS only asks once. Ask the user to allow location for this app in Settings, then start " +
+    "watching again"
+  }
+}
+
+final class LocationAuthorizationRestricted: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Location access is restricted on this device, so the app cannot receive location updates. " +
+    "Authorization changes are prevented by parental restrictions, an MDM configuration, or another " +
+    "device policy, not by the user's choice, so requesting the permission again will not help. Ask " +
+    "the user to check Screen Time content and privacy restrictions, or contact whoever manages the device"
+  }
+}
+
+final class LocationServiceSessionRequired: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Location updates stopped because this app sets 'CLRequireExplicitServiceSession' in its " +
+    "Info.plist, which makes the system refuse updates unless the app holds a CLServiceSession. " +
+    "'expo-location' does not create one. Remove that key from your Info.plist, or manage the session " +
+    "yourself and use CoreLocation directly"
+  }
+}
+
+final class LocationUpdatesEndedUnexpectedly: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The system stopped delivering location updates without reporting a reason, and the app did not " +
+    "stop them. Start the updates again; if this repeats, check that location permissions are still " +
+    "granted and that Location Services are enabled"
+  }
+}
+
 final class LocationServicesDisabledGlobally: Exception, @unchecked Sendable {
   override var reason: String {
     "Location Services are turned off for the whole device, so no app can receive location updates. " +
