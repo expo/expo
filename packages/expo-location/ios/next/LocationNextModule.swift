@@ -28,13 +28,13 @@ public final class LocationNextModule: Module {
       permissions.requestBackgroundPermissions(options: options ?? PermissionsRequestOptions(), promise)
     }
 
-    AsyncFunction("getPosition") { (options: GetPositionOptions) -> Position? in
+    AsyncFunction("getPosition") { (options: GetPositionOptions?) -> Position? in
       guard CLLocationManager.locationServicesEnabled() else {
         throw LocationServicesDisabledGlobally()
       }
       try accessGuard.checkForegroundPermissions()
 
-      let location = try await PositionRequester().get(options: options)
+      let location = try await PositionRequester().get(options: options ?? GetPositionOptions())
       return location?.toPosition()
     }
 
@@ -83,6 +83,28 @@ public final class LocationNextModule: Module {
 
     OnAppEntersBackground {
       PositionWatcher.isAppInForeground = false
+    }
+
+    Class(LocationUpdatesHandle.self) {
+      Constructor { (taskName: String) -> LocationUpdatesHandle in
+        LocationUpdatesHandle(taskName: taskName, accessGuard: accessGuard)
+      }
+
+      Function("withProfile") { (handle: LocationUpdatesHandle, profile: Profile) in
+        handle.withProfile(profile)
+      }
+
+      AsyncFunction("start") { (handle: LocationUpdatesHandle) in
+        try handle.start()
+      }
+
+      AsyncFunction("stop") { (handle: LocationUpdatesHandle) in
+        try handle.stop()
+      }
+
+      AsyncFunction("hasStarted") { (handle: LocationUpdatesHandle) -> Bool in
+        try handle.hasStarted()
+      }
     }
   }
 }
