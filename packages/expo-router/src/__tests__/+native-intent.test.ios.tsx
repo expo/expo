@@ -1,7 +1,21 @@
 import { screen, act } from '@testing-library/react-native';
+import path from 'path';
 import { View } from 'react-native';
 
 import { renderRouter } from '../testing-library';
+
+it('uses a normalized +native-intent override with appDir', () => {
+  const redirectSystemPath = jest.fn(({ path }: { path: string; initial: boolean }) => path);
+
+  renderRouter({
+    appDir: path.join(__dirname, 'fixtures', 'context-stubs'),
+    overrides: {
+      '+native-intent': { redirectSystemPath },
+    },
+  });
+
+  expect(redirectSystemPath).toHaveBeenCalledWith({ path: '/', initial: true });
+});
 
 it('can use redirectSystemPath initial', () => {
   renderRouter({
