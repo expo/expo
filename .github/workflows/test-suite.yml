@@ -215,7 +215,7 @@ jobs:
               break
             fi
           done < <(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/test-suite.yml/runs?branch=main&event=push&status=success&per_page=20" \
-            --jq '.workflow_runs[] | "\(.id) \(.head_sha)"' || true)
+            --jq '.workflow_runs | sort_by(.created_at) | reverse | .[] | "\(.id) \(.head_sha)"' || true)
           echo "base-commit=$base_commit" >> "$GITHUB_OUTPUT"
       - name: 📹 Check fingerprint
         id: fingerprint
