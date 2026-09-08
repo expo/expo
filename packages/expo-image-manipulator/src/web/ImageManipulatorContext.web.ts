@@ -85,8 +85,8 @@ export default class ImageManipulatorContext extends SharedObject {
     clonedCanvasCtx?.drawImage(canvas, 0, 0);
 
     return new Promise((resolve) => {
-      // Create a full-sized, full-quality blob from the original canvas.
-      canvas.toBlob(
+      // Encode the clone, which remains valid if the context is released or reset.
+      clonedCanvas.toBlob(
         (blob) => {
           const url = blob ? URL.createObjectURL(blob) : clonedCanvas.toDataURL();
           const image = new ImageManipulatorImageRef(url, clonedCanvas);
