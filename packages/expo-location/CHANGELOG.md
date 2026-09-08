@@ -19,6 +19,7 @@
 ### 💡 Others
 
 - Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
+- Add missing `react` and `react-native` peer dependencies ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
 
 ## 57.0.7 - 2026-07-29
 

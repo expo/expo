@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- Add missing `react` and `react-native` peer dependencies ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
+
 ## 57.0.8 - 2026-07-29
 
 ### 🐛 Bug fixes
