@@ -285,7 +285,7 @@ Modify the **src/app/(tabs)/\_layout.tsx** file to add tab bar icons:
 
 1. Import `Ionicons` icons set from [`@expo/vector-icons`](/guides/icons/#expovector-icons) — a library that includes popular icon sets.
 2. Add the `tabBarIcon` to both the `index` and `about` routes. This function takes `focused` and `color` as params and renders the icon component. From the icon set, we can provide custom icon names.
-3. Add `screenOptions.tabBarActiveTintColor` to the `Tabs` component and set its value to `#ffd33d`. This will change the color of the tab bar icon and label when active.
+3. Add `screenOptions.tabBarActiveTintColor` and `screenOptions.tabBarInactiveTintColor` to the `Tabs` component and set their values to `#ffd33d` and `#fff`, respectively. These options change the color of the tab bar icon and label when active and inactive.
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/_layout.tsx
@@ -300,6 +300,7 @@ export default function TabLayout() {
       /* @tutinfo There are many `screenOptions` we can use to customize the tab bar. We're changing the active tab color here to custom value which we will also use later in our app. */
       screenOptions={{
         tabBarActiveTintColor: '#ffd33d',
+        tabBarInactiveTintColor: '#fff',
       }}
       /* @end */
     >
@@ -336,6 +337,7 @@ Let's also change the background color of the tab bar and header using `screenOp
 <Tabs
   screenOptions={{
     tabBarActiveTintColor: '#ffd33d',
+    tabBarInactiveTintColor: '#fff',
     headerStyle: {
       backgroundColor: '#25292e',
     },
