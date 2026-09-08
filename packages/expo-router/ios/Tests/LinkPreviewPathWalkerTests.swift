@@ -6,13 +6,19 @@ import UIKit
 private final class MockPathView: UIView {
   @objc var screenId: String?
   @objc var screenKey: String?
+  @objc var nativeId: String?
   @objc var screenIds: [String] = []
   @objc var activityState: Int32 = 2
   @objc var controller: UIViewController?
+  var mockReactViewController: UIViewController?
   var mockReactSubviews: [UIView] = []
 
   override func reactSubviews() -> [UIView]! {
     mockReactSubviews
+  }
+
+  @objc override func reactViewController() -> UIViewController? {
+    mockReactViewController
   }
 }
 
@@ -42,6 +48,17 @@ struct LinkPreviewPathWalkerTests {
     #expect(result.preloadedScreenView === target)
     #expect(result.preloadedStackView === innerStack)
     #expect(result.tabChangeCommands.isEmpty)
+  }
+
+  @Test
+  func `does not match an enclosing JS tab by the inner native tab name`() {
+    let tabs = tabHost(selectedIndex: 0, tabs: [tab(name: "index"), tab(name: "settings")])
+    let result = walker.walk(
+      path: path(("outer-settings-key", "settings")),
+      responder: attachResponder(to: tabs.host)
+    )
+    #expect(result.tabChangeCommands.isEmpty)
+    #expect(result.preloadedScreenView == nil)
   }
 
   @Test
@@ -142,6 +159,23 @@ struct LinkPreviewPathWalkerTests {
   }
 
   @Test
+  func `selects a tab without an enclosing stack`() throws {
+    let tabs = tabHost(selectedIndex: 0, tabs: [tab(name: "home"), tab(name: "second")])
+    let responder = attachResponder(to: tabs.controller.viewControllers![0].view)
+
+    let result = walker.walk(
+      path: path(("root", "__root"), ("second-key", "second")),
+      responder: responder
+    )
+
+    let command = try #require(result.tabChangeCommands.first)
+    #expect(result.tabChangeCommands.count == 1)
+    #expect(command.tabBarController === tabs.controller)
+    #expect(command.tabIndex == 1)
+    #expect(result.preloadedScreenView == nil)
+  }
+
+  @Test
   func `skips JS-only view levels`() {
     let target = screen(id: "details", activityState: 0)
     let targetStack = stack(ids: ["details"], children: [target])
@@ -170,6 +204,23 @@ struct LinkPreviewPathWalkerTests {
 
     #expect(result.preloadedScreenView == nil)
     #expect(result.preloadedStackView == nil)
+  }
+
+  @Test
+  func `reports inactive l1 instead of its already active l2 destination`() {
+    let l2 = screen(id: "l2", activityState: 2)
+    let childStack = stack(ids: ["l2"], children: [l2])
+    let l1 = screen(id: "l1", activityState: 0, children: [childStack])
+    let rootStack = stack(ids: ["index", "l1"], children: [screen(id: "index"), l1])
+
+    let result = walker.walk(
+      path: path(("l1", "l1"), ("l2", "l2")),
+      responder: attachResponder(to: rootStack)
+    )
+
+    #expect(result.preloadedScreenView === l1)
+    #expect(result.preloadedScreenView !== l2)
+    #expect(result.preloadedStackView === rootStack)
   }
 
   @Test
@@ -242,6 +293,7 @@ struct LinkPreviewPathWalkerTests {
   private func tab(name: String, children: [UIView] = []) -> MockPathView {
     let view = MockPathView()
     view.screenKey = name
+    view.nativeId = "expo-router-tab:\(name)-key"
     view.mockReactSubviews = children
     children.forEach(view.addSubview)
     return view
@@ -255,6 +307,7 @@ struct LinkPreviewPathWalkerTests {
     controller.viewControllers = tabs.map { tabView in
       let viewController = UIViewController()
       viewController.view = tabView
+      tabView.mockReactViewController = viewController
       return viewController
     }
     controller.selectedIndex = selectedIndex

@@ -14,7 +14,7 @@ import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
 import { resolveHref } from './href';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
-import { useNextScreenId } from './preview/useNextScreenId';
+import { usePreviewActivationPath } from './preview/usePreviewActivationPath';
 import type { LinkProps } from './useLinkHooks';
 
 const isPad = Platform.OS === 'ios' && Platform.isPad;
@@ -43,7 +43,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
     }
   }, [hrefWithoutQuery]);
 
-  const [{ nextScreenId, activationPath }, prefetch] = useNextScreenId();
+  const [activationPath, prefetch, cancelPrefetch] = usePreviewActivationPath();
 
   useEffect(() => {
     if (rest.replace) {
@@ -88,6 +88,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
   );
 
   const isPreviewTapped = useRef(false);
+  const preloadedScreenId = useRef<string | undefined>(undefined);
 
   const previewActivationPath = useMemo(
     () => (activationPath ? { path: activationPath } : undefined),
@@ -102,10 +103,11 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
 
   return (
     <NativeLinkPreview
-      previewActivationPath={isPad ? undefined : previewActivationPath}
+      previewActivationPath={previewActivationPath}
       onWillPreviewOpen={() => {
         if (hasPreview) {
           isPreviewTapped.current = false;
+          preloadedScreenId.current = undefined;
           prefetch(rest.href);
           setIsCurrenPreviewOpen(true);
         }
@@ -113,6 +115,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
       onPreviewWillClose={() => {
         if (hasPreview) {
           setIsCurrenPreviewOpen(false);
+          cancelPrefetch();
           // When preview was not tapped, then we need to enable the screen stack animation
           // Otherwise this will happen in StackNavigator, when new screen is opened
           if (!isPreviewTapped.current || isPad) {
@@ -122,13 +125,17 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
       }}
       onPreviewDidClose={() => {
         if (hasPreview && isPreviewTapped.current && isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+          router.navigate(rest.href, { __internal__PreviewKey: preloadedScreenId.current });
         }
       }}
-      onPreviewTapped={() => {
+      onPreviewTapped={({ nativeEvent: { screenId } }) => {
         isPreviewTapped.current = true;
+        preloadedScreenId.current = screenId;
+        if (screenId !== undefined) {
+          setOpenPreviewKey(screenId);
+        }
         if (!isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+          router.navigate(rest.href, { __internal__PreviewKey: screenId });
         }
       }}
       style={{ display: 'contents' }}

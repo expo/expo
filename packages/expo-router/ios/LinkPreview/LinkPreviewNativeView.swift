@@ -40,6 +40,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
 
   func performUpdateOfPreloadedView() {
     guard let path = previewActivationPath?.path, !path.isEmpty else {
+      linkPreviewNativeNavigation.clearPreloadedView()
       return
     }
     linkPreviewNativeNavigation.updatePreloadedView(
@@ -113,6 +114,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     configurationForMenuAtLocation location: CGPoint
   ) -> UIContextMenuConfiguration? {
     cancelReactNativeTouches()
+    linkPreviewNativeNavigation.beginInteraction()
     onWillPreviewOpen()
     return UIContextMenuConfiguration(
       identifier: nil,
@@ -177,9 +179,16 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     animator: UIContextMenuInteractionCommitAnimating
   ) {
     if preview != nil {
-      self.onPreviewTapped()
+      let activation = linkPreviewNativeNavigation.captureActivation()
+      if let screenId = activation?.screenId {
+        self.onPreviewTapped(["screenId": screenId])
+      } else {
+        self.onPreviewTapped()
+      }
       animator.addCompletion { [weak self] in
-        self?.linkPreviewNativeNavigation.pushPreloadedView()
+        if UIDevice.current.userInterfaceIdiom != .pad {
+          activation?.commit()
+        }
         self?.onPreviewTappedAnimationCompleted()
       }
     }

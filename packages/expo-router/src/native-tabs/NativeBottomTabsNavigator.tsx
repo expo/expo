@@ -126,6 +126,7 @@ function NativeTabsContent({
         (route): NativeTabsViewTabItem => ({
           options: descriptors[route.key]!.options,
           name: route.name,
+          routeKey: route.key,
           contentRenderer: () => descriptors[route.key]!.render(),
         })
       ),

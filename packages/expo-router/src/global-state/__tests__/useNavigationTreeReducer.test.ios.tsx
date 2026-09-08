@@ -725,7 +725,7 @@ describe('NAVIGATE_TO_HREF', () => {
       'PUSH',
       true,
       dangerouslySingular,
-      true,
+      'preview',
       initialState
     );
   });
