@@ -139,11 +139,8 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
       },
 
       Program: {
-        // Metro skips its per-file import/export transform when the graph optimizer is on, so an
-        // import the removals above left unreferenced would survive into the bundle. Runs for any
-        // file this preset marked for folding, which includes `generateMetadata` removals.
-        //
-        // @see packages/@expo/metro-config/src/transform-worker/metro-transform-worker.ts#transformJS
+        // NOTE(@kev-flex): Metro skips `applyImportSupport` under `optimize`, so an import the
+        // removals above left unreferenced would otherwise survive into the bundle.
         exit(path, state) {
           if (isLoaderBundle) {
             return;
