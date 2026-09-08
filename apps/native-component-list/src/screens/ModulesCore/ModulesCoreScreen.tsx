@@ -53,6 +53,13 @@ if (!isRunningInExpoGo()) {
       return optionalRequire(() => require('./JestMockGeneratorScreen'));
     },
   });
+  ModulesCoreScreens.push({
+    name: 'Callback',
+    route: 'modulescore/callback',
+    getComponent() {
+      return optionalRequire(() => require('./CallbackScreen'));
+    },
+  });
 }
 
 export default function ModulesCoreScreen() {
