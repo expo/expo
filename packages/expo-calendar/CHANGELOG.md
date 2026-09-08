@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [android] Fix `createEventAsync` and `updateEventAsync` failing with "Event could not be saved" in minified release builds. `EventInputBase` now implements `Record`, so the `expo-modules-core` ProGuard rule keeps its `@Field` property names and `startDate`/`endDate` reach the calendar provider. ([#49837](https://github.com/expo/expo/pull/49837) by [@expo-bot](https://github.com/expo-bot))
-
 ### 💡 Others
+
+## 57.0.3 — 2026-09-08
+
+### 🐛 Bug fixes
+
+- [android] Fix `createEventAsync` and `updateEventAsync` failing with "Event could not be saved" in minified release builds. `EventInputBase` now implements `Record`, so the `expo-modules-core` ProGuard rule keeps its `@Field` property names and `startDate`/`endDate` reach the calendar provider. ([#49837](https://github.com/expo/expo/pull/49837) by [@expo-bot](https://github.com/expo-bot))
 
 ## 57.0.2 — 2026-08-14
 

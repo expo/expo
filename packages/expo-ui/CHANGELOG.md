@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.17 — 2026-09-08
+
+### 🎉 New features
+
 - [Android] Added the `enabled` and `colors` props to the Jetpack Compose `RadioButton` component. ([#49852](https://github.com/expo/expo/pull/49852) by [@felipe-software](https://github.com/felipe-software))
 - [iOS] Taught the `presentationBackground` modifier to paint with any `ShapeStyle`, matching SwiftUI, so a sheet can be backed by a material, a gradient or a hierarchical style instead of only a color. iOS 26 renders a material as a flat color rather than a translucent blur. ([#49767](https://github.com/expo/expo/pull/49767) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `scrollClipDisabled` modifier, which lets content that draws outside a scrollable view's bounds, such as a shadow or a scaled-up card, stay visible instead of being clipped. ([#49780](https://github.com/expo/expo/pull/49780) by [@Den1Marshall](https://github.com/Den1Marshall))
@@ -16,8 +24,6 @@
 
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed `PlatformColor` and `DynamicColorIOS` values dropping the `backgroundColor` and `borderColor` of a universal component. Both were stringified to `"[object Object]"`, which the native color converter rejects, so the modifier was discarded without a trace. ([#49746](https://github.com/expo/expo/pull/49746) by [@Den1Marshall](https://github.com/Den1Marshall))
-
-### 💡 Others
 
 ## 57.0.16 — 2026-09-04
 
