@@ -4,21 +4,22 @@ final class PositionUpdatesCompatibilitySource: NSObject, CLLocationManagerDeleg
   private lazy var manager = CLLocationManager()
   private var continuation: AsyncThrowingStream<CLLocation?, Error>.Continuation?
 
-  func updates(for profile: Profile) -> AsyncThrowingStream<CLLocation?, Error> {
-    AsyncThrowingStream { continuation in
-      self.continuation = continuation
-      Task { @MainActor in
-        self.manager.delegate = self
-        self.manager.activityType = profile.clActivityType()
-        self.manager.distanceFilter = profile.clDistanceFilter()
-        self.manager.desiredAccuracy = profile.clDesiredAccuracy()
-        self.manager.startUpdatingLocation()
-      }
-      continuation.onTermination = { _ in
-        Task { @MainActor in
-          self.manager.stopUpdatingLocation()
-          self.manager.delegate = nil
-        }
+  func updates(for profile: Profile) -> PositionUpdatesSource {
+    let (stream, continuation) = AsyncThrowingStream.makeStream(of: CLLocation?.self)
+    self.continuation = continuation
+    // FIFO dispatch keeps an immediate stop behind setup on the main queue.
+    DispatchQueue.main.async {
+      self.manager.delegate = self
+      self.manager.activityType = profile.clActivityType()
+      self.manager.distanceFilter = profile.clDistanceFilter()
+      self.manager.desiredAccuracy = profile.clDesiredAccuracy()
+      self.manager.startUpdatingLocation()
+    }
+    return PositionUpdatesSource(stream: stream, continuation: continuation) {
+      DispatchQueue.main.async {
+        self.manager.stopUpdatingLocation()
+        self.manager.delegate = nil
+        self.continuation = nil
       }
     }
   }

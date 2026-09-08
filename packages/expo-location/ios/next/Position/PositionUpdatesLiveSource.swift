@@ -2,21 +2,31 @@ import CoreLocation
 
 @available(iOS 17.0, *)
 final class PositionUpdatesLiveSource {
-  func updates(for profile: Profile) -> AsyncThrowingStream<CLLocation?, Error> {
-    AsyncThrowingStream { continuation in
-      let providerTask = Task {
-        do {
-          for try await update in CLLocationUpdate.liveUpdates(profile.clLocationUpdateProfile()) {
-            continuation.yield(update.location)
+  func updates(for profile: Profile) -> PositionUpdatesSource {
+    let (stream, continuation) = AsyncThrowingStream.makeStream(of: CLLocation?.self)
+    let providerTask = Task {
+      do {
+        for try await update in CLLocationUpdate.liveUpdates(profile.clLocationUpdateProfile()) {
+          guard !Task.isCancelled else {
+            break
           }
-          continuation.finish()
-        } catch {
-          continuation.finish(throwing: error)
+          if #available(iOS 18.0, *), let failure = LocationUpdateDiagnostics(update).unrecoverableFailure() {
+            continuation.finish(throwing: failure)
+            return
+          }
+          continuation.yield(update.location)
         }
+        if Task.isCancelled {
+          continuation.finish()
+        } else {
+          continuation.finish(throwing: LocationUpdatesEndedUnexpectedly())
+        }
+      } catch {
+        continuation.finish(throwing: error)
       }
-      continuation.onTermination = { _ in
-        providerTask.cancel()
-      }
+    }
+    return PositionUpdatesSource(stream: stream, continuation: continuation) {
+      providerTask.cancel()
     }
   }
 }

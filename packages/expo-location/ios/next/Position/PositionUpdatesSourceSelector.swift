@@ -2,6 +2,10 @@ import CoreLocation
 
 enum PositionUpdatesSourceSelector {
   static func updates(for profile: Profile) -> AsyncThrowingStream<CLLocation?, Error> {
+    source(for: profile).stream
+  }
+
+  static func source(for profile: Profile) -> PositionUpdatesSource {
     if profile == .lowPower {
       return PositionUpdatesCompatibilitySource().updates(for: profile)
     }

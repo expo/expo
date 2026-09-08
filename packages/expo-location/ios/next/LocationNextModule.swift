@@ -37,5 +37,52 @@ public final class LocationNextModule: Module {
       let location = try await PositionRequester().get(options: options ?? GetPositionOptions())
       return location?.toPosition()
     }
+
+    Function("watchPosition") { (profile: Profile?) -> PositionWatcher in
+      guard CLLocationManager.locationServicesEnabled() else {
+        throw LocationServicesDisabledGlobally()
+      }
+      try accessGuard.checkForegroundPermissions()
+
+      let watcher = PositionWatcher(profile: profile ?? .default)
+      watcher.start()
+      return watcher
+    }
+
+    Class("PositionWatchHandle", PositionWatcher.self) {
+      Function("pause") { (watcher: PositionWatcher) in
+        watcher.pause()
+      }
+
+      Function("resume") { (watcher: PositionWatcher) -> Bool in
+        watcher.resume()
+      }
+
+      Function("withProfile") { (watcher: PositionWatcher, profile: Profile) -> PositionWatcher in
+        watcher.withProfile(profile)
+        return watcher
+      }
+
+      Function("withInterval") { (watcher: PositionWatcher, intervalSeconds: Double) -> PositionWatcher in
+        watcher.withInterval(intervalSeconds)
+        return watcher
+      }
+
+      Function("restart") { (watcher: PositionWatcher) -> Bool in
+        watcher.restart()
+      }
+
+      Function("status") { (watcher: PositionWatcher) -> PositionWatchStatus in
+        watcher.status()
+      }
+    }
+
+    OnAppEntersForeground {
+      PositionWatcher.isAppInForeground = true
+    }
+
+    OnAppEntersBackground {
+      PositionWatcher.isAppInForeground = false
+    }
   }
 }
