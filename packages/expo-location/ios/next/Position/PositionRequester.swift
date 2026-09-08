@@ -2,7 +2,7 @@ import CoreLocation
 import ExpoModulesCore
 
 final class PositionRequester {
-  var liveUpdates: (_ profile: Profile) -> AsyncThrowingStream<CLLocation?, Error> = PositionUpdatesSourceSelector.updates
+  var liveUpdates: (_ profile: Profile) -> AsyncThrowingStream<CLLocation?, Error> = { PositionUpdatesSource.foreground(for: $0).stream }
   var cachedLocation: () async -> CLLocation? = {
     await MainActor.run { CLLocationManager().location }
   }
