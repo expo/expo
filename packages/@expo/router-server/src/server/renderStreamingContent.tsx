@@ -29,6 +29,12 @@ import {
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
+// Outlining a completed Suspense boundary moves its markup after `bootstrapScriptContent`
+// without revealing it any sooner, so size-based outlining only delays the first paint here.
+// Not `Infinity`: this value is serialised into `PostponedState`, where it would become `null`.
+// React also derives its blocking-render limit from it, as `progressiveChunkSize * 40`.
+const DISABLE_SIZE_BASED_OUTLINING = Number.MAX_SAFE_INTEGER;
+
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
   // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -163,9 +169,7 @@ export async function getStreamingContent(
         </Head.Provider>
       </ServerDocument>,
       {
-        // Every route renders inside a Suspense boundary with a `null` fallback, so
-        // outlining a completed boundary can never reveal content sooner.
-        progressiveChunkSize: Number.MAX_SAFE_INTEGER,
+        progressiveChunkSize: DISABLE_SIZE_BASED_OUTLINING,
         bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
         bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
