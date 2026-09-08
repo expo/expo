@@ -1,17 +1,14 @@
 'use client';
 import * as React from 'react';
 
-import {
-  isRouteRemovalPrevented,
-  useRoutesWithRemovalPrevented,
-} from '../../../global-state/removalPrevention';
+import { useRoutesWithRemovalPrevented } from '../../../global-state/removalPrevention';
 import type { NativeStackDescriptorMap } from '../types';
 
 export function useInvalidPreventRemoveError(descriptors: NativeStackDescriptorMap) {
   // TODO(@ubax): remove this hook later.
   const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
-  const preventedDescriptor = Object.values(descriptors).find(({ route }) =>
-    isRouteRemovalPrevented(route, routesWithRemovalPrevented)
+  const preventedDescriptor = Object.values(descriptors).find(
+    ({ route }) => route.key !== undefined && routesWithRemovalPrevented.has(route.key)
   );
   const isHeaderBackButtonMenuEnabledOnPreventedScreen =
     preventedDescriptor?.options?.headerBackButtonMenuEnabled;
