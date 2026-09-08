@@ -66,19 +66,14 @@ describe('release', () => {
     await expect(context.currentTask).resolves.toBe(secondCanvas);
   });
 
-  it('releases a canvas returned by a failed context task', async () => {
-    if (typeof document === 'undefined') {
-      return;
-    }
-    const canvas = document.createElement('canvas');
-    const context = new ImageManipulatorContext(() => Promise.reject(canvas));
+  it('can release a context whose loader failed', async () => {
+    const error = new Error('Failed to load image');
+    const context = new ImageManipulatorContext(() => Promise.reject(error));
     const task = context.currentTask;
 
     context.release();
-    await expect(task).rejects.toBe(canvas);
-
-    expect(canvas.width).toBe(0);
-    expect(canvas.height).toBe(0);
+    await expect(task).rejects.toBe(error);
+    expect(() => context.release()).not.toThrow();
   });
 
   it('releases a canvas replaced by an action', async () => {

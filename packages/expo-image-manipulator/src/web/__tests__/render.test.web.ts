@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import ImageManipulatorContext from '../ImageManipulatorContext.web';
+import { loadImageAsync } from '../utils.web';
 
 describe('rendering during release', () => {
   const originalCreateObjectURL = Object.getOwnPropertyDescriptor(URL, 'createObjectURL');
@@ -94,5 +95,20 @@ describe('rendering during release', () => {
     expect(image.width).toBe(300);
     expect(image.height).toBe(150);
     image.release();
+  });
+
+  it('cleans up failed image loads and rejects with a coded error', async () => {
+    const image = new Image();
+    const canvas = document.createElement('canvas');
+    jest.spyOn(globalThis, 'Image').mockImplementation(() => image);
+    jest.spyOn(document, 'createElement').mockReturnValue(canvas);
+
+    const load = loadImageAsync('blob:released');
+    image.dispatchEvent(new Event('error'));
+
+    await expect(load).rejects.toBeInstanceOf(Error);
+    await expect(load).rejects.toMatchObject({ code: 'ERR_IMAGE_MANIPULATOR_LOAD' });
+    expect(canvas.width).toBe(0);
+    expect(canvas.height).toBe(0);
   });
 });

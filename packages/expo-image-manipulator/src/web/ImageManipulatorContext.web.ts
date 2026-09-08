@@ -126,10 +126,7 @@ export default class ImageManipulatorContext extends SharedObject {
   }
 
   private releaseTask(task: Promise<HTMLCanvasElement> | undefined): void {
-    task?.then(releaseCanvas, (reason) => {
-      if (typeof HTMLCanvasElement !== 'undefined' && reason instanceof HTMLCanvasElement) {
-        releaseCanvas(reason);
-      }
-    });
+    // Failed tasks clean up their own canvases.
+    task?.then(releaseCanvas, () => {});
   }
 }

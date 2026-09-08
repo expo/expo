@@ -49,7 +49,15 @@ export function loadImageAsync(
 
       resolve(canvas);
     };
-    imageSource.onerror = () => reject(canvas);
+    imageSource.onerror = () => {
+      releaseCanvas(canvas);
+      reject(
+        new CodedError(
+          'ERR_IMAGE_MANIPULATOR_LOAD',
+          'Failed to load the image. Make sure the source URI is accessible and has not been revoked or released.'
+        )
+      );
+    };
     imageSource.src = uri;
   });
 }
