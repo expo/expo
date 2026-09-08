@@ -149,19 +149,52 @@ describe(RouterRegistryProvider, () => {
     expect(registries.at(-1)?.get(state.key)).toBe(firstEntry);
   });
 
-  it('preserves map identity when registration does not change', () => {
+  it('keeps one map identity for the life of the provider', () => {
     const registries: RouterRegistry[] = [];
 
-    render(
+    const result = render(
       <RouterRegistryProvider>
         <RegistryProbe onRender={(registry) => registries.push(registry)} />
         <Registrant entry={firstEntry} />
         <Registrant entry={firstEntry} />
       </RouterRegistryProvider>
     );
+    result.rerender(
+      <RouterRegistryProvider>
+        <RegistryProbe onRender={(registry) => registries.push(registry)} />
+        <Registrant entry={secondEntry} />
+      </RouterRegistryProvider>
+    );
 
-    expect(new Set(registries).size).toBe(2);
-    expect(registries.at(-1)?.get(state.key)).toBe(firstEntry);
+    expect(new Set(registries).size).toBe(1);
+    expect(registries.at(-1)?.get(state.key)).toBe(secondEntry);
+  });
+
+  it('reports a change only when the map changes', () => {
+    const onChange = jest.fn();
+    function ChangeRegistrant({ entry }: { entry: RouterRegistryEntry }) {
+      useRegisterRouter(state.key, entry, onChange);
+      return null;
+    }
+
+    const result = render(
+      <RouterRegistryProvider>
+        <ChangeRegistrant entry={firstEntry} />
+      </RouterRegistryProvider>
+    );
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenLastCalledWith(state.key, firstEntry, true);
+
+    result.rerender(
+      <RouterRegistryProvider>
+        <ChangeRegistrant entry={firstEntry} />
+      </RouterRegistryProvider>
+    );
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    result.rerender(<RouterRegistryProvider />);
+    expect(onChange).toHaveBeenCalledTimes(2);
+    expect(onChange).toHaveBeenLastCalledWith(state.key, firstEntry, false);
   });
 });
 
@@ -212,22 +245,23 @@ describe('navigation builder registration', () => {
     expect(registry.size).toBe(3);
   });
 
-  it('notifies consumers when a navigator mounts and unmounts', () => {
+  it('reflects navigator mounts and unmounts in the shared map without re-rendering consumers', () => {
     renderRouter({
       _layout: () => <Stack />,
       index: Probe,
       'nested/_layout': () => <Stack />,
       'nested/index': () => <Text testID="nested" />,
     });
+    const initialRegistry = registry;
     const initialRenders = registryRenders;
 
     act(() => router.push('/nested'));
-    expect(registryRenders).toBeGreaterThan(initialRenders);
+    expect(registry.size).toBe(3);
 
-    const mountedRenders = registryRenders;
     act(() => router.back());
-    expect(registryRenders).toBeGreaterThan(mountedRenders);
     expect(registry.size).toBe(2);
+    expect(registry).toBe(initialRegistry);
+    expect(registryRenders).toBe(initialRenders);
   });
 
   it('reduces actions with the registered router configuration', () => {

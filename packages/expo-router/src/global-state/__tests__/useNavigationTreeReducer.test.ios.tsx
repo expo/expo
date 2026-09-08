@@ -232,6 +232,28 @@ it('reduces consecutive actions against accumulated state with one committed upd
   ]);
 });
 
+it('snapshots the mutable registry at dispatch', () => {
+  const reduceAtDispatch = jest.fn((state: NavigationState) => ({
+    state,
+    affectedRouteKey: state.routes[state.index]!.key,
+  }));
+  const reduceAfterDispatch = jest.fn((state: NavigationState) => ({
+    state,
+    affectedRouteKey: state.routes[state.index]!.key,
+  }));
+  const registry = new Map([['root', entry(reduceAtDispatch)]]);
+  const result = renderReducer({ registry });
+
+  act(() => {
+    result.result.current.handleAction({ type: 'NEXT' });
+    // The shared map is mutated in place before React processes the queued action.
+    registry.set('root', entry(reduceAfterDispatch));
+  });
+
+  expect(reduceAtDispatch).toHaveBeenCalledTimes(1);
+  expect(reduceAfterDispatch).not.toHaveBeenCalled();
+});
+
 it('assigns increasing ids to events across actions', () => {
   const result = renderReducer({
     registry: new Map([
@@ -428,16 +450,37 @@ it('resets a state slice when its router unregisters', () => {
     registry: new Map([['root', registryEntry]]),
   });
 
-  result.rerender({
-    registry: new Map(),
-    routesWithRemovalPrevented: new Set(),
-  });
+  act(() => result.result.current.onRegistryChange('root', registryEntry, true));
+  expect(result.result.current.registeredKeys.has('root')).toBe(true);
 
+  act(() => result.result.current.onRegistryChange('root', registryEntry, false));
+
+  expect(result.result.current.registeredKeys.has('root')).toBe(false);
   expect(result.result.current.state).toMatchObject({
     index: 0,
     routeNames: ['second', 'first', 'third'],
     routes: [{ name: 'second' }],
   });
+});
+
+it('keeps the state slice when a router re-registers the same key in one commit', () => {
+  const routeNode = node('root', [node('first'), node('second'), node('third')]);
+  routeNode.initialRouteName = 'second';
+  const registryEntry = { ...entry(() => null), routeNode };
+  const nextEntry = { ...entry(() => null), routeNode };
+  const result = renderReducer({
+    registry: new Map([['root', registryEntry]]),
+  });
+  act(() => result.result.current.onRegistryChange('root', registryEntry, true));
+  const stateBefore = result.result.current.state;
+
+  act(() => {
+    result.result.current.onRegistryChange('root', registryEntry, false);
+    result.result.current.onRegistryChange('root', nextEntry, true);
+  });
+
+  expect(result.result.current.registeredKeys.has('root')).toBe(true);
+  expect(result.result.current.state).toBe(stateBefore);
 });
 
 it('resets a state slice when its router type changes', () => {

@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 
+import type { RouterRegistryChange } from '../../global-state/routerRegistry';
 import type { NavigationAction, ParamListBase } from '../routers';
 import type { NavigationHelpers } from './types';
 
@@ -24,6 +25,8 @@ export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
   addListener?: AddListener;
+  /** Called after a navigator's entry is added to or removed from the router registry. */
+  onRegistryChange?: RouterRegistryChange;
 }>({
   handleAction: () => undefined,
   resetNavigator: () => undefined,
