@@ -5,9 +5,9 @@ let onScreenshotEventName = "onScreenshot"
 public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
   private var isListening = false
-  private var blockView: UIView?
+  private var recordingOverlay: OverlayWindow?
   private var secureCanvas: SecureWindowCanvas?
-  private var blurEffectView: AnimatedBlurEffectView?
+  private var privacyOverlay: OverlayWindow?
   private var blurIntensity: CGFloat = 0.5
   private var keyWindow: UIWindow? {
     return SceneGeometry.keyWindow()
@@ -23,6 +23,7 @@ public final class ScreenCaptureModule: Module {
       self.secureCanvas = nil
       DispatchQueue.main.async {
         canvas?.restore()
+        self.hideRecordingOverlay()
       }
       disableAppSwitcherProtection()
     }
@@ -49,7 +50,7 @@ public final class ScreenCaptureModule: Module {
 
     AsyncFunction("allowScreenCapture") {
       self.allowScreenshots()
-      self.blockView?.removeFromSuperview()
+      self.hideRecordingOverlay()
 
       NotificationCenter.default.removeObserver(
         self,
@@ -92,15 +93,12 @@ public final class ScreenCaptureModule: Module {
 
   @objc
   func preventScreenRecording() {
-    guard let keyWindow = keyWindow,
-      let visibleView = keyWindow.subviews.first else { return }
-    let blockView = getOrCreateBlockView()
-
-    let isCaptured = UIScreen.main.isCaptured
-    if isCaptured {
-      visibleView.addSubview(blockView)
-    } else {
-      blockView.removeFromSuperview()
+    guard let keyWindow else { return }
+    hideRecordingOverlay()
+    if UIScreen.main.isCaptured {
+      let overlay = OverlayWindow(above: keyWindow)
+      overlay.contentView.backgroundColor = .black
+      recordingOverlay = overlay
     }
   }
 
@@ -111,17 +109,9 @@ public final class ScreenCaptureModule: Module {
     ])
   }
 
-  private func getOrCreateBlockView() -> UIView {
-    guard let blockView else {
-      let view = UIView()
-      let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-      view.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
-      view.backgroundColor = .black
-
-      self.blockView = view
-      return view
-    }
-    return blockView
+  private func hideRecordingOverlay() {
+    recordingOverlay?.dismiss()
+    recordingOverlay = nil
   }
 
   private func preventScreenshots() throws {
@@ -191,35 +181,26 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func showPrivacyOverlay() {
-    // Don't add a new blur view if one already exists
-    guard self.blurEffectView == nil,
-      let keyWindow = keyWindow,
-      let rootView = keyWindow.subviews.first else {
+    guard privacyOverlay == nil, let keyWindow else {
       return
     }
-
-    let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
-    blurEffectView.frame = rootView.bounds
+    let overlay = OverlayWindow(above: keyWindow)
+    let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: blurIntensity)
+    blurEffectView.frame = overlay.contentView.bounds
     blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    blurEffectView.alpha = 0
-
-    rootView.addSubview(blurEffectView)
-    self.blurEffectView = blurEffectView
+    overlay.contentView.addSubview(blurEffectView)
+    overlay.contentView.alpha = 0
+    privacyOverlay = overlay
 
     blurEffectView.setupBlur()
 
-    UIView.animate(
-      withDuration: 0.3,
-      delay: 0,
-      options: [.curveEaseOut],
-      animations: {
-        blurEffectView.alpha = 1.0
-      }
-    )
+    UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut]) {
+      overlay.contentView.alpha = 1
+    }
   }
 
   private func removePrivacyOverlay() {
-    guard let blurEffectView = self.blurEffectView else {
+    guard let overlay = privacyOverlay else {
       return
     }
     UIView.animate(
@@ -227,11 +208,11 @@ public final class ScreenCaptureModule: Module {
       delay: 0,
       options: [.curveEaseIn],
       animations: {
-        blurEffectView.alpha = 0
+        overlay.contentView.alpha = 0
       },
       completion: { _ in
-        blurEffectView.removeFromSuperview()
-        self.blurEffectView = nil
+        overlay.dismiss()
+        self.privacyOverlay = nil
       }
     )
   }
