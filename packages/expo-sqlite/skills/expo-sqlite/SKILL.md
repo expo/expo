@@ -156,7 +156,9 @@ async function insertTodos(db: SQLiteDatabase, titles: string[]) {
 
 For an atomic batch, call this helper with the database or `txn` belonging to a surrounding transaction. `executeAsync<T>()` returns metadata and a cursor with `getFirstAsync()`, `getAllAsync()`, and async iteration. Call `resetAsync()` before reading the same result from the beginning again. Consuming a cursor and then calling `getAllAsync()` without resetting is not a fresh query.
 
-## Key-value storage
+## Key-value storage and localStorage
+
+### AsyncStorage-compatible storage
 
 For AsyncStorage-compatible string storage:
 
@@ -169,7 +171,19 @@ const saved = await Storage.getItem('settings'); // string | null
 
 Synchronous methods such as `getItemSync()` are also available. Changing an AsyncStorage import changes the backend; it **does not migrate existing data**. For an existing app, explicitly copy needed keys from the old store, verify the copy, and make the migration safe to retry before removing that dependency. Preserve the user's choice of backend when a migration was not requested.
 
-For shared web-style code, `import 'expo-sqlite/localStorage/install'` installs SQLite-backed `globalThis.localStorage` on native platforms. It is a no-op on web, where browser storage remains in use. Plain SQLite and the key-value store are not encrypted secret storage.
+### localStorage
+
+For shared web-style code, import the polyfill once in the app's entry point before code that uses `localStorage`:
+
+```ts
+import 'expo-sqlite/localStorage/install';
+
+globalThis.localStorage.setItem('settings', JSON.stringify({ theme: 'dark' }));
+const saved = globalThis.localStorage.getItem('settings'); // string | null
+globalThis.localStorage.removeItem('settings');
+```
+
+This installs SQLite-backed `globalThis.localStorage` on native platforms. The import is a no-op on web and is excluded from production web bundles, where the browser's existing `localStorage` remains in use. The API is synchronous and stores strings; serialize objects explicitly. Plain SQLite, the key-value store, and this polyfill are not encrypted secret storage.
 
 ## Debugging and verification
 
