@@ -271,6 +271,10 @@ export class Image extends React.PureComponent<ImageProps> {
   /**
    * Loads an image from the given source to memory and resolves to
    * an object that references the native image instance.
+   *
+   * On Android, when neither `maxWidth` nor `maxHeight` is provided, large images may be
+   * downsampled to fit the platform's bitmap size limit. The returned `ImageRef.width` and
+   * `ImageRef.height` reflect the decoded size and may differ from the original dimensions or iOS.
    * @platform android
    * @platform ios
    * @platform web

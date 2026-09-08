@@ -171,7 +171,7 @@ class SafeDownsampleStrategy(
       return 1f
     }
 
-    val sourceSize = sourceWidth * sourceHeight * decodeFormat.toBytes()
+    val sourceSize = sourceWidth.toLong() * sourceHeight * decodeFormat.toBytes()
     if (sourceSize <= maxBitmapSize) {
       return 1f
     }
