@@ -197,14 +197,26 @@ jobs:
       - name: ⚛️ Display React Native config
         run: pnpm expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
-      - name: ⬇️ Fetch commits from base branch
-        run: git fetch origin main:main --depth 100 --no-recurse-submodules
-        if: github.event_name == 'pull_request'
       - name: 🔎 Get the base commit
         id: base-commit
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          # Since we limit this workflow only triggered from limited paths, we should use custom base commit
-          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages pnpm-lock.yaml) >> "$GITHUB_OUTPUT"
+          # Diff the fingerprint against the last main commit whose ios-build completed:
+          # only completed main builds store their fingerprint and build artifact in the
+          # fingerprint database, so any other base commit misses the database and forces
+          # a full rebuild even for JS-only changes.
+          base_commit=''
+          while read -r run_id head_sha; do
+            conclusion=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" \
+              --jq '.jobs[] | select(.name == "ios-build") | .conclusion' || true)
+            if [ "$conclusion" = 'success' ]; then
+              base_commit="$head_sha"
+              break
+            fi
+          done < <(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/test-suite.yml/runs?branch=main&event=push&status=success&per_page=20" \
+            --jq '.workflow_runs[] | "\(.id) \(.head_sha)"' || true)
+          echo "base-commit=$base_commit" >> "$GITHUB_OUTPUT"
       - name: 📹 Check fingerprint
         id: fingerprint
         uses: expo/actions/fingerprint@150c682164cec02a2d43347b70906d234d33f575 # main
