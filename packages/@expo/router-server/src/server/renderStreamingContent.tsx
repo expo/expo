@@ -144,9 +144,9 @@ export async function getStreamingContent(
         </Head.Provider>
       </ServerDocument>,
       {
-        // TODO(@hassankhan): Experiment and see if we can calculate a better default
-        // We're doubling the default here so non-JavaScript renders show some content
-        progressiveChunkSize: 12800 * 2,
+        // Every route renders inside a Suspense boundary with a `null` fallback, so
+        // outlining a completed boundary can never reveal content sooner.
+        progressiveChunkSize: Number.MAX_SAFE_INTEGER,
         bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
         signal: options?.request?.signal,
         onError(error) {
