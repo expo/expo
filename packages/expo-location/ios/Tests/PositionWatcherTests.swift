@@ -261,7 +261,7 @@ struct PositionWatcherTests {
     let sent = await payloads.collect(after: { await waitUntil { !watcher.status().isSubscribed } })
     #expect(sent.count == 1)
     #expect(sent.first?["error"] as? String == LocationServicesDisabledGlobally().code)
-    #expect(sent.first?["data"] == nil)
+    #expect(sent.first?["data"] is NSNull)
   }
 
   @Test(arguments: [false, true])
@@ -294,7 +294,7 @@ struct PositionWatcherTests {
 
     #expect(sent.count == 1)
     #expect(sent.first?["data"] != nil)
-    #expect(sent.first?["error"] == nil)
+    #expect(sent.first?["error"] is NSNull)
   }
 
   @Test
@@ -341,7 +341,7 @@ struct PositionWatcherTests {
     #expect(coordinates["latitude"] as? Double == 52.2297)
     #expect(coordinates["longitude"] as? Double == 21.0122)
     #expect(data["timestamp"] as? Double != nil)
-    #expect(payload["error"] == nil)
+    #expect(payload["error"] is NSNull)
   }
 
   @Test
@@ -349,7 +349,7 @@ struct PositionWatcherTests {
     let payload = PositionWatcher.errorPayload(LocationServicesDisabledGlobally())
 
     #expect(payload["error"] as? String == LocationServicesDisabledGlobally().code)
-    #expect(payload["data"] == nil)
+    #expect(payload["data"] is NSNull)
   }
 
   @Test
@@ -357,7 +357,7 @@ struct PositionWatcherTests {
     let payload = PositionWatcher.errorPayload(CLError(.network))
 
     #expect((payload["error"] as? String)?.isEmpty == false)
-    #expect(payload["data"] == nil)
+    #expect(payload["data"] is NSNull)
   }
 
   private static func location(latitude: Double, secondsAgo: TimeInterval) -> CLLocation {

@@ -84,5 +84,27 @@ public final class LocationNextModule: Module {
     OnAppEntersBackground {
       PositionWatcher.isAppInForeground = false
     }
+
+    Class(LocationUpdatesHandle.self) {
+      Constructor { (taskName: String) -> LocationUpdatesHandle in
+        LocationUpdatesHandle(taskName: taskName, accessGuard: accessGuard)
+      }
+
+      Function("withProfile") { (handle: LocationUpdatesHandle, profile: Profile) in
+        handle.withProfile(profile)
+      }
+
+      AsyncFunction("start") { (handle: LocationUpdatesHandle) in
+        try handle.start()
+      }
+
+      AsyncFunction("stop") { (handle: LocationUpdatesHandle) in
+        try handle.stop()
+      }
+
+      AsyncFunction("hasStarted") { (handle: LocationUpdatesHandle) -> Bool in
+        try handle.hasStarted()
+      }
+    }
   }
 }

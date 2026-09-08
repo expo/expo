@@ -6,6 +6,12 @@ final class InvalidLocationTimeoutException: Exception, @unchecked Sendable {
   }
 }
 
+final class TaskManagerUnavailable: Exception, @unchecked Sendable {
+  override var reason: String {
+    "'expo-task-manager' module is required to use background services"
+  }
+}
+
 final class LocationAuthorizationDenied: Exception, @unchecked Sendable {
   override var reason: String {
     "Location access for this app has been turned off, so the updates stopped. The user changed it " +
@@ -21,6 +27,14 @@ final class LocationAuthorizationRestricted: Exception, @unchecked Sendable {
     "Authorization changes are prevented by parental restrictions, an MDM configuration, or another " +
     "device policy, not by the user's choice, so requesting the permission again will not help. Ask " +
     "the user to check Screen Time content and privacy restrictions, or contact whoever manages the device"
+  }
+}
+
+final class LocationServicesDisabledGlobally: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Location Services are turned off for the whole device, so no app can receive location updates. " +
+    "This is a system-wide setting the app cannot change or prompt for. Ask the user to enable it in " +
+    "Settings > Privacy & Security > Location Services"
   }
 }
 
@@ -41,19 +55,28 @@ final class LocationUpdatesEndedUnexpectedly: Exception, @unchecked Sendable {
   }
 }
 
-final class LocationServicesDisabledGlobally: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Location Services are turned off for the whole device, so no app can receive location updates. " +
-    "This is a system-wide setting the app cannot change or prompt for. Ask the user to enable it in " +
-    "Settings > Privacy & Security > Location Services"
-  }
-}
-
 final class PermissionsModuleUnavailable: Exception, @unchecked Sendable {
   override var reason: String {
     "Cannot check location permissions because the permissions service of 'expo-modules-core' is " +
     "missing from this app. The Expo module system registers it at startup, so this usually means " +
     "the app was built without 'expo-modules-core'. Reinstall the dependencies and rebuild the app"
+  }
+}
+
+final class SignificantLocationChangesUnavailable: Exception, @unchecked Sendable {
+  override var reason: String {
+    "This device cannot monitor significant location changes, which background location updates " +
+    "are built on. The capability is missing on this hardware, and the app cannot turn it on. " +
+    "Watch the position while the app runs instead of registering a background task"
+  }
+}
+
+final class MissingLocationBackgroundMode: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Background location updates need 'location' in the 'UIBackgroundModes' array of your " +
+    "Info.plist, and this app does not declare it, so the system would stop the updates as soon " +
+    "as the app leaves the foreground. Set 'isIosBackgroundLocationEnabled' in the 'expo-location' " +
+    "config plugin, or add the key by hand, then rebuild the app"
   }
 }
 

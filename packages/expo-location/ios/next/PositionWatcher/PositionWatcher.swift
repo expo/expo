@@ -99,14 +99,14 @@ final class PositionWatcher: SharedObject {
   }
 
   static func positionPayload(_ location: CLLocation) -> [String: Any] {
-    return ["data": location.toPosition().toEventPayload()]
+    return ["data": location.toPosition().toEventPayload(), "error": NSNull()]
   }
 
   static func errorPayload(_ error: Error) -> [String: Any] {
     if let exception = error as? Exception {
-      return ["error": exception.code]
+      return ["data": NSNull(), "error": exception.code]
     }
-    return ["error": error.localizedDescription]
+    return ["data": NSNull(), "error": error.localizedDescription]
   }
 
   // Lifecycle helpers run under the caller's lock (or exclusively during deinit).
