@@ -95,6 +95,7 @@
 
 ### 💡 Others
 
+- Improve expo-router test coverage. ([#47720](https://github.com/expo/expo/pull/47720) by [@Ubax](https://github.com/Ubax))
 - Resolve queued navigation actions against render-time state. ([#49846](https://github.com/expo/expo/pull/49846) by [@Ubax](https://github.com/Ubax))
 - Propagate prevent-remove guards to ancestors. ([#49829](https://github.com/expo/expo/pull/49829) by [@Ubax](https://github.com/Ubax))
 - Mark preloaded routes with `isPreloaded: true` on the route object. ([#49826](https://github.com/expo/expo/pull/49826) by [@Ubax](https://github.com/Ubax))

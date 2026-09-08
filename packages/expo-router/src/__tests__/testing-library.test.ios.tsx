@@ -82,8 +82,14 @@ describe('toHaveSegments', () => {
 
 describe('toHaveSearchParams', () => {
   it('correctly matches', () => {
-    renderRouter(['[slug]/[...catchAll]'], { initialUrl: '/home/long/name?test=true' });
-    expect(screen).toHaveSearchParams({ slug: 'home', test: 'true', catchAll: ['long', 'name'] });
+    renderRouter(['[slug]/[...catchAll]'], {
+      initialUrl: '/home/long/name?test=true',
+    });
+    expect(screen).toHaveSearchParams({
+      slug: 'home',
+      test: 'true',
+      catchAll: ['long', 'name'],
+    });
   });
 
   it('fails with the correct message', () => {
@@ -103,7 +109,9 @@ describe('toHaveSearchParams', () => {
 describe('toHaveRouterState', () => {
   // This test is currently broken in React Navigation v7 as @react-navigation/routers still has the prerenderRoutes key
   it.skip('correctly matches', () => {
-    renderRouter(['[slug]', '[...catchAll]', 'directory/page'], { initialUrl: '/home?test=true' });
+    renderRouter(['[slug]', '[...catchAll]', 'directory/page'], {
+      initialUrl: '/home?test=true',
+    });
     act(() => router.navigate('/directory/page'));
     expect(screen).toHaveRouterState({
       index: 1,
@@ -145,6 +153,7 @@ describe('toHaveRouterState', () => {
     expect(normalizeStateKeys(message)).toMatchSnapshot();
   });
 });
+
 // https://github.com/expo/expo/issues/46864
 describe('fake timers', () => {
   afterEach(() => {
