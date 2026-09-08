@@ -78,6 +78,8 @@ Keep the repository sandbox for authoring and package checks. Create the second 
 
 Use an EAS build or the bounded native-workflow oracle only when native compilation, CocoaPods, Gradle, release configuration, or a changed runtime fingerprint is part of the behavior. Build the minimum necessary arms. Five builds is the maximum available, not a target.
 
+A build that must contain a change to the native code of an `expo-*` package does not compile that code by default. Published `expo-*` packages ship prebuilt binaries (an Android AAR under `local-maven-repo/` declared by `android.publication` in `expo-module.config.json`; an iOS XCFramework), and the build links those instead of the patched source. The build is green and the artifact is identical to the unpatched one (#49802). Opt the package out in the app's `package.json` — `{"expo":{"autolinking":{"android":{"buildFromSource":["<package>"]},"ios":{"buildFromSource":["<package>"]}}}}`, where `<package>` is the npm name with a leading `@` dropped and non-word characters replaced by `-` — and pass `buildExpoModulesFromSource: true` to `eas_build`. Confirm in the Gradle log that the package is listed under `Using expo modules` without the `[📦]` prebuilt prefix. Without that confirmation, report the arm as not containing the change.
+
 Over-verification is a defect: it burns minutes and money, creates more failure modes, and can distract from whether the requested change is correct. Under-verification is also a defect. The right proof is the smallest one that would have caught a wrong implementation.
 
 ## Produce the change
