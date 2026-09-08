@@ -75,6 +75,13 @@ public actor JavaScriptActor: GlobalActor {
 
 /// Executor for the `JavaScriptActor` that executes given jobs synchronously and immediately.
 /// - Note: It does not ensure that given jobs are executed on the JavaScript thread; it must be done externally.
+///
+/// It cannot ensure it either, which is worth knowing before trying: `enqueue` would have to learn
+/// which runtime the job belongs to, and the only ambient carrier for that is a task-local, which
+/// is not readable here. Swift calls `enqueue` outside the target task's context, so a hop arriving
+/// from the main actor reads no task-local at all. There is also no way to reach a job's task-locals
+/// from an `UnownedJob`. Routing therefore has to come from the actor's own executor, which is what
+/// the compatibility path for older systems does.
 internal class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
   func enqueue(_ job: UnownedJob) {
     job.runSynchronously(on: self.asUnownedSerialExecutor())
@@ -93,36 +100,32 @@ internal class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
   }
 }
 
-/// An actor that is dedicated for the specific runtime.
-internal actor JavaScriptRuntimeActor {
-  private weak let runtime: JavaScriptRuntime?
-  nonisolated private let executor: JavaScriptExecutor
-
-  init(runtime: JavaScriptRuntime) {
-    self.runtime = runtime
-    self.executor = JavaScriptRuntimeExecutor(runtime: runtime)
-  }
-
-  nonisolated var unownedExecutor: UnownedSerialExecutor {
-    return executor.asUnownedSerialExecutor()
-  }
-
-  func execute<R: Sendable>(_ operation: @escaping @JavaScriptActor () async throws -> R) async rethrows -> sending R {
-    return try await operation()
-  }
-}
-
-/// Serial executor dedicated for the specific runtime.
-internal final class JavaScriptRuntimeExecutor: JavaScriptExecutor, @unchecked Sendable {
+/// Task executor dedicated to a specific JavaScript runtime.
+///
+/// Unlike ``JavaScriptExecutor``, which only provides actor isolation and runs jobs inline,
+/// this executor routes every job through the runtime scheduler. Using it as a task's executor
+/// preference makes that task re-enter through the runtime's JavaScript thread after suspension
+/// points.
+internal final class JavaScriptRuntimeTaskExecutor: TaskExecutor, @unchecked Sendable {
   private weak let runtime: JavaScriptRuntime?
 
   init(runtime: JavaScriptRuntime) {
     self.runtime = runtime
   }
 
-  override func enqueue(_ job: UnownedJob) {
-    runtime?.schedule(priority: .immediate) {
-      job.runSynchronously(on: self.asUnownedSerialExecutor())
+  // MARK: - TaskExecutor
+
+  func enqueue(_ job: UnownedJob) {
+    runtime?.runOrSchedule(priority: .immediate) {
+      if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
+        job.runSynchronously(on: self.asUnownedTaskExecutor())
+      } else {
+        // `UnownedTaskExecutor` and its `runSynchronously` overload are unavailable below iOS 18,
+        // so fall back to running the job on a serial executor. The executor passed here only
+        // affects isolation checks; the job already runs on the runtime's JavaScript thread
+        // because `runOrSchedule` routed it there.
+        job.runSynchronously(on: JavaScriptActor.shared.unownedExecutor)
+      }
     }
   }
 }
