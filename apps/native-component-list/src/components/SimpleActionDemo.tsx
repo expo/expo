@@ -36,7 +36,7 @@ const SimpleActionDemo = ({ action, title }: SimpleActionDemoProps) => {
 
   return (
     <View style={styles.demoContainer}>
-      <TouchableOpacity onPress={runAction}>
+      <TouchableOpacity onPress={runAction} accessibilityRole="button" accessibilityLabel={title}>
         <View style={styles.demoHeaderContainer}>
           <Text style={styles.demoHeader}>{title}</Text>
           {loading && <ActivityIndicator style={styles.demoActivityIndicator} size={10} />}
@@ -44,7 +44,9 @@ const SimpleActionDemo = ({ action, title }: SimpleActionDemoProps) => {
       </TouchableOpacity>
       <View style={{ opacity: loading ? 0.4 : 1.0 }}>
         {value !== undefined && (
-          <MonoText containerStyle={monoContainerStyle}>{JSON.stringify(value, null, 2)}</MonoText>
+          <MonoText containerStyle={monoContainerStyle}>
+            {`${title} = ${JSON.stringify(value, null, 2)}`}
+          </MonoText>
         )}
       </View>
     </View>

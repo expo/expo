@@ -13,6 +13,7 @@ type Props = {
   onChange: (value: Value) => void;
   values: Value[] | EnumValue[];
   disabled?: boolean;
+  accessibilityLabel?: string;
 };
 
 function valuesAreEnumValues(values: (Value | EnumValue)[]): values is EnumValue[] {
@@ -32,7 +33,13 @@ function getSuccessorCyclically(values: Value[], value: Value) {
 /**
  * Button component that upon every press switches to the next value from the array.
  */
-export default function EnumButton({ value, onChange, values, disabled }: Props) {
+export default function EnumButton({
+  value,
+  onChange,
+  values,
+  disabled,
+  accessibilityLabel,
+}: Props) {
   const valuesAreEnums = useEnumValues(values);
 
   const handleOnPress = useCallback(() => {
@@ -41,12 +48,18 @@ export default function EnumButton({ value, onChange, values, disabled }: Props)
     return onChange(newValue);
   }, [valuesAreEnums, onChange, value, values]);
 
+  const displayValue = valuesAreEnums
+    ? values.find((element) => element.value === value)?.name
+    : String(value);
+
   return (
-    <TouchableOpacity disabled={disabled} onPress={handleOnPress}>
+    <TouchableOpacity
+      disabled={disabled}
+      onPress={handleOnPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}>
       <View style={[styles.button, disabled && styles.buttonDisabled]}>
-        <Text style={styles.text}>
-          {valuesAreEnums ? values.find((element) => element.value === value)?.name : value}
-        </Text>
+        <Text style={styles.text}>{displayValue}</Text>
       </View>
     </TouchableOpacity>
   );
