@@ -14,7 +14,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `File.downloadFileAsync()` returning a runtime-specific error message when canceled with an `AbortSignal`.
+- Fixed `File.downloadFileAsync()` returning a runtime-specific error message when canceled with an `AbortSignal`. ([#49856](https://github.com/expo/expo/pull/49856) by [@Ubax](https://github.com/Ubax))
 - Fix `File.readableStream()` returning zeroed bytes and writing past the requested region when a BYOB read targets a view that starts at a non-zero offset. ([#49234](https://github.com/expo/expo/pull/49234) by [@dennytosp](https://github.com/dennytosp))
 - [Android][iOS] Fix `File.size` returning `null` for a missing or unreadable file. ([#49086](https://github.com/expo/expo/pull/49086)) by [@ACHP](https://github.com/ACHP))
 - [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
