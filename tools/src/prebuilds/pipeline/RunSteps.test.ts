@@ -11,6 +11,8 @@ import { describe, it } from 'node:test';
 import os from 'os';
 import path from 'path';
 
+import type { SPMPackageSource } from '../ExternalPackage';
+import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
 import {
   resolveFlavorTemplatedPath,
   sortPackagesByDependencies,
@@ -19,8 +21,6 @@ import {
   expandWithUnbuiltDependencies,
   rebindExternalPackagesToBundledVersions,
 } from './RunSteps';
-import type { SPMPackageSource } from '../ExternalPackage';
-import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
 
 // ---------------------------------------------------------------------------
 // Stub helpers

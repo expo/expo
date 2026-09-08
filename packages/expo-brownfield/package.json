@@ -36,6 +36,7 @@
     "./plugin": "./plugin/build/index.js"
   },
   "scripts": {
+    "precompile-ios": "et prebuild-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:cli",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -47,7 +48,7 @@
     "test": "jest",
     "test:e2e-cli": "jest --config e2e/cli/jest.config.js",
     "test:e2e-plugin": "jest --config e2e/plugin/jest.config.js",
-    "prepack": "node scripts/resolve-symlinks.js resolve",
+    "prepack": "node scripts/resolve-symlinks.js resolve && expo-module prepack",
     "postpack": "node scripts/resolve-symlinks.js restore",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
@@ -78,6 +79,7 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "react": "*"
+    "react": "*",
+    "react-native": "*"
   }
 }
