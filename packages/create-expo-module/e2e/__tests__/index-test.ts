@@ -576,6 +576,38 @@ describe('non-interactive defaults warning', () => {
   });
 });
 
+describe('--features option', () => {
+  // The SharedObject snippet is the only template file that imports from
+  // `expo-modules-core` directly. Under an isolated node_modules layout (pnpm)
+  // that package is not hoisted, so the module only builds when the template
+  // declares it as a dev dependency of its own. See #49658.
+  it('builds a module with --features SharedObject under pnpm', async () => {
+    const projectName = 'features-shared-object';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'FeatureTest',
+      '--package',
+      'com.test.sharedobject',
+      '--features',
+      'SharedObject',
+      '--package-manager',
+      'pnpm',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const packageJson = readJson(projectName, 'package.json');
+    expect(packageJson.devDependencies).toHaveProperty('expo-modules-core');
+
+    // `prepare` runs `tsc` after installing, so a build artifact proves that
+    // the `expo-modules-core` import resolved.
+    expectFileExists(projectName, 'build/FeatureTestModuleSharedObject.js');
+  });
+});
+
 describe('add-platform-support', () => {
   const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
 
