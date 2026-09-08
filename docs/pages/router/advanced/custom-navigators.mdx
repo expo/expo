@@ -111,12 +111,10 @@ function TabsContent({ emitter }: TabsContentProps) {
 
 Both `unstable_createStandardRouterNavigator` and `unstable_integrateWithRouter` accept an optional `options` object as their third argument:
 
-- **`useOnlyUserDefinedScreens`**: when `true`, only screens you declare with `<Navigator.Screen>` are rendered. Expo Router ignores routes discovered from the filesystem that you did not declare. Defaults to `false`, where Expo Router also renders routes discovered from the filesystem alongside your declared screens.
 - **`createProps`**: derives extra props for `NavigatorContent` from the underlying router state. Use this for router-specific information that is not part of the standard `state` and `actions`.
 
 ```tsx
 export const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
-  useOnlyUserDefinedScreens: true,
   createProps: ({ state, dispatch }) => ({
     activeRouteKey: state.routes[state.index].key,
     preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
