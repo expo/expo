@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Survive the foreground-service eligibility rejection that Android 14+ can raise inside `onServiceConnected` instead of crashing, and retry the foreground service on the next task registration. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@steve-rodri](https://github.com/steve-rodri))
 - [iOS] Add `scope` and `accuracy` under `ios` to the responses from `getBackgroundPermissionsAsync` and `requestBackgroundPermissionsAsync`, matching the `LocationPermissionResponse` type. ([#48926](https://github.com/expo/expo/pull/48926) by [@vonovak](https://github.com/vonovak))
 - [Android] Fix `timeInterval` and `distanceInterval` being ignored for background location updates. ([#46788](https://github.com/expo/expo/issues/46788) by [@doshisunny](https://github.com/doshisunny))
 - [iOS] Fix incorrect default value for `pausesUpdatesAutomatically` to match docs. ([#47008](https://github.com/expo/expo/pull/47008) by [@Ignigena](https://github.com/Ignigena))

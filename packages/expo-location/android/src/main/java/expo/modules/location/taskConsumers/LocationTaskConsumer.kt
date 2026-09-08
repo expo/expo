@@ -211,7 +211,26 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       extras.putString("taskName", task.name)
       extras.putBoolean("killService", serviceOptions.getBoolean("killServiceOnDestroy", false))
       serviceIntent.putExtras(extras)
-      context.startForegroundService(serviceIntent)
+      try {
+        // startService, not startForegroundService: startForegroundService
+        // attaches a promise that the service WILL reach startForeground, and
+        // Android 14+ kills the app with ForegroundServiceDidNotStartInTime-
+        // Exception whenever that promise breaks - including when the
+        // eligibility rejection below makes keeping it impossible, and even
+        // when the service is torn down cleanly. The isForegrounded check
+        // above makes startService legal here, and the startForeground call
+        // in onServiceConnected promotes the service all the same.
+        context.startService(serviceIntent)
+      } catch (e: IllegalStateException) {
+        // BackgroundServiceStartNotAllowedException (API 31+): the app left
+        // the foreground after the check above. Skip binding; the next task
+        // (re)registration retries the foreground service.
+        Log.e(TAG, "Location service start not allowed; skipping the foreground service.", e)
+        return
+      } catch (e: SecurityException) {
+        Log.e(TAG, "Location service start rejected; skipping the foreground service.", e)
+        return
+      }
       context.bindService(
         serviceIntent,
         object : ServiceConnection {
@@ -219,7 +238,13 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
             mService = (service as? ServiceBinder)?.service
             mService?.let {
               it.setParentContext(context)
-              it.startForeground(serviceOptions)
+              try {
+                it.startForeground(serviceOptions)
+              } catch (e: SecurityException) {
+                abortForegroundServiceStart(context, this, e)
+              } catch (e: IllegalStateException) {
+                abortForegroundServiceStart(context, this, e)
+              }
             }
           }
 
@@ -232,12 +257,44 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       )
     } else {
       // Restart the service with new service options.
-      mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      try {
+        mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      } catch (e: SecurityException) {
+        Log.e(TAG, "Foreground service restart rejected; stopping the service.", e)
+        stopForegroundService()
+      } catch (e: IllegalStateException) {
+        Log.e(TAG, "Foreground service restart rejected; stopping the service.", e)
+        stopForegroundService()
+      }
     }
   }
 
   private fun stopForegroundService() {
     mService?.stop()
+  }
+
+  /**
+   * Android 14+ evaluates foreground-service-type eligibility when
+   * startForeground() runs; this call arrives asynchronously via
+   * onServiceConnected, so the app may have left the eligible state after
+   * the isForegrounded check above passed. Uncaught, the SecurityException
+   * (or ForegroundServiceStartNotAllowedException) is fatal on the main
+   * looper. The service must also be fully torn down, stop + unbind, so the
+   * started-service record is destroyed: stopSelf() alone leaves the
+   * "did not call startForeground" deadline armed while the binding keeps
+   * the service alive, and that deadline kills the app once it backgrounds.
+   * The task stays registered, so the next (re)registration retries the
+   * foreground service start.
+   */
+  private fun abortForegroundServiceStart(context: Context, connection: ServiceConnection, error: Exception) {
+    Log.e(TAG, "Foreground service start rejected; shutting the service down.", error)
+    mService?.stop()
+    mService = null
+    try {
+      context.unbindService(connection)
+    } catch (ignored: IllegalArgumentException) {
+      // The binding may already have been released.
+    }
   }
 
   /**
