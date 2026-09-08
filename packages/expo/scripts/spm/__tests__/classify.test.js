@@ -8,9 +8,21 @@ const {
   CORE_REACT_PRODUCTS,
   collectWatchPaths,
   textImportsReact,
+  sourceTreeImportsReact,
+  collectIgnoredDirs,
   moduleNeedsReact,
   isPureSwift,
 } = require('../classify');
+
+function tmpTree(prefix, files) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  for (const [rel, content] of Object.entries(files)) {
+    const target = path.join(root, rel);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, content);
+  }
+  return root;
+}
 
 describe('textImportsReact', () => {
   it.each([
@@ -81,6 +93,30 @@ describe('isPureSwift', () => {
     }
   });
 
+  it('is false when a generated C source sits in the production tree', () => {
+    const root = tmpTree('expo-spm-pureswift-c-', {
+      'ios/A.swift': '// swift\n',
+      'ios/sqlite3.c': '/* generated */\n',
+    });
+    try {
+      expect(isPureSwift(root)).toBe(false);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('stays pure-Swift when the only C source is inside an ignored directory', () => {
+    const root = tmpTree('expo-spm-pureswift-c-ignored-', {
+      'ios/A.swift': '// swift\n',
+      'ios/Tests/fixture.c': '/* test fixture */\n',
+    });
+    try {
+      expect(isPureSwift(root)).toBe(true);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('ignores test/build directories when scanning for non-Swift sources', () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-pureswift-ignore-'));
     try {
@@ -110,5 +146,66 @@ describe('collectWatchPaths', () => {
       path.join(withBoth, 'expo-module.config.json'),
       path.join(withConfig, 'expo-module.config.json'),
     ]);
+  });
+});
+
+describe('sourceTreeImportsReact', () => {
+  it('scans C sources for React imports', () => {
+    const root = tmpTree('expo-spm-react-c-', {
+      'ios/bridge.c': '#import <React/RCTBridge.h>\n',
+    });
+    try {
+      expect(sourceTreeImportsReact(path.join(root, 'ios'))).toBe(true);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('collectIgnoredDirs', () => {
+  it('collects every ignored directory at any depth, relative and sorted', () => {
+    const root = tmpTree('expo-spm-ignored-', {
+      'ios/A.swift': '// swift\n',
+      'ios/Tests/T.swift': '// tests\n',
+      'ios/__tests__/T.swift': '// tests\n',
+      'ios/node_modules/dep/D.swift': '// vendored\n',
+      'ios/build/B.swift': '// output\n',
+      'ios/.build/B.swift': '// output\n',
+      'ios/Feature/Tests/T.swift': '// nested tests\n',
+      'ios/Feature/Impl.swift': '// swift\n',
+    });
+    try {
+      expect(collectIgnoredDirs(path.join(root, 'ios'))).toEqual([
+        '.build',
+        'Feature/Tests',
+        'Tests',
+        '__tests__',
+        'build',
+        'node_modules',
+      ]);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('does not descend into an already-excluded directory', () => {
+    const root = tmpTree('expo-spm-ignored-nested-', {
+      'ios/Tests/node_modules/dep/D.swift': '// vendored inside tests\n',
+    });
+    try {
+      expect(collectIgnoredDirs(path.join(root, 'ios'))).toEqual(['Tests']);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('returns nothing for a clean source tree or a missing directory', () => {
+    const root = tmpTree('expo-spm-ignored-clean-', { 'ios/A.swift': '// swift\n' });
+    try {
+      expect(collectIgnoredDirs(path.join(root, 'ios'))).toEqual([]);
+      expect(collectIgnoredDirs(path.join(root, 'apple'))).toEqual([]);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 });

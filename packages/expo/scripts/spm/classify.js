@@ -13,6 +13,13 @@ const path = require('path');
 // The core layer genuinely needs React/Hermes/jsi — it *is* the React/JSI bridge.
 const CORE_REACT_PRODUCTS = new Set(['ExpoModulesCore', 'ExpoModulesJSI', 'ExpoModulesWorklets']);
 
+// Directories classification never looks into: tests, vendored deps, build output.
+const IGNORED_DIR_RX = /^(Tests?|__tests__|node_modules|build|\.build)$/;
+
+function isIgnoredDir(name) {
+  return IGNORED_DIR_RX.test(name);
+}
+
 // A direct source-level import of the React/Hermes/jsi families (NOT ExpoModulesCore).
 const REACT_IMPORT_RX =
   /(#import\s*[<"](React|react|ReactCommon|RCTDeprecation|hermes|jsi|cxxreact|jsinspector|jsireact)[/>]|@?import\s+(React|ReactCommon|ReactAppDependencyProvider|hermes|jsi)\b)/;
@@ -61,9 +68,9 @@ function sourceTreeImportsReact(dir) {
   for (const e of entries) {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) {
-      if (/^(Tests?|__tests__|node_modules|build|\.build)$/.test(e.name)) continue;
+      if (isIgnoredDir(e.name)) continue;
       if (sourceTreeImportsReact(p)) return true;
-    } else if (/\.(swift|m|mm|h|hpp|cpp|cc)$/.test(e.name)) {
+    } else if (/\.(swift|m|mm|c|h|hpp|cpp|cc)$/.test(e.name)) {
       let content = '';
       try {
         content = fs.readFileSync(p, 'utf8');
@@ -74,6 +81,30 @@ function sourceTreeImportsReact(dir) {
     }
   }
   return false;
+}
+
+/**
+ * The ignored directories under `dir`, relative to it and sorted. A generated
+ * target must exclude exactly what classification skipped, or its production
+ * library compiles test sources (and their `@testable` imports and mocks).
+ * An ignored directory is not descended into: SwiftPM rejects an exclude path
+ * already covered by an excluded ancestor.
+ */
+function collectIgnoredDirs(dir, prefix = '') {
+  let entries = [];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const ignored = [];
+  for (const e of entries) {
+    if (!e.isDirectory()) continue;
+    const rel = prefix ? `${prefix}/${e.name}` : e.name;
+    if (isIgnoredDir(e.name)) ignored.push(rel);
+    else ignored.push(...collectIgnoredDirs(path.join(dir, e.name), rel));
+  }
+  return prefix ? ignored : ignored.sort();
 }
 
 /**
@@ -91,7 +122,7 @@ function moduleNeedsReact(podName, moduleRoot) {
   return false;
 }
 
-/** Cheap check: a module is pure-Swift if its iOS/apple source has no .m/.mm/.cpp files. */
+/** Cheap check: a module is pure-Swift if its iOS/apple source has no .m/.mm/.c/.cpp files. */
 function isPureSwift(moduleRoot) {
   const hasNonSwift = (dir) => {
     let entries = [];
@@ -103,9 +134,9 @@ function isPureSwift(moduleRoot) {
     for (const e of entries) {
       const p = path.join(dir, e.name);
       if (e.isDirectory()) {
-        if (/^(Tests?|__tests__|node_modules|build|\.build)$/.test(e.name)) continue;
+        if (isIgnoredDir(e.name)) continue;
         if (hasNonSwift(p)) return true;
-      } else if (/\.(m|mm|cpp|cc)$/.test(e.name)) {
+      } else if (/\.(m|mm|c|cpp|cc)$/.test(e.name)) {
         return true;
       }
     }
@@ -122,6 +153,7 @@ module.exports = {
   REACT_IMPORT_RX,
   textImportsReact,
   sourceTreeImportsReact,
+  collectIgnoredDirs,
   collectWatchPaths,
   findModuleRoot,
   moduleNeedsReact,

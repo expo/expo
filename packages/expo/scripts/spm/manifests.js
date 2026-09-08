@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { collectIgnoredDirs } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
 const { runDumpPackage } = require('./cli');
 
@@ -16,19 +17,43 @@ const { runDumpPackage } = require('./cli');
 // Pure: parse `swift package dump-package` JSON → { name, products, targets }
 // ---------------------------------------------------------------------------
 
+/**
+ * A same-package target dependency: the bare target name, or `{ name, platforms }`
+ * when the manifest conditions it. Cross-package `.product` deps are not sibling
+ * deps — the injected React set covers those.
+ */
+function siblingDependency(dep) {
+  const [name, condition] = dep.byName ?? dep.target ?? [];
+  if (name == null) return null;
+  const platforms = condition?.platformNames ?? [];
+  return platforms.length ? { name, platforms } : name;
+}
+
+const siblingName = (dep) => (typeof dep === 'string' ? dep : dep.name);
+
 /** Keep only regular targets and library products; resolve same-package sibling deps by name. */
 function parseDumpedManifest(json) {
   const pkg = JSON.parse(json);
-  const targets = (pkg.targets ?? [])
+  const regular = (pkg.targets ?? [])
     .filter((t) => t.type === 'regular')
     .map((t) => ({
       name: t.name,
-      path: t.path,
+      // An omitted `path:` is resolved against the filesystem by the emit layer.
+      path: t.path ?? null,
       publicHeadersPath: t.publicHeadersPath ?? null,
+      exclude: t.exclude ?? [],
+      sources: t.sources ?? [],
+      resources: t.resources ?? [],
       // sibling targets referenced by name within this same package
-      siblingDeps: (t.dependencies ?? []).map((d) => d.byName?.[0]).filter(Boolean),
+      siblingDeps: (t.dependencies ?? []).map(siblingDependency).filter(Boolean),
     }));
-  const regularNames = new Set(targets.map((t) => t.name));
+  const regularNames = new Set(regular.map((t) => t.name));
+  // Only regular targets are mirrored, so a dependency on a binary/macro/plugin/
+  // system target would name a target the generated package does not declare.
+  const targets = regular.map((t) => ({
+    ...t,
+    siblingDeps: t.siblingDeps.filter((d) => regularNames.has(siblingName(d))),
+  }));
   const products = (pkg.products ?? [])
     .filter((p) => Object.keys(p.type ?? {})[0] === 'library')
     .map((p) => ({ name: p.name, targets: (p.targets ?? []).filter((n) => regularNames.has(n)) }))
@@ -40,12 +65,88 @@ function parseDumpedManifest(json) {
 // Pure: render manifest strings
 // ---------------------------------------------------------------------------
 
+const SWIFT_PLATFORM_CASES = {
+  ios: '.iOS',
+  macos: '.macOS',
+  maccatalyst: '.macCatalyst',
+  tvos: '.tvOS',
+  watchos: '.watchOS',
+  visionos: '.visionOS',
+  driverkit: '.driverKit',
+  linux: '.linux',
+  windows: '.windows',
+  android: '.android',
+  wasi: '.wasi',
+  openbsd: '.openbsd',
+};
+
+/**
+ * A sibling dependency, conditioned on platforms when the module declared it so.
+ * SwiftPM allows only `platforms:` in a target-dependency condition. An unknown
+ * platform name drops the condition rather than the dependency: over-declaring a
+ * platform still builds, while invalid Swift or a missing target does not.
+ */
+function renderSiblingDependency(dep) {
+  if (typeof dep === 'string') return `"${dep}"`;
+  const platforms = dep.platforms.map((p) => SWIFT_PLATFORM_CASES[p]);
+  if (platforms.some((p) => p == null)) return `"${dep.name}"`;
+  return `.target(name: "${dep.name}", condition: .when(platforms: [${platforms.join(', ')}]))`;
+}
+
+const RESOURCE_RULES = { process: '.process', copy: '.copy', embedInCode: '.embedInCode' };
+const RESOURCE_LOCALIZATIONS = { default: '.default', base: '.base' };
+
+/**
+ * A resource the module declared, as its `.process`/`.copy`/`.embedInCode` rule.
+ * An unrecognized rule or localization throws: SwiftPM keeps adding both, and a
+ * silently dropped resource means a library whose bundle is missing at runtime.
+ */
+function renderResource(resource, targetName) {
+  const [rule, options] = Object.entries(resource.rule ?? {})[0] ?? [];
+  const call = RESOURCE_RULES[rule];
+  const localization =
+    options?.localization != null ? RESOURCE_LOCALIZATIONS[options.localization] : null;
+  if (call == null || (options?.localization != null && localization == null)) {
+    throw new Error(
+      `Cannot generate a consumption Package.swift for target "${targetName}": resource "${resource.path}" ` +
+        `uses the unsupported rule \`${JSON.stringify(resource.rule)}\`. This plugin renders .process, .copy and ` +
+        '.embedInCode with .default/.base localizations; a newer Swift Package Manager rule needs support added ' +
+        'in expo/scripts/spm/manifests.js. Declare the resource with one of the supported rules meanwhile.'
+    );
+  }
+  return localization != null
+    ? `${call}("${resource.path}", localization: ${localization})`
+    : `${call}("${resource.path}")`;
+}
+
+/** SwiftPM's file-rule arguments, in `.target(…)` declaration order. Empty ones are omitted. */
+function renderFileRules(target) {
+  const list = (label, values) =>
+    values.length ? `\n            ${label}: [${values.join(', ')}],` : '';
+  const quoted = (paths) => (paths ?? []).map((p) => `"${p}"`);
+  return (
+    list('exclude', quoted(target.exclude)) +
+    list('sources', quoted(target.sources)) +
+    list(
+      'resources',
+      (target.resources ?? []).map((r) => renderResource(r, target.name))
+    )
+  );
+}
+
 /** Source-with-manifest: mirror the parsed targets/products, inject the given deps. */
 function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) {
   const interfaceSettings = renderInterfaceSettings(frameworkSearchPath);
   const targetsSwift = manifest.targets
     .map((t) => {
-      const deps = [...t.siblingDeps.map((n) => `"${n}"`), ...injected];
+      if (t.path == null) {
+        throw new Error(
+          `Cannot generate a consumption Package.swift for "${manifest.name}": target "${t.name}" has no source path. ` +
+            "Its path was neither declared in the module's manifest nor resolved on disk, so the generated target " +
+            'would point at nothing. Resolve target paths with resolveTargetPaths before rendering.'
+        );
+      }
+      const deps = [...t.siblingDeps.map(renderSiblingDependency), ...injected];
       const depsSwift = deps.length
         ? `\n${deps.map((dep) => `                ${dep},`).join('\n')}\n            `
         : '';
@@ -55,7 +156,7 @@ function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) 
       return `        .target(
             name: "${t.name}",
             dependencies: [${depsSwift}],
-            path: "root/${t.path}",${headers}${interfaceSettings}
+            path: "root/${t.path}",${renderFileRules(t)}${headers}${interfaceSettings}
         )`;
     })
     .join(',\n');
@@ -93,13 +194,24 @@ ${targetsSwift}
 }
 
 /** Pure-Swift source: single Swift target over the module's `ios`/`apple` sources. */
-function renderPureSwiftManifest(product, srcRel, pkgDeps, targetDeps, frameworkSearchPath) {
+function renderPureSwiftManifest(
+  product,
+  srcRel,
+  pkgDeps,
+  targetDeps,
+  frameworkSearchPath,
+  excludes = []
+) {
   const interfaceSettings = renderInterfaceSettings(frameworkSearchPath);
   const packageDepsSwift = pkgDeps.length
     ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
     : '';
   const targetDepsSwift = targetDeps.length
     ? `\n${targetDeps.map((dep) => `                ${dep},`).join('\n')}\n            `
+    : '';
+  // SwiftPM resolves exclude paths against the target path, not the package root.
+  const excludeSwift = excludes.length
+    ? `\n            exclude: [${excludes.map((e) => `"${e}"`).join(', ')}],`
     : '';
   return `// swift-tools-version: 6.0
 // AUTO-GENERATED by expo/scripts/spm/plugin.js — do not edit.
@@ -117,7 +229,7 @@ let package = Package(
         .target(
             name: "${product}",
             dependencies: [${targetDepsSwift}],
-            path: "root/${srcRel}",${interfaceSettings}
+            path: "root/${srcRel}",${excludeSwift}${interfaceSettings}
         ),
     ],
     swiftLanguageModes: [.v5],
@@ -142,6 +254,58 @@ function renderInterfaceSettings(frameworkSearchPath) {
 // ---------------------------------------------------------------------------
 // I/O: emit a package dir (write manifest + `root` symlink) and return deps
 // ---------------------------------------------------------------------------
+
+// Where SwiftPM looks for a target's sources when the manifest omits `path:`.
+const PREDEFINED_SOURCE_DIRS = ['Sources', 'Source', 'src', 'srcs'];
+
+const SOURCE_FILE_RX = /\.(swift|m|mm|c|cc|cpp|cxx|s)$/i;
+
+/** Whether `dir` contains a source file at any depth — SwiftPM's own condition. */
+function holdsSourceFiles(dir) {
+  let entries = [];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return false;
+  }
+  return entries.some((e) =>
+    e.isDirectory() ? holdsSourceFiles(path.join(dir, e.name)) : SOURCE_FILE_RX.test(e.name)
+  );
+}
+
+/**
+ * Fill in each target's source path relative to the module root. A target that
+ * omits `path:` is absent from the dump, so SwiftPM's own inference
+ * (`<predefined source dir>/<target name>`) has to be redone here. Targets whose
+ * directory does not exist are returned separately: they are reported, not rendered.
+ *
+ * A single-target package may also keep its sources directly in a predefined
+ * directory, with no `<dir>/<target name>` level; SwiftPM only allows that when
+ * the package has exactly one target, so the fallback is gated the same way.
+ */
+function resolveTargetPaths(targets, moduleRoot) {
+  // Counting regular targets only matches SwiftPM: a lone regular target plus a
+  // .testTarget still resolves to the bare directory.
+  const singleTarget = targets.length === 1;
+  const resolved = [];
+  const unresolvedTargets = [];
+  for (const target of targets) {
+    if (target.path != null) {
+      resolved.push(target);
+      continue;
+    }
+    const inferred =
+      PREDEFINED_SOURCE_DIRS.map((dir) => path.join(dir, target.name)).find((rel) =>
+        fs.existsSync(path.join(moduleRoot, rel))
+      ) ??
+      (singleTarget
+        ? PREDEFINED_SOURCE_DIRS.find((dir) => holdsSourceFiles(path.join(moduleRoot, dir)))
+        : undefined);
+    if (inferred == null) unresolvedTargets.push(target.name);
+    else resolved.push({ ...target, path: inferred });
+  }
+  return { targets: resolved, unresolvedTargets };
+}
 
 /** Point a `root` symlink at the real module source so target `path:`s resolve to real files. */
 function linkRoot(pkgDir, moduleRoot) {
@@ -171,9 +335,15 @@ function sourceDependencies(react, codegenPkgPath) {
  * (via a `root` symlink), injects RN's invariant React product set, and points
  * compilation at Expo's binary-free framework interface tree. RN owns the merge;
  * the checked-in manifest stays for standalone dev/describe.
+ *
+ * Returns `{ unresolvedTargets }` instead when a target's sources cannot be
+ * located — the module is skipped and diagnosed rather than emitted broken.
  */
 function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDir, codegenPkgPath) {
-  const manifest = parseDumpedManifest(runDumpPackage(moduleRoot));
+  const dumped = parseDumpedManifest(runDumpPackage(moduleRoot));
+  const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
+  if (unresolvedTargets.length) return { unresolvedTargets };
+  const manifest = { ...dumped, targets };
   const pkgDir = path.join(outDir, 'expo-source', manifest.name);
   fs.mkdirSync(pkgDir, { recursive: true });
   linkRoot(pkgDir, moduleRoot);
@@ -216,7 +386,14 @@ function emitPureSwiftSourcePackage(
   const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
   fs.writeFileSync(
     path.join(pkgDir, 'Package.swift'),
-    renderPureSwiftManifest(product, srcRel, pkgDeps, targetDeps, frameworkSearchPath)
+    renderPureSwiftManifest(
+      product,
+      srcRel,
+      pkgDeps,
+      targetDeps,
+      frameworkSearchPath,
+      collectIgnoredDirs(srcDir)
+    )
   );
 
   return {
@@ -227,6 +404,7 @@ function emitPureSwiftSourcePackage(
 
 module.exports = {
   parseDumpedManifest,
+  resolveTargetPaths,
   renderSourceManifest,
   renderPureSwiftManifest,
   emitSourceManifestPackage,

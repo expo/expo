@@ -357,3 +357,37 @@ describe('reportUnsupported', () => {
     spy.mockRestore();
   });
 });
+
+describe('unresolvable target paths', () => {
+  const pending = [
+    {
+      podName: 'ExpoFoo',
+      packageName: 'expo-foo',
+      moduleRoot: '/node_modules/expo-foo',
+      hasSources: true,
+      prebuildProduct: null,
+      unresolvedTargets: ['Example'],
+    },
+  ];
+
+  it('classifies a module whose target sources could not be located', () => {
+    expect(classifyUnsupported({ pending, coreAvailable: true })).toEqual([
+      {
+        reason: 'unresolvable-target-path',
+        podName: 'ExpoFoo',
+        packageName: 'expo-foo',
+        moduleRoot: '/node_modules/expo-foo',
+        targetNames: ['Example'],
+      },
+    ]);
+  });
+
+  it('reports what failed, the likely cause and the next step', () => {
+    const report = renderUnsupportedReport(classifyUnsupported({ pending, coreAvailable: true }));
+    expect(report).toMatch(/^error: Expo module "expo-foo" \(pod ExpoFoo\)/);
+    expect(report).toContain('"Example"');
+    expect(report).toContain('Sources');
+    expect(report).toContain('npx patch-package expo-foo');
+    expect(report).toContain('Module path: /node_modules/expo-foo');
+  });
+});

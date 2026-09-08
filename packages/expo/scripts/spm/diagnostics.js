@@ -94,6 +94,15 @@ function classifyUnsupported({ pending, coreAvailable }) {
     return [{ reason: 'core-unavailable', pods: pending.map((p) => p.podName) }];
   }
   return pending.map((p) => {
+    if (p.unresolvedTargets?.length) {
+      return {
+        reason: 'unresolvable-target-path',
+        podName: p.podName,
+        packageName: p.packageName,
+        moduleRoot: p.moduleRoot,
+        targetNames: p.unresolvedTargets,
+      };
+    }
     const prebuildable = p.prebuildProduct != null && !p.prebuildProduct.sourceOnly;
     return {
       reason:
@@ -200,6 +209,17 @@ function renderNoAppleSources({ podName, packageName, moduleRoot }) {
   ].join('\n');
 }
 
+function renderUnresolvableTargetPath({ podName, packageName, moduleRoot, targetNames }) {
+  const quoted = targetNames.map((n) => `"${n}"`).join(', ');
+  const plural = targetNames.length === 1 ? 'target' : 'targets';
+  return [
+    `error: Expo module "${packageName}" (pod ${podName}) ships a Package.swift whose ${plural} ${quoted} declare no \`path:\` and have no sources on disk, so it was skipped.`,
+    `  A target without \`path:\` takes its sources from Sources/<target name> (or Source/, src/, srcs/). None of those directories exist in the module, so the generated package would point at nothing — usually a partial install, or a manifest naming targets whose sources live elsewhere.`,
+    `  Reinstall ${packageName} first. If its layout is intentional, add an explicit \`path:\` to each target in its Package.swift, persist it with \`npx patch-package ${packageName}\`, and upstream it.`,
+    `  Module path: ${moduleRoot}`,
+  ].join('\n');
+}
+
 function renderCoreUnavailable({ pods }) {
   return [
     `error: ExpoModulesCore has no prebuilt Debug and Release xcframework, so all ${pods.length} source-built Expo ${pods.length === 1 ? 'module' : 'modules'} were skipped.`,
@@ -215,6 +235,7 @@ const RENDERERS = {
   'mixed-no-manifest': renderMixedNoManifest,
   'prebuild-available': renderPrebuildAvailable,
   'no-apple-sources': renderNoAppleSources,
+  'unresolvable-target-path': renderUnresolvableTargetPath,
   'core-unavailable': renderCoreUnavailable,
 };
 

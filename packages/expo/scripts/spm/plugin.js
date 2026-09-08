@@ -77,6 +77,7 @@ module.exports = function expoSpmPlugin(context) {
   const sourceManifest = []; // packages emitted from a checked-in manifest
   const pureSwiftSource = []; // packages emitted from a pure-Swift descriptor
   const unmappedDeps = []; // emitted pods depending on pods with no SwiftPM counterpart
+  const unresolvedTargets = new Map(); // module root → manifest targets with no sources on disk
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
   // once one flavor exists, the resolver requires and prepares both before RN
@@ -127,7 +128,9 @@ module.exports = function expoSpmPlugin(context) {
           outDir,
           codegenPkgPath
         );
-        if (e != null) {
+        if (e.unresolvedTargets != null) {
+          unresolvedTargets.set(moduleRoot, e.unresolvedTargets);
+        } else {
           packageDependencies.push(e.packageDep);
           productDependencies.push(...e.productDeps);
           pods.forEach((p) => emitted.add(p.podName));
@@ -181,6 +184,7 @@ module.exports = function expoSpmPlugin(context) {
         moduleRoot,
         pureSwift: isPureSwift(moduleRoot),
         hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
+        unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         prebuildProduct: spmConfigProduct(moduleRoot, pod.podName),
       });
     }
