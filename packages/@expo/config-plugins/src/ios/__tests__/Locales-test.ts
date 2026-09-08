@@ -95,6 +95,8 @@ describe('e2e: iOS locales', () => {
       {
         locales: {
           fr: 'lang/fr.json',
+          // no Info.plist keys, must not stop the locales listed after it
+          de: 'lang/de.json',
           // doesn't exist
           xx: 'lang/xx.json',
 
@@ -104,8 +106,6 @@ describe('e2e: iOS locales', () => {
           // support backwards compatibility for `locales` structure without platform keys.
           en: 'lang/en.json',
           ar: 'lang/ar.json',
-          // shouldn't have an infoPlist
-          de: 'lang/de.json',
         },
       },
       { project, projectRoot }
