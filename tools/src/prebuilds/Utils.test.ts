@@ -94,8 +94,8 @@ describe('selectDistributedPackages', () => {
     assert.equal(result, fakePackages);
   });
 
-  it('IOS_PREBUILD_PACKAGES lists the 15 distributed packages', () => {
-    assert.equal(IOS_PREBUILD_PACKAGES.length, 15);
+  it('IOS_PREBUILD_PACKAGES lists the 14 distributed packages', () => {
+    assert.equal(IOS_PREBUILD_PACKAGES.length, 14);
     assert.ok(IOS_PREBUILD_PACKAGES.includes('expo-modules-core'));
     assert.ok(!IOS_PREBUILD_PACKAGES.includes('expo-age-range'));
   });
