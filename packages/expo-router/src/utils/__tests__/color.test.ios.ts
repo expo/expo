@@ -1,4 +1,4 @@
-import { PlatformColor } from 'react-native';
+import { type ColorValue, PlatformColor } from 'react-native';
 
 import { alpha, darken, isDark, isLight } from '../color';
 
@@ -18,6 +18,8 @@ describe('color', () => {
     ['invalid strings', 'not-a-color'],
     ['CSS variables', 'var(--my-color)'],
     ['PlatformColor', PlatformColor('systemPink')],
+    // `NaN` can reach these functions at runtime despite not being a valid `ColorValue`.
+    ['NaN', NaN as unknown as ColorValue],
   ])('returns undefined for %s', (_name, color) => {
     expect(isDark(color)).toBeUndefined();
     expect(isLight(color)).toBeUndefined();
