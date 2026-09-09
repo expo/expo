@@ -84,6 +84,29 @@ test('emits removePrevented and removed to the registered route emitters', () =>
   expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
 });
 
+test('warns about an unhandled action', () => {
+  const action = { type: 'NAVIGATE', payload: { name: 'missing' } };
+  const consumeReportEvents = jest.fn();
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const report: NavigationTreeReport = {
+    events: [
+      { id: 0, type: 'unhandled-action', action },
+      { id: 1, type: 'unhandled-action', action },
+    ],
+  };
+
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
+
+  expect(error).toHaveBeenCalledTimes(1);
+  expect(error).toHaveBeenCalledWith(
+    expect.stringContaining(
+      "The action 'NAVIGATE' with payload {\"name\":\"missing\"} was not handled"
+    )
+  );
+  expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
+  error.mockRestore();
+});
+
 test('does not emit twice in StrictMode', () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();

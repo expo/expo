@@ -125,7 +125,6 @@ test("lets parent handle the action if child didn't", () => {
 
 test('handles an unsupported targeted action as a no-op without bubbling', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
-  const onUnhandledAction = jest.fn();
 
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
@@ -136,7 +135,7 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
   };
 
   render(
-    <BaseNavigationContainer ref={ref} onUnhandledAction={onUnhandledAction}>
+    <BaseNavigationContainer ref={ref}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
@@ -148,11 +147,9 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
   act(() => ref.dispatchSync({ type: 'POP_TO_TOP', target: state.key }));
 
   expect(ref.current!.getRootState()).toBe(state);
-  expect(onUnhandledAction).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("doesn't let a child handle an untargeted navigate action", () => {
+test("doesn't let a child handle an untargeted navigate action", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -166,7 +163,7 @@ test.skip("doesn't let a child handle an untargeted navigate action", () => {
   const TestScreen = () => null;
 
   const onStateChange = jest.fn();
-  const onUnhandledAction = jest.fn();
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
@@ -180,8 +177,7 @@ test.skip("doesn't let a child handle an untargeted navigate action", () => {
           { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
         ],
       }}
-      onStateChange={onStateChange}
-      onUnhandledAction={onUnhandledAction}>
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={TestScreen} />
@@ -202,15 +198,11 @@ test.skip("doesn't let a child handle an untargeted navigate action", () => {
   act(() => navigation.navigate('lex'));
 
   expect(onStateChange).not.toHaveBeenCalled();
-  expect(onUnhandledAction).toHaveBeenCalledTimes(1);
-  expect(onUnhandledAction).toHaveBeenCalledWith(
-    expect.objectContaining({
-      type: 'NAVIGATE',
-      payload: { name: 'lex' },
-    })
+  expect(error).toHaveBeenCalledWith(
+    expect.stringContaining('was not handled by any navigator.')
   );
-
   expect(navigation.getCurrentRoute()?.name).toBe('foo');
+  error.mockRestore();
 });
 
 test('action goes to correct parent navigator if target is specified', () => {
@@ -535,8 +527,7 @@ test("action doesn't bubble if target is specified", () => {
   expect(onStateChange).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip('logs error if no navigator handled the action', () => {
+test('logs error if no navigator handled the action', () => {
   const TestRouter = MockRouter;
 
   const TestNavigator = (props: any) => {

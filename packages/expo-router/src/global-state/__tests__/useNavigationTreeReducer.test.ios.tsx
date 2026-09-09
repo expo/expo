@@ -506,19 +506,19 @@ it('warns for direct navigation actions carrying a screen param', () => {
   warn.mockRestore();
 });
 
-it('logs an error when an action is dispatched before its router registers', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+it('reports an action dispatched before its router registers as unhandled', () => {
   const result = renderReducer({ registry: new Map() });
+  const action = { type: 'TEST' };
 
-  act(() => result.result.current.handleAction({ type: 'TEST' }));
+  act(() => result.result.current.handleAction(action));
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'TEST'"));
+  expect(result.result.current.report?.events).toEqual([
+    { id: 0, type: 'unhandled-action', action },
+  ]);
   expect(result.result.current.state).toBe(initialState);
-  error.mockRestore();
 });
 
-it('logs an error for a later action after a same-batch reset changes the registered state key', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+it('reports a later action as unhandled after a same-batch reset changes the state key', () => {
   const registryEntry = entry((state, action) =>
     action.type === 'RESET_KEY'
       ? {
@@ -536,9 +536,11 @@ it('logs an error for a later action after a same-batch reset changes the regist
     result.result.current.handleAction({ type: 'NEXT' });
   });
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'NEXT'"));
+  expect(result.result.current.report?.events).toEqual([
+    expect.objectContaining({ id: 0, type: 'action-dispatched', action: { type: 'RESET_KEY' } }),
+    { id: 1, type: 'unhandled-action', action: { type: 'NEXT' } },
+  ]);
   expect(result.result.current.state.key).toBe('next-root');
-  error.mockRestore();
 });
 
 it('resets a state slice when its router unregisters', () => {
