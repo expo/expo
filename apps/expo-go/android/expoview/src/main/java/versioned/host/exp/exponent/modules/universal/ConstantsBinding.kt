@@ -41,6 +41,11 @@ class ConstantsBinding(
             )
           )
           this["isDetached"] = false
+          // The embedded fingerprint describes the Expo Go binary, not the loaded project.
+          // iOS Expo Go needs no counterpart today: it goes through `EXConstantsBinding.m` and
+          // the Objective-C `EXConstantsService`, which reads no fingerprint. Mirror this
+          // override there if iOS Expo Go ever adopts `ConstantsProvider`.
+          this["fingerprint"] = null
         }
     }
 
