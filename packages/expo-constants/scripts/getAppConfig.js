@@ -5,22 +5,20 @@ const { getConfig } = require('expo/config');
 const fs = require('node:fs');
 const path = require('node:path');
 
+const {
+  createFingerprintFileAsync,
+  warnFingerprintEmbedFailed,
+} = require('./createFingerprintFile');
+const { resolveProjectRoot } = require('./resolveProjectRoot');
+
 const cwd = process.cwd();
 const possibleProjectRoot = process.argv[2] ?? cwd;
 const destinationDir = process.argv[3] ?? cwd;
+const platform = process.argv[4];
+// The native build scripts pass 'true' for debug builds only.
+const embedFingerprint = process.argv[5] === 'true';
 
-// TODO: Verify we can remove projectRoot validation, now that we no longer
-// support React Native <= 62
-let projectRoot;
-if (fs.existsSync(path.join(possibleProjectRoot, 'package.json'))) {
-  projectRoot = possibleProjectRoot;
-} else if (fs.existsSync(path.join(possibleProjectRoot, '..', 'package.json'))) {
-  projectRoot = path.resolve(possibleProjectRoot, '..');
-} else {
-  throw new Error(
-    `Unable to locate project (no package.json found) at path: ${possibleProjectRoot}`
-  );
-}
+const projectRoot = resolveProjectRoot(possibleProjectRoot);
 
 require('@expo/env').load(projectRoot);
 process.chdir(projectRoot);
@@ -31,3 +29,12 @@ const { exp } = getConfig(projectRoot, {
 });
 
 fs.writeFileSync(path.join(destinationDir, 'app.config'), JSON.stringify(exp));
+
+// Awaited, so the order against process exit is explicit in an Xcode script phase.
+(async () => {
+  try {
+    await createFingerprintFileAsync(projectRoot, destinationDir, platform, embedFingerprint);
+  } catch (error) {
+    warnFingerprintEmbedFailed(/** @type {Error} */ (error));
+  }
+})();

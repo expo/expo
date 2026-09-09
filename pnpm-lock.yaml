@@ -4423,6 +4423,9 @@ importers:
       '@expo/env':
         specifier: workspace:~
         version: link:../@expo/env
+      '@expo/require-utils':
+        specifier: workspace:^
+        version: link:../@expo/require-utils
       expo:
         specifier: '*'
         version: link:../expo
