@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `DatePickerDialog` preselecting today when `initialDate` is omitted, and keep its confirm button disabled while no date is selected so `onDateSelected` never receives an invalid date. ([#49898](https://github.com/expo/expo/pull/49898) by [@pataar](https://github.com/pataar))
+
 ### 💡 Others
 
 ## 57.0.17 — 2026-09-08
