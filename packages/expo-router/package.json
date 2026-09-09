@@ -288,7 +288,6 @@
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native/normalize-colors": "0.87.1",
     "client-only": "^0.0.1",
-    "escape-string-regexp": "^4.0.0",
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
     "nanoid": "^3.3.18",
