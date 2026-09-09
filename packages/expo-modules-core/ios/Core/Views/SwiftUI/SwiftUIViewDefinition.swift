@@ -111,17 +111,29 @@ extension ExpoSwiftUI {
         if ViewType.self is ExpoSwiftUI.WithHostingView.Type {
           let view = ExpoSwiftUI.HostingView(viewType: ViewType.self, props: props, appContext: appContext)
           // Set up events to call view's `dispatchEvent` method.
-          props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
+          props.setUpEvents({ [weak view] eventName, payload in
+            view?.dispatchEvent(eventName, payload: payload)
+          }, synchronous: { [weak view] eventName, payload in
+            view?.requestSynchronousEvent(eventName, payload: payload)
+          })
           return AppleView.from(view)
         }
 
         if EXAppDefines.APP_RCT_DEV {
           let view = ExpoSwiftUI.SwiftUIVirtualViewDev(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
-          props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
+          props.setUpEvents({ [weak view] eventName, payload in
+            view?.dispatchEvent(eventName, payload: payload)
+          }, synchronous: { [weak view] eventName, payload in
+            view?.requestSynchronousEvent(eventName, payload: payload)
+          })
           return .swiftui(view)
         } else {
           let view = ExpoSwiftUI.SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
-          props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
+          props.setUpEvents({ [weak view] eventName, payload in
+            view?.dispatchEvent(eventName, payload: payload)
+          }, synchronous: { [weak view] eventName, payload in
+            view?.requestSynchronousEvent(eventName, payload: payload)
+          })
           return .swiftui(view)
         }
       }
@@ -145,4 +157,3 @@ extension ExpoSwiftUI {
       } as [String]
     }
   }
-

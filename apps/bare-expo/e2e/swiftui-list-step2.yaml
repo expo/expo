@@ -1,0 +1,25 @@
+appId: dev.expo.Payments
+---
+# Open the Playground tab before running this focused smoke test.
+- assertVisible: 'Step 3: buffered window + measured heights'
+- tapOn: 'Reset rows'
+- assertVisible: 'Row 0 · taps 0'
+- tapOn: 'Row 0 · taps 0'
+- assertVisible: 'Row 0 · taps 1'
+- repeat:
+    times: 8
+    commands:
+      - swipe:
+          start: '50%, 80%'
+          end: '50%, 30%'
+          duration: 350
+- assertNotVisible: 'Row 0 · taps 1'
+- scrollUntilVisible:
+    element:
+      text: 'Row 0 · taps 0'
+    direction: UP
+    timeout: 60000
+- tapOn: 'Row 0 · taps 0'
+- assertVisible: 'Row 0 · taps 1'
+- tapOn: 'Reset rows'
+- assertVisible: 'Row 0 · taps 0'

@@ -77,7 +77,10 @@ extension ExpoSwiftUI {
       objectWillChange.send()
     }
 
-    internal func setUpEvents(_ dispatcher: @escaping (_ eventName: String, _ payload: Any) -> Void) {
+    internal func setUpEvents(
+      _ dispatcher: @escaping (_ eventName: String, _ payload: Any) -> Void,
+      synchronous: @escaping (_ eventName: String, _ payload: Any) -> Void
+    ) {
       globalEventDispatcher.handler = { payload in
         dispatcher(GLOBAL_EVENT_NAME, payload)
       }
@@ -92,6 +95,9 @@ extension ExpoSwiftUI {
         }
         event.handler = { payload in
           dispatcher(eventName, payload)
+        }
+        event.synchronousHandler = { payload in
+          synchronous(eventName, payload)
         }
       }
     }
