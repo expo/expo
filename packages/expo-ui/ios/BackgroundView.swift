@@ -3,14 +3,18 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal class BackgroundViewProps: UIBaseViewProps {
+public final class BackgroundViewProps: UIBaseViewProps {
   @Field var alignment: AlignmentOptions?
 }
 
-internal struct BackgroundView: ExpoSwiftUI.View {
-  @ObservedObject var props: BackgroundViewProps
+public struct BackgroundView: ExpoSwiftUI.View {
+  @ObservedObject public var props: BackgroundViewProps
 
-  var body: some View {
+  public init(props: BackgroundViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     baseContent
       .background(alignment: props.alignment?.toAlignment() ?? .center) {
         backgroundContent
