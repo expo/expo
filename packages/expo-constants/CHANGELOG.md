@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Expose the embedded fingerprint as `Constants.fingerprint`, so JavaScript can read what the running build was made from. ([#48922](https://github.com/expo/expo/pull/48922) by [@vonovak](https://github.com/vonovak))
 - Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes

@@ -7,9 +7,12 @@ import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.services.ServiceInterface
 import java.io.FileNotFoundException
 import java.util.UUID
+import org.json.JSONException
+import org.json.JSONObject
 
 private val TAG = ConstantsService::class.java.simpleName
 private const val CONFIG_FILE_NAME = "app.config"
+private const val FINGERPRINT_FILE_NAME = "app.fingerprint"
 
 @ServiceInterface(ConstantsInterface::class)
 open class ConstantsService(private val context: Context) : ConstantsInterface {
@@ -38,6 +41,7 @@ open class ConstantsService(private val context: Context) : ConstantsInterface {
       "systemFonts" to systemFonts,
       "systemVersion" to systemVersion,
       "manifest" to appConfig,
+      "fingerprint" to embeddedFingerprint,
       "platform" to mapOf<String, Map<String, Any>>("android" to emptyMap())
     )
 
@@ -70,23 +74,36 @@ open class ConstantsService(private val context: Context) : ConstantsInterface {
     )
 
   private val appConfig: String?
-    get() {
+    get() = readAssetOrNull(CONFIG_FILE_NAME)
+
+  // The file is `{"hash": ..., "fingerprintVersion": ...}`. Only the hash is exposed: the version
+  // is there for tools comparing two fingerprints, not for app code.
+  private val embeddedFingerprint: String?
+    get() = readAssetOrNull(FINGERPRINT_FILE_NAME)?.let { contents ->
       try {
-        return context
-          .assets
-          .open(CONFIG_FILE_NAME)
-          .use { input ->
-            input
-              .bufferedReader(charset = Charsets.UTF_8)
-              .use { it.readText() }
-          }
-      } catch (_: FileNotFoundException) {
-        // do nothing, expected in managed apps
-      } catch (e: Exception) {
-        Log.e(TAG, "Error reading embedded app config", e)
+        JSONObject(contents).optString("hash").takeIf { it.isNotEmpty() }
+      } catch (_: JSONException) {
+        null
       }
-      return null
     }
+
+  private fun readAssetOrNull(name: String): String? {
+    try {
+      return context
+        .assets
+        .open(name)
+        .use { input ->
+          input
+            .bufferedReader(charset = Charsets.UTF_8)
+            .use { it.readText() }
+        }
+    } catch (_: FileNotFoundException) {
+      // do nothing, expected when the asset was not embedded
+    } catch (e: Exception) {
+      Log.e(TAG, "Error reading embedded asset $name", e)
+    }
+    return null
+  }
 
   companion object {
     private fun convertPixelsToDp(px: Float, context: Context): Int {
