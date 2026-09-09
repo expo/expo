@@ -2,7 +2,7 @@ import type { ColorValue } from 'react-native';
 import { StyleSheet } from 'react-native';
 import type { TabDescriptor } from 'react-native-tab-view';
 
-import { Color } from '../../../utils/color';
+import { alpha } from '../../../utils/color';
 import { Text } from '../../elements';
 import { useLinkBuilder, useLocale, useTheme } from '../../native';
 import type { MaterialTopTabBarProps, MaterialTopTabViewRoute } from '../types';
@@ -51,9 +51,7 @@ export function MaterialTopTabBar({
 
   const activeColor: ColorValue = focusedOptions.tabBarActiveTintColor ?? colors.primary;
   const inactiveColor: ColorValue =
-    focusedOptions.tabBarInactiveTintColor ??
-    Color(activeColor)?.alpha(0.5).string() ??
-    colors.text;
+    focusedOptions.tabBarInactiveTintColor ?? alpha(activeColor, 0.5) ?? colors.text;
 
   const tabBarOptions = Object.fromEntries(
     state.routes.map((route) => {
