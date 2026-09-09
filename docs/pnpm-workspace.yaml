@@ -4,9 +4,7 @@
 # as a root-workspace install and never touches docs/ as standalone.
 packages: []
 
-# Flat `node_modules`, kept from the Yarn 4 layout when docs moved to pnpm. pnpm
-# reads this setting here only, since `.npmrc` now carries auth and registry
-# settings alone.
+# Flat `node_modules`, kept from the Yarn 4 layout when docs moved to pnpm.
 nodeLinker: hoisted
 
 # Reject package versions younger than 24 hours to reduce exposure to
