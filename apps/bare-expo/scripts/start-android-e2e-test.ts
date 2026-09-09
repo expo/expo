@@ -62,6 +62,7 @@ const __dirname = dirname(__filename);
       await runCustomMaestroFlowsAsync(
         e2eDir,
         'android',
+        APP_ID,
         async (flowRelativePaths, { attempt }) => {
           if (attempt > 1) {
             // Stop the app to reset any state left over by the failed flows; the next
