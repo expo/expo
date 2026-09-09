@@ -33,10 +33,7 @@ if (typeof window === 'undefined') {
 
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
 
-    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledWith(name, {
-      ...resource,
-      display: Font.FontDisplay.AUTO,
-    });
+    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledWith(name, resource);
 
     await Font.unloadAsync(name);
     expect(Font.isLoaded(name)).toBe(false);
@@ -81,7 +78,6 @@ if (typeof window === 'undefined') {
 
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledWith(name, {
-      display: Font.FontDisplay.AUTO,
       uri: 'font.ttf',
     });
   });
@@ -98,5 +94,46 @@ if (typeof window === 'undefined') {
 
   it('getLoadedFonts is available', () => {
     expect(Font.getLoadedFonts()).toHaveLength(0);
+  });
+
+  it('parses an array of font family definitions, loading every face', async () => {
+    await Font.loadAsync([
+      {
+        fontFamily: name,
+        fontDefinitions: [
+          { path: 'regular.ttf' },
+          { path: 'italic.ttf', style: 'italic' },
+          { path: 'bold.ttf', weight: 800 },
+        ],
+      },
+    ]);
+
+    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(3);
+    expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(1, name, {
+      uri: 'regular.ttf',
+    });
+    expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(2, name, {
+      uri: 'italic.ttf',
+      style: 'italic',
+    });
+    expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(3, name, {
+      uri: 'bold.ttf',
+      weight: 800,
+    });
+
+    expect(Font.isLoaded(name)).toBe(true);
+    expect(Font.isLoading(name)).toBe(false);
+  });
+
+  it('does not reload a face that was already loaded via the array API', async () => {
+    const definition = {
+      fontFamily: name,
+      fontDefinitions: [{ path: 'regular.ttf', weight: 400 }],
+    };
+
+    await Font.loadAsync([definition]);
+    await Font.loadAsync([definition]);
+
+    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
   });
 }
