@@ -20,13 +20,15 @@ internal final class FontNoPostScriptException: GenericException<String> {
 
 internal final class FontFamilyEmptyFacesException: GenericException<String> {
   override var reason: String {
-    "Could not load font family '\(param)' because no faces were provided. Pass at least one font face with a 'localUri' to 'loadFontFamilyAsync'"
+    "Could not load font family '\(param)' because no faces were provided. "
+      + "Pass at least one font face with a 'localUri' to 'loadFontFamilyAsync'"
   }
 }
 
 internal final class FontFaceMissingUriException: GenericException<String> {
   override var reason: String {
-    "Could not load font family '\(param)' because one of its faces has no 'localUri'. Make sure every face passed to 'loadFontFamilyAsync' includes a font file URI"
+    "Could not load font family '\(param)' because one of its faces has no 'localUri'. "
+      + "Make sure every face passed to 'loadFontFamilyAsync' includes a font file URI"
   }
 }
 

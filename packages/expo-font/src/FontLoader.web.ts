@@ -2,8 +2,9 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import type { FontFaceDefinition, FontResource, FontSource } from './Font.types';
-import { FontDisplay } from './Font.types';
+import type { FontDisplay, FontFaceDefinition, FontResource, FontSource } from './Font.types';
+import { normalizeWeight, resolveFaceStyle, resolveFaceWeight } from './fontFaceValidation';
+import { fontSourceFromFace } from './fontSourceFromFace';
 
 function uriFromFontSource(asset: FontSource): string | number | null {
   if (typeof asset === 'string') {
@@ -79,34 +80,37 @@ function throwInvalidSourceError(source: any): never {
   );
 }
 
-// Merges a face's `weight`/`style`/`display`/`testString` onto its `path`, falling back to
-// values already present on `path` when it's a `FontResource`-shaped object, so the generated
-// `@font-face` rule carries the properties declared on the `FontFaceDefinition`.
-function fontSourceFromFace(face: FontFaceDefinition): FontSource {
-  const { path, weight, style, display, testString } = face;
-
-  if (path instanceof Asset) {
-    return path;
+// The shared declared-value check skips faces with an undeclared weight or style. On web an
+// undeclared descriptor is not read from the font file — CSS defaults it to 'normal'/400 — so
+// two faces can resolve to the same effective descriptors and the last one registered silently
+// shadows the rest. Warn about that; ranges only collide when they are identical.
+function warnOnCollidingFaces(fontFamily: string, fontDefinitions: FontFaceDefinition[]): void {
+  const seenFaces = new Set<string>();
+  for (const face of fontDefinitions) {
+    const weight = resolveFaceWeight(face);
+    const weightKey =
+      normalizeWeight(weight) ?? (typeof weight === 'string' ? weight.trim().toLowerCase() : 400);
+    const styleKey = (resolveFaceStyle(face) ?? 'normal').trim().toLowerCase();
+    const key = `${weightKey}/${styleKey}`;
+    if (seenFaces.has(key)) {
+      console.warn(
+        `Font family "${fontFamily}" declares two faces that both resolve to font-weight ` +
+          `${weightKey} and font-style "${styleKey}" on web. The browser renders the last one ` +
+          `registered and silently ignores the rest. Give each face a distinct weight or style.`
+      );
+      return;
+    }
+    seenFaces.add(key);
   }
-
-  const base: FontResource =
-    typeof path === 'string' || typeof path === 'number' ? { uri: path } : path;
-
-  return {
-    ...base,
-    weight: weight ?? base.weight,
-    style: style ?? base.style,
-    display: display ?? base.display,
-    testString: testString ?? base.testString,
-  };
 }
 
-// Loads every face concurrently, each as its own `@font-face` rule under the shared
-// `fontFamily` name, matching the pre-array-API behavior of calling `loadAsync` once per face.
 export async function loadFontFamilyAsync(
   fontFamily: string,
   fontDefinitions: FontFaceDefinition[]
 ): Promise<void> {
+  if (__DEV__) {
+    warnOnCollidingFaces(fontFamily, fontDefinitions);
+  }
   await Promise.all(
     fontDefinitions.map((face) => {
       const asset = getAssetForSource(fontSourceFromFace(face));

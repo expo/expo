@@ -75,7 +75,7 @@ export function getLoadedServerFonts(): string[] {
   if (!store) {
     return [];
   }
-  return [...store.values()].map(({ name }) => name);
+  return [...new Set([...store.values()].map(({ name }) => name))];
 }
 
 export function isServerFontLoaded(name: string): boolean {

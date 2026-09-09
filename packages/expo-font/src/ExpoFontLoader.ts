@@ -12,7 +12,7 @@ export type ExpoFontLoaderModule = {
   getLoadedFonts: () => string[];
   loadAsync: (fontFamilyName: string, localUriOrWebAsset: any) => Promise<void>;
   // only available on native runtimes; web loads faces individually via `@font-face` instead
-  loadFontFamilyAsync?: (fontFamilyName: string, faces: NativeFontFace[]) => Promise<void>;
+  loadFontFamilyAsync: (fontFamilyName: string, faces: NativeFontFace[]) => Promise<void>;
   // the following methods are only available on web
   unloadAllAsync?: () => Promise<void>;
   unloadAsync?: (fontFamilyName: string, options?: UnloadFontOptions) => Promise<void>;
@@ -29,6 +29,9 @@ const m: ExpoFontLoaderModule =
           return [];
         },
         loadAsync() {
+          return Promise.resolve();
+        },
+        loadFontFamilyAsync() {
           return Promise.resolve();
         },
       }
