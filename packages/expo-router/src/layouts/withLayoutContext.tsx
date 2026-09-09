@@ -113,6 +113,8 @@ export function useFilterScreenChildren<
  * 
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
+ * @deprecated Use `unstable_integrateWithRouter` instead.
+ *
  * @param Nav - The navigator component to wrap.
  * @param processScreens - A function that processes the screens before passing them to the navigator.
  * It must preserve every screen name exactly once because guards are associated with the original
