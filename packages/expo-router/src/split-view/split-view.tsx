@@ -1,17 +1,9 @@
-import React, { createContext, isValidElement, use, type ReactNode } from 'react';
+import React, { isValidElement, use, type ReactNode } from 'react';
 import { Split, type SplitHostProps } from 'react-native-screens/experimental';
 
-import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
+import { IsWithinNativeNavigator } from '../standard-navigation';
 import { Slot } from '../views/Navigator';
 import { SplitViewColumn, SplitViewInspector } from './elements';
-
-const IsWithinSplitViewContext = createContext(false);
-
-const WrappedSlot = () => (
-  <IsWithinLayoutContext value>
-    <Slot />
-  </IsWithinLayoutContext>
-);
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -21,13 +13,8 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
 }
 
 function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps) {
-  if (use(IsWithinSplitViewContext)) {
-    throw new Error('There can only be one SplitView in the navigation hierarchy.');
-  }
-
-  // TODO: Add better way of detecting if SplitView is rendered inside Native navigator.
-  if (use(IsWithinLayoutContext)) {
-    throw new Error('SplitView cannot be used inside another navigator, except for Slot.');
+  if (use(IsWithinNativeNavigator)) {
+    throw new Error('SplitView cannot be used inside another native navigator.');
   }
 
   if (process.env.EXPO_OS !== 'ios') {
@@ -64,13 +51,15 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
 
   // The key is needed, because number of columns cannot be changed dynamically
   return (
-    <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
-      {columnChildren}
-      <Split.Column>
-        <WrappedSlot />
-      </Split.Column>
-      {inspectorChildren}
-    </Split.Host>
+    <IsWithinNativeNavigator value>
+      <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
+        {columnChildren}
+        <Split.Column>
+          <Slot />
+        </Split.Column>
+        {inspectorChildren}
+      </Split.Host>
+    </IsWithinNativeNavigator>
   );
 }
 

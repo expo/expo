@@ -1,63 +1,45 @@
 'use client';
 import * as React from 'react';
-import { use, useMemo } from 'react';
+import { useMemo } from 'react';
+import { createStandardNavigator } from 'standard-navigation';
 
-import { getValidInitialRouteName, useRouteNode } from '../../Route';
 import {
   CompositionContext,
   mergeOptions,
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
-import {
-  createNavigatorFactory,
-  type EventArg,
-  NavigationMetaContext,
-  type NavigatorTypeBagBase,
-  type ParamListBase,
-  type StackActionHelpers,
-  StackActions,
-  type StackNavigationState,
-  StackRouter,
-  type StackRouterOptions,
-  type TypedNavigator,
-  useNavigationBuilder,
-} from '../../react-navigation/native';
+import type { NavigatorContentProps } from '../../standard-navigation';
 import { ExperimentalStackView } from './ExperimentalStackView';
 import type {
   ExperimentalStackNavigationEventMap,
   ExperimentalStackNavigationOptions,
-  ExperimentalStackNavigationProp,
-  ExperimentalStackNavigatorProps,
 } from './types';
 
-function ExperimentalStackNavigator({
-  id,
-  children,
-  layout,
-  screenListeners,
-  screenOptions,
-  screenLayout,
-  UNSTABLE_router,
-  ...rest
-}: ExperimentalStackNavigatorProps) {
-  const routeNode = useRouteNode();
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
-    StackNavigationState<ParamListBase>,
-    StackRouterOptions,
-    StackActionHelpers<ParamListBase>,
-    ExperimentalStackNavigationOptions,
-    ExperimentalStackNavigationEventMap
-  >(StackRouter, {
-    id,
-    initialRouteName: getValidInitialRouteName(routeNode),
-    children,
-    layout,
-    screenListeners,
-    screenOptions,
-    screenLayout,
-    UNSTABLE_router,
-  });
+export interface ExperimentalStackNavigatorCreateProps {
+  pop: (count: number, sourceRouteKey: string) => void;
+  subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
+}
 
+export type StandardExperimentalStackNavigationEventMap = {
+  [Event in keyof ExperimentalStackNavigationEventMap]: ExperimentalStackNavigationEventMap[Event] & {
+    canPreventDefault: false;
+  };
+};
+
+type ExperimentalStackNavigatorContentProps = NavigatorContentProps<
+  ExperimentalStackNavigationOptions,
+  StandardExperimentalStackNavigationEventMap,
+  object,
+  ExperimentalStackNavigatorCreateProps
+>;
+
+function ExperimentalStackNavigatorContent({
+  state,
+  descriptors,
+  emitter,
+  pop,
+  subscribePopToTopOnParentTabPress,
+}: ExperimentalStackNavigatorContentProps) {
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = useMemo(
@@ -65,61 +47,22 @@ function ExperimentalStackNavigator({
     [descriptors, registry, state]
   );
 
-  const meta = use(NavigationMetaContext);
-
-  React.useEffect(() => {
-    if (meta && 'type' in meta && meta.type === 'native-tabs') {
-      // Inside native tabs, popToTop is handled natively.
-      return;
-    }
-
-    // @ts-expect-error: there may not be a tab navigator in parent
-    return navigation?.addListener?.('tabPress', (e: any) => {
-      const isFocused = navigation.isFocused();
-
-      requestAnimationFrame(() => {
-        if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
-          navigation.dispatch({
-            ...StackActions.popToTop(),
-            target: state.key,
-          });
-        }
-      });
-    });
-  }, [meta, navigation, state.index, state.key]);
+  React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   return (
-    <NavigationContent>
-      <CompositionContext value={contextValue}>
-        <ExperimentalStackView
-          {...rest}
-          state={state}
-          navigation={navigation}
-          descriptors={mergedDescriptors}
-        />
-      </CompositionContext>
-    </NavigationContent>
+    <CompositionContext value={contextValue}>
+      <ExperimentalStackView
+        state={state}
+        emit={emitter.emit}
+        pop={pop}
+        descriptors={mergedDescriptors}
+      />
+    </CompositionContext>
   );
 }
 
-export function createExperimentalStackNavigator<
-  const ParamList extends ParamListBase,
-  const NavigatorID extends string | undefined = string | undefined,
-  const TypeBag extends NavigatorTypeBagBase = {
-    ParamList: ParamList;
-    NavigatorID: NavigatorID;
-    State: StackNavigationState<ParamList>;
-    ScreenOptions: ExperimentalStackNavigationOptions;
-    EventMap: ExperimentalStackNavigationEventMap;
-    NavigationList: {
-      [RouteName in keyof ParamList]: ExperimentalStackNavigationProp<
-        ParamList,
-        RouteName,
-        NavigatorID
-      >;
-    };
-    Navigator: typeof ExperimentalStackNavigator;
-  },
->(): TypedNavigator<TypeBag> {
-  return createNavigatorFactory(ExperimentalStackNavigator)();
-}
+export const createStandardExperimentalStackNavigator = createStandardNavigator<
+  ExperimentalStackNavigationOptions,
+  StandardExperimentalStackNavigationEventMap,
+  ExperimentalStackNavigatorCreateProps
+>(ExperimentalStackNavigatorContent);

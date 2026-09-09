@@ -4,6 +4,10 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `onReady` container prop and the `ready` container event. ([#49845](https://github.com/expo/expo/pull/49845) by [@Ubax](https://github.com/Ubax))
+- Remove `createStackNavigator` from `expo-router/js-stack`. Use `unstable_createStandardStackNavigator` with `unstable_integrateWithRouter` instead. ([#49209](https://github.com/expo/expo/pull/49209) by [@Ubax](https://github.com/Ubax))
+- Make `expo-symbols` an optional peer dependency. Install it to use `md` icons with `NativeTabs.Trigger.Icon` on Android. ([#49738](https://github.com/expo/expo/pull/49738) by [@Ubax](https://github.com/Ubax))
+- Make `@expo/ui` an optional peer dependency. Install it to use `Stack.Toolbar` on Android. ([#49737](https://github.com/expo/expo/pull/49737) by [@Ubax](https://github.com/Ubax))
 - Remove `UNSTABLE_UnhandledLinkingContext` from `expo-router/react-navigation`. ([#49616](https://github.com/expo/expo/pull/49616) by [@Ubax](https://github.com/Ubax))
 - Remove `BaseNavigationContainer` export from `expo-router/react-navigation`. ([#49587](https://github.com/expo/expo/pull/49587) by [@Ubax](https://github.com/Ubax))
 - Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
@@ -48,6 +52,7 @@
 
 ### 🎉 New features
 
+- Add unstable APIs for integrating custom native and JavaScript stack navigators with `standard-navigation`. ([#49209](https://github.com/expo/expo/pull/49209) by [@Ubax](https://github.com/Ubax))
 - Add `LocaleProvider` to customize navigation direction at runtime. ([#49815](https://github.com/expo/expo/pull/49815) by [@Ubax](https://github.com/Ubax))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
 - Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
@@ -92,6 +97,11 @@
 
 ### 💡 Others
 
+- Replace the `escape-string-regexp` dependency with an internal helper. ([#49902](https://github.com/expo/expo/pull/49902) by [@Ubax](https://github.com/Ubax))
+- Replace the internal `color` dependency with `@react-native/normalize-colors`. ([#49876](https://github.com/expo/expo/pull/49876) by [@Ubax](https://github.com/Ubax))
+- Resolve queued navigation actions against render-time state. ([#49846](https://github.com/expo/expo/pull/49846) by [@Ubax](https://github.com/Ubax))
+- Propagate prevent-remove guards to ancestors. ([#49829](https://github.com/expo/expo/pull/49829) by [@Ubax](https://github.com/Ubax))
+- Mark preloaded routes with `isPreloaded: true` on the route object. ([#49826](https://github.com/expo/expo/pull/49826) by [@Ubax](https://github.com/Ubax))
 - Replace latest-value refs with `useLatestCallback` and `useEffectEvent`. ([#49643](https://github.com/expo/expo/pull/49643) by [@Ubax](https://github.com/Ubax))
 - Remove the root `options` event, `DocumentTitleOptions`, and the `documentTitle` prop from `expo-router/react-navigation`. ([#49590](https://github.com/expo/expo/pull/49590) by [@Ubax](https://github.com/Ubax))
 - Remove `onStateChange` from `BaseNavigationContainer` and `NavigationContainerProps` in `expo-router/react-navigation` ([#49588](https://github.com/expo/expo/pull/49588) by [@Ubax](https://github.com/Ubax))
@@ -119,6 +129,8 @@
 - [Internal] Read the development server URL from `expo/internal/bundle-origin` instead of duplicating its accessor ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 - [Internal] Isolate the loader's Suspense store from `LoaderClient` ([#48563](https://github.com/expo/expo/pull/48563) by [@hassankhan](https://github.com/hassankhan))
 - [Internal] Remove legacy root entrypoint shims ([#49001](https://github.com/expo/expo/pull/49001) by [@hassankhan](https://github.com/hassankhan))
+- Drop `fast-deep-equal` and `shallowequal` dependencies ([#49875](https://github.com/expo/expo/pull/49875) by [@kitten](https://github.com/kitten))
+- Drop `invariant` dependency ([#49882](https://github.com/expo/expo/pull/49882) by [@kitten](https://github.com/kitten))
 
 ## 57.0.9 - 2026-07-29
 

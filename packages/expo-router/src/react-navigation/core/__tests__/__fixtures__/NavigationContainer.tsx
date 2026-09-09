@@ -3,7 +3,6 @@ import * as React from 'react';
 import { NavigationContainer as NavigationContainerImpl } from '../../../../fork/NavigationContainer';
 import { getStateFromPath, type ResultState } from '../../../../fork/getStateFromPath';
 import { RemovalPreventionProvider } from '../../../../global-state/removalPrevention';
-import { RouterRegistryProvider } from '../../../../global-state/routerRegistry';
 import { RoutingQueueProvider } from '../../../../global-state/routingQueueContext';
 import type { NavigationState } from '../../../routers';
 
@@ -35,11 +34,9 @@ export const NavigationContainer = React.forwardRef(function NavigationContainer
 
   return (
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <NavigationContainerImpl {...props} linking={linkingWithInitialState} ref={ref} />
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <NavigationContainerImpl {...props} linking={linkingWithInitialState} ref={ref} />
+      </RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 });

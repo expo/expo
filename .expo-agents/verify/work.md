@@ -48,7 +48,7 @@ Read any `AGENTS.md` or `CLAUDE.md` governing the files you may change. Make eve
 Do not reflexively run a full monorepo install. First locate the changed subsystem, its package manager, scripts, focused tests, docs tooling, and generated-file rules. Install only what the trustworthy repository command you need requires. For package code whose own checks rely on built workspace siblings, use the proven full setup rather than an attractive but invalid partial install:
 
 ```sh
-corepack prepare pnpm@10.33.0 --activate
+corepack prepare pnpm@12.2.1 --activate
 pnpm install
 ```
 
@@ -77,6 +77,8 @@ Keep the repository sandbox for authoring and package checks. Create the second 
 ### Tier 4 — native, release-only, or build-time behavior
 
 Use an EAS build or the bounded native-workflow oracle only when native compilation, CocoaPods, Gradle, release configuration, or a changed runtime fingerprint is part of the behavior. Build the minimum necessary arms. Five builds is the maximum available, not a target.
+
+A build that must contain a change to the native code of an `expo-*` package does not compile that code by default. Published `expo-*` packages ship prebuilt binaries (an Android AAR under `local-maven-repo/` declared by `android.publication` in `expo-module.config.json`; an iOS XCFramework), and the build links those instead of the patched source. The build is green and the artifact is identical to the unpatched one (#49802). Opt the package out in the app's `package.json` — `{"expo":{"autolinking":{"android":{"buildFromSource":["<package>"]},"ios":{"buildFromSource":["<package>"]}}}}`, where `<package>` is the npm name with a leading `@` dropped and non-word characters replaced by `-` — and pass `buildExpoModulesFromSource: true` to `eas_build`. Confirm in the Gradle log that the package is listed under `Using expo modules` without the `[📦]` prebuilt prefix. Without that confirmation, report the arm as not containing the change.
 
 Over-verification is a defect: it burns minutes and money, creates more failure modes, and can distract from whether the requested change is correct. Under-verification is also a defect. The right proof is the smallest one that would have caught a wrong implementation.
 

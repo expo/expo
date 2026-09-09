@@ -1,6 +1,6 @@
 'use client';
 
-import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import { type PropsWithChildren, Fragment, type ComponentType, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -11,7 +11,6 @@ import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { navigationRef } from './global-state/navigationRef';
 import { RemovalPreventionProvider } from './global-state/removalPrevention';
 import { RouterConfigContext } from './global-state/routerConfigContext';
-import { RouterRegistryProvider } from './global-state/routerRegistry';
 import { RoutingQueueProvider } from './global-state/routingQueueContext';
 import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
@@ -91,11 +90,6 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
-function onNavigationReady() {
-  maybeHideSplashScreen();
-}
-
-// TODO(@ubax): Refactor onReady logic and use listeners pattern
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -141,18 +135,15 @@ function ContextNavigator({
 
   return (
     <RouterConfigContext.Provider value={routerConfig}>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <UpstreamNavigationContainer
-            ref={navigationRef}
-            linking={linkingConfig as LinkingOptions<any>}
-            onReady={onNavigationReady}>
-            <WrapperComponent>
-              <Content rootComponent={rootComponent} />
-            </WrapperComponent>
-          </UpstreamNavigationContainer>
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <UpstreamNavigationContainer
+          ref={navigationRef}
+          linking={linkingConfig as LinkingOptions<any>}>
+          <WrapperComponent>
+            <Content rootComponent={rootComponent} />
+          </WrapperComponent>
+        </UpstreamNavigationContainer>
+      </RemovalPreventionProvider>
     </RouterConfigContext.Provider>
   );
 }
@@ -169,6 +160,10 @@ function Content({ rootComponent }: { rootComponent: ComponentType<any> }) {
     children,
     id: INTERNAL_SLOT_NAME,
   });
+
+  useEffect(() => {
+    maybeHideSplashScreen();
+  }, []);
 
   return (
     <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>

@@ -29,9 +29,11 @@ export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
   StandardNavigatorDescriptor,
+  StandardNavigatorEmit,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
+export { IsWithinNativeNavigator } from './IsWithinNativeNavigator';
 
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';

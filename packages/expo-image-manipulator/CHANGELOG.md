@@ -14,6 +14,12 @@
 
 ### 💡 Others
 
+- Add missing `react` and `react-native` peer dependencies ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
+
+### 📚 3rd party library updates
+
+- Bump `SDWebImage` to 5.21.6 and `SDWebImageWebPCoder` to 0.15.0 to align with `expo-image` ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
+
 ## 57.0.7 - 2026-07-29
 
 _This version does not introduce any user-facing changes._

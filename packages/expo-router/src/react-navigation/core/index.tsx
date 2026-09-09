@@ -74,7 +74,7 @@ export { useNavigationBuilder } from './useNavigationBuilder';
  */
 export { useNavigationContainerRef } from './useNavigationContainerRef';
 export { useNavigationState } from './useNavigationState';
-export { usePreventRemove } from './usePreventRemove';
+export { type PreventRemoveOptions, usePreventRemove } from './usePreventRemove';
 /**
  * @deprecated Import `useRoute` from `expo-router` instead. Will be removed in a future SDK.
  */

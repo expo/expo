@@ -1,6 +1,6 @@
 import { type ColorValue, Platform, type ViewStyle } from 'react-native';
 
-import { Color } from '../../../utils/color';
+import { alpha } from '../../../utils/color';
 
 type ShadowConfig = {
   offset: {
@@ -20,9 +20,7 @@ export function getShadowStyle({
 }: ShadowConfig): ViewStyle {
   const result = Platform.select({
     web: {
-      boxShadow: `${offset.width}px ${offset.height}px ${radius}px ${
-        Color(color)?.alpha(opacity).toString() ?? ''
-      }`,
+      boxShadow: `${offset.width}px ${offset.height}px ${radius}px ${alpha(color, opacity) ?? ''}`,
     },
     default: {
       shadowOffset: offset,

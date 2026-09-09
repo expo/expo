@@ -347,6 +347,12 @@ export interface BottomSheetProps {
    * The content to render inside the bottom sheet.
    */
   children: ReactNode;
+
+  /**
+   * Identifier used to locate the inner content container in end-to-end tests.
+   * Applied on web only.
+   */
+  testID?: string;
 }
 
 // #endregion

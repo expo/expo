@@ -7,6 +7,7 @@ import path from 'path';
 import { getPrecompileDir } from '../Directories';
 import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
+import { usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import {
   enrichFrameworkWithHeaders,
@@ -149,7 +150,9 @@ export const Frameworks = {
     }
 
     // Create tarball containing the product xcframework and any SPM dependency xcframeworks
-    await createProductTarballAsync(pkg, product, buildType, options?.bundleSharedDeps);
+    if (!usesPackageLocalBuildPath(pkg)) {
+      await createProductTarballAsync(pkg, product, buildType, options?.bundleSharedDeps);
+    }
   },
 
   /**
@@ -493,12 +496,42 @@ const copySPMDependencyXCFrameworksAsync = async (
     // Derive the SPM package name from the URL (last path component without .git)
     const packageName = spmPkg.packageName || path.basename(spmPkg.url, '.git');
     const productName = spmPkg.productName;
+    const packageLocalFrameworkPath = path.join(
+      pkg.buildPath,
+      'intermediates',
+      'spm-deps',
+      productName,
+      buildType.toLowerCase(),
+      `${productName}.xcframework`
+    );
+
+    // Exact-package builds prepare source-based SPM dependencies privately so SwiftPM can
+    // consume packages that declare unsafe flags. They are dynamic runtime dependencies, so
+    // copy them into the package-owned cached output for the prepack lifecycle to publish.
+    if (usesPackageLocalBuildPath(pkg) && (await fs.pathExists(packageLocalFrameworkPath))) {
+      const destPath = path.join(outputDir, `${productName}.xcframework`);
+      logger.verbose(
+        `📦 Copying package-local SPM dep ${chalk.cyan(productName)} into cached output`
+      );
+      await fs.remove(destPath);
+      await spawnAsync(
+        'rsync',
+        ['-a', '--delete', `${packageLocalFrameworkPath}/`, `${destPath}/`],
+        {
+          stdio: 'pipe',
+        }
+      );
+      continue;
+    }
 
     // Shared deps are normally skipped — they were built as standalone xcframeworks
     // and vendored separately at pod install time. When bundleSharedDeps is true
     // (npm bundling mode), copy them from the shared location into the output dir
     // so they end up in the product tarball.
-    if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
+    if (
+      !usesPackageLocalBuildPath(pkg) &&
+      Frameworks.hasSharedSPMDepFramework(productName, buildType)
+    ) {
       if (!bundleSharedDeps) {
         logger.info(
           `⏭️  Skipping shared SPM dep ${chalk.cyan(productName)} (already at shared location)`

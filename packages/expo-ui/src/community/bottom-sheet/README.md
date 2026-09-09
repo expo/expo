@@ -4,11 +4,11 @@ A drop-in replacement for [`@gorhom/bottom-sheet`](https://github.com/gorhom/rea
 
 - **iOS**: SwiftUI sheet presentation with detents
 - **Android**: Material 3 ModalBottomSheet with `expand()`/`partialExpand()` native methods
-- **Web**: [vaul](https://github.com/emilkowalski/vaul) drawer with spring-physics gestures
+- **Web**: HTML `<dialog>` bottom sheet
 
 ## Installation
 
-No extra dependencies needed beyond `@expo/ui`. vaul is bundled for web.
+No extra dependencies needed beyond `@expo/ui`.
 
 ## Usage
 
@@ -57,7 +57,7 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 
 ### Behavioral difference: modal vs inline
 
-`@gorhom/bottom-sheet`'s `BottomSheet` renders **inline** — a View at the bottom of its container, always mounted and visible at some snap point height. This component uses **native modal** presentation on iOS and Android — an overlay that is either presented or dismissed. On web, vaul renders a drawer overlay.
+`@gorhom/bottom-sheet`'s `BottomSheet` renders **inline** — a View at the bottom of its container, always mounted and visible at some snap point height. This component uses **native modal** presentation on iOS and Android — an overlay that is either presented or dismissed. On web, it renders a dialog overlay.
 
 **What this means:**
 
@@ -72,7 +72,7 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 
 | Export                        | Supported | Notes                                                          |
 | ----------------------------- | --------- | -------------------------------------------------------------- |
-| `BottomSheet` (default)       | Yes       | Modal on iOS/Android, vaul drawer on web                       |
+| `BottomSheet` (default)       | Yes       | Modal on iOS/Android, HTML dialog on web                       |
 | `BottomSheetView`             | Yes       | Pass-through `View` wrapper (strips `flex` for fit-to-content) |
 | `BottomSheetScrollView`       | Yes       | Re-export of `ScrollView`                                      |
 | `BottomSheetFlatList`         | Yes       | Re-export of `FlatList`                                        |
@@ -81,15 +81,15 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 | `BottomSheetModal`            | Yes       | Starts closed, opened via `present()`                          |
 | `BottomSheetModalProvider`    | Yes       | No-op wrapper for compatibility                                |
 | `useBottomSheet`              | Yes       | Context-based, returns ref methods                             |
-| `BottomSheetBackdrop`         | No        | Native/vaul handles backdrop                                   |
-| `BottomSheetHandle`           | No        | Native/vaul handles drag indicator                             |
+| `BottomSheetBackdrop`         | No        | Native/web sheet handles backdrop                              |
+| `BottomSheetHandle`           | No        | Native/web sheet handles drag indicator                        |
 | `BottomSheetFooter`           | No        | No equivalent                                                  |
 | `BottomSheetDraggableView`    | No        | Not applicable                                                 |
 | `BottomSheetVirtualizedList`  | No        | Use `FlatList` instead                                         |
 | `BottomSheetFlashList`        | No        | Use `FlatList` instead                                         |
 | `useBottomSheetModal`         | No        | Use `useBottomSheet` instead                                   |
-| `useBottomSheetSpringConfigs` | No        | Native/vaul handles animations                                 |
-| `useBottomSheetTimingConfigs` | No        | Native/vaul handles animations                                 |
+| `useBottomSheetSpringConfigs` | No        | Native/web sheet handles animations                            |
+| `useBottomSheetTimingConfigs` | No        | Native/web sheet handles animations                            |
 
 ### Props
 
@@ -102,7 +102,7 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 | `onDismiss`                   | Yes       | Alias for `onClose` (gorhom `BottomSheetModal` compat)                                                                                          |
 | `enablePanDownToClose`        | Yes       | iOS: enables swipe + backdrop tap. Android: swipe + back button + scrim tap.                                                                    |
 | `enableDynamicSizing`         | Yes       | Fit-to-content when no `snapPoints`. Cannot combine with explicit snap points.                                                                  |
-| `handleComponent`             | Partial   | `null` hides handle, non-null shows native/vaul handle. Custom components not rendered.                                                         |
+| `handleComponent`             | Partial   | `null` hides handle, non-null shows native/web handle. Custom components not rendered.                                                          |
 | `backgroundStyle`             | Partial   | Android: `backgroundColor` extracted for `containerColor`. iOS: not applied (SwiftUI sheet uses system background). Web: full style is applied. |
 | `style`                       | Partial   | Passed through where possible                                                                                                                   |
 | `children`                    | Yes       |                                                                                                                                                 |

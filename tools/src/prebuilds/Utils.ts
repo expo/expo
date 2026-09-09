@@ -145,37 +145,14 @@ export const discoverAllSPMPackagesAsync = async (): Promise<SPMPackageSource[]>
   return [...expoPackages, ...externalPackages];
 };
 
-/**
- * Packages whose iOS prebuilt xcframeworks are distributed by default: built by
- * `et prebuild-packages` with no arguments and bundled into the published npm tarballs.
- * Many more packages have an `spm.config.json`; pass `--all-packages` to build those too.
- */
-export const IOS_PREBUILD_PACKAGES = [
-  'expo-brownfield',
-  'expo-camera',
-  'expo-contacts',
-  'expo-file-system',
-  'expo-font',
-  'expo-image',
-  'expo-image-manipulator',
-  'expo-live-photo',
-  'expo-location',
-  'expo-maps',
-  'expo-media-library',
-  'expo-modules-core',
-  'expo-print',
-  'expo-ui',
-  'expo-video',
-];
-
-export const selectDistributedPackages = <T extends { packageName: string }>(
-  expoPackages: T[],
+export const selectDistributedPackages = (
+  expoPackages: Package[],
   allPackages: boolean
-): T[] => {
+): Package[] => {
   if (allPackages) {
     return expoPackages;
   }
-  return expoPackages.filter((pkg) => IOS_PREBUILD_PACKAGES.includes(pkg.packageName));
+  return expoPackages.filter((pkg) => pkg.getSwiftPMConfiguration().publishPrebuilds === true);
 };
 
 /**

@@ -49,10 +49,7 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
   return (
     <RoutingQueueApiContext.Provider value={api}>
       <NavigationPendingContext.Provider value={isPending || queue.length > 0}>
-        <PendingIntentsContext.Provider value={queue}>
-          {children}
-          <ImperativeRoutingQueueBridge enqueue={api.enqueue} />
-        </PendingIntentsContext.Provider>
+        <PendingIntentsContext.Provider value={queue}>{children}</PendingIntentsContext.Provider>
       </NavigationPendingContext.Provider>
     </RoutingQueueApiContext.Provider>
   );
@@ -66,7 +63,7 @@ export function useEnqueueRoutingIntent() {
   return api.enqueue;
 }
 
-function ImperativeRoutingQueueBridge({ enqueue }: Pick<RoutingQueueApi, 'enqueue'>) {
+export function ImperativeRoutingQueueBridge({ enqueue }: Pick<RoutingQueueApi, 'enqueue'>) {
   useClientLayoutEffect(() => {
     if (__DEV__ && boundBridges > 0) {
       console.error(

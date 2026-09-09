@@ -81,6 +81,10 @@ export type Route<
    * Usually present when the screen was opened from a deep link.
    */
   path?: string;
+  /**
+   * Set by the router while the route is rendered ahead of use and cleared when it becomes active.
+   */
+  isPreloaded?: true;
 }> &
   (undefined extends Params
     ? Readonly<{

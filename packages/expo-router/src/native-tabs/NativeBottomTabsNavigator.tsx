@@ -8,7 +8,10 @@ import {
   type TabNavigationState,
   type TabRouterOptions,
 } from '../react-navigation/native';
-import { unstable_createStandardRouterNavigator } from '../standard-navigation';
+import {
+  IsWithinNativeNavigator,
+  unstable_createStandardRouterNavigator,
+} from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
@@ -272,14 +275,16 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   ]);
 
   return (
-    <NativeTabsNavigatorWithContext
-      {...props}
-      children={triggerChildren}
-      nonTriggerChildren={nonTriggerChildren}
-      tabConfigurationKey={tabConfigurationKey}
-      screenOptions={screenOptions}
-      // Passed to TabRouter
-      backBehavior={backBehavior}
-    />
+    <IsWithinNativeNavigator value>
+      <NativeTabsNavigatorWithContext
+        {...props}
+        children={triggerChildren}
+        nonTriggerChildren={nonTriggerChildren}
+        tabConfigurationKey={tabConfigurationKey}
+        screenOptions={screenOptions}
+        // Passed to TabRouter
+        backBehavior={backBehavior}
+      />
+    </IsWithinNativeNavigator>
   );
 }

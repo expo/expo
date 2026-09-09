@@ -74,6 +74,7 @@ it('runs `npx expo lint` to install lint in a project', async () => {
     'metro.config.js',
     'package.json',
     'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
   ]);
 
   // Ensure there are no linting errors
@@ -116,6 +117,7 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
     'metro.config.js',
     'package.json',
     'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
   ]);
 
   // Ensure there are no linting errors

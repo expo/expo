@@ -22,6 +22,7 @@ import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
 import { getExternalPackageByProductName, isExternalPackage } from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
+import { withPackageLocalBuildPath } from '../PackageLocalBuild';
 import type { BuildFlavor } from '../Prebuilder.types';
 import { buildSharedSPMDependencyAsync } from '../SPMBuild';
 import type { SPMPackageDependencyConfig, SPMProduct, SPMTarget } from '../SPMConfig.types';
@@ -504,18 +505,27 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     }
 
     // 1. Verify packages exist and have spm.config.json (or discover the default set)
-    const requestedPackages = await verifyAllPackagesAsync(
+    let requestedPackages = await verifyAllPackagesAsync(
       request.packageNames,
       request.includeExternal,
       request.externalOnly,
       request.allPackages
     );
 
+    if (request.exactPackage) {
+      if (request.packageNames.length !== 1 || requestedPackages.length !== 1) {
+        throw new Error('Exact-package mode requires exactly one package.');
+      }
+      requestedPackages = requestedPackages.map(withPackageLocalBuildPath);
+    }
+
     // 2. Auto-add unbuilt dependencies to the build set
-    const unsortedPackages = expandWithUnbuiltDependencies(requestedPackages, {
-      buildFlavors: request.buildFlavors,
-      clean: request.clean,
-    });
+    const unsortedPackages = request.exactPackage
+      ? requestedPackages
+      : expandWithUnbuiltDependencies(requestedPackages, {
+          buildFlavors: request.buildFlavors,
+          clean: request.clean,
+        });
 
     // 3. Validate podName in spm.config.json matches actual .podspec files
     await validateAllPodNamesAsync(unsortedPackages);
@@ -579,7 +589,9 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     });
 
     // Resolve artifacts path
-    ctx.artifactsPath = Artifacts.getArtifactsPath(PACKAGES_DIR);
+    ctx.artifactsPath = request.exactPackage
+      ? path.join(ctx.packages[0].buildPath, 'intermediates', 'artifacts')
+      : Artifacts.getArtifactsPath(PACKAGES_DIR);
   },
 };
 
@@ -660,6 +672,9 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
 
   async run(ctx) {
     const shared = collectSharedSPMDependencies(ctx.packages);
+    const spmDepsRoot = ctx.request.exactPackage
+      ? path.join(ctx.packages[0].buildPath, 'intermediates', 'spm-deps')
+      : Frameworks.getSharedSPMDepsRoot();
 
     logger.info(
       `📦 Found ${shared.length} shared SPM ${shared.length === 1 ? 'dependency' : 'dependencies'}:`
@@ -671,7 +686,6 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
     // When --clean is passed, wipe shared SPM dep build dirs and xcframeworks
     // so they're rebuilt from scratch (including re-resolving dependencies).
     if (ctx.request.clean) {
-      const spmDepsRoot = Frameworks.getSharedSPMDepsRoot();
       logger.info(`🧹 Cleaning shared SPM dependency caches...`);
       for (const { dep } of shared) {
         const depDir = path.join(spmDepsRoot, dep.productName);
@@ -686,7 +700,13 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
 
     for (const flavor of ctx.request.buildFlavors) {
       for (const { dep } of shared) {
-        await buildSharedSPMDependencyAsync(dep, flavor, allSharedDeps);
+        await buildSharedSPMDependencyAsync(
+          dep,
+          flavor,
+          allSharedDeps,
+          ['iOS', 'iOS Simulator'],
+          spmDepsRoot
+        );
       }
     }
   },

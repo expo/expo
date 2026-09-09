@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react-native';
-import React, { isValidElement } from 'react';
+import React, { isValidElement, use } from 'react';
 import { Button, View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
@@ -8,6 +8,7 @@ import { router } from '../../imperative-api';
 import { Stack } from '../../layouts/Stack';
 import { Redirect } from '../../link/Redirect';
 import { usePreventRemove } from '../../react-navigation/core';
+import { IsWithinNativeNavigator } from '../../standard-navigation';
 import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
@@ -58,6 +59,10 @@ const error = jest.fn();
 const originalWarn = console.warn;
 const originalError = console.error;
 
+function NativeNavigatorContextProbe() {
+  return <View testID={String(use(IsWithinNativeNavigator))} />;
+}
+
 beforeEach(() => {
   console.warn = warn;
   console.error = error;
@@ -82,6 +87,19 @@ it('renders tabs correctly', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(4);
+});
+
+it('marks its routes as nested inside a native navigator', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: NativeNavigatorContextProbe,
+  });
+
+  expect(screen.getByTestId('true')).toBeVisible();
 });
 
 it('does not rerender the focused screen while preloading other tabs', () => {
