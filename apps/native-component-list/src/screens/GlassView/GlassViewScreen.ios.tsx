@@ -10,7 +10,17 @@ import {
   isGlassEffectAPIAvailable,
 } from 'expo-glass-effect';
 import React from 'react';
-import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  PlatformColor,
+  DynamicColorIOS,
+  type ColorValue,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
@@ -18,11 +28,16 @@ import GlassOpacityAnimationExample from './GlassOpacityAnimationExample.ios';
 import { BodyText } from '../../components/BodyText';
 
 // Static color options for tinting
-const colorOptions = [
+const colorOptions: { name: string; value: ColorValue | undefined }[] = [
   { name: 'None', value: undefined },
   { name: 'Red', value: 'rgba(255, 59, 48, 0.7)' },
   { name: 'Blue', value: 'rgba(0, 122, 255, 0.7)' },
   { name: 'Green', value: 'rgba(52, 199, 89, 0.7)' },
+  { name: 'PlatformColor', value: PlatformColor('systemIndigo') },
+  {
+    name: 'DynamicColorIOS',
+    value: DynamicColorIOS({ light: 'rgba(255, 149, 0, 0.7)', dark: 'rgba(88, 86, 214, 0.7)' }),
+  },
 ];
 
 const glassStyles: GlassStyle[] = ['clear', 'regular'];
@@ -35,7 +50,7 @@ export default function GlassViewScreen() {
   const [selectedStyle, setSelectedStyle] = React.useState<GlassStyle>('regular');
   const [colorScheme, setColorScheme] = React.useState<GlassColorScheme>('auto');
   const [isInteractive, setIsInteractive] = React.useState(false);
-  const [tintColor, setTintColor] = React.useState<string | undefined>(undefined);
+  const [tintColor, setTintColor] = React.useState<ColorValue | undefined>(undefined);
   const [spacing, setSpacing] = React.useState(20);
 
   const [isGlassVisible, setIsGlassVisible] = React.useState(true);
