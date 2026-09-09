@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- NativeTabs now honors layout `unstable_settings.initialRouteName` instead of always selecting the first Trigger.
+
 ### 💡 Others
 
 ## 57.0.20 — 2026-09-08
