@@ -3,8 +3,9 @@
 # gate, parse, ack/announce, the run, and the failure report all live in
 # `verify run` (engine LLP 0001; expo-sandbox-mcp LLP 0020).
 #
-# Owns the comment path since 2026-09-09; agent-commands.yml keeps only its
-# workflow_dispatch trigger as the rollback until it is deleted.
+# Owns the comment path since 2026-09-09. It replaced agent-commands.yml,
+# the 2,300-line monolith the engine was extracted from, deleted in
+# expo/expo#49923 — revert that PR to roll back.
 name: verify (comment)
 run-name: "verify #${{ github.event.issue.number }} — ${{ github.event.comment.user.login }}"
 
@@ -32,8 +33,8 @@ jobs:
     # The LOOSE shape gate: command-shaped, from a maintainer-association
     # author, not the bot itself. Exact shapes, the authoritative
     # write-access check, and thread replies are the engine's comment
-    # path. Mirrors agent-commands.yml's gate; reserved verbs stay
-    # excluded because other workflows own them.
+    # path. Same shape the code-review command workflows use; reserved
+    # verbs stay excluded because other workflows own them.
     if: >-
       github.event.comment.user.login != 'expo-bot' &&
       (startsWith(github.event.comment.body, '/verify') ||
@@ -93,7 +94,7 @@ jobs:
         env:
           VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
           # Comment text and identity cross as env only — never ${{ }} inside
-          # run: lines (the same rule agent-commands.yml follows).
+          # run: lines.
           VERIFY_COMMENT_BODY: ${{ github.event.comment.body }}
           VERIFY_COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
           VERIFY_COMMENT_ID: ${{ github.event.comment.id }}
