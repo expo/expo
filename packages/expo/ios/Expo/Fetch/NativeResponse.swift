@@ -58,7 +58,11 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     if state == .bodyCompleted || state == .bodyStreamingCanceled || state == .errorReceived {
       return
     }
-    if isInvalidState(.bodyStreamingStarted) {
+    // A consumer may also cancel before ever reading. The JS stream keeps `pull` lazy, so
+    // `startStreaming()` never ran and the state is still `.responseReceived`. Accept that as a
+    // cancel source: it silences the same spurious error and lets `didReceive data` drop further
+    // chunks instead of buffering a body nobody will read.
+    if isInvalidState(.responseReceived, .bodyStreamingStarted) {
       return
     }
     state = .bodyStreamingCanceled
