@@ -230,7 +230,13 @@ internal class HostView(context: Context, appContext: AppContext) :
         shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
       }
 
-      onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble()))
+      // `onSizeChanged` runs inside the Compose measure pass. Emitting the event here reaches
+      // Fabric event listeners synchronously (e.g. reanimated's `onEventDispatch` hook), which
+      // can flush mount items and re-enter `onMeasure` of a view that is mid-measure — Compose
+      // then throws "performMeasureAndLayout called during measure layout" and takes down the
+      // ReactHost. Post the dispatch so it runs after the measure pass completes.
+      // See https://github.com/expo/expo/issues/47625.
+      post { onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble())) }
     }
   }
 
