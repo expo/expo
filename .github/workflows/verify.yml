@@ -3,10 +3,10 @@
 # customize through .verify/ (config.jsonc, the prompt files) and dispatch
 # inputs.
 #
-# STAGED CUTOVER: this workflow runs only on explicit dispatch and lives
-# beside agent-commands.yml, which remains the live /verify pipeline until
-# shadow parity is approved. The dry_run input runs the full investigation
-# but posts nothing — artifacts only.
+# Runs only on explicit dispatch (`et verify <n>`, or the Actions tab); the
+# comment path (`/verify` typed in a thread) is verify-comment.yml. The
+# dry_run input runs the full investigation but posts nothing — artifacts
+# only.
 name: verify
 run-name: "verify #${{ inputs.target }}${{ inputs.dry_run == true && ' (dry run)' || '' }} — ${{ github.actor }}"
 
@@ -90,7 +90,7 @@ jobs:
           VERIFY_RETRY: ${{ inputs.retry }}
           VERIFY_RUN_ID: ${{ github.run_id }}
           VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
-          # Same deployment agent-commands.yml uses.
+          # Same deployment verify-comment.yml uses.
           MCP_URL: https://agile-minnow-543.convex.site
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
 

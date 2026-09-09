@@ -21,7 +21,7 @@ permissions:
 jobs:
   dismiss:
     # PR comments starting with /dismiss, /undismiss, or the @expo-bot forms.
-    # PREFIX matching, deliberately loose (see agent-commands.yml): expression
+    # PREFIX matching, deliberately loose (see verify-comment.yml): expression
     # literals cannot express a newline, so an exact-body match misses
     # `@expo-bot dismiss\n<ids>` and the command dies without a trace. This
     # gate only decides "command-shaped, from a maintainer"; the parse step
@@ -55,7 +55,7 @@ jobs:
           COMMENT: ${{ github.event.comment.body }}
         run: |
           # Reject an ill-formed command out loud (same contract as
-          # agent-commands.yml): the reply step below posts `reject` to the
+          # verify-comment.yml): the reply step below posts `reject` to the
           # thread. Reasons must be single-line — they pass through
           # GITHUB_OUTPUT.
           fail_cmd() {
@@ -73,7 +73,7 @@ jobs:
               *)
                 # Prefix-matched but not this workflow's verb: a work task
                 # (`dismiss-flaky-test`) or prose (`dismissed`).
-                # agent-commands.yml owns those shapes — stay silent.
+                # verify-comment.yml owns those shapes — stay silent.
                 echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
                 ;;
             esac
@@ -113,8 +113,8 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       # A maintainer typed a command and it did not launch — say so where it
-      # was typed (same contract as agent-commands.yml). Silent skips stay
-      # silent: those shapes belong to agent-commands.yml.
+      # was typed (same contract as verify-comment.yml). Silent skips stay
+      # silent: those shapes belong to verify-comment.yml.
       - name: Reply to a rejected command
         if: always() && steps.cmd.outputs.reject != ''
         env:
