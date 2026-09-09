@@ -19,4 +19,8 @@ android {
 
 dependencies {
   implementation 'com.google.android.material:material:1.13.0'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
 }
