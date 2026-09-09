@@ -94,9 +94,13 @@
 #                            collection) — never placed in the agent's env.
 name: Agent commands
 
+# RETIRED from the comment path (2026-09-09): `verify-comment.yml` and the
+# @expo/verify engine own `/verify` and `@expo-bot …` comments now. The
+# issue_comment trigger is removed here so one comment starts one run; the
+# workflow_dispatch path stays as the rollback (`gh workflow run
+# agent-commands.yml -f target=N`) until this file is deleted in a
+# follow-up, per LLP 0001 P1c (one revert-sized commit).
 on:
-  issue_comment:
-    types: [created]
   # Quiet path. Dispatching from the Actions tab runs a verification that
   # posts NOTHING to the thread until the findings themselves — no eyes
   # reaction, no "started" comment, no failure notice. That matters on a

@@ -3,10 +3,8 @@
 # gate, parse, ack/announce, the run, and the failure report all live in
 # `verify run` (engine LLP 0001; expo-sandbox-mcp LLP 0020).
 #
-# STAGED: lives beside agent-commands.yml, which still owns the comment
-# path until this one is proven live; both are gated on the same comment
-# shapes, so to avoid double runs the legacy workflow's issue_comment
-# trigger is removed in the same commit that promotes this one.
+# Owns the comment path since 2026-09-09; agent-commands.yml keeps only its
+# workflow_dispatch trigger as the rollback until it is deleted.
 name: verify (comment)
 run-name: "verify #${{ github.event.issue.number }} — ${{ github.event.comment.user.login }}"
 
@@ -19,12 +17,18 @@ permissions:
   issues: write
   pull-requests: read
 
-concurrency:
-  group: verify-target-${{ github.event.issue.number }}
-  cancel-in-progress: false
-
 jobs:
   verify:
+    # Job-level, not workflow-level: a workflow-level group is claimed at run
+    # creation, before the gate below runs, so every comment on the thread —
+    # including the bot's own triage and findings replies — counted as an
+    # arrival. With cancel-in-progress:false a group holds one waiting run and
+    # a third arrival evicts it, which cancelled waiting verifications (the
+    # 2026-08-20 incident, repeated on 2026-09-09 against the legacy job). A
+    # job-level group is only entered when the gate passes.
+    concurrency:
+      group: verify-target-${{ github.event.issue.number }}
+      cancel-in-progress: false
     # The LOOSE shape gate: command-shaped, from a maintainer-association
     # author, not the bot itself. Exact shapes, the authoritative
     # write-access check, and thread replies are the engine's comment
