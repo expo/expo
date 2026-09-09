@@ -3,6 +3,9 @@ appId: dev.expo.Payments
 jsEngine: graaljs
 ---
 - openLink: bareexpo://components/video/fullscreen
+- extendedWaitUntil:
+    visible: 'Enter Fullscreen'
+    timeout: 30000
 
 - tapOn: 'Enter Fullscreen'
 - runFlow:
