@@ -9,6 +9,11 @@ public class ExpoDevLauncherAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     EXDevLauncherController.disablePackagerServerAccess()
+    // Legacy non-scene launches only. It can fire twice, which is harmless: same nonce, and the
+    // second POST finds the callback port closed.
+    if let url = launchOptions?[.url] as? URL {
+      _ = EXDevLauncherFingerprintCheck.handle(url)
+    }
     return true
   }
 

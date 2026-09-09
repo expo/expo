@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expose the embedded fingerprint to native code through `EmbeddedFingerprint`. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

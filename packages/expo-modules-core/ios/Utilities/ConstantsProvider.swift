@@ -130,3 +130,22 @@ private func getManifest() -> [String: Any]? {
     return nil
   }
 }
+
+/** Reads the embedded `app.fingerprint`, for the dev-launcher responder. */
+public enum EmbeddedFingerprint {
+  public static func read() -> String? {
+    // Absent in a release build, or with `EXPO_SKIP_FINGERPRINT_EMBED` set. Not an error.
+    guard let bundle = findEXConstantsBundle(),
+          let url = bundle.url(forResource: "app", withExtension: "fingerprint"),
+          let fingerprint = try? String(contentsOf: url, encoding: .utf8) else {
+      return nil
+    }
+    guard let data = fingerprint.data(using: .utf8),
+          let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+          let hash = parsed["hash"] as? String,
+          !hash.isEmpty else {
+      return nil
+    }
+    return hash
+  }
+}
