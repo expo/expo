@@ -3,7 +3,7 @@ import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
 import { MagicWand01Icon } from '@expo/styleguide-icons/outline/MagicWand01Icon';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import {
   Children,
   createContext,
@@ -24,6 +24,8 @@ import { CALLOUT, HEADLINE } from '~/ui/components/Text';
 type AgentPromptProps = PropsWithChildren<{
   title: string;
   description: string;
+  /** Prompt built at runtime, for callers that cannot author it as MDX. */
+  prompt?: string;
   selectorLabel?: string;
   queryParam?: string;
   defaultOption?: string;
@@ -55,6 +57,7 @@ function selectedPromptText(container: HTMLElement | null) {
 export function AgentPrompt({
   title,
   description,
+  prompt,
   selectorLabel,
   queryParam,
   defaultOption,
@@ -68,9 +71,11 @@ export function AgentPrompt({
   const [isPromptVisible, setIsPromptVisible] = useState(false);
   const promptId = useId();
   const contentRef = useRef<HTMLDivElement>(null);
-  const { copiedIsVisible, onCopyAsync } = useCopy(() => selectedPromptText(contentRef.current));
+  const { copiedIsVisible, onCopyAsync } = useCopy(
+    () => prompt ?? selectedPromptText(contentRef.current)
+  );
 
-  const fromQuery = queryParam ? router.query[queryParam] : undefined;
+  const fromQuery = queryParam ? router?.query[queryParam] : undefined;
   const selectedId = queryParam
     ? (options.find(option => option.id === fromQuery)?.id ?? fallbackId)
     : localOptionId;
@@ -92,7 +97,7 @@ export function AgentPrompt({
       return;
     }
 
-    const nextQuery = { ...router.query };
+    const nextQuery = { ...router?.query };
 
     if (nextId === fallbackId) {
       delete nextQuery[queryParam];
@@ -100,7 +105,7 @@ export function AgentPrompt({
       nextQuery[queryParam] = nextId;
     }
 
-    void router.push({ query: nextQuery }, undefined, { shallow: true });
+    void router?.push({ query: nextQuery }, undefined, { shallow: true });
   }
 
   return (
@@ -179,9 +184,19 @@ export function AgentPrompt({
             ref={contentRef}
             hidden={!isPromptVisible}
             className="mt-3 [&_.code-block-wrapper]:my-0">
-            <SelectedOptionContext.Provider value={selectedId}>
-              {children}
-            </SelectedOptionContext.Provider>
+            {prompt ? (
+              <div className="code-block-wrapper overflow-clip rounded-3xl border border-secondary bg-subtle">
+                <pre className="relative max-h-96 overflow-auto whitespace-pre">
+                  <div className="w-fit p-4">
+                    <code className="text-xs text-default">{prompt}</code>
+                  </div>
+                </pre>
+              </div>
+            ) : (
+              <SelectedOptionContext.Provider value={selectedId}>
+                {children}
+              </SelectedOptionContext.Provider>
+            )}
           </div>
         </motion.div>
       </div>
