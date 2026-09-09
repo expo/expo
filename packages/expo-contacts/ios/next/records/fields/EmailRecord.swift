@@ -2,13 +2,13 @@ import ExpoModulesCore
 
 struct NewEmailRecord: NewRecord {
   @Field var address: String
-  @Field var label: String
+  @Field var label: String?
 }
 
 struct ExistingEmailRecord: ExistingRecord {
   @Field(FieldOption.required) var id: String
   @Field var address: String
-  @Field var label: String
+  @Field var label: String?
 
   init() {}
 

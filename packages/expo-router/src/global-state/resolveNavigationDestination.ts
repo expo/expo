@@ -1,4 +1,4 @@
-import isEqual from 'fast-deep-equal';
+import isEqual from 'react-fast-compare';
 
 import { findRouteNodeByName, getValidInitialRouteName, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';

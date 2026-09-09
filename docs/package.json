@@ -38,7 +38,13 @@
     "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale",
     "upstream-sync": "node --experimental-strip-types ./scripts/upstream-sync.ts"
   },
-  "packageManager": "pnpm@10.33.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.2.1",
+      "onFail": "warn"
+    }
+  },
   "engines": {
     "node": ">=24"
   },
@@ -155,14 +161,6 @@
   "postcss": {
     "plugins": {
       "@tailwindcss/postcss": {}
-    }
-  },
-  "pnpm": {
-    "overrides": {
-      "baseline-browser-mapping": "2.9.15"
-    },
-    "patchedDependencies": {
-      "next@16.2.11": "patches/next@16.2.11.patch"
     }
   }
 }
