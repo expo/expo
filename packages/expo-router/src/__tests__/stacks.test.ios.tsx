@@ -530,6 +530,142 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
+test('push should cascade anchor routes through multiple nested stacks', () => {
+  renderRouter({
+    index: () => <Text testID="a">A</Text>,
+    'funnel/_layout': {
+      unstable_settings: { initialRouteName: 'ba' },
+      default: () => <Stack />,
+    },
+    'funnel/ba': () => <Text testID="ba">BA</Text>,
+    'funnel/bb/_layout': {
+      unstable_settings: { initialRouteName: 'index' },
+      default: () => <Stack />,
+    },
+    'funnel/bb/index': () => <Text testID="bb">BB</Text>,
+    'funnel/bb/bc': () => <Text testID="bc">BC</Text>,
+  });
+
+  act(() => router.push('/funnel/bb/bc', { withAnchor: true }));
+
+  expect(screen).toHavePathname('/funnel/bb/bc');
+  expect(screen.getByTestId('bc')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/funnel/bb');
+  expect(screen.getByTestId('bb')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/funnel/ba');
+  expect(screen.getByTestId('ba')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('a')).toBeVisible();
+});
+
+test('three pushes queued in one tick build the same stack as three separate pushes', () => {
+  renderRouter({
+    index: () => <Text testID="a">A</Text>,
+    'funnel/_layout': {
+      unstable_settings: { initialRouteName: 'ba' },
+      default: () => <Stack />,
+    },
+    'funnel/ba': () => <Text testID="ba">BA</Text>,
+    'funnel/bb/_layout': {
+      unstable_settings: { initialRouteName: 'index' },
+      default: () => <Stack />,
+    },
+    'funnel/bb/index': () => <Text testID="bb">BB</Text>,
+    'funnel/bb/bc': () => <Text testID="bc">BC</Text>,
+  });
+
+  // Keep these pushes in one callback so the routing queue drains them as one batch.
+  act(() => {
+    router.push('/funnel/ba');
+    router.push('/funnel/bb');
+    router.push('/funnel/bb/bc');
+  });
+
+  expect(screen).toHavePathname('/funnel/bb/bc');
+  expect(screen.getByTestId('bc')).toBeVisible();
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 1,
+          key: expect.any(String),
+          routeNames: ['index', 'funnel'],
+          routes: [
+            { key: expect.any(String), name: 'index', path: '/' },
+            {
+              key: expect.any(String),
+              name: 'funnel',
+              params: {},
+              path: undefined,
+              state: {
+                index: 1,
+                key: expect.any(String),
+                routeNames: ['ba', 'bb'],
+                routes: [
+                  {
+                    key: expect.any(String),
+                    name: 'ba',
+                    params: {},
+                    path: '/funnel/ba',
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'bb',
+                    params: {},
+                    path: undefined,
+                    state: {
+                      index: 1,
+                      key: expect.any(String),
+                      routeNames: ['index', 'bc'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {},
+                          path: '/funnel/bb',
+                        },
+                        {
+                          key: expect.any(String),
+                          name: 'bc',
+                          params: {},
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      routeKeySeq: expect.any(Number),
+                      type: 'stack',
+                    },
+                  },
+                ],
+                stale: false,
+                routeKeySeq: expect.any(Number),
+                type: 'stack',
+              },
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+    type: 'stack',
+  });
+});
+
 describe('presentation validation', () => {
   let consoleSpy: jest.SpyInstance;
 
