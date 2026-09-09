@@ -42,6 +42,21 @@ function resolveSfEffect(
   });
 }
 
+/**
+ * Normalizes `svgVariables` values to strings. They are substituted into the SVG document as text,
+ * but numbers are accepted for convenience so that lengths and opacities don't have to be quoted.
+ */
+function resolveSvgVariables(
+  svgVariables: Record<string, string | number> | null | undefined
+): Record<string, string> | null {
+  if (svgVariables == null) {
+    return null;
+  }
+  return Object.fromEntries(
+    Object.entries(svgVariables).map(([name, value]) => [name, String(value)])
+  );
+}
+
 let loggedDefaultSourceDeprecationWarning = false;
 let loggedRenderingChildrenWarning = false;
 
@@ -345,6 +360,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         sfEffect={resolveSfEffect(sfEffect)}
+        svgVariables={resolveSvgVariables(restProps.svgVariables)}
         tintColor={
           isSFSymbol && colorStyle && !restProps.tintColor
             ? (colorStyle as string)

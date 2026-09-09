@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    .tick {
+      stroke: #555555;
+      stroke-width: var(--tick-width, 1);
+    }
+    .marker {
+      display: var(--marker, none);
+      fill: #d33333;
+    }
+  </style>
+  <rect x="5" y="5" width="90" height="90" rx="var(--corner-radius, 8)" fill="#f4f4f4" stroke="#888888" stroke-width="var(--frame-width, 2)" />
+  <g opacity="var(--track-opacity, 1)" transform="rotate(135 50 55)">
+    <circle cx="50" cy="55" r="32" fill="none" stroke="#dddddd" stroke-width="var(--track-width, 6)" stroke-dasharray="151 201" stroke-linecap="round" />
+    <circle cx="50" cy="55" r="32" fill="none" stroke="#44aa77" stroke-width="var(--track-width, 6)" stroke-dasharray="var(--progress, 50) 201" stroke-linecap="round" />
+  </g>
+  <line class="tick" x1="50" y1="19" x2="50" y2="23" />
+  <line class="tick" x1="24.5" y1="29.5" x2="27.5" y2="32.5" />
+  <line class="tick" x1="75.5" y1="29.5" x2="72.5" y2="32.5" />
+  <polygon class="marker" points="50,10 46,16 54,16" />
+  <g transform="rotate(var(--angle, 0) 50 55)">
+    <line x1="50" y1="55" x2="50" y2="30" stroke="#cc3333" stroke-width="var(--needle-width, 2)" stroke-linecap="round" />
+  </g>
+  <circle cx="50" cy="55" r="var(--hub-radius, 4)" fill="#333333" />
+</svg>
