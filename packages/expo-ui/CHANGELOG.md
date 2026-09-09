@@ -10,7 +10,7 @@
 
 ### 🎉 New features
 
-- [Android] Add `shadowElevation` to `DropdownMenu` to customize the popup shadow in dp.
+- [Android] Add `shadowElevation` to `DropdownMenu` to customize the popup shadow in dp. ([#49896](https://github.com/expo/expo/pull/49896) by [@maxlapides](https://github.com/maxlapides))
 - [Android] Added the `enabled` and `colors` props to the Jetpack Compose `RadioButton` component. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Added the Jetpack Compose `DateRangePicker` and `DateRangePickerDialog` components. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
