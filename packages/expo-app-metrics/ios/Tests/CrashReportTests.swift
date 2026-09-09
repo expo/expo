@@ -227,8 +227,23 @@ struct CrashReportTests {
     }
 
     @Test
-    func `renders at most twenty-five attributed stack frames and reports the omitted count`() throws {
-      let attributedFrames = (0..<28).map { index in
+    func `reports the faulting memory region`() throws {
+      // A stack overflow looks like any other bad access until you check the region.
+      let report = makeCrashReport(
+        timestampBegin: Date.now,
+        timestampEnd: Date.now,
+        virtualMemoryRegionInfo: "0x16f603ff8 is in STACK GUARD region"
+      )
+      let attributes = try #require(report.toLogRecord().attributes?.value as? [String: Any])
+      #expect(
+        attributes["expo.crash.virtual_memory_region"] as? String
+          == "0x16f603ff8 is in STACK GUARD region"
+      )
+    }
+
+    @Test
+    func `renders at most fifty attributed stack frames and reports the omitted count`() throws {
+      let attributedFrames = (0..<53).map { index in
         CrashReport.CallStackTree.Frame(
           binaryName: "TestApp",
           binaryUUID: nil,
@@ -266,13 +281,15 @@ struct CrashReportTests {
       let attributes = try #require(report.toLogRecord().attributes?.value as? [String: Any])
       let stacktrace = try #require(attributes["exception.stacktrace"] as? String)
       let lines = stacktrace.split(separator: "\n")
-      #expect(lines.count == 26)
-      #expect(lines.first == "frame0")
-      #expect(lines[24] == "frame24")
+      #expect(lines.count == 51)
+      // These fixtures carry no offset, so only the binary name is appended to each symbol.
+      #expect(lines.first == "frame0 (TestApp)")
+      #expect(lines[49] == "frame49 (TestApp)")
       #expect(lines.last == "… +3 more frames")
       #expect(!stacktrace.contains("unattributed"))
     }
   }
+
 }
 
 private func makeMainSessionRow(id: String, startDate: Date, endDate: Date?) -> SessionRow {
@@ -293,6 +310,7 @@ private func makeCrashReport(
   exceptionCode: Int? = 1,
   signal: Int? = 11,
   terminationReason: String? = nil,
+  virtualMemoryRegionInfo: String? = nil,
   exceptionReason: CrashReport.ExceptionReason? = nil,
   callStackTree: CrashReport.CallStackTree? = nil
 ) -> CrashReport {
@@ -301,7 +319,7 @@ private func makeCrashReport(
     exceptionCode: exceptionCode,
     signal: signal,
     terminationReason: terminationReason,
-    virtualMemoryRegionInfo: nil,
+    virtualMemoryRegionInfo: virtualMemoryRegionInfo,
     exceptionReason: exceptionReason,
     callStackTree: callStackTree,
     appVersion: "1.0.0",
