@@ -2,6 +2,7 @@ import { Button, mergeClasses } from '@expo/styleguide';
 import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon';
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
 import { MagicWand01Icon } from '@expo/styleguide-icons/outline/MagicWand01Icon';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import {
   Children,
@@ -64,6 +65,7 @@ export function AgentPrompt({
   const fallbackId = defaultOption ?? options[0]?.id;
   const [localOptionId, setLocalOptionId] = useState(fallbackId);
   const [isOpen, setIsOpen] = useState(false);
+  const [isPromptVisible, setIsPromptVisible] = useState(false);
   const promptId = useId();
   const contentRef = useRef<HTMLDivElement>(null);
   const { copiedIsVisible, onCopyAsync } = useCopy(() => selectedPromptText(contentRef.current));
@@ -72,6 +74,16 @@ export function AgentPrompt({
   const selectedId = queryParam
     ? (options.find(option => option.id === fromQuery)?.id ?? fallbackId)
     : localOptionId;
+
+  function onToggle() {
+    const nextIsOpen = !isOpen;
+
+    setIsOpen(nextIsOpen);
+
+    if (nextIsOpen) {
+      setIsPromptVisible(true);
+    }
+  }
 
   function onSelectionChange(nextId: string) {
     setLocalOptionId(nextId);
@@ -112,7 +124,7 @@ export function AgentPrompt({
           {options.length > 1 && (
             <div data-md="skip" className="max-sm:w-full">
               <Select
-                className="max-w-full shrink-0 border-secondary bg-default sm:min-w-52 max-sm:w-full"
+                className="max-w-full shrink-0 border-default bg-default sm:min-w-52 max-sm:w-full"
                 value={selectedId}
                 onValueChange={onSelectionChange}
                 options={options}
@@ -125,7 +137,7 @@ export function AgentPrompt({
             theme="primary"
             size="sm"
             leftSlot={<ClipboardIcon aria-hidden="true" className="icon-sm" />}
-            className="min-w-36 shrink-0 justify-center max-sm:w-full"
+            className="w-40 shrink-0 justify-center max-sm:w-full"
             onClick={() => void onCopyAsync()}>
             {copiedIsVisible ? 'Copied!' : 'Copy prompt'}
           </Button>
@@ -140,9 +152,7 @@ export function AgentPrompt({
           data-md="skip"
           aria-expanded={isOpen}
           aria-controls={promptId}
-          onClick={() => {
-            setIsOpen(open => !open);
-          }}
+          onClick={onToggle}
           className={mergeClasses(
             'flex cursor-pointer items-center gap-1.5 rounded-md text-xs font-medium text-secondary',
             'hover:text-default focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-link'
@@ -156,15 +166,24 @@ export function AgentPrompt({
           />
           {isOpen ? 'Hide prompt' : 'Show prompt'}
         </button>
-        <div
+        <motion.div
           id={promptId}
-          ref={contentRef}
-          hidden={!isOpen}
-          className="mt-3 [&_.code-block-wrapper]:my-0">
-          <SelectedOptionContext.Provider value={selectedId}>
-            {children}
-          </SelectedOptionContext.Provider>
-        </div>
+          initial={false}
+          animate={{ height: isOpen ? 'auto' : 0 }}
+          transition={{ type: 'tween', duration: 0.2 }}
+          onAnimationComplete={() => {
+            setIsPromptVisible(isOpen);
+          }}
+          className="overflow-hidden">
+          <div
+            ref={contentRef}
+            hidden={!isPromptVisible}
+            className="mt-3 [&_.code-block-wrapper]:my-0">
+            <SelectedOptionContext.Provider value={selectedId}>
+              {children}
+            </SelectedOptionContext.Provider>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
