@@ -34,20 +34,18 @@ const defaultProps: Required<NavigationBarProps> = {
   hidden: false,
 };
 
-// Merges the entries stack
-function mergeEntriesStack(entriesStack: NavigationBarProps[]) {
-  return entriesStack.reduce<{
-    style: NavigationBarStyle | undefined;
-    hidden: boolean | undefined;
-  }>(
+// Merges the entries stack over the default values, so that a key that no mounted entry
+// specifies falls back to the default instead of being left at whatever was applied last.
+function mergeEntriesStack(
+  entriesStack: NavigationBarProps[],
+  defaultValues: Required<NavigationBarProps>
+): Required<NavigationBarProps> {
+  return entriesStack.reduce<Required<NavigationBarProps>>(
     (prev, cur) => ({
       style: cur.style ?? prev.style,
       hidden: cur.hidden ?? prev.hidden,
     }),
-    {
-      style: undefined,
-      hidden: undefined,
-    }
+    { ...defaultValues }
   );
 }
 
@@ -70,9 +68,9 @@ const currentValues: {
   hidden: undefined,
 };
 
-export function setStyle(style: NavigationBarStyle) {
-  defaultProps.style = style;
-
+// Applies the values to the native module. These must not touch `defaultProps`, otherwise
+// mounting a component would overwrite the defaults that seed the merge.
+function applyStyle(style: NavigationBarStyle) {
   const resolvedStyle = resolveStyle(style);
 
   if (resolvedStyle !== currentValues.style) {
@@ -81,13 +79,21 @@ export function setStyle(style: NavigationBarStyle) {
   }
 }
 
-function setHidden(hidden: boolean) {
-  defaultProps.hidden = hidden;
-
+function applyHidden(hidden: boolean) {
   if (hidden !== currentValues.hidden) {
     currentValues.hidden = hidden;
     ExpoNavigationBar.setHidden(hidden).catch(() => {});
   }
+}
+
+export function setStyle(style: NavigationBarStyle) {
+  defaultProps.style = style;
+  applyStyle(style);
+}
+
+function setHidden(hidden: boolean) {
+  defaultProps.hidden = hidden;
+  applyHidden(hidden);
 }
 
 // Updates the native navigation bar with the entries from the stack
@@ -97,19 +103,10 @@ function updateEntriesStack() {
   }
 
   updateImmediate = setImmediate(() => {
-    if (entriesStack.length === 0) {
-      setStyle(defaultProps.style);
-      setHidden(defaultProps.hidden);
-    } else {
-      const { style, hidden } = mergeEntriesStack(entriesStack);
+    const { style, hidden } = mergeEntriesStack(entriesStack, defaultProps);
 
-      if (style != null) {
-        setStyle(style);
-      }
-      if (hidden != null) {
-        setHidden(hidden);
-      }
-    }
+    applyStyle(style);
+    applyHidden(hidden);
   });
 }
 
