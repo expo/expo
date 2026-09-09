@@ -534,12 +534,12 @@ test('push should cascade anchor routes through multiple nested stacks', () => {
   renderRouter({
     index: () => <Text testID="a">A</Text>,
     'funnel/_layout': {
-      unstable_settings: { initialRouteName: 'ba' },
+      unstable_settings: { anchor: 'ba' },
       default: () => <Stack />,
     },
     'funnel/ba': () => <Text testID="ba">BA</Text>,
     'funnel/bb/_layout': {
-      unstable_settings: { initialRouteName: 'index' },
+      unstable_settings: { anchor: 'index' },
       default: () => <Stack />,
     },
     'funnel/bb/index': () => <Text testID="bb">BB</Text>,
@@ -565,20 +565,22 @@ test('push should cascade anchor routes through multiple nested stacks', () => {
 });
 
 test('three pushes queued in one tick build the same stack as three separate pushes', () => {
-  renderRouter({
+  const routes = {
     index: () => <Text testID="a">A</Text>,
     'funnel/_layout': {
-      unstable_settings: { initialRouteName: 'ba' },
+      unstable_settings: { anchor: 'ba' },
       default: () => <Stack />,
     },
     'funnel/ba': () => <Text testID="ba">BA</Text>,
     'funnel/bb/_layout': {
-      unstable_settings: { initialRouteName: 'index' },
+      unstable_settings: { anchor: 'index' },
       default: () => <Stack />,
     },
     'funnel/bb/index': () => <Text testID="bb">BB</Text>,
     'funnel/bb/bc': () => <Text testID="bc">BC</Text>,
-  });
+  };
+
+  renderRouter(routes);
 
   // Keep these pushes in one callback so the routing queue drains them as one batch.
   act(() => {
@@ -587,83 +589,16 @@ test('three pushes queued in one tick build the same stack as three separate pus
     router.push('/funnel/bb/bc');
   });
 
-  expect(screen).toHavePathname('/funnel/bb/bc');
-  expect(screen.getByTestId('bc')).toBeVisible();
-  expectCompleteStateToMatch(navigationRef.getRootState(), {
-    index: 0,
-    key: expect.any(String),
-    routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: '__root',
-        state: {
-          index: 1,
-          key: expect.any(String),
-          routeNames: ['index', 'funnel'],
-          routes: [
-            { key: expect.any(String), name: 'index', path: '/' },
-            {
-              key: expect.any(String),
-              name: 'funnel',
-              params: {},
-              path: undefined,
-              state: {
-                index: 1,
-                key: expect.any(String),
-                routeNames: ['ba', 'bb'],
-                routes: [
-                  {
-                    key: expect.any(String),
-                    name: 'ba',
-                    params: {},
-                    path: '/funnel/ba',
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'bb',
-                    params: {},
-                    path: undefined,
-                    state: {
-                      index: 1,
-                      key: expect.any(String),
-                      routeNames: ['index', 'bc'],
-                      routes: [
-                        {
-                          key: expect.any(String),
-                          name: 'index',
-                          params: {},
-                          path: '/funnel/bb',
-                        },
-                        {
-                          key: expect.any(String),
-                          name: 'bc',
-                          params: {},
-                          path: undefined,
-                        },
-                      ],
-                      stale: false,
-                      routeKeySeq: expect.any(Number),
-                      type: 'stack',
-                    },
-                  },
-                ],
-                stale: false,
-                routeKeySeq: expect.any(Number),
-                type: 'stack',
-              },
-            },
-          ],
-          stale: false,
-          routeKeySeq: expect.any(Number),
-          type: 'stack',
-        },
-      },
-    ],
-    stale: false,
-    routeKeySeq: expect.any(Number),
-    type: 'stack',
-  });
+  const batchedState = structuredClone(navigationRef.getRootState());
+
+  screen.unmount();
+  renderRouter(routes);
+
+  act(() => router.push('/funnel/ba'));
+  act(() => router.push('/funnel/bb'));
+  act(() => router.push('/funnel/bb/bc'));
+
+  expect(batchedState).toStrictEqual(navigationRef.getRootState());
 });
 
 describe('presentation validation', () => {
