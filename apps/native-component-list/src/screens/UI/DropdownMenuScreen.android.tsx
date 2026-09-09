@@ -1,6 +1,7 @@
 import {
   Button,
   Checkbox,
+  Column,
   DropdownMenu,
   HorizontalDivider,
   DropdownMenuItem,
@@ -44,6 +45,8 @@ export default function DropdownMenuScreen() {
   const [longPressTapCount, setLongPressTapCount] = React.useState(0);
   const [rnTriggerMenuExpanded, setRnTriggerMenuExpanded] = React.useState(false);
   const [rnTriggerTapCount, setRnTriggerTapCount] = React.useState(0);
+  const [shadowMenuExpanded, setShadowMenuExpanded] = React.useState(false);
+  const [shadowElevation, setShadowElevation] = React.useState<number | undefined>(undefined);
   const [roundedMenuExpanded, setRoundedMenuExpanded] = React.useState(false);
 
   React.useEffect(() => {
@@ -407,6 +410,40 @@ export default function DropdownMenuScreen() {
               </DropdownMenuItem>
             </DropdownMenu.Items>
           </DropdownMenu>
+        </Host>
+      </Section>
+      <Section title="Custom shadowElevation">
+        <Host matchContents>
+          <Column>
+            <Row>
+              <Button onClick={() => setShadowElevation(undefined)}>
+                <ComposeText>Default</ComposeText>
+              </Button>
+              <Button onClick={() => setShadowElevation(1)}>
+                <ComposeText>1 dp</ComposeText>
+              </Button>
+              <Button onClick={() => setShadowElevation(0)}>
+                <ComposeText>0 dp</ComposeText>
+              </Button>
+            </Row>
+            <DropdownMenu
+              expanded={shadowMenuExpanded}
+              onDismissRequest={() => setShadowMenuExpanded(false)}
+              shadowElevation={shadowElevation}>
+              <DropdownMenu.Trigger>
+                <Button onClick={() => setShadowMenuExpanded(true)}>
+                  <ComposeText>{`Open menu (${shadowElevation ?? 'default'})`}</ComposeText>
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Items>
+                <DropdownMenuItem onClick={() => setShadowMenuExpanded(false)}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>Item 1</ComposeText>
+                  </DropdownMenuItem.Text>
+                </DropdownMenuItem>
+              </DropdownMenu.Items>
+            </DropdownMenu>
+          </Column>
         </Host>
       </Section>
       <Section title="Custom cornerRadius">

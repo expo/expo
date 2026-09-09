@@ -27,6 +27,7 @@ fun FunctionalComposableScope.DropdownMenuContent(
     DropdownMenu(
       containerColor = props.color?.composeOrNull ?: MenuDefaults.containerColor,
       shape = props.cornerRadius?.let { RoundedCornerShape(it.dp) } ?: MenuDefaults.shape,
+      shadowElevation = props.shadowElevation?.dp ?: MenuDefaults.ShadowElevation,
       expanded = props.expanded,
       onDismissRequest = onDismissRequest
     ) {
