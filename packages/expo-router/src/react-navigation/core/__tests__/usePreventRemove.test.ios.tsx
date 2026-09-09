@@ -218,7 +218,7 @@ test.each([
 
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo', 'bar']);
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
-  expect(onPreventRemove.mock.calls[0][0].data.action).toBe(action);
+  expect(onPreventRemove.mock.calls[0]?.[0].data.action).toBe(action);
 
   act(() => {
     if (clearPrevention) {
