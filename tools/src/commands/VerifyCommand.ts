@@ -41,9 +41,9 @@ import { getExpoRepositoryRootDir } from '../Directories';
 
 const REPO = 'expo/expo';
 // Quiet dispatch targets the thin @expo/verify runner (expo-sandbox-mcp
-// LLP 0020 P1c cutover). The comment path (/verify in a thread) still runs
-// agent-commands.yml until the gate ports into the engine; to dispatch the
-// legacy pipeline manually: gh workflow run agent-commands.yml -f target=N.
+// LLP 0020 P1c cutover). The comment path (/verify in a thread) is
+// verify-comment.yml; the agent-commands.yml monolith both replaced was
+// deleted in #49927.
 const WORKFLOW = 'verify.yml';
 const HELP = `verify — dispatch expo/expo's /verify workflow without commenting on the thread
 
