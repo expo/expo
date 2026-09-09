@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Map predefined `CNLabeledValue` labels to JS values (`CNLabelHome` → `"home"`) and JS labels back case-insensitively (`"Home"` → `CNLabelHome`). Default missing or blank labels to `"other"`/`CNLabelOther`. ([#49874](https://github.com/expo/expo/pull/49874) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 57.0.4 — 2026-08-14
