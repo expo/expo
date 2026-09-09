@@ -98,6 +98,7 @@
 
 ### 💡 Others
 
+- Add batched navigation history tests. ([#49904](https://github.com/expo/expo/pull/49904) by [@Ubax](https://github.com/Ubax))
 - Replace the `escape-string-regexp` dependency with an internal helper. ([#49902](https://github.com/expo/expo/pull/49902) by [@Ubax](https://github.com/Ubax))
 - Replace the internal `color` dependency with `@react-native/normalize-colors`. ([#49876](https://github.com/expo/expo/pull/49876) by [@Ubax](https://github.com/Ubax))
 - Resolve queued navigation actions against render-time state. ([#49846](https://github.com/expo/expo/pull/49846) by [@Ubax](https://github.com/Ubax))
