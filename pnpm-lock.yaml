@@ -5567,9 +5567,6 @@ importers:
       client-only:
         specifier: ^0.0.1
         version: 0.0.1
-      escape-string-regexp:
-        specifier: ^4.0.0
-        version: 4.0.0
       expo:
         specifier: '*'
         version: link:../expo
