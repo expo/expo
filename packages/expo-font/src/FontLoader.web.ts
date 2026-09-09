@@ -2,7 +2,7 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import type { FontResource, FontSource } from './Font.types';
+import type { FontFaceDefinition, FontResource, FontSource } from './Font.types';
 import { FontDisplay } from './Font.types';
 
 function uriFromFontSource(asset: FontSource): string | number | null {
@@ -76,6 +76,42 @@ function throwInvalidSourceError(source: any): never {
   throw new CodedError(
     `ERR_FONT_SOURCE`,
     `Expected font asset of type \`string | FontResource | Asset\` instead got: ${type}`
+  );
+}
+
+// Merges a face's `weight`/`style`/`display`/`testString` onto its `path`, falling back to
+// values already present on `path` when it's a `FontResource`-shaped object, so the generated
+// `@font-face` rule carries the properties declared on the `FontFaceDefinition`.
+function fontSourceFromFace(face: FontFaceDefinition): FontSource {
+  const { path, weight, style, display, testString } = face;
+
+  if (path instanceof Asset) {
+    return path;
+  }
+
+  const base: FontResource =
+    typeof path === 'string' || typeof path === 'number' ? { uri: path } : path;
+
+  return {
+    ...base,
+    weight: weight ?? base.weight,
+    style: style ?? base.style,
+    display: display ?? base.display,
+    testString: testString ?? base.testString,
+  };
+}
+
+// Loads every face concurrently, each as its own `@font-face` rule under the shared
+// `fontFamily` name, matching the pre-array-API behavior of calling `loadAsync` once per face.
+export async function loadFontFamilyAsync(
+  fontFamily: string,
+  fontDefinitions: FontFaceDefinition[]
+): Promise<void> {
+  await Promise.all(
+    fontDefinitions.map((face) => {
+      const asset = getAssetForSource(fontSourceFromFace(face));
+      return loadSingleFontAsync(fontFamily, asset);
+    })
   );
 }
 

@@ -4,7 +4,10 @@ package expo.modules.font
 
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.fonts.Font
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import expo.modules.kotlin.exception.CodedException
 import java.io.File
 import java.io.FileInputStream
@@ -35,6 +38,10 @@ internal sealed interface FontSource {
    */
   fun readForInstancing(): ByteBuffer?
 
+  // Reads the file itself; no [readForInstancing] buffer needed.
+  @RequiresApi(Build.VERSION_CODES.Q)
+  fun newFontBuilder(): Font.Builder
+
   class Asset(private val path: String, private val context: Context) : FontSource {
     override fun load(): Typeface =
       Typeface.createFromAsset(context.assets, path)
@@ -49,6 +56,9 @@ internal sealed interface FontSource {
 
         readWholeFont(header, input)
       }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    override fun newFontBuilder(): Font.Builder = Font.Builder(context.assets, path)
   }
 
   class LocalFile(private val file: File) : FontSource {
@@ -60,6 +70,9 @@ internal sealed interface FontSource {
       }
       return mapped.takeIf { FontVariationAxes.declaresVariations(it) }
     }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    override fun newFontBuilder(): Font.Builder = Font.Builder(file)
   }
 
   companion object {
