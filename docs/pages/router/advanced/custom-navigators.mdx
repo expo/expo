@@ -142,6 +142,47 @@ function TabsContent({ activeRouteKey, preload }: TabsContentProps) {
 
 > **info** `createProps` receives the raw Expo Router `state` and `dispatch`. These are internal and may have breaking changes between releases, so prefer the `state` and `actions` passed to `NavigatorContent` when they are enough. If something you need to build your navigator is missing from the standard `state`, `actions`, or `emitter`, [open an issue on GitHub](https://github.com/expo/expo/issues).
 
+### Extend router behavior
+
+Use `extendRouterActions` to add custom action handling without replacing any other router methods. The original router handles each action first, and your extension receives its result. Return that result unchanged for actions you do not want to modify:
+
+```tsx components/Tabs.tsx
+import {
+  extendRouterActions,
+  TabRouter,
+  unstable_createStandardRouterNavigator,
+} from 'expo-router';
+
+const CustomTabRouter = extendRouterActions(TabRouter, (state, action, options, result) => {
+  if (action.type === 'FOCUS_FIRST_TAB') {
+    return {
+      state: { ...state, index: 0 },
+      affectedRouteKey: state.routes[0]?.key,
+    };
+  }
+
+  return result;
+});
+
+export const Tabs = unstable_createStandardRouterNavigator(TabsContent, CustomTabRouter);
+```
+
+The original result is `null` when the router does not handle the action. Returning `null` preserves normal action bubbling.
+
+Use `extendRouter` when you need to override other parts of a router implementation. The extension receives the original router and its factory options, and returns only the methods that should change:
+
+```tsx components/Tabs.tsx
+import { extendRouter, TabRouter } from 'expo-router';
+
+const CustomTabRouter = extendRouter(TabRouter, router => ({
+  shouldActionChangeFocus(action) {
+    return action.type === 'FOCUS_FIRST_TAB' || router.shouldActionChangeFocus(action);
+  },
+}));
+```
+
+`extendStackRouter` and `extendTabRouter` provide shortcuts for extending the corresponding router without passing its factory explicitly.
+
 ## Integrate an existing navigator (library authors)
 
 ### The standard navigator API
