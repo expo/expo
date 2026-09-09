@@ -170,12 +170,11 @@ extension ExpoAppSceneDelegate {
   ) {
     let application = UIApplication.shared
     notifyLinkingManagerUnlessAlreadyNotified(of: url) {
-      route(
-        selector: #selector(UIApplicationDelegate.application(_:open:options:)),
-        to: delegate,
-        toDelegate: { _ = $0.application?(application, open: url, options: options) },
-        toSubscribers: { _ = ExpoAppDelegateSubscriberManager.application(application, open: url, options: options) }
-      )
+      forward(to: delegate) {
+        _ = $0.application(application, open: url, options: options)
+      } orToSubscribers: {
+        _ = ExpoAppDelegateSubscriberManager.application(application, open: url, options: options)
+      }
     } notify: {
       RCTLinkingManager.application(application, open: url, options: options)
     }
@@ -190,18 +189,15 @@ extension ExpoAppSceneDelegate {
     // `RCTLinkingManager` only announces browsing-web activities, so there is nothing to dedupe
     // against for the other activity types.
     notifyLinkingManagerUnlessAlreadyNotified(of: userActivity.webpageURL) {
-      route(
-        selector: #selector(UIApplicationDelegate.application(_:continue:restorationHandler:)),
-        to: delegate,
-        toDelegate: { _ = $0.application?(application, continue: userActivity, restorationHandler: { _ in }) },
-        toSubscribers: {
-          _ = ExpoAppDelegateSubscriberManager.application(
-            application,
-            continue: userActivity,
-            restorationHandler: { _ in }
-          )
-        }
-      )
+      forward(to: delegate) {
+        _ = $0.application(application, continue: userActivity, restorationHandler: { _ in })
+      } orToSubscribers: {
+        _ = ExpoAppDelegateSubscriberManager.application(
+          application,
+          continue: userActivity,
+          restorationHandler: { _ in }
+        )
+      }
     } notify: {
       RCTLinkingManager.application(application, continue: userActivity, restorationHandler: { _ in })
     }
@@ -215,98 +211,78 @@ extension ExpoAppSceneDelegate {
     let application = UIApplication.shared
     switch event {
     case .didBecomeActive:
-      route(
-        selector: #selector(UIApplicationDelegate.applicationDidBecomeActive(_:)),
-        to: delegate,
-        toDelegate: { $0.applicationDidBecomeActive?(application) },
-        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(application) }
-      )
+      forward(to: delegate) {
+        $0.applicationDidBecomeActive(application)
+      } orToSubscribers: {
+        ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(application)
+      }
     case .willResignActive:
-      route(
-        selector: #selector(UIApplicationDelegate.applicationWillResignActive(_:)),
-        to: delegate,
-        toDelegate: { $0.applicationWillResignActive?(application) },
-        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationWillResignActive(application) }
-      )
+      forward(to: delegate) {
+        $0.applicationWillResignActive(application)
+      } orToSubscribers: {
+        ExpoAppDelegateSubscriberManager.applicationWillResignActive(application)
+      }
     case .willEnterForeground:
-      route(
-        selector: #selector(UIApplicationDelegate.applicationWillEnterForeground(_:)),
-        to: delegate,
-        toDelegate: { $0.applicationWillEnterForeground?(application) },
-        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(application) }
-      )
+      forward(to: delegate) {
+        $0.applicationWillEnterForeground(application)
+      } orToSubscribers: {
+        ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(application)
+      }
     case .didEnterBackground:
-      route(
-        selector: #selector(UIApplicationDelegate.applicationDidEnterBackground(_:)),
-        to: delegate,
-        toDelegate: { $0.applicationDidEnterBackground?(application) },
-        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(application) }
-      )
+      forward(to: delegate) {
+        $0.applicationDidEnterBackground(application)
+      } orToSubscribers: {
+        ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(application)
+      }
     }
   }
 
 #if os(iOS)
-  /// Passes a quick action to the app delegate.
-  ///
-  /// The `completionHandler` reports back to UIKit whether the action was handled, so it must run
-  /// exactly once: whoever implements the method owns it, and this never delivers to both the
-  /// delegate and the subscriber manager.
+  /// Passes a quick action to the app delegate. Only one of the two receivers gets it, so the
+  /// `completionHandler` UIKit waits on runs exactly once.
   static func route(
     shortcutItem: UIApplicationShortcutItem,
     to delegate: UIApplicationDelegate? = UIApplication.shared.delegate,
     completionHandler: @escaping (Bool) -> Void
   ) {
     let application = UIApplication.shared
-    let selector = #selector(UIApplicationDelegate.application(_:performActionFor:completionHandler:))
-
-    guard let delegate, delegate.responds(to: selector) else {
+    forward(to: delegate) {
+      $0.application(application, performActionFor: shortcutItem, completionHandler: completionHandler)
+    } orToSubscribers: {
       ExpoAppDelegateSubscriberManager.application(
         application,
         performActionFor: shortcutItem,
         completionHandler: completionHandler
       )
-      return
     }
-    delegate.application?(application, performActionFor: shortcutItem, completionHandler: completionHandler)
   }
 #endif
 
-  /// Sends an event to the app delegate, and to the subscriber manager unless the delegate
-  /// forwards there on its own.
+  /// Sends an event to the app delegate, or to the subscriber manager when the app doesn't use an
+  /// `ExpoAppDelegate`.
   ///
-  /// UIKit stops calling the app delegate's own life-cycle, URL and quick-action methods once the
-  /// app adopts the scene life cycle, so overrides in the app's `AppDelegate` would never run.
-  /// An `ExpoAppDelegate` forwards every event it receives to the subscriber manager, so the
-  /// delegate call is the only delivery needed — an override that skips `super` drops the
-  /// subscribers, exactly as it does under the app-delegate life cycle. A brownfield delegate
-  /// forwards nothing, so there the subscribers are notified from here.
-  private static func route(
-    selector: Selector,
+  /// UIKit no longer calls the app delegate under the scene life cycle, so overrides in the app's
+  /// `AppDelegate` would never run. `ExpoAppDelegate` implements every event and forwards it to
+  /// the subscribers, so one call delivers both — an override that skips `super` drops the
+  /// subscribers, exactly as it does under the app-delegate life cycle.
+  private static func forward(
     to delegate: UIApplicationDelegate?,
-    toDelegate: (UIApplicationDelegate) -> Void,
-    toSubscribers: () -> Void
+    toDelegate: (ExpoAppDelegate) -> Void,
+    orToSubscribers toSubscribers: () -> Void
   ) {
-    guard let delegate, delegate.responds(to: selector) else {
+    guard let appDelegate = delegate as? ExpoAppDelegate else {
       toSubscribers()
       return
     }
-    toDelegate(delegate)
-
-    if !(delegate is ExpoAppDelegate) {
-      toSubscribers()
-    }
+    toDelegate(appDelegate)
   }
 
   /// Runs `body`, then calls `notify` unless `RCTLinkingManager` was already notified about `url`
   /// while `body` ran. Always calls `notify` when `url` is `nil`.
   ///
-  /// App delegates generated by SDK 57 and older call `RCTLinkingManager` from their own
-  /// `application(_:open:options:)` and `application(_:continue:restorationHandler:)` overrides,
-  /// which would deliver the JS `url` event twice now that those overrides run again. There is no
-  /// way to detect such an override statically, so this listens for the notification
-  /// `RCTLinkingManager` posts synchronously for every link it handles. The notification name is
-  /// private to React Native's `RCTLinkingManager.mm`: if React Native ever renames it, those
-  /// legacy overrides deliver a duplicate `url` event again — a link is never lost.
+  /// App delegates generated by SDK 57 and older call `RCTLinkingManager` themselves, which would
+  /// deliver the JS `url` event twice now that their overrides run again, and no static check can
+  /// tell such an override apart — so listen for what `RCTLinkingManager` announces instead.
   private static func notifyLinkingManagerUnlessAlreadyNotified(
     of url: URL?,
     during body: () -> Void,
@@ -324,6 +300,10 @@ extension ExpoAppSceneDelegate {
     }
   }
 
+  /// Observes the notification `RCTLinkingManager` posts for every link it handles. The name is
+  /// private to React Native's `RCTLinkingManager.mm` — expo-router spells it out the same way in
+  /// `ExpoHeadAppDelegateSubscriber.swift`. If React Native renames it, legacy overrides deliver a
+  /// duplicate `url` event again; a link is never lost.
   private final class LinkingManagerObserver: NSObject {
     private let expectedURL: String
     private(set) var wasNotified = false

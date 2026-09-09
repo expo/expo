@@ -123,16 +123,24 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
-  func `lets a brownfield delegate answer the quick action alone`() {
-    let delegate = BrownfieldQuickActionAppDelegate()
+  func `answers a quick action from the subscribers when the delegate isn't an ExpoAppDelegate`() async {
+    let delegate = NonExpoAppDelegate()
     let shortcutItem = UIApplicationShortcutItem(
-      type: "dev.expo.bareexpo.brownfield-action",
-      localizedTitle: "Brownfield action"
+      type: "dev.expo.bareexpo.non-expo-action",
+      localizedTitle: "Non-Expo action"
     )
     var handled: [Bool] = []
-    ExpoAppSceneDelegate.route(shortcutItem: shortcutItem, to: delegate) { handled.append($0) }
-    #expect(delegate.shortcutItemTypes == [shortcutItem.type])
-    #expect(handled == [true])
+    await withCheckedContinuation { continuation in
+      var didResume = false
+      ExpoAppSceneDelegate.route(shortcutItem: shortcutItem, to: delegate) { succeeded in
+        handled.append(succeeded)
+        if !didResume {
+          didResume = true
+          continuation.resume()
+        }
+      }
+    }
+    #expect(handled == [false])
   }
 #endif
 
@@ -183,15 +191,17 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
-  func `routes a URL to both a brownfield delegate and the subscribers`() {
-    let delegate = BrownfieldAppDelegate()
+  func `routes a URL to the subscribers when the delegate isn't an ExpoAppDelegate`() {
+    let delegate = NonExpoAppDelegate()
     let subscriber = URLRecordingSubscriber()
     ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
 
-    let url = URL(string: "bareexpo://scene-delegate/brownfield")!
+    let url = URL(string: "bareexpo://scene-delegate/non-expo-delegate")!
+    let recorder = OpenURLNotificationRecorder()
     ExpoAppSceneDelegate.route(url: url, options: [:], to: delegate)
-    #expect(delegate.openedURLs == [url])
+    #expect(delegate.openedURLs.isEmpty)
     #expect(subscriber.count(of: url) == 1)
+    #expect(recorder.count(of: url) == 1)
   }
 }
 
@@ -226,8 +236,8 @@ private final class LegacyLinkingAppDelegate: ExpoAppDelegate {
   }
 }
 
-/// App delegate of a brownfield app: it handles URLs itself and knows nothing about subscribers.
-private final class BrownfieldAppDelegate: NSObject, UIApplicationDelegate {
+/// App delegate that handles URLs itself without extending `ExpoAppDelegate`.
+private final class NonExpoAppDelegate: NSObject, UIApplicationDelegate {
   var openedURLs: [URL] = []
 
   func application(
@@ -239,23 +249,6 @@ private final class BrownfieldAppDelegate: NSObject, UIApplicationDelegate {
     return true
   }
 }
-
-#if os(iOS)
-/// App delegate of a brownfield app that handles quick actions itself, answering UIKit's
-/// completion handler.
-private final class BrownfieldQuickActionAppDelegate: NSObject, UIApplicationDelegate {
-  var shortcutItemTypes: [String] = []
-
-  func application(
-    _ application: UIApplication,
-    performActionFor shortcutItem: UIApplicationShortcutItem,
-    completionHandler: @escaping (Bool) -> Void
-  ) {
-    shortcutItemTypes.append(shortcutItem.type)
-    completionHandler(true)
-  }
-}
-#endif
 
 /// Records the URLs a module subscriber receives. Registration is permanent for the process, so it
 /// reports not having handled the URL to leave the other delegates' behavior untouched.
