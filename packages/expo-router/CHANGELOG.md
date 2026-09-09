@@ -128,6 +128,7 @@
 - [Internal] Read the development server URL from `expo/internal/bundle-origin` instead of duplicating its accessor ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 - [Internal] Isolate the loader's Suspense store from `LoaderClient` ([#48563](https://github.com/expo/expo/pull/48563) by [@hassankhan](https://github.com/hassankhan))
 - [Internal] Remove legacy root entrypoint shims ([#49001](https://github.com/expo/expo/pull/49001) by [@hassankhan](https://github.com/hassankhan))
+- Drop `fast-deep-equal` and `shallowequal` dependencies ([#49875](https://github.com/expo/expo/pull/49875) by [@kitten](https://github.com/kitten))
 
 ## 57.0.9 - 2026-07-29
 

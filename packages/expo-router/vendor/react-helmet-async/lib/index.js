@@ -490,7 +490,22 @@ var HelmetProvider = class _HelmetProvider extends import_react2.Component {
 
 // src/Dispatcher.tsx
 var import_react3 = require("react");
-var import_shallowequal = __toESM(require("shallowequal"));
+var shallowEqual = (objA, objB) => {
+  if (objA === objB) {
+    return true;
+  }
+  if (typeof objA !== "object" || !objA || typeof objB !== "object" || !objB) {
+    return false;
+  }
+  const keysA = Object.keys(objA);
+  const keysB = Object.keys(objB);
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+  return keysA.every(
+    (key) => Object.prototype.hasOwnProperty.call(objB, key) && objA[key] === objB[key]
+  );
+};
 
 // src/client.ts
 var updateTags = (type, tags) => {
@@ -637,7 +652,7 @@ var client_default = handleStateChangeOnClient;
 var HelmetDispatcher = class extends import_react3.Component {
   rendered = false;
   shouldComponentUpdate(nextProps) {
-    return !(0, import_shallowequal.default)(nextProps, this.props);
+    return !shallowEqual(nextProps, this.props);
   }
   componentDidUpdate() {
     this.emitChange();

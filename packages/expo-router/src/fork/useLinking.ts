@@ -1,5 +1,5 @@
-import isEqual from 'fast-deep-equal';
 import { type RefObject, use, useEffect, useEffectEvent, useRef, useState } from 'react';
+import isEqual from 'react-fast-compare';
 
 import {
   completeParsedState,
