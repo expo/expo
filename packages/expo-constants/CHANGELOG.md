@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. The file is JSON holding the hash and the `@expo/fingerprint` version that produced it, so a reader can tell when two hashes are not comparable. A tool can read it to tell whether the installed app still matches the project. Release builds do not compute or ship the file. Set `EXPO_SKIP_FINGERPRINT_EMBED=1` to opt out. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
