@@ -95,6 +95,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
     Log.log('Rebundling the Expo config file');
     // Re-bundle the config file the same way the app was originally bundled.
+    // No platform argument on purpose: this binary mixes native code from the earlier build with
+    // JS and config from now, so no fingerprint describes it. The script drops the embedded one.
     await spawnAsync('node', [
       // TODO(@kitten): This isn't correct. The template installs expo-constants, but expo also depends on it
       // This however means that the top-level module doesn't have to exist. With isolated dependencies this will then fail
