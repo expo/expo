@@ -26,7 +26,7 @@ beforeEach(() => {
 
 afterEach(() => consoleWarnSpy.mockRestore());
 
-test("prevents removing a screen with 'usePreventRemove' hook", () => {
+test("repeats an action prevented by 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -40,11 +40,13 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   const onPreventRemove = jest.fn();
 
   let setPreventRemove: React.Dispatch<React.SetStateAction<boolean>>;
+  let repeat: () => void;
 
   const TestScreen = () => {
     const [preventRemove, setPreventRemoveState] = React.useState(true);
     setPreventRemove = setPreventRemoveState;
-    usePreventRemove(preventRemove, () => {
+    usePreventRemove(preventRemove, ({ repeat: repeatAction }) => {
+      repeat = repeatAction;
       onPreventRemove();
     });
 
@@ -119,9 +121,10 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
     routeKeySeq: 2,
   });
 
-  act(() => setPreventRemove(false));
-
-  act(() => ref.current?.dispatch(StackActions.popTo('foo')));
+  act(() => {
+    setPreventRemove(false);
+    repeat();
+  });
 
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({

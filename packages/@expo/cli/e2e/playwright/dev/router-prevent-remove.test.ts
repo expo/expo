@@ -30,8 +30,7 @@ test.describe(inputDir, () => {
     await expoStart.stopAsync();
   });
 
-  // TODO(@ubax): Restore remove prevention after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-  test.skip('blocks removal and continues after disabling the hook', async ({ page }) => {
+  test('blocks removal and continues after disabling the hook', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     await page.goto(expoStart.url.href);
 
