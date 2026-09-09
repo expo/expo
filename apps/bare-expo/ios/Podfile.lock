@@ -420,6 +420,9 @@ PODS:
     - ExpoModulesTestCore
   - ExpoContacts (56.0.13):
     - ExpoModulesCore
+  - ExpoContacts/Tests (56.0.13):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoCrypto (56.0.5):
     - ExpoModulesCore
   - ExpoDevice (56.0.4):
@@ -3335,6 +3338,7 @@ DEPENDENCIES:
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
   - ExpoContacts (from `../../../packages/expo-contacts/ios`)
+  - ExpoContacts/Tests (from `../../../packages/expo-contacts/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
@@ -3999,7 +4003,7 @@ SPEC CHECKSUMS:
   ExpoCameraBarcodeScanning: 2acb6385fe6aa7563da5241c775092aac40195ce
   ExpoCellular: 61e540ab0138c7f441639b51a27b3cca2bbc5ae8
   ExpoClipboard: 342ae52697ff1cf89b8849bee624a9a320e77d3c
-  ExpoContacts: ef00b638dc31a78d7dda3a43d56c212f2e897c12
+  ExpoContacts: bcd8eaa079a14a61354b48612eab53a4d3b1a20b
   ExpoCrypto: cfd62630036e9bb983bcde73d564be3dbe47ceb2
   ExpoDevice: f527f8bbefa6efa12f8ef63e9038dd1d5d903697
   ExpoDocumentPicker: caa9c7c1071dc31262d86a8fe48f51929d291a43
