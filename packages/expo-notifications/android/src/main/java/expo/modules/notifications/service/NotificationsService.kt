@@ -56,6 +56,7 @@ open class NotificationsService : BroadcastReceiver() {
     private const val GET_SCHEDULED_TYPE = "getScheduled"
     private const val REMOVE_SELECTED_TYPE = "removeSelected"
     private const val REMOVE_ALL_TYPE = "removeAll"
+    private const val GROUPED_NOTIFICATION_DELETED_TYPE = "groupedNotificationDeleted"
 
     // Messages parts
     const val SUCCESS_CODE = 0
@@ -439,6 +440,24 @@ open class NotificationsService : BroadcastReceiver() {
       )
     }
 
+    fun createGroupedNotificationDeletedIntent(context: Context): PendingIntent {
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilder().appendPath("groupedDeleted").build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, GROUPED_NOTIFICATION_DELETED_TYPE)
+      }
+      return PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
+    }
+
     /**
      * Creates and returns a pending intent that will trigger [NotificationsService]'s "response received"
      * event.
@@ -686,6 +705,8 @@ open class NotificationsService : BroadcastReceiver() {
 
           TRIGGER_TYPE -> onNotificationTriggered(context, intent)
 
+          GROUPED_NOTIFICATION_DELETED_TYPE -> onGroupedNotificationDeleted(context, intent)
+
           else -> throw IllegalArgumentException("Received event of unrecognized type: $eventType. Ignoring.")
         }
 
@@ -745,10 +766,17 @@ open class NotificationsService : BroadcastReceiver() {
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
     val response = getNotificationResponseFromBroadcastIntent(intent)
     getHandlingDelegate(context).handleNotificationResponse(response)
+    // A tap on an auto-cancel notification removes it without going through
+    // dismissNotifications; clean up the group summary it may have orphaned.
+    getPresentationDelegate(context).removeOrphanedGroupSummaries()
   }
 
   open fun onNotificationsDropped(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotificationsDropped()
+
+  /** Fired by the deleteIntent of grouped notifications when the user swipes one away. */
+  open fun onGroupedNotificationDeleted(context: Context, intent: Intent) =
+    getPresentationDelegate(context).removeOrphanedGroupSummaries()
 
   //endregion
 
