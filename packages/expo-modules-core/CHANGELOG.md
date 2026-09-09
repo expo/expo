@@ -12,6 +12,7 @@
 
 ### 🎉 New features
 
+- Expose the embedded fingerprint to native code through `EmbeddedFingerprint`. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 - Read the embedded `app.fingerprint` and report it through the constants provider. ([#48922](https://github.com/expo/expo/pull/48922) by [@vonovak](https://github.com/vonovak))
 - [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))

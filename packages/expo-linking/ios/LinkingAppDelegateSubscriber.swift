@@ -6,6 +6,9 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
   {
+    if isFingerprintCheckURL(url) {
+      return false
+    }
     ExpoLinkingRegistry.shared.initialURL = url
     NotificationCenter.default.post(name: onURLReceivedNotification, object: self, userInfo: ["url": url])
     return false
@@ -13,6 +16,9 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   #elseif os(macOS)
   public func application(_ application: NSApplication, open urls: [URL]) {
     guard let url = urls.first else {
+      return
+    }
+    if isFingerprintCheckURL(url) {
       return
     }
     ExpoLinkingRegistry.shared.initialURL = url
@@ -37,4 +43,16 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     }
     return false
   }
+}
+
+/// A fingerprint-check trigger carries a reserved `__expo_fingerprint_check` query parameter. It is
+/// a command to the dev launcher, not a deep link, so it never becomes the initial URL and never
+/// reaches JS. React Native's own Linking module still sees it.
+///
+/// The name is pinned against the responder by the protocol parity test in expo-constants.
+private func isFingerprintCheckURL(_ url: URL) -> Bool {
+  guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems else {
+    return false
+  }
+  return queryItems.contains { $0.name == "__expo_fingerprint_check" && $0.value == "1" }
 }
