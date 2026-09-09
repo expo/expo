@@ -29,10 +29,10 @@ function useWarnOnStalePreventRemoveDev(preventRemove: boolean) {
     setShouldCheck(false);
     if (preventRemove) {
       console.warn(
-        '`disablePrevention` from `usePreventRemove` was called, but `preventRemove` is still ' +
-          '`true`. The screen is no longer protected, but the hook will not re-enable prevention ' +
-          'until `preventRemove` changes. Set `preventRemove` to `false` in the same handler to ' +
-          'keep the prop and the prevention state in sync.'
+        '`repeat` or `disablePrevention` from `usePreventRemove` was called, but `preventRemove` is ' +
+          'still `true`. The screen is no longer protected, but the hook will not re-enable ' +
+          'prevention until `preventRemove` changes. Set `preventRemove` to `false` in the same ' +
+          'handler to keep the prop and the prevention state in sync.'
       );
     }
   }, [shouldCheck, preventRemove]);
@@ -49,7 +49,8 @@ const useWarnOnStalePreventRemove: (preventRemove: boolean) => () => void =
  * with the blocked navigation action.
  *
  * To continue the blocked navigation action, set `preventRemove` to `false` and call the
- * callback's `repeat` function.
+ * callback's `repeat` function. To navigate somewhere else, set `preventRemove` to `false`, call
+ * the returned `disablePrevention` function, and then navigate.
  *
  * @example
  * ```tsx

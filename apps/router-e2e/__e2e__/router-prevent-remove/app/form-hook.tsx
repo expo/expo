@@ -21,8 +21,10 @@ export default function HookForm() {
       <Button
         testID="discard"
         title="Discard"
+        disabled={!dirty}
         onPress={() => {
           setDirty(false);
+          setPendingNavigation(null);
           pendingNavigation?.repeat();
         }}
       />
