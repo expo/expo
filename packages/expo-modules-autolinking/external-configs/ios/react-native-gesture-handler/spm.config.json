@@ -1,0 +1,153 @@
+{
+    "$schema": "../../../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "RNGestureHandler",
+            "podName": "RNGestureHandler",
+            "codegenName": "rngesturehandler_codegen",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes",
+                "RNWorklets"
+            ],
+            "targets": [
+                {
+                    "type": "cpp",
+                    "name": "RNGestureHandler_codegen_components",
+                    "moduleName": "rngesturehandler_codegen",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rngesturehandler_codegen",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [
+                        "../../../.."
+                    ],
+                    "fileMapping": [
+                        {
+                            "from": "rngesturehandler_codegen",
+                            "to": "react/renderer/components/rngesturehandler_codegen",
+                            "type": "symlink"
+                        }
+                    ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNGestureHandler_codegen_modules",
+                    "moduleName": "rngesturehandler_codegen",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/rngesturehandler_codegen",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [
+                        ".."
+                    ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNGestureHandler_runtime",
+                    "path": "shared/runtime",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "Hermes",
+                        "RNWorklets",
+                        "RNGestureHandler_codegen_components"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../../.build/codegen/build/generated/ios/ReactCodegen"
+                    ],
+                    "compilerFlags": [
+                        "-DRNGH_USE_WORKLETS=1",
+                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}"
+                    ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNGestureHandler_shadow_nodes",
+                    "moduleName": "rngesturehandler_codegen",
+                    "path": "shared/shadowNodes/react/renderer/components/rngesturehandler_codegen",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "exclude": [
+                        "ComponentDescriptors.h"
+                    ],
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNGestureHandler_codegen_components"
+                    ],
+                    "includeDirectories": [
+                        "."
+                    ],
+                    "fileMapping": [
+                        {
+                            "from": "rngesturehandler_codegen",
+                            "to": "react/renderer/components/rngesturehandler_codegen",
+                            "type": "symlink"
+                        }
+                    ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNGestureHandler",
+                    "path": "apple",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "exclude": [
+                        "RNGestureHandler.xcodeproj/**"
+                    ],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNWorklets",
+                        "RNGestureHandler_codegen_components",
+                        "RNGestureHandler_codegen_modules",
+                        "RNGestureHandler_runtime",
+                        "RNGestureHandler_shadow_nodes"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../shared/runtime",
+                        "../.build/codegen/build/generated/ios/ReactCodegen",
+                        "../.build/generated/RNGestureHandler/RNGestureHandler_codegen_components/include/rngesturehandler_codegen",
+                        "../.build/generated/RNGestureHandler/RNGestureHandler_shadow_nodes/include/rngesturehandler_codegen"
+                    ],
+                    "linkedFrameworks": [
+                        "Foundation",
+                        "UIKit",
+                        "QuartzCore"
+                    ],
+                    "compilerFlags": [
+                        "-include",
+                        "Foundation/Foundation.h",
+                        "-include",
+                        "UIKit/UIKit.h",
+                        "-DRNGH_USE_WORKLETS=1",
+                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}"
+                    ],
+                    "fileMapping": [
+                        {
+                            "from": "Handlers/*.h",
+                            "to": "RNGestureHandler/Handlers/{filename}",
+                            "type": "header"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
