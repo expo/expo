@@ -2,8 +2,8 @@
 import type { ReactNode } from 'react';
 
 import { useRouteNode } from '../Route';
-import { useIsFocused, useNavigationState, useRoute } from '../react-navigation/native';
 import { ActivityContents } from './ActivityContents';
+import { useScreensAbove } from './NavigationActivityContext';
 
 export type ActivityMode = 'visible' | 'hidden';
 
@@ -11,24 +11,9 @@ export type ActivityMode = 'visible' | 'hidden';
  * @internal
  */
 export function useActivityMode(hideWhenNestedAtLevel = 2): ActivityMode {
-  const route = useRoute();
-  const isFocused = useIsFocused();
-  const screensAbove = useNavigationState((state) => {
-    if (state.type !== 'stack') {
-      return 0;
-    }
+  const screensAbove = useScreensAbove();
 
-    const ownIndex = state.routes.findIndex(({ key }) => key === route.key);
-    return ownIndex < 0 ? 0 : Math.max(0, state.index - ownIndex);
-  });
-
-  return hideWhenNestedAtLevel <= 1
-    ? isFocused
-      ? 'visible'
-      : 'hidden'
-    : screensAbove >= hideWhenNestedAtLevel
-      ? 'hidden'
-      : 'visible';
+  return screensAbove >= Math.max(1, hideWhenNestedAtLevel) ? 'hidden' : 'visible';
 }
 
 /**

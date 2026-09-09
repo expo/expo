@@ -38,6 +38,11 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
    * Resets the route when switching to a tab.
    */
   resetOnFocus?: boolean;
+  /**
+   * Overrides React Activity behavior inherited from `Tabs` for this route when used in a
+   * `TabList`.
+   */
+  activityEnabled?: boolean | number;
 };
 
 export type TabTriggerOptions = {

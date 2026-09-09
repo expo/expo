@@ -280,6 +280,7 @@ function partitionNavigatorProps<
   const {
     id,
     children,
+    activityEnabled,
     initialRouteName: _initialRouteName,
     layout,
     // `ref` is supplied by `withLayoutContext` and consumed by React; it must not be forwarded
@@ -303,6 +304,7 @@ function partitionNavigatorProps<
   > = {
     id,
     children,
+    activityEnabled,
     initialRouteName: routeNodeInitialRouteName,
     layout,
     screenLayout,

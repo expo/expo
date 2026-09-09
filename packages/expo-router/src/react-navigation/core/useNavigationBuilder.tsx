@@ -258,6 +258,7 @@ export function useNavigationBuilder<
 
   const {
     children,
+    activityEnabled,
     layout,
     screenOptions,
     screenLayout,
@@ -497,10 +498,11 @@ export function useNavigationBuilder<
     routes: state.routes,
     routeNames: state.routeNames,
     screens,
+    activityEnabled,
     navigation,
     screenOptions,
     screenLayout,
-    state: committedState,
+    state,
     addListener,
     router,
     emitter,

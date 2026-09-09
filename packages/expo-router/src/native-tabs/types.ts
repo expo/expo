@@ -305,6 +305,12 @@ export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 export interface NativeTabsProps extends PropsWithChildren {
   /** A component to render when an individual tab screen throws an error. */
   unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  /**
+   * Enables React Activity for tab screens. `true` hides an inactive tab, while a number specifies
+   * how many screens must be above a route before its content is hidden.
+   * @default false
+   */
+  activityEnabled?: boolean | number;
   // #region common props
   /**
    * The style of the every tab label in the tab bar.
@@ -593,6 +599,11 @@ export interface NativeTabTriggerProps {
    * When used in a route it has no effect.
    */
   name?: string;
+  /**
+   * Overrides React Activity behavior inherited from `NativeTabs` for this route when declared in
+   * a layout.
+   */
+  activityEnabled?: boolean | number;
   /**
    * If true, the tab will be hidden from the tab bar.
    *

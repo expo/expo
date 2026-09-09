@@ -41,6 +41,13 @@ export type DefaultNavigatorOptions<
   children: React.ReactNode;
 
   /**
+   * Enables React Activity for nested Expo Router screens. A number specifies how many screens
+   * must be above a route before its content is hidden.
+   * @default false
+   */
+  activityEnabled?: boolean | number;
+
+  /**
    * Layout for the navigator.
    * Useful for wrapping with a component with access to navigator's state and options.
    */
@@ -675,6 +682,11 @@ export type RouteConfigProps<
    * or inferred from the filesystem.
    */
   routeSource?: RouteSource;
+
+  /**
+   * Overrides React Activity behavior inherited from the navigator for this Expo Router screen.
+   */
+  activityEnabled?: boolean | number;
 };
 
 export type RouteConfig<

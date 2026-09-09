@@ -46,6 +46,8 @@ import type { NativeStackNavigationEventMap } from './react-navigation/native-st
 import type { UnknownOutputParams } from './types';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
+import { useActivityThreshold } from './views/NavigationActivityContext';
+import { NavigationAwareActivity } from './views/NavigationAwareActivity';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
@@ -79,6 +81,12 @@ export type ScreenProps<
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
   dangerouslySingular?: SingularOptions;
+
+  /**
+   * Overrides React Activity behavior inherited from the navigator. A number specifies how many
+   * screens must be above this route before its content is hidden.
+   */
+  activityEnabled?: boolean | number;
 };
 
 export type SingularOptions =
@@ -106,7 +114,7 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular, activityEnabled }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -144,7 +152,7 @@ function getSortedChildren<
 
         return {
           route: match,
-          props: { listeners, options, getId },
+          props: { listeners, options, getId, activityEnabled },
           routeSource: 'layout' as const,
         };
       }
@@ -327,6 +335,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
     const isRouteType = value.type === 'route';
@@ -393,6 +402,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         segment={value.route}
       />
     );
+    const screenContent =
+      ScreenErrorBoundary && isRouteType ? (
+        <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+      ) : (
+        screenComponent
+      );
 
     return (
       <Route node={value} params={route?.params}>
@@ -417,10 +432,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {ScreenErrorBoundary && isRouteType ? (
-                <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+              {isRouteType && typeof activityThreshold === 'number' ? (
+                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
+                  {screenContent}
+                </NavigationAwareActivity>
               ) : (
-                screenComponent
+                screenContent
               )}
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>

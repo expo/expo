@@ -40,6 +40,7 @@ type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
 export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   screenOptions?: UseNavigationBuilderOptions['screenOptions'];
   children?: UseNavigationBuilderOptions['children'];
+  activityEnabled?: UseNavigationBuilderOptions['activityEnabled'];
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
   /** A component to render when an individual screen in this navigator throws an error. */
@@ -56,6 +57,7 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
 export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({
   screenOptions,
   children,
+  activityEnabled,
   router,
   routerOptions,
   unstable_screenErrorBoundary,
@@ -82,6 +84,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     ...routerOptions,
     id: contextKey,
     children: sortedScreens || [<Screen key="default" />],
+    activityEnabled,
     screenOptions,
     initialRouteName: getValidInitialRouteName(node),
   });

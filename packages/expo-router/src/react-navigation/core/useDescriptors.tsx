@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { NavigationActivityProvider } from '../../views/NavigationActivityContext';
 import type {
   NavigationAction,
   NavigationState,
@@ -65,6 +66,7 @@ type Options<
   routes: State['routes'];
   routeNames: State['routeNames'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
+  activityEnabled: boolean | number | undefined;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
@@ -92,6 +94,7 @@ export function useDescriptors<
   routes,
   routeNames,
   screens,
+  activityEnabled,
   navigation,
   screenOptions,
   screenLayout,
@@ -229,11 +232,17 @@ export function useDescriptors<
     }
 
     return (
-      <NavigationBuilderContext.Provider key={route.key} value={context}>
-        <NavigationProvider route={route} navigation={navigation}>
-          {element}
-        </NavigationProvider>
-      </NavigationBuilderContext.Provider>
+      <NavigationActivityProvider
+        key={route.key}
+        activityEnabled={screen.activityEnabled ?? activityEnabled}
+        state={state}
+        route={route}>
+        <NavigationBuilderContext.Provider value={context}>
+          <NavigationProvider route={route} navigation={navigation}>
+            {element}
+          </NavigationProvider>
+        </NavigationBuilderContext.Provider>
+      </NavigationActivityProvider>
     );
   };
 

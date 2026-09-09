@@ -63,6 +63,12 @@ export type TabsProps = ViewProps & {
   /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
   asChild?: boolean;
   options?: UseTabsOptions;
+  /**
+   * Enables React Activity for tab screens. `true` hides an inactive tab, while a number specifies
+   * how many screens must be above a route before its content is hidden.
+   * @default false
+   */
+  activityEnabled?: boolean | number;
 };
 
 /**
@@ -80,7 +86,7 @@ export type TabsProps = ViewProps & {
  * ```
  */
 export function Tabs(props: TabsProps) {
-  const { children, asChild, options, ...rest } = props;
+  const { children, asChild, options, activityEnabled, ...rest } = props;
   const Comp = asChild ? ViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
@@ -94,6 +100,7 @@ export function Tabs(props: TabsProps) {
         ? (children.props.children as ReactNode)
         : children,
     ...options,
+    activityEnabled: activityEnabled ?? options?.activityEnabled,
   });
 
   return (
@@ -295,7 +302,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    const { href, name } = child.props;
+    const { href, name, activityEnabled } = child.props;
 
     if (!href) {
       if (process.env.NODE_ENV === 'development') {
@@ -325,7 +332,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    return screenTriggers.push({ type: 'internal', href: resolvedHref, name });
+    return screenTriggers.push({ type: 'internal', href: resolvedHref, name, activityEnabled });
   });
 
   return screenTriggers;

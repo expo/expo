@@ -10,9 +10,15 @@ import { SplitViewColumn, SplitViewInspector } from './elements';
  */
 export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
   children?: ReactNode;
+  /**
+   * Enables React Activity for screens rendered by the detail slot. A number specifies how many
+   * screens must be above a route before its content is hidden.
+   * @default false
+   */
+  activityEnabled?: boolean | number;
 }
 
-function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps) {
+function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }: SplitViewProps) {
   if (use(IsWithinNativeNavigator)) {
     throw new Error('SplitView cannot be used inside another native navigator.');
   }
@@ -21,7 +27,7 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
     console.warn(
       'SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.'
     );
-    return <Slot />;
+    return <Slot activityEnabled={activityEnabled} />;
   }
 
   const allChildrenArray = React.Children.toArray(children);
@@ -46,7 +52,7 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
 
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
-    return <Slot />;
+    return <Slot activityEnabled={activityEnabled} />;
   }
 
   // The key is needed, because number of columns cannot be changed dynamically
@@ -55,7 +61,7 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
         {columnChildren}
         <Split.Column>
-          <Slot />
+          <Slot activityEnabled={activityEnabled} />
         </Split.Column>
         {inspectorChildren}
       </Split.Host>
