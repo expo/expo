@@ -47,7 +47,7 @@ class AudioControlsService : MediaSessionService() {
   private var currentPlayable: LockScreenPlayable? = null
   private var currentOptions: AudioLockScreenOptions? = null
   private val scope = CoroutineScope(Dispatchers.IO)
-  private var currentArtworkUrl: URL? = null
+  private var currentArtworkUrl: String? = null
   private var currentArtwork: Bitmap? = null
   private var artworkLoadJob: Job? = null
   private val notificationId: Int
@@ -533,13 +533,14 @@ class AudioControlsService : MediaSessionService() {
     return currentPlayable?.supportsPreviousTrack == true
   }
 
-  private fun loadArtworkFromUrl(url: URL, callback: (Bitmap?) -> Unit) {
-    if (url != currentArtworkUrl) {
-      currentArtworkUrl = url
+  private fun loadArtworkFromUrl(urlString: String, callback: (Bitmap?) -> Unit) {
+    if (urlString != currentArtworkUrl) {
+      currentArtworkUrl = urlString
       artworkLoadJob?.cancel()
 
       artworkLoadJob = scope.launch {
         try {
+          val url = URL(urlString)
           val bitmap = url.openConnection().getInputStream().use {
             BitmapFactory.decodeStream(it)
           }
