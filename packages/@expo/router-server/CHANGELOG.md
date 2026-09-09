@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Emit `type="image/svg+xml"` on the favicon `<link>` when the href points to an SVG ([#48026](https://github.com/expo/expo/pull/48026) by [@danfitz36](https://github.com/danfitz36))
 - Compile `pageHeaders` rules into the routes manifest ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes

@@ -70,6 +70,46 @@ describe('checkBrowserRequestAsync', () => {
   const createConstructUrl = () =>
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
 
+  it('injects an SVG favicon link into the dev HTML when `web.favicon` is an SVG', async () => {
+    // Browsers auto-discover `/favicon.ico` but not `/favicon.svg`, so without this tag the
+    // dev server renders no favicon at all for an SVG-configured project.
+    jest.mocked(getPlatformBundlers).mockReturnValueOnce({
+      web: 'metro',
+      ios: 'metro',
+      android: 'metro',
+      tvos: 'metro',
+      macos: 'metro',
+    });
+
+    jest.mocked(getConfig).mockReturnValueOnce({
+      pkg: {},
+      exp: {
+        sdkVersion: '45.0.0',
+        name: 'my-app',
+        slug: 'my-app',
+        platforms: ['ios', 'android', 'web'],
+        web: { favicon: './assets/favicon.svg' },
+      },
+    } as any);
+
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: createConstructUrl(),
+      mode: 'development',
+    });
+
+    const req = asReq({ url: 'http://localhost:8080/', headers: {} });
+    const res = new MockServerResponse();
+
+    expect(await middleware.checkBrowserRequestAsync(req, asRes(res), () => {})).toBe(true);
+
+    expect(createTemplateHtmlFromExpoConfigAsync).toHaveBeenCalledWith(
+      '/',
+      expect.objectContaining({
+        extraHead: '<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>',
+      })
+    );
+  });
+
   it('handles browser requests when the web bundler is "metro" and no platform is specified', async () => {
     jest.mocked(getPlatformBundlers).mockReturnValueOnce({
       web: 'metro',
