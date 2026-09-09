@@ -10,6 +10,8 @@
     android:xlargeScreens="true"/>
 
   <uses-permission android:name="android.permission.INTERNET" />
+  <!-- Android 17 gates local network access behind this runtime permission; Home asks before reaching a dev server. -->
+  <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
   <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE" />
