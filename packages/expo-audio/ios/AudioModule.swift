@@ -527,6 +527,7 @@ public class AudioModule: Module {
       AsyncFunction("stop") { recorder in
         try checkPermissions()
         recorder.stopRecording()
+        try setIsAudioActive(false)
       }
 
       Function("getStatus") { recorder -> [String: Any] in
@@ -834,6 +835,7 @@ public class AudioModule: Module {
     audioEnabled.withLock { $0 = isActive }
     if !isActive {
       pauseAllPlayers()
+      pauseAllRecorders()
     }
 
     do {
