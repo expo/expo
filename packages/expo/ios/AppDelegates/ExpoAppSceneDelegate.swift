@@ -12,8 +12,8 @@ import React
 
  Responsibilities:
  - Create the `UIWindow` from the connecting `UIWindowScene` and start React Native into it.
- - Re-feed scene life-cycle, URL, and user-activity events to the existing
-   `ExpoAppDelegateSubscriberManager`, so app delegate subscribers keep working unchanged.
+ - Re-feed scene life-cycle, URL, user-activity, and quick-action events to the app delegate, so
+   both app delegate subscribers and `AppDelegate` overrides keep working unchanged.
  */
 @available(iOSApplicationExtension, unavailable)
 @objc(EXExpoAppSceneDelegate)
@@ -63,29 +63,34 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     // Deep links / universal links.
     Self.route(urlContexts: connectionOptions.urlContexts)
     connectionOptions.userActivities.forEach { Self.route(userActivity: $0) }
+
+#if os(iOS)
+    // A quick action that cold-starts the app arrives here instead of in
+    // `windowScene(_:performActionFor:completionHandler:)`, which UIKit only calls while running.
+    if let shortcutItem = connectionOptions.shortcutItem {
+      Self.route(shortcutItem: shortcutItem, completionHandler: { _ in })
+    }
+#endif
   }
 
   open func sceneDidDisconnect(_ scene: UIScene) {
     window = nil
   }
 
-  // In the scene lifecycle UIKit no longer calls the app delegate equivalents, so we forward
-  // these to the subscriber manager to preserve existing subscriber behavior.
-
   open func sceneDidBecomeActive(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(UIApplication.shared)
+    Self.route(lifeCycleEvent: .didBecomeActive)
   }
 
   open func sceneWillResignActive(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationWillResignActive(UIApplication.shared)
+    Self.route(lifeCycleEvent: .willResignActive)
   }
 
   open func sceneWillEnterForeground(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(UIApplication.shared)
+    Self.route(lifeCycleEvent: .willEnterForeground)
   }
 
   open func sceneDidEnterBackground(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(UIApplication.shared)
+    Self.route(lifeCycleEvent: .didEnterBackground)
   }
 
   open func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -95,6 +100,16 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     Self.route(userActivity: userActivity)
   }
+
+#if os(iOS)
+  open func windowScene(
+    _ windowScene: UIWindowScene,
+    performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
+    Self.route(shortcutItem: shortcutItem, completionHandler: completionHandler)
+  }
+#endif
 }
 
 // MARK: - Launch options & routing helpers
@@ -129,27 +144,209 @@ extension ExpoAppSceneDelegate {
     return launchOptions.isEmpty ? nil : launchOptions
   }
 
-  /// Pass incoming URL contexts to both the subscriber manager and `RCTLinkingManager`.
-  public static func route(urlContexts: Set<UIOpenURLContext>) {
+  /// Scene life-cycle events that have a `UIApplicationDelegate` counterpart.
+  enum LifeCycleEvent {
+    case didBecomeActive
+    case willResignActive
+    case willEnterForeground
+    case didEnterBackground
+  }
+
+  /// Passes incoming URL contexts to the app delegate and `RCTLinkingManager`.
+  public static func route(
+    urlContexts: Set<UIOpenURLContext>,
+    to delegate: UIApplicationDelegate? = UIApplication.shared.delegate
+  ) {
     for context in urlContexts {
-      let options = openURLOptions(from: context.options)
-      _ = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, open: context.url, options: options)
-      RCTLinkingManager.application(UIApplication.shared, open: context.url, options: options)
+      route(url: context.url, options: openURLOptions(from: context.options), to: delegate)
     }
   }
 
-  /// Passes an incoming `NSUserActivity` to both the subscriber manager and `RCTLinkingManager`.
-  public static func route(userActivity: NSUserActivity) {
-    _ = ExpoAppDelegateSubscriberManager.application(
-      UIApplication.shared,
-      continue: userActivity,
-      restorationHandler: { _ in }
-    )
-    RCTLinkingManager.application(
-      UIApplication.shared,
-      continue: userActivity,
-      restorationHandler: { _ in }
-    )
+  /// Passes an incoming URL to the app delegate and `RCTLinkingManager`.
+  static func route(
+    url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any],
+    to delegate: UIApplicationDelegate? = UIApplication.shared.delegate
+  ) {
+    let application = UIApplication.shared
+    notifyLinkingManagerUnlessAlreadyNotified(of: url) {
+      route(
+        selector: #selector(UIApplicationDelegate.application(_:open:options:)),
+        to: delegate,
+        toDelegate: { _ = $0.application?(application, open: url, options: options) },
+        toSubscribers: { _ = ExpoAppDelegateSubscriberManager.application(application, open: url, options: options) }
+      )
+    } notify: {
+      RCTLinkingManager.application(application, open: url, options: options)
+    }
+  }
+
+  /// Passes an incoming `NSUserActivity` to the app delegate and `RCTLinkingManager`.
+  public static func route(
+    userActivity: NSUserActivity,
+    to delegate: UIApplicationDelegate? = UIApplication.shared.delegate
+  ) {
+    let application = UIApplication.shared
+    // `RCTLinkingManager` only announces browsing-web activities, so there is nothing to dedupe
+    // against for the other activity types.
+    notifyLinkingManagerUnlessAlreadyNotified(of: userActivity.webpageURL) {
+      route(
+        selector: #selector(UIApplicationDelegate.application(_:continue:restorationHandler:)),
+        to: delegate,
+        toDelegate: { _ = $0.application?(application, continue: userActivity, restorationHandler: { _ in }) },
+        toSubscribers: {
+          _ = ExpoAppDelegateSubscriberManager.application(
+            application,
+            continue: userActivity,
+            restorationHandler: { _ in }
+          )
+        }
+      )
+    } notify: {
+      RCTLinkingManager.application(application, continue: userActivity, restorationHandler: { _ in })
+    }
+  }
+
+  /// Passes a scene life-cycle event to its app delegate counterpart.
+  static func route(
+    lifeCycleEvent event: LifeCycleEvent,
+    to delegate: UIApplicationDelegate? = UIApplication.shared.delegate
+  ) {
+    let application = UIApplication.shared
+    switch event {
+    case .didBecomeActive:
+      route(
+        selector: #selector(UIApplicationDelegate.applicationDidBecomeActive(_:)),
+        to: delegate,
+        toDelegate: { $0.applicationDidBecomeActive?(application) },
+        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(application) }
+      )
+    case .willResignActive:
+      route(
+        selector: #selector(UIApplicationDelegate.applicationWillResignActive(_:)),
+        to: delegate,
+        toDelegate: { $0.applicationWillResignActive?(application) },
+        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationWillResignActive(application) }
+      )
+    case .willEnterForeground:
+      route(
+        selector: #selector(UIApplicationDelegate.applicationWillEnterForeground(_:)),
+        to: delegate,
+        toDelegate: { $0.applicationWillEnterForeground?(application) },
+        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(application) }
+      )
+    case .didEnterBackground:
+      route(
+        selector: #selector(UIApplicationDelegate.applicationDidEnterBackground(_:)),
+        to: delegate,
+        toDelegate: { $0.applicationDidEnterBackground?(application) },
+        toSubscribers: { ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(application) }
+      )
+    }
+  }
+
+#if os(iOS)
+  /// Passes a quick action to the app delegate.
+  ///
+  /// The `completionHandler` reports back to UIKit whether the action was handled, so it must run
+  /// exactly once: whoever implements the method owns it, and this never delivers to both the
+  /// delegate and the subscriber manager.
+  static func route(
+    shortcutItem: UIApplicationShortcutItem,
+    to delegate: UIApplicationDelegate? = UIApplication.shared.delegate,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
+    let application = UIApplication.shared
+    let selector = #selector(UIApplicationDelegate.application(_:performActionFor:completionHandler:))
+
+    guard let delegate, delegate.responds(to: selector) else {
+      ExpoAppDelegateSubscriberManager.application(
+        application,
+        performActionFor: shortcutItem,
+        completionHandler: completionHandler
+      )
+      return
+    }
+    delegate.application?(application, performActionFor: shortcutItem, completionHandler: completionHandler)
+  }
+#endif
+
+  /// Sends an event to the app delegate, and to the subscriber manager unless the delegate
+  /// forwards there on its own.
+  ///
+  /// UIKit stops calling the app delegate's own life-cycle, URL and quick-action methods once the
+  /// app adopts the scene life cycle, so overrides in the app's `AppDelegate` would never run.
+  /// An `ExpoAppDelegate` forwards every event it receives to the subscriber manager, so the
+  /// delegate call is the only delivery needed — an override that skips `super` drops the
+  /// subscribers, exactly as it does under the app-delegate life cycle. A brownfield delegate
+  /// forwards nothing, so there the subscribers are notified from here.
+  private static func route(
+    selector: Selector,
+    to delegate: UIApplicationDelegate?,
+    toDelegate: (UIApplicationDelegate) -> Void,
+    toSubscribers: () -> Void
+  ) {
+    guard let delegate, delegate.responds(to: selector) else {
+      toSubscribers()
+      return
+    }
+    toDelegate(delegate)
+
+    if !(delegate is ExpoAppDelegate) {
+      toSubscribers()
+    }
+  }
+
+  /// Runs `body`, then calls `notify` unless `RCTLinkingManager` was already notified about `url`
+  /// while `body` ran. Always calls `notify` when `url` is `nil`.
+  ///
+  /// App delegates generated by SDK 57 and older call `RCTLinkingManager` from their own
+  /// `application(_:open:options:)` and `application(_:continue:restorationHandler:)` overrides,
+  /// which would deliver the JS `url` event twice now that those overrides run again. There is no
+  /// way to detect such an override statically, so this listens for the notification
+  /// `RCTLinkingManager` posts synchronously for every link it handles. The notification name is
+  /// private to React Native's `RCTLinkingManager.mm`: if React Native ever renames it, those
+  /// legacy overrides deliver a duplicate `url` event again — a link is never lost.
+  private static func notifyLinkingManagerUnlessAlreadyNotified(
+    of url: URL?,
+    during body: () -> Void,
+    notify: () -> Void
+  ) {
+    guard let url else {
+      body()
+      notify()
+      return
+    }
+    let observer = LinkingManagerObserver(url: url)
+    body()
+    if !observer.wasNotified {
+      notify()
+    }
+  }
+
+  private final class LinkingManagerObserver: NSObject {
+    private let expectedURL: String
+    private(set) var wasNotified = false
+
+    init(url: URL) {
+      expectedURL = url.absoluteString
+      super.init()
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(linkingManagerDidOpenURL(_:)),
+        name: Notification.Name("RCTOpenURLNotification"),
+        object: nil
+      )
+    }
+
+    deinit {
+      NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc
+    private func linkingManagerDidOpenURL(_ notification: Notification) {
+      wasNotified = wasNotified || notification.userInfo?["url"] as? String == expectedURL
+    }
   }
 
   private static func openURLOptions(
