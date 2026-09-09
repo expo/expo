@@ -6,16 +6,19 @@ description: Track flow health, flaky flows, and failure patterns for your Maest
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **info** Maestro insights is available on the Production and Enterprise plans. Learn more at [EAS pricing](https://expo.dev/pricing).
+> **info** Maestro insights is available on the Production and Enterprise plans. Time ranges can start up to 30 days back on the Production plan, and up to 365 days back on the Enterprise plan. Learn more at [EAS pricing](https://expo.dev/pricing).
 
 The **Maestro** tab in the dashboard surfaces results from the [Maestro](https://maestro.dev/) end-to-end (E2E) tests you run in EAS Workflows with the [`maestro` job](/eas/workflows/pre-packaged-jobs/#maestro). It helps you spot which flows fail or flake the most so you can keep your test suite healthy.
 
 - To view insights, open your project in the EAS dashboard, select **Insights** from the navigation menu, and then select the **Maestro** tab.
 - To start sending data, set up E2E tests by following [Run E2E tests on EAS Workflows with Maestro](/eas/workflows/examples/e2e-tests/). Results appear automatically as your tests run.
+
+You can also query the same data from the terminal with [EAS CLI](/eas-insights/eas-cli/).
 
 > **info** Insights are collected from the JUnit test report, which the `maestro` job produces by default (`output_format: junit`). If you set `output_format` to another value such as `html`, results aren't reported and won't appear here.
 
@@ -65,7 +68,16 @@ Select a flow to drill into its history, including its Maestro runs, pass rate, 
   darkSrc="/static/images/eas-insights/insights-maestro-flow-dark.webp"
 />
 
+> **info** Insights are aggregated for trend analysis and can lag behind real time or omit recent runs. Use them to investigate trends rather than as an authoritative record.
+
 ## More
+
+<BoxLink
+  title="Query EAS Insights with EAS CLI"
+  description="Query the same pass rates, flaky flows, and error patterns from the terminal or a CI job."
+  href="/eas-insights/eas-cli/"
+  Icon={TerminalBrowserIcon}
+/>
 
 <BoxLink
   title="Run E2E tests on EAS Workflows with Maestro"
