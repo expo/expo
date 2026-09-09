@@ -2,6 +2,7 @@ package expo.modules.securestore
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import androidx.biometric.BiometricManager
@@ -20,7 +21,7 @@ class AuthenticationHelper(
   private var isAuthenticating = false
 
   internal suspend fun authenticateCipher(cipher: Cipher, options: AuthenticationPromptOptions): Cipher {
-    if (options.requireAuthentication) {
+    if (options.isAuthenticationRequired) {
       return openAuthenticationPrompt(cipher, options).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
@@ -41,7 +42,15 @@ class AuthenticationHelper(
     isAuthenticating = true
 
     try {
-      assertBiometricsSupport()
+      if (options.isDeviceCredentialsRequired) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+          throw UnsupportedDeviceCredentialsException()
+        }
+        assertDeviceSecurity()
+      } else {
+        assertBiometricsSupport()
+      }
+
       val fragmentActivity = getCurrentActivity() as? FragmentActivity
         ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
@@ -49,7 +58,8 @@ class AuthenticationHelper(
         fragmentActivity,
         context,
         options.authenticationPrompt,
-        options.requireConfirmation
+        options.requireConfirmation,
+        options.isDeviceCredentialsRequired
       )
 
       return withContext(Dispatchers.Main.immediate) {
@@ -58,6 +68,15 @@ class AuthenticationHelper(
       }
     } finally {
       isAuthenticating = false
+    }
+  }
+
+  fun assertDeviceSecurity() {
+    val manager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+    if (!manager.isDeviceSecure) {
+      throw AuthenticationException(
+        "A secure lock screen (PIN, pattern, or password) is required for device credential authentication. The device currently has no secure lock screen set."
+      )
     }
   }
 
