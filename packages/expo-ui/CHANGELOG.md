@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `components` `dateStyle` to `Text`, with `componentsStyle` and `componentsFields`, so a `date` can be shown as a live countdown in calendar units such as `1h 6m` instead of `mm:ss`. ([#49929](https://github.com/expo/expo/pull/49929) by [@AlAdler](https://github.com/AlAdler))
 - [Android] Added the `enabled` and `colors` props to the Jetpack Compose `RadioButton` component. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Added the Jetpack Compose `DateRangePicker` and `DateRangePickerDialog` components. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))

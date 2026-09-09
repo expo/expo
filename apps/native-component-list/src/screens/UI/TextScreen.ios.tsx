@@ -108,6 +108,14 @@ export default function TextScreen() {
         <Section title="Date (style: relative)">
           <Text date={new Date(Date.now() + 300000)} dateStyle="relative" />
         </Section>
+        <Section title="Date (style: components, hours and minutes)">
+          <Text
+            date={new Date(Date.now() + 3960000)}
+            dateStyle="components"
+            componentsStyle="narrow"
+            componentsFields={['hour', 'minute']}
+          />
+        </Section>
         <Section title="Timer Interval (countdown)">
           <Text
             timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}

@@ -361,6 +361,29 @@ export default function DateTextExample() {
 
 </ComponentExample>
 
+### Countdown in calendar units
+
+Use the `components` date style to show the time until (or since) a date in calendar units instead of a running clock. `componentsFields` picks the units, so a countdown can leave out seconds, and `componentsStyle` picks how the units are named. This requires iOS/tvOS 18+ and falls back to the `relative` style on older versions.
+
+```tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+
+export default function ComponentsDateExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Text
+        date={new Date(Date.now() + 3960000)}
+        dateStyle="components"
+        componentsStyle="narrow"
+        componentsFields={['hour', 'minute']}
+      />
+    </Host>
+  );
+}
+```
+
+The example above reads `1h 6m` and updates every minute. Set `countsDown={false}` to count up from a past date instead.
+
 ### Timer interval
 
 Use `timerInterval` to display a live countdown or count-up timer. This requires iOS/tvOS 16+.
