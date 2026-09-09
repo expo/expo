@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expose the embedded fingerprint as `Constants.fingerprint`, so JavaScript can read what the running build was made from. ([#48922](https://github.com/expo/expo/pull/48922) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

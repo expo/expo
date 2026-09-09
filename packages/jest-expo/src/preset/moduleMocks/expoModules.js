@@ -1376,6 +1376,8 @@ module.exports = {
           debugMode: { type: 'boolean', mock: true },
           deviceName: { type: 'string' },
           executionEnvironment: { type: 'string' },
+          // Null, not the generic 'mock' string, or `if (Constants.fingerprint)` gates would lie.
+          fingerprint: { type: 'string', mock: null },
           getWebViewUserAgentAsync: { type: 'function' },
           isHeadless: { type: 'boolean', mock: false },
           manifest: { type: 'object' },
