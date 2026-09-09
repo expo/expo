@@ -41,6 +41,8 @@ class ConstantsBinding(
             )
           )
           this["isDetached"] = false
+          // The embedded fingerprint describes the Expo Go binary, not the loaded project.
+          this["fingerprint"] = null
         }
     }
 

@@ -84,6 +84,9 @@ export default {
   get manifest2(): null {
     return null;
   },
+  get fingerprint(): null {
+    return null;
+  },
   get experienceUrl(): string {
     if (typeof location !== 'undefined') {
       return location.origin;

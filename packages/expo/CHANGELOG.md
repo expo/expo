@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- The app reports its embedded fingerprint to the dev server, and `expo start` warns when the installed app no longer matches the project. ([#48922](https://github.com/expo/expo/pull/48922) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix a Hermes JSI crash during reloads where two overlapping `RCTHost` runtime callbacks shared `EXReactNativeFactory`'s app context ivar, letting one callback decorate objects against the other callback's runtime. ([#48576](https://github.com/expo/expo/issues/48576) by [@LizunovSergey](https://github.com/LizunovSergey))
