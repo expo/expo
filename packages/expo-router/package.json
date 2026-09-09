@@ -291,7 +291,6 @@
     "escape-string-regexp": "^4.0.0",
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
-    "invariant": "^2.2.4",
     "nanoid": "^3.3.18",
     "query-string": "^7.1.3",
     "react-fast-compare": "^3.2.2",

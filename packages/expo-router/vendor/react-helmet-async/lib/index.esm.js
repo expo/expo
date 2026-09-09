@@ -1,7 +1,6 @@
 // src/index.tsx
 import React3, { Component as Component3 } from "react";
 import fastCompare from "react-fast-compare";
-import invariant from "invariant";
 
 // src/Provider.tsx
 import React2, { Component } from "react";
@@ -739,16 +738,18 @@ var Helmet = class extends Component3 {
     return newFlattenedProps;
   }
   warnOnInvalidChildren(child, nestedChildren) {
-    invariant(
-      VALID_TAG_NAMES.some((name) => child.type === name),
-      typeof child.type === "function" ? `You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.` : `Only elements types ${VALID_TAG_NAMES.join(
+    if (!VALID_TAG_NAMES.some((name) => child.type === name)) {
+      throw new Error(
+        typeof child.type === "function" ? `You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.` : `Only elements types ${VALID_TAG_NAMES.join(
         ", "
       )} are allowed. Helmet does not support rendering <${child.type}> elements. Refer to our API for more information.`
-    );
-    invariant(
-      !nestedChildren || typeof nestedChildren === "string" || Array.isArray(nestedChildren) && !nestedChildren.some((nestedChild) => typeof nestedChild !== "string"),
-      `Helmet expects a string as a child of <${child.type}>. Did you forget to wrap your children in braces? ( <${child.type}>{\`\`}</${child.type}> ) Refer to our API for more information.`
-    );
+      );
+    }
+    if (nestedChildren && typeof nestedChildren !== "string" && (!Array.isArray(nestedChildren) || nestedChildren.some((nestedChild) => typeof nestedChild !== "string"))) {
+      throw new Error(
+        `Helmet expects a string as a child of <${child.type}>. Did you forget to wrap your children in braces? ( <${child.type}>{\`\`}</${child.type}> ) Refer to our API for more information.`
+      );
+    }
     return true;
   }
   mapChildrenToProps(children, newProps) {
