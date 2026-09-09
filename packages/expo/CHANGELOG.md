@@ -27,6 +27,8 @@
 - Fix `import.meta.url` being `null` on web when `transform.inlineRequires` is enabled. ([#49045](https://github.com/expo/expo/pull/49045) by [@expo-bot](https://github.com/expo-bot))
 - Fix platform resolution of the `expo/dom` and `expo/dom/internal` subpath exports ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Remove a duplicated `ExpoModulesCore-Swift.h` import block in `ExpoReactNativeFactory.mm` whose `#else` branch imported the header unconditionally, breaking builds where neither form is on the header search path. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix `expo/fetch` `Response.body` never closing or erroring when the request fails after the response was delivered but before anything read the body.
+- [Android] Fix `expo/fetch` delivering a truncated response body to JS as a successful, complete one when the request fails after the response was delivered, and make `Response.text()` / `.arrayBuffer()` reject on such a failure.
 
 ### 💡 Others
 
