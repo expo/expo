@@ -126,6 +126,12 @@ If you are using the [default](/more/create-expo/#--template) template to create
       default: 'false',
     },
     {
+      name: 'disableScrollViewDetection',
+      description:
+        'Disable the development-only warning shown when a screen inside a native stack or native tabs renders a scroll view that is not on the first child path. Native header collapse, scroll edge effects, and scroll-to-top on tab re-selection only apply to the scroll view found on that path.',
+      default: 'false',
+    },
+    {
       name: 'unstable_useServerMiddleware',
       description:
         'Enable server middleware support with a `+middleware.ts` file. Requires `web.output: "server"` to be set in app config.',

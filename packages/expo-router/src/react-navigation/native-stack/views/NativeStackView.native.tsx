@@ -11,6 +11,7 @@ import {
 } from 'react-native-screens';
 
 import { useRoutesWithRemovalPrevented } from '../../../global-state/removalPrevention';
+import { ScrollViewPathDetector } from '../../../utils/ScrollViewPathDetector';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -432,6 +433,7 @@ const SceneView = ({
               <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                 <HeaderBackContext.Provider value={headerBack}>
                   {render()}
+                  <ScrollViewPathDetector routeName={route.name} />
                 </HeaderBackContext.Provider>
               </HeaderShownContext.Provider>
             </HeaderHeightContext.Provider>

@@ -82,7 +82,9 @@ function Screen(props: InternalTabScreenProps) {
     shared.selectedIcon ?? shared.icon
   );
 
-  const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
+  const content = (
+    <ScreenContent name={props.name} options={options} contentRenderer={contentRenderer} />
+  );
   const wrappedContent = useMemo(() => {
     if (!options.disableAutomaticContentInsets && !tabBarHidden) {
       return (

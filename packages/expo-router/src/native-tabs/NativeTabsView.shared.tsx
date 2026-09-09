@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import type { TabsHostProps } from 'react-native-screens';
 
 import { useTheme } from '../react-navigation/native';
+import { ScrollViewPathDetector } from '../utils/ScrollViewPathDetector';
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import { useAwaitedScreensIcon } from './utils/icon';
 
@@ -105,9 +106,11 @@ export function useSharedScreenProps(props: InternalTabScreenProps) {
 }
 
 export function ScreenContent({
+  name,
   options,
   contentRenderer,
 }: {
+  name: string;
   options: NativeTabOptions;
   contentRenderer: () => React.ReactNode;
 }) {
@@ -122,6 +125,7 @@ export function ScreenContent({
         { flex: 1, position: 'relative', overflow: 'hidden' },
       ]}>
       {contentRenderer()}
+      <ScrollViewPathDetector routeName={name} />
     </View>
   );
 }

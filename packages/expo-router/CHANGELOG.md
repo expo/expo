@@ -52,6 +52,7 @@
 
 ### 🎉 New features
 
+- Warn in development when a screen inside a native stack or native tabs renders a scroll view that is not on the first child path, so header collapse, scroll edge effects, and scroll-to-top on tab re-selection do not silently stop working. Set `extra.router.disableScrollViewDetection` in the app config to turn the check off. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ubax](https://github.com/Ubax))
 - Export `usePreventRemove` from `expo-router` and add `repeat` for continuing the blocked navigation action. ([#49908](https://github.com/expo/expo/pull/49908) by [@Ubax](https://github.com/Ubax))
 - Add unstable APIs for integrating custom native and JavaScript stack navigators with `standard-navigation`. ([#49209](https://github.com/expo/expo/pull/49209) by [@Ubax](https://github.com/Ubax))
 - Add `LocaleProvider` to customize navigation direction at runtime. ([#49815](https://github.com/expo/expo/pull/49815) by [@Ubax](https://github.com/Ubax))

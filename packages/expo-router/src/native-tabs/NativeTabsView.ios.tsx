@@ -146,7 +146,9 @@ function Screen(props: InternalTabScreenProps) {
     effectiveRenderingMode
   );
 
-  const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
+  const content = (
+    <ScreenContent name={props.name} options={options} contentRenderer={contentRenderer} />
+  );
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
 
   return (
