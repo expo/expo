@@ -178,6 +178,69 @@ test('allows an action dispatched while disabling prevention', () => {
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 });
 
+test.each([
+  ['when preventRemove is set to false', true, false],
+  ['when preventRemove stays true', false, true],
+])('repeats a prevented action %s', (_, clearPrevention, shouldWarn) => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  let repeat!: () => void;
+  let setPreventRemove!: React.Dispatch<React.SetStateAction<boolean>>;
+  const onPreventRemove = jest.fn(({ repeat: repeatAction }) => {
+    repeat = repeatAction;
+  });
+  const TestScreen = () => {
+    const [preventRemove, setPreventRemoveState] = React.useState(true);
+    setPreventRemove = setPreventRemoveState;
+    usePreventRemove(preventRemove, onPreventRemove);
+    return null;
+  };
+  const ref = createNavigationContainerRef<ParamListBase>();
+
+  render(
+    <BaseNavigationContainer ref={ref}>
+      <TestNavigator>
+        <Screen name="foo">{() => null}</Screen>
+        <Screen name="bar" component={TestScreen} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => ref.current?.navigate('bar'));
+  const action = StackActions.popTo('foo');
+  act(() => ref.current?.dispatch(action));
+
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo', 'bar']);
+  expect(onPreventRemove).toHaveBeenCalledTimes(1);
+  expect(onPreventRemove.mock.calls[0][0].data.action).toBe(action);
+
+  act(() => {
+    if (clearPrevention) {
+      setPreventRemove(false);
+    }
+    repeat();
+  });
+
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo']);
+  expect(onPreventRemove).toHaveBeenCalledTimes(1);
+  if (shouldWarn) {
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '`repeat` or `disablePrevention` from `usePreventRemove` was called, but `preventRemove` is ' +
+        'still `true`. The screen is no longer protected, but the hook will not re-enable ' +
+        'prevention until `preventRemove` changes. Set `preventRemove` to `false` in the same ' +
+        'handler to keep the prop and the prevention state in sync.'
+    );
+  } else {
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+  }
+});
+
 test('warns when disablePrevention is called and preventRemove stays true', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);

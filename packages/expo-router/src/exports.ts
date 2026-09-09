@@ -53,6 +53,10 @@ export type { Theme } from './react-navigation/native/types';
 export { useRoutePath } from './react-navigation/native/useRoutePath';
 export { useScrollToTop } from './react-navigation/native/useScrollToTop';
 export { useRoute } from './react-navigation/core/useRoute';
+export {
+  type PreventRemoveOptions,
+  usePreventRemove,
+} from './react-navigation/core/usePreventRemove';
 
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';

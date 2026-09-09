@@ -1,24 +1,16 @@
-import { router, useNavigation } from 'expo-router';
-import { usePreventRemove } from 'expo-router/react-navigation';
-import { useEffect, useRef, useState } from 'react';
+import { router, usePreventRemove } from 'expo-router';
+import { useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
 export default function HookForm() {
-  const navigation = useNavigation();
   const [dirty, setDirty] = useState(true);
   const [preventedCount, setPreventedCount] = useState(0);
-  const pendingAction = useRef<Parameters<typeof navigation.dispatch>[0] | null>(null);
+  const [pendingNavigation, setPendingNavigation] = useState<{ repeat: () => void } | null>(null);
 
-  usePreventRemove(dirty, ({ data }) => {
-    pendingAction.current = data.action;
+  usePreventRemove(dirty, ({ repeat }) => {
+    setPendingNavigation({ repeat });
     setPreventedCount((count) => count + 1);
   });
-
-  useEffect(() => {
-    if (!dirty && pendingAction.current) {
-      navigation.dispatch(pendingAction.current);
-    }
-  }, [dirty, navigation]);
 
   return (
     <View>
@@ -26,7 +18,16 @@ export default function HookForm() {
       <Text testID="dirty">{dirty ? 'dirty' : 'clean'}</Text>
       <Text testID="prevented-count">{preventedCount}</Text>
       <Button testID="back" title="Back" onPress={() => router.back()} />
-      <Button testID="discard" title="Discard" onPress={() => setDirty(false)} />
+      <Button
+        testID="discard"
+        title="Discard"
+        disabled={!dirty}
+        onPress={() => {
+          setDirty(false);
+          setPendingNavigation(null);
+          pendingNavigation?.repeat();
+        }}
+      />
     </View>
   );
 }

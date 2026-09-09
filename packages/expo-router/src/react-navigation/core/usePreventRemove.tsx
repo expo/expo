@@ -29,10 +29,10 @@ function useWarnOnStalePreventRemoveDev(preventRemove: boolean) {
     setShouldCheck(false);
     if (preventRemove) {
       console.warn(
-        '`disablePrevention` from `usePreventRemove` was called, but `preventRemove` is still ' +
-          '`true`. The screen is no longer protected, but the hook will not re-enable prevention ' +
-          'until `preventRemove` changes. Set `preventRemove` to `false` in the same handler to ' +
-          'keep the prop and the prevention state in sync.'
+        '`repeat` or `disablePrevention` from `usePreventRemove` was called, but `preventRemove` is ' +
+          'still `true`. The screen is no longer protected, but the hook will not re-enable ' +
+          'prevention until `preventRemove` changes. Set `preventRemove` to `false` in the same ' +
+          'handler to keep the prop and the prevention state in sync.'
       );
     }
   }, [shouldCheck, preventRemove]);
@@ -48,26 +48,26 @@ const useWarnOnStalePreventRemove: (preventRemove: boolean) => () => void =
  * Prevents the screen from being removed while `preventRemove` is `true` and calls `callback`
  * with the blocked navigation action.
  *
- * To continue from the same handler, call the returned `disablePrevention` function before
- * navigating.
+ * To continue the blocked navigation action, set `preventRemove` to `false` and call the
+ * callback's `repeat` function. To navigate somewhere else, set `preventRemove` to `false`, call
+ * the returned `disablePrevention` function, and then navigate.
  *
  * @example
  * ```tsx
  * const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
- * const [showConfirm, setShowConfirm] = useState(false);
- *
- * const disablePrevention = usePreventRemove(hasUnsavedChanges, () => setShowConfirm(true));
- *
- * {showConfirm && (
- *   <Button
- *     title="Discard changes"
- *     onPress={() => {
- *       setHasUnsavedChanges(false);
- *       disablePrevention();
- *       router.back();
- *     }}
- *   />
- * )}
+ * usePreventRemove(hasUnsavedChanges, ({ repeat }) => {
+ *   Alert.alert('Discard changes?', undefined, [
+ *     { text: 'Cancel', style: 'cancel' },
+ *     {
+ *       text: 'Discard',
+ *       style: 'destructive',
+ *       onPress: () => {
+ *         setHasUnsavedChanges(false);
+ *         repeat();
+ *       },
+ *     },
+ *   ]);
+ * });
  * ```
  *
  * @param preventRemove Boolean indicating whether to prevent screen from being removed.
@@ -76,7 +76,7 @@ const useWarnOnStalePreventRemove: (preventRemove: boolean) => () => void =
  */
 export function usePreventRemove(
   preventRemove: boolean,
-  callback?: (options: { data: { action: NavigationAction } }) => void,
+  callback?: (options: { data: { action: NavigationAction }; repeat: () => void }) => void,
   options?: PreventRemoveOptions
 ) {
   const id = React.useId();
@@ -98,11 +98,23 @@ export function usePreventRemove(
     };
   }, [id, preventInPreloadedRoutes, preventRemove, setPreventRemove]);
 
+  // TODO(@ubax): use standard useCallback if possible
+  const disablePrevention = useLatestCallback(() => {
+    setPreventRemove(id, false, preventInPreloadedRoutes);
+    markDisabled();
+  });
+
   const removePreventedListener = useLatestCallback<
     EventListenerCallback<EventMapCore<any>, 'removePrevented'>
   >((event) => {
     if (preventRemove && callback) {
-      callback({ data: event.data });
+      callback({
+        data: event.data,
+        repeat: () => {
+          disablePrevention();
+          navigation.dispatch(event.data.action);
+        },
+      });
     }
   });
 
@@ -110,10 +122,5 @@ export function usePreventRemove(
     () => navigation.addListener('removePrevented', removePreventedListener),
     [navigation, removePreventedListener]
   );
-  // TODO(@ubax): use standard useCallback if possible
-  // TODO(@ubax): add repeat function which will call this and repeat the action
-  return useLatestCallback(() => {
-    setPreventRemove(id, false, preventInPreloadedRoutes);
-    markDisabled();
-  });
+  return disablePrevention;
 }
