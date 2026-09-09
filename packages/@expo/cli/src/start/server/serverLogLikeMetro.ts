@@ -11,10 +11,10 @@ import * as stackTraceParser from 'stacktrace-parser';
 
 import { env } from '../../utils/env';
 import { memoize } from '../../utils/fn';
+import { formatStack, isExternalCallsite } from './metro/formatStack';
 import { LogBoxLog } from './metro/log-box/LogBoxLog';
 import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
 import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
-import { getStackAsFormattedLog } from './metro/metroErrorInterface';
 
 const CONSOLE_METHODS = [
   'trace',
@@ -119,7 +119,7 @@ export async function maybeSymbolicateAndFormatJSErrorStackLogAsync(
 
   await new Promise((res) => log.symbolicate('stack', res));
 
-  const formatted = getStackAsFormattedLog(projectRoot, {
+  const formatted = formatStack(projectRoot, {
     stack: log.symbolicated?.stack?.stack ?? [],
     codeFrame: log.codeFrame,
   });
@@ -244,11 +244,12 @@ function formatParsedStackLikeMetro(
     .map((line) => {
       // Use the same regex we use in Metro config to filter out traces:
       const isCollapsed = INTERNAL_CALLSITES_REGEX.test(line.file!);
+      const isExternal = isExternalCallsite(line.file);
       if (!isComponentStack && isCollapsed && !env.EXPO_DEBUG) {
         return null;
       }
-      // If a file is collapsed, print it with dim styling.
-      const style = isCollapsed ? chalk.dim : chalk.gray;
+      // If a file is collapsed or external, print it with dim styling.
+      const style = isCollapsed || isExternal ? chalk.dim : chalk.gray;
       // Use the `at` prefix to match Node.js
       let fileName = line.file!;
       if (fileName.startsWith(path.sep)) {

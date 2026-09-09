@@ -39,7 +39,7 @@ describe(getDefaultCustomizeFrame, () => {
     });
   });
 
-  it('collapses node_modules frames with POSIX separators', () => {
+  it('does not collapse general node_modules frames with POSIX separators', () => {
     const customizeFrame = getDefaultCustomizeFrame();
 
     expect(
@@ -54,11 +54,30 @@ describe(getDefaultCustomizeFrame, () => {
       lineNumber: 10,
       column: 20,
       methodName: 'render',
+      collapse: false,
+    });
+  });
+
+  it('still collapses internal node_modules frames', () => {
+    const customizeFrame = getDefaultCustomizeFrame();
+
+    expect(
+      customizeFrame({
+        file: '/Users/app/node_modules/react-refresh/runtime.js',
+        lineNumber: 10,
+        column: 20,
+        methodName: 'performReactRefresh',
+      })
+    ).toEqual({
+      file: '/Users/app/node_modules/react-refresh/runtime.js',
+      lineNumber: 10,
+      column: 20,
+      methodName: 'performReactRefresh',
       collapse: true,
     });
   });
 
-  it('collapses node_modules frames with Windows separators', () => {
+  it('does not collapse general node_modules frames with Windows separators', () => {
     jest.isolateModules(() => {
       mockWindowsPath();
 
@@ -78,7 +97,7 @@ describe(getDefaultCustomizeFrame, () => {
         lineNumber: 10,
         column: 20,
         methodName: 'render',
-        collapse: true,
+        collapse: false,
       });
     });
   });
