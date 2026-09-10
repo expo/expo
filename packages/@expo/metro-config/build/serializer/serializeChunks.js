@@ -80,7 +80,8 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
     const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
     const platform = getPlatformOption(graph, options) ?? 'web';
-    const isHosted = platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
+    const customTransformOptions = graph.transformOptions?.customTransformOptions;
+    const isHosted = platform === 'web' || (customTransformOptions?.hosted && isExporting);
     const publicPath = isExporting
         ? isHosted
             ? `/assets?export_path=${assetPublicUrl}`

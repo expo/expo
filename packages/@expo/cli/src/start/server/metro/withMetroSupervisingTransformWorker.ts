@@ -1,15 +1,10 @@
-import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import { unstable_transformerPath, internal_supervisingTransformerPath } from '@expo/metro-config';
+
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
 
 const debug = require('debug')(
   'expo:metro:withMetroSupervisingTransformWorker'
 ) as typeof console.log;
-
-declare module '@expo/metro/metro-transform-worker' {
-  export interface JsTransformerConfig {
-    expo_customTransformerPath?: string | false;
-  }
-}
 
 // The default babel transformer is either `@expo/metro-config/babel-transformer` set by the user
 // or @expo/metro-config/build/babel-transformer
@@ -41,7 +36,7 @@ const defaultBabelTransformerPaths = [
  * versions of Metro. This is unsupported and undefined behavior and will lead to
  * bugs and errors.
  */
-export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroConfig {
+export function withMetroSupervisingTransformWorker(config: ExpoMetroConfig): ExpoMetroConfig {
   // NOTE: This is usually a required property, but we don't always set it in mocks
   const originalBabelTransformerPath = config.transformer?.babelTransformerPath;
   const originalTransformerPath = config.transformerPath;

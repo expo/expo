@@ -3,6 +3,7 @@ import { mergeConfig, type ConfigT } from '@expo/metro/metro-config';
 import { getDefaultConfig } from '../ExpoMetroConfig';
 import { type LoadMetroConfigParams, resolveMetroUserConfig } from './resolveMetroUserConfig';
 import { resolveBabelrcName } from '../loadBabelConfig';
+import type { ExpoJsTransformerConfig } from '../transform-worker/types';
 
 export type { LoadMetroConfigParams } from './resolveMetroUserConfig';
 
@@ -28,7 +29,7 @@ export async function loadUserConfig(params: LoadMetroConfigParams): Promise<Con
   };
 
   // NOTE(@kitten): Pass a hint to the transformer on where to find the Babel config
-  asWritable(config.transformer).extendsBabelConfigPath =
+  asWritable(config.transformer as ExpoJsTransformerConfig).extendsBabelConfigPath =
     config.transformer.enableBabelRCLookup !== false
       ? resolveBabelrcName(params.projectRoot)
       : undefined;
