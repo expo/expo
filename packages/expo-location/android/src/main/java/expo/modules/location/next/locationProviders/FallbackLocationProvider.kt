@@ -1,6 +1,7 @@
 package expo.modules.location.next.locationProviders
 
 import android.app.Activity
+import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.location.next.Position
 import kotlinx.coroutines.CompletableDeferred
 
@@ -22,6 +23,10 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : 
 
   override fun watchPosition(): ProviderResult<WatchSession> {
     return firstAvailable { it.watchPosition() }
+  }
+
+  override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    return firstAvailable { it.getLocationTaskConsumerClass() }
   }
 
   inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {
