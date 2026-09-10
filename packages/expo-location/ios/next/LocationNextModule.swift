@@ -27,5 +27,15 @@ public final class LocationNextModule: Module {
     AsyncFunction("requestBackgroundPermissions") { (options: PermissionsRequestOptions?, promise: Promise) in
       permissions.requestBackgroundPermissions(options: options ?? PermissionsRequestOptions(), promise)
     }
+
+    AsyncFunction("getPosition") { (options: GetPositionOptions) -> Position? in
+      guard CLLocationManager.locationServicesEnabled() else {
+        throw LocationServicesDisabledGlobally()
+      }
+      try accessGuard.checkForegroundPermissions()
+
+      let location = try await PositionRequester().get(options: options)
+      return location?.toPosition()
+    }
   }
 }
