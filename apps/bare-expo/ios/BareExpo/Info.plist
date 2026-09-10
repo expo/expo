@@ -44,6 +44,10 @@
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
+    <key>ExpoWidgetsAppGroupIdentifier</key>
+    <string>group.dev.expo.Payments</string>
+    <key>ExpoWidgets_EnablePushNotifications</key>
+    <false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>airmail</string>
@@ -114,6 +118,10 @@
     <string>Allow $(PRODUCT_NAME) to access your reminders</string>
     <key>NSRemindersUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+    <key>NSSupportsLiveActivities</key>
+    <true/>
+    <key>NSSupportsLiveActivitiesFrequentUpdates</key>
+    <false/>
     <key>NSUserTrackingUsageDescription</key>
     <string>Allow Expo projects to use data for tracking the user or the device</string>
     <key>RCTNewArchEnabled</key>
