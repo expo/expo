@@ -111,7 +111,7 @@ export function AgentPrompt({
         <div className="flex min-w-0 flex-1 basis-80 gap-3">
           <MagicWand01Icon
             aria-hidden="true"
-            className="mt-0.5 icon-md shrink-0 text-palette-purple11"
+            className="mt-0.5 icon-md shrink-0 text-palette-purple11 max-sm:hidden"
           />
           <div>
             <HEADLINE tag="h2">{title}</HEADLINE>
