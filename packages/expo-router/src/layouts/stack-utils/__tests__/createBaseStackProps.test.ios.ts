@@ -5,6 +5,7 @@ import type {
   ParamListBase,
   StackNavigationState,
 } from '../../../react-navigation/native';
+import type { StandardNavigatorCreatePropsFactoryDeps } from '../../../standard-navigation/types';
 import { createBaseStackProps } from '../createBaseStackProps';
 
 describe(createBaseStackProps, () => {
@@ -13,14 +14,21 @@ describe(createBaseStackProps, () => {
     key: 'stack-key',
     index: 1,
   } as StackNavigationState<ParamListBase>;
+  const dependencies: StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>> =
+    {
+      dispatch: jest.fn(),
+      dispatchSync: jest.fn(),
+      isPreloaded: jest.fn(() => false),
+      isRemovalPrevented: jest.fn(() => false),
+      navigation: {} as NavigationHelpers<ParamListBase>,
+      state,
+    };
 
   it('creates a synchronous pop function', () => {
     const dispatchSync = jest.fn();
     const props = createBaseStackProps({
+      ...dependencies,
       dispatchSync,
-      // `pop` does not read navigation.
-      navigation: {} as NavigationHelpers<ParamListBase>,
-      state,
     });
 
     props.pop(2, 'route-key');
@@ -40,7 +48,7 @@ describe(createBaseStackProps, () => {
     const unsubscribe = jest.fn();
     const addListener = jest.fn(() => unsubscribe);
     const props = createBaseStackProps({
-      dispatchSync: jest.fn(),
+      ...dependencies,
       navigation: {
         addListener,
         // The subscription helper only reads `addListener` until the listener fires.
@@ -52,13 +60,18 @@ describe(createBaseStackProps, () => {
     expect(addListener).toHaveBeenCalledWith('tabPress', expect.any(Function));
   });
 
-  it('only requires the dependencies used by base stack props', () => {
-    expectTypeOf(createBaseStackProps).parameter(0).toEqualTypeOf<{
-      dispatchSync: (
-        action: Parameters<NavigationHelpers<ParamListBase>['dispatchSync']>[0]
-      ) => void;
-      navigation: NavigationHelpers<ParamListBase>;
-      state: StackNavigationState<ParamListBase>;
-    }>();
+  it('accepts the standard navigator dependencies', () => {
+    expectTypeOf(createBaseStackProps)
+      .parameter(0)
+      .toEqualTypeOf<
+        StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>
+      >();
+  });
+
+  it('forwards integration state callbacks', () => {
+    const props = createBaseStackProps(dependencies);
+
+    expect(props.isPreloaded).toBe(dependencies.isPreloaded);
+    expect(props.isRemovalPrevented).toBe(dependencies.isRemovalPrevented);
   });
 });

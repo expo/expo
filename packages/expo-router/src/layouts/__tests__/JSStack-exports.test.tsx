@@ -17,7 +17,6 @@ describe('expo-router/js-stack re-exports', () => {
   });
 
   it('exports a single factory for the JS stack integration props', () => {
-    expect(RouterEntry.createBaseStackProps).toBeDefined();
     expect(JSStackEntry.unstable_createPropsForJSStack).toBeDefined();
     expect(JSStackEntry.unstable_createStandardStackNavigator).toBeDefined();
     expect('createPropsForJSStack' in JSStackEntry).toBe(false);

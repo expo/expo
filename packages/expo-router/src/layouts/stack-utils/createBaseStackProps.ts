@@ -5,18 +5,31 @@ import type { StandardNavigatorCreatePropsFactoryDeps } from '../../standard-nav
 
 /**
  * Creates the shared props for integrating a stack navigator with Expo Router.
- * The returned `pop` function dispatches synchronously.
  *
  * @param dependencies The navigation state and dispatch functions provided to a `createProps`
  * factory.
  * @returns The shared stack navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { createBaseStackProps, StackRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { navigator } from './navigator';
+ *
+ * export const Stack = unstable_integrateWithRouter(navigator, StackRouter, {
+ *   createProps: createBaseStackProps,
+ * });
+ * ```
  */
 export function createBaseStackProps({
   dispatchSync,
+  isPreloaded,
+  isRemovalPrevented,
   navigation,
   state,
 }: StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>) {
   return {
+    isPreloaded,
+    isRemovalPrevented,
     pop: makePopAction(dispatchSync, state.key),
     subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
   };
