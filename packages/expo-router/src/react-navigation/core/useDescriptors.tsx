@@ -333,7 +333,7 @@ function getActivityThreshold(
   defaultThreshold: number
 ) {
   if (typeof activityEnabled === 'number') {
-    if (activityEnabled <= 0) {
+    if (Number.isNaN(activityEnabled) || activityEnabled <= 0) {
       if (__DEV__) {
         console.warn(
           `activityEnabled must be a positive number. Received ${activityEnabled}; disabling React Activity.`

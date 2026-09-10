@@ -290,7 +290,7 @@ describe('invalid activity threshold', () => {
     warn.mockRestore();
   });
 
-  test.each([0, -1])('disables activity for %s', (activityEnabled) => {
+  test.each([0, -1, NaN])('disables activity for %s', (activityEnabled) => {
     renderRouter({
       _layout: () => <JSStack activityEnabled={activityEnabled} />,
       index: () => <View testID="index" />,
