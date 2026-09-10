@@ -71,7 +71,7 @@ export function getStackRoutes<ParamList extends ParamListBase>(
   };
 }
 
-function markPreloadedRoutes<ParamList extends ParamListBase>(
+export function markPreloadedRoutes<ParamList extends ParamListBase>(
   state: StackNavigationState<ParamList>
 ) {
   let changed = false;
