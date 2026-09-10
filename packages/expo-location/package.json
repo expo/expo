@@ -1,6 +1,6 @@
 {
   "name": "expo-location",
-  "version": "57.0.7",
+  "version": "58.0.0",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "keywords": [
     "compass",

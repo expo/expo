@@ -1,6 +1,6 @@
 {
   "name": "patch-project",
-  "version": "57.0.9",
+  "version": "58.0.0",
   "description": "An Expo config-plugin and tool to support patch-based CNG",
   "keywords": [
     "cng",

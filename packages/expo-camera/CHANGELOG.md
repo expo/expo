@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [iOS] Changed `selectedLens` prop to use stable `deviceType` identifiers instead of locale-dependent `localizedName` strings, enabling reliable programmatic lens selection across all device languages. ([#42916](https://github.com/expo/expo/pull/42916) by [@mplumador](https://github.com/mplumador))
 
 ### 🎉 New features
@@ -25,8 +35,6 @@
 - [iOS] Fix `responsiveOrientationWhenOrientationLocked: false` being ignored — photos and videos captured while the app orientation is locked now follow the locked interface orientation instead of the physical device rotation. ([#47881](https://github.com/expo/expo/pull/47881) by [@jiunshinn](https://github.com/jiunshinn))
 - [iOS] Read the capture interface orientation from the scene the camera view is in rather than an arbitrary connected scene. ([#48315](https://github.com/expo/expo/pull/48315) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Restore the shutter animation on capture, which stopped running when the photo capture delegate moved off `CameraView`, leaving `animateShutter` with no effect. ([#49591](https://github.com/expo/expo/pull/49591) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 57.0.3 - 2026-07-16
 

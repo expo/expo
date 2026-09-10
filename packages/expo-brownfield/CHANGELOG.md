@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - [android] Add `ReactNativeViewFactory.createSurface`, returning a `ReactNativeSurfaceHandle` the host disposes when its container goes away. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 
 ### 🐛 Bug fixes

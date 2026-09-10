@@ -1,6 +1,6 @@
 {
   "name": "expo-image",
-  "version": "57.0.1",
+  "version": "58.0.0",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
   "keywords": [
     "react-native"
