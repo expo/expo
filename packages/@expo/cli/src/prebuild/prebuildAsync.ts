@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
+import { recordPrebuildFingerprintAsync } from '../utils/nativeFingerprint';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -200,6 +201,14 @@ export async function prebuildAsync(
       xcodeProjectTargets: inlineModules.xcodeProjectTargets,
       name: exp.name,
     });
+  }
+
+  // After `pod install`, not before: the fingerprint scans the ios directory, and a concurrent
+  // scan could read files mid-write.
+  for (const platform of options.platforms) {
+    if (platform === 'android' || platform === 'ios') {
+      await recordPrebuildFingerprintAsync(projectRoot, platform);
+    }
   }
 
   donePrebuild('done', {

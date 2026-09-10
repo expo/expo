@@ -176,6 +176,10 @@ async function calculateFingerprintHashAsync({
   return fingerprint.hash;
 }
 
+/**
+ * Resolves `@expo/fingerprint` directly, not through `importFingerprint`: build-cache keys
+ * predate that helper, and resolving another copy would change every existing key.
+ */
 function importFingerprintForDev(projectRoot: string): null | typeof import('@expo/fingerprint') {
   try {
     return require(require.resolve('@expo/fingerprint', { paths: [projectRoot] }));
