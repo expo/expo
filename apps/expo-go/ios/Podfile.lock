@@ -230,8 +230,6 @@ PODS:
     - ExpoModulesCore
   - ExpoStoreReview (57.0.1):
     - ExpoModulesCore
-  - ExpoSymbols (57.0.1):
-    - ExpoModulesCore
   - ExpoSystemUI (57.0.2):
     - ExpoModulesCore
   - ExpoTaskManager (57.0.7):
@@ -428,7 +426,7 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - lottie-ios (4.6.0)
-  - lottie-react-native (7.3.8):
+  - lottie-react-native (7.5.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2489,7 +2487,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Generated (1.27.2):
+  - react-native-maps/Generated (1.29.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2517,7 +2515,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Maps (1.27.2):
+  - react-native-maps/Maps (1.29.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2574,7 +2572,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-pager-view (8.0.2):
+  - react-native-pager-view (9.0.4):
     - boost
     - DoubleConversion
     - fast_float
@@ -2603,7 +2601,7 @@ PODS:
     - SocketRocket
     - SwiftUIIntrospect (~> 1.0)
     - Yoga
-  - react-native-safe-area-context (5.7.0):
+  - react-native-safe-area-context (5.9.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2622,8 +2620,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.7.0)
-    - react-native-safe-area-context/fabric (= 5.7.0)
+    - react-native-safe-area-context/common (= 5.9.1)
+    - react-native-safe-area-context/fabric (= 5.9.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2633,7 +2631,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.7.0):
+  - react-native-safe-area-context/common (5.9.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2661,7 +2659,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.7.0):
+  - react-native-safe-area-context/fabric (5.9.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2692,7 +2690,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
-  - react-native-skia (2.6.2):
+  - react-native-skia (2.11.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2722,7 +2720,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-slider (5.2.0):
+  - react-native-slider (5.2.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2741,7 +2739,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-slider/common (= 5.2.0)
+    - react-native-slider/common (= 5.2.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2751,7 +2749,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-slider/common (5.2.0):
+  - react-native-slider/common (5.2.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3499,7 +3497,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNDateTimePicker (9.1.0):
+  - RNDateTimePicker (9.2.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3527,7 +3525,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNGestureHandler (3.1.0):
+  - RNGestureHandler (3.2.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3553,43 +3551,10 @@ PODS:
     - React-utils
     - ReactCodegen
     - ReactCommon/turbomodule/core
+    - RNWorklets (>= 0.8.0)
     - SocketRocket
     - Yoga
-  - RNReanimated (4.5.1):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-jsitooling
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - RNReanimated/apple (= 4.5.1)
-    - RNReanimated/common (= 4.5.1)
-    - RNReanimated/view (= 4.5.1)
-    - RNWorklets
-    - SocketRocket
-    - Yoga
-  - RNReanimated/apple (4.5.1):
+  - RNReanimated (4.6.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3617,10 +3582,13 @@ PODS:
     - React-utils
     - ReactCodegen
     - ReactCommon/turbomodule/core
+    - RNReanimated/apple (= 4.6.0)
+    - RNReanimated/common (= 4.6.0)
+    - RNReanimated/view (= 4.6.0)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/common (4.5.1):
+  - RNReanimated/apple (4.6.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3651,7 +3619,38 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/view (4.5.1):
+  - RNReanimated/common (4.6.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-jsitooling
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - RNWorklets
+    - SocketRocket
+    - Yoga
+  - RNReanimated/view (4.6.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3741,7 +3740,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNSVG (15.15.4):
+  - RNSVG (15.15.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3767,10 +3766,10 @@ PODS:
     - React-utils
     - ReactCodegen
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.15.4)
+    - RNSVG/common (= 15.15.5)
     - SocketRocket
     - Yoga
-  - RNSVG/common (15.15.4):
+  - RNSVG/common (15.15.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3798,39 +3797,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.10.1):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-jsitooling
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - RNWorklets/apple (= 0.10.1)
-    - RNWorklets/common (= 0.10.1)
-    - SocketRocket
-    - Yoga
-  - RNWorklets/apple (0.10.1):
+  - RNWorklets (0.12.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3858,9 +3825,41 @@ PODS:
     - React-utils
     - ReactCodegen
     - ReactCommon/turbomodule/core
+    - RNWorklets/apple (= 0.12.2)
+    - RNWorklets/common (= 0.12.2)
     - SocketRocket
     - Yoga
-  - RNWorklets/common (0.10.1):
+  - RNWorklets/apple (0.12.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-jsitooling
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - RNWorklets/common (0.12.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3902,14 +3901,14 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1)
-  - Stripe (25.11.0):
-    - StripeApplePay (= 25.11.0)
-    - StripeCore (= 25.11.0)
-    - StripeIssuing (= 25.11.0)
-    - StripePayments (= 25.11.0)
-    - StripePaymentsUI (= 25.11.0)
-    - StripeUICore (= 25.11.0)
-  - stripe-react-native (0.64.0):
+  - Stripe (26.9.0):
+    - StripeApplePay (= 26.9.0)
+    - StripeCore (= 26.9.0)
+    - StripeIssuing (= 26.9.0)
+    - StripePayments (= 26.9.0)
+    - StripePaymentsUI (= 26.9.0)
+    - StripeUICore (= 26.9.0)
+  - stripe-react-native (0.76.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3936,10 +3935,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - SocketRocket
-    - stripe-react-native/Core (= 0.64.0)
-    - stripe-react-native/NewArch (= 0.64.0)
+    - stripe-react-native/Core (= 0.76.0)
+    - stripe-react-native/NewArch (= 0.76.0)
     - Yoga
-  - stripe-react-native/Core (0.64.0):
+  - stripe-react-native/Core (0.76.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3966,14 +3965,14 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - SocketRocket
-    - Stripe (~> 25.11.0)
-    - StripeApplePay (~> 25.11.0)
-    - StripeFinancialConnections (~> 25.11.0)
-    - StripePayments (~> 25.11.0)
-    - StripePaymentSheet (~> 25.11.0)
-    - StripePaymentsUI (~> 25.11.0)
+    - Stripe (= 26.9.0)
+    - StripeApplePay (= 26.9.0)
+    - StripeFinancialConnections (= 26.9.0)
+    - StripePayments (= 26.9.0)
+    - StripePaymentSheet (= 26.9.0)
+    - StripePaymentsUI (= 26.9.0)
     - Yoga
-  - stripe-react-native/NewArch (0.64.0):
+  - stripe-react-native/NewArch (0.76.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -4001,32 +4000,35 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - StripeApplePay (25.11.0):
-    - StripeCore (= 25.11.0)
-  - StripeCore (25.11.0)
-  - StripeFinancialConnections (25.11.0):
-    - StripeCore (= 25.11.0)
-    - StripeUICore (= 25.11.0)
-  - StripeIssuing (25.11.0):
-    - StripeCore (= 25.11.0)
-    - StripePayments (= 25.11.0)
-    - StripePaymentsUI (= 25.11.0)
-  - StripePayments (25.11.0):
-    - StripeCore (= 25.11.0)
-    - StripePayments/Stripe3DS2 (= 25.11.0)
-  - StripePayments/Stripe3DS2 (25.11.0):
-    - StripeCore (= 25.11.0)
-  - StripePaymentSheet (25.11.0):
-    - StripeApplePay (= 25.11.0)
-    - StripeCore (= 25.11.0)
-    - StripePayments (= 25.11.0)
-    - StripePaymentsUI (= 25.11.0)
-  - StripePaymentsUI (25.11.0):
-    - StripeCore (= 25.11.0)
-    - StripePayments (= 25.11.0)
-    - StripeUICore (= 25.11.0)
-  - StripeUICore (25.11.0):
-    - StripeCore (= 25.11.0)
+  - StripeApplePay (26.9.0):
+    - StripeCore (= 26.9.0)
+  - StripeCore (26.9.0)
+  - StripeFinancialConnections (26.9.0):
+    - StripeCore (= 26.9.0)
+    - StripeUICore (= 26.9.0)
+  - StripeFinancialConnectionsLite (26.9.0):
+    - StripeCore (= 26.9.0)
+  - StripeIssuing (26.9.0):
+    - StripeCore (= 26.9.0)
+    - StripePayments (= 26.9.0)
+    - StripePaymentsUI (= 26.9.0)
+  - StripePayments (26.9.0):
+    - StripeCore (= 26.9.0)
+    - StripePayments/Stripe3DS2 (= 26.9.0)
+  - StripePayments/Stripe3DS2 (26.9.0):
+    - StripeCore (= 26.9.0)
+  - StripePaymentSheet (26.9.0):
+    - StripeApplePay (= 26.9.0)
+    - StripeCore (= 26.9.0)
+    - StripeFinancialConnectionsLite (= 26.9.0)
+    - StripePayments (= 26.9.0)
+    - StripePaymentsUI (= 26.9.0)
+  - StripePaymentsUI (26.9.0):
+    - StripeCore (= 26.9.0)
+    - StripePayments (= 26.9.0)
+    - StripeUICore (= 26.9.0)
+  - StripeUICore (26.9.0):
+    - StripeCore (= 26.9.0)
   - SwiftUIIntrospect (1.3.0)
   - UMAppLoader (57.0.1)
   - Yoga (0.0.0)
@@ -4102,7 +4104,6 @@ DEPENDENCIES:
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
-  - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
@@ -4126,7 +4127,7 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_6fc5dc79a8f6fd78adf6bcd63485efc3/node_modules/lottie-react-native`)"
+  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.5.0_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_9ea185666f2d68820aea45c0350292bb/node_modules/lottie-react-native`)"
   - MBProgressHUD (~> 1.2.0)
   - nanopb
   - RCT-Folly (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -4169,14 +4170,14 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks`)
   - React-mutationobservernativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/mutationobserver`)
-  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.5.1_patch_hash=e2626d_e01bb4e2db1f5447608607788bd79f91/node_modules/react-native-keyboard-controller`)"
-  - "react-native-maps/Maps (from `../../../node_modules/.pnpm/react-native-maps@1.27.2_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_403b20e9e45b3ed6d2fa4da586be25c4/node_modules/react-native-maps`)"
+  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.6.0_patch_hash=0f735c_b55251ba838ec9154bcd8af13b502916/node_modules/react-native-keyboard-controller`)"
+  - "react-native-maps/Maps (from `../../../node_modules/.pnpm/react-native-maps@1.29.0_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_e1854c4bfd1ac3878ef613e24782c6c0/node_modules/react-native-maps`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_67fd72eeeea49053cc8d818fd61e58c9/node_modules/@react-native-community/netinfo`)"
-  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c90e34c81cef348ccb84922dfedc4d61/node_modules/react-native-pager-view`)"
-  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_patch_hash=625957ca1b170be60c35594e195dc626b3f9d4b_157827a109228860c6ee084a5c9b8876/node_modules/react-native-safe-area-context`)"
+  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@9.0.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c3840d7501005511355a04d1a2b40448/node_modules/react-native-pager-view`)"
+  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.9.1_react-native@0.87.1_@babel+core@7.29.7_@react-nati_adb1b65619431520b87dadb88dcd647e/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.1_@babel+core_2687cd65cab8a7758da635070dce755a/node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=70039779bd3538cedc83bf96344d02399b7a16d42e5_3ea67fb9ba2157e4a5a97f54d186f29e/node_modules/@shopify/react-native-skia`)"
-  - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.0/node_modules/@react-native-community/slider`)"
+  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.11.2_5524a63d44d2c1f7d902dfe44459758b/node_modules/@shopify/react-native-skia`)"
+  - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider`)"
   - react-native-view-shot (from `../modules/react-native-view-shot`)
   - react-native-webview (from `../modules/react-native-webview`)
   - React-NativeModulesApple (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -4217,14 +4218,14 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.1_@babel+core@7.29.7_@rea_09ee359239ea0123c02574dd3289fac9/node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.87.1_@babel+core@7.29.7_@react-native_472b4b70d05eb5703fd69c073dfc40a2/node_modules/@react-native-picker/picker`)"
-  - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@packages+expo_react-native@0.87.1_@ba_dc25ce21588f0cd767546557b89fd5ce/node_modules/@react-native-community/datetimepicker`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.87.1_@babel+core@7.29.7_@react-native_81c5d59f515eb28f3ad7f8701ebbdc26/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=e2626de5a7914e5e42159ee39602e6b9ff62cbfb4ba181_65e73318fee7b8ef0f8e77a4000c0135/node_modules/react-native-reanimated`)"
+  - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.1_expo@packages+expo_react-native@0.87.1_@ba_cfa9ff0bc9a50be038b9752dcb5b4462/node_modules/@react-native-community/datetimepicker`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.2.1_react-native@0.87.1_@babel+core@7.29.7_@react-native_7cb6c8160e969c79415d6e01d1e3104b/node_modules/react-native-gesture-handler`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.6.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_3729f7e5db51842afeb6e3fa4b4802b5/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.27.0_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-_81b149c5f40a2cff65b916b4986a8c35/node_modules/react-native-screens`)"
-  - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_33b2729560b8e9d3ba80bd873b043556/node_modules/react-native-svg`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=8e525838db0b8e9bed0b01632a1f8b6f7c40543b37a45f5_0834f3bc1798e2a9de47573205214371/node_modules/react-native-worklets`)"
+  - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_1115222816e704c9f50081b4d5a73333/node_modules/react-native-svg`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_c8efdab8aa7abbb1c42f730208a0ef67/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
-  - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.64.0_expo@packages+expo_react-native-webview@13.16.1_reac_b0ff58250e41e8d54a0aedf77650ec6f/node_modules/@stripe/stripe-react-native`)"
+  - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.76.0_expo@packages+expo_react-native-webview@13.16.1_reac_2e76719769c9f7082008eb7e00a400f7/node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - Yoga (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/yoga`)
 
@@ -4260,6 +4261,7 @@ SPEC REPOS:
     - StripeApplePay
     - StripeCore
     - StripeFinancialConnections
+    - StripeFinancialConnectionsLite
     - StripeIssuing
     - StripePayments
     - StripePaymentSheet
@@ -4397,8 +4399,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-sqlite/ios"
   ExpoStoreReview:
     :path: "../../../packages/expo-store-review/ios"
-  ExpoSymbols:
-    :path: "../../../packages/expo-symbols/ios"
   ExpoSystemUI:
     :path: "../../../packages/expo-system-ui/ios"
   ExpoTaskManager:
@@ -4431,7 +4431,7 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v250829098.0.17
   lottie-react-native:
-    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_6fc5dc79a8f6fd78adf6bcd63485efc3/node_modules/lottie-react-native"
+    :path: "../../../node_modules/.pnpm/lottie-react-native@7.5.0_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_9ea185666f2d68820aea45c0350292bb/node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -4511,21 +4511,21 @@ EXTERNAL SOURCES:
   React-mutationobservernativemodule:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/mutationobserver"
   react-native-keyboard-controller:
-    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.5.1_patch_hash=e2626d_e01bb4e2db1f5447608607788bd79f91/node_modules/react-native-keyboard-controller"
+    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.6.0_patch_hash=0f735c_b55251ba838ec9154bcd8af13b502916/node_modules/react-native-keyboard-controller"
   react-native-maps:
-    :path: "../../../node_modules/.pnpm/react-native-maps@1.27.2_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_403b20e9e45b3ed6d2fa4da586be25c4/node_modules/react-native-maps"
+    :path: "../../../node_modules/.pnpm/react-native-maps@1.29.0_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_e1854c4bfd1ac3878ef613e24782c6c0/node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_67fd72eeeea49053cc8d818fd61e58c9/node_modules/@react-native-community/netinfo"
   react-native-pager-view:
-    :path: "../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c90e34c81cef348ccb84922dfedc4d61/node_modules/react-native-pager-view"
+    :path: "../../../node_modules/.pnpm/react-native-pager-view@9.0.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c3840d7501005511355a04d1a2b40448/node_modules/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_patch_hash=625957ca1b170be60c35594e195dc626b3f9d4b_157827a109228860c6ee084a5c9b8876/node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.9.1_react-native@0.87.1_@babel+core@7.29.7_@react-nati_adb1b65619431520b87dadb88dcd647e/node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.1_@babel+core_2687cd65cab8a7758da635070dce755a/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=70039779bd3538cedc83bf96344d02399b7a16d42e5_3ea67fb9ba2157e4a5a97f54d186f29e/node_modules/@shopify/react-native-skia"
+    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.11.2_5524a63d44d2c1f7d902dfe44459758b/node_modules/@shopify/react-native-skia"
   react-native-slider:
-    :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.0/node_modules/@react-native-community/slider"
+    :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider"
   react-native-view-shot:
     :path: "../modules/react-native-view-shot"
   react-native-webview:
@@ -4607,19 +4607,19 @@ EXTERNAL SOURCES:
   RNCPicker:
     :path: "../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.87.1_@babel+core@7.29.7_@react-native_472b4b70d05eb5703fd69c073dfc40a2/node_modules/@react-native-picker/picker"
   RNDateTimePicker:
-    :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@packages+expo_react-native@0.87.1_@ba_dc25ce21588f0cd767546557b89fd5ce/node_modules/@react-native-community/datetimepicker"
+    :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.1_expo@packages+expo_react-native@0.87.1_@ba_cfa9ff0bc9a50be038b9752dcb5b4462/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.87.1_@babel+core@7.29.7_@react-native_81c5d59f515eb28f3ad7f8701ebbdc26/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.2.1_react-native@0.87.1_@babel+core@7.29.7_@react-native_7cb6c8160e969c79415d6e01d1e3104b/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=e2626de5a7914e5e42159ee39602e6b9ff62cbfb4ba181_65e73318fee7b8ef0f8e77a4000c0135/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.6.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_3729f7e5db51842afeb6e3fa4b4802b5/node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/.pnpm/react-native-screens@4.27.0_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-_81b149c5f40a2cff65b916b4986a8c35/node_modules/react-native-screens"
   RNSVG:
-    :path: "../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_33b2729560b8e9d3ba80bd873b043556/node_modules/react-native-svg"
+    :path: "../../../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_1115222816e704c9f50081b4d5a73333/node_modules/react-native-svg"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=8e525838db0b8e9bed0b01632a1f8b6f7c40543b37a45f5_0834f3bc1798e2a9de47573205214371/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_c8efdab8aa7abbb1c42f730208a0ef67/node_modules/react-native-worklets"
   stripe-react-native:
-    :path: "../../../node_modules/.pnpm/@stripe+stripe-react-native@0.64.0_expo@packages+expo_react-native-webview@13.16.1_reac_b0ff58250e41e8d54a0aedf77650ec6f/node_modules/@stripe/stripe-react-native"
+    :path: "../../../node_modules/.pnpm/@stripe+stripe-react-native@0.76.0_expo@packages+expo_react-native-webview@13.16.1_reac_2e76719769c9f7082008eb7e00a400f7/node_modules/@stripe/stripe-react-native"
   UMAppLoader:
     :path: "../../../packages/unimodules-app-loader/ios"
   Yoga:
@@ -4650,7 +4650,7 @@ SPEC CHECKSUMS:
   ExpoCameraBarcodeScanning: b869ac87ebe30bb99b26c55b0e0471301383c90b
   ExpoCellular: e78a2fe5ac3239ec7252f3451e170560c8e25dcd
   ExpoClipboard: 95055b11758f339b61d4d8064dd799df1cf03b7f
-  ExpoContacts: 78d97ee2f1b65c38a2f7f8c51eefd43fd402fbca
+  ExpoContacts: 1673effbe160d97dc9dd518339ab1e5622fc0be9
   ExpoCrypto: 366380ffafeb22cc9795438cddcbfa299e1aaf42
   ExpoDevice: 93a72d7c2bd656a4f0c0d580523e390e9ee7fba5
   ExpoDocumentPicker: 6fb67a6f39ba9beb53a4b4a3f2949e0b5e9bc3bf
@@ -4672,12 +4672,12 @@ SPEC CHECKSUMS:
   ExpoLocation: ad64144374a840dd365274b309dbbbb253a1e44e
   ExpoLogBox: 6bb73c341aca22e699bd4da6cc61afc844e1a648
   ExpoMailComposer: 101933dc6bdb4d7a46495d1dd87420365325adb9
-  ExpoMediaLibrary: e0829ae4fe90dc8bcd5ec13250ba6503aebbbc94
+  ExpoMediaLibrary: 7bfe9d7ac76561028ffcb1caa143b4436bd5df7b
   ExpoMeshGradient: ade33604a92081a2deda41c6107e7d080493012d
   ExpoModulesCore: 25948e99956de7933cb24260f6ed72fbf0d1a98b
   ExpoModulesJSI: b20fefa4cdd9097e7e6b715466d1900b8c5d4711
   ExpoModulesWorklets: 6b240031daa3de4df791588fc78236637ff602f6
-  ExpoModulesWorkletsAdapter: cea71d88212c35a1291503a495a9197538a87a29
+  ExpoModulesWorkletsAdapter: 509408e327d938edfd7d218d06a9888295ad2845
   ExpoNetwork: 973d523fe9b1f99223dd945fed9ad1226ae64920
   ExpoNotifications: 2cb244d406414754b7159f1c7a9fd2d4754e7f47
   ExpoPrint: 7e7a9bc7c12b9b336f34c4458d0c9ba14f243759
@@ -4691,7 +4691,6 @@ SPEC CHECKSUMS:
   ExpoSpeech: 0e90904e2af5d6f166d4d2ffbdab535686597938
   ExpoSQLite: 73ec3c3dd0c5e8c6592c341edf00efa6271c51a8
   ExpoStoreReview: 2a0f6b8e04112aea2f6e3e1cb84109d78f4d041f
-  ExpoSymbols: 7c7c7bd3c52f0b6dcbba6e8af4088b0dc1ea7d29
   ExpoSystemUI: ff3142b323ae7b4d11dc0b1dc4acfa30d92be7dc
   ExpoTaskManager: d52427f67bf8f00fa56d52f9603919049c67cfc5
   ExpoTrackingTransparency: 43401b22cf6aed3a4a35e0c24d0b320905acc477
@@ -4722,7 +4721,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
-  lottie-react-native: f0f39c28d1ed4fb3abf3a65497324bcef2bfe793
+  lottie-react-native: 87afd471a1fb7f99ae00e7f83f5c5b3f9fccaffb
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
@@ -4768,13 +4767,13 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 5d3b9d5efd2976635af98df3326e005d50773ac2
   React-mutationobservernativemodule: ec0eba737ed97965cd4e7b827089998bb7818f82
   react-native-keyboard-controller: 3e5f9c683d77ad196132296937a99294c78c879d
-  react-native-maps: 527d049522f748692fbd16301e54a6c25dfc2408
+  react-native-maps: 022eaec7845728a87351985551cfee4e35a74212
   react-native-netinfo: 36b41a843c14f430ee9ce6133af7f6f84fffe961
-  react-native-pager-view: baa5452c3565eb2ab08913290c9dfaa8a6108980
-  react-native-safe-area-context: 86ace704313987c85346c55ed4894fd906facec2
+  react-native-pager-view: f30f4219fda166039bc59e475b0ad917ec69e5a0
+  react-native-safe-area-context: cd294e95860134c3ca485a4ea87ffbffd78ba0f0
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
-  react-native-skia: badbd2ea5f780b49a36f889cfc5ffa625e4d01e2
-  react-native-slider: d81b30ea3f52d45449f909eb44d88447042b6a85
+  react-native-skia: 54276e96c8b14339d0531d28da3b98c35ca58e91
+  react-native-slider: 82b825008b4b3e7ae175a17eee2ff1e475f0f088
   react-native-view-shot: cbcadec8eac5bcc6f7d0a48471fe90f749a48bde
   react-native-webview: 3d28b14e0c704dc555ebea11db42e3eaa1d1a8d8
   React-NativeModulesApple: 461ef67544d391e24ad598ed09314a2527943faf
@@ -4815,27 +4814,28 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: e1b3478bf231a170c33685009113c270f67edd30
   RNCMaskedView: 023a0e58c900499c42c3462b442c0eb21685a941
   RNCPicker: 5d752824bbf14593d57636246cb5ed3e0221d8b9
-  RNDateTimePicker: 1731580acdcc1d2d17d4032779e454d3fab748d7
-  RNGestureHandler: e3e48692c1d938f8a0db094cdc3dfb2d0071b411
-  RNReanimated: b69de91eb1b0311d0787c05b87ec1237b5076407
+  RNDateTimePicker: 04088eaa77fcf335cab912453e745a011cd168d4
+  RNGestureHandler: 11a8bd8b6d28b04b91a006725ab7a8fd13292508
+  RNReanimated: 30287f4c4be76c3773bd35b8221ad3a97a8d4376
   RNScreens: fefee75ca1721eb61d1fb7de838701ad603a8801
-  RNSVG: 6775ad53904e9bdbdbd12fb865b3a699bfd7fa12
-  RNWorklets: a36b410446bddd779419fb59ce9a5f20a7627139
+  RNSVG: e4ff630437ce5bc2ab10794dd14722e0d249bad5
+  RNWorklets: 4855ab08003c99137f0d1d36e17918269e1a52b4
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Stripe: 0421dcc510a52f2abf63bbf03a547caf6639dce7
-  stripe-react-native: 77dc6d9dd3514866d3b1f4bfce2c3558119b48ad
-  StripeApplePay: b74b487cdc4176b32ea3f250d63ceb7b0ab7dedb
-  StripeCore: c9d8b48d4b9b14e73edfa2ca714dea44c0849f73
-  StripeFinancialConnections: 0209e955d46e927089a017f56e4a34f2e3e85bfd
-  StripeIssuing: 2b1f0054ee9439e7e716f101099a22bb95addc08
-  StripePayments: c54ac68d13e5ef09c98aa5c12314a73d1e6a1fc6
-  StripePaymentSheet: 46ca981c6106b559d323d41b5ee9af0485252a63
-  StripePaymentsUI: e942824c2a21c67f41b3bf6c09e87ebe882dd5c5
-  StripeUICore: 9ee3c730f282fd34605f7ba00f2b77d80729d882
+  Stripe: a232266e1c9709b56cfdeffaa731370407b0e3e2
+  stripe-react-native: 53e60ebd7b2ff55115ca95aac5f6571349b36adb
+  StripeApplePay: 83587609b80bc165a941fbe7c6ba7db8822bcc36
+  StripeCore: 0d4533f5ca61b8abd60004464e0125ee98df91b7
+  StripeFinancialConnections: e61972f157473f6bdced8d25075ddfad48d36ca9
+  StripeFinancialConnectionsLite: 0b51780316bb63a94fd5ef11a4480fb9a0951661
+  StripeIssuing: 4a0c35bebc94b586c4c3b73fe432280330f75739
+  StripePayments: 57614a765aa5dce6d5e5c4d669afda2b80c64e5e
+  StripePaymentSheet: 6ecef03b5032a1acff02a47e0bbfc17fb730bb3d
+  StripePaymentsUI: bcb256b2cb9cb0926842ca92cd19e9705c3339f8
+  StripeUICore: cd7242a0449cea4e4b38b61d11584dfabb8e28ce
   SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
   UMAppLoader: 173cb90a3039aa9c1b84bace4487e1907a4a5a39
   Yoga: 9ddcb167a9925a24e745b8548de3b77c69828931

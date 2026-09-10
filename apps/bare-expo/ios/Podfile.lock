@@ -794,7 +794,7 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - lottie-ios (4.6.0)
-  - lottie-react-native (7.3.8):
+  - lottie-react-native (7.5.0):
     - hermes-engine
     - lottie-ios (= 4.6.0)
     - RCTRequired
@@ -2130,7 +2130,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-pager-view (8.0.2):
+  - react-native-pager-view (9.0.4):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2153,7 +2153,7 @@ PODS:
     - ReactNativeDependencies
     - SwiftUIIntrospect (~> 1.0)
     - Yoga
-  - react-native-safe-area-context (5.7.0):
+  - react-native-safe-area-context (5.9.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2166,8 +2166,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.7.0)
-    - react-native-safe-area-context/fabric (= 5.7.0)
+    - react-native-safe-area-context/common (= 5.9.1)
+    - react-native-safe-area-context/fabric (= 5.9.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2177,7 +2177,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/common (5.7.0):
+  - react-native-safe-area-context/common (5.9.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2199,7 +2199,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/fabric (5.7.0):
+  - react-native-safe-area-context/fabric (5.9.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2224,7 +2224,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
-  - react-native-skia (2.6.2):
+  - react-native-skia (2.11.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2248,7 +2248,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-slider (5.1.2):
+  - react-native-slider (5.2.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2261,7 +2261,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-slider/common (= 5.1.2)
+    - react-native-slider/common (= 5.2.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2271,7 +2271,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-slider/common (5.1.2):
+  - react-native-slider/common (5.2.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2761,7 +2761,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNDateTimePicker (8.6.0):
+  - RNDateTimePicker (9.2.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2783,7 +2783,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNGestureHandler (3.1.0):
+  - RNGestureHandler (3.2.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2804,36 +2804,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
+    - RNWorklets (>= 0.8.0)
     - Yoga
-  - RNReanimated (4.5.1):
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-jsitooling
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - RNReanimated/apple (= 4.5.1)
-    - RNReanimated/common (= 4.5.1)
-    - RNReanimated/view (= 4.5.1)
-    - RNWorklets
-    - Yoga
-  - RNReanimated/apple (4.5.1):
+  - RNReanimated (4.6.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2856,9 +2829,12 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
+    - RNReanimated/apple (= 4.6.0)
+    - RNReanimated/common (= 4.6.0)
+    - RNReanimated/view (= 4.6.0)
     - RNWorklets
     - Yoga
-  - RNReanimated/common (4.5.1):
+  - RNReanimated/apple (4.6.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2883,7 +2859,32 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNReanimated/view (4.5.1):
+  - RNReanimated/common (4.6.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-jsitooling
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - RNWorklets
+    - Yoga
+  - RNReanimated/view (4.6.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2955,7 +2956,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNSVG (15.15.4):
+  - RNSVG (15.15.5):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2976,9 +2977,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNSVG/common (= 15.15.4)
+    - RNSVG/common (= 15.15.5)
     - Yoga
-  - RNSVG/common (15.15.4):
+  - RNSVG/common (15.15.5):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3000,33 +3001,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.10.1):
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-jsitooling
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - RNWorklets/apple (= 0.10.1)
-    - RNWorklets/common (= 0.10.1)
-    - Yoga
-  - RNWorklets/apple (0.10.1):
+  - RNWorklets (0.12.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3049,8 +3024,34 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
+    - RNWorklets/apple (= 0.12.2)
+    - RNWorklets/common (= 0.12.2)
     - Yoga
-  - RNWorklets/common (0.10.1):
+  - RNWorklets/apple (0.12.2):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-jsitooling
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - RNWorklets/common (0.12.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3254,7 +3255,7 @@ DEPENDENCIES:
   - glog (from `build/rndeps-facades/glog`)
   - "hermes-engine (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
   - JestMockSchema (from `../modules/jest-mock-schema/ios`)
-  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_6fc5dc79a8f6fd78adf6bcd63485efc3/node_modules/lottie-react-native`)"
+  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.5.0_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_9ea185666f2d68820aea45c0350292bb/node_modules/lottie-react-native`)"
   - RCT-Folly (from `build/rndeps-facades/RCT-Folly`)
   - RCTDeprecation (from `build/rncore-facades/RCTDeprecation`)
   - RCTRequired (from `build/rncore-facades/RCTRequired`)
@@ -3296,13 +3297,13 @@ DEPENDENCIES:
   - "React-Mapbuffer (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon`)"
   - "React-microtasksnativemodule (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
   - "React-mutationobservernativemodule (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)"
-  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.5.1_patch_hash=e2626d_e01bb4e2db1f5447608607788bd79f91/node_modules/react-native-keyboard-controller`)"
+  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.6.0_patch_hash=0f735c_b55251ba838ec9154bcd8af13b502916/node_modules/react-native-keyboard-controller`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_67fd72eeeea49053cc8d818fd61e58c9/node_modules/@react-native-community/netinfo`)"
-  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c90e34c81cef348ccb84922dfedc4d61/node_modules/react-native-pager-view`)"
-  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_patch_hash=625957ca1b170be60c35594e195dc626b3f9d4b_157827a109228860c6ee084a5c9b8876/node_modules/react-native-safe-area-context`)"
+  - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@9.0.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c3840d7501005511355a04d1a2b40448/node_modules/react-native-pager-view`)"
+  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.9.1_react-native@0.87.1_@babel+core@7.29.7_@react-nati_adb1b65619431520b87dadb88dcd647e/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.1_@babel+core_2687cd65cab8a7758da635070dce755a/node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=70039779bd3538cedc83bf96344d02399b7a16d42e5_3ea67fb9ba2157e4a5a97f54d186f29e/node_modules/@shopify/react-native-skia`)"
-  - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.1.2/node_modules/@react-native-community/slider`)"
+  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.11.2_5524a63d44d2c1f7d902dfe44459758b/node_modules/@shopify/react-native-skia`)"
+  - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider`)"
   - "react-native-view-shot (from `../../../node_modules/.pnpm/react-native-view-shot@4.0.3_patch_hash=c493165ff680241f9c0432f4619a8f581420b9f8dd9c6e8_5fbb7ca0873f4e8b39ed4ce260a64943/node_modules/react-native-view-shot`)"
   - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro_241a362037bf8aca4857135a2be0f9f2/node_modules/react-native-webview`)"
   - "React-NativeModulesApple (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
@@ -3344,12 +3345,12 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.87.1_@babel+core@7.29.7__dc8440db3195125825077efffe1896b1/node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.1_@babel+core@7.29.7_@rea_09ee359239ea0123c02574dd3289fac9/node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.87.1_@babel+core@7.29.7_@react-native_472b4b70d05eb5703fd69c073dfc40a2/node_modules/@react-native-picker/picker`)"
-  - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.87.1_@ba_b5af8c5a61eba1c29d2a5b92107fbbb1/node_modules/@react-native-community/datetimepicker`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.87.1_@babel+core@7.29.7_@react-native_81c5d59f515eb28f3ad7f8701ebbdc26/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=e2626de5a7914e5e42159ee39602e6b9ff62cbfb4ba181_65e73318fee7b8ef0f8e77a4000c0135/node_modules/react-native-reanimated`)"
+  - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.1_expo@packages+expo_react-native@0.87.1_@ba_cfa9ff0bc9a50be038b9752dcb5b4462/node_modules/@react-native-community/datetimepicker`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.2.1_react-native@0.87.1_@babel+core@7.29.7_@react-native_7cb6c8160e969c79415d6e01d1e3104b/node_modules/react-native-gesture-handler`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.6.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_3729f7e5db51842afeb6e3fa4b4802b5/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.27.0_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-_81b149c5f40a2cff65b916b4986a8c35/node_modules/react-native-screens`)"
-  - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_33b2729560b8e9d3ba80bd873b043556/node_modules/react-native-svg`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=8e525838db0b8e9bed0b01632a1f8b6f7c40543b37a45f5_0834f3bc1798e2a9de47573205214371/node_modules/react-native-worklets`)"
+  - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_1115222816e704c9f50081b4d5a73333/node_modules/react-native-svg`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_c8efdab8aa7abbb1c42f730208a0ef67/node_modules/react-native-worklets`)"
   - SocketRocket (from `build/rndeps-facades/SocketRocket`)
   - TestExpoUi (from `../modules/test-expo-ui/ios`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -3652,7 +3653,7 @@ EXTERNAL SOURCES:
     inhibit_warnings: false
     :path: "../modules/jest-mock-schema/ios"
   lottie-react-native:
-    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_6fc5dc79a8f6fd78adf6bcd63485efc3/node_modules/lottie-react-native"
+    :path: "../../../node_modules/.pnpm/lottie-react-native@7.5.0_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_9ea185666f2d68820aea45c0350292bb/node_modules/lottie-react-native"
   RCT-Folly:
     :path: build/rndeps-facades/RCT-Folly
   RCTDeprecation:
@@ -3734,19 +3735,19 @@ EXTERNAL SOURCES:
   React-mutationobservernativemodule:
     :path: "../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver"
   react-native-keyboard-controller:
-    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.5.1_patch_hash=e2626d_e01bb4e2db1f5447608607788bd79f91/node_modules/react-native-keyboard-controller"
+    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.4_react-native-reanimated@4.6.0_patch_hash=0f735c_b55251ba838ec9154bcd8af13b502916/node_modules/react-native-keyboard-controller"
   react-native-netinfo:
     :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_67fd72eeeea49053cc8d818fd61e58c9/node_modules/@react-native-community/netinfo"
   react-native-pager-view:
-    :path: "../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c90e34c81cef348ccb84922dfedc4d61/node_modules/react-native-pager-view"
+    :path: "../../../node_modules/.pnpm/react-native-pager-view@9.0.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metr_c3840d7501005511355a04d1a2b40448/node_modules/react-native-pager-view"
   react-native-safe-area-context:
-    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_patch_hash=625957ca1b170be60c35594e195dc626b3f9d4b_157827a109228860c6ee084a5c9b8876/node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.9.1_react-native@0.87.1_@babel+core@7.29.7_@react-nati_adb1b65619431520b87dadb88dcd647e/node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.1_@babel+core_2687cd65cab8a7758da635070dce755a/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=70039779bd3538cedc83bf96344d02399b7a16d42e5_3ea67fb9ba2157e4a5a97f54d186f29e/node_modules/@shopify/react-native-skia"
+    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.11.2_5524a63d44d2c1f7d902dfe44459758b/node_modules/@shopify/react-native-skia"
   react-native-slider:
-    :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.1.2/node_modules/@react-native-community/slider"
+    :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider"
   react-native-view-shot:
     :path: "../../../node_modules/.pnpm/react-native-view-shot@4.0.3_patch_hash=c493165ff680241f9c0432f4619a8f581420b9f8dd9c6e8_5fbb7ca0873f4e8b39ed4ce260a64943/node_modules/react-native-view-shot"
   react-native-webview:
@@ -3830,17 +3831,17 @@ EXTERNAL SOURCES:
   RNCPicker:
     :path: "../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.87.1_@babel+core@7.29.7_@react-native_472b4b70d05eb5703fd69c073dfc40a2/node_modules/@react-native-picker/picker"
   RNDateTimePicker:
-    :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.87.1_@ba_b5af8c5a61eba1c29d2a5b92107fbbb1/node_modules/@react-native-community/datetimepicker"
+    :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.1_expo@packages+expo_react-native@0.87.1_@ba_cfa9ff0bc9a50be038b9752dcb5b4462/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.87.1_@babel+core@7.29.7_@react-native_81c5d59f515eb28f3ad7f8701ebbdc26/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.2.1_react-native@0.87.1_@babel+core@7.29.7_@react-native_7cb6c8160e969c79415d6e01d1e3104b/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=e2626de5a7914e5e42159ee39602e6b9ff62cbfb4ba181_65e73318fee7b8ef0f8e77a4000c0135/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.6.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_3729f7e5db51842afeb6e3fa4b4802b5/node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/.pnpm/react-native-screens@4.27.0_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-_81b149c5f40a2cff65b916b4986a8c35/node_modules/react-native-screens"
   RNSVG:
-    :path: "../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_33b2729560b8e9d3ba80bd873b043556/node_modules/react-native-svg"
+    :path: "../../../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_1115222816e704c9f50081b4d5a73333/node_modules/react-native-svg"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=8e525838db0b8e9bed0b01632a1f8b6f7c40543b37a45f5_0834f3bc1798e2a9de47573205214371/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_c8efdab8aa7abbb1c42f730208a0ef67/node_modules/react-native-worklets"
   SocketRocket:
     :path: build/rndeps-facades/SocketRocket
   TestExpoUi:
@@ -3912,13 +3913,13 @@ SPEC CHECKSUMS:
   ExpoLogBox: 6bb73c341aca22e699bd4da6cc61afc844e1a648
   ExpoMailComposer: 101933dc6bdb4d7a46495d1dd87420365325adb9
   ExpoMaps: dc3ea592f1b936bab4b5f545f21bd495945fe12e
-  ExpoMediaLibrary: e0829ae4fe90dc8bcd5ec13250ba6503aebbbc94
+  ExpoMediaLibrary: 7bfe9d7ac76561028ffcb1caa143b4436bd5df7b
   ExpoMeshGradient: ade33604a92081a2deda41c6107e7d080493012d
   ExpoModulesCore: 5716f46d38a91abbfbc5a361c240a2ef1ebc11d9
   ExpoModulesJSI: b20fefa4cdd9097e7e6b715466d1900b8c5d4711
   ExpoModulesTestCore: 638024012fa1ec8639398a2afe1ee5dd0fa006c6
   ExpoModulesWorklets: 6b240031daa3de4df791588fc78236637ff602f6
-  ExpoModulesWorkletsAdapter: cea71d88212c35a1291503a495a9197538a87a29
+  ExpoModulesWorkletsAdapter: 509408e327d938edfd7d218d06a9888295ad2845
   ExpoNetwork: 973d523fe9b1f99223dd945fed9ad1226ae64920
   ExpoNotifications: 2cb244d406414754b7159f1c7a9fd2d4754e7f47
   ExpoObserve: aa4fcbe7ed0a7ba387984a38e24c2ecaa8895fd0
@@ -3956,7 +3957,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
-  lottie-react-native: 42d8e9b21a41e4860aa19f5f25b49052d5ba2810
+  lottie-react-native: efe1da0fa960ce6c9847129162a75806c49808d3
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   RCT-Folly: 82921e585c0400eda46fac1068297aa9dfb035e4
   RCTDeprecation: 5cc865306ce4974b7a57ddbc575fd1f3fef41957
@@ -4001,11 +4002,11 @@ SPEC CHECKSUMS:
   React-mutationobservernativemodule: 877e9f730e0d8175c2e952901b55c170fc3d372f
   react-native-keyboard-controller: 33347269968e43cc84723fbfab3f89ee1ab00dc3
   react-native-netinfo: 58601963060e4df0c1b6b6980d4f24ce2751e64c
-  react-native-pager-view: 56b0d5a2b9439ec884bbad4b1898afd4b42f5b25
-  react-native-safe-area-context: 33c51f0075e6fe0013be39018d89f594893d558c
+  react-native-pager-view: 58a07dda0ab632882334a2b26a7829886590a21f
+  react-native-safe-area-context: f17f4ec987ecdd130820a4a850498b874fb70388
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
-  react-native-skia: 50827a40a0388334427af6271f90d4903cf83e0f
-  react-native-slider: b87ffa1a891807c2de3b1a2da0b2584b919b1e97
+  react-native-skia: 70620b06743d1b684296675e1be5c918e52fe55e
+  react-native-slider: 7ce2a5b996adbf8e380d4359bd87a84d2811e58c
   react-native-view-shot: 3f011b7dc5ff349426c277d4ed347157cd1bf37d
   react-native-webview: 75191eb40b339529fa98e9cf7639210ba2b579af
   React-NativeModulesApple: adb1dd8361dff80e9f6652fb3fdbf033cfbe2a89
@@ -4047,12 +4048,12 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 2f5e3ddbfb3d3168345311b25fb3c470edf36d9d
   RNCMaskedView: d4884d6b3b256bd1830a211db3d5f551def82e36
   RNCPicker: ec68d66db9b3dae7563bdd5f13bdadee1ac90eba
-  RNDateTimePicker: c3fc062fa18439d8da7b510b242534c0d334af36
-  RNGestureHandler: f09eca0b47053142f7543f5c71d183f215ba5d81
-  RNReanimated: 825046ea563afec0936e4392942386bf5fdbdf59
+  RNDateTimePicker: 49ce6ad22b39e73975753384a3869a546f3a44f4
+  RNGestureHandler: ec5fccd94cfa3ef0014ca794e4acd9807e497939
+  RNReanimated: 9c7ac552be60002865d48ac64e8a26136cc448ff
   RNScreens: 0135deb65b65d207ee6294d0baf06681e1071d93
-  RNSVG: 2db63ac8e69ffb8575003599f6871f9b890a9b1e
-  RNWorklets: f0f95327c156b03cd8f562eacb41d47e61beb207
+  RNSVG: 6c9bcbf53822153be6f6c1484f6b0b57c0040d21
+  RNWorklets: 290ec6bbed6db165004b06781c29577abd762171
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
