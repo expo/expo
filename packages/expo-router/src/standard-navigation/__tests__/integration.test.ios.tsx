@@ -3,7 +3,9 @@ import { Pressable, Text, View } from 'react-native';
 import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation';
 
 import { router } from '../../imperative-api';
+import Stack from '../../layouts/StackClient';
 import type { ParamListBase } from '../../react-navigation/core';
+import { usePreventRemove } from '../../react-navigation/core/usePreventRemove';
 import {
   StackRouter,
   type StackNavigationState,
@@ -37,6 +39,11 @@ function NavigatorContent(args: NavigatorArgs<TestOptions, TestEventMap>) {
       ))}
     </>
   );
+}
+
+function RemovalPreventedScreen() {
+  usePreventRemove(true);
+  return null;
 }
 
 const StandardTabs = unstable_createStandardRouterNavigator<
@@ -412,6 +419,78 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
 
     expect(lastArgs().state.routes[lastArgs().state.index]!.key).toBe(preloadedKey);
     expect((lastArgs().isPreloaded as (key: string) => boolean)(preloadedKey)).toBe(false);
+  });
+
+  it('exposes whether a route key has removal prevented via createProps', () => {
+    const StandardWithRemovalPrevention = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions,
+      {
+        isRemovalPrevented: (key: string) => boolean;
+        preloadSecond: () => void;
+        focusSecond: () => void;
+      }
+    >(NavigatorContent, TabRouter, {
+      createProps: ({ isRemovalPrevented, dispatchSync }) => ({
+        isRemovalPrevented,
+        preloadSecond: () => dispatchSync({ type: 'PRELOAD', payload: { name: 'second' } }),
+        focusSecond: () => dispatchSync(TabActions.jumpTo('second')),
+      }),
+    });
+    renderRouter({
+      _layout: () => (
+        <StandardWithRemovalPrevention>
+          <StandardWithRemovalPrevention.Screen name="index" />
+          <StandardWithRemovalPrevention.Screen name="second" />
+        </StandardWithRemovalPrevention>
+      ),
+      index: () => <View testID="index" />,
+      second: RemovalPreventedScreen,
+    });
+
+    const activeKey = lastArgs().state.routes[0]!.key;
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(activeKey)).toBe(false);
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)('unknown')).toBe(false);
+
+    act(() => (lastArgs().preloadSecond as () => void)());
+
+    const preloadedKey = lastArgs().state.routes.find((route) => route.name === 'second')!.key;
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(preloadedKey)).toBe(false);
+
+    act(() => (lastArgs().focusSecond as () => void)());
+
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(preloadedKey)).toBe(true);
+  });
+
+  it('exposes removal prevention propagated from a nested route via createProps', () => {
+    const StandardWithRemovalPrevention = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions,
+      { isRemovalPrevented: (key: string) => boolean }
+    >(NavigatorContent, TabRouter, {
+      createProps: ({ isRemovalPrevented }) => ({ isRemovalPrevented }),
+    });
+    renderRouter(
+      {
+        _layout: () => (
+          <StandardWithRemovalPrevention>
+            <StandardWithRemovalPrevention.Screen name="nested" />
+          </StandardWithRemovalPrevention>
+        ),
+        'nested/_layout': () => <Stack />,
+        'nested/index': RemovalPreventedScreen,
+      },
+      { initialUrl: '/nested' }
+    );
+
+    const parentKey = lastArgs().state.routes[0]!.key;
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(parentKey)).toBe(true);
   });
 
   // Covers the `dispatch` path of `createProps` (the part flagged as internal and most likely to
