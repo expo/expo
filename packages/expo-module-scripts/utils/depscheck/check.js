@@ -143,7 +143,7 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
     for (const importRef of source.importRefs) {
       if (importRef.type !== 'external' || pkg.packageName === importRef.packageName) {
         continue;
-      } else if (isDisallowedImport(importRef)) {
+      } else if (isDisallowedImport(importRef, pkg.packageName)) {
         invalidImports.push({ file: source.file, importRef, kind: undefined });
       } else if (isIgnoredPackage) {
         continue;
@@ -198,7 +198,7 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
       logger.verbose(
         `     > ${path.relative(pkg.packagePath, file.path)} - ${importRef.importValue}` +
           `${importRef.isTypeOnly ? ' (types only)' : ''}` +
-          `${isDisallowedImport(importRef) ? ' (disallowed)' : ''}`
+          `${isDisallowedImport(importRef, pkg.packageName) ? ' (disallowed)' : ''}`
       );
     });
 
@@ -213,12 +213,20 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
   }
 }
 
+// Packages allowed to import `@expo/metro`. Metro coupling is being consolidated into
+// `@expo/metro-config`; this list only shrinks.
+const EXPO_METRO_IMPORTERS = ['@expo/metro-config', '@expo/cli', 'expo'];
+
 /**
  * @param {SourceFileImportRef} ref
+ * @param {string} importingPackageName
  * @returns {boolean}
  */
-function isDisallowedImport(ref) {
+function isDisallowedImport(ref, importingPackageName) {
   const packageName = getPackageName(ref.packageName);
+  if (packageName === '@expo/metro') {
+    return !EXPO_METRO_IMPORTERS.includes(importingPackageName);
+  }
   return packageName === 'metro' || packageName.startsWith('metro-');
 }
 
