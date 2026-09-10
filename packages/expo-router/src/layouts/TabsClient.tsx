@@ -25,7 +25,9 @@ import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import type { Href } from '../types';
+import { createBaseTabProps } from './createBaseTabProps';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
 export * from '../react-navigation/bottom-tabs';
@@ -34,6 +36,40 @@ export type TabsScreenOptions = BottomTabNavigationOptions & {
   // TODO: Consider deprecating `href`.
   href?: Href | null;
 };
+
+/**
+ * Creates the props required to integrate Expo Router's JavaScript tabs navigator.
+ *
+ * @param dependencies The navigation state and dispatch function provided to a `createProps`
+ * factory.
+ * @returns The JavaScript tabs navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { TabRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { createJSTabsProps } from 'expo-router/js-tabs';
+ * import { navigator } from './navigator';
+ *
+ * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter, {
+ *   createProps: createJSTabsProps,
+ * });
+ * ```
+ */
+export function createJSTabsProps(
+  args: StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>
+): BottomTabNavigatorCreateProps {
+  const { dispatch, state } = args;
+  return {
+    ...createBaseTabProps(args),
+    popNestedStackToTop: (routeKey) => {
+      const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
+      // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
+      if (nestedState?.key) {
+        dispatch({ ...StackActions.popToTop(), target: nestedState.key });
+      }
+    },
+  };
+}
 
 /**
  * Renders a tabs navigator.
@@ -50,19 +86,7 @@ const Tabs = unstable_integrateWithRouter<
 >(createStandardBottomTabNavigator, TabRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch, isPreloaded, isRemovalPrevented }) => ({
-    isPreloaded,
-    isRemovalPrevented,
-    routeNames: state.routeNames,
-    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
-    popNestedStackToTop: (routeKey) => {
-      const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
-      // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
-      if (nestedState?.key) {
-        dispatch({ ...StackActions.popToTop(), target: nestedState.key });
-      }
-    },
-  }),
+  createProps: createJSTabsProps,
   // Support the `href` shortcut prop.
   processScreens: (screens) =>
     screens.map((screen) => {
