@@ -149,60 +149,73 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
   expect(ref.current!.getRootState()).toBe(state);
 });
 
-test("doesn't let a child handle an untargeted navigate action", () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+describe('unhandled action warnings', () => {
+  let error: jest.SpyInstance;
 
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
+  beforeEach(() => {
+    error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    error.mockRestore();
+  });
+
+  test("doesn't let a child handle an untargeted navigate action", () => {
+    const TestNavigator = (props: any) => {
+      const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+      return (
+        <NavigationContent>
+          {state.routes.map((route) => descriptors[route.key]!.render())}
+        </NavigationContent>
+      );
+    };
+
+    const TestScreen = () => null;
+
+    const onStateChange = jest.fn();
+    const navigation = createNavigationContainerRef<ParamListBase>();
+
+    const element = (
+      <BaseNavigationContainer
+        ref={navigation}
+        initialState={{
+          routes: [
+            { name: 'foo' },
+            { name: 'bar' },
+            {
+              name: 'baz',
+              state: { routes: [{ name: 'qux' }, { name: 'lex' }] },
+            },
+          ],
+        }}
+        onStateChange={onStateChange}>
+        <TestNavigator>
+          <Screen name="foo" component={TestScreen} />
+          <Screen name="bar" component={TestScreen} />
+          <Screen name="baz">
+            {() => (
+              <TestNavigator>
+                <Screen name="qux" component={TestScreen} />
+                <Screen name="lex" component={TestScreen} />
+              </TestNavigator>
+            )}
+          </Screen>
+        </TestNavigator>
+      </BaseNavigationContainer>
     );
-  };
 
-  const TestScreen = () => null;
+    render(element);
 
-  const onStateChange = jest.fn();
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    act(() => navigation.navigate('lex'));
 
-  const navigation = createNavigationContainerRef<ParamListBase>();
-
-  const element = (
-    <BaseNavigationContainer
-      ref={navigation}
-      initialState={{
-        routes: [
-          { name: 'foo' },
-          { name: 'bar' },
-          { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
-        ],
-      }}
-      onStateChange={onStateChange}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-        <Screen name="bar" component={TestScreen} />
-        <Screen name="baz">
-          {() => (
-            <TestNavigator>
-              <Screen name="qux" component={TestScreen} />
-              <Screen name="lex" component={TestScreen} />
-            </TestNavigator>
-          )}
-        </Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element);
-
-  act(() => navigation.navigate('lex'));
-
-  expect(onStateChange).not.toHaveBeenCalled();
-  expect(error).toHaveBeenCalledWith(
-    expect.stringContaining('was not handled by any navigator.')
-  );
-  expect(navigation.getCurrentRoute()?.name).toBe('foo');
-  error.mockRestore();
+    expect(onStateChange).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining('was not handled by any navigator.')
+    );
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(navigation.getCurrentRoute()?.name).toBe('foo');
+  });
 });
 
 test('action goes to correct parent navigator if target is specified', () => {
@@ -852,7 +865,12 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
             name: 'baz',
             state: {
               type: 'stack',
-              routes: [{ name: 'qux', state: { type: 'stack', routes: [{ name: 'lex' }] } }],
+              routes: [
+                {
+                  name: 'qux',
+                  state: { type: 'stack', routes: [{ name: 'lex' }] },
+                },
+              ],
             },
           },
         ],
@@ -955,7 +973,12 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
             name: 'bax',
             state: {
               type: 'stack',
-              routes: [{ name: 'qux', state: { type: 'stack', routes: [{ name: 'lex' }] } }],
+              routes: [
+                {
+                  name: 'qux',
+                  state: { type: 'stack', routes: [{ name: 'lex' }] },
+                },
+              ],
             },
           },
         ],

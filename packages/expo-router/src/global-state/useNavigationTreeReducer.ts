@@ -169,7 +169,10 @@ function navigationTreeReducer(
       }
       return navigationTreeReducer(
         result,
-        { type: 'ACTION', payload: { action, originKey: operation.payload.originKey } },
+        {
+          type: 'ACTION',
+          payload: { action, originKey: operation.payload.originKey },
+        },
         config
       );
     }
@@ -182,10 +185,14 @@ function navigationTreeReducer(
         operation.payload.originKey
       );
       if (!origin) {
-        return appendReportEvent(result, {
-          type: 'unhandled-action',
-          action: operation.payload.action,
-        });
+        return process.env.NODE_ENV === 'production'
+          ? result
+          : appendReportEvents(result, [
+              {
+                type: 'unhandled-action',
+                action: operation.payload.action,
+              },
+            ]);
       }
 
       const reduction = reduceNavigationTree(operation.payload.action, config.registry, {
@@ -193,10 +200,14 @@ function navigationTreeReducer(
         tree,
       });
       if (!reduction.handled) {
-        return appendReportEvent(result, {
-          type: 'unhandled-action',
-          action: operation.payload.action,
-        });
+        return process.env.NODE_ENV === 'production'
+          ? result
+          : appendReportEvents(result, [
+              {
+                type: 'unhandled-action',
+                action: operation.payload.action,
+              },
+            ]);
       }
       const nextState = config.routeNode
         ? completeNavigationState(reduction.nextState, config.routeNode)
@@ -236,19 +247,7 @@ function navigationTreeReducer(
                 state: committedState,
               },
             ];
-      const events: NavigationTreeReportEvent[] = eventsWithoutIds.map((event, index) => ({
-        ...event,
-        id: result.eventSeq + index,
-      }));
-      const report: NavigationTreeReport = {
-        events: result.report ? [...result.report.events, ...events] : events,
-      };
-
-      return {
-        state: committedState,
-        report,
-        eventSeq: result.eventSeq + events.length,
-      };
+      return appendReportEvents({ ...result, state: committedState }, eventsWithoutIds);
     }
     case 'NAVIGATOR_UNMOUNTED': {
       // A still-registered key re-registered before this operation reduced, so it did not unmount.
@@ -292,17 +291,20 @@ function navigationTreeReducer(
   }
 }
 
-function appendReportEvent(
+function appendReportEvents(
   result: NavigationTreeResult,
-  event: NavigationTreeReportEventData
+  events: NavigationTreeReportEventData[]
 ): NavigationTreeResult {
-  const eventWithId: NavigationTreeReportEvent = { ...event, id: result.eventSeq };
+  const eventsWithIds: NavigationTreeReportEvent[] = events.map((event, index) => ({
+    ...event,
+    id: result.eventSeq + index,
+  }));
   return {
     ...result,
     report: {
-      events: result.report ? [...result.report.events, eventWithId] : [eventWithId],
+      events: result.report ? [...result.report.events, ...eventsWithIds] : eventsWithIds,
     },
-    eventSeq: result.eventSeq + 1,
+    eventSeq: result.eventSeq + eventsWithIds.length,
   };
 }
 

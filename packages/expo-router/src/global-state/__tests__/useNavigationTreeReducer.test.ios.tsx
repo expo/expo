@@ -340,7 +340,9 @@ it('logs an error for focused state without an index after commit', () => {
     } as unknown as NavigationState;
     return { state: incompleteState, affectedRouteKey: state.routes[0]!.key };
   });
-  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  const result = renderReducer({
+    registry: new Map([['root', entry(reduce)]]),
+  });
 
   act(() => result.result.current.handleAction({ type: 'INCOMPLETE' }));
 
@@ -380,7 +382,9 @@ it('uses the registry from the render that reduces an operation', () => {
     state: { ...state, index: 1 },
     affectedRouteKey: state.routes[1]!.key,
   }));
-  const result = renderReducer({ registry: new Map([['root', entry(firstReduce)]]) });
+  const result = renderReducer({
+    registry: new Map([['root', entry(firstReduce)]]),
+  });
   const processIntent = result.result.current.processIntent;
 
   result.rerender({
@@ -388,7 +392,10 @@ it('uses the registry from the render that reduces an operation', () => {
     routesWithRemovalPrevented: new Set(),
   });
   act(() =>
-    processIntent({ type: 'ACTION', payload: { action: { type: 'USE_CURRENT_REGISTRY' } } })
+    processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'USE_CURRENT_REGISTRY' } },
+    })
   );
 
   expect(result.result.current.processIntent).toBe(processIntent);
@@ -402,7 +409,9 @@ it('uses removal prevention from the render that reduces an operation', () => {
     state: { ...state, routes: state.routes.slice(0, 1) },
     affectedRouteKey: state.routes[0]!.key,
   }));
-  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  const result = renderReducer({
+    registry: new Map([['root', entry(reduce)]]),
+  });
   const processIntent = result.result.current.processIntent;
 
   result.rerender({
@@ -423,20 +432,37 @@ it('computes a queued action from accumulated state', () => {
     type: 'tab',
     routeNames: ['first', 'second'],
     routes: [
-      { key: 'first', name: 'first', state: { ...initialState, key: 'first-stack' } },
-      { key: 'second', name: 'second', state: { ...initialState, key: 'second-stack' } },
+      {
+        key: 'first',
+        name: 'first',
+        state: { ...initialState, key: 'first-stack' },
+      },
+      {
+        key: 'second',
+        name: 'second',
+        state: { ...initialState, key: 'second-stack' },
+      },
     ],
   };
   const reduce = jest.fn((state: NavigationState, action: NavigationAction) => {
     if (action.type === 'FOCUS_SECOND') {
-      return { state: { ...state, index: 1 }, affectedRouteKey: state.routes[1]!.key };
+      return {
+        state: { ...state, index: 1 },
+        affectedRouteKey: state.routes[1]!.key,
+      };
     }
     if (action.type === 'JUMP_TO' || action.type === 'NAVIGATE') {
-      return { state: { ...state, index: 0 }, affectedRouteKey: state.routes[0]!.key };
+      return {
+        state: { ...state, index: 0 },
+        affectedRouteKey: state.routes[0]!.key,
+      };
     }
     return null;
   });
-  const result = renderReducer({ state: tabState, registry: new Map([['root', entry(reduce)]]) });
+  const result = renderReducer({
+    state: tabState,
+    registry: new Map([['root', entry(reduce)]]),
+  });
 
   act(() => {
     result.result.current.processIntent({
@@ -463,7 +489,9 @@ it('computes a queued action from accumulated state', () => {
 
 it('warns and keeps the state when computing a queued action throws', () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  const result = renderReducer({ registry: new Map([['root', entry(() => null)]]) });
+  const result = renderReducer({
+    registry: new Map([['root', entry(() => null)]]),
+  });
 
   act(() =>
     result.result.current.processIntent({
@@ -518,6 +546,18 @@ it('reports an action dispatched before its router registers as unhandled', () =
   expect(result.result.current.state).toBe(initialState);
 });
 
+it('does not report an unhandled action in production', () => {
+  const nodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  const result = renderReducer({ registry: new Map() });
+
+  act(() => result.result.current.handleAction({ type: 'TEST' }));
+
+  expect(result.result.current.report).toBeUndefined();
+  expect(result.result.current.state).toBe(initialState);
+  process.env.NODE_ENV = nodeEnv;
+});
+
 it('reports a later action as unhandled after a same-batch reset changes the state key', () => {
   const registryEntry = entry((state, action) =>
     action.type === 'RESET_KEY'
@@ -537,7 +577,11 @@ it('reports a later action as unhandled after a same-batch reset changes the sta
   });
 
   expect(result.result.current.report?.events).toEqual([
-    expect.objectContaining({ id: 0, type: 'action-dispatched', action: { type: 'RESET_KEY' } }),
+    expect.objectContaining({
+      id: 0,
+      type: 'action-dispatched',
+      action: { type: 'RESET_KEY' },
+    }),
     { id: 1, type: 'unhandled-action', action: { type: 'NEXT' } },
   ]);
   expect(result.result.current.state.key).toBe('next-root');

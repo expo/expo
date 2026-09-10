@@ -84,27 +84,37 @@ test('emits removePrevented and removed to the registered route emitters', () =>
   expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
 });
 
-test('warns about an unhandled action', () => {
-  const action = { type: 'NAVIGATE', payload: { name: 'missing' } };
-  const consumeReportEvents = jest.fn();
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
-  const report: NavigationTreeReport = {
-    events: [
-      { id: 0, type: 'unhandled-action', action },
-      { id: 1, type: 'unhandled-action', action },
-    ],
-  };
+describe('unhandled action warnings', () => {
+  let error: jest.SpyInstance;
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
+  beforeEach(() => {
+    error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
 
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(
-    expect.stringContaining(
-      "The action 'NAVIGATE' with payload {\"name\":\"missing\"} was not handled"
-    )
-  );
-  expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
-  error.mockRestore();
+  afterEach(() => {
+    error.mockRestore();
+  });
+
+  test('warns about an unhandled action', () => {
+    const action = { type: 'NAVIGATE', payload: { name: 'missing' } };
+    const consumeReportEvents = jest.fn();
+    const report: NavigationTreeReport = {
+      events: [
+        { id: 0, type: 'unhandled-action', action },
+        { id: 1, type: 'unhandled-action', action },
+      ],
+    };
+
+    renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
+
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'The action \'NAVIGATE\' with payload {"name":"missing"} was not handled'
+      )
+    );
+    expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
+  });
 });
 
 test('does not emit twice in StrictMode', () => {
@@ -147,7 +157,9 @@ test('keeps emitting the remaining events when a listener throws', () => {
     ],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), {
+    wrapper,
+  });
 
   expect(actions).toEqual(['FIRST', 'SECOND']);
   expect(warn).toHaveBeenCalledTimes(1);

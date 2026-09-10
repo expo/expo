@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `onUnhandledAction` container prop from `expo-router/react-navigation`. ([#49917](https://github.com/expo/expo/pull/49917) by [@Ubax](https://github.com/Ubax))
 - Remove the `onReady` container prop and the `ready` container event. ([#49845](https://github.com/expo/expo/pull/49845) by [@Ubax](https://github.com/Ubax))
 - Remove `createStackNavigator` from `expo-router/js-stack`. Use `unstable_createStandardStackNavigator` with `unstable_integrateWithRouter` instead. ([#49209](https://github.com/expo/expo/pull/49209) by [@Ubax](https://github.com/Ubax))
 - Make `expo-symbols` an optional peer dependency. Install it to use `md` icons with `NativeTabs.Trigger.Icon` on Android. ([#49738](https://github.com/expo/expo/pull/49738) by [@Ubax](https://github.com/Ubax))
