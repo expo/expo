@@ -68,7 +68,7 @@
     "react-native-screens": "4.27.0",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "^0.21.0",
-    "react-native-webview": "13.16.1"
+    "react-native-webview": "14.0.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
