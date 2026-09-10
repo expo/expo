@@ -1,7 +1,7 @@
 import type { NativeStackNavigatorCreateProps } from '../fork/native-stack/createNativeStackNavigator';
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
-import { createBaseStackProps } from './stack-utils';
+import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 
 /**
  * Creates the props required to integrate Expo Router's native stack navigator.
