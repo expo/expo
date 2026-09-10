@@ -30,4 +30,6 @@ dependencies {
   if (project.findProject(':expo-modules-test-core')) {
     androidTestImplementation project(':expo-modules-test-core')
   }
+
+  testImplementation 'junit:junit:4.13.2'
 }
