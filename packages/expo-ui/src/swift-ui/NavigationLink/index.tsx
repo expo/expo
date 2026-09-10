@@ -25,6 +25,10 @@ const NavigationLinkNativeView: ComponentType<NavigationLinkProps> = requireNati
  * A view that controls a navigation presentation. In a `List` it renders as a row with a
  * disclosure chevron, and tapping it pushes the matching `NavigationDestination`.
  *
+ * The link has to be inside the `NavigationStack` itself. Content presented from the stack, such
+ * as a `BottomSheet` or a `Popover`, is its own presentation context and does not reach the
+ * stack's destinations, so give that content its own `NavigationStack`.
+ *
  * @example
  * ```tsx
  * <NavigationLink value="settings">

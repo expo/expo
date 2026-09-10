@@ -16,7 +16,7 @@ export interface NavigationDestinationProps {
 /**
  * Associates a destination view with a `NavigationLink` value, matching SwiftUI's
  * `navigationDestination(for:destination:)`. It must be a direct child of the `NavigationStack`,
- * wherever the link that pushes it sits.
+ * however deeply the link that pushes it is nested inside that stack.
  *
  * Keep it mounted so the pushed screen already carries its `navigationTitle` when the slide
  * starts, or render one for each value on the stack's `path` to build screens on demand.
