@@ -6,7 +6,8 @@
   "android": {
     "modules": [
       "expo.modules.location.LocationModule",
-      "expo.modules.location.next.LocationModuleNext"
+      "expo.modules.location.next.LocationModuleNext",
+      "expo.modules.location.next.locationProviders.HmsModule"
     ]
   }
 }
