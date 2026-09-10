@@ -18,4 +18,9 @@ android {
 dependencies {
   api 'com.google.android.gms:play-services-location:21.0.1'
   implementation "androidx.core:core-ktx:1.17.0"
+  implementation('com.huawei.hms:location:6.12.0.300') {
+    // HMS pulls the legacy bcprov-jdk15on artifact, which duplicates every Bouncy Castle class
+    // already provided (under the renamed bcprov-jdk15to18 artifact) via expo-updates.
+    exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+  }
 }
