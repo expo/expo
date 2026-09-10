@@ -32,6 +32,15 @@ export type NotificationsPluginProps = {
    */
   defaultChannel?: string;
   /**
+   * Whether a remote notification's image fills the notification when the user expands it,
+   * using Android's `NotificationCompat.BigPictureStyle`. When `false`, the image appears
+   * only as the notification's large icon. This style replaces the expanded text layout,
+   * so the full notification body no longer appears.
+   * @default false
+   * @platform android
+   */
+  enableBigPictureStyle?: boolean;
+  /**
    * Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
    */
   sounds?: string[];

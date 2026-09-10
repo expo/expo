@@ -383,6 +383,13 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
       description: 'Default channel for FCMv1 notifications.',
     },
     {
+      name: 'enableBigPictureStyle',
+      default: 'false',
+      platform: 'android',
+      description:
+        "Whether a remote notification's image fills the notification when the user expands it, using Android's `NotificationCompat.BigPictureStyle`. When `false`, the image appears only as the notification's large icon. This style replaces the expanded text layout, so the full notification body no longer appears.",
+    },
+    {
       name: 'sounds',
       description:
         'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds. Sound will not be played when focus mode does not permit it or silent mode is on.',
@@ -410,6 +417,7 @@ Here is an example of using the config plugin in the app config file:
           "largeIcon": "./local/assets/notification_large_icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
+          "enableBigPictureStyle": true,
           "sounds": [
             "./local/assets/notification_sound.wav",
             "./local/assets/notification_sound_other.wav"
