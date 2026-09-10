@@ -1,5 +1,11 @@
 import { NativeModule, registerWebModule } from 'expo';
-import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
+import AppMetrics, {
+  recordSpan,
+  startSpan,
+  withSpan,
+  type LogEventOptions,
+  type MetricAttributes,
+} from 'expo-app-metrics';
 
 import { reportCaughtError } from './reportCaughtError';
 import type {
@@ -16,6 +22,9 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
     return null;
   }
   async dispatchEvents() {}
+  startSpan = startSpan;
+  withSpan = withSpan;
+  recordSpan = recordSpan;
   configure(config: ObserveConfig): void {}
   getIntegrations(): ObserveIntegrationsConfig {
     return {};

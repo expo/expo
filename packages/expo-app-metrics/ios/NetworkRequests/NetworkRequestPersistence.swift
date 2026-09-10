@@ -7,9 +7,7 @@ import Foundation
 /// Mirrors the Android `NetworkRequestPersistence`.
 @AppMetricsActor
 final class NetworkRequestPersistence: Sendable {
-  /// Optional so a failed database open degrades to dropped rows instead of blocking the
-  /// monitor from starting.
-  private let database: MetricsDatabase?
+  private let writer: SpanWriter
 
   /// A closure so constructing this does not force the session machinery into existence before
   /// the app delegate finished wiring it.
@@ -18,11 +16,11 @@ final class NetworkRequestPersistence: Sendable {
   private var configuration: NetworkSpansConfiguration
 
   init(
-    database: MetricsDatabase?,
+    writer: SpanWriter,
     configuration: NetworkSpansConfiguration = NetworkSpansConfiguration(),
     sessionId: @escaping @Sendable () -> String
   ) {
-    self.database = database
+    self.writer = writer
     self.configuration = configuration
     self.sessionId = sessionId
   }
@@ -37,15 +35,10 @@ final class NetworkRequestPersistence: Sendable {
     guard configuration.allows(url: request.url, method: request.method) else {
       return
     }
-    guard let database, let row = SpanRow.from(request: request, sessionId: sessionId()) else {
+    guard let row = SpanRow.from(request: request, sessionId: sessionId()) else {
       return
     }
-    do {
-      try database.insert(span: row)
-    } catch {
-      // Swallowed: recording telemetry must never break the monitor's fan-out to its delegates.
-      logger.warn("[AppMetrics] Failed to persist a network request span: \(error.localizedDescription)")
-    }
+    writer.write(row)
   }
 }
 
