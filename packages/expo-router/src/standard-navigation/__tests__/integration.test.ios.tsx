@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, use } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation';
 
@@ -563,30 +563,46 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(parentKey)).toBe(true);
   });
 
-  it('preserves dispatchSync and dispatch semantics through createProps callbacks', () => {
+  it('preserves dispatchSync and dispatch semantics through createProps callbacks', async () => {
+    let resolveSlowScreen!: () => void;
+    const slowScreenPromise = new Promise<void>((resolve) => {
+      resolveSlowScreen = resolve;
+    });
+    const FocusedNavigatorContent = (args: NavigatorArgs<TestOptions, TestEventMap>) => {
+      contentSpy(args);
+      const route = args.state.routes[args.state.index]!;
+      return args.descriptors[route.key]!.render();
+    };
     const StandardWithDispatch = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
       object,
       TabRouterOptions,
-      { goToIndex: () => void; goToSecondSync: () => void }
-    >(NavigatorContent, TabRouter, {
+      { goToSlow: () => void; goToSecondSync: () => void }
+    >(FocusedNavigatorContent, TabRouter, {
       createProps: ({ dispatch, dispatchSync }) => ({
-        goToIndex: () => dispatch(TabActions.jumpTo('index')),
+        goToSlow: () => dispatch(TabActions.jumpTo('slow')),
         goToSecondSync: () => dispatchSync(TabActions.jumpTo('second')),
       }),
     });
+
+    function SlowScreen() {
+      use(slowScreenPromise);
+      return <View testID="slow" />;
+    }
 
     renderRouter({
       _layout: () => (
         <StandardWithDispatch>
           <StandardWithDispatch.Screen name="index" />
           <StandardWithDispatch.Screen name="second" />
+          <StandardWithDispatch.Screen name="slow" />
         </StandardWithDispatch>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
+      slow: SlowScreen,
     });
 
     expect(lastArgs().state.index).toBe(0);
@@ -594,13 +610,19 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     act(() => {
       // The shared content spy cannot retain navigator-specific injected prop types.
       (lastArgs().goToSecondSync as () => void)();
-      expect(lastArgs().state.index).toBe(1);
-
-      (lastArgs().goToIndex as () => void)();
-      expect(lastArgs().state.index).toBe(1);
     });
+    expect(lastArgs().state.index).toBe(1);
+    expect(screen.getByTestId('second')).toBeVisible();
 
-    expect(lastArgs().state.index).toBe(0);
+    const navigationAct = act(() => {
+      (lastArgs().goToSlow as () => void)();
+    });
+    expect(screen.getByTestId('second')).toBeVisible();
+
+    resolveSlowScreen();
+    await navigationAct;
+    expect(lastArgs().state.index).toBe(2);
+    expect(screen.getByTestId('slow')).toBeVisible();
   });
 
   it('does not leak initialRouteName to NavigatorContent', () => {
