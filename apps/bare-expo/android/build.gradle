@@ -20,6 +20,21 @@ allprojects {
     mavenCentral()
     maven { url 'https://jitpack.io' }
   }
+
+  // react-android pulls a stale kotlin-stdlib-jdk8:1.4.10 (via okhttp-urlconnection) that isn't aligned
+  // with kotlin-stdlib (which com.composables:core, used by expo-dev-launcher/expo-dev-menu, forces to
+  // 2.2.20). In 1.4.10 `toJavaDuration` lives in the old `kotlin.time.jdk8` package, so the compiler's
+  // inliner fails with "couldn't find inline method ...kotlin/time/jdk8/DurationConversionsJDK8Kt".
+  // Align the legacy jdk7/jdk8 stdlib artifacts with kotlin-stdlib so they become empty shims.
+  configurations.all {
+    resolutionStrategy.eachDependency { details ->
+      if (details.requested.group == "org.jetbrains.kotlin" &&
+          (details.requested.name == "kotlin-stdlib-jdk8" || details.requested.name == "kotlin-stdlib-jdk7")) {
+        details.useVersion("2.2.20")
+        details.because("Align kotlin-stdlib-jdk7/jdk8 with kotlin-stdlib to avoid the stale kotlin.time.jdk8 package")
+      }
+    }
+  }
 }
 
 subprojects { project ->
