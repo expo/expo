@@ -8,7 +8,8 @@ import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../../sta
 import { isChildOfType } from '../../utils/children';
 import { Protected } from '../../views/Protected';
 import { stackRouterOverride } from '../StackClient';
-import { createBaseStackProps, mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
+import { mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
+import { createBaseStackProps } from '../stack-utils/createBaseStackProps';
 import {
   createStandardExperimentalStackNavigator,
   type ExperimentalStackNavigatorCreateProps,

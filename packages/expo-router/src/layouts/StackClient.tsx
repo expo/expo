@@ -32,10 +32,10 @@ import {
   StackTitle,
   StackToolbar,
   appendScreenStackPropsToOptions,
-  createBaseStackProps,
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
+import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 
 const RNStack = unstable_integrateWithRouter<
   NativeStackNavigationOptions,
