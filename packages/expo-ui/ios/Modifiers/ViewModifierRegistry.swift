@@ -1800,6 +1800,19 @@ internal struct TextFieldStyleModifier: ViewModifier, Record {
   }
 }
 
+internal struct NavigationTitleModifier: ViewModifier, Record {
+  @Field var title: String?
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if let title {
+      content.navigationTitle(title)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -1970,6 +1983,10 @@ extension ViewModifierRegistry {
 
     register("hueRotation") { params, appContext, _ in
       return try HueRotationModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationTitle") { params, appContext, _ in
+      return try NavigationTitleModifier(from: params, appContext: appContext)
     }
 
     register("accessibilityLabel") { params, appContext, _ in
