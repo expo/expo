@@ -35,7 +35,10 @@ describe('app.fingerprint protocol parity', () => {
   // `@expo/fingerprint` would prevent the drift instead of detecting it.
   it.each([
     ['the embed script', 'expo-constants/scripts/createFingerprintFile.js'],
-    ['the dev server and the prebuild marker (@expo/cli)', '@expo/cli/src/utils/nativeFingerprint.ts'],
+    [
+      'the dev server and the prebuild marker (@expo/cli)',
+      '@expo/cli/src/utils/nativeFingerprint.ts',
+    ],
   ])(`%s uses the shared fingerprint options`, (_description, file) => {
     const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
     expect(contents).toContain('platforms: [platform]');
