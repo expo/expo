@@ -59,7 +59,7 @@ declare module 'react' {
 }
 
 export type ScreenProps<
-  TOptions extends Record<string, any> = Record<string, any>,
+  TOptions extends object = Record<string, any>,
   TState extends NavigationState = NavigationState,
   TEventMap extends EventMapBase = EventMapBase,
 > = {
@@ -534,17 +534,24 @@ function AnalyticsListeners({
   return null;
 }
 
-export function screenOptionsFactory(
+export function screenOptionsFactory<
+  TOptions extends object = Record<string, any>,
+  TState extends NavigationState = NavigationState,
+  TEventMap extends EventMapBase = EventMapBase,
+>(
   route: RouteNode,
-  options?: ScreenProps['options'],
+  options?: ScreenProps<TOptions, TState, TEventMap>['options'],
   isGuarded?: boolean
-): ScreenProps['options'] {
+): ScreenProps<TOptions, TState, TEventMap>['options'] {
   return (args) => {
     // Only eager load generated components
     const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-    const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+    // Route modules are untyped, while callers define the option shape for their navigator.
+    const staticResult = (
+      typeof staticOptions === 'function' ? staticOptions(args) : staticOptions
+    ) as TOptions | null | undefined;
     const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-    const output = {
+    const output: Partial<TOptions> & { hidden?: boolean } = {
       ...staticResult,
       ...dynamicResult,
     };
@@ -556,7 +563,9 @@ export function screenOptionsFactory(
       output.hidden = true;
     }
 
-    return output;
+    // Screen options are resolved incrementally, so the merged object may contain only part of the
+    // navigator's option shape even though React Navigation models each resolver as `TOptions`.
+    return output as TOptions;
   };
 }
 

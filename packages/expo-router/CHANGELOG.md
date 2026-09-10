@@ -52,6 +52,7 @@
 
 ### 🎉 New features
 
+- Support application-defined screen options in custom standard navigators.
 - Export `createBaseTabProps`, `createNativeStackProps`, `createJSStackProps`, `createJSTabsProps`, `createJSTopTabsProps`, and `createNativeTabsProps` for integrating navigators with Expo Router.
 - Export `createBaseStackProps` for integrating custom stack navigators with Expo Router.
 - Expose route removal prevention state to custom navigators through `createProps`.
