@@ -26,6 +26,28 @@
   "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json",
+    "./plugin": "./plugin/build/index.js",
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./next": {
+      "types": {
+        "expo-source": "./src/next/index.ts",
+        "default": "./build/next/index.d.ts"
+      },
+      "expo-source": "./src/next/index.ts",
+      "default": "./build/next/index.js"
+    }
+  },
   "scripts": {
     "precompile-ios": "et prebuild-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
@@ -41,7 +63,8 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^"
+    "@expo/image-utils": "workspace:^",
+    "expo-task-manager": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

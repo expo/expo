@@ -5130,6 +5130,9 @@ importers:
       '@expo/image-utils':
         specifier: workspace:^
         version: link:../@expo/image-utils
+      expo-task-manager:
+        specifier: workspace:~
+        version: link:../expo-task-manager
       react:
         specifier: '*'
         version: 19.2.3
