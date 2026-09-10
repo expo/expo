@@ -16,12 +16,15 @@ export * as TransitionSpecs from '../react-navigation/bottom-tabs/TransitionConf
 export type {
   BottomTabBarButtonProps,
   BottomTabBarProps,
+  BottomTabEmitter,
   BottomTabHeaderProps,
   BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
   BottomTabNavigationProp,
   BottomTabOptionsArgs,
   BottomTabScreenProps,
+  BottomTabViewRoute,
+  BottomTabViewState,
 } from '../react-navigation/bottom-tabs';
 export type { JSTabsProps, TabsScreenOptions } from './TabsClient';
 
