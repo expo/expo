@@ -400,11 +400,6 @@ export type NavigationContainerProps = {
    */
   initialState?: InitialState;
   /**
-   * Callback which is called when an action is not handled.
-   * TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
-   */
-  onUnhandledAction?: (action: Readonly<NavigationAction>) => void;
-  /**
    * Theme object for the UI elements.
    */
   theme?: ReactNavigation.Theme;
