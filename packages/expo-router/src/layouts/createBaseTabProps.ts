@@ -21,10 +21,12 @@ import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-naviga
 export function createBaseTabProps({
   dispatch,
   isPreloaded,
+  isRemovalPrevented,
   state,
 }: StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>) {
   return {
     isPreloaded,
+    isRemovalPrevented,
     routeNames: state.routeNames,
     preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
   };
