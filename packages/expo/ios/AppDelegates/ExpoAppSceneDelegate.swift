@@ -153,10 +153,11 @@ extension ExpoAppSceneDelegate {
   }
 
   /// Passes incoming URL contexts to the app delegate and `RCTLinkingManager`.
-  public static func route(
-    urlContexts: Set<UIOpenURLContext>,
-    to delegate: UIApplicationDelegate? = UIApplication.shared.delegate
-  ) {
+  public static func route(urlContexts: Set<UIOpenURLContext>) {
+    route(urlContexts: urlContexts, to: UIApplication.shared.delegate)
+  }
+
+  static func route(urlContexts: Set<UIOpenURLContext>, to delegate: UIApplicationDelegate?) {
     for context in urlContexts {
       route(url: context.url, options: openURLOptions(from: context.options), to: delegate)
     }
@@ -181,10 +182,11 @@ extension ExpoAppSceneDelegate {
   }
 
   /// Passes an incoming `NSUserActivity` to the app delegate and `RCTLinkingManager`.
-  public static func route(
-    userActivity: NSUserActivity,
-    to delegate: UIApplicationDelegate? = UIApplication.shared.delegate
-  ) {
+  public static func route(userActivity: NSUserActivity) {
+    route(userActivity: userActivity, to: UIApplication.shared.delegate)
+  }
+
+  static func route(userActivity: NSUserActivity, to delegate: UIApplicationDelegate?) {
     let application = UIApplication.shared
     // `RCTLinkingManager` only announces browsing-web activities, so there is nothing to dedupe
     // against for the other activity types.

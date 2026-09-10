@@ -117,6 +117,7 @@ struct ExpoAppSceneDelegateTests {
         }
       }
     }
+    await drainMainQueue()
     #expect(spy.shortcutItemTypes == [shortcutItem.type])
     #expect(handled == [false])
   }
@@ -140,6 +141,7 @@ struct ExpoAppSceneDelegateTests {
         }
       }
     }
+    await drainMainQueue()
     #expect(handled == [false])
   }
 #endif
@@ -191,6 +193,15 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
+  func `routes through the public functions passed as function values`() {
+    let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
+    userActivity.webpageURL = URL(string: "https://expo.dev/scene-delegate/function-value")!
+    [userActivity].forEach(ExpoAppSceneDelegate.route(userActivity:))
+    [Set<UIOpenURLContext>()].forEach(ExpoAppSceneDelegate.route(urlContexts:))
+  }
+
+  @Test
+  @MainActor
   func `routes a URL to the subscribers when the delegate isn't an ExpoAppDelegate`() {
     let delegate = NonExpoAppDelegate()
     let subscriber = URLRecordingSubscriber()
@@ -217,8 +228,9 @@ private final class LegacyLinkingAppDelegate: ExpoAppDelegate {
     options: [UIApplication.OpenURLOptionsKey: Any]
   ) -> Bool {
     openedURLs.append(url)
-    return super.application(app, open: url, options: options) ||
-      RCTLinkingManager.application(app, open: url, options: options)
+    let handled = super.application(app, open: url, options: options)
+    RCTLinkingManager.application(app, open: url, options: options)
+    return handled
   }
 
   override func application(
@@ -227,12 +239,9 @@ private final class LegacyLinkingAppDelegate: ExpoAppDelegate {
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
     continuedUserActivities.append(userActivity)
-    return super.application(application, continue: userActivity, restorationHandler: restorationHandler) ||
-      RCTLinkingManager.application(
-        application,
-        continue: userActivity,
-        restorationHandler: restorationHandler
-      )
+    let handled = super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    return handled
   }
 }
 
@@ -247,6 +256,15 @@ private final class NonExpoAppDelegate: NSObject, UIApplicationDelegate {
   ) -> Bool {
     openedURLs.append(url)
     return true
+  }
+}
+
+/// Lets the main-queue blocks scheduled so far run, so a late duplicate reply is recorded before
+/// the assertions.
+@MainActor
+private func drainMainQueue() async {
+  await withCheckedContinuation { continuation in
+    DispatchQueue.main.async { continuation.resume() }
   }
 }
 
