@@ -8,6 +8,7 @@ import {
   Navigator,
   type NavigatorContentProps,
   StackRouter,
+  type StandardNavigatorEventMapBase,
   unstable_integrateWithRouter,
 } from '../index';
 import Drawer from '../layouts/Drawer';
@@ -65,7 +66,10 @@ jest.mock('react-native-screens/experimental', () => {
 
 type NavigatorLayout = (explicitNotFound: boolean) => ReactElement;
 
-function StandardNavigatorContent({ state, descriptors }: NavigatorContentProps<object>) {
+function StandardNavigatorContent({
+  state,
+  descriptors,
+}: NavigatorContentProps<object, StandardNavigatorEventMapBase>) {
   const focusedRouteKey = state.routes[state.index]?.key;
   return focusedRouteKey ? descriptors[focusedRouteKey]?.render() : null;
 }
