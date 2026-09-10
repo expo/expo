@@ -4,7 +4,7 @@ import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation
 
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/StackClient';
-import type { ParamListBase } from '../../react-navigation/core';
+import type { DescriptorRouteProp, ParamListBase } from '../../react-navigation/core';
 import { usePreventRemove } from '../../react-navigation/core/usePreventRemove';
 import {
   StackRouter,
@@ -18,6 +18,7 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import { act, fireEvent, renderRouter, screen } from '../../testing-library';
+import { screenOptionsFactory } from '../../useScreens';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
@@ -25,7 +26,7 @@ import {
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
 import type { NavigatorContentProps, StandardNavigatorDescriptor } from '../types';
 
-type TestOptions = { title?: string };
+type TestOptions = { title?: string; customOption?: number; processed?: boolean };
 type TestEventMap = Record<string, { data: object | undefined; canPreventDefault: boolean }>;
 
 const contentSpy = jest.fn();
@@ -203,6 +204,69 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     const key = lastArgs().state.routes[0]!.key;
     expect(lastArgs().descriptors[key]!.options).toMatchObject({ title: 'Home' });
     expect(typeof lastArgs().descriptors[key]!.render).toBe('function');
+  });
+
+  it('passes application-defined screen options through processScreens and descriptors', () => {
+    const CustomOptionsTabs = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) =>
+        screens.map((screen) => {
+          const options = screen.options;
+          return {
+            ...screen,
+            options: (args) => ({
+              ...(typeof options === 'function' ? options(args) : options),
+              processed: true,
+            }),
+          };
+        }),
+    });
+
+    renderRouter({
+      _layout: () => (
+        <CustomOptionsTabs>
+          <CustomOptionsTabs.Screen
+            name="index"
+            options={({ route }) => ({ customOption: route.name.length })}
+          />
+        </CustomOptionsTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    const key = lastArgs().state.routes[0]!.key;
+    expect(lastArgs().descriptors[key]!.options).toMatchObject({
+      customOption: 'index'.length,
+      processed: true,
+    });
+  });
+
+  it('merges generated route options before application-defined options', () => {
+    const options = screenOptionsFactory<TestOptions>(
+      {
+        type: 'route',
+        route: 'index',
+        contextKey: './index.tsx',
+        children: [],
+        dynamic: null,
+        generated: true,
+        loadRoute: () => ({
+          getNavOptions: () => ({ title: 'Generated', customOption: 1 }),
+        }),
+      },
+      () => ({ title: 'Application', customOption: 123 })
+    );
+    const route: DescriptorRouteProp<ParamListBase, string> = { key: 'index', name: 'index' };
+
+    expect(typeof options === 'function' ? options({ route, navigation: {} }) : options).toEqual({
+      title: 'Application',
+      customOption: 123,
+    });
   });
 
   it('passes the standard navigator args (state, descriptors, actions, emitter) to NavigatorContent', () => {

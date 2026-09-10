@@ -37,19 +37,19 @@ export type StandardNavigatorEmit<EventMap extends Record<string, { data: object
 
 export type StandardNavigationAction = NavigateAction | GoBackAction;
 
-export type PlaceholderDescriptorMap = Record<
+export type PlaceholderDescriptorMap<NavigatorOptions extends object = object> = Record<
   string,
   {
     route: DescriptorRouteProp<ParamListBase, string>;
-    options: object;
+    options: NavigatorOptions;
     render: () => React.ReactNode;
     routeSource?: RouteSource;
   }
 >;
 
-export type DescribePlaceholderRoute = (
+export type DescribePlaceholderRoute<NavigatorOptions extends object = object> = (
   route: DescriptorRouteProp<ParamListBase, string>
-) => NonNullable<PlaceholderDescriptorMap[string]>;
+) => NonNullable<PlaceholderDescriptorMap<NavigatorOptions>[string]>;
 
 export type StandardNavigator<
   NavigatorOptions extends object,
@@ -133,15 +133,15 @@ export type IntegrateWithRouterOptions<
    */
   processState?: (
     state: State,
-    descriptors: PlaceholderDescriptorMap,
-    describe: DescribePlaceholderRoute
+    descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
+    describe: DescribePlaceholderRoute<NavigatorOptions>
   ) => State;
   /** Creates additional descriptors before `processState` and navigator rendering. */
   processDescriptors?: (
-    descriptors: PlaceholderDescriptorMap,
+    descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
     state: State,
-    describe: DescribePlaceholderRoute
-  ) => PlaceholderDescriptorMap;
+    describe: DescribePlaceholderRoute<NavigatorOptions>
+  ) => PlaceholderDescriptorMap<NavigatorOptions>;
   /**
    * Transforms the screens declared as children of the navigator before they are rendered.
    *
