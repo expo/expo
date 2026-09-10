@@ -303,7 +303,7 @@ const changeIndex = (
 };
 
 /**
- * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ * @deprecated Use `extendTabRouterActions`. If its API is insufficient, open an Expo Router issue.
  */
 export function TabRouter({
   initialRouteName,

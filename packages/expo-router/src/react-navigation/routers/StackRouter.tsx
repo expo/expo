@@ -207,7 +207,7 @@ export const StackActions = {
 };
 
 /**
- * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ * @deprecated Use `extendStackRouterActions`. If its API is insufficient, open an Expo Router issue.
  */
 export function StackRouter(options: StackRouterOptions) {
   const { initialRouteName } = options;

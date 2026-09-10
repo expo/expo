@@ -1,163 +1,84 @@
-import { expect, jest, test } from '@jest/globals';
+import { expect, test } from '@jest/globals';
 
-import {
-  extendRouter,
-  extendRouterActions,
-  extendStackRouter,
-  extendTabRouter,
-} from '../extendRouter';
-import type {
-  DefaultRouterOptions,
-  NavigationState,
-  Router,
-  RouterActionResult,
-  RouterConfigOptions,
-} from '../types';
+import type { StackNavigationState } from '../StackRouter';
+import type { TabNavigationState } from '../TabRouter';
+import { extendStackRouterActions, extendTabRouterActions } from '../extendRouter';
+import type { ParamListBase } from '../types';
 
-type TestState = NavigationState & { type?: 'test' };
-type TestAction = { type: 'BASE'; payload?: object };
 type CustomAction = {
   type: 'CUSTOM';
   payload: { value: number };
 };
-type TestRouterOptions = DefaultRouterOptions & { enabled?: boolean };
-
-const state: TestState = {
+const options = { routeNames: ['index'], routeGetIdList: {} };
+const stackState: StackNavigationState<ParamListBase> = {
   stale: false,
-  type: 'test',
-  key: 'test:root',
-  routeKeySeq: 0,
+  type: 'stack',
+  key: 'stack',
+  routeKeySeq: 1,
   index: 0,
   routeNames: ['index'],
-  routes: [{ key: 'index:0', name: 'index' }],
+  routes: [{ key: 'index', name: 'index' }],
+};
+const tabState: TabNavigationState<ParamListBase> = {
+  ...stackState,
+  type: 'tab',
+  key: 'tab',
+  history: [],
 };
 
-function createTestRouter() {
-  let router: Router<TestState, TestAction> | undefined;
-  const factory = jest.fn((_options: TestRouterOptions): Router<TestState, TestAction> => {
-    const createdRouter: Router<TestState, TestAction> = {
-      type: 'test',
-      getStateForDeclaredRoutes: jest.fn((state: TestState) => state),
-      getStateForRouteFocus: jest.fn((state: TestState) => state),
-      getStateForAction: jest.fn(() => ({
-        state,
-        affectedRouteKey: state.routes[state.index]?.key,
-      })),
-      shouldActionChangeFocus: jest.fn(() => false),
-      actionCreators: {
-        reset: () => ({ type: 'BASE' }),
+test('clears the focused route preload marker for an extended stack router', () => {
+  const router = extendStackRouterActions<CustomAction>((state, action, _options, result) => {
+    if (action.type !== 'CUSTOM') {
+      return result;
+    }
+    return {
+      state: {
+        ...state,
+        routes: state.routes.map((route) => ({
+          ...route,
+          isPreloaded: true as const,
+        })),
       },
+      affectedRouteKey: state.routes[state.index]?.key,
     };
-    router = createdRouter;
-    return createdRouter;
-  });
+  })({});
 
-  return { factory, getRouter: () => router! };
-}
-
-test('extends a complete router implementation', () => {
-  const { factory, getRouter } = createTestRouter();
-  const getStateForRouteFocus = jest.fn((state: TestState) => state);
-  const extension = jest.fn(() => ({ getStateForRouteFocus }));
-  const extendedFactory = extendRouter(factory, extension);
-
-  const extended = extendedFactory({
-    initialRouteName: 'index',
-    enabled: true,
-  });
-  const original = getRouter();
-
-  expect(factory).toHaveBeenCalledWith({
-    initialRouteName: 'index',
-    enabled: true,
-  });
-  expect(extension).toHaveBeenCalledWith(original, {
-    initialRouteName: 'index',
-    enabled: true,
-  });
-  expect(extended.getStateForRouteFocus).toBe(getStateForRouteFocus);
-  expect(extended.getStateForDeclaredRoutes).toBe(original.getStateForDeclaredRoutes);
-  expect(extended.getStateForAction).toBe(original.getStateForAction);
-  expect(extended.shouldActionChangeFocus).toBe(original.shouldActionChangeFocus);
-  expect(extended.actionCreators).toBe(original.actionCreators);
-});
-
-test('extends only action handling and preserves the other router members', () => {
-  const { factory, getRouter } = createTestRouter();
-  const expected: RouterActionResult<TestState> = {
-    state: { ...state, index: 0 },
-    affectedRouteKey: 'custom',
-  };
-  const handleAction = jest.fn(
-    (
-      _state: TestState,
-      action: TestAction | CustomAction,
-      _options: RouterConfigOptions,
-      result: RouterActionResult<TestState> | null,
-      _routerOptions: TestRouterOptions
-    ) => (action.type === 'CUSTOM' ? expected : result)
+  const result = router.getStateForAction(
+    stackState,
+    { type: 'CUSTOM', payload: { value: 1 } },
+    options
   );
-  const extended = extendRouterActions<TestState, TestAction, CustomAction, TestRouterOptions>(
-    factory,
-    handleAction
-  )({ enabled: true });
-  const original = getRouter();
-  const options = { routeNames: ['index'], routeGetIdList: {} };
-  const action: CustomAction = { type: 'CUSTOM', payload: { value: 1 } };
 
-  expect(extended.getStateForAction(state, action, options)).toBe(expected);
-  expect(original.getStateForAction).toHaveBeenCalledTimes(1);
-  expect(original.getStateForAction).toHaveBeenCalledWith(state, action, options);
-  expect(handleAction).toHaveBeenCalledWith(
-    state,
-    action,
-    options,
-    expect.objectContaining({ affectedRouteKey: 'index:0' }),
-    { enabled: true }
+  expect(result?.state.routes[result.state.index]?.isPreloaded).toBeUndefined();
+});
+
+test('clears the focused route preload marker for an extended tab router', () => {
+  const router = extendTabRouterActions<CustomAction>((state, action, _options, result) => {
+    if (action.type !== 'CUSTOM') {
+      return result;
+    }
+    return {
+      state: {
+        ...state,
+        routes: state.routes.map((route) => ({
+          ...route,
+          isPreloaded: true as const,
+        })),
+      },
+      affectedRouteKey: state.routes[state.index]?.key,
+    };
+  })({});
+
+  const result = router.getStateForAction(
+    tabState,
+    { type: 'CUSTOM', payload: { value: 1 } },
+    options
   );
-  expect(extended.getStateForDeclaredRoutes).toBe(original.getStateForDeclaredRoutes);
-  expect(extended.getStateForRouteFocus).toBe(original.getStateForRouteFocus);
-  expect(extended.shouldActionChangeFocus).toBe(original.shouldActionChangeFocus);
-  expect(extended.actionCreators).toBe(original.actionCreators);
+
+  expect(result?.state.routes[result.state.index]?.isPreloaded).toBeUndefined();
 });
 
-test('allows an action extension to preserve null from the original router', () => {
-  const { factory, getRouter } = createTestRouter();
-  const extendedFactory = extendRouterActions<
-    TestState,
-    TestAction,
-    CustomAction,
-    TestRouterOptions
-  >(factory, (_state, _action, _options, result) => result);
-  const extended = extendedFactory({});
-  const original = getRouter();
-  jest.mocked(original.getStateForAction).mockReturnValueOnce(null);
-
-  expect(
-    extended.getStateForAction(state, { type: 'BASE' }, { routeNames: [], routeGetIdList: {} })
-  ).toBeNull();
-});
-
-test('provides stack and tab router extension shortcuts', () => {
-  expect(
-    extendStackRouter(() => ({ shouldActionChangeFocus: () => true }))({}).shouldActionChangeFocus({
-      type: 'CUSTOM',
-    })
-  ).toBe(true);
-  expect(
-    extendTabRouter(() => ({ shouldActionChangeFocus: () => true }))({}).shouldActionChangeFocus({
-      type: 'CUSTOM',
-    })
-  ).toBe(true);
-});
-
-const customActionRouter = extendRouterActions<
-  TestState,
-  TestAction,
-  CustomAction,
-  TestRouterOptions
->(
-  () => createTestRouter().factory({}),
+const customActionRouter = extendStackRouterActions<CustomAction>(
   (state, action, _options, result) => {
     if (action.type === 'CUSTOM') {
       action.payload.value satisfies number;
@@ -167,18 +88,19 @@ const customActionRouter = extendRouterActions<
   }
 );
 
-customActionRouter({ enabled: true }).getStateForAction(
-  state,
+customActionRouter({}).getStateForAction(
+  stackState,
   { type: 'CUSTOM', payload: { value: 1 } },
-  { routeNames: [], routeGetIdList: {} }
+  options
 );
 
+extendTabRouterActions<CustomAction>((state, action, _options, result) => result)(
+  {}
+).getStateForAction(tabState, { type: 'CUSTOM', payload: { value: 1 } }, options);
+
 customActionRouter({}).getStateForAction(
-  state,
+  stackState,
   // @ts-expect-error Custom action payload is checked by the extended router factory.
   { type: 'CUSTOM', payload: { value: 'invalid' } },
-  {
-    routeNames: [],
-    routeGetIdList: {},
-  }
+  options
 );
