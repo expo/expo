@@ -144,7 +144,7 @@ Run the command without a channel name to pick one from a list. In CI, pass the 
 
 - Builds on that channel still check for updates, but no update is returned to them. EAS Update answers with a bodyless HTTP [`204`](/technical-specs/expo-updates-1/#response) response, so these checks use very little bandwidth.
 - Each app keeps running the newest update it has already downloaded. If it never downloaded one, it keeps running the update embedded in the build. Your users see no change in what their app is running.
-- Because no app downloads an update, those installs do not count toward your [monthly active users](/eas-update/introduction/#how-are-monthly-active-users-counted-for) for the billing cycle. This keeps [updated user charges](/billing/usage-based-pricing/) from growing while the channel is paused.
+- Because no app downloads an update, the number of [monthly active users](/eas-update/introduction/#how-are-monthly-active-users-counted-for) does not increase while the channel is paused. This keeps [updated user charges](/billing/usage-based-pricing/) from growing.
 - `eas channel:view [channel-name]` and `eas channel:list` show the channel's status as **Paused**.
 - You can keep publishing updates to branches. They are stored as usual and become available when you resume the channel.
 
