@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Point the `ExpoAppDelegate.swift` template symlink at the restructured `expo/ios/Expo` directory so `expo prebuild` works again. ([#45906](https://github.com/expo/expo/pull/45906) by [@chrfalch](https://github.com/chrfalch))
 - [android] Stop React Native surfaces when their container is destroyed instead of when the Activity is, so embedding a surface in a Compose node, fragment or tab no longer leaves it running off screen while a second one is created. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 - [android] Fix `ReactDelegate.onHostResume()` throwing in host Activities that don't implement `DefaultHardwareBackBtnHandler`. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 - [android] Fix `brownfield.fused.strip-packages` corrupting the generated `ExpoModulesPackageList.kt` when given a broad prefix (e.g. `expo.modules`). ([@gabrieldonadel](https://github.com/gabrieldonadel)) ([#48118](https://github.com/expo/expo/pull/48118) by [@gabrieldonadel](https://github.com/gabrieldonadel))

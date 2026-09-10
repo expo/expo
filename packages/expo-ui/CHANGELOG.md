@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- [Android] Add `shadowElevation` to `DropdownMenu` to customize the popup shadow in dp. ([#49896](https://github.com/expo/expo/pull/49896) by [@maxlapides](https://github.com/maxlapides))
 - [Android] Added the `enabled` and `colors` props to the Jetpack Compose `RadioButton` component. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Added the Jetpack Compose `DateRangePicker` and `DateRangePickerDialog` components. (by [@felipe-software](https://github.com/felipe-software))
 - [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
@@ -35,8 +36,11 @@
 - [iOS] Taught the `presentationBackground` modifier to paint with any `ShapeStyle`, matching SwiftUI, so a sheet can be backed by a material, a gradient or a hierarchical style instead of only a color. iOS 26 renders a material as a flat color rather than a translucent blur. ([#49767](https://github.com/expo/expo/pull/49767) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `scrollClipDisabled` modifier, which lets content that draws outside a scrollable view's bounds, such as a shadow or a scaled-up card, stay visible instead of being clipped. ([#49780](https://github.com/expo/expo/pull/49780) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Taught the `tint`, `border`, `strokeBorder` and `containerBackground` modifiers to paint with any `ShapeStyle`, matching SwiftUI, where all four take a `ShapeStyle` rather than a color. The `color` parameter of `border` and `strokeBorder` is deprecated in favor of `content`, the name SwiftUI gives it. ([#49838](https://github.com/expo/expo/pull/49838) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Added the `NavigationStack` and `Toolbar` components, the `navigationTitle` modifier, and the `close` button role. ([#49940](https://github.com/expo/expo/pull/49940) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
+
+- [Android] Fix `DatePickerDialog` preselecting today when `initialDate` is omitted, and keep its confirm button disabled while no date is selected so `onDateSelected` never receives an invalid date. ([#49898](https://github.com/expo/expo/pull/49898) by [@pataar](https://github.com/pataar))
 
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme. ([#49697](https://github.com/expo/expo/pull/49697) by [@expo-bot](https://github.com/expo-bot))

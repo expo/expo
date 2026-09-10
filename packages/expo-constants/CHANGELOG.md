@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Split the mixed Swift/Objective-C sources into `EXConstants` and `EXConstantsObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#47649](https://github.com/expo/expo/pull/47649) by [@chrfalch](https://github.com/chrfalch))
+
 ## 57.0.8 - 2026-07-29
 
 _This version does not introduce any user-facing changes._

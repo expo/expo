@@ -160,7 +160,8 @@ class NetworkRequestInterceptor private constructor(
       fallbackStart = startedAt,
       fallbackEnd = endDate,
       totalDuration = totalDuration,
-      error = error
+      error = error,
+      canceled = call.isCanceled()
     )
     monitor.record(snapshot)
   }
@@ -198,7 +199,8 @@ internal fun buildSnapshot(
   fallbackStart: Date,
   fallbackEnd: Date,
   totalDuration: Double,
-  error: IOException?
+  error: IOException?,
+  canceled: Boolean = false
 ): NetworkRequest {
   val redirects = response?.let { buildRedirectChain(it) } ?: emptyList()
 
@@ -225,6 +227,20 @@ internal fun buildSnapshot(
     // which requests form the throughput ratio, so an unmeasured body would drag the denominator
     // out with no bytes to match.
     body?.let { responseHeaderBytes + it }
+  }
+
+  // OkHttp reports both halves of a conditional GET: a 304 leaves `networkResponse` set (the
+  // revalidation went out) alongside `cacheResponse` (the body came from disk). A plain cache hit
+  // has only `cacheResponse`, and a normal load only `networkResponse`. No response at all means
+  // nothing classified the fetch.
+  val fetchType = response?.let { received ->
+    val fromCache = received.cacheResponse != null
+    val fromNetwork = received.networkResponse != null
+    when {
+      fromCache && fromNetwork -> NetworkRequest.FetchType.VALIDATED
+      fromCache -> NetworkRequest.FetchType.CACHE
+      else -> NetworkRequest.FetchType.NETWORK
+    }
   }
 
   val timings = NetworkRequest.Timings(
@@ -257,9 +273,19 @@ internal fun buildSnapshot(
     requestBytesSent = requestBytesSent,
     responseBytesReceived = responseBytesReceived,
     timings = timings,
+    fetchType = fetchType,
     // Falls back to the class name because an exception is allowed to carry no message at all, and
     // a null description would read as "this request succeeded" to `isFailed`.
     errorDescription = failure?.let { it.localizedMessage ?: it.message ?: it.javaClass.simpleName },
+    errorType = failure?.javaClass?.name,
+    // A cancellation reaches this snapshot two ways: as an `IOException` when the call was cut
+    // before or during `chain.proceed`, or with no exception at all when the caller abandoned a
+    // response body it had started reading. Both are intentional aborts, so both are flagged.
+    //
+    // The status check is not about classifying errors: it stops a late cancel from masking a
+    // 4xx or 5xx the server already returned, because `canceled` suppresses both the ERROR
+    // status and `error.type` downstream.
+    canceled = canceled && (failure != null || (response?.code ?: 0) < 400),
     redirects = redirects
   )
 }
@@ -302,7 +328,9 @@ internal fun buildRedirectChain(final: Response): List<NetworkRequest.Redirect> 
       NetworkRequest.Redirect(
         fromUrl = prior.request.url.toString(),
         toUrl = next.request.url.toString(),
-        statusCode = prior.code
+        statusCode = prior.code,
+        // OkHttp reports 0 when it has no timestamp for the response.
+        respondedAtMs = prior.receivedResponseAtMillis.takeIf { it > 0 }
       )
     )
     next = prior

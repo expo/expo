@@ -110,7 +110,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
   @JavaScriptActor
   public func `await`() async throws -> JavaScriptValue {
-    let deferredPromise = try deferredPromiseForAwait()
+    let deferredPromise = try await deferredPromiseForAwait()
     return try await deferredPromise.getValue()
   }
 
@@ -228,7 +228,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// callbacks that forward the promise's settlement to it; later calls return the same instance.
   /// Installing on an already settled promise is fine: `then` schedules the matching callback for it.
   @JavaScriptActor
-  private func deferredPromiseForAwait() throws -> DeferredPromise {
+  private func deferredPromiseForAwait() async throws -> DeferredPromise {
     if let deferredPromise = longLivedState.deferredPromise {
       return deferredPromise
     }
@@ -238,34 +238,40 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       longLivedState.deferredPromise = deferredPromise
       return deferredPromise
     }
-    let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
-      guard let deferredPromise else { return .undefined }
-      let value = arguments[0]
-      Task.immediate_polyfill {
-        await deferredPromise.resolve(value)
+    // Installing calls `then`, which is JavaScript, so it has to run on the runtime's JavaScript
+    // thread, the same hop `resolve` and `reject` make. `@JavaScriptActor` does not get there on
+    // its own: its executor runs jobs inline on the calling thread. `execute` runs the closure
+    // inline when the caller is already on the JavaScript thread.
+    try await runtime.execute { [longLivedState] in
+      let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
+        guard let deferredPromise else { return .undefined }
+        let value = arguments[0]
+        Task.immediate_polyfill {
+          await deferredPromise.resolve(value)
+        }
+        return .undefined
       }
-      return .undefined
-    }
-    let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
-      guard let deferredPromise else { return .undefined }
-      // Wrap the rejection value into a `JavaScriptError` here, on the JavaScript thread, rather
-      // than inside the off-thread actor, since building the error touches the runtime.
-      let error = JavaScriptError(runtime, value: arguments[0])
-      Task.immediate_polyfill {
-        await deferredPromise.reject(error)
+      let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
+        guard let deferredPromise else { return .undefined }
+        // Wrap the rejection value into a `JavaScriptError` here, on the JavaScript thread, rather
+        // than inside the off-thread actor, since building the error touches the runtime.
+        let error = JavaScriptError(runtime, value: arguments[0])
+        Task.immediate_polyfill {
+          await deferredPromise.reject(error)
+        }
+        return .undefined
       }
-      return .undefined
+      _ = try longLivedState.object.withValue { object in
+        try object?.getObject().callFunction(
+          .cached(runtime, "then"),
+          arguments: onFulfilled.asValue(),
+          onRejected.asValue()
+        )
+      }
+      // Stored only once the callbacks are in place, so a failed install (e.g. `then` unavailable) is
+      // retried by the next `await()` instead of leaving a receiver nothing will ever settle.
+      longLivedState.deferredPromise = deferredPromise
     }
-    _ = try longLivedState.object.withValue { object in
-      try object?.getObject().callFunction(
-        .cached(runtime, "then"),
-        arguments: onFulfilled.asValue(),
-        onRejected.asValue()
-      )
-    }
-    // Stored only once the callbacks are in place, so a failed install (e.g. `then` unavailable) is
-    // retried by the next `await()` instead of leaving a receiver nothing will ever settle.
-    longLivedState.deferredPromise = deferredPromise
     return deferredPromise
   }
 }

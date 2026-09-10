@@ -44,6 +44,20 @@ class EXDevLauncherURLHelperTests: XCTestCase {
     XCTAssertEqual(queryParams["url"], "http://localhost:8081")
   }
 
+  func testHasEnabledFlag() {
+    let devLauncherUrl = URL(string: "scheme://expo-development-client/?url=\(encodedUrlString)&disableFab=1")!
+
+    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: devLauncherUrl))
+    XCTAssertTrue(EXDevLauncherURLHelper.hasEnabledFlag("disableAutoLaunch", in: URL(string: "http://localhost:8081?disableAutoLaunch=1")!))
+
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableAutoLaunch", in: devLauncherUrl))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: URL(string: "http://localhost:8081?disableFab=0")!))
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: URL(string: "http://localhost:8081?disableFab")!))
+
+    let urlWithFlagInAppUrl = URL(string: "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%3FdisableFab%3D1")!
+    XCTAssertFalse(EXDevLauncherURLHelper.hasEnabledFlag("disableFab", in: urlWithFlagInAppUrl))
+  }
+
   //  HELPER
   func expectDevLauncherUrlToEqual(input: String, expected: String) {
     let devLauncherUrl = EXDevLauncherUrl(URL(string: input)!)

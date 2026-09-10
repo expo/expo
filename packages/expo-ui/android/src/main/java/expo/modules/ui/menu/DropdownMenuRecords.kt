@@ -17,5 +17,6 @@ data class DropdownMenuProps(
   val expanded: Boolean = false,
   val color: Color? = null,
   val cornerRadius: Float? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val shadowElevation: Float? = null
 ) : ComposeProps

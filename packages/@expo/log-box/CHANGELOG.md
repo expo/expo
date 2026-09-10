@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- [iOS] Split the mixed Swift/Objective-C++ sources into `ExpoLogBox` and `ExpoLogBoxObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#47651](https://github.com/expo/expo/pull/47651) by [@chrfalch](https://github.com/chrfalch))
 - Get the development server address from the loaded bundle. ([#48722](https://github.com/expo/expo/pull/48722) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 57.0.2 - 2026-07-29

@@ -44,19 +44,31 @@ public class EXDevLauncherURLHelper: NSObject {
     return queryItems.contains { $0.name == "url" && $0.value != nil }
   }
 
-  @objc
-  public static func disableOnboardingPopupIfNeeded(_ url: URL) {
+  static func hasEnabledFlag(_ name: String, in url: URL) -> Bool {
     guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
     let queryItems = components.queryItems else {
-      return
+      return false
     }
 
-    let shouldDisable = queryItems.contains {
-      $0.name == "disableOnboarding" && ($0.value ?? "") == "1"
-    }
+    return queryItems.contains { $0.name == name && ($0.value ?? "") == "1" }
+  }
 
-    if shouldDisable {
+  @objc
+  public static func disableOnboardingPopupIfNeeded(_ url: URL) {
+    if hasEnabledFlag("disableOnboarding", in: url) {
       DevMenuPreferences.isOnboardingFinished = true
+    }
+  }
+
+  @objc
+  public static func applyDevMenuPreferencesIfNeeded(_ url: URL) {
+    if hasEnabledFlag("disableFab", in: url) {
+      DevMenuManager.shared.setShowFloatingActionButton(false)
+    }
+
+    if hasEnabledFlag("disableAutoLaunch", in: url) {
+      DevMenuPreferences.isOnboardingFinished = true
+      DevMenuManager.shared.setShowsAtLaunch(false)
     }
   }
 

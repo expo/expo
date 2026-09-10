@@ -2,6 +2,13 @@ import ExpoModulesJSI
 import Foundation
 import Testing
 
+/// Carries a single answer out of a host function back to the test body. Written on the runtime's
+/// JavaScript thread and read after the `await()` that triggered the write has resumed, so the two
+/// accesses are already ordered.
+private final class ThreadFlag: @unchecked Sendable {
+  var value: Bool?
+}
+
 /// A `JavaScriptEncodable` whose `encode` always throws, for exercising the encodable `resolve`'s
 /// encode-failure path.
 private struct FailingEncodable: JavaScriptEncodable {
@@ -405,6 +412,35 @@ struct JavaScriptPromiseTests {
     await #expect(throws: Error.self) {
       try await promise.await()
     }
+  }
+
+  @Test
+  func `awaiting off the JavaScript thread installs the then callbacks on it`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let installedOnJavaScriptThread = ThreadFlag()
+
+    let promise = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      // A thenable whose `then` records where the engine called it from, then fulfills right away
+      // so the `await()` below completes and the recorded answer can be read.
+      let thenable = runtime.createObject()
+      let then = runtime.createFunction("then") { _, arguments in
+        installedOnJavaScriptThread.value = runtime.isOnJavaScriptThread()
+        return try arguments[0].getFunction().call(arguments: 42)
+      }
+      thenable.setProperty("then", value: then.asValue())
+      return UncheckedSendable(value: try JavaScriptPromise(runtime, thenable))
+    }
+
+    // The test body runs on the cooperative pool, never on the runtime's dedicated thread, so this
+    // `await()` is the off-thread case. Installing the callbacks calls `then`, which is JavaScript,
+    // and JavaScript for this runtime may only run on the thread that owns it.
+    #expect(testRuntime.runtime.isOnJavaScriptThread() == false)
+
+    let result = try await promise.value.await()
+
+    #expect(result.getInt() == 42)
+    #expect(installedOnJavaScriptThread.value == true)
   }
 
   @Test

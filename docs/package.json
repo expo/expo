@@ -38,13 +38,6 @@
     "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale",
     "upstream-sync": "node --experimental-strip-types ./scripts/upstream-sync.ts"
   },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "12.2.1",
-      "onFail": "warn"
-    }
-  },
   "engines": {
     "node": ">=24"
   },

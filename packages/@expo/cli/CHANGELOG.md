@@ -68,6 +68,7 @@
 - [Internal] Align local annotations in the Metro integration with Metro's own types. ([#49669](https://github.com/expo/expo/pull/49669) by [@robhogan](https://github.com/robhogan))
 - [Internal] Import Expo's Metro type extensions from `@expo/metro-config` instead of relying on global type augmentations. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
 - Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- Remove the unused `confirm_account` query param from the browser login URL. ([#49891](https://github.com/expo/expo/pull/49891) by [@byronkarlen](https://github.com/byronkarlen))
 
 ## 57.0.11 - 2026-07-29
 
