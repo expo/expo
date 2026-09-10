@@ -82,7 +82,7 @@
 ### 🐛 Bug fixes
 
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
-- Infer navigator and router types in `unstable_integrateWithRouter`.
+- Infer navigator and router types in `unstable_integrateWithRouter`. ([#49983](https://github.com/expo/expo/pull/49983) by [@Ubax](https://github.com/Ubax))
 - Re-export missing bottom tab types from `expo-router/js-tabs`. ([#49954](https://github.com/expo/expo/pull/49954) by [@Ubax](https://github.com/Ubax))
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))
