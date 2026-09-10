@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Wait for pending source replacements before releasing players created by `useVideoPlayer`. ([#49981](https://github.com/expo/expo/pull/49981) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-11
