@@ -143,6 +143,30 @@ const Nav = unstable_createStandardRouterNavigator<
   TabRouterOptions
 >(Content, TabRouter);
 
+type ApplicationOptions = { customOption?: number };
+type ExtendedOptions = Opts & ApplicationOptions;
+
+const ExtendedNav = unstable_createStandardRouterNavigator<
+  ExtendedOptions,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  { initialRouteName?: string },
+  TabRouterOptions
+>((args) => {
+  args.descriptors.index?.options.customOption satisfies number | undefined;
+  return null;
+}, TabRouter);
+
+<ExtendedNav.Screen name="index" options={{ title: 'Home', customOption: 123 }} />;
+<ExtendedNav.Screen
+  name="index"
+  options={({ route }) => ({ title: route.name, customOption: 123 })}
+/>;
+// @ts-expect-error Application-defined options retain their declared value type.
+<ExtendedNav.Screen name="index" options={{ customOption: '123' }} />;
+// @ts-expect-error Undeclared options are rejected.
+<ExtendedNav.Screen name="index" options={{ unknownOption: true }} />;
+
 type TypelessNavigationState = Readonly<{
   key: string;
   routeKeySeq: number;
@@ -233,6 +257,33 @@ const splitStandardNavigator = createStandardNavigator<Opts, EventMap, NavProps 
   SplitContent
 );
 const publicStandardNavigator = createStandardNavigator<Opts, EventMap, NavProps>(PublicContent);
+
+const ExtendedIntegratedNav = unstable_integrateWithRouter<
+  ExtendedOptions,
+  TabState,
+  EventMap,
+  NavProps,
+  TabRouterOptions
+>(publicStandardNavigator, TabRouter, {
+  processDescriptors: (descriptors, _state, describe) => {
+    descriptors.index?.options.customOption satisfies number | undefined;
+    describe({ key: 'generated', name: 'generated' }).options.customOption satisfies
+      | number
+      | undefined;
+    return descriptors;
+  },
+  processScreens: (screens) =>
+    screens.map((screen) => {
+      if (typeof screen.options !== 'function') {
+        screen.options?.customOption satisfies number | undefined;
+      }
+      return screen;
+    }),
+});
+
+<ExtendedIntegratedNav.Screen name="index" options={{ title: 'Home', customOption: 123 }} />;
+// @ts-expect-error Application-defined options retain their declared value type.
+<ExtendedIntegratedNav.Screen name="index" options={{ customOption: '123' }} />;
 
 // These instantiated signatures are for explicit-instantiation tests only. Inference tests below
 // call the original functions directly so they continue to exercise the carrier and `NoInfer`.
@@ -447,7 +498,11 @@ integratePublicNav(publicStandardNavigator, TabRouter);
 // unstable_integrateWithRouter infers a standard navigator's full contract
 // ---------------------------------------------------------------------------
 
-type CustomStackOptions = { title?: string; presentation?: 'card' | 'modal' };
+type CustomStackOptions = {
+  title?: string;
+  presentation?: 'card' | 'modal';
+  requiresAuth?: boolean;
+};
 type CustomStackEventMap = {
   transitionStart: { data: { closing: boolean }; canPreventDefault: false };
   gestureCancel: { data: { reason: 'gesture' }; canPreventDefault: true };
@@ -534,6 +589,16 @@ export type _IntegratedStackOmitsInitialRouteName = Expect<
 
 <InferredIntegratedStack headerHeight={44} />;
 <InferredIntegratedStack headerHeight={44} backBehavior="history" />;
+<InferredIntegratedStack.Screen
+  name="index"
+  options={{ presentation: 'modal', requiresAuth: true }}
+/>;
+<InferredIntegratedStack.Screen
+  name="index"
+  options={({ route }) => ({ title: route.name, requiresAuth: false })}
+/>;
+// @ts-expect-error Inferred screen options retain their declared value types.
+<InferredIntegratedStack.Screen name="index" options={{ requiresAuth: 'yes' }} />;
 // @ts-expect-error Public navigator props stay required after inference.
 <InferredIntegratedStack />;
 // @ts-expect-error Props supplied by `createProps` are not public navigator props.
