@@ -50,8 +50,9 @@ const Tabs = unstable_integrateWithRouter<
 >(createStandardBottomTabNavigator, TabRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch, isPreloaded }) => ({
+  createProps: ({ state, dispatch, isPreloaded, isRemovalPrevented }) => ({
     isPreloaded,
+    isRemovalPrevented,
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
     popNestedStackToTop: (routeKey) => {

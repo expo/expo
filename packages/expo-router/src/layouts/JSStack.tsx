@@ -30,11 +30,13 @@ export function unstable_createPropsForJSStack({
   navigation,
   state,
   isPreloaded,
+  isRemovalPrevented,
 }: StandardNavigatorCreatePropsFactoryDeps<
   StackNavigationState<ParamListBase>
 >): StackNavigatorCreateProps {
   return {
     isPreloaded,
+    isRemovalPrevented,
     pop: makePopAction(dispatchSync, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
     restoreRoute: makeRestoreRouteAction(dispatchSync, state),

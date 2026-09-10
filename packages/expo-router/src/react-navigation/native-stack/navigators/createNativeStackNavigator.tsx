@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { useRoutesWithRemovalPrevented } from '../../../global-state/removalPrevention';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -54,6 +55,7 @@ function NativeStackNavigator({
   });
 
   const meta = use(NavigationMetaContext);
+  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
   React.useEffect(() => {
     if (meta && 'type' in meta && meta.type === 'native-tabs') {
@@ -91,6 +93,7 @@ function NativeStackNavigator({
         descriptors={descriptors}
         emit={navigation.emit}
         isPreloaded={(key) => state.routes.find((route) => route.key === key)?.isPreloaded === true}
+        isRemovalPrevented={(key) => routesWithRemovalPrevented.has(key)}
         pop={pop}
       />
     </NavigationContent>

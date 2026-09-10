@@ -27,12 +27,18 @@ type Props = {
   // These are used for the native implementation of the stack.
   emit: NativeStackViewEmit;
   isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
 } & NativeStackNavigationConfig;
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
-export function NativeStackView({ state, descriptors, isPreloaded }: Props) {
+export function NativeStackView({
+  state,
+  descriptors,
+  isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
+}: Props) {
   const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 
