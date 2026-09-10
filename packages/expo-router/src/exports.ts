@@ -88,6 +88,8 @@ export type {
   StandardUseNavigationBuilderOptions,
 } from './standard-navigation';
 export { createBaseStackProps } from './layouts/stack-utils/createBaseStackProps';
+export { createBaseTabProps } from './layouts/createBaseTabProps';
+export { createNativeStackProps } from './layouts/createNativeStackProps';
 
 export type { RouteSource } from './react-navigation/native';
 

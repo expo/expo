@@ -23,6 +23,7 @@ import type { NativeStackNavigationConfig } from '../react-navigation/native-sta
 import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
+import { createNativeStackProps } from './createNativeStackProps';
 import { StackRouter } from './stack-router';
 import {
   type StackScreenProps,
@@ -35,7 +36,6 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
-import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 
 const RNStack = unstable_integrateWithRouter<
   NativeStackNavigationOptions,
@@ -46,10 +46,7 @@ const RNStack = unstable_integrateWithRouter<
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
-  createProps: (args) => ({
-    ...createBaseStackProps(args),
-    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-  }),
+  createProps: createNativeStackProps,
 });
 
 /**

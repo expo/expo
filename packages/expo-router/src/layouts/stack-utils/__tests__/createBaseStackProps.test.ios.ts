@@ -14,22 +14,24 @@ describe(createBaseStackProps, () => {
     key: 'stack-key',
     index: 1,
   } as StackNavigationState<ParamListBase>;
-  const dependencies: StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>> =
-    {
-      dispatch: jest.fn(),
-      dispatchSync: jest.fn(),
-      isPreloaded: jest.fn(() => false),
-      isRemovalPrevented: jest.fn(() => false),
-      navigation: {} as NavigationHelpers<ParamListBase>,
-      state,
-    };
+
+  const createDeps = (
+    overrides: Partial<
+      StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>
+    > = {}
+  ): StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>> => ({
+    dispatch: jest.fn(),
+    dispatchSync: jest.fn(),
+    isPreloaded: jest.fn(),
+    isRemovalPrevented: jest.fn(),
+    navigation: {} as NavigationHelpers<ParamListBase>,
+    state,
+    ...overrides,
+  });
 
   it('creates a synchronous pop function', () => {
     const dispatchSync = jest.fn();
-    const props = createBaseStackProps({
-      ...dependencies,
-      dispatchSync,
-    });
+    const props = createBaseStackProps(createDeps({ dispatchSync }));
 
     props.pop(2, 'route-key');
 
@@ -47,20 +49,20 @@ describe(createBaseStackProps, () => {
   it('creates a parent tab press subscription function', () => {
     const unsubscribe = jest.fn();
     const addListener = jest.fn(() => unsubscribe);
-    const props = createBaseStackProps({
-      ...dependencies,
-      navigation: {
-        addListener,
-        // The subscription helper only reads `addListener` until the listener fires.
-      } as unknown as NavigationHelpers<ParamListBase>,
-      state,
-    });
+    const props = createBaseStackProps(
+      createDeps({
+        navigation: {
+          addListener,
+          // The subscription helper only reads `addListener` until the listener fires.
+        } as unknown as NavigationHelpers<ParamListBase>,
+      })
+    );
 
     expect(props.subscribePopToTopOnParentTabPress()).toBe(unsubscribe);
     expect(addListener).toHaveBeenCalledWith('tabPress', expect.any(Function));
   });
 
-  it('accepts the standard navigator dependencies', () => {
+  it('accepts all navigator props factory dependencies', () => {
     expectTypeOf(createBaseStackProps)
       .parameter(0)
       .toEqualTypeOf<
@@ -69,6 +71,7 @@ describe(createBaseStackProps, () => {
   });
 
   it('forwards integration state callbacks', () => {
+    const dependencies = createDeps();
     const props = createBaseStackProps(dependencies);
 
     expect(props.isPreloaded).toBe(dependencies.isPreloaded);
