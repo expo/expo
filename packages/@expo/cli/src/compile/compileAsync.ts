@@ -27,7 +27,12 @@ export async function compileAsync(request: CompileCommandRequest): Promise<read
       outputMode: 'quiet',
       env: {
         ...process.env,
-        'ORG_GRADLE_PROJECT_android.injected.build.abi': architectures.join(','),
+        GRADLE_OPTS: [
+          process.env.GRADLE_OPTS,
+          `-Dorg.gradle.project.android.injected.build.abi=${architectures.join(',')}`,
+        ]
+          .filter(Boolean)
+          .join(' '),
       },
     });
     await assertAndroidArtifactAbisAsync(artifacts, architectures);
