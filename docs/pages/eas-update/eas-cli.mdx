@@ -152,15 +152,6 @@ Pausing applies to a single channel, so pausing `production` has no effect on a 
 
 </Collapsible>
 
-### Resume updates on a channel
-
-<Terminal
-  cmd={['$ eas channel:resume [channel-name]', '', '# Example', '$ eas channel:resume production']}
-  cmdCopy="eas channel:resume [channel-name]"
-/>
-
-Resuming a channel starts serving updates again from the branch the channel was already linked to. You do not need to specify a branch or republish anything, because pausing did not change the channel–branch link. As users open their apps, they download the newest compatible update on that branch.
-
 <Collapsible summary="How is pausing a channel different from a rollback?">
 
 A rollback changes what your users run. Pausing changes whether your users receive anything new at all.
@@ -172,3 +163,12 @@ A rollback changes what your users run. Pausing changes whether your users recei
 Pausing a channel does not undo an update that your users have already downloaded. If a broken update is already out, roll back, then pause the channel if you also want to stop serving updates while you investigate.
 
 </Collapsible>
+
+### Resume updates on a channel
+
+<Terminal
+  cmd={['$ eas channel:resume [channel-name]', '', '# Example', '$ eas channel:resume production']}
+  cmdCopy="eas channel:resume [channel-name]"
+/>
+
+Resuming a channel starts serving updates again from the branch the channel was already linked to. You do not need to specify a branch or republish anything, because pausing did not change the channel–branch link. As users open their apps, they download the newest compatible update on that branch.
