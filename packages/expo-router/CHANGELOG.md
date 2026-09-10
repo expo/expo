@@ -120,6 +120,7 @@ _This version does not introduce any user-facing changes._
 
 - Mark routes after the focused one as preloaded in states returned by the singular `Stack` router. ([#49914](https://github.com/expo/expo/pull/49914) by [@Ubax](https://github.com/Ubax))
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
+- Test not-found routes in navigators. ([#49989](https://github.com/expo/expo/pull/49989) by [@Ubax](https://github.com/Ubax))
 - Test `createProps` dispatch timing. ([#49955](https://github.com/expo/expo/pull/49955) by [@Ubax](https://github.com/Ubax))
 - Re-export missing bottom tab types from `expo-router/js-tabs`. ([#49954](https://github.com/expo/expo/pull/49954) by [@Ubax](https://github.com/Ubax))
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
