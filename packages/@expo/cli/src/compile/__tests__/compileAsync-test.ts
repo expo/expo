@@ -18,6 +18,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  jest.restoreAllMocks();
   vol.reset();
   Object.defineProperty(process, 'platform', { value: originalPlatform });
 });
@@ -117,6 +118,13 @@ it.each(['/missing', '/app/file'])(
 it.each(['development', 'production'] as const)(
   'targets an Android device without changing %s mode or project environment',
   async (mode) => {
+    const gradleOpts =
+      '-Xmx1g "-Dcompile.fixture=with spaces" -Dorg.gradle.project.android.injected.build.abi=x86';
+    jest.replaceProperty(process, 'env', {
+      GRADLE_OPTS: gradleOpts,
+      JAVA_HOME: '/java home',
+      NODE_ENV: 'test',
+    });
     const envBefore = { ...process.env };
     const request = {
       platform: 'android' as const,
@@ -138,7 +146,7 @@ it.each(['development', 'production'] as const)(
       outputMode: 'quiet',
       env: {
         ...envBefore,
-        'ORG_GRADLE_PROJECT_android.injected.build.abi': 'arm64-v8a,armeabi-v7a',
+        GRADLE_OPTS: `${gradleOpts} -Dorg.gradle.project.android.injected.build.abi=arm64-v8a,armeabi-v7a`,
       },
     });
     expect(assertAndroidArtifactAbisAsync).toHaveBeenCalledWith(

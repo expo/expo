@@ -263,11 +263,19 @@ describe('Android device compilation', () => {
     const artifact = await writeApkFixture('wifi.apk', ['x86_64', 'x86']);
     const gradleAbiPath = await writeDeviceGradleFixture([artifact]);
 
-    const result = await runCompile(['compile:android', '--dev', '--device', serial], adb.env);
+    const gradleOpts =
+      '-Xmx1g "-Dcompile.fixture=with spaces" -Dorg.gradle.project.android.injected.build.abi=arm64-v8a';
+    const result = await runCompile(['compile:android', '--dev', '--device', serial], {
+      ...adb.env,
+      GRADLE_OPTS: gradleOpts,
+    });
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toBe(`${artifact}\n`);
     expect(result.stderr).toBe('');
     expect(await fs.readFile(gradleAbiPath, 'utf8')).toBe('x86_64,x86');
+    expect(await fs.readFile(path.join(projectRoot, 'gradle-options.txt'), 'utf8')).toBe(
+      `${gradleOpts} -Dorg.gradle.project.android.injected.build.abi=x86_64,x86`
+    );
     expect(await fs.readFile(adb.commandsPath, 'utf8')).toBe(
       `devices -l\n-s ${serial} shell 'getprop' 'ro.product.cpu.abilist'\n`
     );
@@ -323,7 +331,7 @@ describe('Android device compilation', () => {
 
       const result = await runCompile(['compile:android', '--dev'], {
         ...adb.env,
-        'ORG_GRADLE_PROJECT_android.injected.build.abi': abi,
+        GRADLE_OPTS: abi ? `-Dorg.gradle.project.android.injected.build.abi=${abi}` : undefined,
       });
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toBe(`${artifact}\n`);
@@ -542,7 +550,10 @@ async function writeDeviceGradleFixture(
   await writeGradleFixture([
     'const fs = require("node:fs");',
     `if (process.argv[2] !== ${JSON.stringify(task)}) throw new Error("Unexpected Gradle task: " + process.argv[2]);`,
-    `fs.writeFileSync(${JSON.stringify(abiPath)}, process.env["ORG_GRADLE_PROJECT_android.injected.build.abi"] ?? "<unset>");`,
+    'const options = process.env.GRADLE_OPTS ?? "";',
+    'const abi = [...options.matchAll(/(?:^|\\s)-Dorg\\.gradle\\.project\\.android\\.injected\\.build\\.abi=([^\\s]+)/g)].at(-1)?.[1];',
+    `fs.writeFileSync(${JSON.stringify(abiPath)}, abi ?? "<unset>");`,
+    `fs.writeFileSync(${JSON.stringify(path.join(projectRoot, 'gradle-options.txt'))}, options);`,
     `fs.writeFileSync(process.env.COMPILE_ANDROID_REPORT, ${JSON.stringify(JSON.stringify({ paths: artifacts }))});`,
   ]);
   return abiPath;
