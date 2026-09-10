@@ -1,0 +1,27 @@
+# expo-video: playback state on the Video Events screen. Native port of playback-test.yaml
+# without the view shot step.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://components/video/events"
+wait text "status = readyToPlay" 20000
+wait text "isPlaying = false"
+wait text "isAtStart = true"
+wait text "duration = 27"
+wait text "currentTime = 0"
+wait text "isSupported = true"
+wait text "volume = 1"
+wait text "playbackRate = 1"
+wait text "error = false"
+# The scroll view inherits the label of its first child, so qualify the button by role.
+press "role=button label=\"Play\""
+wait text "isPlaying = true" 10000
+wait text "isAtStart = false" 10000
+press "role=button label=\"Pause\""
+wait text "isPlaying = false" 10000
+press label="Seek to 20s"
+wait text "currentTime = 20" 10000
+press label="Trigger an Error"
+wait text "status = error" 15000
+wait text "error = true" 10000
+wait text "isPlaying = false"
+close

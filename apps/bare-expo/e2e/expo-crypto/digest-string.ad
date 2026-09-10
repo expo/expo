@@ -1,0 +1,18 @@
+# expo-crypto: digestString with fixed input across algorithms and encodings.
+# Expected values are the MD5 and SHA-1 digests of "I'm a string".
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/expo-crypto/general"
+wait text "digestString" 20000
+scroll bottom
+press label="digestString: RUN"
+wait text "digestString = KrwvTpOiXAQnbyNglGnWxA==" 10000
+# algorithm cycles MD5 -> SHA1
+press label="digestString: algorithm"
+press label="digestString: RUN"
+wait text "digestString = VlWsJMfyE9suMreEvpahsVYkTwY=" 10000
+# encoding cycles BASE64 -> HEX
+press label="digestString: options.encoding"
+press label="digestString: RUN"
+wait text "digestString = 5655ac24c7f213db2e32b784be96a1b156244f06" 10000
+close
