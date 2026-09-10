@@ -2,6 +2,7 @@
 
 import React, { use, useCallback, useMemo, useRef } from 'react';
 
+import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
   CommonActions,
   type ParamListBase,
@@ -16,7 +17,10 @@ import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
-import type { StandardNavigatorContentProps } from '../standard-navigation/types';
+import type {
+  StandardNavigatorContentProps,
+  StandardNavigatorCreatePropsFactoryDeps,
+} from '../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
@@ -42,6 +46,27 @@ export interface NativeTabsNavigatorCreateProps {
   routeNames: string[];
   preload: (name: string) => void;
   navigateSync: (name: string) => void;
+}
+
+/**
+ * Creates the props required to integrate Expo Router's native tabs navigator.
+ *
+ * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The native tabs navigator props.
+ */
+export function createNativeTabsProps({
+  state,
+  dispatch,
+  dispatchSync,
+}: Pick<
+  StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>,
+  'dispatch' | 'dispatchSync' | 'state'
+>): NativeTabsNavigatorCreateProps {
+  return {
+    ...createBaseTabProps({ dispatch, state }),
+    navigateSync: (name) => dispatchSync(CommonActions.navigate(name)),
+  };
 }
 
 function NativeTabsContent({
@@ -192,11 +217,7 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
 >(NativeTabsContent, NativeBottomTabsRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch, dispatchSync }) => ({
-    routeNames: state.routeNames,
-    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
-    navigateSync: (name) => dispatchSync(CommonActions.navigate(name)),
-  }),
+  createProps: createNativeTabsProps,
 });
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {

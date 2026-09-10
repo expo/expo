@@ -21,20 +21,30 @@ import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 export * from '../react-navigation/stack';
 
 /**
- * Creates the adapter props required to integrate the JavaScript stack with Expo Router.
+ * Creates the props required to integrate Expo Router's JavaScript stack navigator.
+ *
+ * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The JavaScript stack navigator props.
  */
-export function unstable_createPropsForJSStack({
+export function createJSStackProps({
   dispatchSync,
   navigation,
   state,
-}: StandardNavigatorCreatePropsFactoryDeps<
-  StackNavigationState<ParamListBase>
+}: Pick<
+  StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>,
+  'dispatchSync' | 'navigation' | 'state'
 >): StackNavigatorCreateProps {
   return {
     ...createBaseStackProps({ dispatchSync, navigation, state }),
     restoreRoute: makeRestoreRouteAction(dispatchSync, state),
   };
 }
+
+/**
+ * @deprecated Use `createJSStackProps` instead.
+ */
+export const unstable_createPropsForJSStack = createJSStackProps;
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
 const JSStack = unstable_integrateWithRouter<
@@ -45,7 +55,7 @@ const JSStack = unstable_integrateWithRouter<
   object,
   StackNavigatorCreateProps
 >(unstable_createStandardStackNavigator, StackRouter, {
-  createProps: unstable_createPropsForJSStack,
+  createProps: createJSStackProps,
 });
 
 /**

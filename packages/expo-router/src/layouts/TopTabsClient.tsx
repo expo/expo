@@ -23,9 +23,32 @@ import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
+import { createBaseTabProps } from './createBaseTabProps';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
 export * from '../react-navigation/material-top-tabs';
+
+/**
+ * Creates the props required to integrate Expo Router's JavaScript top tabs navigator.
+ *
+ * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The JavaScript top tabs navigator props.
+ */
+export function createJSTopTabsProps({
+  state,
+  dispatch,
+  dispatchSync,
+}: Pick<
+  StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>,
+  'dispatch' | 'dispatchSync' | 'state'
+>): MaterialTopTabNavigatorCreateProps {
+  return {
+    ...createBaseTabProps({ dispatch, state }),
+    navigateToTabSync: (name, params) => dispatchSync(CommonActions.navigate(name, params)),
+  };
+}
 
 const TopTabs = unstable_integrateWithRouter<
   MaterialTopTabNavigationOptions,
@@ -37,11 +60,7 @@ const TopTabs = unstable_integrateWithRouter<
 >(createStandardMaterialTopTabNavigator, TabRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch, dispatchSync }) => ({
-    routeNames: state.routeNames,
-    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
-    navigateToTabSync: (name, params) => dispatchSync(CommonActions.navigate(name, params)),
-  }),
+  createProps: createJSTopTabsProps,
 });
 
 export type JSTopTabsProps = ComponentProps<typeof TopTabs>;
