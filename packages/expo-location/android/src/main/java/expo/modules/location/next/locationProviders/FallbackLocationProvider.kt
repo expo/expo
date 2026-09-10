@@ -15,6 +15,10 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : 
     return firstAvailable { it.enableLocationServices(activity) }
   }
 
+  override fun watchPosition(): ProviderResult<WatchSession> {
+    return firstAvailable { it.watchPosition() }
+  }
+
   inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {
     var outcome: ProviderResult<T> = ProviderResult.Unsupported
     for (locationProvider in locationProviders) {
