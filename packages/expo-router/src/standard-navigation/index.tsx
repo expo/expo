@@ -210,7 +210,14 @@ export function unstable_integrateWithRouter<
 
     const derivedProps = useMemo<Partial<CreateProps>>(
       () =>
-        options?.createProps?.({ state: processedState, dispatch, dispatchSync, navigation }) ?? {},
+        options?.createProps?.({
+          state: processedState,
+          dispatch,
+          dispatchSync,
+          navigation,
+          isPreloaded: (key) =>
+            processedState.routes.some((route) => route.key === key && route.isPreloaded === true),
+        }) ?? {},
       [processedState, dispatch, dispatchSync, navigation, options]
     );
 
