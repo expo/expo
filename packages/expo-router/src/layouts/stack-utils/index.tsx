@@ -17,3 +17,4 @@ export {
 } from './StackScreen';
 
 export { mapProtectedScreen } from './mapProtectedScreen';
+export { createBaseStackProps } from './createBaseStackProps';
