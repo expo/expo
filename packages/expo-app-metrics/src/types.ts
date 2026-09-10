@@ -356,6 +356,13 @@ export type NetworkRequestRedirect = {
   toUrl: string;
   /** The 3xx status code (301, 302, 307, 308, …) returned by `fromUrl`. */
   statusCode: number;
+  /**
+   * ISO 8601 UTC timestamp of when `fromUrl` returned the 3xx response, or `null` when the
+   * platform did not report it. Includes milliseconds (for example `2026-09-07T12:00:00.250Z`),
+   * unlike the whole-second `startedAt`, because hops within one request are usually fractions of
+   * a second apart.
+   */
+  respondedAt: string | null;
 };
 
 /**
