@@ -5,33 +5,24 @@ internal import SDWebImage
 /**
  Custom `SDAnimatedImage` that fixes issues with `images` and `duration` not being available.
  */
-final class AnimatedImage: SDAnimatedImage {
-  var frames: [SDImageFrame]?
+final class AnimatedImage: SDAnimatedImage, @unchecked Sendable {
+  /**
+   * Frame schedule for `SharedAnimationDriver`, built once per image.
+   */
+  var sharedAnimationTimeline: AnimationTimeline?
 
   // MARK: - UIImage
 
   override var images: [UIImage]? {
+    guard animatedImageFrameCount > 1 else {
+      return nil
+    }
+    // Shares SDWebImage's frame store with `SharedAnimationDriver`, so frames are decoded once.
     preloadAllFrames()
-    return frames?.map({ $0.image })
+    return (0..<animatedImageFrameCount).compactMap { animatedImageFrame(at: $0) }
   }
 
   override var duration: TimeInterval {
-    preloadAllFrames()
-    return frames?.reduce(0, { $0 + $1.duration }) ?? 0.0
-  }
-
-  // MARK: - SDAnimatedImage
-
-  override func preloadAllFrames() {
-    if frames != nil {
-      return
-    }
-    frames = [UInt](0..<animatedImageFrameCount).compactMap { index in
-      guard let image = animatedImageFrame(at: index) else {
-        return nil
-      }
-      let duration = animatedImageDuration(at: index)
-      return SDImageFrame(image: image, duration: duration)
-    }
+    return (0..<animatedImageFrameCount).reduce(0.0) { $0 + animatedImageDuration(at: $1) }
   }
 }

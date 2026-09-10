@@ -282,6 +282,20 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   recyclingKey?: string | null;
 
   /**
+   * Keeps the playback of every animated image with the same source in sync, no matter when each one
+   * was rendered. All of them show the same frame at the same time, like animated emotes in a chat.
+   * Without it, each image starts its animation from the beginning when it appears.
+   *
+   * The frames of a synchronized image are decoded once and kept in memory as long as one of the
+   * images is visible. Very large animations, animations that don't loop forever, tinted images
+   * and SF Symbols play on their own.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  synchronizedAnimation?: boolean;
+
+  /**
    * Determines if an image should automatically begin playing if it is an
    * animated image.
    * @default true

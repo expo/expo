@@ -396,6 +396,10 @@ class ExpoImageModule : Module() {
         view.autoplay = autoplay != false
       }
 
+      Prop("synchronizedAnimation") { view: ExpoImageViewWrapper, synchronizedAnimation: Boolean? ->
+        view.synchronizedAnimation = synchronizedAnimation == true
+      }
+
       Prop("decodeFormat") { view: ExpoImageViewWrapper, format: DecodeFormat? ->
         view.decodeFormat = format ?: DecodeFormat.ARGB_8888
       }

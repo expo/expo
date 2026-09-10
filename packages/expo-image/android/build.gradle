@@ -58,5 +58,6 @@ dependencies {
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 
   testImplementation 'junit:junit:4.13.2'
+  testImplementation 'io.mockk:mockk:1.13.11'
   testImplementation 'org.robolectric:robolectric:4.16'
 }
