@@ -26,11 +26,12 @@ describe('navigator props helpers', () => {
   } as TabNavigationState<ParamListBase>;
 
   const isPreloaded = jest.fn();
+  const isRemovalPrevented = jest.fn();
   const tabDeps = {
     dispatch: jest.fn(),
     dispatchSync: jest.fn(),
     isPreloaded,
-    isRemovalPrevented: jest.fn(),
+    isRemovalPrevented,
     navigation: {} as NavigationHelpers<ParamListBase>,
     state: tabState,
   } satisfies StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>;
@@ -43,6 +44,7 @@ describe('navigator props helpers', () => {
 
     expect(props.routeNames).toBe(tabState.routeNames);
     expect(props.isPreloaded).toBe(isPreloaded);
+    expect(props.isRemovalPrevented).toBe(isRemovalPrevented);
     expect(dispatch).toHaveBeenCalledWith({ type: 'PRELOAD', payload: { name: 'settings' } });
   });
 
@@ -120,9 +122,7 @@ describe('navigator props helpers', () => {
   });
 
   it('returns each navigator content props type', () => {
-    type StackDeps = StandardNavigatorCreatePropsFactoryDeps<
-      StackNavigationState<ParamListBase>
-    >;
+    type StackDeps = StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>;
     type TabDeps = StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>;
 
     expectTypeOf(createJSStackProps).parameter(0).toEqualTypeOf<StackDeps>();
