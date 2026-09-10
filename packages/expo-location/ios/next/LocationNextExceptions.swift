@@ -1,5 +1,25 @@
 import ExpoModulesCore
 
+final class InvalidLocationTimeoutException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Location timeout must be a non-negative number of seconds or positive Infinity"
+  }
+}
+
+final class LocationServicesDisabledGlobally: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Location Services are turned off for the whole device, so no app can receive location updates. " +
+    "This is a system-wide setting the app cannot change or prompt for. Ask the user to enable it in " +
+    "Settings > Privacy & Security > Location Services"
+  }
+}
+
+final class MissingPermissionsException: GenericException<(name: String, request: String)>, @unchecked Sendable {
+  override var reason: String {
+    "\(param.name) permission is required to do this operation. Request it with \(param.request)() before calling this method"
+  }
+}
+
 final class PermissionsModuleUnavailable: Exception, @unchecked Sendable {
   override var reason: String {
     "Cannot check location permissions because the app context or its permissions service is no " +
