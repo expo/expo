@@ -145,4 +145,10 @@ dependencies {
   implementation expoModule.getExpoDependency("expo-ui")
   api 'io.github.jakex7.peek:peek-emittables:0.2.0'
   implementation "androidx.glance:glance:1.2.0-rc01"
+  // Glance asks for work-runtime-ktx 2.7.1, which still carries the Kotlin extensions.
+  // WorkManager 2.8.0 moved those into work-runtime and left the ktx artifact empty, so
+  // as soon as anything in the graph pulls work-runtime 2.8+ the two ship the same
+  // classes and the release duplicate-class check fails. Pinning ktx forward, to the
+  // version expo-background-task and expo-observe already use, keeps it the empty shim.
+  implementation 'androidx.work:work-runtime-ktx:2.9.1'
 }
