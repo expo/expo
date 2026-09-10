@@ -23,15 +23,30 @@ type Props = PropsWithChildren<{
    */
   onCountdownEnded: () => void;
 
+  /**
+   * Keep the text visible until the close button is pressed. No countdown runs.
+   * Lets humans read long results and lets e2e tests assert on them.
+   */
+  persistent?: boolean;
+
   style?: StyleProp<ViewStyle>;
 }>;
 
-function MonoTextWithCountdown({ style, children, timeout = 8000, onCountdownEnded }: Props) {
+function MonoTextWithCountdown({
+  style,
+  children,
+  timeout = 8000,
+  onCountdownEnded,
+  persistent = false,
+}: Props) {
   const animatedValue = useRef(new Animated.Value(1)).current;
-  const [countdownInterrupted, setCountdownInterrupted] = useState(false);
+  const [countdownInterrupted, setCountdownInterrupted] = useState(persistent);
   const [valueUponPause, setValueUponPause] = useState(1);
 
   useEffect(() => {
+    if (persistent) {
+      return;
+    }
     if (countdownInterrupted) {
       animatedValue.stopAnimation((value) => {
         setValueUponPause(value);
@@ -60,10 +75,12 @@ function MonoTextWithCountdown({ style, children, timeout = 8000, onCountdownEnd
     <View style={[styles.container, style]}>
       <Code style={styles.monoText}>{children}</Code>
       <View style={styles.buttonsContainer}>
-        <IconButton icon={countdownInterrupted ? '▶️' : '⏸'} onPress={toggleCountdown} />
+        {!persistent && (
+          <IconButton icon={countdownInterrupted ? '▶️' : '⏸'} onPress={toggleCountdown} />
+        )}
         <IconButton icon="❌" onPress={triggerCountdownEnd} />
       </View>
-      <CountdownBar width={animatedValue} />
+      {!persistent && <CountdownBar width={animatedValue} />}
     </View>
   );
 }
