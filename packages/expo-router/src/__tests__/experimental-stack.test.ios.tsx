@@ -63,6 +63,7 @@ const { Stack: MockedStackV5 } = jest.requireMock(
 const MockedHost = MockedStackV5.Host as unknown as jest.Mock;
 const MockedScreen = MockedStackV5.Screen as unknown as jest.Mock;
 const MockedHeaderConfig = MockedStackV5.HeaderConfig as unknown as jest.Mock;
+let warnSpy: jest.SpyInstance | undefined;
 
 function NativeNavigatorContextProbe() {
   return <Text>{String(use(IsWithinNativeNavigator))}</Text>;
@@ -94,6 +95,11 @@ beforeEach(() => {
   MockedHost.mockClear();
   MockedScreen.mockClear();
   MockedHeaderConfig.mockClear();
+});
+
+afterEach(() => {
+  warnSpy?.mockRestore();
+  warnSpy = undefined;
 });
 
 describe('ExperimentalStack — basic navigation', () => {
@@ -128,7 +134,7 @@ describe('ExperimentalStack — basic navigation', () => {
 
   it('removes guarded routes from history when a guard flips false', () => {
     let setGuard: Dispatch<SetStateAction<boolean>>;
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     renderRouter({
       _layout: function Layout() {
@@ -152,8 +158,10 @@ describe('ExperimentalStack — basic navigation', () => {
     act(() => router.push('/other'));
     act(() => setGuard(false));
     act(() => router.back());
-    warnSpy.mockRestore();
 
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("ignoring unsupported screenOption 'hidden'")
+    );
     expect(screen).toHavePathname('/');
     expect(router.canGoBack()).toBe(false);
   });
