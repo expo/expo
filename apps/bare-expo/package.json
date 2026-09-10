@@ -71,7 +71,7 @@
     "react-native-safe-area-context": "~5.9.1",
     "react-native-screens": "4.27.0",
     "react-native-svg": "15.15.5",
-    "react-native-view-shot": "4.0.3",
+    "react-native-view-shot": "5.1.1",
     "react-native-webview": "14.0.1",
     "react-native-worklets": "0.12.2",
     "test-suite": "workspace:*"
