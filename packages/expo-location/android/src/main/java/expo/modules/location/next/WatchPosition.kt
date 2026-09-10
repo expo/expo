@@ -54,11 +54,15 @@ class PausableWatchSession(
 
   private var onPosition: ((Position) -> Unit)? = null
 
+  private fun isInForegroundOrHasForegroundService(): Boolean {
+    return isInForeground || LocationForegroundService.isBackgroundLocationUnthrottled()
+  }
+
   @SuppressLint("MissingPermission")
   @Synchronized
   private fun handleLocationUpdatesRequest(): Boolean {
-    val shouldRequestUpdates = !isSubscribed && !isPaused && isStarted && !isReleased && isInForeground
-    val shouldRemoveRequest = isSubscribed && (isPaused || !isStarted || isReleased || !isInForeground)
+    val shouldRequestUpdates = !isSubscribed && !isPaused && isStarted && !isReleased && isInForegroundOrHasForegroundService()
+    val shouldRemoveRequest = isSubscribed && (isPaused || !isStarted || isReleased || !isInForegroundOrHasForegroundService())
     val onPosition = this.onPosition
     if (shouldRequestUpdates && onPosition != null) {
       isSubscribed = session.startUpdates(activeParameters, onPosition)
@@ -88,7 +92,7 @@ class PausableWatchSession(
 
   @Synchronized
   fun restart(): Boolean {
-    val needsResubscribe = !isSubscribed && isStarted && !isPaused && !isReleased && isInForeground
+    val needsResubscribe = !isSubscribed && isStarted && !isPaused && !isReleased && isInForegroundOrHasForegroundService()
     if (stagedParameters == activeParameters && !needsResubscribe) {
       return true
     }
@@ -151,6 +155,8 @@ class PausableWatchSession(
   }
 }
 
+
+
 class PositionWatchHandle(
   val session: PausableWatchSession
 ) : SharedObject() {
@@ -173,3 +179,4 @@ class PositionWatchHandle(
 }
 
 class LocationWatchHandleCreationException : CodedException("LocationWatchHandle cannot be created from JavaScript!")
+
