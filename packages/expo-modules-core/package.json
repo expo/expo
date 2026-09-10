@@ -85,7 +85,9 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/invariant": "^2.2.33",
     "@types/react": "~19.3.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/react-dom": "^19.1.7",
+    "expo-module-scripts": "workspace:*",
+    "react-dom": "19.3.0"
   },
   "peerDependencies": {
     "react": "*",
