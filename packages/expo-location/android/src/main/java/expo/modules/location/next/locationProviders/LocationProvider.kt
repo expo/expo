@@ -27,9 +27,9 @@ data class GetCurrentPositionOptions(
 )
 
 sealed interface ProviderResult<out T> {
-  data class Success<T>(val value: T): ProviderResult<T>
-  object Unavailable: ProviderResult<Nothing>
-  object Unsupported: ProviderResult<Nothing>
+  data class Success<T>(val value: T) : ProviderResult<T>
+  object Unavailable : ProviderResult<Nothing>
+  object Unsupported : ProviderResult<Nothing>
 
   fun getOrThrow(): T = when (this) {
     is Success -> value
@@ -62,5 +62,5 @@ interface LocationProvider {
   fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
 }
 
-class LocationUnavailableException: CodedException("Location fix is currently unavailable")
-class LocationOperationNotSupportedException: CodedException("This location operation is not supported")
+class LocationUnavailableException : CodedException("Location fix is currently unavailable")
+class LocationOperationNotSupportedException : CodedException("This location operation is not supported")

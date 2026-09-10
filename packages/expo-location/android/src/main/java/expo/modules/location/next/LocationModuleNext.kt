@@ -45,18 +45,18 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration.Companion.seconds
 
-class RequestingBackgroundPermissionsWithoutForegroundGrantException: CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
-class BackgroundSessionRequiresForegroundException: CodedException("Need to be in foreground to ask for starting the background session.")
-class ServicePromotionFailedException(cause: Throwable): CodedException(cause.localizedMessage, cause)
-class ServicePromotionTimedOutException: CodedException("Service promotion has timed out, need to check the background activity status to check if the service actually promoted in a later time.")
-class NoNotificationIconException: CodedException("No notification icon was configured.")
-class LocationServicesPromptPendingException: CodedException("Tried running enableLocationServices while other is pending")
+class RequestingBackgroundPermissionsWithoutForegroundGrantException : CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
+class BackgroundSessionRequiresForegroundException : CodedException("Need to be in foreground to ask for starting the background session.")
+class ServicePromotionFailedException(cause: Throwable) : CodedException(cause.localizedMessage, cause)
+class ServicePromotionTimedOutException : CodedException("Service promotion has timed out, need to check the background activity status to check if the service actually promoted in a later time.")
+class NoNotificationIconException : CodedException("No notification icon was configured.")
+class LocationServicesPromptPendingException : CodedException("Tried running enableLocationServices while other is pending")
 
 sealed interface LocationServicesContinuation {
-  object Empty: LocationServicesContinuation
-  object Pending: LocationServicesContinuation
-  class Registered(val continuation: Continuation<Boolean>): LocationServicesContinuation
-  object Resumed: LocationServicesContinuation
+  object Empty : LocationServicesContinuation
+  object Pending : LocationServicesContinuation
+  class Registered(val continuation: Continuation<Boolean>) : LocationServicesContinuation
+  object Resumed : LocationServicesContinuation
 }
 
 class LocationModuleNext : Module() {
@@ -307,9 +307,6 @@ class LocationModuleNext : Module() {
     return LocationManagerCompat.isLocationEnabled(locationManager)
   }
 
-  // We want to request the ACCESS_BACKGROUND_LOCATION permission,
-  // we need to check if it is in the manifest if so we ask for it,
-  // but only if we need to do it separately.
   private suspend fun requestBackgroundPermissions() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
       // Before version Q, there are only foreground permissions.
@@ -473,11 +470,7 @@ class BackgroundSessionOptions(
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Permissions helpers ///////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
-
-internal class PermissionsPromise(private val continuation: Continuation<PermissionRequestResponse>): Promise {
+internal class PermissionsPromise(private val continuation: Continuation<PermissionRequestResponse>) : Promise {
   override fun resolve(value: Any?) {
     val result = value as? Bundle
       ?: throw ConversionException(Any::class.java, Bundle::class.java, "value to which permission promise resolved is not a bundle")

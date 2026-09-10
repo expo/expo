@@ -51,7 +51,7 @@ fun LocationPriority.toHmsPriority(): Int = when (this) {
 
 class HuaweiLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient
-): LocationProvider {
+) : LocationProvider {
   override fun name(): String {
     return "Huawei"
   }
@@ -101,7 +101,7 @@ class HuaweiLocationProvider(
 
 private class HmsWatchSession(
   private val fusedLocationProvider: FusedLocationProviderClient
-): WatchSession {
+) : WatchSession {
   private var callback: LocationCallback? = null
 
   @SuppressLint("MissingPermission")
@@ -129,8 +129,8 @@ private class HmsWatchSession(
   }
 }
 
-class HmsModule: Module() {
-  lateinit  var mContext: Context
+class HmsModule : Module() {
+  lateinit var mContext: Context
   val locationProvider: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
     val hmsLocationProvider = HuaweiLocationProvider(fusedLocationProvider)

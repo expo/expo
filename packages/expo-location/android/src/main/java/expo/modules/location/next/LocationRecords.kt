@@ -58,7 +58,7 @@ class LocationPermissionResponse(
   @Field val expires: String = "never"
 ) : Record
 
-enum class LocationProfile(val value: String): Enumerable {
+enum class LocationProfile(val value: String) : Enumerable {
   DEFAULT("DEFAULT"),
   AUTOMOTIVE_NAVIGATION("AUTOMOTIVE_NAVIGATION"),
   OTHER_NAVIGATION("OTHER_NAVIGATION"),
@@ -105,7 +105,7 @@ class GetPositionOptions(
 class Coordinates (
   @Field val latitude: Double,
   @Field val longitude: Double,
-): Record {
+) : Record {
   fun toPersistableBundle(): PersistableBundle {
     val bundle = PersistableBundle()
     bundle.putDouble("lat", latitude)
@@ -138,7 +138,7 @@ class Position (
   @Field val horizontalAccuracy: Double? = null,
   @Field val verticalAccuracy: Double? = null,
   @Field val speedAccuracy: Double? = null,
-): Record {
+) : Record {
   fun toPersistableBundle(): PersistableBundle {
     val bundle = PersistableBundle()
     bundle.putPersistableBundle("coordinates", coordinates.toPersistableBundle())

@@ -5,7 +5,7 @@ import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.location.next.Position
 import kotlin.coroutines.Continuation
 
-class FallbackLocationProvider(val locationProviders: List<LocationProvider>): LocationProvider {
+class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : LocationProvider {
   val fallbackName: String by lazy {
     locationProviders.joinToString(prefix = "Fallback: ", separator = " -> ") { it.name() }
   }

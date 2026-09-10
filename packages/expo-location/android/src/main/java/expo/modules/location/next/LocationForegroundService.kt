@@ -20,7 +20,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.CompletableDeferred
 
-class LocationForegroundService: Service() {
+class LocationForegroundService : Service() {
   override fun onBind(intent: Intent?): IBinder? {
     return null
   }
@@ -134,7 +134,7 @@ class LocationForegroundService: Service() {
         .build()
       NotificationManagerCompat.from(context).createNotificationChannel(channel)
 
-      val notificationBuilder =  NotificationCompat
+      val notificationBuilder = NotificationCompat
         .Builder(context, channelID)
         .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
         .setSmallIcon(notificationIconId)
@@ -155,15 +155,15 @@ class LocationForegroundService: Service() {
   }
 }
 
-enum class BackgroundSessionState: Enumerable {
+enum class BackgroundSessionState : Enumerable {
   NOT_RUNNING,
   PENDING,
   PROMOTED,
 }
 
 sealed interface ServicePromotionResult {
-  data object Promoted: ServicePromotionResult
-  data class Failed(val cause: Throwable): ServicePromotionResult
+  data object Promoted : ServicePromotionResult
+  data class Failed(val cause: Throwable) : ServicePromotionResult
 }
 
 @OptimizedRecord

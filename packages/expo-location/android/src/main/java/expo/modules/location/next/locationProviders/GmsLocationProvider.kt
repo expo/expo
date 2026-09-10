@@ -60,7 +60,7 @@ class GmsLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient,
   val settingsClient: SettingsClient,
   val isServiceAvailable: () -> Boolean,
-): LocationProvider {
+) : LocationProvider {
   override fun name(): String {
     return "GMS"
   }
@@ -133,7 +133,7 @@ class GmsLocationProvider(
 
 private class GmsWatchSession(
   private val fusedLocationProvider: FusedLocationProviderClient
-): WatchSession {
+) : WatchSession {
   private var callback: LocationCallback? = null
 
   @SuppressLint("MissingPermission")
@@ -161,7 +161,7 @@ private class GmsWatchSession(
   }
 }
 
-class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?): LocationTaskConsumer(
+class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?) : LocationTaskConsumer(
   context,
   taskManagerUtils
 ) {

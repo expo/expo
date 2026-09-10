@@ -15,7 +15,7 @@ import expo.modules.kotlin.records.Record
 abstract class LocationTaskConsumer(
   context: Context,
   taskManagerUtils: TaskManagerUtilsInterface?,
-): TaskConsumer(context, taskManagerUtils) {
+) : TaskConsumer(context, taskManagerUtils) {
   var mTask: TaskInterface? = null
   var mPendingIntent: PendingIntent? = null
 

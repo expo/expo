@@ -23,8 +23,6 @@ class PositionChangedEvent(
 class PositionWatchStatus(
   @Field val isWatching: Boolean = false,
   @Field val isPaused: Boolean = false,
-  // Whether the session currently holds a platform subscription. False also while the app is
-  // backgrounded or before the first positionChanged listener is added.
   @Field val isSubscribed: Boolean = false,
   @Field val activeParameters: WatchParametersStatus = WatchParametersStatus(),
   @Field val stagedParameters: WatchParametersStatus = WatchParametersStatus()
@@ -67,7 +65,7 @@ class PausableWatchSession(
   @Synchronized
   private fun handleLocationUpdatesRequest(): Boolean {
     val shouldRequestUpdates = !isSubscribed && !isPaused && isStarted && !isReleased && isInForegroundOrHasForegroundService()
-    val shouldRemoveRequest =  isSubscribed && (isPaused || !isStarted || isReleased || !isInForegroundOrHasForegroundService())
+    val shouldRemoveRequest = isSubscribed && (isPaused || !isStarted || isReleased || !isInForegroundOrHasForegroundService())
     val onPosition = this.onPosition
     if (shouldRequestUpdates && onPosition != null) {
       isSubscribed = session.startUpdates(activeParameters, onPosition)
@@ -104,7 +102,6 @@ class PausableWatchSession(
     activeParameters = stagedParameters
     val onPosition = this.onPosition
     if (isSubscribed && onPosition != null) {
-      // Atomic reconfiguration: one remove + one request with the new parameters.
       session.stopUpdates()
       isSubscribed = session.startUpdates(activeParameters, onPosition)
       return isSubscribed
@@ -172,7 +169,7 @@ class PausableWatchSession(
 
 class PositionWatchHandle(
   val session: PausableWatchSession
-): SharedObject() {
+) : SharedObject() {
 
   override fun onStartListeningToEvent(eventName: String) {
     if (eventName == POSITION_CHANGED) {
@@ -191,5 +188,5 @@ class PositionWatchHandle(
   }
 }
 
-class LocationWatchHandleCreationException: CodedException("LocationWatchHandle cannot be created from JavaScript!")
+class LocationWatchHandleCreationException : CodedException("LocationWatchHandle cannot be created from JavaScript!")
 

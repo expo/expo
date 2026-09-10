@@ -47,7 +47,7 @@ fun resolveLocationProvider(locationPriority: LocationPriority, context: Context
   }
 
   // Avoid GPS_PROVIDER, when only coarse permissions are given.
-  val fineGranted =  ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+  val fineGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
   val enabledProviders = locationManager.getProviders(true)
   val validProviders = enabledProviders.filter {
     it != LocationManager.GPS_PROVIDER || fineGranted
@@ -67,7 +67,7 @@ fun resolveLocationProvider(locationPriority: LocationPriority, context: Context
   return provider
 }
 
-class AndroidLocationProvider(private val context: Context): LocationProvider {
+class AndroidLocationProvider(private val context: Context) : LocationProvider {
   val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
   override fun name(): String {
@@ -76,7 +76,7 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
 
   @SuppressLint("MissingPermission")
   override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
-    val fineGranted =  ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    val fineGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     val enabledProviders = locationManager.getProviders(true)
     val lastLocation = enabledProviders
@@ -132,7 +132,7 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
 private class AndroidWatchSession(
   private val context: Context,
   private val locationManager: LocationManager,
-): WatchSession {
+) : WatchSession {
   private var listener: LocationListenerCompat? = null
 
   @SuppressLint("MissingPermission")
