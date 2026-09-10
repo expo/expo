@@ -80,16 +80,7 @@ jobs:
           bun-version: '1.x'
 
       - name: 📦 Install node modules in root dir
-        run: pnpm install --frozen-lockfile --ignore-scripts
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: expo
-
-      - name: 🔨 Build the CLI and its dependencies
-        run: pnpm turbo run build --filter=@expo/cli
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: expo
+        run: pnpm install --frozen-lockfile
 
       - name: 🧪 Install-while-running E2E
         working-directory: packages/@expo/cli
@@ -124,9 +115,6 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile --ignore-scripts
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: expo
 
       - name: 🧪 FallbackWatcher unit tests
         working-directory: packages/@expo/metro-file-map
