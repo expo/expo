@@ -5,6 +5,7 @@ import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
 import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
+import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -197,6 +198,7 @@ export function unstable_integrateWithRouter<
     });
 
     const { dispatch, dispatchSync } = navigation;
+    const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
     const processedDescriptors = useMemo(
       () =>
@@ -219,8 +221,9 @@ export function unstable_integrateWithRouter<
           navigation,
           isPreloaded: (key) =>
             processedState.routes.find((route) => route.key === key)?.isPreloaded === true,
+          isRemovalPrevented: (key) => routesWithRemovalPrevented.has(key),
         }) ?? {},
-      [processedState, dispatch, dispatchSync, navigation, options]
+      [processedState, dispatch, dispatchSync, navigation, options, routesWithRemovalPrevented]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
