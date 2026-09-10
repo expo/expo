@@ -121,42 +121,7 @@ struct ExpoAppSceneDelegateTests {
     #expect(spy.shortcutItemTypes == [shortcutItem.type])
     #expect(handled == [false])
   }
-
-  @Test
-  @MainActor
-  func `answers a quick action from the subscribers when the delegate isn't an ExpoAppDelegate`() async {
-    let delegate = NonExpoAppDelegate()
-    let shortcutItem = UIApplicationShortcutItem(
-      type: "dev.expo.bareexpo.non-expo-action",
-      localizedTitle: "Non-Expo action"
-    )
-    var handled: [Bool] = []
-    await withCheckedContinuation { continuation in
-      var didResume = false
-      ExpoAppSceneDelegate.route(shortcutItem: shortcutItem, to: delegate) { succeeded in
-        handled.append(succeeded)
-        if !didResume {
-          didResume = true
-          continuation.resume()
-        }
-      }
-    }
-    await drainMainQueue()
-    #expect(handled == [false])
-  }
 #endif
-
-  @Test
-  @MainActor
-  func `routes a URL past a delegate that doesn't open URLs`() {
-    let delegate = BareAppDelegate()
-    #expect(delegate.responds(to: #selector(UIApplicationDelegate.application(_:open:options:))) == false)
-
-    let url = URL(string: "bareexpo://scene-delegate/bare-delegate")!
-    let recorder = OpenURLNotificationRecorder()
-    ExpoAppSceneDelegate.route(url: url, options: [:], to: delegate)
-    #expect(recorder.count(of: url) == 1)
-  }
 
   @Test
   @MainActor
@@ -193,26 +158,48 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
+  func `does not notify subscribers without an ExpoAppDelegate`() {
+    let subscriber = URLRecordingSubscriber()
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
+
+    let url = URL(string: "bareexpo://scene-delegate/no-app-delegate")!
+    let recorder = OpenURLNotificationRecorder()
+    ExpoAppSceneDelegate.route(url: url, options: [:], to: nil)
+    #expect(subscriber.count(of: url) == 0)
+    #expect(recorder.count(of: url) == 1)
+  }
+
+#if os(iOS)
+  @Test
+  @MainActor
+  func `completes a quick action with false without an ExpoAppDelegate`() async {
+    let shortcutItem = UIApplicationShortcutItem(
+      type: "dev.expo.bareexpo.unhandled-action",
+      localizedTitle: "Unhandled action"
+    )
+    var handled: [Bool] = []
+    await withCheckedContinuation { continuation in
+      var didResume = false
+      ExpoAppSceneDelegate.route(shortcutItem: shortcutItem, to: nil) { succeeded in
+        handled.append(succeeded)
+        if !didResume {
+          didResume = true
+          continuation.resume()
+        }
+      }
+    }
+    await drainMainQueue()
+    #expect(handled == [false])
+  }
+#endif
+
+  @Test
+  @MainActor
   func `routes through the public functions passed as function values`() {
     let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
     userActivity.webpageURL = URL(string: "https://expo.dev/scene-delegate/function-value")!
     [userActivity].forEach(ExpoAppSceneDelegate.route(userActivity:))
     [Set<UIOpenURLContext>()].forEach(ExpoAppSceneDelegate.route(urlContexts:))
-  }
-
-  @Test
-  @MainActor
-  func `routes a URL to the subscribers when the delegate isn't an ExpoAppDelegate`() {
-    let delegate = NonExpoAppDelegate()
-    let subscriber = URLRecordingSubscriber()
-    ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
-
-    let url = URL(string: "bareexpo://scene-delegate/non-expo-delegate")!
-    let recorder = OpenURLNotificationRecorder()
-    ExpoAppSceneDelegate.route(url: url, options: [:], to: delegate)
-    #expect(delegate.openedURLs.isEmpty)
-    #expect(subscriber.count(of: url) == 1)
-    #expect(recorder.count(of: url) == 1)
   }
 }
 
@@ -242,20 +229,6 @@ private final class LegacyLinkingAppDelegate: ExpoAppDelegate {
     let handled = super.application(application, continue: userActivity, restorationHandler: restorationHandler)
     RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
     return handled
-  }
-}
-
-/// App delegate that handles URLs itself without extending `ExpoAppDelegate`.
-private final class NonExpoAppDelegate: NSObject, UIApplicationDelegate {
-  var openedURLs: [URL] = []
-
-  func application(
-    _ app: UIApplication,
-    open url: URL,
-    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-  ) -> Bool {
-    openedURLs.append(url)
-    return true
   }
 }
 
@@ -349,10 +322,6 @@ private final class SpyAppDelegate: ExpoAppDelegate {
   }
 #endif
 }
-
-/// App delegate that implements none of the optional `UIApplicationDelegate` methods, so routing
-/// has to fall back to the subscriber manager.
-private final class BareAppDelegate: NSObject, UIApplicationDelegate {}
 
 /// Counts the notifications `RCTLinkingManager` posts for handled URLs. React Native keeps the
 /// notification name private to its implementation file, so it's spelled out here.
