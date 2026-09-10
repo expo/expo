@@ -160,6 +160,22 @@ describe('screen lifecycle events', () => {
   });
 });
 
+describe('preloaded screens', () => {
+  it('detaches a preloaded route until it is focused', () => {
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    act(() => router.prefetch('/second'));
+    expect(latestStackItemProps('second')?.activityState).toBe(0);
+
+    act(() => router.push('/second'));
+    expect(latestStackItemProps('second')?.activityState).toBe(2);
+  });
+});
+
 describe('tabPress', () => {
   it('pops the stack to top when the focused tab is pressed again', () => {
     jest.useFakeTimers();

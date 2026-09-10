@@ -90,6 +90,7 @@ function NativeStackNavigator({
         state={state}
         descriptors={descriptors}
         emit={navigation.emit}
+        isPreloaded={(key) => state.routes.find((route) => route.key === key)?.isPreloaded === true}
         pop={pop}
       />
     </NavigationContent>

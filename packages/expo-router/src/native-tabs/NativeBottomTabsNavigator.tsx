@@ -39,6 +39,7 @@ const defaultBackBehavior = 'initialRoute';
 export const NativeTabsContext = React.createContext<boolean>(false);
 
 export interface NativeTabsNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
   routeNames: string[];
   preload: (name: string) => void;
   navigateSync: (name: string) => void;
@@ -52,6 +53,7 @@ function NativeTabsContent({
   emitter,
   preload,
   navigateSync,
+  isPreloaded: _isPreloaded,
   tabConfigurationKey,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
@@ -192,7 +194,8 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
 >(NativeTabsContent, NativeBottomTabsRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch, dispatchSync }) => ({
+  createProps: ({ state, dispatch, dispatchSync, isPreloaded }) => ({
+    isPreloaded,
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
     navigateSync: (name) => dispatchSync(CommonActions.navigate(name)),

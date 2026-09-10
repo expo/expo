@@ -49,6 +49,7 @@ type Props = {
   state: StackViewState;
   descriptors: StackViewDescriptorMap;
   routes: Route<string>[];
+  isPreloaded: (key: string) => boolean;
   openingRouteKeys: string[];
   closingRouteKeys: string[];
   onOpenRoute: (props: { route: Route<string> }) => void;
@@ -232,15 +233,16 @@ export function getAnimationEnabled(animation: StackAnimationName | undefined) {
   return getDefaultAnimation(animation) !== 'none';
 }
 
-const getAllRoutes = (routes: Route<string>[], state: StackViewState) => {
+const getAllRoutes = (
+  routes: Route<string>[],
+  state: StackViewState,
+  isPreloaded: (key: string) => boolean
+) => {
   const routeKeys = new Set(routes.map((route) => route.key));
   return routes.concat(
-    state.routes.slice(state.index + 1).filter((route) => !routeKeys.has(route.key))
+    state.routes.filter((route) => isPreloaded(route.key) && !routeKeys.has(route.key))
   );
 };
-
-const isPreloadedRoute = (route: Route<string>, routes: Route<string>[]) =>
-  !routes.some((currentRoute) => currentRoute.key === route.key);
 
 export class CardStack extends React.Component<Props, State> {
   static getDerivedStateFromProps(props: Props, state: State): Partial<State> | null {
@@ -248,7 +250,7 @@ export class CardStack extends React.Component<Props, State> {
       return null;
     }
 
-    const allRoutes = getAllRoutes(props.routes, props.state);
+    const allRoutes = getAllRoutes(props.routes, props.state, props.isPreloaded);
     const gestures = allRoutes.reduce<GestureValues>((acc, curr) => {
       const descriptor = props.descriptors[curr.key];
       const { animation } = descriptor?.options || {};
@@ -257,7 +259,7 @@ export class CardStack extends React.Component<Props, State> {
         state.gestures[curr.key] ||
         new Animated.Value(
           (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
-            isPreloadedRoute(curr, props.routes)
+            props.isPreloaded(curr.key)
             ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
             : 0
         );
@@ -268,11 +270,11 @@ export class CardStack extends React.Component<Props, State> {
     const modalRouteKeys = getModalRouteKeys(props.routes, props.descriptors);
 
     const scenes = allRoutes.map((route, index, self) => {
-      const isPreloaded = isPreloadedRoute(route, props.routes);
+      const isPreloaded = props.isPreloaded(route.key);
       const previousRoute = isPreloaded ? undefined : self[index - 1];
       const nextRouteCandidate = self[index + 1];
       const nextRoute =
-        isPreloaded || (nextRouteCandidate && isPreloadedRoute(nextRouteCandidate, props.routes))
+        isPreloaded || (nextRouteCandidate && props.isPreloaded(nextRouteCandidate.key))
           ? undefined
           : nextRouteCandidate;
 
@@ -639,11 +641,11 @@ export class CardStack extends React.Component<Props, State> {
           enabled={detachInactiveScreens}
           style={styles.container}
           onLayout={this.handleLayout}>
-          {getAllRoutes(routes, state).map((route, index) => {
+          {getAllRoutes(routes, state, this.props.isPreloaded).map((route, index) => {
             const focused = focusedRoute.key === route.key;
             const gesture = gestures[route.key]!;
             const scene = scenes[index]!;
-            const isPreloaded = isPreloadedRoute(route, routes);
+            const isPreloaded = this.props.isPreloaded(route.key);
 
             const {
               headerShown = true,

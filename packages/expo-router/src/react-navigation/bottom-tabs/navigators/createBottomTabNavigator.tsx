@@ -14,6 +14,7 @@ import type {
 import { BottomTabView } from '../views/BottomTabView';
 
 export interface BottomTabNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
   routeNames: string[];
   popNestedStackToTop: (routeKey: string) => void;
   preload: (name: string) => void;
@@ -34,6 +35,7 @@ function BottomTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  isPreloaded: _isPreloaded,
   routeNames,
   popNestedStackToTop,
   preload,

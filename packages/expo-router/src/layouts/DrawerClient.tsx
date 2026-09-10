@@ -34,8 +34,9 @@ export const Drawer = unstable_integrateWithRouter<
 >(createStandardDrawerNavigator, DrawerRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, navigation, dispatch }) => ({
+  createProps: ({ state, navigation, dispatch, isPreloaded }) => ({
     drawerState: state,
+    isPreloaded,
     // `createProps` exposes base helpers, but `DrawerRouter` adds drawer action helpers at runtime.
     navigation: navigation as DrawerNavigationHelpers,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
