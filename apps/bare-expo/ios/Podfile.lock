@@ -2315,7 +2315,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-webview (13.16.1):
+  - react-native-webview (14.0.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3305,7 +3305,7 @@ DEPENDENCIES:
   - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.11.2_5524a63d44d2c1f7d902dfe44459758b/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider`)"
   - "react-native-view-shot (from `../../../node_modules/.pnpm/react-native-view-shot@4.0.3_patch_hash=c493165ff680241f9c0432f4619a8f581420b9f8dd9c6e8_5fbb7ca0873f4e8b39ed4ce260a64943/node_modules/react-native-view-shot`)"
-  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro_241a362037bf8aca4857135a2be0f9f2/node_modules/react-native-webview`)"
+  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@14.0.1_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-_a0dd8c47083bdabe549e2c80ad24cd6d/node_modules/react-native-webview`)"
   - "React-NativeModulesApple (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
   - "React-networking (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/react/networking`)"
   - "React-oscompat (from `../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/oscompat`)"
@@ -3751,7 +3751,7 @@ EXTERNAL SOURCES:
   react-native-view-shot:
     :path: "../../../node_modules/.pnpm/react-native-view-shot@4.0.3_patch_hash=c493165ff680241f9c0432f4619a8f581420b9f8dd9c6e8_5fbb7ca0873f4e8b39ed4ce260a64943/node_modules/react-native-view-shot"
   react-native-webview:
-    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro_241a362037bf8aca4857135a2be0f9f2/node_modules/react-native-webview"
+    :path: "../../../node_modules/.pnpm/react-native-webview@14.0.1_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-_a0dd8c47083bdabe549e2c80ad24cd6d/node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../../../node_modules/.pnpm/react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._370da78176cd56794ea7fe683f7b4151/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -4008,7 +4008,7 @@ SPEC CHECKSUMS:
   react-native-skia: 70620b06743d1b684296675e1be5c918e52fe55e
   react-native-slider: 7ce2a5b996adbf8e380d4359bd87a84d2811e58c
   react-native-view-shot: 3f011b7dc5ff349426c277d4ed347157cd1bf37d
-  react-native-webview: 75191eb40b339529fa98e9cf7639210ba2b579af
+  react-native-webview: f189adab64d5d71cec3b9e9ec3261355376ec7a2
   React-NativeModulesApple: adb1dd8361dff80e9f6652fb3fdbf033cfbe2a89
   React-networking: c00b437c4408f0640ba0d4158357133488521eca
   React-oscompat: 3175a287dd7175d1a20fdce5048a4b9e11f4b915
