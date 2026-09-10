@@ -44,34 +44,6 @@ export default function Layout() {
 }
 ```
 
-## Preserve state while hiding deeply nested screens
-
-Set `activityEnabled` on a stack to wrap its route content in [React Activity](https://react.dev/reference/react/Activity). Hidden content runs effect cleanups and releases resources while preserving local state. By default, a stack hides a route when two screens are above it:
-
-```tsx src/app/_layout.tsx
-import { Stack } from 'expo-router';
-
-export default function Layout() {
-  return <Stack activityEnabled />;
-}
-```
-
-Pass a number to change the hiding threshold. You can override the setting for a statically declared route in the layout, including setting it to `false` to keep that route active:
-
-```tsx src/app/_layout.tsx
-import { Stack } from 'expo-router';
-
-export default function Layout() {
-  return (
-    <Stack activityEnabled={3}>
-      <Stack.Screen name="map" activityEnabled={false} />
-    </Stack>
-  );
-}
-```
-
-When navigators are nested, screens above a route in each navigator are added together. The nearest explicit navigator or screen setting applies.
-
 ## Screen options and header configuration
 
 Starting in SDK 55, you can configure screen options and the header using either the options-based API or the new composition components API. Both APIs can be used interchangeably in your project.

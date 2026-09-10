@@ -134,27 +134,6 @@ const styles = StyleSheet.create({
 
 The tab file named **index.tsx** is the default tab when the app loads. The second tab file **settings.tsx** shows how you can add more tabs to the tab bar.
 
-## Preserve state while hiding inactive tabs
-
-Set `activityEnabled` on a tabs layout to wrap each route's content in [React Activity](https://react.dev/reference/react/Activity). An inactive tab then runs effect cleanups and releases resources while preserving local state:
-
-```tsx src/app/(tabs)/_layout.tsx
-import { Tabs } from 'expo-router';
-
-export default function TabLayout() {
-  return (
-    <Tabs activityEnabled>
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="map" activityEnabled={false} />
-    </Tabs>
-  );
-}
-```
-
-For tabs, `true` hides a route as soon as its tab becomes inactive. Pass a number to require that many screens above a route instead. You can override the setting for a statically declared screen in the layout, including setting it to `false` to keep that route active.
-
-When navigators are nested, screens above a route in each navigator are added together. The nearest explicit navigator or screen setting applies.
-
 ## Tab bar options
 
 The JavaScript tabs in Expo Router extend the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. The specific APIs available depend on your versions. For example, Expo Router v6 extends Bottom Tabs Navigator v7. Check your versions to ensure compatibility, then you can use the same configuration props to customize the bottom tab bar and individual tabs. For example:

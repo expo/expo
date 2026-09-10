@@ -230,12 +230,12 @@ test('accumulates screens above across nested navigators', () => {
     {
       _layout: () => <JSStack activityEnabled />,
       '(tabs)/_layout': () => (
-        <Tabs>
+        <Tabs activityEnabled>
           <Tabs.Screen name="home" />
           <Tabs.Screen name="other" />
         </Tabs>
       ),
-      '(tabs)/home/_layout': () => <JSStack />,
+      '(tabs)/home/_layout': () => <JSStack activityEnabled />,
       '(tabs)/home/index': () => <View testID="home-index" />,
       '(tabs)/home/details': () => <View testID="home-details" />,
       '(tabs)/other': () => <View testID="other" />,
@@ -254,7 +254,7 @@ test('accumulates screens above across nested navigators', () => {
 
   act(() => router.push('/modal'));
   expect(getActivityModes('home-details')).toEqual(['hidden']);
-  expect(getActivityModes('other')).toEqual(['visible']);
+  expect(getActivityModes('other')).toEqual(['hidden']);
   expect(getActivityModes('modal')).toEqual(['visible']);
 });
 
@@ -280,12 +280,12 @@ test('uses the nearest navigator or screen activity setting', () => {
   expect(getActivityModes('disabled')).toEqual([]);
 });
 
-test('allows a nested navigator to disable inherited activity', () => {
+test('does not inherit activity from a parent navigator', () => {
   renderRouter(
     {
       _layout: () => <JSStack activityEnabled />,
       '(tabs)/_layout': () => (
-        <Tabs activityEnabled={false}>
+        <Tabs>
           <Tabs.Screen name="index" />
         </Tabs>
       ),
@@ -346,7 +346,7 @@ test('wraps route modules but not layout modules', () => {
       ),
       'nested/_layout': () => (
         <View testID="nested-layout">
-          <JSStack />
+          <JSStack activityEnabled />
         </View>
       ),
       'nested/index': () => <View testID="route" />,
