@@ -2777,7 +2777,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-view-shot (4.0.3):
+  - react-native-view-shot (5.1.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4225,7 +4225,7 @@ DEPENDENCIES:
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.87.1_@babel+core@7.29.7_@react-native+metro-con_1115222816e704c9f50081b4d5a73333/node_modules/react-native-svg`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_c8efdab8aa7abbb1c42f730208a0ef67/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
-  - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.76.0_expo@packages+expo_react-native-webview@13.16.1_reac_2e76719769c9f7082008eb7e00a400f7/node_modules/@stripe/stripe-react-native`)"
+  - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.76.0_expo@packages+expo_react-native-webview@14.0.1_react_4102169c49b70ecbc4b64f1224a575e2/node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - Yoga (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/yoga`)
 
@@ -4619,7 +4619,7 @@ EXTERNAL SOURCES:
   RNWorklets:
     :path: "../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_c8efdab8aa7abbb1c42f730208a0ef67/node_modules/react-native-worklets"
   stripe-react-native:
-    :path: "../../../node_modules/.pnpm/@stripe+stripe-react-native@0.76.0_expo@packages+expo_react-native-webview@13.16.1_reac_2e76719769c9f7082008eb7e00a400f7/node_modules/@stripe/stripe-react-native"
+    :path: "../../../node_modules/.pnpm/@stripe+stripe-react-native@0.76.0_expo@packages+expo_react-native-webview@14.0.1_react_4102169c49b70ecbc4b64f1224a575e2/node_modules/@stripe/stripe-react-native"
   UMAppLoader:
     :path: "../../../packages/unimodules-app-loader/ios"
   Yoga:
@@ -4774,7 +4774,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
   react-native-skia: 54276e96c8b14339d0531d28da3b98c35ca58e91
   react-native-slider: 82b825008b4b3e7ae175a17eee2ff1e475f0f088
-  react-native-view-shot: cbcadec8eac5bcc6f7d0a48471fe90f749a48bde
+  react-native-view-shot: fd96f3f380f08643cf323cde3796346a1cd4c707
   react-native-webview: 941d18f45168750ea4de46e1d31515c2848016fc
   React-NativeModulesApple: 461ef67544d391e24ad598ed09314a2527943faf
   React-networking: 7942a43ba47eed92e9b406ec2c7c79f86aeddf5f

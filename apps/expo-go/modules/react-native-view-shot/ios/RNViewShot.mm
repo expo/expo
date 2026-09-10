@@ -4,7 +4,6 @@
 #import <React/UIView+React.h>
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
-#import <React/RCTScrollView.h>
 #import <React/RCTUIManager.h>
 #if __has_include(<React/RCTUIManagerUtils.h>)
 #import <React/RCTUIManagerUtils.h>
@@ -75,17 +74,43 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
     BOOL snapshotContentContainer = [RCTConvert BOOL:options[@"snapshotContentContainer"]];
 
     // Capture image
-    BOOL success;
+    __block BOOL success = NO;
 
     UIView* rendered;
     UIScrollView* scrollView;
     if (snapshotContentContainer) {
-      if (![view isKindOfClass:[UIScrollView class]]) {
-        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"snapshotContentContainer can only be used on a UIScrollView. instead got: %@", view], nil);
+      // Find the UIScrollView from the view hierarchy
+      UIScrollView* foundScrollView = nil;
+
+      // Check if view itself is a UIScrollView
+      if ([view isKindOfClass:[UIScrollView class]]) {
+        foundScrollView = (UIScrollView *)view;
+      }
+
+      // Try to find UIScrollView in subviews (works for both old and new arch)
+      if (!foundScrollView) {
+        for (UIView *subview in view.subviews) {
+          if ([subview isKindOfClass:[UIScrollView class]]) {
+            foundScrollView = (UIScrollView *)subview;
+            break;
+          }
+        }
+      }
+
+      // Try responding to scrollView selector (old arch RCTScrollView)
+      if (!foundScrollView && [view respondsToSelector:@selector(scrollView)]) {
+        id sv = [view performSelector:@selector(scrollView)];
+        if ([sv isKindOfClass:[UIScrollView class]]) {
+          foundScrollView = (UIScrollView *)sv;
+        }
+      }
+
+      if (!foundScrollView) {
+        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"snapshotContentContainer requires a ScrollView. Got: %@", view], nil);
         return;
       }
-      scrollView = (UIScrollView *)view;
-      rendered = view;
+      scrollView = foundScrollView;
+      rendered = scrollView;
     }
     else {
       rendered = view;
@@ -109,20 +134,23 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
       scrollView.frame = CGRectMake(0, 0, scrollView.contentSize.width, scrollView.contentSize.height);
     }
 
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-    
-    if (renderInContext) {
-      // this comes with some trade-offs such as inability to capture gradients or scrollview's content in full but it works for large views
-      [rendered.layer renderInContext: UIGraphicsGetCurrentContext()];
-      success = YES;
-    }
-    else {
-      // this doesn't work for large views and reports incorrect success even though the image is blank
-      success = [rendered drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
-    }
-   
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UIGraphicsImageRendererFormat *rendererFormat = [UIGraphicsImageRendererFormat preferredFormat];
+    rendererFormat.opaque = NO;
+    rendererFormat.scale = 0; // 0 means "use device scale" (matches old UIGraphicsBeginImageContextWithOptions behaviour)
+
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size format:rendererFormat];
+
+    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+      if (renderInContext) {
+        // this comes with some trade-offs such as inability to capture gradients or scrollview's content in full but it works for large views
+        [rendered.layer renderInContext:rendererContext.CGContext];
+        success = YES;
+      }
+      else {
+        // this doesn't work for large views and reports incorrect success even though the image is blank
+        success = [rendered drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
+      }
+    }];
 
     if (snapshotContentContainer) {
       // Restore scroll & frame
@@ -136,7 +164,7 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
     }
 
     if (!image) {
-      reject(RCTErrorUnspecified, @"Failed to capture view snapshot. UIGraphicsGetImageFromCurrentImageContext() returned nil!", nil);
+      reject(RCTErrorUnspecified, @"Failed to capture view snapshot. UIGraphicsImageRenderer returned nil!", nil);
       return;
     }
 
