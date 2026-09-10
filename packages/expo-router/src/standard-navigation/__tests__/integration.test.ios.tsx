@@ -563,19 +563,18 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(parentKey)).toBe(true);
   });
 
-  // Covers the `dispatch` path of `createProps` (the part flagged as internal and most likely to
-  // break): a prop built from the raw dispatch must actually mutate the navigator state when called.
-  it('exposes a working dispatch via createProps to NavigatorContent', () => {
+  it('preserves dispatchSync and dispatch semantics through createProps callbacks', () => {
     const StandardWithDispatch = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
       object,
       TabRouterOptions,
-      { goToSecond: () => void }
+      { goToIndex: () => void; goToSecondSync: () => void }
     >(NavigatorContent, TabRouter, {
-      createProps: ({ dispatch }) => ({
-        goToSecond: () => dispatch(TabActions.jumpTo('second')),
+      createProps: ({ dispatch, dispatchSync }) => ({
+        goToIndex: () => dispatch(TabActions.jumpTo('index')),
+        goToSecondSync: () => dispatchSync(TabActions.jumpTo('second')),
       }),
     });
 
@@ -592,10 +591,16 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
 
     expect(lastArgs().state.index).toBe(0);
 
-    act(() => (lastArgs().goToSecond as () => void)());
+    act(() => {
+      // The shared content spy cannot retain navigator-specific injected prop types.
+      (lastArgs().goToSecondSync as () => void)();
+      expect(lastArgs().state.index).toBe(1);
 
-    expect(lastArgs().state.index).toBe(1);
-    expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
+      (lastArgs().goToIndex as () => void)();
+      expect(lastArgs().state.index).toBe(1);
+    });
+
+    expect(lastArgs().state.index).toBe(0);
   });
 
   it('does not leak initialRouteName to NavigatorContent', () => {
