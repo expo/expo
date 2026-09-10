@@ -183,10 +183,7 @@ describe('unhandled action warnings', () => {
           routes: [
             { name: 'foo' },
             { name: 'bar' },
-            {
-              name: 'baz',
-              state: { routes: [{ name: 'qux' }, { name: 'lex' }] },
-            },
+            { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
           ],
         }}
         onStateChange={onStateChange}>
@@ -865,12 +862,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
             name: 'baz',
             state: {
               type: 'stack',
-              routes: [
-                {
-                  name: 'qux',
-                  state: { type: 'stack', routes: [{ name: 'lex' }] },
-                },
-              ],
+              routes: [{ name: 'qux', state: { type: 'stack', routes: [{ name: 'lex' }] } }],
             },
           },
         ],
@@ -973,12 +965,7 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
             name: 'bax',
             state: {
               type: 'stack',
-              routes: [
-                {
-                  name: 'qux',
-                  state: { type: 'stack', routes: [{ name: 'lex' }] },
-                },
-              ],
+              routes: [{ name: 'qux', state: { type: 'stack', routes: [{ name: 'lex' }] } }],
             },
           },
         ],

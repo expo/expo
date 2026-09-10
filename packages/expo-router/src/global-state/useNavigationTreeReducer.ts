@@ -169,10 +169,7 @@ function navigationTreeReducer(
       }
       return navigationTreeReducer(
         result,
-        {
-          type: 'ACTION',
-          payload: { action, originKey: operation.payload.originKey },
-        },
+        { type: 'ACTION', payload: { action, originKey: operation.payload.originKey } },
         config
       );
     }
@@ -185,14 +182,7 @@ function navigationTreeReducer(
         operation.payload.originKey
       );
       if (!origin) {
-        return process.env.NODE_ENV === 'production'
-          ? result
-          : appendReportEvents(result, [
-              {
-                type: 'unhandled-action',
-                action: operation.payload.action,
-              },
-            ]);
+        return reportUnhandledAction(result, operation.payload.action);
       }
 
       const reduction = reduceNavigationTree(operation.payload.action, config.registry, {
@@ -200,14 +190,7 @@ function navigationTreeReducer(
         tree,
       });
       if (!reduction.handled) {
-        return process.env.NODE_ENV === 'production'
-          ? result
-          : appendReportEvents(result, [
-              {
-                type: 'unhandled-action',
-                action: operation.payload.action,
-              },
-            ]);
+        return reportUnhandledAction(result, operation.payload.action);
       }
       const nextState = config.routeNode
         ? completeNavigationState(reduction.nextState, config.routeNode)
@@ -289,6 +272,15 @@ function navigationTreeReducer(
       return { ...result, report: events.length > 0 ? { events } : undefined };
     }
   }
+}
+
+function reportUnhandledAction(
+  result: NavigationTreeResult,
+  action: NavigationAction
+): NavigationTreeResult {
+  return process.env.NODE_ENV === 'production'
+    ? result
+    : appendReportEvents(result, [{ type: 'unhandled-action', action }]);
 }
 
 function appendReportEvents(

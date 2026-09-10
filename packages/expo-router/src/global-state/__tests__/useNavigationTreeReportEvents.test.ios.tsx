@@ -157,9 +157,7 @@ test('keeps emitting the remaining events when a listener throws', () => {
     ],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), {
-    wrapper,
-  });
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
 
   expect(actions).toEqual(['FIRST', 'SECOND']);
   expect(warn).toHaveBeenCalledTimes(1);
