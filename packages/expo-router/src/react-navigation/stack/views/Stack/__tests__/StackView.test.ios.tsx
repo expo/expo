@@ -56,6 +56,8 @@ const createProps = (
 ) => ({
   state: createNavigationState(routes, options),
   descriptors: createDescriptors(routes, options),
+  isPreloaded: (key: string) =>
+    options.preloadedRoutes?.some((route) => route.key === key) === true,
   direction: 'ltr' as const,
   emit: jest.fn(),
   pop: jest.fn(),
@@ -89,6 +91,18 @@ describe('StackView.getDerivedStateFromProps', () => {
       expect(result.openingRouteKeys).toEqual([]);
       expect(result.closingRouteKeys).toEqual([]);
       expect(result.replacingRouteKeys).toEqual([]);
+    });
+
+    test('uses preload status instead of route position', () => {
+      const routeA = createRoute('A');
+      const routeB = createRoute('B');
+      const preloadedRoute = createRoute('preloaded');
+      const props = createProps([routeA, routeB], { preloadedRoutes: [preloadedRoute] });
+      props.state = createNavigationState([routeA, preloadedRoute, routeB], { index: 2 });
+
+      const result = StackView.getDerivedStateFromProps(props, createState());
+
+      expect(result.routes.map((route) => route.key)).toEqual(['A', 'B']);
     });
   });
 

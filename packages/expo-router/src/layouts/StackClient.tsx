@@ -47,7 +47,8 @@ const RNStack = unstable_integrateWithRouter<
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
-  createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
+  createProps: ({ state, dispatch, dispatchSync, navigation, isPreloaded }) => ({
+    isPreloaded,
     pop: makePopAction(dispatchSync, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
     subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),

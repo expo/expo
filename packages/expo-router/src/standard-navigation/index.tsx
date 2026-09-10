@@ -218,7 +218,7 @@ export function unstable_integrateWithRouter<
           dispatchSync,
           navigation,
           isPreloaded: (key) =>
-            processedState.routes.some((route) => route.key === key && route.isPreloaded === true),
+            processedState.routes.find((route) => route.key === key)?.isPreloaded === true,
         }) ?? {},
       [processedState, dispatch, dispatchSync, navigation, options]
     );

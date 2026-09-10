@@ -6,7 +6,15 @@ import {
   type NavigatorDescriptor,
 } from 'standard-navigation';
 
+import type { NativeStackNavigatorCreateProps } from '../../fork/native-stack/createNativeStackNavigator';
+import type { DrawerNavigatorProps } from '../../layouts/DrawerClient';
+import type { JSTabsProps } from '../../layouts/TabsClient';
+import type { ExperimentalStackNavigatorCreateProps } from '../../layouts/experimental-stack/createExperimentalStackNavigator';
+import type { NativeTabsNavigatorCreateProps } from '../../native-tabs/NativeBottomTabsNavigator';
+import type { BottomTabNavigatorCreateProps } from '../../react-navigation/bottom-tabs/navigators/createBottomTabNavigator';
 import type { CommonNavigationAction, ParamListBase } from '../../react-navigation/core';
+import type { DrawerNavigatorCreateProps } from '../../react-navigation/drawer/navigators/createDrawerNavigator';
+import type { MaterialTopTabNavigatorCreateProps } from '../../react-navigation/material-top-tabs/navigators/createMaterialTopTabNavigator';
 import {
   type DefaultRouterOptions,
   type NavigationAction,
@@ -18,6 +26,7 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import type { GoBackAction, NavigateAction } from '../../react-navigation/routers/CommonActions';
+import type { StackNavigatorCreateProps } from '../../react-navigation/stack/navigators/createStackNavigator';
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
 import type {
   IntegrateWithRouterOptions,
@@ -33,6 +42,25 @@ type Equal<A, B> =
 
 type Opts = { title?: string };
 type EventMap = { tabPress: { data: undefined; canPreventDefault: true } };
+type IsPreloadedProp = { isPreloaded: (key: string) => boolean };
+
+export type _AllInternalNavigatorCreatePropsReceiveIsPreloaded = Expect<
+    | StackNavigatorCreateProps
+    | NativeStackNavigatorCreateProps
+    | ExperimentalStackNavigatorCreateProps
+    | BottomTabNavigatorCreateProps
+    | MaterialTopTabNavigatorCreateProps
+    | DrawerNavigatorCreateProps
+    | NativeTabsNavigatorCreateProps extends IsPreloadedProp
+    ? true
+    : false
+>;
+export type _TabsElementLacksIsPreloaded = Expect<
+  Equal<'isPreloaded' extends keyof JSTabsProps ? true : false, false>
+>;
+export type _DrawerElementLacksIsPreloaded = Expect<
+  Equal<'isPreloaded' extends keyof DrawerNavigatorProps ? true : false, false>
+>;
 
 export type _DescriptorExtendsStandardDescriptor = Expect<
   StandardNavigatorDescriptor<Opts> extends NavigatorDescriptor<Opts> ? true : false

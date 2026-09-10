@@ -13,6 +13,7 @@ import type {
 import { StackView } from '../views/Stack/StackView';
 
 export interface StackNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   removeRoutes: (routeNames: string[]) => void;
   restoreRoute: (route: Route<string>) => boolean;
@@ -36,6 +37,7 @@ function StackNavigatorContent({
   state,
   descriptors,
   emitter,
+  isPreloaded,
   pop,
   removeRoutes,
   restoreRoute,
@@ -58,6 +60,7 @@ function StackNavigatorContent({
       state={state}
       descriptors={descriptors}
       emit={emitter.emit}
+      isPreloaded={isPreloaded}
       pop={pop}
       restoreRoute={restoreRoute}
     />

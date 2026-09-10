@@ -27,7 +27,8 @@ const RNExperimentalStack = unstable_integrateWithRouter<
   ExperimentalStackNavigatorCreateProps
 >(createStandardExperimentalStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
-  createProps: ({ dispatch, dispatchSync, navigation, state }) => ({
+  createProps: ({ dispatch, dispatchSync, navigation, state, isPreloaded }) => ({
+    isPreloaded,
     pop: makePopAction(dispatchSync, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
     subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
