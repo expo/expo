@@ -163,6 +163,8 @@ export type PrebuildSourceChange = {
   /** Readable name of the fingerprint source, such as `app config` or `plugins/withFoo.js`. */
   source: string;
   change: 'added' | 'removed' | 'changed';
+  /** Only project sources are named in messages. */
+  scope: 'project' | 'dependency';
 };
 
 export type PrebuildStaleness = {
@@ -236,43 +238,64 @@ export function getPrebuildStaleness({
   for (const key of new Set([...markerHashes.keys(), ...currentHashes.keys()])) {
     const before = markerHashes.get(key);
     const after = currentHashes.get(key);
-    if (before === after) {
+    if (before?.hash === after?.hash) {
       continue;
     }
+    // Describe the source, never the map key: the key may be an `overrideHashKey`.
+    const entry = after ?? before!;
     changes.push({
-      source: describeSourceKey(key),
+      ...describeSource(entry.source),
       change: before === undefined ? 'added' : after === undefined ? 'removed' : 'changed',
     });
   }
-  // Stable order across runs: the hash maps follow fingerprint traversal order.
-  changes.sort((a, b) => a.source.localeCompare(b.source));
+  // Stable order across runs, project sources first so they survive message truncation.
+  changes.sort((a, b) =>
+    a.scope === b.scope ? a.source.localeCompare(b.source) : a.scope === 'project' ? -1 : 1
+  );
 
   return { status: changes.length ? 'stale' : 'fresh', changes };
 }
 
-/** Name the changed sources for a message. Long lists are truncated. */
+/**
+ * Name the changed sources for a message. Long lists are truncated, and only project sources
+ * are named: a dependency path is not something the developer can act on. Empty when nothing
+ * nameable changed, so callers must drop the clause rather than print a hole.
+ */
 export function formatPrebuildChanges(changes: PrebuildSourceChange[], max: number = 3): string {
-  const named = changes.slice(0, max).map((change) => change.source);
-  const remaining = changes.length - named.length;
+  const project = changes.filter((change) => change.scope === 'project');
+  const named = project.slice(0, max).map((change) => change.source);
+  const remaining = project.length - named.length;
   return named.join(', ') + (remaining > 0 ? `, and ${remaining} more` : '');
 }
 
-/** Turn a `toSourceHashMap` key into something a developer can act on. */
-function describeSourceKey(key: string): string {
-  const separatorIndex = key.indexOf(':');
-  const type = key.slice(0, separatorIndex);
-  const id = key.slice(separatorIndex + 1);
-  if (type === 'contents') {
-    return id === 'expoConfig' ? 'app config' : id;
+/** Turn a fingerprint source into something a developer can act on. */
+function describeSource(source: FingerprintSource): Pick<PrebuildSourceChange, 'source' | 'scope'> {
+  if (source.type === 'contents') {
+    return { source: source.id === 'expoConfig' ? 'app config' : source.id, scope: 'project' };
   }
-  if (type === 'package') {
-    return `package ${id}`;
+  if (source.type === 'package') {
+    return { source: `package ${source.name}`, scope: 'dependency' };
   }
-  return id;
+  return {
+    source: source.filePath,
+    scope: isDependencyPath(source.filePath) ? 'dependency' : 'project',
+  };
 }
 
-function toSourceHashMap(sources: FingerprintSource[]): Map<string, string> {
-  const map = new Map<string, string>();
+/** Paths are project-relative, so `..` is a linked workspace package and `node_modules` an installed one. */
+function isDependencyPath(filePath: string): boolean {
+  const segments = filePath.split(/[\\/]/);
+  return segments[0] === '..' || segments.includes('node_modules');
+}
+
+/**
+ * Index sources by a stable identity. `overrideHashKey` is part of the key when set: it exists to
+ * keep a source identifiable when its path varies between environments.
+ */
+function toSourceHashMap(
+  sources: FingerprintSource[]
+): Map<string, { hash: string; source: FingerprintSource }> {
+  const map = new Map<string, { hash: string; source: FingerprintSource }>();
   for (const source of sources) {
     if (source.hash == null) {
       continue;
@@ -283,7 +306,7 @@ function toSourceHashMap(sources: FingerprintSource[]): Map<string, string> {
         : source.type === 'package'
           ? `package:${source.overrideHashKey ?? source.name}`
           : `${source.type}:${source.overrideHashKey ?? source.filePath}`;
-    map.set(key, source.hash);
+    map.set(key, { hash: source.hash, source });
   }
   return map;
 }
