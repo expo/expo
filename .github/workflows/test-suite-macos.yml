@@ -6,6 +6,8 @@ on:
     paths:
       - .github/workflows/test-suite-macos.yml
       - apps/bare-expo/macos/**
+      - apps/bare-expo/scripts/setup-macos-project.sh
+      - apps/bare-expo/scripts/fixtures/macos/**
       - packages/expo/**
       - packages/expo-asset/**
       - packages/expo-clipboard/**
