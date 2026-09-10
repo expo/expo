@@ -1,10 +1,12 @@
 import {
+  markPreloadedRoutes,
   StackRouter,
   type StackActionType,
   type StackNavigationState,
   type StackRouterOptions,
 } from './StackRouter';
 import {
+  clearFocusedPreloadedRoute,
   TabRouter,
   type TabActionType,
   type TabNavigationState,
@@ -21,7 +23,7 @@ import type {
   RouterFactory,
 } from './types';
 
-type RouterActionExtension<
+export type RouterActionExtension<
   State extends NavigationState,
   Action extends NavigationAction,
   RouterOptions extends DefaultRouterOptions,
@@ -29,29 +31,13 @@ type RouterActionExtension<
   state: State,
   action: Action,
   options: RouterConfigOptions,
-  result: RouterActionResult<State> | null,
+  baseActionHandler: (
+    state: State,
+    action: Action,
+    options: RouterConfigOptions
+  ) => RouterActionResult<State> | null,
   routerOptions: RouterOptions
 ) => RouterActionResult<State> | null;
-
-function clearFocusedPreloadedRoute<State extends NavigationState>(
-  result: RouterActionResult<State> | null
-) {
-  if (!result) {
-    return result;
-  }
-
-  const route = result.state.routes[result.state.index];
-  if (!route?.isPreloaded) {
-    return result;
-  }
-
-  const { isPreloaded, ...focusedRoute } = route;
-  const routes = [...result.state.routes];
-  // Removing an optional field preserves the route's conditional params type, which TypeScript
-  // cannot infer through the `Route` intersection.
-  routes[result.state.index] = focusedRoute as typeof route;
-  return { ...result, state: { ...result.state, routes } };
-}
 
 function extendRouterActions<
   State extends NavigationState,
@@ -60,24 +46,34 @@ function extendRouterActions<
   RouterOptions extends DefaultRouterOptions,
 >(
   createRouter: RouterFactory<State, Action, RouterOptions>,
-  extension: RouterActionExtension<State, Action | AdditionalAction, RouterOptions>
+  extension: RouterActionExtension<State, Action | AdditionalAction, RouterOptions>,
+  normalizeState: (state: State) => State
 ): RouterFactory<State, Action | AdditionalAction, RouterOptions> {
   return (options) => {
     const router = createRouter(options);
     return {
       ...router,
       getStateForAction(state, action, routerConfigOptions) {
-        // Unknown actions are passed to the extension as unhandled.
-        const result = router.getStateForAction(state, action as Action, routerConfigOptions);
-        return clearFocusedPreloadedRoute(
-          extension(state, action, routerConfigOptions, result, options)
-        );
+        const baseActionHandler = (
+          state: State,
+          action: Action | AdditionalAction,
+          routerConfigOptions: RouterConfigOptions
+        ) =>
+          // The base router treats actions it does not recognize as unhandled.
+          router.getStateForAction(state, action as Action, routerConfigOptions);
+        const result = extension(state, action, routerConfigOptions, baseActionHandler, options);
+        const actionResult = result ?? baseActionHandler(state, action, routerConfigOptions);
+        return actionResult ? { ...actionResult, state: normalizeState(actionResult.state) } : null;
       },
     };
   };
 }
 
-/** Extends stack router action handling while preserving the rest of the router implementation. */
+/**
+ * Extends stack router action handling while preserving the rest of the router implementation.
+ * Custom actions must be dispatched directly and do not change parent focus unless handled by the
+ * base router.
+ */
 export function extendStackRouterActions<AdditionalAction extends NavigationAction>(
   extension: RouterActionExtension<
     StackNavigationState<ParamListBase>,
@@ -90,10 +86,14 @@ export function extendStackRouterActions<AdditionalAction extends NavigationActi
     StackActionType | CommonNavigationAction,
     AdditionalAction,
     StackRouterOptions
-  >(StackRouter, extension);
+  >(StackRouter, extension, markPreloadedRoutes);
 }
 
-/** Extends tab router action handling while preserving the rest of the router implementation. */
+/**
+ * Extends tab router action handling while preserving the rest of the router implementation.
+ * Custom actions must be dispatched directly and do not change parent focus unless handled by the
+ * base router.
+ */
 export function extendTabRouterActions<AdditionalAction extends NavigationAction>(
   extension: RouterActionExtension<
     TabNavigationState<ParamListBase>,
@@ -106,5 +106,5 @@ export function extendTabRouterActions<AdditionalAction extends NavigationAction
     TabActionType | CommonNavigationAction,
     AdditionalAction,
     TabRouterOptions
-  >(TabRouter, extension);
+  >(TabRouter, extension, clearFocusedPreloadedRoute);
 }
