@@ -91,6 +91,8 @@ export type {
 export type { RouteSource } from './react-navigation/native';
 
 // Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
+// TODO: Migrate internal router wrappers to the action extension helpers.
+// TODO: Deprecate direct router exports after the internal migration.
 export {
   extendStackRouterActions,
   extendTabRouterActions,
@@ -103,6 +105,7 @@ export type {
   NativeStackViewState,
 } from './react-navigation/native-stack';
 export type {
+  RouterActionExtension,
   StackNavigationState,
   StackRouterOptions,
   TabNavigationState,

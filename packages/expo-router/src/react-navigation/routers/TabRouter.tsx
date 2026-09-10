@@ -104,7 +104,7 @@ type TabNavigationStateWithHistory = TabNavigationState<ParamListBase> &
 
 const TYPE_ROUTE = 'route' as const;
 
-function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
+export function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
   state: TabNavigationState<ParamList>
 ) {
   const route = state.routes[state.index];
@@ -303,7 +303,7 @@ const changeIndex = (
 };
 
 /**
- * @deprecated Use `extendTabRouterActions`. If its API is insufficient, open an Expo Router issue.
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
 export function TabRouter({
   initialRouteName,
