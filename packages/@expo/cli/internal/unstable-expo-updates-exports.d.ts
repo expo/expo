@@ -3,7 +3,7 @@
 
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import type Server from '@expo/metro/metro/Server';
-import type { BundleOptions } from '@expo/metro/metro/shared/types.flow';
+import type { BundleOptions } from '@expo/metro/metro/shared/types';
 
 export const drawableFileTypes: Set<string>;
 
