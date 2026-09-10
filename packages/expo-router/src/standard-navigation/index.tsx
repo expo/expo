@@ -192,7 +192,9 @@ export function unstable_integrateWithRouter<
       Record<string, (...args: unknown[]) => void>,
       NavigatorOptions,
       EventMap
-    >(router, useNavigationBuilderProps);
+    >(router, useNavigationBuilderProps, {
+      activityDefaultThreshold: options?.activityDefaultThreshold,
+    });
 
     const { dispatch, dispatchSync } = navigation;
 

@@ -47,6 +47,7 @@ const JSStack = unstable_integrateWithRouter<
   object,
   StackNavigatorCreateProps
 >(unstable_createStandardStackNavigator, StackRouter, {
+  activityDefaultThreshold: 2,
   createProps: unstable_createPropsForJSStack,
 });
 

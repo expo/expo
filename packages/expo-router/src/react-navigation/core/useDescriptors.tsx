@@ -67,6 +67,7 @@ type Options<
   routeNames: State['routeNames'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
   activityEnabled: boolean | number | undefined;
+  activityDefaultThreshold: number;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
@@ -95,6 +96,7 @@ export function useDescriptors<
   routeNames,
   screens,
   activityEnabled,
+  activityDefaultThreshold,
   navigation,
   screenOptions,
   screenLayout,
@@ -231,10 +233,15 @@ export function useDescriptors<
       });
     }
 
+    const activityThreshold = getActivityThreshold(
+      screen.activityEnabled ?? activityEnabled,
+      activityDefaultThreshold
+    );
+
     return (
       <NavigationActivityProvider
         key={route.key}
-        activityEnabled={screen.activityEnabled ?? activityEnabled}
+        activityThreshold={activityThreshold}
         state={state}
         route={route}>
         <NavigationBuilderContext.Provider value={context}>
@@ -323,4 +330,17 @@ export function useDescriptors<
   };
 
   return { describe, descriptors };
+}
+
+function getActivityThreshold(
+  activityEnabled: boolean | number | undefined,
+  defaultThreshold: number
+) {
+  if (typeof activityEnabled === 'number') {
+    return Math.max(1, activityEnabled);
+  }
+  if (activityEnabled) {
+    return Math.max(1, defaultThreshold);
+  }
+  return undefined;
 }

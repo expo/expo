@@ -7,7 +7,11 @@ import JSStack from '../../layouts/JSStack';
 import Stack from '../../layouts/Stack';
 import Tabs from '../../layouts/Tabs';
 import { NativeTabs } from '../../native-tabs';
-import { CommonActions, useNavigation, useRoute } from '../../react-navigation/native';
+import { CommonActions, StackRouter, useNavigation, useRoute } from '../../react-navigation/native';
+import {
+  unstable_createStandardRouterNavigator,
+  type NavigatorContentProps,
+} from '../../standard-navigation';
 import { renderRouter, screen } from '../../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../../ui';
 import {
@@ -60,6 +64,21 @@ function getActivityModes(testID: string) {
 
   return modes;
 }
+
+function expectActivityModes(expected: Record<string, ActivityMode[]>) {
+  for (const [testID, modes] of Object.entries(expected)) {
+    expect(getActivityModes(testID)).toEqual(modes);
+  }
+}
+
+const ActivityStack = unstable_createStandardRouterNavigator(
+  ({ state, descriptors }: NavigatorContentProps<object>) =>
+    state.routes.map((route) => (
+      <React.Fragment key={route.key}>{descriptors[route.key]?.render()}</React.Fragment>
+    )),
+  StackRouter,
+  { activityDefaultThreshold: 1 }
+);
 
 function renderModes({ tabs = false, threshold }: { tabs?: boolean; threshold?: number } = {}) {
   const modes: Record<string, ActivityMode> = {};
@@ -215,14 +234,26 @@ test('automatically wraps screens when enabled on a navigator', () => {
     c: () => <View testID="c" />,
   });
 
-  expect(getActivityModes('index')).toEqual(['visible']);
+  expectActivityModes({ index: ['visible'] });
 
   act(() => router.push('/b'));
-  act(() => router.push('/c'));
+  expectActivityModes({ index: ['visible'], b: ['visible'] });
 
-  expect(getActivityModes('index')).toEqual(['hidden']);
-  expect(getActivityModes('b')).toEqual(['visible']);
-  expect(getActivityModes('c')).toEqual(['visible']);
+  act(() => router.push('/c'));
+  expectActivityModes({ index: ['hidden'], b: ['visible'], c: ['visible'] });
+});
+
+test('uses the navigator activity default threshold', () => {
+  renderRouter({
+    _layout: () => <ActivityStack activityEnabled />,
+    index: () => <View testID="index" />,
+    b: () => <View testID="b" />,
+  });
+
+  expectActivityModes({ index: ['visible'] });
+
+  act(() => router.push('/b'));
+  expectActivityModes({ index: ['hidden'], b: ['visible'] });
 });
 
 test('accumulates screens above across nested navigators', () => {
@@ -244,18 +275,25 @@ test('accumulates screens above across nested navigators', () => {
     { initialUrl: '/home' }
   );
 
+  expectActivityModes({ 'home-index': ['visible'] });
+
   act(() => router.push('/home/details'));
-  expect(getActivityModes('home-index')).toEqual(['visible']);
+  expectActivityModes({ 'home-index': ['visible'], 'home-details': ['visible'] });
 
   act(() => router.navigate('/other'));
-  expect(getActivityModes('home-index')).toEqual(['hidden']);
-  expect(getActivityModes('home-details')).toEqual(['visible']);
-  expect(getActivityModes('other')).toEqual(['visible']);
+  expectActivityModes({
+    'home-index': ['hidden'],
+    'home-details': ['visible'],
+    other: ['visible'],
+  });
 
   act(() => router.push('/modal'));
-  expect(getActivityModes('home-details')).toEqual(['hidden']);
-  expect(getActivityModes('other')).toEqual(['hidden']);
-  expect(getActivityModes('modal')).toEqual(['visible']);
+  expectActivityModes({
+    'home-index': ['hidden'],
+    'home-details': ['hidden'],
+    other: ['hidden'],
+    modal: ['visible'],
+  });
 });
 
 test('uses the nearest navigator or screen activity setting', () => {
@@ -272,12 +310,13 @@ test('uses the nearest navigator or screen activity setting', () => {
     disabled: () => <View testID="disabled" />,
   });
 
+  expectActivityModes({ index: ['visible'] });
+
   act(() => router.navigate('/inherited'));
-  expect(getActivityModes('index')).toEqual(['visible']);
+  expectActivityModes({ index: ['visible'], inherited: ['visible'] });
 
   act(() => router.navigate('/disabled'));
-  expect(getActivityModes('inherited')).toEqual(['hidden']);
-  expect(getActivityModes('disabled')).toEqual([]);
+  expectActivityModes({ index: ['visible'], inherited: ['hidden'], disabled: [] });
 });
 
 test('does not inherit activity from a parent navigator', () => {
@@ -294,7 +333,7 @@ test('does not inherit activity from a parent navigator', () => {
     { initialUrl: '/' }
   );
 
-  expect(getActivityModes('index')).toEqual([]);
+  expectActivityModes({ index: [] });
 });
 
 test('uses NativeTabs trigger activity settings', () => {
@@ -309,10 +348,10 @@ test('uses NativeTabs trigger activity settings', () => {
     disabled: () => <View testID="disabled" />,
   });
 
-  act(() => router.navigate('/disabled'));
+  expectActivityModes({ index: ['visible'] });
 
-  expect(getActivityModes('index')).toEqual(['visible']);
-  expect(getActivityModes('disabled')).toEqual([]);
+  act(() => router.navigate('/disabled'));
+  expectActivityModes({ index: ['visible'], disabled: [] });
 });
 
 test('uses headless tab trigger activity settings', () => {
@@ -330,10 +369,10 @@ test('uses headless tab trigger activity settings', () => {
     disabled: () => <View testID="disabled" />,
   });
 
-  act(() => router.navigate('/disabled'));
+  expectActivityModes({ index: ['visible'] });
 
-  expect(getActivityModes('index')).toEqual(['visible']);
-  expect(getActivityModes('disabled')).toEqual([]);
+  act(() => router.navigate('/disabled'));
+  expectActivityModes({ index: ['visible'], disabled: [] });
 });
 
 test('wraps route modules but not layout modules', () => {
@@ -354,9 +393,11 @@ test('wraps route modules but not layout modules', () => {
     { initialUrl: '/nested' }
   );
 
-  expect(getActivityModes('root-layout')).toEqual([]);
-  expect(getActivityModes('nested-layout')).toEqual([]);
-  expect(getActivityModes('route')).toEqual(['visible']);
+  expectActivityModes({
+    'root-layout': [],
+    'nested-layout': [],
+    route: ['visible'],
+  });
 });
 
 test('manual activity uses screens above from nested navigators', () => {
@@ -381,11 +422,13 @@ test('manual activity uses screens above from nested navigators', () => {
     { initialUrl: '/home' }
   );
 
+  expectActivityModes({ 'home-index': ['visible'] });
+
   act(() => router.push('/home/details'));
-  expect(getActivityModes('home-index')).toEqual(['visible']);
+  expectActivityModes({ 'home-index': ['visible'] });
 
   act(() => router.navigate('/other'));
-  expect(getActivityModes('home-index')).toEqual(['hidden']);
+  expectActivityModes({ 'home-index': ['hidden'] });
 });
 
 test('cleans up effects while preserving local state', async () => {

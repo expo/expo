@@ -185,14 +185,18 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     TabActionHelpers<ParamListBase>,
     ExpoTabsScreenOptions,
     TabNavigationEventMap
-  >(ExpoTabRouter, {
-    children,
-    ...rest,
-    triggerMap,
-    id: contextKey,
-    initialRouteName,
-    backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
-  });
+  >(
+    ExpoTabRouter,
+    {
+      children,
+      ...rest,
+      triggerMap,
+      id: contextKey,
+      initialRouteName,
+      backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
+    },
+    { activityDefaultThreshold: 1 }
+  );
 
   const {
     state,

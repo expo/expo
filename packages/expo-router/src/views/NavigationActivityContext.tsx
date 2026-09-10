@@ -8,29 +8,21 @@ const ScreensAboveContext = createContext(0);
 const ActivityThresholdContext = createContext<number | undefined>(undefined);
 
 export function NavigationActivityProvider({
-  activityEnabled,
+  activityThreshold,
   state,
   route,
   children,
 }: {
-  activityEnabled: boolean | number | undefined;
+  activityThreshold: number | undefined;
   state: NavigationState;
   route: Route<string>;
   children: ReactNode;
 }) {
   const inheritedScreensAbove = use(ScreensAboveContext);
   const screensAbove = getScreensAbove(state, route);
-  const threshold =
-    typeof activityEnabled === 'number'
-      ? Math.max(1, activityEnabled)
-      : activityEnabled
-        ? state.type === 'stack'
-          ? 2
-          : 1
-        : undefined;
 
   return (
-    <ActivityThresholdContext value={threshold}>
+    <ActivityThresholdContext value={activityThreshold}>
       <ScreensAboveContext value={inheritedScreensAbove + screensAbove}>
         {children}
       </ScreensAboveContext>

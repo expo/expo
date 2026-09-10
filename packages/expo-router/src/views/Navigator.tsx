@@ -41,6 +41,11 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   screenOptions?: UseNavigationBuilderOptions['screenOptions'];
   children?: UseNavigationBuilderOptions['children'];
   activityEnabled?: UseNavigationBuilderOptions['activityEnabled'];
+  /**
+   * Number of screens above a route that hides its content when `activityEnabled` is `true`.
+   * @default 2
+   */
+  activityDefaultThreshold?: number;
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
   /** A component to render when an individual screen in this navigator throws an error. */
@@ -58,6 +63,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   screenOptions,
   children,
   activityEnabled,
+  activityDefaultThreshold = 2,
   router,
   routerOptions,
   unstable_screenErrorBoundary,
@@ -79,15 +85,19 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
 
   router ||= StackRouter as unknown as T;
 
-  const navigation = useNavigationBuilder(router, {
-    // Used for getting the parent with navigation.getParent('/normalized/path')
-    ...routerOptions,
-    id: contextKey,
-    children: sortedScreens || [<Screen key="default" />],
-    activityEnabled,
-    screenOptions,
-    initialRouteName: getValidInitialRouteName(node),
-  });
+  const navigation = useNavigationBuilder(
+    router,
+    {
+      // Used for getting the parent with navigation.getParent('/normalized/path')
+      ...routerOptions,
+      id: contextKey,
+      children: sortedScreens || [<Screen key="default" />],
+      activityEnabled,
+      screenOptions,
+      initialRouteName: getValidInitialRouteName(node),
+    },
+    { activityDefaultThreshold }
+  );
 
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
   if (!sortedScreens.length) {
@@ -136,7 +146,9 @@ function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
   return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
 
-const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter);
+const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter, {
+  activityDefaultThreshold: 2,
+});
 
 /**
  * Renders the currently selected content.
