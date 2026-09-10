@@ -11,6 +11,31 @@
 NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
 NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 
+#if TARGET_OS_IOS
+/**
+ The status bar belongs to a scene, so it has to be read from one. The `UIApplication` accessors
+ return NaN in apps built with the iOS 27 SDK, and they can't describe a resizable window anyway.
+ Mirrors `SceneGeometry` in ExpoModulesCore, which this file can't reach from Objective-C.
+ */
+static UIWindowScene *EXConstantsForegroundWindowScene(void)
+{
+  UIWindowScene *fallbackScene = nil;
+  for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+    if (![scene isKindOfClass:[UIWindowScene class]]) {
+      continue;
+    }
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+    if (windowScene.activationState == UISceneActivationStateForegroundActive) {
+      return windowScene;
+    }
+    if (fallbackScene == nil) {
+      fallbackScene = windowScene;
+    }
+  }
+  return fallbackScene;
+}
+#endif
+
 @interface EXConstantsService ()
 
 @property (nonatomic, strong) NSString *sessionId;
@@ -62,9 +87,9 @@ EX_REGISTER_MODULE();
 - (CGFloat)statusBarHeight
 {
 #if TARGET_OS_IOS
-  __block CGSize statusBarSize;
+  __block CGSize statusBarSize = CGSizeZero;
   [EXUtilities performSynchronouslyOnMainThread:^{
-    statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    statusBarSize = EXConstantsForegroundWindowScene().statusBarManager.statusBarFrame.size;
   }];
   return MIN(statusBarSize.width, statusBarSize.height);
 #elif TARGET_OS_OSX || TARGET_OS_TV

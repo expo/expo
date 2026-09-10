@@ -18,6 +18,7 @@
 - [iOS] Fix a failed crop resolving with the uncropped original image instead of rejecting when `allowsEditing` is `true`. ([#48524](https://github.com/expo/expo/issues/48524) by [@aashishshrestha5532](https://github.com/aashishshrestha5532), [#48541](https://github.com/expo/expo/pull/48541) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the video `PHAssetResourceManager` fast path rejecting instead of falling back to the slower path that can fetch iCloud assets, and pass `shouldDownloadFromNetwork` through when reading Live Photo resources. As a result, a video whose data is not stored locally is now downloaded through the fallback path even when `shouldDownloadFromNetwork` is `false` and `videoExportPreset` is `Passthrough`. ([#48658](https://github.com/expo/expo/issues/48658) by [@gcampoyf-cloud](https://github.com/gcampoyf-cloud), [#48794](https://github.com/expo/expo/pull/48794) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix picking a video terminating apps that ship no `NSPhotoLibraryUsageDescription` by only taking the `PHAssetResourceManager` fast path when photo library read access has already been granted. ([#49362](https://github.com/expo/expo/pull/49362) by [@OlegBezr](https://github.com/OlegBezr))
+- [iOS] Read status bar visibility from the scene, so hiding and restoring it still works in apps built with the iOS 27 SDK. ([#49851](https://github.com/expo/expo/pull/49851) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

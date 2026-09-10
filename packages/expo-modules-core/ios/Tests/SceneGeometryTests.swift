@@ -69,6 +69,34 @@ struct SceneGeometryTests {
     // environment is available.
     #expect(SceneGeometry.displayScale(for: UIView()) > 0)
   }
+
+#if os(iOS)
+  @Test
+  func `status bar frame is never NaN`() {
+    // `UIApplication.statusBarFrame` returns NaN in apps built with the iOS 27 SDK, and the value
+    // reaches JS through `Constants.statusBarHeight`.
+    let size = SceneGeometry.statusBarFrame().size
+    #expect(!size.width.isNaN)
+    #expect(!size.height.isNaN)
+  }
+
+  @Test
+  func `status bar frame is zero while the status bar is hidden`() {
+    guard SceneGeometry.isStatusBarHidden() else {
+      return
+    }
+    #expect(SceneGeometry.statusBarFrame() == .zero)
+  }
+
+  @Test
+  func `status bar reads fall back to hidden when no scene serves them`() {
+    // Callers restore a status bar they hid, so a missing scene has to read as hidden rather
+    // than as shown-with-an-empty-frame.
+    let manager = SceneGeometry.statusBarManager()
+    #expect(SceneGeometry.statusBarFrame() == (manager?.statusBarFrame ?? .zero))
+    #expect(SceneGeometry.isStatusBarHidden() == (manager?.isStatusBarHidden ?? true))
+  }
+#endif
 }
 
 #endif
