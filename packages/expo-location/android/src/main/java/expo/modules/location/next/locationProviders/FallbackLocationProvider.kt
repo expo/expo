@@ -1,6 +1,7 @@
 package expo.modules.location.next.locationProviders
 
 import android.app.Activity
+import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.location.next.Position
 
 class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : LocationProvider {
@@ -17,6 +18,10 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : 
 
   override fun watchPosition(): ProviderResult<PositionUpdatesSession> {
     return firstAvailable { it.watchPosition() }
+  }
+
+  override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    return firstAvailable { it.getLocationTaskConsumerClass() }
   }
 
   private inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {

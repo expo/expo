@@ -45,9 +45,13 @@ class PausableWatchSession(
 
   private var onEvent: ((PositionChangedEvent) -> Unit)? = null
 
+  private fun isInForegroundOrHasForegroundService(): Boolean {
+    return isInForeground || LocationForegroundService.isBackgroundLocationUnthrottled()
+  }
+
   @Synchronized
   private fun handleLocationUpdatesRequest(): Throwable? {
-    val shouldBeActive = !isPaused && isStarted && !isReleased && isInForeground
+    val shouldBeActive = !isPaused && isStarted && !isReleased && isInForegroundOrHasForegroundService()
     val shouldRequestUpdates = !session.isSubscribed() && shouldBeActive
     val onEvent = this.onEvent
     if (shouldRequestUpdates && onEvent != null) {
@@ -140,6 +144,8 @@ class PausableWatchSession(
     )
   }
 }
+
+
 
 class PositionWatchHandle(
   val session: PausableWatchSession
