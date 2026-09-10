@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50018](https://github.com/expo/expo/pull/50018) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

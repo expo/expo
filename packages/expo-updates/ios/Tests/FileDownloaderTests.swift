@@ -1057,6 +1057,88 @@ class HermesDiffApplicationTests {
     }
   }
 
+  private func embeddedLaunchedUpdate() -> Update {
+    return Update(
+      manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+      config: config,
+      database: db,
+      updateId: UUID(),
+      scopeKey: config.scopeKey,
+      commitTime: Date(),
+      runtimeVersion: config.runtimeVersion,
+      keep: true,
+      status: UpdateStatus.StatusEmbedded,
+      isDevelopmentMode: false,
+      assetsFromManifest: [],
+      url: config.updateUrl,
+      requestHeaders: [:]
+    )
+  }
+
+  private func requestedUpdate() -> Update {
+    return Update(
+      manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+      config: config,
+      database: db,
+      updateId: UUID(),
+      scopeKey: config.scopeKey,
+      commitTime: Date(),
+      runtimeVersion: config.runtimeVersion,
+      keep: true,
+      status: UpdateStatus.StatusReady,
+      isDevelopmentMode: false,
+      assetsFromManifest: [],
+      url: config.updateUrl,
+      requestHeaders: [:]
+    )
+  }
+
+  @Test
+  func `applies a Hermes diff against the embedded bundle in the app binary`() throws {
+    downloader.embeddedLaunchAssetUrl = URL(fileURLWithPath: bundle.path(forResource: "old", ofType: "hbc")!)
+
+    let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+    targetAsset.isLaunchAsset = true
+
+    let (patchedData, patchedHash) = try downloader.applyHermesDiff(
+      asset: targetAsset,
+      diffData: patchData,
+      destinationPath: destinationURL.path,
+      launchedUpdate: embeddedLaunchedUpdate(),
+      requestedUpdate: requestedUpdate(),
+      expectedBase64URLEncodedSHA256Hash: expectedPatchedHash
+    )
+
+    #expect(patchedData == expectedPatchedData)
+    #expect(patchedHash == expectedPatchedHash)
+    let writtenData = try Data(contentsOf: destinationURL)
+    #expect(writtenData == expectedPatchedData)
+  }
+
+  @Test
+  func `throws when the embedded bundle is missing from the app binary`() {
+    downloader.embeddedLaunchAssetUrl = nil
+    let targetAsset = UpdateAsset(key: "new-asset", type: "hbc")
+    targetAsset.isLaunchAsset = true
+
+    #expect {
+      try downloader.applyHermesDiff(
+        asset: targetAsset,
+        diffData: patchData,
+        destinationPath: destinationURL.path,
+        launchedUpdate: embeddedLaunchedUpdate(),
+        requestedUpdate: requestedUpdate(),
+        expectedBase64URLEncodedSHA256Hash: expectedPatchedHash
+      )
+    } throws: { error in
+      guard let diffError = error as? FileDownloader.DiffError,
+            case .embeddedBaseAssetMissing = diffError else {
+        return false
+      }
+      return true
+    }
+  }
+
   @Test
   func `throws when launch asset hash mismatches expected value`() {
     let expectedHash = "incorrect-hash"
