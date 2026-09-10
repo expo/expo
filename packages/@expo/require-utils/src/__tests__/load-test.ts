@@ -87,6 +87,70 @@ describe('evalModule', () => {
     expect(mod).toMatchObject({ default: 'test' });
   });
 
+  it('resolves a default import of an __esModule module to its default export', () => {
+    const mod = evalModule(
+      `
+      import withPlugin from './esmodule-plugin.js';
+      export default withPlugin({ name: 'test' });
+    `,
+      path.join(basepath, 'eval.js')
+    );
+
+    expect(mod).toEqual({
+      __esModule: true,
+      default: { name: 'test', pluginRan: true },
+    });
+  });
+
+  it('resolves a default import of a plain CommonJS module to its module.exports', () => {
+    const mod = evalModule(
+      `
+      import withPlugin from './commonjs-plugin.js';
+      export default withPlugin({ name: 'test' });
+    `,
+      path.join(basepath, 'eval.js')
+    );
+
+    expect(mod).toEqual({
+      __esModule: true,
+      default: { name: 'test', pluginRan: true },
+    });
+  });
+
+  it('resolves default imports when falling back to Node TypeScript stripping', () => {
+    jest.isolateModules(() => {
+      const actualNodeModule = jest.requireActual('node:module');
+      const moduleNotFoundError = new Error(
+        "Cannot find module 'typescript'"
+      ) as NodeJS.ErrnoException;
+      moduleNotFoundError.code = 'MODULE_NOT_FOUND';
+
+      jest.doMock('node:module', () => ({
+        ...actualNodeModule,
+        stripTypeScriptTypes: (code: string) => code.replace(': Config', ''),
+      }));
+      jest.doMock('typescript', () => {
+        throw moduleNotFoundError;
+      });
+
+      const { evalModule } = require('../load') as typeof import('../load');
+      const mod = evalModule(
+        `
+        import esModulePlugin from './esmodule-plugin.js';
+        import commonjsPlugin from './commonjs-plugin.js';
+        const config: Config = { name: 'test' };
+        export default [esModulePlugin(config), commonjsPlugin(config)];
+      `,
+        path.join(basepath, 'eval.ts')
+      );
+
+      expect(mod.default).toEqual([
+        { name: 'test', pluginRan: true },
+        { name: 'test', pluginRan: true },
+      ]);
+    });
+  });
+
   it('evaluates .js using import.meta as ESM instead of CommonJS', () => {
     const mod = evalModule(
       `
