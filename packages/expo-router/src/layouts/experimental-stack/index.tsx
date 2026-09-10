@@ -4,13 +4,11 @@ import { Children, useMemo } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { StackRouter } from '../../react-navigation/native';
-import { makePopAction } from '../../react-navigation/native-stack/utils/makePopAction';
 import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../../standard-navigation';
-import { subscribePopToTopOnParentTabPress } from '../../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../../utils/children';
 import { Protected } from '../../views/Protected';
 import { stackRouterOverride } from '../StackClient';
-import { mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
+import { createBaseStackProps, mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
 import {
   createStandardExperimentalStackNavigator,
   type ExperimentalStackNavigatorCreateProps,
@@ -26,19 +24,9 @@ const RNExperimentalStack = unstable_integrateWithRouter<
   object,
   ExperimentalStackNavigatorCreateProps
 >(createStandardExperimentalStackNavigator, StackRouter, {
-  createProps: ({
-    dispatch,
-    dispatchSync,
-    navigation,
-    state,
-    isPreloaded,
-    isRemovalPrevented,
-  }) => ({
-    isPreloaded,
-    isRemovalPrevented,
-    pop: makePopAction(dispatchSync, state.key),
-    removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
+  createProps: (args) => ({
+    ...createBaseStackProps(args),
+    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
   }),
 });
 
