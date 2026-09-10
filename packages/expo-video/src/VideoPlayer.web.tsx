@@ -70,6 +70,24 @@ export function createVideoPlayer(source: VideoSource): VideoPlayer {
   return new VideoPlayerWeb(parsedSource);
 }
 
+/**
+ * `HTMLMediaElement.play()` returns a promise that rejects with `AbortError` when the element
+ * leaves the document, is paused, or has its source reloaded before the request settles. All
+ * three are ordinary teardown — a React view unmounting while a video is starting is the common
+ * one — so dropping the promise turns routine navigation into an uncaught rejection that surfaces
+ * as an app-level error.
+ *
+ * Only `AbortError` is absorbed. Every other rejection is rethrown, leaving it exactly as
+ * unhandled as before, so an autoplay-policy refusal (`NotAllowedError`) still surfaces.
+ */
+function playIgnoringTeardownAbort(video: HTMLVideoElement): void {
+  video.play().catch((error) => {
+    if ((error as DOMException | undefined)?.name !== 'AbortError') {
+      throw error;
+    }
+  });
+}
+
 export default class VideoPlayerWeb
   extends globalThis.expo.SharedObject<VideoPlayerEvents>
   implements VideoPlayer
@@ -311,7 +329,7 @@ export default class VideoPlayerWeb
 
   play(): void {
     this._mountedVideos.forEach((video) => {
-      video.play();
+      playIgnoringTeardownAbort(video);
     });
   }
 
@@ -328,7 +346,7 @@ export default class VideoPlayerWeb
       if (uri) {
         video.setAttribute('src', uri);
         video.load();
-        video.play();
+        playIgnoringTeardownAbort(video);
       } else {
         video.removeAttribute('src');
         video.load();
@@ -355,7 +373,7 @@ export default class VideoPlayerWeb
   replay(): void {
     this._mountedVideos.forEach((video) => {
       video.currentTime = 0;
-      video.play();
+      playIgnoringTeardownAbort(video);
     });
     this.playing = true;
   }
@@ -371,7 +389,7 @@ export default class VideoPlayerWeb
     if (firstVideo.paused) {
       video.pause();
     } else {
-      video.play();
+      playIgnoringTeardownAbort(video);
     }
     video.currentTime = firstVideo.currentTime;
     video.volume = firstVideo.volume;
@@ -403,7 +421,7 @@ export default class VideoPlayerWeb
       this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
         if (e.target !== mountedVideo) {
-          mountedVideo.play();
+          playIgnoringTeardownAbort(mountedVideo);
         }
       });
     };

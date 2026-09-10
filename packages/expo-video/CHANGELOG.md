@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Handle the `HTMLMediaElement.play()` promise so that removing a playing element — what a route change does to a feed video that just started — no longer reaches the app as an uncaught `AbortError`. ([#49753](https://github.com/expo/expo/pull/49753) by [@NateIsern](https://github.com/NateIsern))
 - [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fixed a data race on the video cache's open-file registry, which could crash the app while the cache was being trimmed. ([#49286](https://github.com/expo/expo/pull/49286) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fixed a crash when the device runs out of storage while writing to the video cache. `FileHandle.writeData:` raises an uncatchable Objective-C `NSFileHandleOperationException` on `ENOSPC`; the throwing Swift APIs are now used so the error is caught and logged instead. ([#49284](https://github.com/expo/expo/pull/49284) by [@huextrat](https://github.com/huextrat))
