@@ -1,6 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+#if canImport(ExpoObjC)
+import ExpoObjC
+#endif
 
 /**
  Conformed to by the application's `AppDelegate` so that the scene delegate can retrieve
