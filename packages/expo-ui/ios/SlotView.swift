@@ -30,6 +30,11 @@ extension [any ExpoSwiftUI.AnyChild] {
       .first { $0.props.name == name }
   }
 
+  func slots(_ name: String) -> [SlotView] {
+    compactMap { $0.childView as? SlotView }
+      .filter { $0.props.name == name }
+  }
+
   func withoutSlot(_ name: String) -> [any ExpoSwiftUI.AnyChild] {
     filter {
       guard let slot = $0.childView as? SlotView else { return true }
