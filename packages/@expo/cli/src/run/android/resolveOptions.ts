@@ -50,7 +50,7 @@ export async function resolveOptionsAsync(
 
   return {
     ...(await resolveBundlerPropsAsync(projectRoot, options)),
-    ...(await resolveGradlePropsAsync(projectRoot, options, device.device)),
+    ...(await resolveGradlePropsAsync(options, device.device)),
     ...(await resolveLaunchPropsAsync(projectRoot, options)),
     variant: options.variant ?? 'debug',
     // Resolve the device based on the provided device id or prompt

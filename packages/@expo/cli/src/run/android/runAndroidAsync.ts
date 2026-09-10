@@ -4,7 +4,7 @@ import path from 'path';
 
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
-import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
+import { installAsync } from '../../start/platforms/android/gradle';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
 import { loadEnvFiles } from '../../utils/nodeEnv';
@@ -14,7 +14,8 @@ import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-import { resolveInstallApkNameAsync } from './resolveInstallApkName';
+import { compileAndroidAsync } from './compileAndroidAsync';
+import { resolveInstallApkPathAsync } from './resolveInstallApkPath';
 import type { Options, ResolvedOptions } from './resolveOptions';
 import { resolveOptionsAsync } from './resolveOptions';
 
@@ -56,9 +57,9 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   const androidProjectRoot = path.join(projectRoot, 'android');
 
   let shouldUpdateBuildCache = false;
+  let artifactPaths: readonly string[] = [];
+  let eagerBundleOptions: string | undefined;
   if (!options.binary) {
-    let eagerBundleOptions: string | undefined;
-
     if (isProduction) {
       eagerBundleOptions = JSON.stringify(
         await exportEagerAsync(projectRoot, {
@@ -70,7 +71,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
     const done = event.span();
     try {
-      await assembleAsync(androidProjectRoot, {
+      artifactPaths = await compileAndroidAsync(androidProjectRoot, {
         variant: props.variant,
         port: props.port,
         appName: props.appName,
@@ -105,12 +106,8 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   });
 
   if (!options.binary) {
-    // Find the APK file path
-    const apkFile = await resolveInstallApkNameAsync(props.device.device, props);
-    if (apkFile) {
-      // Attempt to install the APK from the file path
-      options.binary = path.join(props.apkVariantDirectory, apkFile);
-    }
+    options.binary =
+      (await resolveInstallApkPathAsync(props.device.device, artifactPaths)) ?? undefined;
   }
 
   const doneInstall = event.span();
@@ -124,7 +121,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
     await props.device.installAppAsync(binaryPath);
   } else {
-    await installAppAsync(androidProjectRoot, props);
+    await installAppAsync(androidProjectRoot, props, eagerBundleOptions);
   }
   doneInstall('install', { platform: 'android', appId: props.packageName });
 
@@ -157,13 +154,28 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   }
 }
 
-async function installAppAsync(androidProjectRoot: string, props: ResolvedOptions) {
+async function installAppAsync(
+  androidProjectRoot: string,
+  props: ResolvedOptions,
+  eagerBundleOptions?: string
+) {
+  const deviceId = props.device.device.pid;
+  if (!deviceId) {
+    throw new CommandError(
+      'ANDROID_DEVICE_NOT_FOUND',
+      'The selected Android device has no serial.'
+    );
+  }
+
   // If we cannot resolve the APK file path then we can attempt to install using Gradle.
   // This offers more advanced resolution that we may not have first class support for.
   Log.log('› Failed to locate binary file, installing with Gradle...');
   await installAsync(androidProjectRoot, {
-    variant: props.variant ?? 'debug',
-    appName: props.appName ?? 'app',
+    variant: props.variant,
+    appName: props.appName,
     port: props.port,
+    deviceId,
+    architectures: props.architectures,
+    eagerBundleOptions,
   });
 }

@@ -1,5 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
+import { buildIos, CompileError, runProcess } from '@ramonclaudio/compile';
+import type {
+  IosBuildPlatform,
+  IosBuildRequest,
+  ProcessResult,
+  RunProcessOptions,
+} from '@ramonclaudio/compile';
 import chalk from 'chalk';
 import type { SpawnOptionsWithoutStdio } from 'child_process';
 import { spawn } from 'child_process';
@@ -16,6 +23,7 @@ import { getUserTerminal } from '../../utils/terminal';
 import type { BuildProps, ProjectInfo } from './XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
 import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
+import { resolveInstallAppPathAsync } from './resolveInstallAppPath';
 
 // Error messages that indicate concurrent Xcode build failures.
 // When multiple builds run simultaneously, Xcode's build database can become locked.
@@ -43,100 +51,6 @@ export function getGenericSimulatorDestination(osType: OSType): string {
 }
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
-}
-
-export function matchEstimatedBinaryPath(buildOutput: string): string | null {
-  // Match the full path that contains `/(.*)/Developer/Xcode/DerivedData/(.*)/Build/Products/(.*)/(.*).app`
-  const appBinaryPathMatch = buildOutput.match(
-    /(\/(?:\\\s|[^ ])+\/Developer\/Xcode\/DerivedData\/(?:\\\s|[^ ])+\/Build\/Products\/(?:Debug|Release)-(?:[^\s/]+)\/(?:\\\s|[^ ])+\.app)/
-  );
-  const pathFiltered = appBinaryPathMatch?.filter((a) => typeof a === 'string' && a);
-  if (!pathFiltered?.length) {
-    throw new CommandError(
-      'XCODE_BUILD',
-      `Malformed xcodebuild results: app binary path was not generated in build output. Report this issue and run your project with Xcode instead.`
-    );
-  } else {
-    // Sort for the shortest
-    const shortestPath = pathFiltered
-      .sort((a: string, b: string) => a.length - b.length)[0]
-      ?.trim();
-    Log.debug(`Found app binary path: ${shortestPath}`);
-    return shortestPath ?? null;
-  }
-}
-/**
- *
- * @returns '/Users/evanbacon/Library/Developer/Xcode/DerivedData/myapp-gpgjqjodrxtervaufttwnsgimhrx/Build/Products/Debug-iphonesimulator/myapp.app'
- */
-export function getAppBinaryPath(buildOutput: string) {
-  // Matches what's used in "Bundle React Native code and images" script.
-  // Requires that `-hideShellScriptEnvironment` is not included in the build command (extra logs).
-
-  try {
-    // Like `\=/Users/evanbacon/Library/Developer/Xcode/DerivedData/Exponent-anpuosnglkxokahjhfszejloqfvo/Build/Products/Debug-iphonesimulator`
-    const CONFIGURATION_BUILD_DIR = extractEnvVariableFromBuild(
-      buildOutput,
-      'CONFIGURATION_BUILD_DIR'
-    ).sort(
-      // Longer name means more suffixes, we want the shortest possible one to be first.
-      // Massive projects (like Expo Go) can sometimes print multiple different sets of environment variables.
-      // This can become an issue with some
-      (a, b) => a.length - b.length
-    );
-    // Like `Exponent.app`
-    const UNLOCALIZED_RESOURCES_FOLDER_PATH = extractEnvVariableFromBuild(
-      buildOutput,
-      'UNLOCALIZED_RESOURCES_FOLDER_PATH'
-    );
-
-    const binaryPath = path.join(
-      // Use the shortest defined env variable (usually there's just one).
-      CONFIGURATION_BUILD_DIR[0]!,
-      // Use the last defined env variable.
-      UNLOCALIZED_RESOURCES_FOLDER_PATH[UNLOCALIZED_RESOURCES_FOLDER_PATH.length - 1]!
-    );
-
-    // If the app has a space in the name it'll fail because it isn't escaped properly by Xcode.
-    return getEscapedPath(binaryPath);
-  } catch (error) {
-    if (error instanceof CommandError && error.code === 'XCODE_BUILD') {
-      const possiblePath = matchEstimatedBinaryPath(buildOutput);
-      if (possiblePath) {
-        return possiblePath;
-      }
-    }
-    throw error;
-  }
-}
-
-export function getEscapedPath(filePath: string): string {
-  if (fs.existsSync(filePath)) {
-    return filePath;
-  }
-  const unescapedPath = filePath.split(/\\ /).join(' ');
-  if (fs.existsSync(unescapedPath)) {
-    return unescapedPath;
-  }
-  throw new CommandError(
-    'XCODE_BUILD',
-    `Unexpected: Generated app at path "${filePath}" cannot be read, the app cannot be installed. Report this and build onto a simulator.`
-  );
-}
-
-export function extractEnvVariableFromBuild(buildOutput: string, variableName: string) {
-  // Xcode can sometimes escape `=` with a backslash or put the value in quotes
-  const reg = new RegExp(`export ${variableName}\\\\?=(.*)$`, 'mg');
-  const matched = [...buildOutput.matchAll(reg)]
-    .map((value) => value[1])
-    .filter((value): value is string => !!value);
-  if (!matched || !matched.length) {
-    throw new CommandError(
-      'XCODE_BUILD',
-      `Malformed xcodebuild results: "${variableName}" variable was not generated in build output. Report this issue and run your project with Xcode instead.`
-    );
-  }
-  return matched;
 }
 
 export function getProcessOptions({
@@ -180,7 +94,7 @@ export function getProcessOptions({
   };
 }
 
-export async function getXcodeBuildArgsAsync(
+export async function getIosBuildRequestAsync(
   props: Pick<
     BuildProps,
     | 'buildCache'
@@ -192,7 +106,8 @@ export async function getXcodeBuildArgsAsync(
     | 'osType'
     | 'isSimulator'
   >
-): Promise<string[]> {
+): Promise<IosBuildRequest> {
+  const platform = getBuildPlatform(props.osType, props.isSimulator);
   // Use specific device UDID when available, otherwise use generic simulator destination
   // for build-only workflows (e.g., --device generic).
   const destination = props.device
@@ -200,15 +115,6 @@ export async function getXcodeBuildArgsAsync(
     : getGenericSimulatorDestination(props.osType);
 
   const args = [
-    props.xcodeProject.isWorkspace ? '-workspace' : '-project',
-    props.xcodeProject.name,
-    '-configuration',
-    props.configuration,
-    '-scheme',
-    props.scheme,
-    '-destination',
-    destination,
-
     // Enable parallel code signing for CocoaPods frameworks to speed up device builds.
     // When building for device, multiple frameworks need to be code signed. By default this
     // happens sequentially. This flag allows them to run in parallel.
@@ -236,29 +142,47 @@ export async function getXcodeBuildArgsAsync(
     }
   }
 
-  // Add last
-  if (props.buildCache === false) {
-    args.push(
-      // Will first clean the derived data folder.
-      'clean',
-      // Then build step must be added otherwise the process will simply clean and exit.
-      'build'
-    );
-  }
-
   if (env.EXPO_PROFILE) {
     args.push('-showBuildTimingSummary');
   }
 
-  return args;
+  return {
+    cwd: props.projectRoot,
+    source: {
+      kind: props.xcodeProject.isWorkspace ? 'workspace' : 'project',
+      path: props.xcodeProject.name,
+    },
+    scheme: props.scheme,
+    configuration: props.configuration,
+    destination,
+    platform,
+    buildArgs: args,
+    clean: props.buildCache === false,
+  };
+}
+
+function getBuildPlatform(osType: OSType, isSimulator: boolean): IosBuildPlatform {
+  switch (osType) {
+    case 'tvOS':
+      return isSimulator ? 'appletvsimulator' : 'appletvos';
+    case 'watchOS':
+      return isSimulator ? 'watchsimulator' : 'watchos';
+    case 'xrOS':
+      return isSimulator ? 'xrsimulator' : 'xros';
+    case 'macOS':
+      throw new CommandError('UNSUPPORTED_PLATFORM', 'Run iOS does not support macOS app builds.');
+    default:
+      return isSimulator ? 'iphonesimulator' : 'iphoneos';
+  }
 }
 
 function spawnXcodeBuild(
-  args: string[],
+  command: string,
+  args: readonly string[],
   options: SpawnOptionsWithoutStdio,
   { onData }: { onData: (data: string) => void }
 ): Promise<{ code: number | null; results: string; error: string }> {
-  const buildProcess = spawn('xcodebuild', args, options);
+  const buildProcess = spawn(command, args, options);
 
   let results = '';
   let error = '';
@@ -275,14 +199,16 @@ function spawnXcodeBuild(
   });
 
   return new Promise((resolve, reject) => {
-    buildProcess.on('close', (code: number) => {
+    buildProcess.on('error', reject);
+    buildProcess.on('close', (code: number | null) => {
       resolve({ code, results, error });
     });
   });
 }
 
 async function spawnXcodeBuildWithFlush(
-  args: string[],
+  command: string,
+  args: readonly string[],
   options: SpawnOptionsWithoutStdio,
   { onFlush }: { onFlush: (data: string) => void }
 ): Promise<{ code: number | null; results: string; error: string }> {
@@ -302,7 +228,7 @@ async function spawnXcodeBuildWithFlush(
     onFlush(data);
   }
 
-  const data = await spawnXcodeBuild(args, options, {
+  const data = await spawnXcodeBuild(command, args, options, {
     onData(stringData) {
       currentBuffer += stringData;
       // Only flush the data if we have a full line.
@@ -318,11 +244,12 @@ async function spawnXcodeBuildWithFlush(
 }
 
 async function spawnXcodeBuildWithFormat(
-  args: string[],
+  command: string,
+  args: readonly string[],
   options: SpawnOptionsWithoutStdio,
   { projectRoot, xcodeProject }: { projectRoot: string; xcodeProject: ProjectInfo }
 ): Promise<{ code: number | null; results: string; error: string; formatter: ExpoRunFormatter }> {
-  Log.debug(`  xcodebuild ${args.join(' ')}`);
+  Log.debug(`  ${command} ${args.join(' ')}`);
 
   logPrettyItem(chalk.bold`Planning build`);
 
@@ -331,7 +258,7 @@ async function spawnXcodeBuildWithFormat(
     isDebug: env.EXPO_DEBUG,
   });
 
-  const results = await spawnXcodeBuildWithFlush(args, options, {
+  const results = await spawnXcodeBuildWithFlush(command, args, options, {
     onFlush(data) {
       // Process data through formatter for display
       for (const line of formatter.pipe(data)) {
@@ -357,15 +284,12 @@ async function spawnXcodeBuildWithFormat(
 }
 
 export async function buildAsync(props: BuildProps): Promise<string> {
-  const args = await getXcodeBuildArgsAsync(props);
+  const request = await getIosBuildRequestAsync(props);
+  const { projectRoot, shouldSkipInitialBundling, port, eagerBundleOptions } = props;
 
-  const { projectRoot, xcodeProject, shouldSkipInitialBundling, port, eagerBundleOptions } = props;
-
-  // Remove extended attributes that can cause code signing failures before building.
-  // These are added by Finder, cloud storage services, or when downloading files.
   await removeExtendedAttributesAsync(projectRoot);
 
-  const processOptions = getProcessOptions({
+  const { env: buildEnv } = getProcessOptions({
     packager: false,
     terminal: getUserTerminal(),
     shouldSkipInitialBundling,
@@ -373,56 +297,72 @@ export async function buildAsync(props: BuildProps): Promise<string> {
     eagerBundleOptions,
   });
 
-  // Retry logic for concurrent build failures.
-  // When multiple Xcode builds run simultaneously (e.g., in CI), the build database
-  // can become locked. We retry with exponential backoff to handle this.
+  let appPaths: readonly string[];
+  try {
+    appPaths = await buildIos(request, {
+      env: buildEnv,
+      runProcess(command, args, options) {
+        if (
+          command === '/usr/bin/xcrun' &&
+          args[0] === 'xcodebuild' &&
+          options.outputMode !== 'capture'
+        ) {
+          return runFormattedBuildAsync(command, args, options, props);
+        }
+        return runProcess(command, args, options);
+      },
+    });
+  } catch (error) {
+    if (error instanceof CompileError) {
+      if (error.signal) throw new AbortCommandError();
+      const commandError = new CommandError('XCODE_BUILD', error.message);
+      commandError.cause = error;
+      throw commandError;
+    }
+    throw error;
+  }
+
+  return resolveInstallAppPathAsync(props, appPaths);
+}
+
+async function runFormattedBuildAsync(
+  command: string,
+  args: readonly string[],
+  options: RunProcessOptions,
+  { projectRoot, xcodeProject }: BuildProps
+): Promise<ProcessResult> {
   const maxRetries = 3;
   let retryDelaySeconds = 1;
-  let lastResults: {
-    code: number | null;
-    results: string;
-    error: string;
-    formatter: ExpoRunFormatter;
-  } | null = null;
 
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  for (let attempt = 0; ; attempt++) {
     const { code, results, formatter, error } = await spawnXcodeBuildWithFormat(
+      command,
       args,
-      processOptions,
+      { cwd: options.cwd, env: options.env, signal: options.signal },
       { projectRoot, xcodeProject }
     );
 
-    lastResults = { code, results, error, formatter };
-
-    // If build succeeded or failed for a reason other than concurrent builds, stop retrying
-    if (code === 0 || !isConcurrentBuildError(results)) {
-      break;
-    }
-
-    // If we have retries left, wait and try again
-    if (attempt < maxRetries) {
-      Log.warn(
-        `Xcode build failed due to concurrent builds, retrying in ${retryDelaySeconds}s... (attempt ${attempt + 1}/${maxRetries})`
-      );
-      await new Promise((resolve) => setTimeout(resolve, retryDelaySeconds * 1000));
-      retryDelaySeconds *= 2; // Exponential backoff
-    } else {
+    if (code !== 0 && isConcurrentBuildError(results)) {
+      if (attempt < maxRetries) {
+        Log.warn(
+          `Xcode build failed due to concurrent builds, retrying in ${retryDelaySeconds}s... (attempt ${attempt + 1}/${maxRetries})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, retryDelaySeconds * 1000));
+        retryDelaySeconds *= 2;
+        continue;
+      }
       Log.warn('Xcode build failed due to concurrent builds after maximum retries.');
     }
-  }
 
-  const { code, results, formatter, error } = lastResults!;
-  const logFilePath = writeBuildLogs(projectRoot, results, error);
-
-  if (code !== 0) {
-    if (_hasXcodeBuildErrorDetails(formatter.errors)) {
-      // The formatter can miss another error, so include the build log path.
-      throw new CommandError(_formatXcodeBuildFailure(code, logFilePath));
+    const logFilePath = writeBuildLogs(projectRoot, results, error);
+    if (code !== 0) {
+      if (_hasXcodeBuildErrorDetails(formatter.errors)) {
+        throw new CommandError(_formatXcodeBuildFailure(code, logFilePath));
+      }
+      _assertXcodeBuildResults(code, results, error, xcodeProject, logFilePath);
     }
-
-    _assertXcodeBuildResults(code, results, error, xcodeProject, logFilePath);
+    return { status: 'exited', exitCode: 0, stdout: results, stderr: error };
   }
-  return results;
 }
 
 // Exposed for testing.
