@@ -16,7 +16,7 @@ import { unstable_integrateWithRouter } from '../standard-navigation';
 import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-import { createBaseStackProps } from './stack-utils';
+import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 
 export * from '../react-navigation/stack';
 
