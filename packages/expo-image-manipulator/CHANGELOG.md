@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `renderAsync` failing with `ERR_IMAGE_CONTEXT_LOST` for 10-bit HDR images, such as HEIC screenshots.
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
