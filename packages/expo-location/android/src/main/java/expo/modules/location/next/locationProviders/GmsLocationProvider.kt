@@ -24,15 +24,9 @@ import com.google.android.gms.tasks.Task
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
 import expo.modules.location.next.BatchedPositions
-import expo.modules.location.next.GetCurrentPositionOptions
-import expo.modules.location.next.LocationPriority
-import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.LocationTaskConsumer
 import expo.modules.location.next.Position
-import expo.modules.location.next.ProviderResult
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
-import expo.modules.location.next.WatchPositionParameters
-import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.Continuation
@@ -66,7 +60,7 @@ class GmsLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient,
   val settingsClient: SettingsClient,
   val isServiceAvailable: () -> Boolean,
-): LocationProvider, LocationCallback() {
+): LocationProvider {
   override fun name(): String {
     return "GMS"
   }
@@ -91,12 +85,12 @@ class GmsLocationProvider(
   }
 
   override fun watchPosition(): ProviderResult<WatchSession> {
-    if (!isServiceAvailable()) return ProviderResult.Unsupported;
+    if (!isServiceAvailable()) return ProviderResult.Unsupported
     return ProviderResult.Success(GmsWatchSession(fusedLocationProvider))
   }
 
   override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
-    if (!isServiceAvailable()) return ProviderResult.Unsupported;
+    if (!isServiceAvailable()) return ProviderResult.Unsupported
     val settingsRequest = LocationSettingsRequest
       .Builder()
       .addLocationRequest(LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 1000L).build())

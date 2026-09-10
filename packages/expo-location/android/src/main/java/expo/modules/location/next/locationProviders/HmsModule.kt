@@ -14,13 +14,7 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
-import expo.modules.location.next.GetCurrentPositionOptions
-import expo.modules.location.next.LocationPriority
-import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.Position
-import expo.modules.location.next.ProviderResult
-import expo.modules.location.next.WatchPositionParameters
-import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
@@ -61,10 +55,6 @@ class HuaweiLocationProvider(
   override fun name(): String {
     return "Huawei"
   }
-  // HMS has no getCurrentLocation(priority, token) one-shot like modern GMS - the canonical
-  // pattern is a single-update subscription (setNumUpdates(1)), same shape as the pre-API-30
-  // path in AndroidLocationProvider, and like there the fix may never come (e.g. indoors),
-  // hence the timeout.
   @SuppressLint("MissingPermission")
   override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
     val request = LocationRequest.create()

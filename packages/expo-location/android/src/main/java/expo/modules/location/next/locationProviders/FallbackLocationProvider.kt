@@ -2,11 +2,7 @@ package expo.modules.location.next.locationProviders
 
 import android.app.Activity
 import expo.modules.interfaces.taskManager.TaskConsumer
-import expo.modules.location.next.GetCurrentPositionOptions
-import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.Position
-import expo.modules.location.next.ProviderResult
-import expo.modules.location.next.WatchSession
 import kotlin.coroutines.Continuation
 
 class FallbackLocationProvider(val locationProviders: List<LocationProvider>): LocationProvider {

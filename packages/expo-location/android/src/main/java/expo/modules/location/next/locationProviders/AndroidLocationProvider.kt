@@ -16,14 +16,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.location.LocationListenerCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.core.location.LocationRequestCompat
-import expo.modules.location.next.GetCurrentPositionOptions
-import expo.modules.location.next.LocationPriority
-import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.Position
-import expo.modules.location.next.ProviderResult
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
-import expo.modules.location.next.WatchPositionParameters
-import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
