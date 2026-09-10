@@ -59,6 +59,12 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     state = .bodyStreamingCanceled
   }
 
+  func urlSessionDidFailToStart(_ session: ExpoURLSessionTask, error: Error) {
+    self.error = error
+    state = .errorReceived
+    emit(event: "readyForJSFinalization")
+  }
+
   func emitRequestCanceled() {
     let error = FetchRequestCanceledException()
     self.error = error

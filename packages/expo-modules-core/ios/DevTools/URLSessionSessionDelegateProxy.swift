@@ -12,19 +12,36 @@ public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDeleg
     super.init()
   }
 
+  /**
+   `URLSession`'s `nonnull`-audited factories can still return a null task, and bridging one into
+   an `AnyHashable` key aborts. Only a raw-pointer compare survives optimization.
+   */
+  private static func isNonNull(_ task: URLSessionTask) -> Bool {
+    return unsafeBitCast(task, to: UnsafeRawPointer?.self) != nil
+  }
+
   public func addDelegate(task: URLSessionTask, delegate: URLSessionDataDelegate) {
+    guard Self.isNonNull(task) else {
+      return
+    }
     self.dispatchQueue.async {
       self.delegateMap[task] = delegate
     }
   }
 
   public func removeDelegate(task: URLSessionTask) {
+    guard Self.isNonNull(task) else {
+      return
+    }
     self.dispatchQueue.async {
       self.delegateMap.removeValue(forKey: task)
     }
   }
 
   public func getDelegate(task: URLSessionTask) -> URLSessionDataDelegate? {
+    guard Self.isNonNull(task) else {
+      return nil
+    }
     return self.dispatchQueue.sync {
       return self.delegateMap[task]
     }

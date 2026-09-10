@@ -39,6 +39,12 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     request.httpBody = requestBody
 
     let task = urlSession.dataTask(with: request as URLRequest)
+    // A null task would abort in the delegate proxy and leave this promise pending forever.
+    // The raw-pointer compare is deliberate: an `Optional` test is folded away when optimized.
+    guard unsafeBitCast(task, to: UnsafeRawPointer?.self) != nil else {
+      self.delegate.urlSessionDidFailToStart(self, error: FetchTaskUnavailableException())
+      return
+    }
     urlSessionDelegate.addDelegate(task: task, delegate: self)
     self.task = task
     task.resume()
@@ -90,6 +96,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
 
 internal protocol ExpoURLSessionTaskDelegate: AnyObject, Sendable {
   func urlSessionDidStart(_ session: ExpoURLSessionTask)
+  func urlSessionDidFailToStart(_ session: ExpoURLSessionTask, error: Error)
   func urlSession(_ session: ExpoURLSessionTask, didReceive response: URLResponse)
   func urlSession(_ session: ExpoURLSessionTask, didReceive data: Data)
   func urlSession(
