@@ -52,6 +52,7 @@
 
 ### 🎉 New features
 
+- Export `createBaseStackProps` for integrating custom stack navigators with Expo Router.
 - Expose route removal prevention state to custom navigators through `createProps`.
 - Expose route preload state to custom navigators through `createProps`.
 - Export `usePreventRemove` from `expo-router` and add `repeat` for continuing the blocked navigation action. ([#49908](https://github.com/expo/expo/pull/49908) by [@Ubax](https://github.com/Ubax))

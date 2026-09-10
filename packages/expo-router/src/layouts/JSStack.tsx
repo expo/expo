@@ -4,7 +4,6 @@ import type { ComponentProps, ComponentType } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import { StackRouter } from '../react-navigation/native';
-import { makePopAction } from '../react-navigation/native-stack/utils/makePopAction';
 import {
   type StackNavigationConfig,
   type StackNavigatorCreateProps,
@@ -14,10 +13,10 @@ import {
 } from '../react-navigation/stack';
 import { makeRestoreRouteAction } from '../react-navigation/stack/utils/makeRestoreRouteAction';
 import { unstable_integrateWithRouter } from '../standard-navigation';
-import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
 import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
+import { createBaseStackProps } from './stack-utils';
 
 export * from '../react-navigation/stack';
 
@@ -32,9 +31,8 @@ export function unstable_createPropsForJSStack({
   StackNavigationState<ParamListBase>
 >): StackNavigatorCreateProps {
   return {
-    pop: makePopAction(dispatchSync, state.key),
+    ...createBaseStackProps({ dispatchSync, navigation, state }),
     restoreRoute: makeRestoreRouteAction(dispatchSync, state),
-    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
   };
 }
 

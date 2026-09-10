@@ -87,6 +87,7 @@ export type {
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './standard-navigation';
+export { createBaseStackProps } from './layouts/stack-utils/createBaseStackProps';
 
 export type { RouteSource } from './react-navigation/native';
 
