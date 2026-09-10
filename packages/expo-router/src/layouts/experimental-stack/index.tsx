@@ -4,13 +4,12 @@ import { Children, useMemo } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { StackRouter } from '../../react-navigation/native';
-import { makePopAction } from '../../react-navigation/native-stack/utils/makePopAction';
 import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../../standard-navigation';
-import { subscribePopToTopOnParentTabPress } from '../../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../../utils/children';
 import { Protected } from '../../views/Protected';
 import { stackRouterOverride } from '../StackClient';
 import { mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
+import { createBaseStackProps } from '../stack-utils/createBaseStackProps';
 import {
   createStandardExperimentalStackNavigator,
   type ExperimentalStackNavigatorCreateProps,
@@ -26,10 +25,7 @@ const RNExperimentalStack = unstable_integrateWithRouter<
   object,
   ExperimentalStackNavigatorCreateProps
 >(createStandardExperimentalStackNavigator, StackRouter, {
-  createProps: ({ dispatchSync, navigation, state }) => ({
-    pop: makePopAction(dispatchSync, state.key),
-    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
-  }),
+  createProps: createBaseStackProps,
 });
 
 /**
