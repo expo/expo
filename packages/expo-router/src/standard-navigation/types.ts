@@ -76,6 +76,8 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
   dispatch: (action: NavigationAction) => void;
   dispatchSync: (action: NavigationAction) => void;
   navigation: NavigationHelpers<ParamListBase>;
+  /** Returns whether the route with the given key is preloaded. */
+  isPreloaded: (key: string) => boolean;
 }
 
 /**
