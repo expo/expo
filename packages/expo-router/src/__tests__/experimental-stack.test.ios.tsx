@@ -1,5 +1,5 @@
 import { act, screen } from '@testing-library/react-native';
-import { use, type ReactNode } from 'react';
+import { use, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { Text, type NativeSyntheticEvent } from 'react-native';
 import type { TabSelectedEvent, TabsHostProps } from 'react-native-screens';
 
@@ -124,6 +124,38 @@ describe('ExperimentalStack — basic navigation', () => {
 
     expect(screen).toHavePathname('/b');
     expect(router.canDismiss()).toBe(true);
+  });
+
+  it('removes guarded routes from history when a guard flips false', () => {
+    let setGuard: Dispatch<SetStateAction<boolean>>;
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter({
+      _layout: function Layout() {
+        const [guard, setState] = useState(true);
+        setGuard = setState;
+        return (
+          <ExperimentalStack>
+            <ExperimentalStack.Protected guard={guard}>
+              <ExperimentalStack.Screen name="secret" />
+            </ExperimentalStack.Protected>
+            <ExperimentalStack.Screen name="other" />
+          </ExperimentalStack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+      other: () => <Text testID="other">other</Text>,
+    });
+
+    act(() => router.push('/secret'));
+    act(() => router.push('/other'));
+    act(() => setGuard(false));
+    act(() => router.back());
+    warnSpy.mockRestore();
+
+    expect(screen).toHavePathname('/');
+    expect(router.canGoBack()).toBe(false);
   });
 
   it('pops via router.dismiss', () => {
