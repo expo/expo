@@ -81,6 +81,7 @@
 
 ### 🐛 Bug fixes
 
+- Infer navigator and router types in `unstable_integrateWithRouter`.
 - Re-export missing bottom tab types from `expo-router/js-tabs`.
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))

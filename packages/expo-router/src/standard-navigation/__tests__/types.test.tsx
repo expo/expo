@@ -13,6 +13,9 @@ import {
   type NavigationState,
   type Router,
   type RouterFactory,
+  StackRouter,
+  type StackNavigationState,
+  type StackRouterOptions,
   TabRouter,
   type TabNavigationState,
   type TabRouterOptions,
@@ -375,6 +378,141 @@ export type _IntegratedAndCreatedElementPropsMatch = Expect<
 integrateSplitNav(splitStandardNavigator, TabRouter);
 
 integratePublicNav(publicStandardNavigator, TabRouter);
+
+// ---------------------------------------------------------------------------
+// unstable_integrateWithRouter infers a standard navigator's full contract
+// ---------------------------------------------------------------------------
+
+type CustomStackOptions = { title?: string; presentation?: 'card' | 'modal' };
+type CustomStackEventMap = {
+  transitionStart: { data: { closing: boolean }; canPreventDefault: false };
+  gestureCancel: { data: { reason: 'gesture' }; canPreventDefault: true };
+};
+type CustomStackPublicProps = { headerHeight: number; testID?: string };
+type CustomStackCreateProps = {
+  navigationState: StackNavigationState<ParamListBase>;
+  navigateBack: () => void;
+};
+type CustomStackRouterOptions = StackRouterOptions & {
+  backBehavior?: 'firstRoute' | 'history';
+};
+
+const CustomStackRouter: RouterFactory<
+  StackNavigationState<ParamListBase>,
+  NavigationAction,
+  CustomStackRouterOptions
+> = (options) => StackRouter(options);
+
+function CustomStackContent(
+  _props: NavigatorContentProps<
+    CustomStackOptions,
+    CustomStackEventMap,
+    CustomStackPublicProps,
+    CustomStackCreateProps
+  >
+) {
+  return null;
+}
+
+const customStackNavigator = createStandardNavigator<
+  CustomStackOptions,
+  CustomStackEventMap,
+  CustomStackPublicProps & CustomStackCreateProps
+>(CustomStackContent);
+
+const InferredIntegratedStack = unstable_integrateWithRouter(
+  customStackNavigator,
+  CustomStackRouter,
+  {
+    createProps: ({ state, navigation }) => {
+      state satisfies StackNavigationState<ParamListBase>;
+      return {
+        navigationState: state,
+        navigateBack: navigation.goBack,
+      };
+    },
+    processScreens: (screens) =>
+      screens.map((screen) => ({
+        ...screen,
+        options: { title: 'Custom', presentation: 'card' },
+      })),
+  }
+);
+type InferredIntegratedStackProps = ComponentProps<typeof InferredIntegratedStack>;
+
+export type _IntegratedStackInfersPublicProps = Expect<
+  Equal<InferredIntegratedStackProps['headerHeight'], number>
+>;
+export type _IntegratedStackInfersRouterOptions = Expect<
+  Equal<InferredIntegratedStackProps['backBehavior'], 'firstRoute' | 'history' | undefined>
+>;
+type InferredStackListeners = Extract<
+  InferredIntegratedStackProps['screenListeners'],
+  (...args: never[]) => unknown
+>;
+export const _inferredStackListeners: InferredStackListeners = () => ({
+  transitionStart: (event) => {
+    event.data.closing satisfies boolean;
+    // @ts-expect-error `transitionStart` cannot be prevented.
+    event.preventDefault();
+  },
+  gestureCancel: (event) => {
+    event.data.reason satisfies 'gesture';
+    event.preventDefault();
+  },
+});
+export type _IntegratedStackOmitsCreateProps = Expect<
+  Equal<'navigationState' extends keyof InferredIntegratedStackProps ? true : false, false>
+>;
+export type _IntegratedStackOmitsInitialRouteName = Expect<
+  Equal<'initialRouteName' extends keyof InferredIntegratedStackProps ? true : false, false>
+>;
+
+<InferredIntegratedStack headerHeight={44} />;
+<InferredIntegratedStack headerHeight={44} backBehavior="history" />;
+// @ts-expect-error Public navigator props stay required after inference.
+<InferredIntegratedStack />;
+// @ts-expect-error Props supplied by `createProps` are not public navigator props.
+<InferredIntegratedStack headerHeight={44} navigationState={{}} />;
+// @ts-expect-error `initialRouteName` is configured through Expo Router settings.
+<InferredIntegratedStack headerHeight={44} initialRouteName="index" />;
+
+// @ts-expect-error `createProps` must return only props declared by the navigator.
+unstable_integrateWithRouter(customStackNavigator, CustomStackRouter, {
+  createProps: () => ({ unknownProp: true }),
+});
+
+unstable_integrateWithRouter(customStackNavigator, CustomStackRouter, {
+  // @ts-expect-error `createProps` must return its complete inferred shape.
+  createProps: (): CustomStackCreateProps => ({
+    navigationState: {} as StackNavigationState<ParamListBase>,
+  }),
+});
+
+// @ts-expect-error `createProps` must not add undeclared properties to an otherwise valid shape.
+unstable_integrateWithRouter(customStackNavigator, CustomStackRouter, {
+  createProps: ({ state, navigation }) => ({
+    navigationState: state,
+    navigateBack: navigation.goBack,
+    extra: true,
+  }),
+});
+
+const InferredIntegratedPublicStack = unstable_integrateWithRouter(
+  publicStandardNavigator,
+  CustomStackRouter
+);
+type InferredIntegratedPublicStackProps = ComponentProps<typeof InferredIntegratedPublicStack>;
+export type _IntegratedWithoutCreatePropsInfersPublicProps = Expect<
+  Equal<InferredIntegratedPublicStackProps['tintColor'], string | undefined>
+>;
+// @ts-expect-error The navigator does not declare this public prop.
+<InferredIntegratedPublicStack badge="new" />;
+
+// @ts-expect-error A navigator without injected props cannot gain them from `createProps`.
+unstable_integrateWithRouter(publicStandardNavigator, CustomStackRouter, {
+  createProps: () => ({ injected: true }),
+});
 
 describe('standard-navigation types', () => {
   it('is type-checked by tsc via pnpm typecheck or et check-packages', () => {
