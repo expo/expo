@@ -48,6 +48,7 @@ const Tabs = unstable_integrateWithRouter<
   TabRouterOptions,
   BottomTabNavigatorCreateProps
 >(createStandardBottomTabNavigator, TabRouter, {
+  activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, dispatch }) => ({

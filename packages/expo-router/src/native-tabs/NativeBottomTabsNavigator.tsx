@@ -190,6 +190,7 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
   TabRouterOptions,
   NativeTabsNavigatorCreateProps
 >(NativeTabsContent, NativeBottomTabsRouter, {
+  activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, dispatch, dispatchSync }) => ({

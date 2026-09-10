@@ -250,7 +250,8 @@ export function useNavigationBuilder<
     EventMap,
     any
   > &
-    RouterOptions
+    RouterOptions,
+  { activityDefaultThreshold = 1 }: { activityDefaultThreshold?: number } = {}
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
@@ -258,6 +259,7 @@ export function useNavigationBuilder<
 
   const {
     children,
+    activityEnabled,
     layout,
     screenOptions,
     screenLayout,
@@ -497,6 +499,8 @@ export function useNavigationBuilder<
     routes: state.routes,
     routeNames: state.routeNames,
     screens,
+    activityEnabled,
+    activityDefaultThreshold,
     navigation,
     screenOptions,
     screenLayout,
