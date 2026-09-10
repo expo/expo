@@ -567,10 +567,16 @@
 # Based on Algolia 404 report 2026-04-01
 /versions/latest/sdk/secure-store /versions/latest/sdk/securestore 301
 /versions/latest/sdk/secure-store/ /versions/latest/sdk/securestore 301
-/versions/latest/sdk/av /versions/v54.0.0/sdk/av 301
-/versions/latest/sdk/av/ /versions/v54.0.0/sdk/av 301
 /versions/latest/sdk/ui/jetpack-compose/floatingactionbutton /versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton 301
 /versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/ /versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton 301
+
+# After removing SDK 54, the last version with expo-av reference pages
+/versions/latest/sdk/av /versions/latest/sdk/audio 301
+/versions/latest/sdk/av/ /versions/latest/sdk/audio 301
+/versions/latest/sdk/audio-av /versions/latest/sdk/audio 301
+/versions/latest/sdk/audio-av/ /versions/latest/sdk/audio 301
+/versions/latest/sdk/video-av /versions/latest/sdk/video 301
+/versions/latest/sdk/video-av/ /versions/latest/sdk/video 301
 
 # TextInput renamed to TextField
 /versions/latest/sdk/ui/jetpack-compose/textinput /versions/latest/sdk/ui/jetpack-compose/textfield 301
@@ -709,6 +715,7 @@
 /eas/hosting/environment-variables/ /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
 /versions/v50.0.0/* /versions/latest/:splat 301
 /versions/v52.0.0/* /versions/latest/:splat 301
+/versions/v54.0.0/* /versions/latest/:splat 301
 
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.
