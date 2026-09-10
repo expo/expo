@@ -38,8 +38,9 @@ const TopTabs = unstable_integrateWithRouter<
   activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch, dispatchSync, isPreloaded }) => ({
+  createProps: ({ state, dispatch, dispatchSync, isPreloaded, isRemovalPrevented }) => ({
     isPreloaded,
+    isRemovalPrevented,
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
     navigateToTabSync: (name, params) => dispatchSync(CommonActions.navigate(name, params)),

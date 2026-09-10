@@ -25,4 +25,27 @@ describe('expo-router/js-stack re-exports', () => {
     expect('makePopAction' in NativeStackEntry).toBe(false);
     expect('subscribePopToTopOnParentTabPress' in RouterEntry).toBe(false);
   });
+
+  it('forwards the canonical removal-prevention callback', () => {
+    const isRemovalPrevented = jest.fn(() => false);
+    const props = JSStackEntry.unstable_createPropsForJSStack({
+      dispatch: jest.fn(),
+      dispatchSync: jest.fn(),
+      isPreloaded: jest.fn(() => false),
+      isRemovalPrevented,
+      // The adapter only captures navigation in a callback that this test does not invoke.
+      navigation: {} as never,
+      state: {
+        stale: false,
+        type: 'stack',
+        key: 'stack',
+        index: 0,
+        routeNames: [],
+        routes: [],
+        preloadedRoutes: [],
+      },
+    });
+
+    expect(props.isRemovalPrevented).toBe(isRemovalPrevented);
+  });
 });

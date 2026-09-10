@@ -8,9 +8,14 @@ import {
 
 import type { NativeStackNavigatorCreateProps } from '../../fork/native-stack/createNativeStackNavigator';
 import type { DrawerNavigatorProps } from '../../layouts/DrawerClient';
+import type { Stack as JSStack } from '../../layouts/JSStack';
+import type NativeStack from '../../layouts/StackClient';
 import type { JSTabsProps } from '../../layouts/TabsClient';
+import type { JSTopTabsProps } from '../../layouts/TopTabsClient';
+import type { ExperimentalStack } from '../../layouts/experimental-stack';
 import type { ExperimentalStackNavigatorCreateProps } from '../../layouts/experimental-stack/createExperimentalStackNavigator';
 import type { NativeTabsNavigatorCreateProps } from '../../native-tabs/NativeBottomTabsNavigator';
+import type { NativeTabsProps } from '../../native-tabs/types';
 import type { BottomTabNavigatorCreateProps } from '../../react-navigation/bottom-tabs/navigators/createBottomTabNavigator';
 import type { CommonNavigationAction, ParamListBase } from '../../react-navigation/core';
 import type { DrawerNavigatorCreateProps } from '../../react-navigation/drawer/navigators/createDrawerNavigator';
@@ -43,6 +48,12 @@ type Equal<A, B> =
 type Opts = { title?: string };
 type EventMap = { tabPress: { data: undefined; canPreventDefault: true } };
 type IsPreloadedProp = { isPreloaded: (key: string) => boolean };
+type IsRemovalPreventedProp = { isRemovalPrevented: (key: string) => boolean };
+type ContainsRemovalPreventionProp<Props> = Props extends unknown
+  ? 'isRemovalPrevented' extends keyof Props
+    ? true
+    : false
+  : never;
 
 export type _AllInternalNavigatorCreatePropsReceiveIsPreloaded = Expect<
     | StackNavigatorCreateProps
@@ -60,6 +71,31 @@ export type _TabsElementLacksIsPreloaded = Expect<
 >;
 export type _DrawerElementLacksIsPreloaded = Expect<
   Equal<'isPreloaded' extends keyof DrawerNavigatorProps ? true : false, false>
+>;
+export type _AllInternalNavigatorCreatePropsReceiveIsRemovalPrevented = Expect<
+    | StackNavigatorCreateProps
+    | NativeStackNavigatorCreateProps
+    | ExperimentalStackNavigatorCreateProps
+    | BottomTabNavigatorCreateProps
+    | MaterialTopTabNavigatorCreateProps
+    | DrawerNavigatorCreateProps
+    | NativeTabsNavigatorCreateProps extends IsRemovalPreventedProp
+    ? true
+    : false
+>;
+export type _InternalNavigatorElementsLackIsRemovalPrevented = Expect<
+  Equal<
+    ContainsRemovalPreventionProp<
+      | ComponentProps<typeof JSStack>
+      | ComponentProps<typeof NativeStack>
+      | ComponentProps<typeof ExperimentalStack>
+      | JSTabsProps
+      | JSTopTabsProps
+      | DrawerNavigatorProps
+      | NativeTabsProps
+    >,
+    false
+  >
 >;
 
 export type _DescriptorExtendsStandardDescriptor = Expect<

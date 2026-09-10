@@ -26,6 +26,7 @@ type NativeStackNavigationOptionsWithInternal = NativeStackNavigationOptions &
 
 export interface NativeStackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   removeRoutes: (routeNames: string[]) => void;
   /** Registers pop-to-top on parent tab press, or returns undefined without a tab parent. */
@@ -50,6 +51,7 @@ function NativeStackNavigatorContent({
   descriptors,
   emitter,
   isPreloaded,
+  isRemovalPrevented,
   pop,
   removeRoutes,
   subscribePopToTopOnParentTabPress,
@@ -112,6 +114,7 @@ function NativeStackNavigatorContent({
           descriptors={mergedDescriptors}
           emit={emit}
           isPreloaded={isComputedRoutePreloaded}
+          isRemovalPrevented={isRemovalPrevented}
           pop={pop}
           unstable_nativeProps={unstable_nativeProps}
         />
