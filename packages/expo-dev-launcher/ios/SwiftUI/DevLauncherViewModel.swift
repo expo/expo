@@ -133,6 +133,19 @@ class DevLauncherViewModel: ObservableObject {
     loadData()
     checkAuthenticationStatus()
     checkForStoredCrashes()
+
+    // A launch can start without going through this view model — a deep link or an initial URL
+    // reaches `EXDevLauncherController.loadApp` directly — so stop discovery from the launch
+    // itself rather than only from `openApp(url:)`.
+    NotificationCenter.default.addObserver(
+      forName: .EXDevLauncherAppLoadingDidStart,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      MainActor.assumeIsolated {
+        self?.stopServerDiscovery()
+      }
+    }
   }
 
   private func updateDevServers(_ servers: [DevServer]) {
@@ -269,7 +282,13 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func startServerDiscovery() {
-    if browser != nil {
+    // Don't browse while an app is loading or already running — the launcher UI that consumes
+    // the results isn't on screen, and the browse's mDNS resolution runs alongside the launch.
+    // Discovery restarts when the launcher UI reappears.
+    if isLoadingServer
+      || browser != nil
+      || EXDevLauncherController.sharedInstance().isLoadingApp()
+      || EXDevLauncherController.sharedInstance().isAppRunning() {
       return
     }
 
