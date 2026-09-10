@@ -387,7 +387,7 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
       default: 'false',
       platform: 'android',
       description:
-        "Whether remote notification images should use Android's `NotificationCompat.BigPictureStyle` when the notification is expanded. When disabled, the image is shown only as the notification's large icon.",
+        "Whether a remote notification's image fills the notification when the user expands it, using Android's `NotificationCompat.BigPictureStyle`. When `false`, the image appears only as the notification's large icon. This style replaces the expanded text layout, so the full notification body no longer appears.",
     },
     {
       name: 'sounds',
