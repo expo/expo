@@ -62,7 +62,7 @@ struct ExpoAppSceneDelegateTests {
   func `routes an opened URL through the app delegate`() {
     let spy = SpyAppDelegate()
     let url = URL(string: "bareexpo://scene-delegate/open-url")!
-    ExpoAppSceneDelegate.route(url: url, options: [.sourceApplication: "dev.expo.Payments"], to: spy)
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [.sourceApplication: "dev.expo.Payments"])
     #expect(spy.openedURLs.count == 1)
     #expect(spy.openedURLs.first?.url == url)
     #expect(spy.openedURLs.first?.options[.sourceApplication] as? String == "dev.expo.Payments")
@@ -74,7 +74,7 @@ struct ExpoAppSceneDelegateTests {
     let spy = SpyAppDelegate()
     let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
     userActivity.webpageURL = URL(string: "https://expo.dev/scene-delegate")!
-    ExpoAppSceneDelegate.route(userActivity: userActivity, to: spy)
+    SceneEventForwarder(appDelegate: { spy }).continue(userActivity)
     #expect(spy.continuedUserActivities.count == 1)
     #expect(spy.continuedUserActivities.first === userActivity)
   }
@@ -83,10 +83,11 @@ struct ExpoAppSceneDelegateTests {
   @MainActor
   func `routes life cycle events through the app delegate`() {
     let spy = SpyAppDelegate()
-    ExpoAppSceneDelegate.route(lifeCycleEvent: .didBecomeActive, to: spy)
-    ExpoAppSceneDelegate.route(lifeCycleEvent: .willResignActive, to: spy)
-    ExpoAppSceneDelegate.route(lifeCycleEvent: .willEnterForeground, to: spy)
-    ExpoAppSceneDelegate.route(lifeCycleEvent: .didEnterBackground, to: spy)
+    let forwarder = SceneEventForwarder(appDelegate: { spy })
+    forwarder.didBecomeActive()
+    forwarder.willResignActive()
+    forwarder.willEnterForeground()
+    forwarder.didEnterBackground()
     #expect(spy.lifeCycleEvents == [
       "applicationDidBecomeActive",
       "applicationWillResignActive",
@@ -109,7 +110,7 @@ struct ExpoAppSceneDelegateTests {
     // action, so wait for the first reply instead of assuming a synchronous one.
     await withCheckedContinuation { continuation in
       var didResume = false
-      ExpoAppSceneDelegate.route(shortcutItem: shortcutItem, to: spy) { succeeded in
+      SceneEventForwarder(appDelegate: { spy }).perform(shortcutItem) { succeeded in
         handled.append(succeeded)
         if !didResume {
           didResume = true
@@ -128,7 +129,8 @@ struct ExpoAppSceneDelegateTests {
   func `notifies RCTLinkingManager once per routed URL`() {
     let url = URL(string: "bareexpo://scene-delegate/linking")!
     let recorder = OpenURLNotificationRecorder()
-    ExpoAppSceneDelegate.route(url: url, options: [:], to: SpyAppDelegate())
+    let spy = SpyAppDelegate()
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:])
     #expect(recorder.count(of: url) == 1)
   }
 
@@ -138,7 +140,7 @@ struct ExpoAppSceneDelegateTests {
     let delegate = LegacyLinkingAppDelegate()
     let url = URL(string: "bareexpo://scene-delegate/legacy-open-url")!
     let recorder = OpenURLNotificationRecorder()
-    ExpoAppSceneDelegate.route(url: url, options: [:], to: delegate)
+    SceneEventForwarder(appDelegate: { delegate }).open(url: url, options: [:])
     #expect(delegate.openedURLs == [url])
     #expect(recorder.count(of: url) == 1)
   }
@@ -151,7 +153,7 @@ struct ExpoAppSceneDelegateTests {
     let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
     userActivity.webpageURL = webpageURL
     let recorder = OpenURLNotificationRecorder()
-    ExpoAppSceneDelegate.route(userActivity: userActivity, to: delegate)
+    SceneEventForwarder(appDelegate: { delegate }).continue(userActivity)
     #expect(delegate.continuedUserActivities.count == 1)
     #expect(recorder.count(of: webpageURL) == 1)
   }
@@ -164,7 +166,7 @@ struct ExpoAppSceneDelegateTests {
 
     let url = URL(string: "bareexpo://scene-delegate/no-app-delegate")!
     let recorder = OpenURLNotificationRecorder()
-    ExpoAppSceneDelegate.route(url: url, options: [:], to: nil)
+    SceneEventForwarder(appDelegate: { nil }).open(url: url, options: [:])
     #expect(subscriber.count(of: url) == 0)
     #expect(recorder.count(of: url) == 1)
   }
@@ -180,7 +182,7 @@ struct ExpoAppSceneDelegateTests {
     var handled: [Bool] = []
     await withCheckedContinuation { continuation in
       var didResume = false
-      ExpoAppSceneDelegate.route(shortcutItem: shortcutItem, to: nil) { succeeded in
+      SceneEventForwarder(appDelegate: { nil }).perform(shortcutItem) { succeeded in
         handled.append(succeeded)
         if !didResume {
           didResume = true
@@ -195,11 +197,9 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
-  func `routes through the public functions passed as function values`() {
-    let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
-    userActivity.webpageURL = URL(string: "https://expo.dev/scene-delegate/function-value")!
-    [userActivity].forEach(ExpoAppSceneDelegate.route(userActivity:))
-    [Set<UIOpenURLContext>()].forEach(ExpoAppSceneDelegate.route(urlContexts:))
+  func `forwards to the app delegate of the running application`() {
+    let forwarder = ExpoAppSceneDelegate().forwarder
+    #expect(forwarder.appDelegate() === UIApplication.shared.delegate as? ExpoAppDelegate)
   }
 }
 
