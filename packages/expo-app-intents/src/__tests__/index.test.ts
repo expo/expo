@@ -1,5 +1,8 @@
 import * as AppIntents from '../index';
 
+// jest-expo mocks the native module, so null it out to exercise the unavailable path.
+jest.mock('../ExpoAppIntentsModule', () => ({ __esModule: true, default: null }));
+
 describe('expo-app-intents on unsupported platforms', () => {
   it('reports unavailability', () => {
     expect(AppIntents.isAvailable()).toBe(false);
