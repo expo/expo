@@ -205,7 +205,12 @@ const integratePublicNav = unstable_integrateWithRouter<
 // ---------------------------------------------------------------------------
 
 const SplitNav = createSplitNav(SplitContent, TabRouter, {
-  createProps: () => ({ routeNames: [], preload: () => {} }),
+  createProps: ({ isPreloaded }) => {
+    isPreloaded('route-key') satisfies boolean;
+    // @ts-expect-error Route keys are strings, not array indexes.
+    isPreloaded(0);
+    return { routeNames: [], preload: () => {} };
+  },
 });
 type SplitElementProps = ComponentProps<typeof SplitNav>;
 
