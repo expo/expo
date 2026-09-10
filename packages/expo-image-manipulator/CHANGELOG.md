@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `renderAsync()` failing with `ERR_IMAGE_CONTEXT_LOST` on 10-bit HDR images, such as an iPhone HDR screenshot, whose pixel format has no `CGContext` equivalent. ([#50001](https://github.com/expo/expo/pull/50001) by [@LizunovSergey](https://github.com/LizunovSergey))
+- [iOS] Fix `renderAsync()` failing with `ERR_IMAGE_CONTEXT_LOST` on 10-bit HDR images, such as an iPhone HDR screenshot, whose pixel format has no `CGContext` equivalent. ([#50009](https://github.com/expo/expo/pull/50009) by [@LizunovSergey](https://github.com/LizunovSergey))
 
 ### 💡 Others
 
