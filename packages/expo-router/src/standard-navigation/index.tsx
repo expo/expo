@@ -18,6 +18,7 @@ import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
   StandardNavigator,
+  StandardNavigatorCreatePropsFactoryDeps,
   StandardNavigatorEventMapBase,
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
@@ -25,6 +26,30 @@ import type {
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
+
+type StandardNavigatorEventMapCarrier<EventMap extends StandardNavigatorEventMapBase> = {
+  readonly __expoRouterEventMap__?: EventMap;
+};
+
+declare module 'standard-navigation' {
+  export function createStandardNavigator<
+    NavigatorOptions extends object,
+    EventMap extends StandardNavigatorEventMapBase,
+    NavigatorProps extends object = object,
+  >(
+    NavigatorContent: ComponentType<
+      NavigatorArgs<NavigatorOptions, EventMap> &
+        Omit<NavigatorProps, keyof NavigatorArgs<NavigatorOptions, EventMap>>
+    >
+  ): {
+    readonly type: 'standard';
+    readonly version: 1;
+    readonly NavigatorContent: ComponentType<
+      NavigatorArgs<NavigatorOptions, EventMap> &
+        Omit<NavigatorProps, keyof NavigatorArgs<NavigatorOptions, EventMap>>
+    >;
+  } & StandardNavigatorEventMapCarrier<EventMap>;
+}
 
 export type {
   IntegrateWithRouterOptions,
@@ -66,6 +91,73 @@ type StandardRouterNavigatorComponent<
     EventMap
   >
 >;
+
+type StandardNavigatorShape = {
+  readonly type: 'standard';
+  readonly version: number;
+  readonly NavigatorContent: unknown;
+};
+
+type StandardNavigatorContentProps<Navigator extends StandardNavigatorShape> =
+  Navigator['NavigatorContent'] extends ComponentType<infer Props> ? Props : never;
+
+type StandardNavigatorEventMap<Navigator extends StandardNavigatorShape> =
+  Navigator extends StandardNavigatorEventMapCarrier<infer EventMap> ? EventMap : never;
+
+type StandardNavigatorContract<Navigator extends StandardNavigatorShape> =
+  StandardNavigatorContentProps<Navigator> extends infer Props
+    ? Props extends {
+        descriptors: Record<string, { options: infer NavigatorOptions extends object }>;
+      }
+      ? {
+          NavigatorOptions: NavigatorOptions;
+          EventMap: StandardNavigatorEventMap<Navigator>;
+          NavigatorProps: Omit<
+            Props,
+            keyof NavigatorArgs<NavigatorOptions, StandardNavigatorEventMap<Navigator>>
+          >;
+        }
+      : never
+    : never;
+
+type ValidStandardNavigator<Navigator extends StandardNavigatorShape> = StandardNavigator<
+  StandardNavigatorContract<Navigator>['NavigatorOptions'],
+  StandardNavigatorContract<Navigator>['EventMap'],
+  StandardNavigatorContract<Navigator>['NavigatorProps']
+>;
+
+type RouterContract<Router extends (options: never) => unknown> =
+  Router extends RouterFactory<infer _State, infer Action, infer RouterOptions>
+    ? { Action: Action; RouterOptions: RouterOptions }
+    : never;
+
+type InferredIntegrateWithRouterOptions<
+  Navigator extends StandardNavigatorShape,
+  State extends NavigationState,
+  CreateProps extends object,
+> = Omit<
+  IntegrateWithRouterOptions<
+    State,
+    CreateProps,
+    StandardNavigatorContract<Navigator>['NavigatorOptions'],
+    StandardNavigatorContract<Navigator>['EventMap']
+  >,
+  'createProps'
+> & {
+  createProps: (deps: StandardNavigatorCreatePropsFactoryDeps<State>) => CreateProps;
+} & (Exclude<
+    keyof CreateProps,
+    keyof StandardNavigatorContract<Navigator>['NavigatorProps']
+  > extends never
+    ? object
+    : {
+        createProps: (
+          deps: StandardNavigatorCreatePropsFactoryDeps<State>
+        ) => Record<
+          Exclude<keyof CreateProps, keyof StandardNavigatorContract<Navigator>['NavigatorProps']>,
+          never
+        >;
+      });
 
 /**
  * > **warning** This API is unstable and may change between minor releases.
@@ -149,6 +241,44 @@ export function unstable_createStandardRouterNavigator<
  * ```
  */
 export function unstable_integrateWithRouter<
+  Navigator extends StandardNavigatorShape,
+  Router extends (options: never) => unknown,
+  State extends NavigationState,
+  CreateProps extends Partial<StandardNavigatorContract<Navigator>['NavigatorProps']>,
+>(
+  navigator: Navigator & ValidStandardNavigator<Navigator>,
+  router: Router &
+    RouterFactory<State, RouterContract<Router>['Action'], RouterContract<Router>['RouterOptions']>,
+  options: InferredIntegrateWithRouterOptions<Navigator, State, CreateProps>
+): StandardRouterNavigatorComponent<
+  StandardNavigatorContract<Navigator>['NavigatorOptions'],
+  State,
+  StandardNavigatorContract<Navigator>['EventMap'],
+  Omit<StandardNavigatorContract<Navigator>['NavigatorProps'], keyof CreateProps>,
+  RouterContract<Router>['RouterOptions']
+>;
+export function unstable_integrateWithRouter<
+  Navigator extends StandardNavigatorShape,
+  State extends NavigationState,
+  Action extends NavigationAction,
+  RouterOptions extends DefaultRouterOptions,
+>(
+  navigator: Navigator & ValidStandardNavigator<Navigator>,
+  router: RouterFactory<State, Action, RouterOptions>,
+  options?: IntegrateWithRouterOptions<
+    State,
+    object,
+    StandardNavigatorContract<Navigator>['NavigatorOptions'],
+    StandardNavigatorContract<Navigator>['EventMap']
+  >
+): StandardRouterNavigatorComponent<
+  StandardNavigatorContract<Navigator>['NavigatorOptions'],
+  State,
+  StandardNavigatorContract<Navigator>['EventMap'],
+  StandardNavigatorContract<Navigator>['NavigatorProps'],
+  RouterOptions
+>;
+export function unstable_integrateWithRouter<
   NavigatorOptions extends object,
   State extends NavigationState,
   EventMap extends StandardNavigatorEventMapBase,
@@ -164,10 +294,29 @@ export function unstable_integrateWithRouter<
     NavigatorOptions,
     EventMap
   >
-) {
+): StandardRouterNavigatorComponent<
+  NavigatorOptions,
+  State,
+  EventMap,
+  NavigatorProps,
+  RouterOptions
+>;
+export function unstable_integrateWithRouter<
+  NavigatorOptions extends object,
+  State extends NavigationState,
+  EventMap extends StandardNavigatorEventMapBase,
+  NavigatorProps extends object,
+  RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
+>(navigator: unknown, router: unknown, ...[options]: [options?: unknown]): unknown {
   assertStandardNavigator(navigator);
-  const { NavigatorContent } = navigator;
-
+  // The overloads validate these contracts; the implementation uses their common base types.
+  const { NavigatorContent } = navigator as StandardNavigator<
+    NavigatorOptions,
+    EventMap,
+    NavigatorProps & CreateProps
+  >;
+  type Options = IntegrateWithRouterOptions<State, CreateProps, NavigatorOptions, EventMap>;
   type NavPropsType = StandardRouterNavigatorProps<
     State,
     NavigatorOptions,
@@ -193,26 +342,32 @@ export function unstable_integrateWithRouter<
       Record<string, (...args: unknown[]) => void>,
       NavigatorOptions,
       EventMap
-    >(router, useNavigationBuilderProps);
+    >(
+      // The overloads require a compatible router factory.
+      router as RouterFactory<State, NavigationAction, RouterOptions>,
+      useNavigationBuilderProps
+    );
 
     const { dispatch, dispatchSync } = navigation;
     const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
     const processedDescriptors = useMemo(
       () =>
-        (options?.processDescriptors?.(descriptors, state, describe) as
+        ((options as Options | undefined)?.processDescriptors?.(descriptors, state, describe) as
           | typeof descriptors
           | undefined) ?? descriptors,
       [state, descriptors, describe, options]
     );
     const processedState = useMemo(
-      () => options?.processState?.(state, processedDescriptors, describe) ?? state,
+      () =>
+        (options as Options | undefined)?.processState?.(state, processedDescriptors, describe) ??
+        state,
       [state, processedDescriptors, describe, options]
     );
 
     const derivedProps = useMemo<Partial<CreateProps>>(
       () =>
-        options?.createProps?.({
+        (options as Options | undefined)?.createProps?.({
           state: processedState,
           dispatch,
           dispatchSync,
@@ -260,7 +415,7 @@ export function unstable_integrateWithRouter<
 
   return withLayoutContext<NavigatorOptions, typeof StandardRouterNavigator, State, EventMap>(
     StandardRouterNavigator,
-    options?.processScreens
+    (options as Options | undefined)?.processScreens
   );
 }
 
