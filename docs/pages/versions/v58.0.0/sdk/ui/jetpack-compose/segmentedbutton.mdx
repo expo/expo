@@ -96,18 +96,11 @@ import {
 } from '@expo/ui/jetpack-compose';
 
 export default function MultiChoiceExample() {
-  const [checkedItems, setCheckedItems] = useState([
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const [checkedItems, setCheckedItems] = useState([false, false, false, false]);
   const options = ['Wi-Fi', 'Bluetooth', 'NFC', 'GPS'];
 
   return (
-    <Host
-      matchContents={{ vertical: true }}
-      style={{ width: '100%' }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <MultiChoiceSegmentedButtonRow>
         {options.map((label, index) => (
           <SegmentedButton
@@ -191,7 +184,4 @@ import {
 } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection
-  packageName="expo-ui/jetpack-compose/segmentedbutton"
-  apiName="SegmentedButton"
-/>
+<APISection packageName="expo-ui/jetpack-compose/segmentedbutton" apiName="SegmentedButton" />

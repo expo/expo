@@ -24,12 +24,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 The example below masks a phone number as the user types. The formatting and the writes to `maskedPhone.value` (text) and `selection.value` (cursor position) all happen synchronously on the UI thread, so there is no flicker between the typed value and the masked value.
 
 ```tsx WorkletPhoneMaskExample.tsx
-import {
-  Host,
-  TextField,
-  Text as ComposeText,
-  useNativeState,
-} from '@expo/ui/jetpack-compose';
+import { Host, TextField, Text as ComposeText, useNativeState } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 import { useCallback } from 'react';
 
@@ -86,7 +81,4 @@ export default function WorkletPhoneMaskExample() {
 import { useNativeState } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection
-  packageName="expo-ui/jetpack-compose/usenativestate"
-  apiName="useNativeState"
-/>
+<APISection packageName="expo-ui/jetpack-compose/usenativestate" apiName="useNativeState" />
