@@ -140,7 +140,7 @@ Pausing a channel stops EAS Update from serving updates to builds on that channe
 
 Run the command without a channel name to pick one from a list. In CI, pass the channel name with `--non-interactive`, or use `--json` to print the channel as JSON. The `--json` flag implies `--non-interactive`.
 
-While a channel is paused:
+<Collapsible summary="What happens while a channel is paused?">
 
 - Builds on that channel still check for updates, but no update is returned to them. EAS Update answers with a bodyless HTTP [`204`](/technical-specs/expo-updates-1/#response) response, so these checks use very little bandwidth.
 - Each app keeps running the newest update it has already downloaded. If it never downloaded one, it keeps running the update embedded in the build. Your users see no change in what their app is running.
@@ -150,7 +150,7 @@ While a channel is paused:
 
 Pausing applies to a single channel, so pausing `production` has no effect on a `preview` or `development` channel. You can continue to publish and test updates on your development and preview channels while production is paused.
 
-> **info** `eas channel:pause` and `eas channel:resume` require EAS CLI 12.6.0 or newer.
+</Collapsible>
 
 ### Resume updates on a channel
 
