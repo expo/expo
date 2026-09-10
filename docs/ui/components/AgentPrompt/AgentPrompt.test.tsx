@@ -57,6 +57,20 @@ function developmentBuildsPrompt() {
   );
 }
 
+const NATIVE_UPGRADE_PAGE = '/bare/upgrade/';
+const RUNTIME_PROMPT =
+  'Upgrade my Expo React Native project from SDK 52 to SDK 53.\n\ndiff --git a/android/app/build.gradle';
+
+function runtimePrompt() {
+  return (
+    <AgentPrompt
+      title="Upgrade your native project with an AI agent"
+      description={DESCRIPTION}
+      prompt={RUNTIME_PROMPT}
+    />
+  );
+}
+
 function setupClipboard() {
   const writeText = jest.fn();
   Object.defineProperty(navigator, 'clipboard', {
@@ -138,6 +152,27 @@ describe('AgentPrompt', () => {
     renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
 
     expect(screen.getByRole('button', { name: /show prompt/i })).toHaveAttribute('data-md', 'skip');
+  });
+
+  it('copies a runtime prompt given as a prop', async () => {
+    const writeText = setupClipboard();
+
+    renderAt(NATIVE_UPGRADE_PAGE, runtimePrompt());
+
+    expect(await copiedTextAsync(writeText)).toBe(RUNTIME_PROMPT);
+  });
+
+  it('hides a runtime prompt until the reader asks for it', () => {
+    setupClipboard();
+
+    renderAt(NATIVE_UPGRADE_PAGE, runtimePrompt());
+    const code = screen.getByText(RUNTIME_PROMPT, { normalizer: text => text });
+
+    expect(code).not.toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: /show prompt/i }));
+
+    expect(code).toBeVisible();
   });
 
   it('has no axe violations', async () => {
