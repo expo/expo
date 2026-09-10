@@ -8,6 +8,19 @@ import { isReactNavigationInstalled } from './integrations/react-navigation/reac
 import { reportCaughtError } from './reportCaughtError';
 import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
 
+/**
+ * Normalizes the `traces.network` sugar (`true` / `false` / `{ filter }`) into the config shape
+ * the native producer persists. `configure` is a full replacement, so an absent `traces` resets
+ * to the default: enabled, no filter.
+ */
+function networkSpansConfigFromTraces(traces: ObserveConfig['traces']) {
+  const network = traces?.network ?? true;
+  if (typeof network === 'boolean') {
+    return { enabled: network };
+  }
+  return network.filter != null ? { enabled: true, filter: network.filter } : { enabled: true };
+}
+
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
 
 const Observe: ObserveModule = new Proxy(native, {
@@ -17,6 +30,11 @@ const Observe: ObserveModule = new Proxy(native, {
         // The handler is already installed at this point (it installs on import), so this only
         // toggles whether it records anything.
         setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
+
+        // Recording is gated in expo-app-metrics (the producer side), so the setting travels
+        // there rather than into the native `configure` payload. Applies to future captures
+        // only; spans persisted earlier in the launch still dispatch.
+        AppMetrics.setNetworkSpansConfig(networkSpansConfigFromTraces(config.traces));
 
         const routerEnabled = !!config.integrations?.['expo-router'];
         const reactNavigationEnabled = !!config.integrations?.['react-navigation'];

@@ -12,6 +12,7 @@
 - Add an `errorHandlingEnabled` option to `configure` to opt out of recording unhandled JavaScript errors. ([#48506](https://github.com/expo/expo/pull/48506) by [@tsapeta](https://github.com/tsapeta))
 - Add `Observe.clientId`, the EAS client id recorded on every event, so apps can correlate Observe data with other services. ([#49599](https://github.com/expo/expo/pull/49599) by [@kadikraman](https://github.com/kadikraman))
 - Export network requests as OTLP traces. ([#48883](https://github.com/expo/expo/pull/48883) by [@tsapeta](https://github.com/tsapeta))
+- Add a `traces` option to `configure` to control whether network requests are recorded as trace spans, with an optional capture filter. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

@@ -54,6 +54,7 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   async markInteractive(attributes?: MetricAttributes) {}
   logEvent(name: string, options?: LogEventOptions) {}
   setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null) {}
+  setNetworkSpansConfig() {}
   async clearStoredEntries() {}
   async getInactiveSessions() {
     return [];
