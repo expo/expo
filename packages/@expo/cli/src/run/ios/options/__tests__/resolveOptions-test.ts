@@ -28,11 +28,12 @@ describe(resolveOptionsAsync, () => {
   it(`resolves default options`, async () => {
     vol.fromJSON(fixture, '/');
 
-    expect(await resolveOptionsAsync('/', {})).toEqual({
+    expect(await resolveOptionsAsync('/', {}, 'development')).toEqual({
       buildCache: true,
       configuration: 'Debug',
       device: { name: 'mock', udid: '123' },
       isSimulator: true,
+      mode: 'development',
       osType: 'iOS',
       port: 8081,
       projectRoot: '/',
@@ -48,20 +49,25 @@ describe(resolveOptionsAsync, () => {
     jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
 
     expect(
-      await resolveOptionsAsync('/', {
-        buildCache: false,
-        bundler: true,
-        device: 'search',
-        install: true,
-        port: 8081,
-        configuration: 'Release',
-        scheme: 'MyScheme',
-      })
+      await resolveOptionsAsync(
+        '/',
+        {
+          buildCache: false,
+          bundler: true,
+          device: 'search',
+          install: true,
+          port: 8081,
+          configuration: 'Release',
+          scheme: 'MyScheme',
+        },
+        'production'
+      )
     ).toEqual({
       buildCache: false,
       configuration: 'Release',
       device: { name: 'mock', udid: '123' },
       isSimulator: false,
+      mode: 'production',
       osType: 'iOS',
       port: 8081,
       projectRoot: '/',
@@ -70,5 +76,37 @@ describe(resolveOptionsAsync, () => {
       shouldStartBundler: true,
       xcodeProject: { isWorkspace: false, name: '/ios/ReactNativeProject.xcodeproj' },
     });
+  });
+
+  describe.each([
+    { target: 'simulator', isSimulator: true },
+    { target: 'device', isSimulator: false },
+  ])('on a $target', ({ isSimulator }) => {
+    it.each([
+      { configuration: 'DebugStaging', mode: 'development' as const },
+      { configuration: 'debugStaging', mode: 'production' as const },
+    ])(
+      'respects --no-bundler without forcing SKIP_BUNDLING for $configuration',
+      async ({ configuration, mode }) => {
+        vol.fromJSON(fixture, '/');
+        jest.mocked(isSimulatorDevice).mockReturnValueOnce(isSimulator);
+
+        expect(await resolveOptionsAsync('/', { bundler: false, configuration }, mode)).toEqual(
+          expect.objectContaining({
+            configuration,
+            shouldSkipInitialBundling: false,
+            shouldStartBundler: false,
+          })
+        );
+      }
+    );
+  });
+
+  it('respects --no-bundler without an explicit configuration', async () => {
+    vol.fromJSON(fixture, '/');
+
+    expect(await resolveOptionsAsync('/', { bundler: false }, 'development')).toEqual(
+      expect.objectContaining({ shouldStartBundler: false })
+    );
   });
 });

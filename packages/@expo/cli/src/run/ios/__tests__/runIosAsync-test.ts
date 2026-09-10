@@ -79,7 +79,12 @@ afterEach(() => {
 describe(runIosAsync, () => {
   afterEach(() => vol.reset());
 
-  it('uses production mode for a release configuration', async () => {
+  it.each([
+    { configuration: 'Release', mode: 'production' },
+    { configuration: 'StagingRelease', mode: 'production' },
+    { configuration: 'DebugStaging', mode: 'development' },
+    { configuration: 'debugStaging', mode: 'production' },
+  ])('uses $mode mode for $configuration', async ({ configuration, mode }) => {
     mockPlatform('darwin');
     vol.fromJSON(
       {
@@ -92,13 +97,11 @@ describe(runIosAsync, () => {
       '/'
     );
 
-    await runIosAsync('/', { configuration: 'Release' });
+    await runIosAsync('/', { configuration });
 
-    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode: 'production' });
-    expect(startBundlerAsync).toHaveBeenCalledWith(
-      '/',
-      expect.objectContaining({ mode: 'production' })
-    );
+    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode });
+    expect(startBundlerAsync).toHaveBeenCalledWith('/', expect.objectContaining({ mode }));
+    expect(buildAsync).toHaveBeenCalledWith(expect.objectContaining({ configuration, mode }));
   });
 
   it(`asserts that the function only runs on darwin machines`, async () => {
@@ -129,6 +132,7 @@ describe(runIosAsync, () => {
       device: { name: 'mock', udid: '123' },
       eagerBundleOptions: undefined,
       isSimulator: true,
+      mode: 'development',
       osType: 'iOS',
       port: 8081,
       projectRoot: '/',
@@ -192,6 +196,7 @@ describe(runIosAsync, () => {
       },
       eagerBundleOptions: undefined,
       isSimulator: false,
+      mode: 'development',
       osType: 'iOS',
       port: 8081,
       projectRoot: '/',
