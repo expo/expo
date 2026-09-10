@@ -1017,10 +1017,37 @@ export function insertAgentInstructionsAfterH1(
   return `${markdown.slice(0, insertAt)}\n\n${block.trimEnd()}${markdown.slice(insertAt)}`;
 }
 
-/**
- * Post-process the markdown output to clean up common artifacts.
- */
-export function cleanMarkdown(markdown: string): string {
+const CODE_FENCE_LINE = /^\s*```/;
+
+function applyOutsideCodeFences(markdown: string, transform: (text: string) => string): string {
+  const segments: { isCode: boolean; lines: string[] }[] = [];
+  let insideFence = false;
+
+  for (const line of markdown.split('\n')) {
+    const isFenceLine = CODE_FENCE_LINE.test(line);
+    const isCode = insideFence || isFenceLine;
+    const openSegment = segments.at(-1);
+
+    if (openSegment?.isCode === isCode) {
+      openSegment.lines.push(line);
+    } else {
+      segments.push({ isCode, lines: [line] });
+    }
+
+    if (isFenceLine) {
+      insideFence = !insideFence;
+    }
+  }
+
+  return segments
+    .map(segment => {
+      const text = segment.lines.join('\n');
+      return segment.isCode ? text : transform(text);
+    })
+    .join('\n');
+}
+
+function cleanProse(markdown: string): string {
   return (
     markdown
       // Remove empty headings (from sections whose only content was visual/interactive)
@@ -1031,8 +1058,6 @@ export function cleanMarkdown(markdown: string): string {
       .replace(/\[]\([^)]+\)/g, '')
       // Remove standalone horizontal rules (often from description separators)
       .replace(/^\* \* \*$/gm, '')
-      // Replace %%placeholder%% markers with ellipsis
-      .replace(/%%placeholder-start%%.*?%%placeholder-end%%/g, '...')
       // Clean up platform badge comma formatting
       .replace(/Only for:\s*,\s*/g, 'Only for: ')
       .replace(/^\s*,\s*/gm, '')
@@ -1057,6 +1082,17 @@ export function cleanMarkdown(markdown: string): string {
       .replace(/^\s*•\s*$/gm, '')
       // Replace fullwidth equals sign with regular equals
       .replace(/\uff1d/g, '=')
+  );
+}
+
+/**
+ * Post-process the markdown output to clean up common artifacts.
+ */
+export function cleanMarkdown(markdown: string): string {
+  return (
+    applyOutsideCodeFences(markdown, cleanProse)
+      // Replace %%placeholder%% markers with ellipsis
+      .replace(/%%placeholder-start%%.*?%%placeholder-end%%/g, '...')
       // Clean up excessive whitespace
       .replace(/\n{3,}/g, '\n\n')
       .trim()
