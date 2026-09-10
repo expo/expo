@@ -1,0 +1,22 @@
+# expo-image: load a bundled image and a broken URL, then check the emitted events.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://components/image/events"
+wait text "onLoadStart = 0" 20000
+wait text "onLoad = 0"
+# The buttons row inherits the label of its first button on iOS, so qualify by role.
+press "role=button label=\"Local image\""
+wait text "onDisplay = 1" 10000
+wait text "onLoadStart = 1"
+wait text "onLoad = 1"
+wait text "onLoadEnd = 1"
+wait text "onError = 0"
+wait text "width = 600"
+wait text "height = 400"
+press label="Broken URL"
+wait text "onError = 1" 15000
+wait text "onLoadStart = 1"
+wait text "onLoadEnd = 1"
+wait text "onLoad = 0"
+wait text "onDisplay = 0"
+close
