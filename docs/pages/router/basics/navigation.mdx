@@ -254,8 +254,6 @@ export default function Page() {
 
 The `prefetch` prop on a `<Link />` component enables prefetching of the target screen when the component is rendered. This allows for faster navigation by preparing the screen in advance.
 
-Expo Router calls this operation `prefetch` in its public APIs. The underlying navigator handles a prefetch request by preloading the route, so internal state and React Navigation APIs use the term `preload`.
-
 ```tsx
 import { Link } from 'expo-router';
 
