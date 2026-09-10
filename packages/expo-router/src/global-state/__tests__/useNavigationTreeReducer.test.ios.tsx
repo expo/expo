@@ -530,7 +530,7 @@ it('does not report an unhandled action in production', () => {
     expect(result.result.current.state).toBe(initialState);
   } finally {
     if (nodeEnv === undefined) {
-      delete process.env.NODE_ENV;
+      Reflect.deleteProperty(process.env, 'NODE_ENV');
     } else {
       process.env.NODE_ENV = nodeEnv;
     }
