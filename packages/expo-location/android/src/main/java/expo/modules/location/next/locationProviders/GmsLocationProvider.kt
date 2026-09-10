@@ -3,12 +3,15 @@ package expo.modules.location.next.locationProviders
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.location.Location
+import android.os.Looper
 import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
@@ -71,6 +74,11 @@ class GmsLocationProvider(
     } ?: ProviderResult.Unavailable
   }
 
+  override fun watchPosition(): ProviderResult<WatchSession> {
+    if (!isServiceAvailable()) return ProviderResult.Unsupported
+    return ProviderResult.Success(GmsWatchSession(fusedLocationProvider))
+  }
+
   override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
     if (!isServiceAvailable()) return ProviderResult.Unsupported
     val settingsRequest = LocationSettingsRequest
@@ -106,5 +114,35 @@ class GmsLocationProvider(
       }
     }
     return ProviderResult.Success(enabled)
+  }
+}
+
+private class GmsWatchSession(
+  private val fusedLocationProvider: FusedLocationProviderClient
+) : WatchSession {
+  private var callback: LocationCallback? = null
+
+  @SuppressLint("MissingPermission")
+  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean {
+    stopUpdates()
+    val locationRequest = LocationRequest
+      .Builder(parameters.priority.toGmsPriority(), parameters.interval.inWholeMilliseconds)
+      .setMaxUpdateDelayMillis(parameters.maxUpdateDelay.inWholeMilliseconds)
+      .build()
+    val callback = object: LocationCallback() {
+      override fun onLocationResult(locationResult: LocationResult) {
+        locationResult.lastLocation?.let {
+          onPosition(it.toPosition())
+        }
+      }
+    }
+    this.callback = callback
+    fusedLocationProvider.requestLocationUpdates(locationRequest, callback, Looper.getMainLooper())
+    return true
+  }
+
+  override fun stopUpdates() {
+    callback?.let { fusedLocationProvider.removeLocationUpdates(it) }
+    callback = null
   }
 }

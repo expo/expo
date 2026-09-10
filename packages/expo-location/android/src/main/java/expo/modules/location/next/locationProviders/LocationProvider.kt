@@ -13,6 +13,12 @@ enum class LocationPriority {
   PASSIVE,
 }
 
+data class WatchPositionParameters(
+  val priority: LocationPriority,
+  val interval: Duration,
+  val maxUpdateDelay: Duration
+)
+
 data class GetCurrentPositionOptions(
   val maxCachedAge: Duration,
   val timeout: Duration,
@@ -37,8 +43,14 @@ sealed interface ProviderResult<out T> {
   }
 }
 
+interface WatchSession {
+  fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean
+  fun stopUpdates()
+}
+
 interface LocationProvider {
   suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position>
+  fun watchPosition(): ProviderResult<WatchSession>
   fun name(): String
 
   // Prompt user to enable location services.
