@@ -42,7 +42,7 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
    * Overrides React Activity behavior inherited from `Tabs` for this route when used in a
    * `TabList`.
    */
-  activityEnabled?: boolean | number;
+  activityEnabled?: boolean;
 };
 
 export type TabTriggerOptions = {

@@ -306,11 +306,10 @@ export interface NativeTabsProps extends PropsWithChildren {
   /** A component to render when an individual tab screen throws an error. */
   unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   /**
-   * Enables React Activity for tab screens. `true` hides an inactive tab, while a number specifies
-   * how many screens must be above a route before its content is hidden.
+   * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
    * @default false
    */
-  activityEnabled?: boolean | number;
+  activityEnabled?: boolean;
   // #region common props
   /**
    * The style of the every tab label in the tab bar.
@@ -603,7 +602,7 @@ export interface NativeTabTriggerProps {
    * Overrides React Activity behavior inherited from `NativeTabs` for this route when declared in
    * a layout.
    */
-  activityEnabled?: boolean | number;
+  activityEnabled?: boolean;
   /**
    * If true, the tab will be hidden from the tab bar.
    *

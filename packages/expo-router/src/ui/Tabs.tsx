@@ -54,8 +54,9 @@ export type UseTabsOptions = Omit<
     TabNavigationEventMap,
     any
   >,
-  'children' | 'initialRouteName'
+  'activityEnabled' | 'children' | 'initialRouteName'
 > & {
+  activityEnabled?: boolean;
   backBehavior?: TabRouterOptions['backBehavior'];
 };
 
@@ -64,11 +65,10 @@ export type TabsProps = ViewProps & {
   asChild?: boolean;
   options?: UseTabsOptions;
   /**
-   * Enables React Activity for tab screens. `true` hides an inactive tab, while a number specifies
-   * how many screens must be above a route before its content is hidden.
+   * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
    * @default false
    */
-  activityEnabled?: boolean | number;
+  activityEnabled?: boolean;
 };
 
 /**

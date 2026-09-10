@@ -147,7 +147,7 @@ function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
 }
 
 const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter, {
-  activityDefaultThreshold: 2,
+  activityDefaultThreshold: 1,
 });
 
 /**
@@ -161,7 +161,11 @@ const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRout
  * the current `_layout`, you can use this to determine if you are inside
  * a custom navigator or not.
  */
-export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
+export function Slot(
+  props: Omit<NavigatorProps<any>, 'children' | 'activityEnabled' | 'activityDefaultThreshold'> & {
+    activityEnabled?: boolean;
+  }
+) {
   const contextKey = useContextKey();
   const context = React.use(NavigatorContext);
 

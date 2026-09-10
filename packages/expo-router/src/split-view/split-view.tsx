@@ -11,11 +11,10 @@ import { SplitViewColumn, SplitViewInspector } from './elements';
 export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
   children?: ReactNode;
   /**
-   * Enables React Activity for screens rendered by the detail slot. A number specifies how many
-   * screens must be above a route before its content is hidden.
+   * Enables React Activity for screens rendered by the detail slot.
    * @default false
    */
-  activityEnabled?: boolean | number;
+  activityEnabled?: boolean;
 }
 
 function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }: SplitViewProps) {

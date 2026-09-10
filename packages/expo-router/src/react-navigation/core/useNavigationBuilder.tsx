@@ -504,7 +504,7 @@ export function useNavigationBuilder<
     navigation,
     screenOptions,
     screenLayout,
-    state,
+    state: committedState,
     addListener,
     router,
     emitter,

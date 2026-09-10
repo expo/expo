@@ -333,7 +333,15 @@ function getActivityThreshold(
   defaultThreshold: number
 ) {
   if (typeof activityEnabled === 'number') {
-    return Math.max(1, activityEnabled);
+    if (activityEnabled <= 0) {
+      if (__DEV__) {
+        console.warn(
+          `activityEnabled must be a positive number. Received ${activityEnabled}; disabling React Activity.`
+        );
+      }
+      return undefined;
+    }
+    return activityEnabled;
   }
   if (activityEnabled) {
     return Math.max(1, defaultThreshold);

@@ -19,6 +19,7 @@ import {
   useActivityMode,
   type ActivityMode,
 } from '../NavigationAwareActivity';
+import { Slot } from '../Navigator';
 
 jest.mock('../ActivityContents', () => ({
   ActivityContents: ({ children, mode }: React.ActivityProps) => {
@@ -256,6 +257,52 @@ test('uses the navigator activity default threshold', () => {
   expectActivityModes({ index: ['hidden'], b: ['visible'] });
 });
 
+test('uses depth 1 for Slot', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="other" />
+        </Tabs>
+      ),
+      '(home)/_layout': () => <Slot activityEnabled />,
+      '(home)/index': () => <View testID="index" />,
+      other: () => <View testID="other" />,
+    },
+    { initialUrl: '/' }
+  );
+
+  expectActivityModes({ index: ['visible'] });
+
+  act(() => router.navigate('/other'));
+  expectActivityModes({ index: ['hidden'], other: [] });
+});
+
+describe('invalid activity threshold', () => {
+  let warn: jest.SpyInstance;
+
+  beforeEach(() => {
+    warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warn.mockRestore();
+  });
+
+  test.each([0, -1])('disables activity for %s', (activityEnabled) => {
+    renderRouter({
+      _layout: () => <JSStack activityEnabled={activityEnabled} />,
+      index: () => <View testID="index" />,
+    });
+
+    expectActivityModes({ index: [] });
+    expect(warn).toHaveBeenCalledWith(
+      `activityEnabled must be a positive number. Received ${activityEnabled}; disabling React Activity.`
+    );
+  });
+});
+
 test('counts screens above only in the current navigator', () => {
   renderRouter(
     {
@@ -300,7 +347,7 @@ test('uses the nearest navigator or screen activity setting', () => {
   renderRouter({
     _layout: () => (
       <Tabs activityEnabled>
-        <Tabs.Screen name="index" activityEnabled={2} />
+        <Tabs.Screen name="index" />
         <Tabs.Screen name="inherited" />
         <Tabs.Screen name="disabled" activityEnabled={false} />
       </Tabs>
@@ -313,10 +360,10 @@ test('uses the nearest navigator or screen activity setting', () => {
   expectActivityModes({ index: ['visible'] });
 
   act(() => router.navigate('/inherited'));
-  expectActivityModes({ index: ['visible'], inherited: ['visible'] });
+  expectActivityModes({ index: ['hidden'], inherited: ['visible'] });
 
   act(() => router.navigate('/disabled'));
-  expectActivityModes({ index: ['visible'], inherited: ['hidden'], disabled: [] });
+  expectActivityModes({ index: ['hidden'], inherited: ['hidden'], disabled: [] });
 });
 
 test('does not inherit activity from a parent navigator', () => {
@@ -340,7 +387,7 @@ test('uses NativeTabs trigger activity settings', () => {
   renderRouter({
     _layout: () => (
       <NativeTabs activityEnabled>
-        <NativeTabs.Trigger name="index" activityEnabled={2} />
+        <NativeTabs.Trigger name="index" activityEnabled />
         <NativeTabs.Trigger name="disabled" activityEnabled={false} />
       </NativeTabs>
     ),
@@ -351,7 +398,7 @@ test('uses NativeTabs trigger activity settings', () => {
   expectActivityModes({ index: ['visible'] });
 
   act(() => router.navigate('/disabled'));
-  expectActivityModes({ index: ['visible'], disabled: [] });
+  expectActivityModes({ index: ['hidden'], disabled: [] });
 });
 
 test('uses headless tab trigger activity settings', () => {
@@ -360,7 +407,7 @@ test('uses headless tab trigger activity settings', () => {
       <HeadlessTabs activityEnabled>
         <TabSlot />
         <TabList>
-          <TabTrigger name="index" href="/" activityEnabled={2} />
+          <TabTrigger name="index" href="/" activityEnabled />
           <TabTrigger name="disabled" href="/disabled" activityEnabled={false} />
         </TabList>
       </HeadlessTabs>
@@ -372,7 +419,7 @@ test('uses headless tab trigger activity settings', () => {
   expectActivityModes({ index: ['visible'] });
 
   act(() => router.navigate('/disabled'));
-  expectActivityModes({ index: ['visible'], disabled: [] });
+  expectActivityModes({ index: ['hidden'], disabled: [] });
 });
 
 test('wraps route modules but not layout modules', () => {

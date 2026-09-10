@@ -28,7 +28,7 @@ export type ScreenTrigger =
       type: 'internal';
       href: Href;
       name: string;
-      activityEnabled?: boolean | number;
+      activityEnabled?: boolean;
     }
   | {
       type: 'external';
@@ -48,7 +48,7 @@ type TriggerConfig =
       action: JumpToNavigationAction;
       targetState?: PartialState<NavigationState>;
       deep: boolean;
-      activityEnabled?: boolean | number;
+      activityEnabled?: boolean;
     }
   | { type: 'external'; name: string; href: string };
 

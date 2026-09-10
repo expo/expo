@@ -83,10 +83,10 @@ export type ScreenProps<
   dangerouslySingular?: SingularOptions;
 
   /**
-   * Overrides React Activity behavior inherited from the navigator. A number specifies how many
-   * screens must be above this route before its content is hidden.
+   * Overrides React Activity behavior inherited from the navigator. For stack navigators, a number
+   * specifies how many screens must be above this route before its content is hidden.
    */
-  activityEnabled?: boolean | number;
+  activityEnabled?: TState extends { type?: 'stack' } ? boolean | number : boolean;
 };
 
 export type SingularOptions =
