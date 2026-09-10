@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a data race on reload that could crash the app or stop the delivery of `onKeyRecreated` events and messages. ([#49560](https://github.com/expo/expo/pull/49560) by [@vonovak](https://github.com/vonovak))
 - [android] Stop React Native surfaces when their container is destroyed instead of when the Activity is, so embedding a surface in a Compose node, fragment or tab no longer leaves it running off screen while a second one is created. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 - [android] Fix `ReactDelegate.onHostResume()` throwing in host Activities that don't implement `DefaultHardwareBackBtnHandler`. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 - [android] Fix `brownfield.fused.strip-packages` corrupting the generated `ExpoModulesPackageList.kt` when given a broad prefix (e.g. `expo.modules`). ([@gabrieldonadel](https://github.com/gabrieldonadel)) ([#48118](https://github.com/expo/expo/pull/48118) by [@gabrieldonadel](https://github.com/gabrieldonadel))

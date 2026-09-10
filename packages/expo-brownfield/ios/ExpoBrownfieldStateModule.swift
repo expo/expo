@@ -29,7 +29,7 @@ public class ExpoBrownfieldStateModule: Module {
     }
 
     OnDestroy {
-      BrownfieldStateInternal.shared.setExpoModule(nil)
+      BrownfieldStateInternal.shared.clearExpoModule(self)
     }
 
     Function("getSharedState") { (key: String) -> SharedState in
