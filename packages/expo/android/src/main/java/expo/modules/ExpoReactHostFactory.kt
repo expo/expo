@@ -38,7 +38,7 @@ object ExpoReactHostFactory {
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
       DefaultTurboModuleManagerDelegate.Builder(),
     private val hostHandlers: List<ReactNativeHostHandler>,
-    private val jsRuntimeFactoryOverride: JSRuntimeFactory? = null
+    override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance()
   ) : ReactHostDelegate {
 
     val hostDelegateJsBundleFilePath: String?
@@ -78,9 +78,6 @@ object ExpoReactHostFactory {
 
         return JSBundleLoader.createAssetLoader(context, "assets://$hostDelegateJSBundleAssetPath", true)
       }
-
-    override val jsRuntimeFactory: JSRuntimeFactory
-      get() = jsRuntimeFactoryOverride ?: HermesInstance()
 
     override val reactPackages: List<ReactPackage>
       get() = packageList
@@ -122,7 +119,7 @@ object ExpoReactHostFactory {
         useDevSupport,
         bindingsInstaller,
         hostHandlers = hostHandlers,
-        jsRuntimeFactoryOverride = jsRuntimeFactory
+        jsRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
       )
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
