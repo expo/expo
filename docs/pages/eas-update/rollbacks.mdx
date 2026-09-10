@@ -29,3 +29,9 @@ The above command instructs the client to run the update embedded in the build.
 ## Publishing after the rollback
 
 Upon publishing again after a rollback, all clients will receive the new update.
+
+## Pausing updates instead of rolling back
+
+A rollback changes which update your users run. If you instead want to stop serving updates on a channel without changing what your users are running, pause the channel with `eas channel:pause`. Clients keep running the update they already have, and no new update reaches them until you resume the channel.
+
+Pausing does not undo an update that your users have already downloaded. Learn more in [Pause updates on a channel](/eas-update/eas-cli/#pause-updates-on-a-channel).
