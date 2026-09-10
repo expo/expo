@@ -16,25 +16,12 @@ import type {
   NavigationAction,
   NavigationState,
   ParamListBase,
-  Router,
   RouterActionResult,
   RouterConfigOptions,
   RouterFactory,
 } from './types';
 
-/**
- * A function that returns overrides for an existing router.
- */
-export type RouterExtension<
-  State extends NavigationState,
-  Action extends NavigationAction,
-  RouterOptions extends DefaultRouterOptions,
-> = (router: Router<State, Action>, options: RouterOptions) => Partial<Router<State, Action>>;
-
-/**
- * A function that processes the result of an existing router's action handler.
- */
-export type RouterActionExtension<
+type RouterActionExtension<
   State extends NavigationState,
   Action extends NavigationAction,
   RouterOptions extends DefaultRouterOptions,
@@ -46,58 +33,27 @@ export type RouterActionExtension<
   routerOptions: RouterOptions
 ) => RouterActionResult<State> | null;
 
-/**
- * Extends a router factory with partial overrides of its router implementation.
- *
- * @param createRouter Router factory to extend.
- * @param extension Function that receives the original router and its factory options, and returns
- * its overrides.
- * @returns A router factory that creates the extended router.
- *
- * @example
- * ```ts
- * const CustomTabRouter = extendRouter(TabRouter, (router) => ({
- *   shouldActionChangeFocus(action) {
- *     return action.type === 'CUSTOM_ACTION' || router.shouldActionChangeFocus(action);
- *   },
- * }));
- * ```
- */
-export function extendRouter<
-  State extends NavigationState,
-  Action extends NavigationAction,
-  RouterOptions extends DefaultRouterOptions,
->(
-  createRouter: RouterFactory<State, Action, RouterOptions>,
-  extension: RouterExtension<State, Action, RouterOptions>
-): RouterFactory<State, Action, RouterOptions> {
-  return (options) => {
-    const router = createRouter(options);
-    return { ...router, ...extension(router, options) };
-  };
+function clearFocusedPreloadedRoute<State extends NavigationState>(
+  result: RouterActionResult<State> | null
+) {
+  if (!result) {
+    return result;
+  }
+
+  const route = result.state.routes[result.state.index];
+  if (!route?.isPreloaded) {
+    return result;
+  }
+
+  const { isPreloaded, ...focusedRoute } = route;
+  const routes = [...result.state.routes];
+  // Removing an optional field preserves the route's conditional params type, which TypeScript
+  // cannot infer through the `Route` intersection.
+  routes[result.state.index] = focusedRoute as typeof route;
+  return { ...result, state: { ...result.state, routes } };
 }
 
-/**
- * Extends only the action handling of a router factory. The original router handles the action
- * first, then the extension receives its result. All other router members remain unchanged.
- *
- * @param createRouter Router factory whose action handling is extended.
- * @param extension Function that receives the action, original router result, and router factory
- * options.
- * @returns A router factory that creates the extended router.
- *
- * @example
- * ```ts
- * const CustomTabRouter = extendRouterActions(TabRouter, (state, action, options, result) => {
- *   if (action.type === 'CUSTOM_ACTION') {
- *     return { state, affectedRouteKey: state.routes[state.index]?.key };
- *   }
- *
- *   return result;
- * });
- * ```
- */
-export function extendRouterActions<
+function extendRouterActions<
   State extends NavigationState,
   Action extends NavigationAction,
   AdditionalAction extends NavigationAction,
@@ -111,36 +67,44 @@ export function extendRouterActions<
     return {
       ...router,
       getStateForAction(state, action, routerConfigOptions) {
-        // The original router treats actions it does not recognize as unhandled and returns `null`.
+        // Unknown actions are passed to the extension as unhandled.
         const result = router.getStateForAction(state, action as Action, routerConfigOptions);
-        return extension(state, action, routerConfigOptions, result, options);
+        return clearFocusedPreloadedRoute(
+          extension(state, action, routerConfigOptions, result, options)
+        );
       },
     };
   };
 }
 
-/**
- * Extends the stack router with partial overrides of its router implementation.
- */
-export function extendStackRouter(
-  extension: RouterExtension<
+/** Extends stack router action handling while preserving the rest of the router implementation. */
+export function extendStackRouterActions<AdditionalAction extends NavigationAction>(
+  extension: RouterActionExtension<
     StackNavigationState<ParamListBase>,
-    StackActionType | CommonNavigationAction,
+    StackActionType | CommonNavigationAction | AdditionalAction,
     StackRouterOptions
   >
 ) {
-  return extendRouter(StackRouter, extension);
+  return extendRouterActions<
+    StackNavigationState<ParamListBase>,
+    StackActionType | CommonNavigationAction,
+    AdditionalAction,
+    StackRouterOptions
+  >(StackRouter, extension);
 }
 
-/**
- * Extends the tab router with partial overrides of its router implementation.
- */
-export function extendTabRouter(
-  extension: RouterExtension<
+/** Extends tab router action handling while preserving the rest of the router implementation. */
+export function extendTabRouterActions<AdditionalAction extends NavigationAction>(
+  extension: RouterActionExtension<
     TabNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction,
+    TabActionType | CommonNavigationAction | AdditionalAction,
     TabRouterOptions
   >
 ) {
-  return extendRouter(TabRouter, extension);
+  return extendRouterActions<
+    TabNavigationState<ParamListBase>,
+    TabActionType | CommonNavigationAction,
+    AdditionalAction,
+    TabRouterOptions
+  >(TabRouter, extension);
 }
