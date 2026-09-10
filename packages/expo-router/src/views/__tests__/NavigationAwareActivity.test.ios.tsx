@@ -256,7 +256,7 @@ test('uses the navigator activity default threshold', () => {
   expectActivityModes({ index: ['hidden'], b: ['visible'] });
 });
 
-test('accumulates screens above across nested navigators', () => {
+test('counts screens above only in the current navigator', () => {
   renderRouter(
     {
       _layout: () => <JSStack activityEnabled />,
@@ -282,15 +282,15 @@ test('accumulates screens above across nested navigators', () => {
 
   act(() => router.navigate('/other'));
   expectActivityModes({
-    'home-index': ['hidden'],
+    'home-index': ['visible'],
     'home-details': ['visible'],
     other: ['visible'],
   });
 
   act(() => router.push('/modal'));
   expectActivityModes({
-    'home-index': ['hidden'],
-    'home-details': ['hidden'],
+    'home-index': ['visible'],
+    'home-details': ['visible'],
     other: ['hidden'],
     modal: ['visible'],
   });
@@ -400,7 +400,7 @@ test('wraps route modules but not layout modules', () => {
   });
 });
 
-test('manual activity uses screens above from nested navigators', () => {
+test('manual activity only counts screens above in the current navigator', () => {
   renderRouter(
     {
       _layout: () => <JSStack />,
@@ -428,7 +428,7 @@ test('manual activity uses screens above from nested navigators', () => {
   expectActivityModes({ 'home-index': ['visible'] });
 
   act(() => router.navigate('/other'));
-  expectActivityModes({ 'home-index': ['hidden'] });
+  expectActivityModes({ 'home-index': ['visible'] });
 });
 
 test('cleans up effects while preserving local state', async () => {

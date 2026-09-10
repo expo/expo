@@ -239,11 +239,7 @@ export function useDescriptors<
     );
 
     return (
-      <NavigationActivityProvider
-        key={route.key}
-        activityThreshold={activityThreshold}
-        state={state}
-        route={route}>
+      <NavigationActivityProvider key={route.key} activityThreshold={activityThreshold}>
         <NavigationBuilderContext.Provider value={context}>
           <NavigationProvider route={route} navigation={navigation}>
             {element}
