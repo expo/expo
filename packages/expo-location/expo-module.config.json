@@ -1,12 +1,13 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["LocationModule", "LocationModuleNext"]
+    "modules": ["LocationModule", "LocationModuleNext", "HmsModule"]
   },
   "android": {
     "modules": [
       "expo.modules.location.LocationModule",
-      "expo.modules.location.next.LocationModuleNext"
+      "expo.modules.location.next.LocationModuleNext",
+      "expo.modules.location.next.locationProviders.HmsModule"
     ]
   }
 }

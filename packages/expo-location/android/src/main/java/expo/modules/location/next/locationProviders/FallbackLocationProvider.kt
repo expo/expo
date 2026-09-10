@@ -1,6 +1,7 @@
 package expo.modules.location.next.locationProviders
 
 import android.app.Activity
+import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.location.next.GetCurrentPositionOptions
 import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.Position
@@ -27,6 +28,10 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>): L
 
   override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
     return firstAvailable { it.enableLocationServices(activity, storeContinuationObject) }
+  }
+
+  override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    return firstAvailable { it.getLocationTaskConsumerClass() }
   }
 
   inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {

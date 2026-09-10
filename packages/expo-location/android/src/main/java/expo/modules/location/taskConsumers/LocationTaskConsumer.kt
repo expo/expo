@@ -53,12 +53,14 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     return "location"
   }
 
+  // TODO(@HubertBer): This one gets called when we register the task from the module side
   override fun didRegister(task: TaskInterface) {
     mTask = task
     startLocationUpdates()
     maybeStartForegroundService()
   }
 
+  // TODO(@HubertBer): This one gets called when we unregister the task from the module side
   override fun didUnregister() {
     stopLocationUpdates()
     stopForegroundService()
@@ -133,6 +135,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   }
 
   //region private
+  // TODO(@HubertBer) This function requests location updates from GMS.
   private fun startLocationUpdates() {
     val context = context ?: run {
       Log.w(TAG, "The context has been abandoned")
@@ -173,6 +176,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     }
   }
 
+  // TODO(@HubertBer) tries to start foreground service -- we don't want it on the new locaiton@next it's separate there.
   private fun maybeStartForegroundService() {
     // Foreground service is available as of Android Oreo.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

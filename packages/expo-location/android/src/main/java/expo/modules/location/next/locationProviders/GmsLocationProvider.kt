@@ -2,6 +2,9 @@ package expo.modules.location.next.locationProviders
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.os.Looper
 import android.util.Log
@@ -9,16 +12,22 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
+import expo.modules.interfaces.taskManager.TaskConsumer
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
+import expo.modules.location.next.BatchedPositions
 import expo.modules.location.next.GetCurrentPositionOptions
 import expo.modules.location.next.LocationPriority
 import expo.modules.location.next.LocationProvider
+import expo.modules.location.next.LocationTaskConsumer
 import expo.modules.location.next.Position
 import expo.modules.location.next.ProviderResult
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
@@ -31,6 +40,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 fun LocationPriority.toGmsPriority(): Int {
   return when (this) {
@@ -121,6 +131,10 @@ class GmsLocationProvider(
     }
     return ProviderResult.Success(enabled)
   }
+
+  override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    return ProviderResult.Success(GmsLocationTaskConsumer::class.java)
+  }
 }
 
 private class GmsWatchSession(
@@ -150,5 +164,49 @@ private class GmsWatchSession(
   override fun stopUpdates() {
     callback?.let { fusedLocationProvider.removeLocationUpdates(it) }
     callback = null
+  }
+}
+
+class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?): LocationTaskConsumer(
+  context,
+  taskManagerUtils
+) {
+  private val fusedLocationProvider: FusedLocationProviderClient by lazy {
+    LocationServices.getFusedLocationProviderClient(context)
+  }
+  override fun requestLocationUpdates(pendingIntent: PendingIntent): Boolean {
+    // TODO(@HubertBer): add error handling everywhere in this function
+    // TODO(@HubertBer): add proper options in here
+    val request = LocationRequest.Builder(
+      Priority.PRIORITY_HIGH_ACCURACY,
+      1.seconds.inWholeMilliseconds
+    ).setMaxUpdateDelayMillis(5.seconds.inWholeMilliseconds)
+      .build()
+
+    try {
+      fusedLocationProvider.requestLocationUpdates(request, pendingIntent)
+      return true
+    } catch (e: SecurityException) {}
+    return false
+  }
+
+  override fun stopLocationUpdates(pendingIntent: PendingIntent) {
+    fusedLocationProvider.removeLocationUpdates(pendingIntent)
+  }
+
+  override fun decodeBatchedPositions(intent: Intent?): BatchedPositions {
+    intent ?: return BatchedPositions(null, "Received a location broadcast without an intent.")
+
+    val positions = LocationResult.extractResult(intent)?.locations?.takeIf { it.isNotEmpty() }
+    if (positions != null) {
+      return BatchedPositions(positions.map { it.toPosition() }, null)
+    }
+
+    val availability = LocationAvailability.extractLocationAvailability(intent)
+    if (availability != null && !availability.isLocationAvailable) {
+      return BatchedPositions(null, "Location is currently unavailable.")
+    }
+
+    return BatchedPositions(null, null)
   }
 }
