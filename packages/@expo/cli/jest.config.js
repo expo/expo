@@ -9,5 +9,6 @@ module.exports = {
   displayName: require('./package').name,
   roots,
   setupFiles: ['<rootDir>/jest.setup.ts'],
+  transformIgnorePatterns: ['/node_modules/(?!(?:\\.pnpm|@ramonclaudio/compile)/)'],
   clearMocks: true,
 };

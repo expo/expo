@@ -56,8 +56,7 @@ jest.mock('../../../start/platforms/ios/AppleDeviceManager', () => ({
 
 jest.mock('../XcodeBuild', () => ({
   logPrettyItem: jest.fn(),
-  buildAsync: jest.fn(async () => '...'),
-  getAppBinaryPath: jest.fn(() => '/mock_binary'),
+  buildAsync: jest.fn(async () => '/mock_binary'),
 }));
 
 jest.mock('../launchApp', () => ({
@@ -150,6 +149,43 @@ describe(runIosAsync, () => {
     );
 
     expect(logProjectLogsLocation).toHaveBeenCalled();
+  });
+
+  it('reports the compiled artifact without launching for a generic device', async () => {
+    mockPlatform('darwin');
+    jest.mocked(resolveDeviceAsync).mockResolvedValueOnce(null);
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({ version: '53.0.0' }),
+      },
+      '/'
+    );
+
+    await runIosAsync('/', { device: 'generic' });
+
+    expect(buildAsync).toHaveBeenCalledWith(expect.objectContaining({ device: null }));
+    expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('/mock_binary'));
+    expect(startBundlerAsync).not.toHaveBeenCalled();
+    expect(launchAppAsync).not.toHaveBeenCalled();
+  });
+
+  it('stops before starting Metro or installing when compilation fails', async () => {
+    mockPlatform('darwin');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({ version: '53.0.0' }),
+      },
+      '/'
+    );
+    jest.mocked(buildAsync).mockRejectedValueOnce(new Error('native compile failed'));
+
+    await expect(runIosAsync('/', {})).rejects.toThrow('native compile failed');
+    expect(startBundlerAsync).not.toHaveBeenCalled();
+    expect(launchAppAsync).not.toHaveBeenCalled();
   });
 
   it(`runs ios on device`, async () => {

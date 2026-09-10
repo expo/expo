@@ -8,6 +8,7 @@ import * as path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 import {
   annotate,
   createMaestroFlowAsync,
@@ -22,7 +23,6 @@ import {
   startGroup,
   endGroup,
 } from './lib/e2e-common';
-import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
 const TARGET_DEVICE_IOS_VERSION = 26;
@@ -96,7 +96,7 @@ const __dirname = dirname(__filename);
 async function buildAsync(projectRoot: string, deviceId: string): Promise<string> {
   console.log('\n💿 Building App');
   // @ts-expect-error missing typings
-  const buildOutput = await XcodeBuild.default.buildAsync({
+  return await XcodeBuild.default.buildAsync({
     projectRoot,
     isSimulator: true,
     xcodeProject: {
@@ -114,10 +114,6 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
     port: 8081,
     shouldStartBundler: false,
   });
-
-  // @ts-expect-error missing typings
-  const binaryPath = await XcodeBuild.default.getAppBinaryPath(buildOutput);
-  return binaryPath;
 }
 
 function prettyPrintNativeErrorLogs(logs: string[]) {
