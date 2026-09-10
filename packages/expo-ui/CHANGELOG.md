@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android] Add `shadowElevation` to `DropdownMenu` to customize the popup shadow in dp. ([#49896](https://github.com/expo/expo/pull/49896) by [@maxlapides](https://github.com/maxlapides))
 - [iOS] Added the `NavigationStack` and `Toolbar` components, the `navigationTitle` modifier, and the `close` button role. ([#49940](https://github.com/expo/expo/pull/49940) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes

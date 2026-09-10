@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.UIComposableScope
 import expo.modules.ui.ModifierRegistry
@@ -24,6 +25,7 @@ fun FunctionalComposableScope.DropdownMenuContent(
 
     DropdownMenu(
       containerColor = props.color?.composeOrNull ?: MenuDefaults.containerColor,
+      shadowElevation = props.shadowElevation?.dp ?: MenuDefaults.ShadowElevation,
       expanded = props.expanded,
       onDismissRequest = onDismissRequest
     ) {

@@ -44,6 +44,14 @@ export interface DropdownMenuProps {
   color?: ColorValue;
 
   /**
+   * Shadow elevation of the dropdown menu popup in dp. Set to `0` to remove the shadow.
+   * Defaults to Material3's `MenuDefaults.ShadowElevation`.
+   *
+   * @platform android
+   */
+  shadowElevation?: number;
+
+  /**
    * Optional styles to apply to the `DropdownMenu`.
    */
   style?: StyleProp<ViewStyle>;
@@ -58,6 +66,7 @@ type NativeMenuProps = {
   expanded?: boolean;
   onDismissRequest?: () => void;
   color?: ColorValue;
+  shadowElevation?: number;
   style?: StyleProp<ViewStyle>;
   modifiers?: ModifierConfig[];
   children?: ReactNode;
