@@ -1,0 +1,16 @@
+# expo-image-manipulator: resize, crop, and rotate a bundled image and check the result size.
+# iOS only for now: in the Android Release build the bundled example image resolves to a missing
+# /android_res/drawable path (Glide FileNotFoundException), so no operation applies there.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/imagemanipulator"
+wait text "Resize both to square" 20000
+press label="Resize both to square"
+wait text "size = 300 x 300" 15000
+press label="Crop - half image"
+wait text "size = 150 x 300" 15000
+press label="-90"
+wait text "size = 300 x 150" 15000
+press label="Reset photo"
+wait text "size = 800 x 533" 15000
+close

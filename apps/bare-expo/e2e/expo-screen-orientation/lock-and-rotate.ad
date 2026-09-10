@@ -1,0 +1,14 @@
+# expo-screen-orientation: lock to landscape, observe the orientation change, lock back.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/screenorientation"
+wait text "OrientationLock:" 20000
+press label="LANDSCAPE_LEFT"
+wait text "OrientationLock: LANDSCAPE_LEFT" 10000
+wait text "Orientation: LANDSCAPE_LEFT" 10000
+press label="PORTRAIT_UP"
+wait text "OrientationLock: PORTRAIT_UP" 10000
+wait text "Orientation: PORTRAIT_UP" 10000
+press label="DEFAULT"
+wait text "OrientationLock: DEFAULT" 10000
+close
