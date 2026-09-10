@@ -1741,3 +1741,73 @@ describe('extractFrontmatter', () => {
     expect(result).toBeNull();
   });
 });
+
+describe('angle brackets in re-injected text', () => {
+  const cases: [name: string, html: string, expected: string][] = [
+    [
+      'tab label',
+      '<main><div data-md="tabs"><div role="tablist"><button role="tab">Using &lt;Stack&gt; navigator</button></div><div role="tabpanel"><p>body</p></div></div></main>',
+      'Using <Stack> navigator',
+    ],
+    [
+      'collapsible summary',
+      '<main><details data-md="collapsible"><summary>Using &lt;Stack&gt; navigator</summary><p>body</p></details></main>',
+      'Using <Stack> navigator',
+    ],
+    [
+      'prerequisites summary',
+      '<main><details data-md="prerequisites"><summary>Install &lt;Foo&gt; first</summary><p>body</p></details></main>',
+      'Install <Foo> first',
+    ],
+    [
+      'requirement title',
+      '<main><details data-md="prerequisites"><summary>Prereqs</summary><div data-md="requirement-title">A &lt;Bar&gt; module</div></details></main>',
+      'A <Bar> module',
+    ],
+    [
+      'homepage link label',
+      '<main><a data-md="link" href="/launch"><span>Try &lt;Launch&gt;</span></a></main>',
+      'Try <Launch>',
+    ],
+    [
+      'card link title',
+      '<main><a href="/guide" data-md="card-link"><div><span data-text="true">Using &lt;Stack&gt;</span><p data-text="true">Wrap &lt;Slot&gt; here.</p></div></a></main>',
+      'Using <Stack> — Wrap <Slot> here.',
+    ],
+    [
+      'api platforms list',
+      '<main><div data-md="api-platforms"><span data-md="platform-badge"><span>&lt;iOS&gt;</span></span></div></main>',
+      'Supported platforms: <iOS>.',
+    ],
+    [
+      'table cell blockquote',
+      '<main><table><tr><td><blockquote>Use &lt;Stack&gt; here</blockquote></td></tr></table></main>',
+      'Use <Stack> here',
+    ],
+    [
+      'platform badge',
+      '<main><p>Config<span data-md="platform-badge"><span>&lt;iOS&gt;</span></span></p></main>',
+      'Config, <iOS>',
+    ],
+  ];
+
+  it.each(cases)('keeps angle-bracketed text in the %s', (_name, html, expected) => {
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('main').text().replace(/\s+/g, ' ').trim()).toContain(expected);
+  });
+
+  it('keeps angle-bracketed text inside an unknown tag in code', () => {
+    const $ = cheerio.load('<main><code><promise>Array&lt;Bar&gt;</promise></code></main>');
+    cleanHtml($, $('main'));
+    expect($('main').text()).toBe('<promise>Array<Bar></promise>');
+  });
+
+  it('escapes ampersands so they survive as literal text', () => {
+    const $ = cheerio.load(
+      '<main><details data-md="collapsible"><summary>Tips &amp; tricks</summary><p>body</p></details></main>'
+    );
+    cleanHtml($, $('main'));
+    expect($('h4').text()).toBe('Tips & tricks');
+  });
+});
