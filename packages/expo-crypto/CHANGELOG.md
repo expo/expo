@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Move digest to the module queue. ([#45271](https://github.com/expo/expo/pull/45271) by [@rustle](https://github.com/rustle))
+
 ### 🐛 Bug fixes
 
 - [Web] Respect the bounds of typed-array views in `Crypto.AES`, so sealed data passed as a `Uint8Array` that views part of a larger buffer no longer reads the wrong bytes and fails to decrypt. ([#49196](https://github.com/expo/expo/pull/49196) by [@dennytosp](https://github.com/dennytosp))
