@@ -40,9 +40,9 @@ describe('expo-router/js-stack re-exports', () => {
         type: 'stack',
         key: 'stack',
         index: 0,
+        routeKeySeq: 0,
         routeNames: [],
         routes: [],
-        preloadedRoutes: [],
       },
     });
 
