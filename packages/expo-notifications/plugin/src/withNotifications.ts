@@ -32,9 +32,10 @@ export type NotificationsPluginProps = {
    */
   defaultChannel?: string;
   /**
-   * Whether remote notification images should be displayed using Android's
-   * `NotificationCompat.BigPictureStyle` when the notification is expanded.
-   *
+   * Whether a remote notification's image fills the notification when the user expands it,
+   * using Android's `NotificationCompat.BigPictureStyle`. When `false`, the image appears
+   * only as the notification's large icon. This style replaces the expanded text layout,
+   * so the full notification body no longer appears.
    * @default false
    * @platform android
    */
