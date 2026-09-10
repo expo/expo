@@ -186,8 +186,8 @@ export function AgentPrompt({
             className="mt-3 [&_.code-block-wrapper]:my-0">
             {prompt ? (
               <div className="code-block-wrapper overflow-clip rounded-3xl border border-secondary bg-subtle">
-                <pre className="relative max-h-96 overflow-auto whitespace-pre">
-                  <div className="w-fit p-4">
+                <pre className="relative max-h-96 overflow-auto wrap-break-word whitespace-pre-wrap">
+                  <div className="p-4">
                     <code className="text-xs text-default">{prompt}</code>
                   </div>
                 </pre>
