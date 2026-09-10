@@ -16,9 +16,13 @@ describe('expo-router/js-stack re-exports', () => {
     expect(JSStackEntry.Stack.Protected).toBeDefined();
   });
 
-  it('exports a single factory for the JS stack integration props', () => {
+  it('exports navigator props helpers and preserves the unstable JS stack alias', () => {
     expect(RouterEntry.createBaseStackProps).toBeDefined();
+    expect(RouterEntry.createBaseTabProps).toBeDefined();
+    expect(RouterEntry.createNativeStackProps).toBeDefined();
+    expect(JSStackEntry.createJSStackProps).toBeDefined();
     expect(JSStackEntry.unstable_createPropsForJSStack).toBeDefined();
+    expect(JSStackEntry.unstable_createPropsForJSStack).toBe(JSStackEntry.createJSStackProps);
     expect(JSStackEntry.unstable_createStandardStackNavigator).toBeDefined();
     expect('createPropsForJSStack' in JSStackEntry).toBe(false);
     expect('createStandardStackNavigator' in JSStackEntry).toBe(false);

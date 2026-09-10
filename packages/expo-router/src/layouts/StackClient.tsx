@@ -23,6 +23,7 @@ import type { NativeStackNavigationConfig } from '../react-navigation/native-sta
 import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
+import { createNativeStackProps } from './createNativeStackProps';
 import { StackRouter } from './stack-router';
 import {
   type StackScreenProps,
@@ -45,10 +46,7 @@ const RNStack = unstable_integrateWithRouter<
   StackRouterOptions,
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
-  createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
-    ...createBaseStackProps({ dispatchSync, navigation, state }),
-    removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-  }),
+  createProps: createNativeStackProps,
 });
 
 /**

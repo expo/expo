@@ -4,6 +4,7 @@ import Tabs from './TabsClient';
 
 export {
   createStandardBottomTabNavigator,
+  createJSTabsProps,
   BottomTabBar,
   BottomTabView,
   BottomTabBarHeightCallbackContext,
