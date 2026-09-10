@@ -259,6 +259,46 @@ export default function RoundedDropdownMenuExample() {
 
 </ComponentExample>
 
+### Shadow elevation
+
+Use `shadowElevation` to set the popup shadow elevation in dp. Set it to `0` to remove the shadow, or omit it to use Material 3's default. Modifiers on `DropdownMenu` apply to the trigger container, so shadow modifiers do not change the popup shadow.
+
+```tsx
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuItem,
+  OutlinedButton,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+export default function ShadowDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu
+        expanded={isExpanded}
+        onDismissRequest={() => setIsExpanded(false)}
+        shadowElevation={1}>
+        <DropdownMenu.Trigger>
+          <OutlinedButton onClick={() => setIsExpanded(true)}>
+            <Text>Show menu</Text>
+          </OutlinedButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <Text>Item 1</Text>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

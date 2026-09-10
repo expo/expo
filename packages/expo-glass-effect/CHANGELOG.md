@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Changed the type of the `GlassView` `tintColor` prop from `string` to `ColorValue`, which the native implementation already accepted, so `PlatformColor` and `DynamicColorIOS` values now type-check. ([#49893](https://github.com/expo/expo/pull/49893) by [@johankasperi](https://github.com/johankasperi))
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

@@ -263,7 +263,7 @@ export type ImperativeRouter = {
    */
   reload: () => void;
   /**
-   * Prefetch a screen in the background before navigating to it
+   * Prefetches a route in the background before navigating to it.
    */
   prefetch: (href: Href, options?: NavigationOptions) => void;
 };

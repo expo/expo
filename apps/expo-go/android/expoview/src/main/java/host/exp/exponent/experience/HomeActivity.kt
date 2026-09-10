@@ -102,6 +102,8 @@ open class HomeActivity : AppCompatActivity() {
     SoLoader.init(this, OpenSourceMergedSoMapping)
     super.onResume()
     updateStatusBarForTheme(viewModel.selectedTheme.value)
+    // The user may have changed it in Settings while Home was in the background.
+    viewModel.refreshLocalNetworkPermission()
   }
   //endregion Activity Lifecycle
 

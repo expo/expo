@@ -1687,6 +1687,13 @@ export const resizable = (
   resizingMode?: 'stretch' | 'tile'
 ) => createModifier('resizable', { ...capInsets, resizingMode });
 
+/**
+ * Configures the view's title for purposes of navigation, using a string.
+ * @param title - The title to display.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationtitle(_:)).
+ */
+export const navigationTitle = (title: string) => createModifier('navigationTitle', { title });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -1830,7 +1837,8 @@ export type BuiltInModifier =
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
   | ReturnType<typeof activityBackgroundTint>
-  | ReturnType<typeof containerBackground>;
+  | ReturnType<typeof containerBackground>
+  | ReturnType<typeof navigationTitle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

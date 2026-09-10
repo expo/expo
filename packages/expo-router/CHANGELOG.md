@@ -78,6 +78,7 @@
 
 ### 🐛 Bug fixes
 
+- Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))
 - Re-export the vendored JavaScript stack API from `expo-router/js-stack`. ([#49657](https://github.com/expo/expo/pull/49657) by [@davidmokos](https://github.com/davidmokos))
@@ -99,6 +100,8 @@
 
 ### 💡 Others
 
+- Clarify prefetch terminology. ([#49918](https://github.com/expo/expo/pull/49918) by [@Ubax](https://github.com/Ubax))
+- Add batched navigation history tests. ([#49904](https://github.com/expo/expo/pull/49904) by [@Ubax](https://github.com/Ubax))
 - Replace the `escape-string-regexp` dependency with an internal helper. ([#49902](https://github.com/expo/expo/pull/49902) by [@Ubax](https://github.com/Ubax))
 - Replace the internal `color` dependency with `@react-native/normalize-colors`. ([#49876](https://github.com/expo/expo/pull/49876) by [@Ubax](https://github.com/Ubax))
 - Resolve queued navigation actions against render-time state. ([#49846](https://github.com/expo/expo/pull/49846) by [@Ubax](https://github.com/Ubax))

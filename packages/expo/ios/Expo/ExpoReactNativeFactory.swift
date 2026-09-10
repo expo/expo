@@ -1,6 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+// SwiftPM compiles Expo and ExpoObjC as separate modules; CocoaPods builds them
+// as one pod target where Swift saw the ObjC half implicitly.
+#if canImport(ExpoObjC)
+import ExpoObjC
+#endif
 
 public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
