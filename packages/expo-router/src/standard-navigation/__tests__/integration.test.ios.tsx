@@ -368,6 +368,52 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().focusedName).toBe('second');
   });
 
+  it('exposes whether a route key is preloaded via createProps', () => {
+    const StandardWithIsPreloaded = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions,
+      {
+        isPreloaded: (key: string) => boolean;
+        preloadSecond: () => void;
+        focusSecond: () => void;
+      }
+    >(NavigatorContent, TabRouter, {
+      createProps: ({ isPreloaded, dispatchSync }) => ({
+        isPreloaded,
+        preloadSecond: () => dispatchSync({ type: 'PRELOAD', payload: { name: 'second' } }),
+        focusSecond: () => dispatchSync(TabActions.jumpTo('second')),
+      }),
+    });
+
+    renderRouter({
+      _layout: () => (
+        <StandardWithIsPreloaded>
+          <StandardWithIsPreloaded.Screen name="index" />
+          <StandardWithIsPreloaded.Screen name="second" />
+        </StandardWithIsPreloaded>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    const activeKey = lastArgs().state.routes[0]!.key;
+    expect((lastArgs().isPreloaded as (key: string) => boolean)(activeKey)).toBe(false);
+    expect((lastArgs().isPreloaded as (key: string) => boolean)('unknown')).toBe(false);
+
+    act(() => (lastArgs().preloadSecond as () => void)());
+
+    const preloadedKey = lastArgs().state.routes.find((route) => route.name === 'second')!.key;
+    expect((lastArgs().isPreloaded as (key: string) => boolean)(preloadedKey)).toBe(true);
+
+    act(() => (lastArgs().focusSecond as () => void)());
+
+    expect(lastArgs().state.routes[lastArgs().state.index]!.key).toBe(preloadedKey);
+    expect((lastArgs().isPreloaded as (key: string) => boolean)(preloadedKey)).toBe(false);
+  });
+
   // Covers the `dispatch` path of `createProps` (the part flagged as internal and most likely to
   // break): a prop built from the raw dispatch must actually mutate the navigator state when called.
   it('exposes a working dispatch via createProps to NavigatorContent', () => {
