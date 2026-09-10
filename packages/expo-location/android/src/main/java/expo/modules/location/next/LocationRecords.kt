@@ -8,6 +8,8 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.GetCurrentPositionOptions
 import expo.modules.location.next.locationProviders.LocationPriority
+import expo.modules.location.next.locationProviders.WatchPositionParameters
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 enum class LocationPermissionStatus(val value: String) : Enumerable {
@@ -70,6 +72,17 @@ enum class LocationProfile(val value: String) : Enumerable {
       FITNESS -> LocationPriority.HIGH_ACCURACY
       AIRBORNE -> LocationPriority.HIGH_ACCURACY
       LOW_POWER -> LocationPriority.LOW_POWER
+    }
+  }
+
+  fun watchParameters(): WatchPositionParameters {
+    return when (this) {
+      DEFAULT -> WatchPositionParameters(LocationPriority.BALANCED_POWER_ACCURACY, 5.seconds, Duration.ZERO)
+      AUTOMOTIVE_NAVIGATION -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO)
+      OTHER_NAVIGATION -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 2.seconds, Duration.ZERO)
+      FITNESS -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 2.seconds, Duration.ZERO)
+      AIRBORNE -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO)
+      LOW_POWER -> WatchPositionParameters(LocationPriority.LOW_POWER, 60.seconds, 300.seconds)
     }
   }
 }

@@ -26,12 +26,15 @@ import expo.modules.location.next.locationProviders.AndroidLocationProvider
 import expo.modules.location.next.locationProviders.FallbackLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.next.locationProviders.LocationProvider
+import expo.modules.location.next.locationProviders.WatchPositionParameters
+import expo.modules.location.next.locationProviders.WatchSession
 import expo.modules.location.records.PermissionRequestResponse
-import java.util.Locale
+import java.lang.ref.WeakReference
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.time.Duration.Companion.seconds
 
 class RequestingBackgroundPermissionsWithoutForegroundGrantException : CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
 class LocationServicesPromptPendingException : CodedException("Tried running enableLocationServices while other is pending")
@@ -45,6 +48,8 @@ sealed interface LocationServicesContinuation {
 
 class LocationModuleNext : Module() {
   lateinit var mContext: Context
+  val sessionsLock = Any()
+  val watchSessions: MutableList<WeakReference<PausableWatchSession>> = mutableListOf()
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
     val gmsLocationProvider = GmsLocationProvider(
@@ -60,6 +65,12 @@ class LocationModuleNext : Module() {
   lateinit var currentLocationProvider: LocationProvider
   lateinit var locationManager: LocationManager
   var locationServicesPromptContinuation: LocationServicesContinuation = LocationServicesContinuation.Empty
+
+  fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: WatchSession): PositionWatchHandle = synchronized(sessionsLock) {
+    val pausableSession = PausableWatchSession(initialParameters, session)
+    watchSessions.add(WeakReference(pausableSession))
+    return@synchronized PositionWatchHandle(pausableSession)
+  }
 
   override fun definition() = ModuleDefinition {
     OnCreate {
@@ -114,6 +125,12 @@ class LocationModuleNext : Module() {
       return@Coroutine currentLocationProvider.getPosition(providerOptions).getOrNull()
     }
 
+    Function("watchPosition") { profile: LocationProfile? ->
+      ensureForegroundPermissions()
+      val parameters = (profile ?: LocationProfile.DEFAULT).watchParameters()
+      return@Function createPositionWatchHandle(parameters, currentLocationProvider.watchPosition().getOrThrow())
+    }
+
     Function<Boolean>("hasLocationServicesEnabled") { ->
       hasLocationServicesEnabled()
     }
@@ -141,6 +158,70 @@ class LocationModuleNext : Module() {
           val continuation = (locationServicesPromptContinuation as LocationServicesContinuation.Registered).continuation
           locationServicesPromptContinuation = LocationServicesContinuation.Resumed
           continuation.resume(hasLocationServicesEnabled())
+        }
+      }
+    }
+
+    Class(PositionWatchHandle::class) {
+      Constructor { ->
+        throw LocationWatchHandleCreationException()
+      }
+
+      Events(POSITION_CHANGED)
+
+      Function("pause") { locationWatchHandle: PositionWatchHandle ->
+        locationWatchHandle.session.pause()
+      }
+
+      Function("resume") { locationWatchHandle: PositionWatchHandle ->
+        return@Function locationWatchHandle.session.resume()
+      }
+
+      Function("withProfile") { locationWatchHandle: PositionWatchHandle, profile: LocationProfile ->
+        locationWatchHandle.session.withProfile(profile)
+        locationWatchHandle
+      }
+
+      Function("withInterval") { locationWatchHandle: PositionWatchHandle, intervalSeconds: Double ->
+        locationWatchHandle.session.withInterval(intervalSeconds.seconds)
+        locationWatchHandle
+      }
+
+      Function("withBatching") { locationWatchHandle: PositionWatchHandle, maxUpdateDelaySeconds: Double ->
+        locationWatchHandle.session.withBatching(maxUpdateDelaySeconds.seconds)
+        locationWatchHandle
+      }
+
+      Function("restart") { locationWatchHandle: PositionWatchHandle ->
+        return@Function locationWatchHandle.session.restart()
+      }
+
+      Function("status") { locationWatchHandle: PositionWatchHandle ->
+        locationWatchHandle.session.status()
+      }
+    }
+
+    OnDestroy {
+      synchronized(sessionsLock) {
+        for (session in watchSessions) {
+          session.get()?.release()
+        }
+      }
+    }
+
+    OnActivityEntersForeground {
+      synchronized(sessionsLock) {
+        for (session in watchSessions) {
+          session.get()?.onLifecycleChange(true)
+        }
+      }
+    }
+
+    OnActivityEntersBackground {
+      synchronized(sessionsLock) {
+        watchSessions.removeIf { it.get() == null }
+        for (session in watchSessions) {
+          session.get()?.onLifecycleChange(false)
         }
       }
     }
