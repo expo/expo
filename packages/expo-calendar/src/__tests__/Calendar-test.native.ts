@@ -2,7 +2,15 @@ jest.mock('../ExpoCalendar', () => ({
   __esModule: true,
   default: {
     ExpoCalendar: class {},
-    ExpoCalendarEvent: class {},
+    ExpoCalendarEvent: class {
+      async getExtendedProperties() {
+        return [{ name: 'private:x-owner', value: 'mirror-42' }];
+      }
+      async setExtendedProperty() {}
+      async deleteExtendedProperty() {
+        return true;
+      }
+    },
     ExpoCalendarReminder: class {},
     ExpoCalendarAttendee: class {},
     getSourcesSync: jest.fn(),
@@ -54,5 +62,32 @@ describe('entrypoints', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('expo-calendar/legacy'));
 
     warn.mockRestore();
+  });
+});
+
+describe('extended properties', () => {
+  const properties = [{ name: 'private:x-owner', value: 'mirror-42' }];
+
+  it('are reachable on Android and unavailable everywhere else', async () => {
+    const { Platform } = require('react-native');
+    const { ExpoCalendarEvent } = require('../index');
+    const event = Object.create(ExpoCalendarEvent.prototype);
+
+    if (Platform.OS === 'android') {
+      await expect(event.getExtendedProperties()).resolves.toEqual(properties);
+      await expect(
+        event.setExtendedProperty('private:x-owner', 'mirror-42')
+      ).resolves.toBeUndefined();
+      await expect(event.deleteExtendedProperty('private:x-owner')).resolves.toBe(true);
+    } else {
+      // The table backing them exists only in Android's calendar provider.
+      await expect(event.getExtendedProperties()).rejects.toThrow(/not available/);
+      await expect(event.setExtendedProperty('private:x-owner', 'mirror-42')).rejects.toThrow(
+        /not available/
+      );
+      await expect(event.deleteExtendedProperty('private:x-owner')).rejects.toThrow(
+        /not available/
+      );
+    }
   });
 });
