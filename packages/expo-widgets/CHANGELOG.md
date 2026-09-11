@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Preserve SwiftUI view identity across widget and Live Activity updates so system update animations can run. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
+- [iOS] Fix Live Activity `colorScheme` and `isLuminanceReduced` always reporting default values. ([#50034](https://github.com/expo/expo/pull/50034) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

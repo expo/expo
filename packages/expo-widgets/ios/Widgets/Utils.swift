@@ -76,23 +76,6 @@ public func evaluateLayout(
   }
 }
 
-func getLiveActivityNodes(forName name: String, props: String? = nil, environment: [String: Any]) -> [String: Any] {
-  let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
-  let propsDict = props.flatMap { props in
-    props.data(using: .utf8).flatMap {
-      try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any]
-    }
-  }
-
-  switch evaluateWidgetLayout(layout: layout, props: propsDict, environment: environment) {
-  case .success(let result):
-    return result
-  case .failure(let error):
-    print("[ExpoWidgets] Layout evaluation failed: \(error.message)")
-    return ["banner": createRedBox(message: error.message)]
-  }
-}
-
 public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any] {
   var env: [String: Any] = [
     "showsContainerBackground": environment.showsWidgetContainerBackground,
@@ -117,7 +100,11 @@ public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any
   return env
 }
 
-func getLiveActivityEnvironment(for environment: EnvironmentValues, in context: ActivityViewContext<LiveActivityAttributes>) -> [String: Any] {
+@MainActor
+func getLiveActivityEnvironment(
+  for environment: EnvironmentValues,
+  in context: ActivityViewContext<LiveActivityAttributes>
+) -> [String: Any] {
   var env: [String: Any] = [
     "colorScheme": "\(environment.colorScheme)",
     "isLuminanceReduced": environment.isLuminanceReduced,
