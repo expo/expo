@@ -1,9 +1,10 @@
-import { Column, Host, Text } from '@expo/ui';
+import { Column, Host, Text as ExpoUIText } from '@expo/ui';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { useTheme } from 'ThemeProvider';
 import * as AppIntents from 'expo-app-intents';
 import { useRoute } from 'expo-router';
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text as ReactNativeText, View } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
@@ -23,17 +24,18 @@ function formatDate(timestamp?: number): string {
   return timestamp ? new Date(timestamp).toLocaleString() : 'Never';
 }
 
-/**
- * The card is rendered with `@expo/ui` so it can carry an `appEntityIdentifier` modifier, which
- * tells the system which `MailDraftEntity` the visible view represents.
- */
+const entityAssociationModes = ['None', 'UIKit', 'ExpoUI'] as const;
+type EntityAssociationMode = (typeof entityAssociationModes)[number];
+
 function MailDraft({
   draft,
   highlight,
+  entityAssociationMode,
   onToggleFlag,
 }: {
   draft: AppIntentMailDraft;
   highlight: boolean;
+  entityAssociationMode: EntityAssociationMode;
   onToggleFlag: (flag: 'hideInSpotlight' | 'hideInSuggestions') => void;
 }) {
   const { theme } = useTheme();
@@ -42,6 +44,7 @@ function MailDraft({
     borderColor: highlight ? '#805ad5' : theme.border.default,
     borderRadius: 6,
     borderWidth: StyleSheet.hairlineWidth,
+    gap: 6,
     padding: 12,
     width: '100%' as const,
   };
@@ -49,22 +52,65 @@ function MailDraft({
   const bodyTextStyle = { color: theme.text.default };
   const secondaryTextStyle = { color: theme.text.secondary, fontSize: 14 };
 
+  const reactNativeContent = (
+    <>
+      <ReactNativeText style={subjectTextStyle}>{draft.subject}</ReactNativeText>
+      <ReactNativeText style={bodyTextStyle}>{draft.body}</ReactNativeText>
+      {draft.recipients.length > 0 ? (
+        <ReactNativeText style={secondaryTextStyle}>
+          {`To: ${draft.recipients.join(', ')}`}
+        </ReactNativeText>
+      ) : null}
+      <ReactNativeText style={secondaryTextStyle}>
+        {`Created at: ${formatDate(draft.createdAt)}`}
+      </ReactNativeText>
+      <ReactNativeText style={secondaryTextStyle}>
+        {`Invocation id: ${draft.invocationId}`}
+      </ReactNativeText>
+    </>
+  );
+
+  let renderedDraft: React.ReactNode;
+  switch (entityAssociationMode) {
+    case 'UIKit':
+      renderedDraft = (
+        <AppIntents.AppEntityView entity="mailDraft" entityId={draft.id} style={draftStyle}>
+          {reactNativeContent}
+        </AppIntents.AppEntityView>
+      );
+      break;
+    case 'ExpoUI':
+      renderedDraft = (
+        <Host matchContents={{ vertical: true }} seedColor="#805ad5" style={styles.draftHost}>
+          <Column
+            modifiers={[AppIntents.appEntityIdentifier('mailDraft', draft.id)]}
+            spacing={6}
+            style={draftStyle}>
+            <ExpoUIText textStyle={subjectTextStyle}>{draft.subject}</ExpoUIText>
+            <ExpoUIText textStyle={bodyTextStyle}>{draft.body}</ExpoUIText>
+            {draft.recipients.length > 0 ? (
+              <ExpoUIText textStyle={secondaryTextStyle}>
+                {`To: ${draft.recipients.join(', ')}`}
+              </ExpoUIText>
+            ) : null}
+            <ExpoUIText textStyle={secondaryTextStyle}>
+              {`Created at: ${formatDate(draft.createdAt)}`}
+            </ExpoUIText>
+            <ExpoUIText textStyle={secondaryTextStyle}>
+              {`Invocation id: ${draft.invocationId}`}
+            </ExpoUIText>
+          </Column>
+        </Host>
+      );
+      break;
+    case 'None':
+      renderedDraft = <View style={draftStyle}>{reactNativeContent}</View>;
+      break;
+  }
+
   return (
     <View style={styles.draftGroup}>
-      <Host matchContents={{ vertical: true }} seedColor="#805ad5" style={styles.draftHost}>
-        <Column
-          modifiers={[AppIntents.appEntityIdentifier('mailDraft', draft.id)]}
-          spacing={6}
-          style={draftStyle}>
-          <Text textStyle={subjectTextStyle}>{draft.subject}</Text>
-          <Text textStyle={bodyTextStyle}>{draft.body}</Text>
-          {draft.recipients.length > 0 ? (
-            <Text textStyle={secondaryTextStyle}>{`To: ${draft.recipients.join(', ')}`}</Text>
-          ) : null}
-          <Text textStyle={secondaryTextStyle}>{`Created at: ${formatDate(draft.createdAt)}`}</Text>
-          <Text textStyle={secondaryTextStyle}>{`Invocation id: ${draft.invocationId}`}</Text>
-        </Column>
-      </Host>
+      {renderedDraft}
 
       <View style={styles.draftFlags}>
         <Button
@@ -83,6 +129,8 @@ function MailDraft({
 export default function AppIntentMailScreen() {
   const route = useRoute<any>();
   const drafts = useAppIntentState<AppIntentMailDraft[]>(getMailDrafts, []);
+  const [entityAssociationMode, setEntityAssociationMode] =
+    React.useState<EntityAssociationMode>('None');
   const highlightedInvocationId =
     route.params?.source === 'siri' ? route.params?.intentId : undefined;
   const highlightedDraftId = route.params?.source === 'siri' ? route.params?.draftId : undefined;
@@ -102,6 +150,14 @@ export default function AppIntentMailScreen() {
   );
   return (
     <ScrollPage>
+      <Section title="Entity association">
+        <SegmentedControl
+          values={[...entityAssociationModes]}
+          selectedIndex={entityAssociationModes.indexOf(entityAssociationMode)}
+          onValueChange={(value) => setEntityAssociationMode(value as EntityAssociationMode)}
+        />
+      </Section>
+
       <Section title="Mail Drafts">
         {drafts.length > 0 ? (
           <View style={styles.drafts}>
@@ -109,6 +165,7 @@ export default function AppIntentMailScreen() {
               <MailDraft
                 key={draft.id}
                 draft={draft}
+                entityAssociationMode={entityAssociationMode}
                 highlight={
                   draft.invocationId === highlightedInvocationId || draft.id === highlightedDraftId
                 }

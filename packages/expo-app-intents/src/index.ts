@@ -10,6 +10,8 @@ import type {
 import ExpoAppIntents from './ExpoAppIntentsModule';
 
 export type * from './ExpoAppIntents.types';
+export { default as AppEntityView } from './AppEntityView';
+export type { AppEntityViewProps } from './AppEntityView.types';
 
 const MAX_SEEN_INVOCATION_IDS = 100;
 
@@ -270,6 +272,9 @@ export async function refreshShortcutsAsync(): Promise<void> {
  * The `entity` value must be registered from app-target Swift with
  * `AppEntityIdentifierRegistry.shared.register(_:as:)` or
  * `AppEntityIdentifierRegistry.shared.registerIndexed(_:as:)`.
+ *
+ * > **Note:** The entity association requires iOS 18.4 or later and a project compiled with Xcode 27
+ * > or later. Otherwise the view renders normally without it.
  *
  * @platform ios
  */
