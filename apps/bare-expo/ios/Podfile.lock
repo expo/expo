@@ -277,6 +277,9 @@ PODS:
     - ExpoModulesCore
   - ExpoApplication (58.0.0):
     - ExpoModulesCore
+  - ExpoApplication/Tests (58.0.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoAppMetrics (58.0.0):
     - ExpoModulesCore
     - EXUpdatesInterface
@@ -3155,6 +3158,7 @@ DEPENDENCIES:
   - ExpoAppIntents/Tests (from `../../../packages/expo-app-intents/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoApplication (from `../../../packages/expo-application/ios`)
+  - ExpoApplication/Tests (from `../../../packages/expo-application/ios`)
   - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
