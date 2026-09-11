@@ -55,7 +55,10 @@ export default function OverlayExample() {
       <Overlay alignment="topTrailing">
         <Image
           systemName="bell.fill"
-          modifiers={[font({ size: 28 }), foregroundStyle('#007AFF')]}
+          modifiers={[
+            font({ size: 28 }),
+            foregroundStyle('#007AFF'),
+          ]}
         />
         <Overlay.Content>
           <Text
@@ -84,4 +87,7 @@ export default function OverlayExample() {
 import { Overlay } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/overlay" apiName="Overlay" />
+<APISection
+  packageName="expo-ui/swift-ui/overlay"
+  apiName="Overlay"
+/>

@@ -38,9 +38,17 @@ A lazily-loaded vertical list component that only renders visible items for effi
   alt="A scrollable list showing the first seven of one hundred items">
 
 ```tsx
-import { Host, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
-const items = Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`);
+const items = Array.from(
+  { length: 100 },
+  (_, i) => `Item ${i + 1}`
+);
 
 export default function BasicLazyColumn() {
   return (
@@ -72,12 +80,19 @@ Use the `verticalArrangement` prop to control how items are spaced within the li
   alt="Three list items separated by an eight density independent pixel gap">
 
 ```tsx
-import { Host, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function LazyColumnArrangement() {
   return (
     <Host style={{ height: 400 }}>
-      <LazyColumn verticalArrangement={{ spacedBy: 8 }} horizontalAlignment="center">
+      <LazyColumn
+        verticalArrangement={{ spacedBy: 8 }}
+        horizontalAlignment="center">
         <ListItem>
           <ListItem.HeadlineContent>
             <Text>Spaced Item 1</Text>
@@ -112,12 +127,18 @@ Use the `contentPadding` prop to add padding around the list content in dp.
   alt="Three list items inset from the edges of the list by content padding">
 
 ```tsx
-import { Host, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function LazyColumnPadding() {
   return (
     <Host style={{ height: 400 }}>
-      <LazyColumn contentPadding={{ start: 16, top: 8, end: 16, bottom: 8 }}>
+      <LazyColumn
+        contentPadding={{ start: 16, top: 8, end: 16, bottom: 8 }}>
         <ListItem>
           <ListItem.HeadlineContent>
             <Text>Padded item 1</Text>
@@ -147,4 +168,7 @@ export default function LazyColumnPadding() {
 import { LazyColumn } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/lazycolumn" apiName="LazyColumn" />
+<APISection
+  packageName="expo-ui/jetpack-compose/lazycolumn"
+  apiName="LazyColumn"
+/>

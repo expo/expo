@@ -37,13 +37,21 @@ Expo UI ZStack matches the official SwiftUI [ZStack API](https://developer.apple
 
 ```tsx
 import { Host, ZStack, Rectangle, Text } from '@expo/ui/swift-ui';
-import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  frame,
+  foregroundStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function BasicZStackExample() {
   return (
     <Host style={{ flex: 1 }}>
       <ZStack>
-        <Rectangle modifiers={[frame({ width: 100, height: 100 }), foregroundStyle('blue')]} />
+        <Rectangle
+          modifiers={[
+            frame({ width: 100, height: 100 }),
+            foregroundStyle('blue'),
+          ]}
+        />
         <Text modifiers={[foregroundStyle('white')]}>Overlay</Text>
       </ZStack>
     </Host>
@@ -65,14 +73,27 @@ The `alignment` prop controls how children are positioned within the stack. Avai
 
 ```tsx
 import { Host, ZStack, Rectangle, Circle } from '@expo/ui/swift-ui';
-import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  frame,
+  foregroundStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function ZStackAlignmentExample() {
   return (
     <Host style={{ flex: 1 }}>
       <ZStack alignment="bottomTrailing">
-        <Rectangle modifiers={[frame({ width: 100, height: 100 }), foregroundStyle('blue')]} />
-        <Circle modifiers={[frame({ width: 30, height: 30 }), foregroundStyle('red')]} />
+        <Rectangle
+          modifiers={[
+            frame({ width: 100, height: 100 }),
+            foregroundStyle('blue'),
+          ]}
+        />
+        <Circle
+          modifiers={[
+            frame({ width: 30, height: 30 }),
+            foregroundStyle('red'),
+          ]}
+        />
       </ZStack>
     </Host>
   );
@@ -90,15 +111,29 @@ export default function ZStackAlignmentExample() {
   alt="A blue bell icon with a small red dot at its top trailing corner">
 
 ```tsx
-import { Host, ZStack, Circle, Text, Image } from '@expo/ui/swift-ui';
-import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  Host,
+  ZStack,
+  Circle,
+  Text,
+  Image,
+} from '@expo/ui/swift-ui';
+import {
+  frame,
+  foregroundStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function ZStackBadgeExample() {
   return (
     <Host style={{ flex: 1 }}>
       <ZStack alignment="topTrailing">
         <Image systemName="bell.fill" size={32} color="blue" />
-        <Circle modifiers={[frame({ width: 16, height: 16 }), foregroundStyle('red')]} />
+        <Circle
+          modifiers={[
+            frame({ width: 16, height: 16 }),
+            foregroundStyle('red'),
+          ]}
+        />
       </ZStack>
     </Host>
   );
@@ -113,4 +148,7 @@ export default function ZStackBadgeExample() {
 import { ZStack } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/zstack" apiName="ZStack" />
+<APISection
+  packageName="expo-ui/swift-ui/zstack"
+  apiName="ZStack"
+/>

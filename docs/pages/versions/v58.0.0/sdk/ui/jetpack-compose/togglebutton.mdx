@@ -89,13 +89,19 @@ export default function IconToggleButtonVariantsExample() {
     <Host matchContents>
       <Surface>
         <Row horizontalArrangement={{ spacedBy: 8 }}>
-          <IconToggleButton checked={checked1} onCheckedChange={setChecked1}>
+          <IconToggleButton
+            checked={checked1}
+            onCheckedChange={setChecked1}>
             <Icon source={starIcon} size={24} />
           </IconToggleButton>
-          <FilledIconToggleButton checked={checked2} onCheckedChange={setChecked2}>
+          <FilledIconToggleButton
+            checked={checked2}
+            onCheckedChange={setChecked2}>
             <Icon source={starIcon} size={24} />
           </FilledIconToggleButton>
-          <OutlinedIconToggleButton checked={checked3} onCheckedChange={setChecked3}>
+          <OutlinedIconToggleButton
+            checked={checked3}
+            onCheckedChange={setChecked3}>
             <Icon source={starIcon} size={24} />
           </OutlinedIconToggleButton>
         </Row>
@@ -179,4 +185,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/togglebutton" apiName="ToggleButton" />
+<APISection
+  packageName="expo-ui/jetpack-compose/togglebutton"
+  apiName="ToggleButton"
+/>

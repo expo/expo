@@ -39,7 +39,11 @@ Use `ConfirmationDialog.Trigger` to define the visible element and `Confirmation
 
 ```tsx
 import { useState } from 'react';
-import { Host, ConfirmationDialog, Button } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+} from '@expo/ui/swift-ui';
 
 export default function BasicConfirmationDialogExample() {
   const [isPresented, setIsPresented] = useState(false);
@@ -52,10 +56,16 @@ export default function BasicConfirmationDialogExample() {
         onIsPresentedChange={setIsPresented}
         titleVisibility="visible">
         <ConfirmationDialog.Trigger>
-          <Button label="Show dialog" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Show dialog"
+            onPress={() => setIsPresented(true)}
+          />
         </ConfirmationDialog.Trigger>
         <ConfirmationDialog.Actions>
-          <Button label="Confirm" onPress={() => setIsPresented(false)} />
+          <Button
+            label="Confirm"
+            onPress={() => setIsPresented(false)}
+          />
           <Button label="Cancel" role="cancel" />
         </ConfirmationDialog.Actions>
       </ConfirmationDialog>
@@ -78,7 +88,12 @@ Use `role="destructive"` on a `Button` inside `ConfirmationDialog.Actions` to st
 
 ```tsx
 import { useState } from 'react';
-import { Host, ConfirmationDialog, Button, Text } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function DestructiveConfirmationDialogExample() {
   const [isPresented, setIsPresented] = useState(false);
@@ -91,7 +106,11 @@ export default function DestructiveConfirmationDialogExample() {
         onIsPresentedChange={setIsPresented}
         titleVisibility="visible">
         <ConfirmationDialog.Trigger>
-          <Button label="Delete" role="destructive" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => setIsPresented(true)}
+          />
         </ConfirmationDialog.Trigger>
         <ConfirmationDialog.Actions>
           <Button
@@ -127,7 +146,12 @@ Use `ConfirmationDialog.Message` to display a descriptive message below the titl
 
 ```tsx
 import { useState } from 'react';
-import { Host, ConfirmationDialog, Button, Text } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function MultiActionConfirmationDialogExample() {
   const [isPresented, setIsPresented] = useState(false);
@@ -140,15 +164,27 @@ export default function MultiActionConfirmationDialogExample() {
         onIsPresentedChange={setIsPresented}
         titleVisibility="visible">
         <ConfirmationDialog.Trigger>
-          <Button label="Close document" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Close document"
+            onPress={() => setIsPresented(true)}
+          />
         </ConfirmationDialog.Trigger>
         <ConfirmationDialog.Actions>
-          <Button label="Save" onPress={() => console.log('Saved')} />
-          <Button label="Discard" role="destructive" onPress={() => console.log('Discarded')} />
+          <Button
+            label="Save"
+            onPress={() => console.log('Saved')}
+          />
+          <Button
+            label="Discard"
+            role="destructive"
+            onPress={() => console.log('Discarded')}
+          />
           <Button label="Cancel" role="cancel" />
         </ConfirmationDialog.Actions>
         <ConfirmationDialog.Message>
-          <Text>You have unsaved changes. What would you like to do?</Text>
+          <Text>
+            You have unsaved changes. What would you like to do?
+          </Text>
         </ConfirmationDialog.Message>
       </ConfirmationDialog>
     </Host>
@@ -170,7 +206,12 @@ Set `titleVisibility="hidden"` to hide the dialog title while still showing the 
 
 ```tsx
 import { useState } from 'react';
-import { Host, ConfirmationDialog, Button, Text } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function HiddenTitleConfirmationDialogExample() {
   const [isPresented, setIsPresented] = useState(false);
@@ -183,10 +224,16 @@ export default function HiddenTitleConfirmationDialogExample() {
         onIsPresentedChange={setIsPresented}
         titleVisibility="hidden">
         <ConfirmationDialog.Trigger>
-          <Button label="Show dialog" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Show dialog"
+            onPress={() => setIsPresented(true)}
+          />
         </ConfirmationDialog.Trigger>
         <ConfirmationDialog.Actions>
-          <Button label="OK" onPress={() => setIsPresented(false)} />
+          <Button
+            label="OK"
+            onPress={() => setIsPresented(false)}
+          />
           <Button label="Cancel" role="cancel" />
         </ConfirmationDialog.Actions>
         <ConfirmationDialog.Message>
@@ -206,4 +253,7 @@ export default function HiddenTitleConfirmationDialogExample() {
 import { ConfirmationDialog } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/confirmationdialog" apiName="ConfirmationDialog" />
+<APISection
+  packageName="expo-ui/swift-ui/confirmationdialog"
+  apiName="ConfirmationDialog"
+/>

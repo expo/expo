@@ -47,7 +47,11 @@ export default function BasicToggleExample() {
   // A toggle row stretches to the width it is given, so give the host a size.
   return (
     <Host style={{ flex: 1 }}>
-      <Toggle isOn={isOn} onIsOnChange={setIsOn} label="Enable feature" />
+      <Toggle
+        isOn={isOn}
+        onIsOnChange={setIsOn}
+        label="Enable feature"
+      />
     </Host>
   );
 }
@@ -230,4 +234,7 @@ export default function HiddenLabelExample() {
 import { Toggle } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/toggle" apiName="Toggle" />
+<APISection
+  packageName="expo-ui/swift-ui/toggle"
+  apiName="Toggle"
+/>

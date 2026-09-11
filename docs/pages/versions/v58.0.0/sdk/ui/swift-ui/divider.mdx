@@ -95,17 +95,33 @@ Dividers are commonly used to separate groups of actions in context menus.
   alt="A context menu with a rule separating Edit and Duplicate from a red Delete">
 
 ```tsx
-import { Host, ContextMenu, Button, Text, Divider } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ContextMenu,
+  Button,
+  Text,
+  Divider,
+} from '@expo/ui/swift-ui';
 
 export default function DividerInContextMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Edit" onPress={() => console.log('Edit')} />
-          <Button label="Duplicate" onPress={() => console.log('Duplicate')} />
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
+          <Button
+            label="Duplicate"
+            onPress={() => console.log('Duplicate')}
+          />
           <Divider />
-          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
@@ -124,4 +140,7 @@ export default function DividerInContextMenuExample() {
 import { Divider } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/divider" apiName="Divider" />
+<APISection
+  packageName="expo-ui/swift-ui/divider"
+  apiName="Divider"
+/>

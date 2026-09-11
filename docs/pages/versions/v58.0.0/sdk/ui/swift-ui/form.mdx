@@ -63,7 +63,14 @@ Use the [`Section`](section) component to group related controls within a form.
 
 ```tsx
 import { useState } from 'react';
-import { Host, Form, Section, TextField, Toggle, Button } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Form,
+  Section,
+  TextField,
+  Toggle,
+  Button,
+} from '@expo/ui/swift-ui';
 
 export default function FormWithSectionsExample() {
   const [notifications, setNotifications] = useState(false);
@@ -83,11 +90,18 @@ export default function FormWithSectionsExample() {
             isOn={notifications}
             onIsOnChange={setNotifications}
           />
-          <Toggle label="Dark mode" isOn={darkMode} onIsOnChange={setDarkMode} />
+          <Toggle
+            label="Dark mode"
+            isOn={darkMode}
+            onIsOnChange={setDarkMode}
+          />
         </Section>
 
         <Section>
-          <Button label="Save changes" onPress={() => console.log('Saved!')} />
+          <Button
+            label="Save changes"
+            onPress={() => console.log('Saved!')}
+          />
         </Section>
       </Form>
     </Host>
@@ -109,12 +123,19 @@ Use the `scrollContentBackground` modifier to customize or hide the form's backg
 
 ```tsx
 import { Host, Form, Section, TextField } from '@expo/ui/swift-ui';
-import { scrollContentBackground, background } from '@expo/ui/swift-ui/modifiers';
+import {
+  scrollContentBackground,
+  background,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function FormBackgroundExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Form modifiers={[scrollContentBackground('hidden'), background('#F0F0F0')]}>
+      <Form
+        modifiers={[
+          scrollContentBackground('hidden'),
+          background('#F0F0F0'),
+        ]}>
         <Section title="Custom Background">
           <TextField placeholder="Enter text" />
         </Section>
@@ -140,7 +161,13 @@ Use the [`scrollDisabled`](modifiers/#scrolldisableddisabled) modifier to preven
 
 ```tsx
 import { useState } from 'react';
-import { Host, Form, Section, TextField, Toggle } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Form,
+  Section,
+  TextField,
+  Toggle,
+} from '@expo/ui/swift-ui';
 import { scrollDisabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function NonScrollableFormExample() {
@@ -150,7 +177,11 @@ export default function NonScrollableFormExample() {
     <Host style={{ flex: 1 }}>
       <Form modifiers={[scrollDisabled()]}>
         <Section title="Settings">
-          <Toggle label="Enable feature" isOn={isOn} onIsOnChange={setIsOn} />
+          <Toggle
+            label="Enable feature"
+            isOn={isOn}
+            onIsOnChange={setIsOn}
+          />
         </Section>
       </Form>
     </Host>
@@ -188,7 +219,9 @@ export default function RefreshableFormExample() {
     <Host style={{ flex: 1 }}>
       <Form modifiers={[refreshable(handleRefresh)]}>
         <Section title="Pull to refresh">
-          <Text>Last refreshed: {lastRefresh.toLocaleTimeString()}</Text>
+          <Text>
+            Last refreshed: {lastRefresh.toLocaleTimeString()}
+          </Text>
         </Section>
       </Form>
     </Host>

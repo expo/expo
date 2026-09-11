@@ -39,7 +39,13 @@ Manage the selected item in React state and pass `selected` to each `NavigationB
 
 ```tsx
 import { useState } from 'react';
-import { Host, Icon, NavigationBar, NavigationBarItem, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Icon,
+  NavigationBar,
+  NavigationBarItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 const HOME_ICON = require('./assets/home.xml');
 const SEARCH_ICON = require('./assets/search.xml');
@@ -49,9 +55,13 @@ export default function BasicNavigationBar() {
   const [selectedTab, setSelectedTab] = useState('home');
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <NavigationBar>
-        <NavigationBarItem selected={selectedTab === 'home'} onClick={() => setSelectedTab('home')}>
+        <NavigationBarItem
+          selected={selectedTab === 'home'}
+          onClick={() => setSelectedTab('home')}>
           <NavigationBarItem.Icon>
             <Icon source={HOME_ICON} />
           </NavigationBarItem.Icon>
@@ -92,9 +102,18 @@ export default function BasicNavigationBar() {
 ## API
 
 ```tsx
-import { NavigationBar, NavigationBarItem } from '@expo/ui/jetpack-compose';
+import {
+  NavigationBar,
+  NavigationBarItem,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/navigationbar" apiName="NavigationBar" />
+<APISection
+  packageName="expo-ui/jetpack-compose/navigationbar"
+  apiName="NavigationBar"
+/>
 
-<APISection packageName="expo-ui/jetpack-compose/navigationbar" apiName="NavigationBarItem" />
+<APISection
+  packageName="expo-ui/jetpack-compose/navigationbar"
+  apiName="NavigationBarItem"
+/>

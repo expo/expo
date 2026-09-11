@@ -36,12 +36,28 @@ Expo UI FlowRow matches the official Jetpack Compose [FlowRow](https://developer
   alt="Six tag labels flowing across three lines, wrapping at the edge of the screen">
 
 ```tsx
-import { Host, FlowRow, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
-import { border, padding, paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  FlowRow,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  border,
+  padding,
+  paddingAll,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function FlowRowExample() {
   const colors = useMaterialColors();
-  const tags = ['React Native', 'Expo', 'Android', 'Jetpack Compose', 'Material 3', 'Kotlin'];
+  const tags = [
+    'React Native',
+    'Expo',
+    'Android',
+    'Jetpack Compose',
+    'Material 3',
+    'Kotlin',
+  ];
 
   return (
     <Host style={{ flex: 1 }}>
@@ -54,7 +70,10 @@ export default function FlowRowExample() {
             key={tag}
             style={{ fontSize: 28 }}
             color={colors.onBackground}
-            modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+            modifiers={[
+              border(1, colors.outline),
+              padding(12, 6, 12, 6),
+            ]}>
             {tag}
           </Text>
         ))}
@@ -72,4 +91,7 @@ export default function FlowRowExample() {
 import { FlowRow } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/flowrow" apiName="FlowRow" />
+<APISection
+  packageName="expo-ui/jetpack-compose/flowrow"
+  apiName="FlowRow"
+/>

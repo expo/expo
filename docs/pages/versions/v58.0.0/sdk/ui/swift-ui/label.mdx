@@ -65,7 +65,12 @@ import { Host, Label, Image } from '@expo/ui/swift-ui';
 export default function LabelCustomIconExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Label title="Custom Icon" icon={<Image systemName="sparkles" size={20} color="purple" />} />
+      <Label
+        title="Custom Icon"
+        icon={
+          <Image systemName="sparkles" size={20} color="purple" />
+        }
+      />
     </Host>
   );
 }
@@ -90,7 +95,11 @@ import { labelStyle } from '@expo/ui/swift-ui/modifiers';
 export default function LabelIconOnlyExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Label title="Settings" systemImage="gear" modifiers={[labelStyle('iconOnly')]} />
+      <Label
+        title="Settings"
+        systemImage="gear"
+        modifiers={[labelStyle('iconOnly')]}
+      />
     </Host>
   );
 }

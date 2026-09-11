@@ -38,10 +38,21 @@ A lazily-loaded horizontal list component that only renders visible items for ef
   alt="Outlined items in a horizontal row, scrolling off the right edge of the screen">
 
 ```tsx
-import { Host, LazyRow, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
-import { border, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  LazyRow,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  border,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
-const items = Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`);
+const items = Array.from(
+  { length: 100 },
+  (_, i) => `Item ${i + 1}`
+);
 
 export default function BasicLazyRow() {
   const colors = useMaterialColors();
@@ -54,7 +65,10 @@ export default function BasicLazyRow() {
             key={item}
             style={{ fontSize: 28 }}
             color={colors.onBackground}
-            modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+            modifiers={[
+              border(1, colors.outline),
+              padding(12, 6, 12, 6),
+            ]}>
             {item}
           </Text>
         ))}
@@ -77,31 +91,50 @@ Use the `horizontalArrangement` prop to control how items are spaced within the 
   alt="Outlined row items separated by a sixteen density independent pixel gap">
 
 ```tsx
-import { Host, LazyRow, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
-import { border, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  LazyRow,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  border,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function LazyRowArrangement() {
   const colors = useMaterialColors();
 
   return (
     <Host style={{ height: 100 }}>
-      <LazyRow horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+      <LazyRow
+        horizontalArrangement={{ spacedBy: 16 }}
+        verticalAlignment="center">
         <Text
           style={{ fontSize: 28 }}
           color={colors.onBackground}
-          modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
           Spaced item 1
         </Text>
         <Text
           style={{ fontSize: 28 }}
           color={colors.onBackground}
-          modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
           Spaced item 2
         </Text>
         <Text
           style={{ fontSize: 28 }}
           color={colors.onBackground}
-          modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
           Spaced item 3
         </Text>
       </LazyRow>
@@ -123,31 +156,49 @@ Use the `contentPadding` prop to add padding around the list content in dp.
   alt="Outlined row items inset from the start of the list by content padding">
 
 ```tsx
-import { Host, LazyRow, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
-import { border, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  LazyRow,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  border,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function LazyRowPadding() {
   const colors = useMaterialColors();
 
   return (
     <Host style={{ height: 100 }}>
-      <LazyRow contentPadding={{ start: 16, top: 8, end: 16, bottom: 8 }}>
+      <LazyRow
+        contentPadding={{ start: 16, top: 8, end: 16, bottom: 8 }}>
         <Text
           style={{ fontSize: 28 }}
           color={colors.onBackground}
-          modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
           Padded item 1
         </Text>
         <Text
           style={{ fontSize: 28 }}
           color={colors.onBackground}
-          modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
           Padded item 2
         </Text>
         <Text
           style={{ fontSize: 28 }}
           color={colors.onBackground}
-          modifiers={[border(1, colors.outline), padding(12, 6, 12, 6)]}>
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
           Padded item 3
         </Text>
       </LazyRow>
@@ -164,4 +215,7 @@ export default function LazyRowPadding() {
 import { LazyRow } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/lazyrow" apiName="LazyRow" />
+<APISection
+  packageName="expo-ui/jetpack-compose/lazyrow"
+  apiName="LazyRow"
+/>

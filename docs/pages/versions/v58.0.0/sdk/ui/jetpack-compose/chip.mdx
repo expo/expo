@@ -38,12 +38,18 @@ Assist chips help users take actions or start tasks, such as booking a flight or
   alt="An outlined assist chip with an airplane icon and the label Book flight">
 
 ```tsx
-import { Host, AssistChip, Icon, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  AssistChip,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function AssistChipExample() {
   return (
     <Host matchContents>
-      <AssistChip onClick={() => console.log('Opening flight booking...')}>
+      <AssistChip
+        onClick={() => console.log('Opening flight booking...')}>
         <AssistChip.Label>
           <Text>Book flight</Text>
         </AssistChip.Label>
@@ -77,7 +83,9 @@ export default function FilterChipExample() {
 
   return (
     <Host matchContents>
-      <FilterChip selected={selected} onClick={() => setSelected(!selected)}>
+      <FilterChip
+        selected={selected}
+        onClick={() => setSelected(!selected)}>
         <FilterChip.Label>
           <Text>Images</Text>
         </FilterChip.Label>
@@ -101,7 +109,13 @@ Input chips represent discrete pieces of information entered by a user, such as 
 
 ```tsx
 import { useState } from 'react';
-import { Host, InputChip, Icon, Text, FlowRow } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  InputChip,
+  Icon,
+  Text,
+  FlowRow,
+} from '@expo/ui/jetpack-compose';
 
 export default function InputChipExample() {
   const [chips, setChips] = useState(['Work', 'Travel', 'News']);
@@ -113,12 +127,17 @@ export default function InputChipExample() {
           <InputChip
             key={label}
             selected
-            onClick={() => setChips(prev => prev.filter(c => c !== label))}>
+            onClick={() =>
+              setChips(prev => prev.filter(c => c !== label))
+            }>
             <InputChip.Label>
               <Text>{label}</Text>
             </InputChip.Label>
             <InputChip.TrailingIcon>
-              <Icon source={require('./assets/close.xml')} size={18} />
+              <Icon
+                source={require('./assets/close.xml')}
+                size={18}
+              />
             </InputChip.TrailingIcon>
           </InputChip>
         ))}
@@ -141,12 +160,17 @@ Suggestion chips help narrow a user's intent by presenting dynamically generated
   alt="An outlined suggestion chip labeled Nearby">
 
 ```tsx
-import { Host, SuggestionChip, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  SuggestionChip,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function SuggestionChipExample() {
   return (
     <Host matchContents>
-      <SuggestionChip onClick={() => console.log('Searching nearby...')}>
+      <SuggestionChip
+        onClick={() => console.log('Searching nearby...')}>
         <SuggestionChip.Label>
           <Text>Nearby</Text>
         </SuggestionChip.Label>
@@ -161,7 +185,15 @@ export default function SuggestionChipExample() {
 ## API
 
 ```tsx
-import { AssistChip, FilterChip, InputChip, SuggestionChip } from '@expo/ui/jetpack-compose';
+import {
+  AssistChip,
+  FilterChip,
+  InputChip,
+  SuggestionChip,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/chip" apiName="Chip" />
+<APISection
+  packageName="expo-ui/jetpack-compose/chip"
+  apiName="Chip"
+/>

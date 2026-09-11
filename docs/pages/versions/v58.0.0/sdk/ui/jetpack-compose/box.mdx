@@ -37,12 +37,17 @@ Expo UI Box matches the official Jetpack Compose [Box](https://developer.android
 
 ```tsx
 import { Host, Box, Text } from '@expo/ui/jetpack-compose';
-import { size, background } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  size,
+  background,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function BoxExample() {
   return (
     <Host matchContents>
-      <Box contentAlignment="center" modifiers={[size(200, 200), background('#E0E0E0')]}>
+      <Box
+        contentAlignment="center"
+        modifiers={[size(200, 200), background('#E0E0E0')]}>
         <Text>Centered in Box</Text>
       </Box>
     </Host>
@@ -58,4 +63,7 @@ export default function BoxExample() {
 import { Box } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/box" apiName="Box" />
+<APISection
+  packageName="expo-ui/jetpack-compose/box"
+  apiName="Box"
+/>

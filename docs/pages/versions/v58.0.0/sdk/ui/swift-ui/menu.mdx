@@ -44,9 +44,18 @@ export default function SimpleMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Menu label="Options">
-        <Button label="Option 1" onPress={() => console.log('Option 1')} />
-        <Button label="Option 2" onPress={() => console.log('Option 2')} />
-        <Button label="Option 3" onPress={() => console.log('Option 3')} />
+        <Button
+          label="Option 1"
+          onPress={() => console.log('Option 1')}
+        />
+        <Button
+          label="Option 2"
+          onPress={() => console.log('Option 2')}
+        />
+        <Button
+          label="Option 3"
+          onPress={() => console.log('Option 3')}
+        />
       </Menu>
     </Host>
   );
@@ -70,8 +79,16 @@ export default function MenuWithIconExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Menu label="More" systemImage="ellipsis.circle">
-        <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
-        <Button label="Profile" systemImage="person" onPress={() => console.log('Profile')} />
+        <Button
+          label="Settings"
+          systemImage="gear"
+          onPress={() => console.log('Settings')}
+        />
+        <Button
+          label="Profile"
+          systemImage="person"
+          onPress={() => console.log('Profile')}
+        />
         <Divider />
         <Button
           label="Delete"
@@ -104,9 +121,20 @@ import { foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 export default function CustomLabelMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Menu label={<Text modifiers={[foregroundStyle('accentColor')]}>Custom Label</Text>}>
-        <Button label="Action 1" onPress={() => console.log('Action 1')} />
-        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+      <Menu
+        label={
+          <Text modifiers={[foregroundStyle('accentColor')]}>
+            Custom Label
+          </Text>
+        }>
+        <Button
+          label="Action 1"
+          onPress={() => console.log('Action 1')}
+        />
+        <Button
+          label="Action 2"
+          onPress={() => console.log('Action 2')}
+        />
       </Menu>
     </Host>
   );
@@ -144,12 +172,20 @@ export default function RNLabelMenuExample() {
                 borderRadius: 8,
                 backgroundColor: '#9B59B6',
               }}>
-              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+              <Text style={{ color: 'white', fontWeight: '600' }}>
+                RN Pressable Trigger
+              </Text>
             </Pressable>
           </RNHostView>
         }>
-        <Button label="Item 1" onPress={() => console.log('Item 1')} />
-        <Button label="Item 2" onPress={() => console.log('Item 2')} />
+        <Button
+          label="Item 1"
+          onPress={() => console.log('Item 1')}
+        />
+        <Button
+          label="Item 2"
+          onPress={() => console.log('Item 2')}
+        />
       </Menu>
     </Host>
   );
@@ -175,12 +211,24 @@ export default function NestedMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Menu label="Main Menu">
-        <Button label="Item 1" onPress={() => console.log('Item 1')} />
+        <Button
+          label="Item 1"
+          onPress={() => console.log('Item 1')}
+        />
         <Menu label="Submenu">
-          <Button label="Sub Item 1" onPress={() => console.log('Sub Item 1')} />
-          <Button label="Sub Item 2" onPress={() => console.log('Sub Item 2')} />
+          <Button
+            label="Sub Item 1"
+            onPress={() => console.log('Sub Item 1')}
+          />
+          <Button
+            label="Sub Item 2"
+            onPress={() => console.log('Sub Item 2')}
+          />
         </Menu>
-        <Button label="Item 2" onPress={() => console.log('Item 2')} />
+        <Button
+          label="Item 2"
+          onPress={() => console.log('Item 2')}
+        />
       </Menu>
     </Host>
   );
@@ -208,10 +256,21 @@ export default function PrimaryActionMenuExample() {
       <Menu
         label="Tap or hold"
         systemImage="play.circle"
-        onPrimaryAction={() => console.log('Primary action triggered!')}>
-        <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
-        <Button label="Menu Item 2" onPress={() => console.log('Menu Item 2')} />
-        <Button label="Menu Item 3" onPress={() => console.log('Menu Item 3')} />
+        onPrimaryAction={() =>
+          console.log('Primary action triggered!')
+        }>
+        <Button
+          label="Menu Item 1"
+          onPress={() => console.log('Menu Item 1')}
+        />
+        <Button
+          label="Menu Item 2"
+          onPress={() => console.log('Menu Item 2')}
+        />
+        <Button
+          label="Menu Item 3"
+          onPress={() => console.log('Menu Item 3')}
+        />
       </Menu>
     </Host>
   );
@@ -237,9 +296,17 @@ import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 export default function StyledMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Menu label="Styled Menu" modifiers={[buttonStyle('borderedProminent')]}>
-        <Button label="Styled Action 1" onPress={() => console.log('Styled 1')} />
-        <Button label="Styled Action 2" onPress={() => console.log('Styled 2')} />
+      <Menu
+        label="Styled Menu"
+        modifiers={[buttonStyle('borderedProminent')]}>
+        <Button
+          label="Styled Action 1"
+          onPress={() => console.log('Styled 1')}
+        />
+        <Button
+          label="Styled Action 2"
+          onPress={() => console.log('Styled 2')}
+        />
       </Menu>
     </Host>
   );
@@ -254,16 +321,30 @@ On a Mac Catalyst build that uses the Mac idiom (Xcode's **Optimize Interface fo
 
 ```tsx PlainTriggerMenuExample.tsx
 import { Host, Menu, Button, Text } from '@expo/ui/swift-ui';
-import { buttonStyle, menuIndicator, menuStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  buttonStyle,
+  menuIndicator,
+  menuStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function PlainTriggerMenuExample() {
   return (
     <Host matchContents>
       <Menu
         label={<Text>Custom Label</Text>}
-        modifiers={[menuStyle('button'), buttonStyle('plain'), menuIndicator('hidden')]}>
-        <Button label="Action 1" onPress={() => console.log('Action 1')} />
-        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+        modifiers={[
+          menuStyle('button'),
+          buttonStyle('plain'),
+          menuIndicator('hidden'),
+        ]}>
+        <Button
+          label="Action 1"
+          onPress={() => console.log('Action 1')}
+        />
+        <Button
+          label="Action 2"
+          onPress={() => console.log('Action 2')}
+        />
       </Menu>
     </Host>
   );
@@ -289,9 +370,18 @@ import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 export default function GlassMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Menu label="Glass Menu" systemImage="ellipsis.circle" modifiers={[buttonStyle('glass')]}>
-        <Button label="Action 1" onPress={() => console.log('Action 1')} />
-        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+      <Menu
+        label="Glass Menu"
+        systemImage="ellipsis.circle"
+        modifiers={[buttonStyle('glass')]}>
+        <Button
+          label="Action 1"
+          onPress={() => console.log('Action 1')}
+        />
+        <Button
+          label="Action 2"
+          onPress={() => console.log('Action 2')}
+        />
       </Menu>
     </Host>
   );
@@ -319,7 +409,11 @@ export default function GlassProminentMenuExample() {
         label="Glass Prominent Menu"
         systemImage="slider.horizontal.3"
         modifiers={[buttonStyle('glassProminent')]}>
-        <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
+        <Button
+          label="Settings"
+          systemImage="gear"
+          onPress={() => console.log('Settings')}
+        />
         <Button
           label="Filter"
           systemImage="line.3.horizontal.decrease"
@@ -344,15 +438,30 @@ Use a [`ControlGroup`](controlgroup) inside a menu to render a horizontal row of
   alt="An open menu with an Add, Favorite, and Share row above two sections of list items">
 
 ```tsx
-import { Host, Menu, ControlGroup, Button, Section, Divider } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Menu,
+  ControlGroup,
+  Button,
+  Section,
+  Divider,
+} from '@expo/ui/swift-ui';
 
 export default function MenuWithControlGroupExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Menu label="Song Options" systemImage="ellipsis.circle">
         <ControlGroup>
-          <Button systemImage="plus" label="Add" onPress={() => console.log('Add')} />
-          <Button systemImage="star" label="Favorite" onPress={() => console.log('Favorite')} />
+          <Button
+            systemImage="plus"
+            label="Add"
+            onPress={() => console.log('Add')}
+          />
+          <Button
+            systemImage="star"
+            label="Favorite"
+            onPress={() => console.log('Favorite')}
+          />
           <Button
             systemImage="square.and.arrow.up"
             label="Share"
@@ -403,7 +512,10 @@ export default function DisabledMenuItemExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Menu label="Options">
-        <Button label="Available" onPress={() => console.log('Available')} />
+        <Button
+          label="Available"
+          onPress={() => console.log('Available')}
+        />
         <Button
           label="Locked"
           systemImage="lock"
@@ -438,7 +550,9 @@ export default function CheckmarkMenuItemExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Menu label="Filter" systemImage="line.3.horizontal.decrease.circle">
+      <Menu
+        label="Filter"
+        systemImage="line.3.horizontal.decrease.circle">
         <Toggle
           isOn={showCompleted}
           label="Show completed"
@@ -451,7 +565,10 @@ export default function CheckmarkMenuItemExample() {
           systemImage="archivebox"
           onIsOnChange={setShowArchived}
         />
-        <Button label="Clear filters" onPress={() => console.log('Clear')} />
+        <Button
+          label="Clear filters"
+          onPress={() => console.log('Clear')}
+        />
       </Menu>
     </Host>
   );
@@ -477,10 +594,22 @@ import { labelStyle } from '@expo/ui/swift-ui/modifiers';
 export default function IconOnlyMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Menu label="More options" systemImage="ellipsis.circle" modifiers={[labelStyle('iconOnly')]}>
-        <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
-        <Button label="Menu Item 2" onPress={() => console.log('Menu Item 2')} />
-        <Button label="Menu Item 3" onPress={() => console.log('Menu Item 3')} />
+      <Menu
+        label="More options"
+        systemImage="ellipsis.circle"
+        modifiers={[labelStyle('iconOnly')]}>
+        <Button
+          label="Menu Item 1"
+          onPress={() => console.log('Menu Item 1')}
+        />
+        <Button
+          label="Menu Item 2"
+          onPress={() => console.log('Menu Item 2')}
+        />
+        <Button
+          label="Menu Item 3"
+          onPress={() => console.log('Menu Item 3')}
+        />
       </Menu>
     </Host>
   );

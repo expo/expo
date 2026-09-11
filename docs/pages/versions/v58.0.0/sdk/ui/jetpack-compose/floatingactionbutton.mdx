@@ -45,12 +45,17 @@ Each component uses slot-based children (`.Icon` and, for `ExtendedFloatingActio
   alt="A standard floating action button with a plus icon">
 
 ```tsx
-import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
+import {
+  FloatingActionButton,
+  Host,
+  Icon,
+} from '@expo/ui/jetpack-compose';
 
 export default function StandardFABExample() {
   return (
     <Host matchContents>
-      <FloatingActionButton onClick={() => console.log('FAB pressed')}>
+      <FloatingActionButton
+        onClick={() => console.log('FAB pressed')}>
         <FloatingActionButton.Icon>
           <Icon source={require('./assets/add.xml')} />
         </FloatingActionButton.Icon>
@@ -120,7 +125,12 @@ export default function FABVariantsExample() {
   alt="An extended floating action button with a pencil icon and the label Edit">
 
 ```tsx
-import { ExtendedFloatingActionButton, Host, Icon, Text } from '@expo/ui/jetpack-compose';
+import {
+  ExtendedFloatingActionButton,
+  Host,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
 
 export default function ExtendedFABExample() {
@@ -128,7 +138,9 @@ export default function ExtendedFABExample() {
 
   return (
     <Host matchContents>
-      <ExtendedFloatingActionButton expanded={expanded} onClick={() => setExpanded(v => !v)}>
+      <ExtendedFloatingActionButton
+        expanded={expanded}
+        onClick={() => setExpanded(v => !v)}>
         <ExtendedFloatingActionButton.Icon>
           <Icon source={require('./assets/edit.xml')} />
         </ExtendedFloatingActionButton.Icon>
@@ -163,9 +175,16 @@ import {
   ListItem,
   Text,
 } from '@expo/ui/jetpack-compose';
-import { align, fillMaxSize, offset } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  align,
+  fillMaxSize,
+  offset,
+} from '@expo/ui/jetpack-compose/modifiers';
 
-const ITEMS = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+const ITEMS = Array.from(
+  { length: 20 },
+  (_, index) => `Item ${index + 1}`
+);
 
 export default function FloatingFABExample() {
   return (
@@ -205,12 +224,19 @@ export default function FloatingFABExample() {
   alt="An extended floating action button with a light purple container and the label New item">
 
 ```tsx
-import { ExtendedFloatingActionButton, Host, Icon, Text } from '@expo/ui/jetpack-compose';
+import {
+  ExtendedFloatingActionButton,
+  Host,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function FABCustomColorExample() {
   return (
     <Host matchContents>
-      <ExtendedFloatingActionButton containerColor="#E8DEF8" onClick={() => console.log('pressed')}>
+      <ExtendedFloatingActionButton
+        containerColor="#E8DEF8"
+        onClick={() => console.log('pressed')}>
         <ExtendedFloatingActionButton.Icon>
           <Icon source={require('./assets/add.xml')} />
         </ExtendedFloatingActionButton.Icon>

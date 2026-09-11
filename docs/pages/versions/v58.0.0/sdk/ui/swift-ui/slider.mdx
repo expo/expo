@@ -73,7 +73,12 @@ export default function CustomRangeSliderExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Slider value={value} min={0} max={100} onValueChange={setValue} />
+      <Slider
+        value={value}
+        min={0}
+        max={100}
+        onValueChange={setValue}
+      />
     </Host>
   );
 }
@@ -100,7 +105,13 @@ export default function SteppedSliderExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Slider value={value} min={0} max={100} step={10} onValueChange={setValue} />
+      <Slider
+        value={value}
+        min={0}
+        max={100}
+        step={10}
+        onValueChange={setValue}
+      />
     </Host>
   );
 }
@@ -149,4 +160,7 @@ export default function LabeledSliderExample() {
 import { Slider } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/slider" apiName="Slider" />
+<APISection
+  packageName="expo-ui/swift-ui/slider"
+  apiName="Slider"
+/>

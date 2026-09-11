@@ -127,9 +127,18 @@ export default function ButtonStylesExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack spacing={8}>
-        <Button label="Bordered" modifiers={[buttonStyle('bordered')]} />
-        <Button label="Bordered Prominent" modifiers={[buttonStyle('borderedProminent')]} />
-        <Button label="Borderless" modifiers={[buttonStyle('borderless')]} />
+        <Button
+          label="Bordered"
+          modifiers={[buttonStyle('bordered')]}
+        />
+        <Button
+          label="Bordered Prominent"
+          modifiers={[buttonStyle('borderedProminent')]}
+        />
+        <Button
+          label="Borderless"
+          modifiers={[buttonStyle('borderless')]}
+        />
         <Button label="Plain" modifiers={[buttonStyle('plain')]} />
       </VStack>
     </Host>
@@ -193,16 +202,40 @@ Use the `controlSize` modifier to adjust the button size. Available sizes are: `
 
 ```tsx
 import { Host, Button, VStack } from '@expo/ui/swift-ui';
-import { buttonStyle, controlSize } from '@expo/ui/swift-ui/modifiers';
+import {
+  buttonStyle,
+  controlSize,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function ControlSizeExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack spacing={8}>
-        <Button label="Mini" modifiers={[controlSize('mini'), buttonStyle('bordered')]} />
-        <Button label="Small" modifiers={[controlSize('small'), buttonStyle('bordered')]} />
-        <Button label="Regular" modifiers={[controlSize('regular'), buttonStyle('bordered')]} />
-        <Button label="Large" modifiers={[controlSize('large'), buttonStyle('bordered')]} />
+        <Button
+          label="Mini"
+          modifiers={[controlSize('mini'), buttonStyle('bordered')]}
+        />
+        <Button
+          label="Small"
+          modifiers={[
+            controlSize('small'),
+            buttonStyle('bordered'),
+          ]}
+        />
+        <Button
+          label="Regular"
+          modifiers={[
+            controlSize('regular'),
+            buttonStyle('bordered'),
+          ]}
+        />
+        <Button
+          label="Large"
+          modifiers={[
+            controlSize('large'),
+            buttonStyle('bordered'),
+          ]}
+        />
       </VStack>
     </Host>
   );
@@ -300,7 +333,13 @@ You can pass custom components as `children` for more complex button label conte
   alt="A button with a folder icon stacked above the label Folder">
 
 ```tsx
-import { Host, Button, VStack, Image, Text } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Button,
+  VStack,
+  Image,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function CustomContentExample() {
   return (
@@ -324,4 +363,7 @@ export default function CustomContentExample() {
 import { Button } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/button" apiName="Button" />
+<APISection
+  packageName="expo-ui/swift-ui/button"
+  apiName="Button"
+/>

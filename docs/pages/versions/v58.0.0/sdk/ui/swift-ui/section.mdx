@@ -68,7 +68,15 @@ Use the `header` and `footer` props for custom views. These props are only used 
   alt="A section with a location icon in its header, a toggle row, and footer text below">
 
 ```tsx
-import { Host, List, Section, Toggle, Text, HStack, Image } from '@expo/ui/swift-ui';
+import {
+  Host,
+  List,
+  Section,
+  Toggle,
+  Text,
+  HStack,
+  Image,
+} from '@expo/ui/swift-ui';
 import { useState } from 'react';
 
 export default function CustomHeaderFooterExample() {
@@ -80,13 +88,18 @@ export default function CustomHeaderFooterExample() {
         <Section
           header={
             <HStack>
-              <Image systemName="location.fill" color="blue" size={16} />
+              <Image
+                systemName="location.fill"
+                color="blue"
+                size={16}
+              />
               <Text>Location Services</Text>
             </HStack>
           }
           footer={
             <Text>
-              Enabling location services allows the app to provide personalized recommendations.
+              Enabling location services allows the app to provide
+              personalized recommendations.
             </Text>
           }>
           <Toggle
@@ -163,7 +176,15 @@ Sections work within `Form` components to organize form controls into logical gr
 
 ```tsx
 import { useState } from 'react';
-import { Host, Form, Section, Toggle, Picker, Text, Button } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Form,
+  Section,
+  Toggle,
+  Picker,
+  Text,
+  Button,
+} from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
 export default function FormSectionsExample() {
@@ -176,7 +197,11 @@ export default function FormSectionsExample() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Appearance">
-          <Toggle label="Dark Mode" isOn={darkMode} onIsOnChange={setDarkMode} />
+          <Toggle
+            label="Dark Mode"
+            isOn={darkMode}
+            onIsOnChange={setDarkMode}
+          />
           <Picker
             label="Language"
             selection={language}
@@ -190,10 +215,18 @@ export default function FormSectionsExample() {
           </Picker>
         </Section>
         <Section title="Notifications">
-          <Toggle label="Push Notifications" isOn={notifications} onIsOnChange={setNotifications} />
+          <Toggle
+            label="Push Notifications"
+            isOn={notifications}
+            onIsOnChange={setNotifications}
+          />
         </Section>
         <Section title="Account">
-          <Button label="Sign out" role="destructive" onPress={() => alert('Signed out')} />
+          <Button
+            label="Sign out"
+            role="destructive"
+            onPress={() => alert('Signed out')}
+          />
         </Section>
       </Form>
     </Host>
@@ -209,4 +242,7 @@ export default function FormSectionsExample() {
 import { Section } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/section" apiName="Section" />
+<APISection
+  packageName="expo-ui/swift-ui/section"
+  apiName="Section"
+/>

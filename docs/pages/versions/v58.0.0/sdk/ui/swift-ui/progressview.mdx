@@ -88,7 +88,12 @@ Use the [`progressViewStyle`](modifiers/#progressviewstylestyle) modifier to cha
   alt="A half-filled linear progress bar labelled Linear, above a circular spinner labelled Circular">
 
 ```tsx
-import { Host, ProgressView, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ProgressView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 import { progressViewStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function ProgressViewStylesExample() {
@@ -96,9 +101,15 @@ export default function ProgressViewStylesExample() {
     <Host style={{ flex: 1 }}>
       <VStack spacing={16}>
         <Text>Linear</Text>
-        <ProgressView value={0.5} modifiers={[progressViewStyle('linear')]} />
+        <ProgressView
+          value={0.5}
+          modifiers={[progressViewStyle('linear')]}
+        />
         <Text>Circular</Text>
-        <ProgressView value={0.5} modifiers={[progressViewStyle('circular')]} />
+        <ProgressView
+          value={0.5}
+          modifiers={[progressViewStyle('circular')]}
+        />
       </VStack>
     </Host>
   );
@@ -171,7 +182,12 @@ Use the `timerInterval` prop to create a progress view that automatically animat
   alt="Two timer progress bars part way through a ten second range, one labeled Counting up">
 
 ```tsx
-import { Host, ProgressView, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ProgressView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 
 export default function TimerExample() {
   const startDate = new Date();
@@ -180,8 +196,12 @@ export default function TimerExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack spacing={16}>
-        <ProgressView timerInterval={{ lower: startDate, upper: endDate }} />
-        <ProgressView timerInterval={{ lower: startDate, upper: endDate }} countsDown={false}>
+        <ProgressView
+          timerInterval={{ lower: startDate, upper: endDate }}
+        />
+        <ProgressView
+          timerInterval={{ lower: startDate, upper: endDate }}
+          countsDown={false}>
           <Text>Counting up</Text>
         </ProgressView>
       </VStack>
@@ -198,4 +218,7 @@ export default function TimerExample() {
 import { ProgressView } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/progressview" apiName="ProgressView" />
+<APISection
+  packageName="expo-ui/swift-ui/progressview"
+  apiName="ProgressView"
+/>

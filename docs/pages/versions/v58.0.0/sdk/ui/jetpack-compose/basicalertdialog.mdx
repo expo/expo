@@ -66,17 +66,25 @@ export default function BasicAlertDialogExample() {
         <Text>Open dialog</Text>
       </Button>
       {visible && (
-        <BasicAlertDialog onDismissRequest={() => setVisible(false)}>
+        <BasicAlertDialog
+          onDismissRequest={() => setVisible(false)}>
           <Surface
             tonalElevation={6}
-            modifiers={[wrapContentWidth(), wrapContentHeight(), clip(Shapes.RoundedCorner(28))]}>
+            modifiers={[
+              wrapContentWidth(),
+              wrapContentHeight(),
+              clip(Shapes.RoundedCorner(28)),
+            ]}>
             <Column modifiers={[padding(16, 16, 16, 16)]}>
               <Text>
-                This area typically contains the supportive text which presents the details
-                regarding the Dialog's purpose.
+                This area typically contains the supportive text
+                which presents the details regarding the Dialog's
+                purpose.
               </Text>
               <Spacer modifiers={[height(24)]} />
-              <TextButton onClick={() => setVisible(false)} modifiers={[align('end')]}>
+              <TextButton
+                onClick={() => setVisible(false)}
+                modifiers={[align('end')]}>
                 <Text>Confirm</Text>
               </TextButton>
             </Column>
@@ -96,4 +104,7 @@ export default function BasicAlertDialogExample() {
 import { BasicAlertDialog } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/basicalertdialog" apiName="BasicAlertDialog" />
+<APISection
+  packageName="expo-ui/jetpack-compose/basicalertdialog"
+  apiName="BasicAlertDialog"
+/>

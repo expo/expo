@@ -43,7 +43,9 @@ export default function BasicCardExample() {
   return (
     <Host matchContents>
       <Card>
-        <Text modifiers={[paddingAll(16)]}>This is a basic card with default styling.</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          This is a basic card with default styling.
+        </Text>
       </Card>
     </Host>
   );
@@ -63,7 +65,14 @@ Use `Card` (filled), `ElevatedCard`, or `OutlinedCard` for different styles.
   alt="Filled, elevated, and outlined cards stacked in a column">
 
 ```tsx
-import { Host, Card, ElevatedCard, OutlinedCard, Text, Column } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Card,
+  ElevatedCard,
+  OutlinedCard,
+  Text,
+  Column,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function CardTypesExample() {
@@ -105,7 +114,9 @@ export default function ElevatedCardExample() {
   return (
     <Host matchContents>
       <ElevatedCard elevation={8}>
-        <Text modifiers={[paddingAll(16)]}>Card with 8dp elevation</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          Card with 8dp elevation
+        </Text>
       </ElevatedCard>
     </Host>
   );
@@ -132,7 +143,9 @@ export default function OutlinedCardExample() {
   return (
     <Host matchContents>
       <OutlinedCard border={{ width: 2, color: '#6200EE' }}>
-        <Text modifiers={[paddingAll(16)]}>Card with custom purple border</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          Card with custom purple border
+        </Text>
       </OutlinedCard>
     </Host>
   );
@@ -144,7 +157,14 @@ export default function OutlinedCardExample() {
 ## API
 
 ```tsx
-import { Card, ElevatedCard, OutlinedCard } from '@expo/ui/jetpack-compose';
+import {
+  Card,
+  ElevatedCard,
+  OutlinedCard,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/card" apiName="Card" />
+<APISection
+  packageName="expo-ui/jetpack-compose/card"
+  apiName="Card"
+/>
