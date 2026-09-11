@@ -20,7 +20,7 @@ Open your project and navigate to [**Observe** > **Errors**](https://expo.dev/ac
   darkSrc="/static/images/expo-observe/observe-errors-dark.webp"
 />
 
-The **Crash-free sessions** card shows the share of sessions in the selected time range that finished without a fatal error, together with crash-free users, fatal and non-fatal counts, and the number of affected users.
+The **Crash-free sessions** card shows the share of sessions in the selected time range that finished without a fatal error. It also shows crash-free users, fatal and non-fatal counts, and the number of affected users.
 
 **Distinct errors** lists the errors recorded in the selected time range, grouped by error. The **Source** column tells you where an error came from:
 
@@ -113,7 +113,7 @@ A native crash terminates the app before your JavaScript can react to it, so the
 
 On Android, EAS Observe records uncaught Java and Kotlin exceptions, including the `Caused by` chain. On Android 11 and later, it also reads the crash records the operating system keeps for your app, which covers crashes in native code such as `SIGSEGV` and `SIGABRT`.
 
-On iOS, EAS Observe uses MetricKit to collect the crash reports the system produces for your app. These cover Mach exceptions such as `EXC_BAD_ACCESS` and `EXC_BREAKPOINT`, Unix signals such as `SIGSEGV`, `SIGBUS`, and `SIGTRAP`, and, on iOS 17 and later, uncaught Objective-C and Swift exceptions.
+On iOS, EAS Observe uses MetricKit to collect the crash reports the system produces for your app. These cover Mach exceptions such as `EXC_BAD_ACCESS` and `EXC_BREAKPOINT`, and Unix signals such as `SIGSEGV`, `SIGBUS`, and `SIGTRAP`. On iOS 17 and later, they also cover uncaught Objective-C and Swift exceptions.
 
 > **Note:** Native crashes are not recorded on tvOS or on the iOS Simulator. Application Not Responding (ANR) events and out-of-memory terminations are not recorded on either platform.
 
@@ -174,4 +174,4 @@ On Android, frames from Java and Kotlin exceptions already carry the class, meth
 Error reporting is in preview, and the following are not available yet:
 
 - **Source maps for EAS Update**: errors from an app running an OTA update show the unsymbolicated stack trace.
-- **Symbolication for native crashes**: uploading debug symbols, such as iOS dSYMs and Android ProGuard mappings, is not supported yet.
+- **Symbolication for native crashes**: uploading debug symbols, such as Android ProGuard mappings and iOS dSYMs, is not supported yet.
