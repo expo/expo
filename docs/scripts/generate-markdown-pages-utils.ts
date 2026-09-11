@@ -218,14 +218,14 @@ export interface ResolvedMdxImport {
 
 type ResolveImportedMdx = (importPath: string, fromPath: string | null) => ResolvedMdxImport | null;
 
+const JS_STRING_ESCAPES: Record<string, string> = {
+  n: '\n',
+  r: '\r',
+  t: '\t',
+};
+
 function decodeJsStringLiteral(value: string): string {
-  return value
-    .replace(/\\n/g, '\n')
-    .replace(/\\r/g, '\r')
-    .replace(/\\t/g, '\t')
-    .replace(/\\\\/g, '\\')
-    .replace(/\\'/g, "'")
-    .replace(/\\"/g, '"');
+  return value.replace(/\\(.)/g, (_match, char: string) => JS_STRING_ESCAPES[char] ?? char);
 }
 
 function extractTerminalCommands(arrayLiteral: string): string[] {
