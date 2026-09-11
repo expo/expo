@@ -848,43 +848,35 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       )
         .replace(/\s+/g, ' ')
         .trim();
-      $callout.replaceWith(text ? '. ' + escapeHtml(text) + ' ' : '');
+      $callout.replaceWith(text ? '%%MD_SEP%%' + escapeHtml(text) + ' ' : '');
     });
 
-    // Generic block flattening — loop until stable since nested divs require multiple passes.
-    // Prepend ". " when unwrapping so adjacent blocks read as separate sentences, then
-    // clean up artifacts (double periods, leading separators) after the loop.
     let hasBlocks = true;
     while (hasBlocks) {
       hasBlocks = false;
       $cell.find('blockquote').each((_, el) => {
-        $(el).replaceWith('. ' + $(el).text().trim());
+        $(el).replaceWith('%%MD_SEP%%' + $(el).text().trim());
         hasBlocks = true;
       });
       $cell.find('p').each((_, el) => {
-        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
       $cell.find('div').each((_, el) => {
-        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
     }
-    // Clean up artifacts from block flattening:
-    // - Collapse ". ." / ".." from nested unwrapping. Skip <code>/<pre> so "..." is untouched.
-    // - Repeat until stable: a single pass leaves ". ." from triple nesting.
-    // - Trim leading ". " at cell start
-    // - Remove orphan "-" after periods (upstream renders a bare dash for empty descriptions)
     const blocks: string[] = [];
     let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
       blocks.push(match);
       return `%%MD_CODE_${blocks.length - 1}%%`;
     });
-    while (/\.\s*\./.test(cellHtml)) {
-      cellHtml = cellHtml.replace(/\.\s*\./g, '. ');
-    }
     cellHtml = cellHtml
-      .replace(/^\s*\.\s*/, '')
+      .replace(/(?:%%MD_SEP%%)+/g, '%%MD_SEP%%')
+      .replace(/^\s*%%MD_SEP%%\s*/, '')
+      .replace(/\.\s*%%MD_SEP%%/g, '. ')
+      .replace(/%%MD_SEP%%/g, '. ')
       .replace(/\.\s*-\s*$/, '.')
       .replace(/%%MD_CODE_(\d+)%%/g, (_, i) => blocks[Number(i)]);
     $cell.html(cellHtml);
