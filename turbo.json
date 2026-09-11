@@ -61,6 +61,41 @@
       "env": ["RCT_HERMES_V1_ENABLED"],
       "outputs": [".expo-prebuild/output/**"],
       "outputLogs": "new-only"
+    },
+    "precompile-android": {
+      "dependsOn": [
+        "expo-modules-core#precompile-android-inputs",
+        "expo-modules-autolinking#precompile-android-inputs",
+        "expo-modules-autolinking#build",
+        "^precompile-android-inputs"
+      ],
+      "inputs": [
+        "package.json",
+        "expo-module.config.json",
+        "common/**",
+        "android/**",
+        "!android/**/build/**",
+        "!android/**/.gradle/**",
+        "!android/**/.cxx/**",
+        "$TURBO_ROOT$/tools/android-precompile/**",
+        "$TURBO_ROOT$/tools/src/prebuilds/**"
+      ],
+      "passThroughEnv": ["JAVA_HOME", "GRADLE_USER_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT"],
+      "outputs": [".expo-prebuild-android/**"],
+      "outputLogs": "new-only"
+    },
+    "precompile-android-inputs": {
+      "inputs": [
+        "package.json",
+        "expo-module.config.json",
+        "android/**",
+        "!android/**/build/**",
+        "!android/**/.gradle/**",
+        "!android/**/.cxx/**",
+        "common/**",
+        "src/**"
+      ],
+      "outputLogs": "errors-only"
     }
   },
   "remoteCache": {
