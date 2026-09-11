@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS][macOS] Use `CAGradientLayer` instead of drawing bitmaps on the main thread, which could hitch large gradients.
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
