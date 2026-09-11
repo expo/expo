@@ -153,7 +153,7 @@ internal struct NavigationSplitViewView: ExpoSwiftUI.View {
     case .sidebar: return .sidebar
     case .content: return .content
     case .detail: return .detail
-    @unknown default: return .sidebar
+    default: return .sidebar
     }
   }
 }
