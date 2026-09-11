@@ -23,6 +23,9 @@ extension ExpoSwiftUI {
    It's a record that can be observed by SwiftUI to re-render on its changes.
    */
   open class ViewProps: ObservableObject, Record {
+    // Stored so `objectWillChange` is a plain property read instead of Combine's O(live objects) side-table lookup.
+    public let objectWillChange = ObservableObjectPublisher()
+
     public required init() {}
 
     public required init(rawProps: [String: Any], context: AppContext) throws {
