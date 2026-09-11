@@ -1,0 +1,37 @@
+buildscript {
+  repositories {
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    classpath("com.android.tools.build:gradle")
+    classpath("com.facebook.react:react-native-gradle-plugin")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+  }
+}
+
+allprojects {
+  repositories {
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+  }
+  configurations.configureEach {
+    resolutionStrategy.force("com.facebook.react:react-android:${providers.gradleProperty('expo.precompileAndroid.reactNativeVersion').get()}")
+  }
+}
+
+subprojects { project ->
+  project.pluginManager.withPlugin("com.android.library") {
+    project.afterEvaluate {
+      project.android {
+        compileOptions {
+          sourceCompatibility JavaVersion.VERSION_17
+          targetCompatibility JavaVersion.VERSION_17
+        }
+      }
+    }
+  }
+}
+
+apply plugin: "expo-root-project"
