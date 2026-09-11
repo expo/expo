@@ -1,21 +1,21 @@
 ---
 title: Query EAS Insights with EAS CLI
-sidebar_title: Query with EAS CLI
+sidebar_title: EAS CLI
 description: Query EAS Workflows and Maestro insights from the terminal with the eas workflow:insights commands.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-Everything the [Workflows](/eas-insights/workflows/) and [Maestro](/eas-insights/maestro/) tabs of EAS Insights show is also available from the terminal. Use the `eas workflow:insights` commands to check run health, find flaky flows, and feed the numbers into your own reports.
+The metrics the [Workflows](/eas-insights/workflows/) and [Maestro](/eas-insights/maestro/) tabs of EAS Insights show are also available from the terminal. Use the `eas workflow:insights` commands to check run health, find flaky flows, and feed the numbers into your own reports.
 
-This guide covers the Workflows and Maestro tabs. For update and channel usage, see [`eas update:insights`](/eas/cli/#eas-update-insights-groupid) and [`eas channel:insights`](/eas/cli/#eas-channel-insights) in the EAS CLI reference.
+For update and channel usage, see [`eas update:insights`](/eas/cli/#eas-update-insights-groupid) and [`eas channel:insights`](/eas/cli/#eas-channel-insights) in the EAS CLI reference.
 
 ## Prerequisites
 
 <Prerequisites>
   <Requirement title="The EAS CLI">
-    Follow the [instructions for installing the CLI](/eas/cli#installation).
+    Follow the [instructions for installing the CLI](/eas/cli/#installation).
   </Requirement>
   <Requirement title="A project that runs EAS Workflows">
     Follow [Get started with EAS Workflows](/eas/workflows/get-started/). For Maestro insights, the
@@ -29,10 +29,6 @@ This guide covers the Workflows and Maestro tabs. For update and channel usage, 
     <Terminal cmd={['$ eas workflow:insights --project-id <project-id>']} />
   </Requirement>
 </Prerequisites>
-
-## EAS CLI help
-
-Run any command with `--help` to see the flags supported by your installed EAS CLI version.
 
 ## Plans and lookback limits
 
@@ -56,14 +52,16 @@ Both commands accept these flags:
 
 - `--days <number>`: Show data from the last N days. Defaults to 7.
 - `--start <ISO date>` and `--end <ISO date>`: Set an explicit time range. Mutually exclusive with `--days`. Pass `--start` on its own to include everything up to now. `--end` on its own fails.
-- `--workflow <file name>`: Only include runs of this workflow file, such as `ci.yml`. Include the extension, and repeat the flag for several workflows. A workflow becomes available to this flag after its first run, and a name the project does not know fails the command and lists the ones it does.
-- `--git-ref <ref>`: Only include runs requested for this git ref. A bare name such as `main` is read as a branch and expanded to `refs/heads/main`, so pass the full ref for anything else, such as `refs/tags/v1.0.0`. A full 40-character commit SHA is matched as `eas workflow:run` recorded it.
-- `--limit <number>`: How many rows to list. Defaults to 50, and a value outside 1 to 100 is rejected.
+- `--workflow <file name>`: Only include runs of this workflow file, such as **ci.yml**. Include the extension, and repeat the flag for several workflows. A workflow becomes available to this flag after its first run. A name the project does not know fails the command and lists the names it does know.
+- `--git-ref <ref>`: Only include runs requested for this git ref. The command treats a bare name such as `main` as a branch and expands it to `refs/heads/main`. For anything else, pass the full ref, such as `refs/tags/v1.0.0`. The command matches a full 40-character commit SHA as `eas workflow:run` recorded it.
+- `--limit <number>`: How many rows to list. Defaults to 50. The command rejects a value outside 1 to 100.
 - `--project-id <id>`: Query a project without running inside its directory.
 - `--json`: Machine-readable output. Implies `--non-interactive`.
 - `--non-interactive`: Fail instead of prompting.
 
-Insights include finished runs only. Overview metrics compare the selected time range with the previous period of equal length, except for `eas workflow:insights:maestro --flow`, which reports one flow's numbers for the selected range alone. The data is aggregated for trend analysis and can lag behind real time. Use it to investigate trends rather than as an authoritative record.
+Insights include finished runs only. Time ranges are queried in whole UTC periods, so a command can report a slightly wider range than the one you asked for. Overview metrics compare the selected time range with the previous period of equal length. The exception is `eas workflow:insights:maestro --flow`, which reports one flow's numbers for the selected range alone. The data is aggregated for trend analysis and can lag behind real time. Use it to investigate trends rather than as an authoritative record.
+
+Run any command with `--help` to see the flags supported by your installed EAS CLI version.
 
 ## `eas workflow:insights`
 
@@ -93,7 +91,7 @@ Command flags:
 The output has three parts:
 
 - **Overview**: Total runs, success rate, active workflows, and failed runs, each with the change from the previous period.
-- **Runs over time**: Total, successful, failed, and canceled runs per period, in UTC. Time ranges of four days or less use hourly buckets, and ranges of two hours or less use minute buckets. The table lists only the periods that had runs and says so in its heading when it left some out. It is omitted when nothing ran in the range.
+- **Runs over time**: Total, successful, failed, and canceled runs per period. Periods are whole UTC intervals, and their size follows the length of the time range. The table lists only the periods that had runs and says so in its heading when it left some out. The table does not appear when nothing ran in the range.
 - **Workflows**: The workflows with the most runs in the time range, with their run counts, success rate, and last run. The **Workflow** column shows the file name, so you can pass a row straight to `--workflow`.
 
 With `--json`, these parts are the `overview`, `runsOverTime`, and `workflows` keys, alongside `project`, `timespan`, and `filters` when a filter is set. Each overview metric is an object with `current` and `previous` values. `runsOverTime` is an object with `granularity` and a `buckets` array that keeps every period, including the empty ones the table leaves out. Each entry in `workflows` carries `fileName` next to the `name` from the workflow file, and `hasMoreWorkflows` tells you whether `--limit` cut the table short.
@@ -127,13 +125,13 @@ Command flags:
 - `--sort-direction <direction>`: `desc` (default) or `asc`.
 - `--flow <path>`: Show one flow's history instead of the overview. Takes the exact path from the **Flow** column, and cannot be combined with `--status`, `--tag`, `--search`, `--sort`, or `--sort-direction`.
 
-The overview shows Maestro runs, pass rate, flaky flows, and average duration, each with the change from the previous period. A flaky run counts as a pass, so a flow can show a high pass rate together with a non-zero flake rate. Below the overview, runs over time uses the same buckets as `eas workflow:insights`, and the flows table lists each flow with its runs, pass rate, fails, flake rate, P90 duration, last run, and the status of that last run. With `--json`, these are the `totals`, `runsOverTime`, and `flows` keys, and `totalFlows` and `hasMoreFlows` tell you how many flows matched and whether `--limit` cut the table short.
+The overview shows Maestro runs, pass rate, flaky flows, and average duration, each with the change from the previous period. A flaky run counts as a pass, so a flow can show a high pass rate together with a non-zero flake rate. Below the overview, runs over time uses the same buckets as `eas workflow:insights`. The flows table lists each flow with its runs, pass rate, fails, and flake rate. The table also shows P90 (90th percentile) duration, last run, and the status of that last run. With `--json`, these are the `totals`, `runsOverTime`, and `flows` keys. `totalFlows` and `hasMoreFlows` tell you how many flows matched and whether `--limit` cut the table short.
 
 With `--flow`, the output starts with that flow's runs, pass rate, flaky runs, and P90 duration. It then lists the flow's runs over time, its five most common error patterns, and its most recent runs. `--limit` applies to the recent runs. With `--json`, look for the `totals`, `errorPatterns`, and `recentRuns` keys, plus `totalRecentRuns` and `hasMoreRecentRuns`.
 
-Tables print durations as `450ms` or `12.3s`, and `n/a` where no run reported one. The `--json` output reports durations in milliseconds and leaves out any key whose value is null, so read those with a fallback, such as `jq '.flows[] | {path, p90: (.p90DurationMs // "n/a")}'`.
+Tables print durations as `450ms` or `12.3s`, and `n/a` where no run reported one. The `--json` output reports durations in milliseconds and leaves out any key whose value is null. Read those with a fallback, such as `jq '.flows[] | {path, p90: (.p90DurationMs // "n/a")}'`.
 
-## Common workflows
+## Common tasks
 
 **Check how your workflows are doing on the main branch:**
 
@@ -157,7 +155,7 @@ Tables print durations as `450ms` or `12.3s`, and `n/a` where no run reported on
 2. Set its access token as the `EXPO_TOKEN` environment variable in your CI job.
 3. Query the project by ID and read the numbers you need from the JSON output.
 
-Non-JSON messages go to stderr, so you can pipe the output straight into a tool such as `jq`. When a command fails, stdout stays empty, the message goes to stderr, and the exit code is non-zero, so check the exit code before parsing:
+Non-JSON messages go to stderr, so you can pipe the output straight into a tool such as `jq`. When a command fails, stdout stays empty and the message goes to stderr. The exit code is non-zero, so check it before parsing:
 
 <Terminal
   cmd={[
