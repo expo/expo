@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtraPropertiesExtension
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.internal.extensions.core.extra
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -22,6 +23,7 @@ class ExpoRootProjectPlugin : Plugin<Project> {
       maybeOverrideCmakeVersion()
       setDefaultCmakeObjectPathMax()
       disableLinkedModulesLintWhenRequested()
+      declareInlinedEnvironmentAsBundleTaskInputs()
     }
   }
 }
@@ -167,6 +169,45 @@ private fun Project.disableLintVitalAnalysis() {
     }
   }
 }
+
+/**
+ * Declares the values that Expo inlines into the JavaScript bundle as inputs of React Native's
+ * `createBundle*JsAndAssets` tasks.
+ *
+ * Those tasks declare the JavaScript sources and the bundle settings as inputs, but not the
+ * environment the bundler reads. Expo inlines every `EXPO_PUBLIC_*` value into a release bundle,
+ * and it takes those values from the process environment and from the `.env` files in the project
+ * directory. A build that only changes such a value keeps the same JavaScript sources, so Gradle
+ * reports the task as `UP-TO-DATE` and the app keeps the value of the previous build.
+ *
+ * [org.gradle.api.provider.ProviderFactory.environmentVariablesPrefixedBy] reads only the
+ * `EXPO_PUBLIC_*` variables. Other environment variables do not become build inputs, and they do
+ * not invalidate the configuration cache.
+ */
+internal fun Project.declareInlinedEnvironmentAsBundleTaskInputs() {
+  val publicEnv = providers.environmentVariablesPrefixedBy(PUBLIC_ENV_PREFIX)
+  // The root Gradle project is the `android` directory, so its parent is the project directory
+  // that holds the `.env` files.
+  val dotenvFiles = fileTree(projectDir.parentFile) { fileTree ->
+    fileTree.include(DOTENV_FILE_PATTERNS)
+  }
+
+  subprojects { subproject ->
+    subproject.tasks.configureEach { task ->
+      if (task.name.startsWith(BUNDLE_TASK_PREFIX) && task.name.endsWith(BUNDLE_TASK_SUFFIX)) {
+        task.inputs.property("expoPublicEnv", publicEnv)
+        task.inputs.files(dotenvFiles)
+          .withPropertyName("expoDotenvFiles")
+          .withPathSensitivity(PathSensitivity.RELATIVE)
+      }
+    }
+  }
+}
+
+private const val PUBLIC_ENV_PREFIX = "EXPO_PUBLIC_"
+private val DOTENV_FILE_PATTERNS = listOf(".env", ".env.*")
+private const val BUNDLE_TASK_PREFIX = "createBundle"
+private const val BUNDLE_TASK_SUFFIX = "JsAndAssets"
 
 fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
   // Android related
