@@ -84,11 +84,10 @@ export enum SourceSkips {
   //#endregion - EAS Build source
 
   /**
-   * Skip the resolved autolinking config from `expo-modules-autolinking` and `react-native-config`.
-   * Each autolinked module is still hashed on its own, so adding, removing, or upgrading a module
-   * still changes the fingerprint.
-   * Note that per-module overrides in the project's **react-native.config.js** are then ignored,
-   * e.g. adding `scriptPhases` to a dependency.
+   * Path fields in the resolved autolinking config from `expo-modules-autolinking` and
+   * `react-native-config`.
+   * The config itself is still hashed. Filesystem paths, and values that sit under the project
+   * root, are omitted. Linked module names, `scriptPhases`, and similar non-path overrides remain.
    */
-  AutolinkingConfig = 1 << 15,
+  AutolinkingConfigPaths = 1 << 15,
 }

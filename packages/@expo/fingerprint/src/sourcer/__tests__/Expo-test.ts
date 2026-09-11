@@ -218,9 +218,9 @@ describe('getExpoAutolinkingSourcesAsync', () => {
     }
   });
 
-  it('should keep autolinking projects but drop the config when SourceSkips.AutolinkingConfig is set', async () => {
+  it('should keep autolinking projects and strip path fields when SourceSkips.AutolinkingConfigPaths is set', async () => {
     const options = await normalizeOptionsAsync('/app', {
-      sourceSkips: SourceSkips.AutolinkingConfig,
+      sourceSkips: SourceSkips.AutolinkingConfigPaths,
     });
 
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
@@ -234,17 +234,29 @@ describe('getExpoAutolinkingSourcesAsync', () => {
         filePath: 'node_modules/expo-modules-core/android',
       })
     );
-    expect(sources).not.toContainEqual(
-      expect.objectContaining({ id: 'expoAutolinkingConfig:android' })
+    const androidConfig = sources.find(
+      (source) => source.type === 'contents' && source.id === 'expoAutolinkingConfig:android'
     );
+    expect(androidConfig?.type).toBe('contents');
+    if (androidConfig?.type !== 'contents') {
+      throw new Error('expected expoAutolinkingConfig:android contents source');
+    }
+    expect(androidConfig.contents).toContain('expo-modules-core');
+    expect(androidConfig.contents).not.toContain('node_modules');
 
     sources = await getExpoAutolinkingIosSourcesAsync('/app', options, expoAutolinkingVersion);
     expect(sources).toContainEqual(
       expect.objectContaining({ type: 'dir', filePath: 'node_modules/expo-modules-core' })
     );
-    expect(sources).not.toContainEqual(
-      expect.objectContaining({ id: 'expoAutolinkingConfig:ios' })
+    const iosConfig = sources.find(
+      (source) => source.type === 'contents' && source.id === 'expoAutolinkingConfig:ios'
     );
+    expect(iosConfig?.type).toBe('contents');
+    if (iosConfig?.type !== 'contents') {
+      throw new Error('expected expoAutolinkingConfig:ios contents source');
+    }
+    expect(iosConfig.contents).toContain('expo-modules-core');
+    expect(iosConfig.contents).not.toContain('node_modules');
   });
 });
 
