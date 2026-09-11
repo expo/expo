@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `getAdvertisingIdAsync` to read the advertising ID off the JavaScript thread. ([#PR](https://github.com/expo/expo/pull/PR) by [@greg-schrammel](https://github.com/greg-schrammel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
