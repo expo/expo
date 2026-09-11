@@ -77,6 +77,16 @@ export const expoStart: Command = async (argv) => {
         ``,
         chalk`--private-key-path <path>       Path to private key for code signing. {dim Required to sign development manifests when the project is configured with an expo-updates code signing certificate.}`,
         `-h, --help                      Usage info`,
+      ].join('\n'),
+      [
+        '',
+        chalk`  A truthy {bold CI} environment variable starts the dev server in CI mode: file watching and`,
+        chalk`  Fast Refresh are off, and it serves the bundle built at startup until it exits.`,
+        chalk`  Leave {bold CI} unset for local development.`,
+        '',
+        chalk`  Run without the interactive UI and keep Fast Refresh by redirecting output:`,
+        chalk`    {dim $} npx expo start > expo.log 2>&1`,
+        '',
       ].join('\n')
     );
   }
