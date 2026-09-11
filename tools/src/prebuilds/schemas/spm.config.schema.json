@@ -277,7 +277,11 @@
                 },
                 "path": {
                     "type": "string",
-                    "description": "Path to the xcframework relative to package root"
+                    "description": "Path to the xcframework, relative to the package root or to the root of `package` when that is set"
+                },
+                "package": {
+                    "type": "string",
+                    "description": "npm package shipping the xcframework, when it is not the package being built (resolved from it with Node module resolution)"
                 },
                 "includeDirectories": {
                     "type": "array",

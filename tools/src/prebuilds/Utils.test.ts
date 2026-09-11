@@ -3,12 +3,14 @@
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import { before, describe, it, afterEach } from 'node:test';
+import { after, before, describe, it, afterEach } from 'node:test';
 
 import {
   getVersionsInfoAsync,
   isNonInteractive,
+  resolveFrameworkTargetPath,
   resolveHermesVersion,
   selectDistributedPackages,
   setForceNonInteractive,
@@ -239,5 +241,62 @@ describe('getVersionsInfoAsync — Hermes V1 polarity', () => {
     delete process.env.RCT_HERMES_V1_ENABLED;
     const { hermesVersion } = await getVersionsInfoAsync({});
     assert.equal(hermesVersion, classicVersion);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveFrameworkTargetPath
+// ---------------------------------------------------------------------------
+
+describe('resolveFrameworkTargetPath', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-framework-target-'));
+  const packagePath = path.join(fs.realpathSync(tmpDir), 'node_modules', 'some-package');
+  const binaryPackagePath = path.join(packagePath, 'node_modules', 'binary-package');
+
+  before(() => {
+    fs.mkdirSync(binaryPackagePath, { recursive: true });
+    fs.writeFileSync(
+      path.join(binaryPackagePath, 'package.json'),
+      JSON.stringify({ name: 'binary-package', version: '1.0.0' })
+    );
+  });
+
+  after(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('resolves the xcframework inside the package by default', () => {
+    const target = {
+      type: 'framework',
+      name: 'libfoo',
+      path: 'libs/libfoo.xcframework',
+    } as const;
+    assert.equal(
+      resolveFrameworkTargetPath(packagePath, target),
+      path.join(packagePath, 'libs/libfoo.xcframework')
+    );
+  });
+
+  it('resolves the xcframework inside another npm package when `package` is set', () => {
+    const target = {
+      type: 'framework',
+      name: 'libfoo',
+      path: 'libs/libfoo.xcframework',
+      package: 'binary-package',
+    } as const;
+    assert.equal(
+      resolveFrameworkTargetPath(packagePath, target),
+      path.join(binaryPackagePath, 'libs/libfoo.xcframework')
+    );
+  });
+
+  it('throws a helpful error when the package shipping the xcframework is missing', () => {
+    const target = {
+      type: 'framework',
+      name: 'libfoo',
+      path: 'libs/libfoo.xcframework',
+      package: 'not-installed-package',
+    } as const;
+    assert.throws(() => resolveFrameworkTargetPath(packagePath, target), /not-installed-package/);
   });
 });
