@@ -39,34 +39,33 @@ When ending an update-based rollout, you have three options:
 
 ### Publishing while a rollout is in progress
 
-Sometimes you need to ship a change before a rollout finishes. A crash report arrives, or the rollout itself turns out to be the problem.
+If you need to publish a fix or roll back before a rollout finishes, you can replace it with a new update. EAS CLI asks you to confirm before ending a rollout for the same branch, platform, and runtime version.
 
-While a rollout is in progress, EAS Update rejects a new update for the same runtime version. This protects the rollout from ending by accident. Pick the option that matches your intent:
+Use `--force-end-active-rollout` to confirm this in advance. The flag is required in non-interactive mode when a rollout is in progress. For example, to publish a fix:
 
-| Your intent                                   | What to do                                |
-| --------------------------------------------- | ----------------------------------------- |
-| You trust the update you are rolling out      | Progress it to 100%                       |
-| You want everyone back on the previous update | Run `eas update:revert-update-rollout`    |
-| You need to ship something else now           | Publish with `--force-end-active-rollout` |
+<Terminal
+  cmd={[
+    '$ eas update --branch production --environment production --message "Fix a crash" --force-end-active-rollout',
+  ]}
+/>
 
-Reverting deletes the rollout update group, so links to that update stop working. Publishing over the rollout leaves it in place. Prefer the flag when you reference update URLs in release notes or incident reports.
+To roll back to the update embedded in the build instead:
 
 <Terminal cmd={['$ eas update:roll-back-to-embedded --force-end-active-rollout']} />
 
 The flag works with `eas update`, `eas update:republish`, `eas update:roll-back-to-embedded`, and `eas update:rollback`.
 
-Without the flag, each command names the rollout in progress and asks you to confirm. In non-interactive mode, the command fails and tells you to pass the flag.
+The rollout ends when the replacement is available to clients. For signed updates, EAS CLI must finish signing the replacement first. Until then, the existing rollout continues.
 
-The rollout ends once clients can receive your new update. For an update that uses code signing, this happens when you attach the signature, so the rollout continues until then.
+The replacement becomes available to all users on that branch with the matching platform and runtime version, regardless of whether they received the rollout update. Clients receive it according to their app's update checking and loading behavior. A rollback to embedded directs clients to use the update embedded in their build.
 
-After the rollout ends, your update is the latest, so every user receives it. The update that was rolling out stops being served.
+Replacing a rollout preserves the previous update group and its dashboard links. In contrast, `eas update:revert-update-rollout` deletes the rollout update group and republishes the control update, or creates a rollback to embedded if there is no control update.
 
-You cannot use `--rollout-percentage` at the same time. Rolling out a new update over one already in progress would make the update being rolled out the control update, so it would reach more users rather than fewer. Finish or revert the rollout in progress first.
+You cannot start another rollout for the same branch, platform, and runtime version while one is in progress, even with `--force-end-active-rollout`. To publish with `--rollout-percentage`, first finish the existing rollout with `eas update:edit` or revert it with `eas update:revert-update-rollout`.
 
 ### Additional notes
 
-- Only one update can be rolled out on a branch at one time.
-- When a rollout is in progress, a new update for the same runtime version needs one of the options above. See [Publishing while a rollout is in progress](#publishing-while-a-rollout-is-in-progress).
+- Only one rollout can be in progress for a given branch, platform, and runtime version.
 - To see the state of the rollout, use the `eas update:list` or `eas update:view` commands.
 - Reverting a rollout that is created on a branch with an existing update will republish the control update. This ensures that all clients are reverted back to the previous state.
 - A rollout can be started on a branch with no current update, in which case the first update will be rolled out to the specified percentage of users. When reverted, a rollback-to-embedded update will be created, which will revert the clients to their previous state (embedded update).
