@@ -4035,6 +4035,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      jest-expo:
+        specifier: workspace:*
+        version: link:../jest-expo
 
   packages/expo-auth-session:
     dependencies:
