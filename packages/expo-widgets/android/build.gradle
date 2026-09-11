@@ -108,7 +108,10 @@ def generateExpoWidgetsLayoutRegistry = tasks.register("generateExpoWidgetsLayou
   inputs.file file("$expoWidgetsPackageDir/metro.config.js")
   inputs.file file("$expoWidgetsPackageDir/scripts/build-layout-registry.mjs")
   inputs.file file("$expoWidgetsPackageDir/bundle/layout-registry-entry.js")
-  inputs.file(expoWidgetsLayoutRegistryConfigFile).optional()
+  // The layout registry config is only written when the Android side of the config plugin runs
+  // (`enableAndroid: true`). Use a FileCollection so an absent file is not a validation error —
+  // build-layout-registry.mjs already treats a missing config as "no widgets".
+  inputs.files(expoWidgetsLayoutRegistryConfigFile)
   outputs.file(expoWidgetsLayoutRegistryOutput)
 
   def command = [
