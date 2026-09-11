@@ -2052,8 +2052,8 @@ importers:
         specifier: ^4.4.4
         version: 4.4.4
       '@ramonclaudio/compile':
-        specifier: 0.1.0-beta.1
-        version: 0.1.0-beta.1
+        specifier: 0.1.0-beta.3
+        version: 0.1.0-beta.3
       '@react-native/dev-middleware':
         specifier: 0.87.1
         version: 0.87.1
@@ -9161,8 +9161,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@ramonclaudio/compile@0.1.0-beta.1':
-    resolution: {integrity: sha512-e3+r/EY1Ry93c80WKCx8M+AJ5AnIIcWuVYheTsevVCi6GPYZuvSZ52ajPoJvS0j4hvvsjTEwEollRfM1JPjYXg==}
+  '@ramonclaudio/compile@0.1.0-beta.3':
+    resolution: {integrity: sha512-NQjNX9KMWioyGSTEEUTR1xRwmb7w65jqYgdajbXM9kZrSz6D5aCf2BQxezbrDIZVuILdkOUa5ydotxTrmBk38Q==}
     engines: {node: '>=22.13.0'}
     hasBin: true
 
@@ -17955,7 +17955,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  '@ramonclaudio/compile@0.1.0-beta.1': {}
+  '@ramonclaudio/compile@0.1.0-beta.3': {}
 
   '@react-native-async-storage/async-storage@2.2.0(react-native@0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))':
     dependencies:

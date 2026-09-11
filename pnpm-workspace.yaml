@@ -22,7 +22,7 @@ loglevel: info
 minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:
-  - '@ramonclaudio/compile@0.1.0-beta.1'
+  - '@ramonclaudio/compile@0.1.0-beta.3'
   - '@expo/*'
   - '@noxcturnal/*'
   - '@react-native/*'

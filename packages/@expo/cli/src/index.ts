@@ -239,7 +239,6 @@ if (!isSubcommand) {
   }
 }
 
-// Forward help to the subcommand before any Compile option separator.
 if (args['--help']) {
   if (isCompileCommand) {
     commandArgs.unshift('--help');
