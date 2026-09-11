@@ -18,6 +18,7 @@ enum KeyboardType: String, Enumerable {
   case asciiCapableNumberPad = "ascii-capable-number-pad"
 }
 
+#if !os(macOS)
 func getKeyboardType(_ keyboardType: KeyboardType) -> UIKeyboardType {
   switch keyboardType {
   case .defaultKeyboard:
@@ -46,16 +47,22 @@ func getKeyboardType(_ keyboardType: KeyboardType) -> UIKeyboardType {
     return .asciiCapableNumberPad
   }
 }
+#endif
 
 internal struct KeyboardTypeModifier: ViewModifier, Record {
   @Field var keyboardType: KeyboardType?
 
   func body(content: Content) -> some View {
+#if os(macOS)
+    // There is no software keyboard on macOS, so there is no keyboard type to request.
+    content
+#else
     if let keyboardType {
       content.keyboardType(getKeyboardType(keyboardType))
     } else {
       content
     }
+#endif
   }
 }
 

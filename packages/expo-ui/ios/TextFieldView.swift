@@ -56,7 +56,13 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 
   func forceResignFirstResponder() {
     if textManager.isFocused {
+#if os(macOS)
+      // `NSApplication.sendAction` has no `for:` event argument, and AppKit clears focus by
+      // handing the window a nil first responder.
+      NSApplication.shared.keyWindow?.makeFirstResponder(nil)
+#else
       UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+#endif
     }
 
     textManager.isFocused = false

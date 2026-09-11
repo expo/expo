@@ -14,13 +14,19 @@ internal enum ListStyleType: String, Enumerable {
   @ViewBuilder
   func apply<Content: View>(to content: Content) -> some View {
     switch self {
-    case .grouped:
-      content.listStyle(.grouped)
     case .plain:
       content.listStyle(.plain)
-#if !os(tvOS)
+// `grouped` and `insetGrouped` are unavailable on macOS, which has no grouped list styles.
+// They fall through to `automatic` below.
+#if !os(macOS)
+    case .grouped:
+      content.listStyle(.grouped)
+#endif
+#if !os(tvOS) && !os(macOS)
     case .insetGrouped:
       content.listStyle(.insetGrouped)
+#endif
+#if !os(tvOS)
     case .inset:
       content.listStyle(.inset)
     case .sidebar:

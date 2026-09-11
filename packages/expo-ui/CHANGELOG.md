@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [macOS] Added macOS to the supported platforms and made the SwiftUI layer build against the macOS SDK. Modifiers that have no macOS counterpart — `keyboardType`, `textInputAutocapitalization`, `editMode`, the wheel picker and date picker styles, the paged `TabView` and index view styles, the grouped list styles, `listSectionSpacing` and `listSectionMargins` — are no-ops there, matching how they already behave on tvOS. (by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
 
 ### 🐛 Bug fixes

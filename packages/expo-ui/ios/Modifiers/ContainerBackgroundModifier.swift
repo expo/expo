@@ -11,7 +11,9 @@ internal enum ContainerBackgroundPlacementOptions: String, Enumerable {
   case navigation
   case navigationSplitView
 
-#if !os(tvOS)
+// `.navigation` and `.navigationSplitView` are unavailable on macOS, which only defines the
+// `.widget` placement. macOS handles the mapping inline in `body` instead.
+#if !os(tvOS) && !os(macOS)
   @available(iOS 18.0, *)
   var toContainerBackgroundPlacement: ContainerBackgroundPlacement {
     switch self {
@@ -28,7 +30,16 @@ internal struct ContainerBackgroundModifier: ViewModifier, Record {
   @Field var container: ContainerBackgroundPlacementOptions?
 
   func body(content: Content) -> some View {
-#if !os(tvOS)
+#if os(tvOS)
+    content
+#elseif os(macOS)
+    // `.widget` is the only placement macOS defines; the other two are unavailable there.
+    if let color, container == .widget {
+      content.containerBackground(color, for: .widget)
+    } else {
+      content
+    }
+#else
     if let color, let container {
       if #available(iOS 18.0, *) {
         content.containerBackground(color, for: container.toContainerBackgroundPlacement)
@@ -40,8 +51,6 @@ internal struct ContainerBackgroundModifier: ViewModifier, Record {
     } else {
       content
     }
-#else
-    content
 #endif
   }
 }

@@ -15,6 +15,7 @@ internal enum EditModeType: String, Enumerable {
   case inactive
   case transient
 
+#if !os(macOS)
   func toNativeEditMode() -> EditMode {
     switch self {
     case .active:
@@ -25,6 +26,7 @@ internal enum EditModeType: String, Enumerable {
       return .transient
     }
   }
+#endif
 }
 
 internal enum ColorSchemeType: String, Enumerable {
@@ -49,11 +51,17 @@ internal struct EnvironmentModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     switch key {
     case .editMode:
+      // `EditMode` and the `editMode` environment key are both unavailable on macOS, which has
+      // no list edit mode. Setting the key is a no-op there.
+#if os(macOS)
+      content
+#else
       if let editMode = EditModeType(rawValue: value) {
         content.environment(\.editMode, .constant(editMode.toNativeEditMode()))
       } else {
         content
       }
+#endif
     case .colorScheme:
       if let colorScheme = ColorSchemeType(rawValue: value) {
         content.environment(\.colorScheme, colorScheme.toNativeColorScheme())

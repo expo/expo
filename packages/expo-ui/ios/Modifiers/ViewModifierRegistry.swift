@@ -16,7 +16,8 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-#if os(tvOS)
+// `listSectionSpacing` is unavailable on tvOS and macOS.
+#if os(tvOS) || os(macOS)
     content
 #else
     if #available(iOS 17.0, *) {
@@ -537,7 +538,12 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
       case .automatic:
         content.menuActionDismissBehavior(.automatic)
       case .disabled:
+        // `.disabled` is unavailable on macOS; menus there always dismiss on action.
+#if os(macOS)
+        content.menuActionDismissBehavior(.automatic)
+#else
         content.menuActionDismissBehavior(.disabled)
+#endif
       case .enabled:
         content.menuActionDismissBehavior(.enabled)
       }
@@ -1260,7 +1266,8 @@ internal struct ListSectionMargins: ViewModifier, Record {
   @Field var edges: EdgeOptions?
 
   func body(content: Content) -> some View {
-#if compiler(>=6.2) && !os(tvOS) // Xcode 26
+// `listSectionMargins` is unavailable on tvOS and macOS.
+#if compiler(>=6.2) && !os(tvOS) && !os(macOS) // Xcode 26
     if #available(iOS 26.0, *) {
       if let edges {
         content.listSectionMargins(edges.toEdge(), length ?? 0)

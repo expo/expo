@@ -134,7 +134,16 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   private func safeAreaSize() -> CGSize {
+#if os(macOS)
+    // `SceneGeometry` is built on `UIWindowScene`, which has no macOS counterpart. The closest
+    // analogue to a window's safe area is its content layout rect, which excludes the title bar.
+    guard let window = NSApplication.shared.keyWindow ?? NSApplication.shared.windows.first else {
+      return .zero
+    }
+    return window.contentLayoutRect.size
+#else
     return SceneGeometry.safeAreaSize()
+#endif
   }
 }
 

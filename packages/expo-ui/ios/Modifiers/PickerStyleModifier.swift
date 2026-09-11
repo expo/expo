@@ -24,11 +24,16 @@ internal enum PickerStyleType: String, Enumerable {
         content.pickerStyle(.automatic)
       }
     case .navigationLink:
+      // `.navigationLink` is unavailable on macOS, which has no navigation-stack picker.
+#if os(macOS)
+      content.pickerStyle(.automatic)
+#else
       if #available(iOS 16.0, tvOS 16.0, *) {
         content.pickerStyle(.navigationLink)
       } else {
         content.pickerStyle(.automatic)
       }
+#endif
     case .palette:
 #if !os(tvOS)
       if #available(iOS 17.0, *) {
@@ -42,7 +47,7 @@ internal enum PickerStyleType: String, Enumerable {
     case .segmented:
       content.pickerStyle(.segmented)
     case .wheel:
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
       content.pickerStyle(.wheel)
 #else
       content.pickerStyle(.automatic)
