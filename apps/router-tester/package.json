@@ -8,6 +8,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "eas:build": "./scripts/eas-build.sh",
     "lint": "expo lint",
     "test:e2e": "./maestro/test.sh"
   },
