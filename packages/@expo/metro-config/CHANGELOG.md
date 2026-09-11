@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support separate output and restored Metro transform cache directories for EAS jobs.
+- Add support for separate restored and output Metro transform cache directories.
 
 ### 🐛 Bug fixes
 

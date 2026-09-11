@@ -42,8 +42,12 @@ describe(getDefaultConfig, () => {
     ['/cache/output', undefined],
     [undefined, '/cache/restored'],
   ])('keeps one default store with output=%s and restored=%s', (output, restored) => {
-    if (output) process.env.EAS_METRO_CACHE_OUTPUT_DIR = output;
-    if (restored) process.env.EAS_METRO_CACHE_RESTORE_DIR = restored;
+    if (output) {
+      process.env.EAS_METRO_CACHE_OUTPUT_DIR = output;
+    }
+    if (restored) {
+      process.env.EAS_METRO_CACHE_RESTORE_DIR = restored;
+    }
     expect(getDefaultConfig(projectRoot).cacheStores).toHaveLength(1);
   });
 
@@ -61,7 +65,9 @@ describe(getDefaultConfig, () => {
     await restored.set(unusedKey, Buffer.from('unused module'));
 
     const stores = getDefaultConfig(projectRoot).cacheStores;
-    if (!Array.isArray(stores)) throw new Error('Expected an array of cache stores');
+    if (!Array.isArray(stores)) {
+      throw new Error('Expected an array of cache stores');
+    }
     expect(stores).toHaveLength(2);
     const cache = new Cache<Buffer>(stores);
     expect(await cache.get(reusedKey)).toEqual(reusedValue);
@@ -75,7 +81,9 @@ describe(getDefaultConfig, () => {
     expect(await output.get(unusedKey)).toBeNull();
     expect(await restored.get(unusedKey)).toEqual(Buffer.from('unused module'));
 
-    for (const store of stores) await store.clear();
+    for (const store of stores) {
+      await store.clear();
+    }
     expect(await output.get(reusedKey)).toBeNull();
     expect(await restored.get(reusedKey)).toBeNull();
   });

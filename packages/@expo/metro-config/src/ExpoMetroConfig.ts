@@ -283,8 +283,10 @@ export function getDefaultConfig(
 
   const outputCacheRoot = env.EAS_METRO_CACHE_OUTPUT_DIR;
   const restoredCacheRoot = env.EAS_METRO_CACHE_RESTORE_DIR;
-  // Metro promotes restored hits into earlier stores. An empty output directory therefore
-  // collects only results used by this job, which EAS can archive without unused entries.
+  // EAS supplies distinct absolute paths and starts each job with an empty output directory.
+  // Metro promotes restored hits into the first store and writes new transforms there too.
+  // After bundling processes exit, EAS archives only the output directory, excluding unused
+  // restored entries. Both stores remain writable and are cleared by Metro's cache reset.
   const cacheStores =
     outputCacheRoot && restoredCacheRoot
       ? [
@@ -465,9 +467,7 @@ export function getDefaultConfig(
   // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
   (metroConfig.resolver as { useWatchman?: boolean | null }).useWatchman = null;
 
-  return withExpoSerializers(metroConfig, {
-    unstable_beforeAssetSerializationPlugins,
-  });
+  return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 
 /** Use to access the Expo Metro transformer path */
