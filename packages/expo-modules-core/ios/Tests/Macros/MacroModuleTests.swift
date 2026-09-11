@@ -12,8 +12,10 @@ private struct MacroOptions {
   var count: Int = 0
 }
 
+// `@unchecked Sendable`: the `@JS(.concurrent)` members send `self` off the JavaScript thread,
+// which Swift 6 mode allows only for a `Sendable` module.
 @ExpoModule
-private final class MacroGreeter: Module {
+private final class MacroGreeter: Module, @unchecked Sendable {
   @JS
   func greet(name: String) -> String {
     return "Hi, \(name)"
@@ -49,6 +51,18 @@ private final class MacroGreeter: Module {
   @JS
   @JavaScriptActor
   func delayed(value: String) async throws -> String {
+    return value
+  }
+
+  // An async function whose body runs off the JS thread, on the concurrent pool.
+  @JS(.concurrent)
+  func offThread(value: String) async throws -> String {
+    return value
+  }
+
+  // The `.concurrent` option combined with a JS name override.
+  @JS("renamedOffThread", .concurrent)
+  func offThreadWithName(value: String) async throws -> String {
     return value
   }
 }
@@ -146,6 +160,21 @@ private struct MacroModuleTests {
     register(MacroGreeter(appContext: appContext))
     let result = try await runtime.evalAsync("expo.modules.MacroGreeter.delayed('done')")
     #expect(try await result.asString() == "done")
+  }
+
+  @Test
+  func `binds a @JS(.concurrent) async function that returns a promise`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.offThread('done')")
+    #expect(try await result.asString() == "done")
+  }
+
+  @Test
+  func `honors the @JS name override combined with .concurrent`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.renamedOffThread('done')")
+    #expect(try await result.asString() == "done")
+    #expect(try runtime.eval("'offThreadWithName' in expo.modules.MacroGreeter").asBool() == false)
   }
 
   // MARK: - Non-primitive decode/encode
