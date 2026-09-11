@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle.
+
 ### 💡 Others
 
 ## 58.0.0-preview.0 — 2026-09-10
