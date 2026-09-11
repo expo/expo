@@ -12,6 +12,7 @@ const path = require('path');
 const { collectIgnoredDirs } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
 const { runDumpPackage } = require('./cli');
+const { podspecDeclarations } = require('./podspec');
 
 // ---------------------------------------------------------------------------
 // Pure: parse `swift package dump-package` JSON → { name, products, targets }
@@ -44,6 +45,7 @@ function parseDumpedManifest(json) {
       exclude: t.exclude ?? [],
       sources: t.sources ?? [],
       resources: t.resources ?? [],
+      settings: t.settings ?? [],
       // sibling targets referenced by name within this same package
       siblingDeps: (t.dependencies ?? []).map(siblingDependency).filter(Boolean),
     }));
@@ -58,7 +60,9 @@ function parseDumpedManifest(json) {
     .filter((p) => Object.keys(p.type ?? {})[0] === 'library')
     .map((p) => ({ name: p.name, targets: (p.targets ?? []).filter((n) => regularNames.has(n)) }))
     .filter((p) => p.targets.length);
-  return { name: pkg.name, products, targets };
+  const iosDeploymentTarget =
+    (pkg.platforms ?? []).find((p) => p.platformName === 'ios')?.version ?? null;
+  return { name: pkg.name, iosDeploymentTarget, products, targets };
 }
 
 // ---------------------------------------------------------------------------
@@ -81,15 +85,22 @@ const SWIFT_PLATFORM_CASES = {
 };
 
 /**
+ * The Swift cases for the platform names a condition lists. A name PackageDescription
+ * does not declare is dropped rather than rendered: the condition then covers more
+ * platforms than declared, which still builds, while invalid Swift does not.
+ */
+function swiftPlatformCases(names) {
+  return (names ?? []).map((p) => SWIFT_PLATFORM_CASES[p]).filter((p) => p != null);
+}
+
+/**
  * A sibling dependency, conditioned on platforms when the module declared it so.
- * SwiftPM allows only `platforms:` in a target-dependency condition. An unknown
- * platform name drops the condition rather than the dependency: over-declaring a
- * platform still builds, while invalid Swift or a missing target does not.
+ * SwiftPM allows only `platforms:` in a target-dependency condition.
  */
 function renderSiblingDependency(dep) {
   if (typeof dep === 'string') return `"${dep}"`;
-  const platforms = dep.platforms.map((p) => SWIFT_PLATFORM_CASES[p]);
-  if (platforms.some((p) => p == null)) return `"${dep.name}"`;
+  const platforms = swiftPlatformCases(dep.platforms);
+  if (!platforms.length) return `"${dep.name}"`;
   return `.target(name: "${dep.name}", condition: .when(platforms: [${platforms.join(', ')}]))`;
 }
 
@@ -119,6 +130,107 @@ function renderResource(resource, targetName) {
     : `${call}("${resource.path}")`;
 }
 
+const SETTING_FAMILIES = [
+  ['c', 'cSettings'],
+  ['cxx', 'cxxSettings'],
+  ['swift', 'swiftSettings'],
+  ['linker', 'linkerSettings'],
+];
+const SETTING_TOOLS = new Set(SETTING_FAMILIES.map(([tool]) => tool));
+
+function renderSettingCondition(condition) {
+  const platforms = swiftPlatformCases(condition?.platformNames);
+  const clauses = [];
+  if (platforms.length) clauses.push(`platforms: [${platforms.join(', ')}]`);
+  if (condition?.config != null) clauses.push(`configuration: .${condition.config}`);
+  return clauses.length ? `, .when(${clauses.join(', ')})` : '';
+}
+
+const SWIFT_LANGUAGE_MODES = { 4: '.v4', 4.2: '.v4_2', 5: '.v5', 6: '.v6' };
+const INTEROPERABILITY_MODES = { C: '.C', Cxx: '.Cxx' };
+
+function settingError(targetName, setting, explanation) {
+  return new Error(
+    `Cannot generate a consumption Package.swift for target "${targetName}": build setting ` +
+      `\`${JSON.stringify(setting.kind)}\` ${explanation}`
+  );
+}
+
+/**
+ * One build setting as its PackageDescription call. An unrecognized kind throws for
+ * the same reason an unrecognized resource rule does: a silently dropped setting
+ * turns into a compile or link failure far from the manifest.
+ */
+function renderSetting(setting, targetName) {
+  const [kind, args] = Object.entries(setting.kind ?? {})[0] ?? [];
+  const value = args?._0;
+  const when = renderSettingCondition(setting.condition);
+  const quoted = (v) => `"${escapeSwiftString(v)}"`;
+  if (value == null) {
+    throw settingError(
+      targetName,
+      setting,
+      'carries no value, so there is nothing to render. The dumped manifest is malformed — every ' +
+        'setting Swift Package Manager emits names one. Re-run `swift package dump-package` on the module.'
+    );
+  }
+  switch (kind) {
+    case 'define': {
+      const separator = value.indexOf('=');
+      if (separator < 0) return `.define(${quoted(value)}${when})`;
+      const name = quoted(value.slice(0, separator));
+      // A Swift define is a conditional-compilation flag: swiftc warns that flags have
+      // no values and then `#if NAME` is false, so only the name survives.
+      if (setting.tool === 'swift') return `.define(${name}${when})`;
+      return `.define(${name}, to: ${quoted(value.slice(separator + 1))}${when})`;
+    }
+    case 'headerSearchPath':
+      return `.headerSearchPath(${quoted(value)}${when})`;
+    case 'unsafeFlags':
+      return `.unsafeFlags([${value.map(quoted).join(', ')}]${when})`;
+    case 'linkedFramework':
+      return `.linkedFramework(${quoted(value)}${when})`;
+    case 'linkedLibrary':
+      return `.linkedLibrary(${quoted(value)}${when})`;
+    case 'enableUpcomingFeature':
+      return `.enableUpcomingFeature(${quoted(value)}${when})`;
+    case 'enableExperimentalFeature':
+      return `.enableExperimentalFeature(${quoted(value)}${when})`;
+    case 'swiftLanguageMode': {
+      const mode = SWIFT_LANGUAGE_MODES[value];
+      if (mode == null) {
+        throw settingError(
+          targetName,
+          setting,
+          `names the Swift language mode "${value}", which PackageDescription does not declare. ` +
+            'The generated manifest would not compile. Declare the target with mode 4, 4.2, 5 or 6.'
+        );
+      }
+      return `.swiftLanguageMode(${mode}${when})`;
+    }
+    case 'interoperabilityMode': {
+      const mode = INTEROPERABILITY_MODES[value];
+      if (mode == null) {
+        throw settingError(
+          targetName,
+          setting,
+          `names the interoperability mode "${value}", which PackageDescription does not declare. ` +
+            'The generated manifest would not compile. Declare the target with mode C or Cxx.'
+        );
+      }
+      return `.interoperabilityMode(${mode}${when})`;
+    }
+    default:
+      throw settingError(
+        targetName,
+        setting,
+        `uses the kind "${kind}", which this plugin's renderer does not support yet. Swift Package ` +
+          'Manager keeps adding build settings, and rendering it needs a case added in ' +
+          'expo/scripts/spm/manifests.js.'
+      );
+  }
+}
+
 /** SwiftPM's file-rule arguments, in `.target(…)` declaration order. Empty ones are omitted. */
 function renderFileRules(target) {
   const list = (label, values) =>
@@ -136,7 +248,6 @@ function renderFileRules(target) {
 
 /** Source-with-manifest: mirror the parsed targets/products, inject the given deps. */
 function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) {
-  const interfaceSettings = renderInterfaceSettings(frameworkSearchPath);
   const targetsSwift = manifest.targets
     .map((t) => {
       if (t.path == null) {
@@ -156,7 +267,7 @@ function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) 
       return `        .target(
             name: "${t.name}",
             dependencies: [${depsSwift}],
-            path: "root/${t.path}",${renderFileRules(t)}${headers}${interfaceSettings}
+            path: "root/${t.path}",${renderFileRules(t)}${headers}${renderTargetSettings(frameworkSearchPath, t.settings, t.name)}
         )`;
     })
     .join(',\n');
@@ -179,7 +290,7 @@ import PackageDescription
 
 let package = Package(
     name: "${manifest.name}",
-    platforms: [.iOS(.v15)],
+    platforms: ${renderPlatforms(manifest.iosDeploymentTarget ?? null)},
     products: [
 ${productsSwift}
     ],
@@ -193,16 +304,19 @@ ${targetsSwift}
 `;
 }
 
-/** Pure-Swift source: single Swift target over the module's `ios`/`apple` sources. */
+/**
+ * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources,
+ * carrying the deployment floor and linkage its podspec declares.
+ */
 function renderPureSwiftManifest(
   product,
   srcRel,
   pkgDeps,
   targetDeps,
   frameworkSearchPath,
-  excludes = []
+  excludes = [],
+  podspec = {}
 ) {
-  const interfaceSettings = renderInterfaceSettings(frameworkSearchPath);
   const packageDepsSwift = pkgDeps.length
     ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
     : '';
@@ -220,7 +334,7 @@ import PackageDescription
 
 let package = Package(
     name: "${product}",
-    platforms: [.iOS(.v15)],
+    platforms: ${renderPlatforms(podspec.iosDeploymentTarget ?? null)},
     products: [
         .library(name: "${product}", targets: ["${product}"]),
     ],
@@ -229,7 +343,7 @@ let package = Package(
         .target(
             name: "${product}",
             dependencies: [${targetDepsSwift}],
-            path: "root/${srcRel}",${excludeSwift}${interfaceSettings}
+            path: "root/${srcRel}",${excludeSwift}${renderTargetSettings(frameworkSearchPath, podspecLinkerSettings(podspec), product)}
         ),
     ],
     swiftLanguageModes: [.v5],
@@ -242,13 +356,45 @@ function escapeSwiftString(value) {
   return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
-function renderInterfaceSettings(frameworkSearchPath) {
-  const escaped = escapeSwiftString(frameworkSearchPath);
-  const flags = `.unsafeFlags(["-F", "${escaped}"])`;
-  return `
-            cSettings: [${flags}],
-            cxxSettings: [${flags}],
-            swiftSettings: [${flags}],`;
+/**
+ * A target's `*Settings:` arguments: Expo's binary-free interface tree first, then
+ * whatever the module itself declared, in its own order.
+ */
+function renderTargetSettings(frameworkSearchPath, settings, targetName) {
+  const interfaceFlags = `.unsafeFlags(["-F", "${escapeSwiftString(frameworkSearchPath)}"])`;
+  for (const setting of settings ?? []) {
+    if (!SETTING_TOOLS.has(setting.tool)) {
+      throw new Error(
+        `Cannot generate a consumption Package.swift for target "${targetName}": build setting tool ` +
+          `"${setting.tool}" has no arguments to be rendered into. This plugin renders the c, cxx, swift ` +
+          'and linker tools; a newer Swift Package Manager tool needs a family added in ' +
+          'expo/scripts/spm/manifests.js.'
+      );
+    }
+  }
+  return SETTING_FAMILIES.map(([tool, label]) => {
+    const own = (settings ?? [])
+      .filter((s) => s.tool === tool)
+      .map((s) => renderSetting(s, targetName));
+    const values = tool === 'linker' ? own : [interfaceFlags, ...own];
+    return values.length ? `\n            ${label}: [${values.join(', ')}],` : '';
+  }).join('');
+}
+
+/** Podspec linkage as dumped build settings, so both paths render through one code path. */
+function podspecLinkerSettings({ frameworks = [], libraries = [] }) {
+  return [
+    ...frameworks.map((name) => ({ tool: 'linker', kind: { linkedFramework: { _0: name } } })),
+    ...libraries.map((name) => ({ tool: 'linker', kind: { linkedLibrary: { _0: name } } })),
+  ];
+}
+
+/**
+ * The module's own iOS floor, or the plugin's when it declares none. Only iOS is
+ * mirrored: React Native's Swift Package Manager support is iOS-only.
+ */
+function renderPlatforms(iosDeploymentTarget) {
+  return iosDeploymentTarget != null ? `[.iOS("${iosDeploymentTarget}")]` : '[.iOS(.v15)]';
 }
 
 // ---------------------------------------------------------------------------
@@ -372,7 +518,8 @@ function emitPureSwiftSourcePackage(
   react,
   frameworkSearchPath,
   outDir,
-  codegenPkgPath
+  codegenPkgPath,
+  podspecDir = null
 ) {
   const srcDir = ['ios', 'apple']
     .map((s) => path.join(moduleRoot, s))
@@ -392,7 +539,8 @@ function emitPureSwiftSourcePackage(
       pkgDeps,
       targetDeps,
       frameworkSearchPath,
-      collectIgnoredDirs(srcDir)
+      collectIgnoredDirs(srcDir),
+      podspecDeclarations(product, [podspecDir, srcDir, moduleRoot].filter(Boolean))
     )
   );
 

@@ -17,6 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { podspecBodyLines } = require('./podspec');
 
 /**
  * Pod-name families already covered by the SwiftPM graph: Expo's own modules
@@ -122,19 +123,7 @@ function classifyUnsupported({ pending, coreAvailable }) {
 /** Pod names a podspec depends on, ignoring `test_spec` blocks. Text-only. */
 function podspecDependencies(text) {
   const deps = [];
-  let inTestSpec = false;
-  let testSpecIndent = 0;
-  for (const line of text.split('\n')) {
-    const indent = line.length - line.trimStart().length;
-    if (inTestSpec && line.trim().length > 0 && indent <= testSpecIndent) {
-      inTestSpec = false;
-    }
-    if (/\.test_spec\b/.test(line)) {
-      inTestSpec = true;
-      testSpecIndent = indent;
-      continue;
-    }
-    if (inTestSpec) continue;
+  for (const line of podspecBodyLines(text)) {
     const match = line.match(/\.dependency\s+['"]([^'"]+)['"]/);
     if (match) deps.push(match[1]);
   }
