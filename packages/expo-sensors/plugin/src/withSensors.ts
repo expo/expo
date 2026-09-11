@@ -1,4 +1,5 @@
 import {
+  AndroidConfig,
   ConfigPlugin,
   createRunOncePlugin,
   IOSConfig,
@@ -15,9 +16,22 @@ export type Props = {
    * @platform ios
    */
   motionPermission?: string | false;
+  /**
+   * Whether to enable the `ACTIVITY_RECOGNITION` permission required for motion activity
+   * tracking via `getPermissionsAsync` and `requestPermissionsAsync`.
+   * @default false
+   * @platform android
+   */
+  isAndroidMotionActivityEnabled?: boolean;
 };
 
-const withSensors: ConfigPlugin<Props | void> = (config, { motionPermission } = {}) => {
+const withSensors: ConfigPlugin<Props | void> = (
+  config,
+  {
+    motionPermission,
+    isAndroidMotionActivityEnabled,
+  } = {}
+) => {
   if (motionPermission === false) {
     config = withPodfileProperties(config, (config) => {
       config.modResults.MOTION_PERMISSION = 'false';
@@ -25,11 +39,18 @@ const withSensors: ConfigPlugin<Props | void> = (config, { motionPermission } = 
     });
   }
 
-  return IOSConfig.Permissions.createPermissionsPlugin({
+  IOSConfig.Permissions.createPermissionsPlugin({
     NSMotionUsageDescription: MOTION_USAGE,
   })(config, {
     NSMotionUsageDescription: motionPermission,
   });
+
+  return AndroidConfig.Permissions.withPermissions(
+    config,
+    [
+      isAndroidMotionActivityEnabled && 'android.permission.ACTIVITY_RECOGNITION',
+    ].filter(Boolean) as string[]
+  );
 };
 
 export default createRunOncePlugin(withSensors, pkg.name, pkg.version);

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `isAndroidMotionActivityEnabled` configurable property to the plugin ([#49187](https://github.com/expo/expo/pull/49187) by [@cornejobarraza](https://github.com/cornejobarraza))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
