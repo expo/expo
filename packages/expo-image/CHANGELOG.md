@@ -21,6 +21,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `prefetch` crashing with `PromiseAlreadySettledException` when Glide restarts a failed request after connectivity is restored, resolving the already-settled promise a second time. ([#49942](https://github.com/expo/expo/issues/49942), [#49944](https://github.com/expo/expo/pull/49944) by [@riorafe](https://github.com/riorafe))
 - [Android] Fixed a URL staying permanently broken after the server answered an image request with `200 OK` and a non-image body, such as an HTML error page. ([#48442](https://github.com/expo/expo/issues/48442) by [@julian-dueck](https://github.com/julian-dueck), [#48456](https://github.com/expo/expo/pull/48456) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
 - [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
