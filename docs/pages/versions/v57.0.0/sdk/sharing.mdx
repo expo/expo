@@ -72,7 +72,7 @@ The following example shows a configuration that allows sharing a single or mult
     {
       name: 'ios.extensionBundleIdentifier',
       description: 'The bundle identifier for the iOS Share Extension.',
-      default: '{appBundleIdentifier}.ShareExtension',
+      default: '{appBundleIdentifier}.expo-sharing-extension',
     },
     {
       name: 'ios.appGroupId',
@@ -83,7 +83,7 @@ The following example shows a configuration that allows sharing a single or mult
       name: 'ios.activationRule',
       description:
         'Configuration for the `NSExtensionActivationRule` in **Info.plist**. Can be either an object confirming to the [`ActivationRuleOptions`](#activationruleoptions) type to generate a standard predicate or a raw string to specify a custom predicate directly (for example, `SUBQUERY(...)`).',
-      default: '{}',
+      default: '{ supportsText: true, supportsWebUrlWithMaxCount: 1 }',
     },
     {
       name: 'android.enabled',
@@ -105,6 +105,8 @@ The following example shows a configuration that allows sharing a single or mult
     },
   ]}
 />
+
+> **info** On iOS, the system shows your app in the share sheet only when the source app offers an item that matches the activation rule. The rule matches the [uniform type identifier](https://developer.apple.com/documentation/uniformtypeidentifiers) of the shared item, not the subject of the content. Many apps share a link to a video or a photo instead of the file itself. For example, `supportsMovieWithMaxCount` matches a video file, but it does not match a link to a video. To receive those shares, also set `supportsWebUrlWithMaxCount` and `supportsText`.
 
 ## Sharing to your app from other apps
 
