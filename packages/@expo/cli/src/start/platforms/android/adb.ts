@@ -510,15 +510,15 @@ export async function getDeviceABIsAsync(
 ): Promise<DeviceABI[]> {
   const cpuAbiList = (await getPropertyDataForDeviceAsync(device, PROP_CPU_ABI_LIST_NAME))[
     PROP_CPU_ABI_LIST_NAME
-  ];
+  ]?.trim();
 
   if (cpuAbiList) {
-    return cpuAbiList.trim().split(',') as DeviceABI[];
+    return cpuAbiList.split(',').map((abi) => abi.trim()) as DeviceABI[];
   }
 
   const abi = (await getPropertyDataForDeviceAsync(device, PROP_CPU_NAME))[
     PROP_CPU_NAME
-  ] as DeviceABI;
+  ]?.trim() as DeviceABI;
   return [abi];
 }
 

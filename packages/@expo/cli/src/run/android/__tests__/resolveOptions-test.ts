@@ -29,10 +29,8 @@ describe(resolveOptionsAsync, () => {
     vol.fromJSON(fixture, '/');
 
     expect(await resolveOptionsAsync('/', {})).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/debug',
       appName: 'app',
       buildCache: false,
-      buildType: 'debug',
       architectures: '',
       device: {
         device: {
@@ -40,7 +38,6 @@ describe(resolveOptionsAsync, () => {
           pid: '123',
         },
       },
-      flavors: [],
       install: false,
       launchActivity: 'com.bacon.mydevicefamilyproject/.MainActivity',
       mainActivity: '.MainActivity',
@@ -64,10 +61,8 @@ describe(resolveOptionsAsync, () => {
         appId: 'dev.expo.test',
       })
     ).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/firstSecond/third',
       appName: 'app',
       buildCache: true,
-      buildType: 'third',
       architectures: '',
       device: {
         device: {
@@ -75,7 +70,6 @@ describe(resolveOptionsAsync, () => {
           pid: '123',
         },
       },
-      flavors: ['first', 'second'],
       install: true,
       launchActivity: 'dev.expo.test/com.bacon.mydevicefamilyproject.MainActivity',
       mainActivity: '.MainActivity',

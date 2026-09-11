@@ -19,6 +19,9 @@ export type Command = (argv?: string[]) => void;
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
   // Project commands must select a mode before loading app config or env files.
+  compile: () => import('../src/compile/index.js').then((i) => i.expoCompile),
+  'compile:ios': () => import('../src/compile/index.js').then((i) => i.expoCompileIos),
+  'compile:android': () => import('../src/compile/index.js').then((i) => i.expoCompileAndroid),
   run: () => import('../src/run/index.js').then((i) => i.expoRun),
   'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
@@ -66,6 +69,17 @@ const args = arg(
 const isSubcommand = !!(args._[0] && commands[args._[0]]);
 const command = isSubcommand ? args._[0]! : defaultCmd;
 const commandArgs = isSubcommand ? args._.slice(1) : args._;
+const isCompileCommand =
+  command === 'compile' || command === 'compile:ios' || command === 'compile:android';
+
+if (isCompileCommand) {
+  const separatorIndex = process.argv.indexOf('--', 2);
+  if (separatorIndex > process.argv.indexOf(command, 2)) {
+    // arg removes --, but Compile needs it to recognize project paths that start with a dash.
+    const positionalCount = process.argv.length - separatorIndex - 1;
+    commandArgs.splice(commandArgs.length - positionalCount, 0, '--');
+  }
+}
 
 // Setup event logger output before any console output. This single install handles explicit
 // LOG_EVENTS targets, parent IPC, and bounded command sessions in 2g's precedence order.
@@ -117,6 +131,9 @@ if (!isSubcommand && args['--help']) {
     config,
     customize,
     prebuild,
+    compile,
+    'compile:ios': compileIos,
+    'compile:android': compileAndroid,
     'run:ios': runIos,
     'run:android': runAndroid,
     // NOTE(EvanBacon): Don't document this command as it's a temporary
@@ -141,6 +158,7 @@ if (!isSubcommand && args['--help']) {
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
+    ${Object.keys({ compile, 'compile:ios': compileIos, 'compile:android': compileAndroid }).join(', ')}
     ${Object.keys({ install, customize, config, serve }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
@@ -221,14 +239,20 @@ if (!isSubcommand) {
   }
 }
 
-// Push the help flag to the subcommand args.
+// Forward help to the subcommand before any Compile option separator.
 if (args['--help']) {
-  commandArgs.push('--help');
+  if (isCompileCommand) {
+    commandArgs.unshift('--help');
+  } else {
+    commandArgs.push('--help');
+  }
 }
 
 // Install exit hooks
-process.on('SIGINT', () => process.exit(0));
-process.on('SIGTERM', () => process.exit(0));
+if (!isCompileCommand) {
+  process.on('SIGINT', () => process.exit(0));
+  process.on('SIGTERM', () => process.exit(0));
+}
 
 commands[command]!().then((exec) => {
   exec(commandArgs);

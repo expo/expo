@@ -683,11 +683,37 @@ describe(getPropertyDataForDeviceAsync, () => {
 });
 
 describe(getDeviceABIsAsync, () => {
-  it(`returns a list of device ABIs`, async () => {
-    jest
-      .mocked(getServer().getFileOutputAsync)
-      .mockResolvedValueOnce(['x86,armeabi-v7a,armeabi', ''].join('\n'));
-    await expect(isBootAnimationCompleteAsync()).resolves.toBe(false);
+  it.each(['x86,armeabi-v7a,armeabi\n', ' x86, armeabi-v7a ,armeabi\r\n'])(
+    'returns device ABIs in preference order from %j',
+    async (output) => {
+      const readProperty = jest.mocked(getServer().getFileOutputAsync);
+      readProperty.mockResolvedValueOnce(output);
+
+      await expect(getDeviceABIsAsync(device)).resolves.toEqual(['x86', 'armeabi-v7a', 'armeabi']);
+      expect(readProperty).toHaveBeenCalledTimes(1);
+      expect(readProperty).toHaveBeenCalledWith(
+        ['-s', '123', 'shell', "'getprop'", "'ro.product.cpu.abilist'"],
+        { signal: undefined }
+      );
+    }
+  );
+
+  it.each(['', '\n', ' \r\n'])('uses the primary ABI when the ABI list is %j', async (output) => {
+    const readProperty = jest.mocked(getServer().getFileOutputAsync);
+    readProperty.mockResolvedValueOnce(output).mockResolvedValueOnce(' arm64-v8a\r\n');
+
+    await expect(getDeviceABIsAsync(device)).resolves.toEqual(['arm64-v8a']);
+    expect(readProperty).toHaveBeenCalledTimes(2);
+    expect(readProperty).toHaveBeenNthCalledWith(
+      1,
+      ['-s', '123', 'shell', "'getprop'", "'ro.product.cpu.abilist'"],
+      { signal: undefined }
+    );
+    expect(readProperty).toHaveBeenNthCalledWith(
+      2,
+      ['-s', '123', 'shell', "'getprop'", "'ro.product.cpu.abi'"],
+      { signal: undefined }
+    );
   });
 });
 

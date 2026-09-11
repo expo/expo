@@ -1,6 +1,5 @@
-const os = jest.requireActual('os');
-
-os.homedir = jest.fn(() => '/home');
-os.tmpdir = jest.fn(() => '/tmp');
-
-module.exports = os;
+module.exports = {
+  ...jest.requireActual<typeof import('os')>('os'),
+  homedir: jest.fn(() => '/home'),
+  tmpdir: jest.fn(() => '/tmp'),
+};

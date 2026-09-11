@@ -2048,6 +2048,9 @@ importers:
       '@expo/xcpretty':
         specifier: ^4.4.4
         version: 4.4.4
+      '@ramonclaudio/compile':
+        specifier: 0.1.0-beta.1
+        version: 0.1.0-beta.1
       '@react-native/dev-middleware':
         specifier: 0.87.1
         version: 0.87.1
@@ -9157,6 +9160,11 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  '@ramonclaudio/compile@0.1.0-beta.1':
+    resolution: {integrity: sha512-e3+r/EY1Ry93c80WKCx8M+AJ5AnIIcWuVYheTsevVCi6GPYZuvSZ52ajPoJvS0j4hvvsjTEwEollRfM1JPjYXg==}
+    engines: {node: '>=22.13.0'}
+    hasBin: true
 
   '@react-native-async-storage/async-storage@2.2.0':
     resolution: {integrity: sha512-gvRvjR5JAaUZF8tv2Kcq/Gbt3JHwbKFYfmb445rhOj6NUMx3qPLixmDx5pZAyb9at1bYvJ4/eTUipU5aki45xw==}
@@ -17940,6 +17948,8 @@ snapshots:
       react: 19.2.3
     optionalDependencies:
       '@types/react': 19.2.14
+
+  '@ramonclaudio/compile@0.1.0-beta.1': {}
 
   '@react-native-async-storage/async-storage@2.2.0(react-native@0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))':
     dependencies:

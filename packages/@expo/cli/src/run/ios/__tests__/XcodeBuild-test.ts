@@ -1,180 +1,361 @@
+import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
+import { buildIos, CompileError, runProcess } from '@ramonclaudio/compile';
+import type { NativeBuildOptions, ProcessRunner } from '@ramonclaudio/compile';
+import { spawn } from 'child_process';
+import { vol } from 'memfs';
 import path from 'path';
+import { PassThrough } from 'stream';
 
+import * as Log from '../../../log';
+import { env } from '../../../utils/env';
+import { AbortCommandError, CommandError } from '../../../utils/errors';
 import {
-  extractEnvVariableFromBuild,
   getProcessOptions,
-  getXcodeBuildArgsAsync,
+  getIosBuildRequestAsync,
+  buildAsync,
   _assertXcodeBuildResults,
   _extractXcodeBuildErrorLines,
   _formatXcodeBuildFailure,
   _hasXcodeBuildErrorDetails,
-  matchEstimatedBinaryPath,
-  getAppBinaryPath,
 } from '../XcodeBuild';
+import type { BuildProps } from '../XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from '../codeSigning/configureCodeSigning';
+import { simulatorBuildRequiresCodeSigning } from '../codeSigning/simulatorCodeSigning';
 
 jest.mock('../codeSigning/configureCodeSigning');
+jest.mock('../codeSigning/simulatorCodeSigning');
+jest.mock('../../../log');
+jest.mock('@ramonclaudio/compile', () => ({
+  ...jest.requireActual('@ramonclaudio/compile'),
+  buildIos: jest.fn(),
+  runProcess: jest.fn(),
+}));
 
 const fs = jest.requireActual('fs') as typeof import('fs');
 
-describe(getXcodeBuildArgsAsync, () => {
-  it(`returns fully qualified arguments for a build`, async () => {
+const baseProps: BuildProps = {
+  projectRoot: '/path/to/project',
+  buildCache: true,
+  configuration: 'Debug',
+  isSimulator: true,
+  scheme: 'MyApp',
+  device: { udid: 'demo-udid', name: 'iPhone', osType: 'iOS' },
+  osType: 'iOS',
+  xcodeProject: { isWorkspace: true, name: '/path/to/project/ios/MyApp.xcworkspace' },
+  shouldSkipInitialBundling: false,
+  shouldStartBundler: true,
+  port: 8081,
+};
+
+const simulatorRequest = {
+  cwd: baseProps.projectRoot,
+  source: { kind: 'workspace', path: baseProps.xcodeProject.name },
+  scheme: 'MyApp',
+  configuration: 'Debug',
+  destination: 'id=demo-udid',
+  platform: 'iphonesimulator',
+  buildArgs: ['COCOAPODS_PARALLEL_CODE_SIGN=true', 'COMPILER_INDEX_STORE_ENABLE=NO'],
+  clean: false,
+};
+
+describe(getIosBuildRequestAsync, () => {
+  afterEach(() => jest.restoreAllMocks());
+  it('passes resolved workspace, configuration, and device to Compile', async () => {
+    await expect(getIosBuildRequestAsync(baseProps)).resolves.toEqual(simulatorRequest);
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).not.toHaveBeenCalled();
+  });
+
+  it('preserves physical-device signing and disabled build cache', async () => {
     jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce('my-dev-team');
     await expect(
-      getXcodeBuildArgsAsync({
-        projectRoot: '/path/to/project',
-        buildCache: false,
-        configuration: 'Debug',
-        isSimulator: false,
-        scheme: 'project-with-build-configurations',
-        device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
-        osType: 'iOS',
-        xcodeProject: {
-          isWorkspace: true,
-          name: 'demo-project',
-        },
-      })
-    ).resolves.toEqual([
-      '-workspace',
-      'demo-project',
-      '-configuration',
-      'Debug',
-      '-scheme',
-      'project-with-build-configurations',
-      '-destination',
-      'id=demo-udid',
-      'COCOAPODS_PARALLEL_CODE_SIGN=true',
-      'COMPILER_INDEX_STORE_ENABLE=NO',
-      'DEVELOPMENT_TEAM=my-dev-team',
-      '-allowProvisioningUpdates',
-      '-allowProvisioningDeviceRegistration',
-      'clean',
-      'build',
-    ]);
-  });
-  it(`returns standard simulator arguments`, async () => {
-    await expect(
-      getXcodeBuildArgsAsync({
-        projectRoot: '/path/to/project',
-        buildCache: true,
-        configuration: 'Release',
-        isSimulator: true,
-        scheme: 'project-with-build-configurations',
-        device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
-        osType: 'iOS',
-        xcodeProject: {
-          isWorkspace: false,
-          name: 'demo-project',
-        },
-      })
-    ).resolves.toEqual([
-      '-project',
-      'demo-project',
-      '-configuration',
-      'Release',
-      '-scheme',
-      'project-with-build-configurations',
-      '-destination',
-      'id=demo-udid',
-      'COCOAPODS_PARALLEL_CODE_SIGN=true',
-      'COMPILER_INDEX_STORE_ENABLE=NO',
-    ]);
-    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
-  });
-  it(`returns generic simulator destination when device is null`, async () => {
-    await expect(
-      getXcodeBuildArgsAsync({
-        projectRoot: '/path/to/project',
-        buildCache: true,
-        configuration: 'Release',
-        isSimulator: true,
-        scheme: 'my-app',
-        device: null,
-        osType: 'iOS',
-        xcodeProject: {
-          isWorkspace: true,
-          name: 'my-app.xcworkspace',
-        },
-      })
-    ).resolves.toEqual([
-      '-workspace',
-      'my-app.xcworkspace',
-      '-configuration',
-      'Release',
-      '-scheme',
-      'my-app',
-      '-destination',
-      'generic/platform=iOS Simulator',
-      'COCOAPODS_PARALLEL_CODE_SIGN=true',
-      'COMPILER_INDEX_STORE_ENABLE=NO',
-    ]);
-    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
-  });
-  it(`returns generic tvOS simulator destination when osType is tvOS`, async () => {
-    await expect(
-      getXcodeBuildArgsAsync({
-        projectRoot: '/path/to/project',
-        buildCache: true,
-        configuration: 'Release',
-        isSimulator: true,
-        scheme: 'my-tv-app',
-        device: null,
-        osType: 'tvOS',
-        xcodeProject: {
-          isWorkspace: true,
-          name: 'my-tv-app.xcworkspace',
-        },
-      })
-    ).resolves.toEqual([
-      '-workspace',
-      'my-tv-app.xcworkspace',
-      '-configuration',
-      'Release',
-      '-scheme',
-      'my-tv-app',
-      '-destination',
-      'generic/platform=tvOS Simulator',
-      'COCOAPODS_PARALLEL_CODE_SIGN=true',
-      'COMPILER_INDEX_STORE_ENABLE=NO',
-    ]);
-  });
-});
-
-describe(extractEnvVariableFromBuild, () => {
-  const fixture = fs.readFileSync(path.join(__dirname, 'fixtures/xcodebuild.log'), 'utf8');
-  it(`gets env variables from build results`, async () => {
-    expect(extractEnvVariableFromBuild(fixture, 'APPLE_INTERNAL_LIBRARY_DIR')).toEqual([
-      '/AppleInternal/Library',
-    ]);
-    expect(extractEnvVariableFromBuild(fixture, 'AVAILABLE_PLATFORMS')[0]).toEqual(
-      'appletvos\\ appletvsimulator\\ driverkit\\ iphoneos\\ iphonesimulator\\ macosx\\ watchos\\ watchsimulator'
-    );
-    expect(
-      extractEnvVariableFromBuild(fixture, 'CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING')[0]
-    ).toEqual('YES');
-    expect(extractEnvVariableFromBuild(fixture, 'CONFIGURATION_BUILD_DIR')[0]).toEqual(
-      '/Users/evanbacon/Library/Developer/Xcode/DerivedData/basicexpoapp-bhxfzfgdguosemfinvpzbtpjpnji/Build/Products/Debug-iphonesimulator/expo-dev-launcher'
-    );
-    expect(extractEnvVariableFromBuild(fixture, 'UNLOCALIZED_RESOURCES_FOLDER_PATH')[0]).toEqual(
-      'basicexpoapp.app'
-    );
-  });
-});
-
-xdescribe(getProcessOptions, () => {
-  it(`gets process option when a packager is enabled`, async () => {
-    expect(
-      getProcessOptions({
-        packager: true,
-        shouldSkipInitialBundling: true,
-        terminal: 'foobar',
-        port: 3000,
-      })
-    ).toEqual({
-      env: {},
+      getIosBuildRequestAsync({ ...baseProps, isSimulator: false, buildCache: false })
+    ).resolves.toEqual({
+      ...simulatorRequest,
+      platform: 'iphoneos',
+      clean: true,
+      buildArgs: [
+        ...simulatorRequest.buildArgs,
+        'DEVELOPMENT_TEAM=my-dev-team',
+        '-allowProvisioningUpdates',
+        '-allowProvisioningDeviceRegistration',
+      ],
     });
   });
+
+  it('preserves signing when simulator entitlements require it', async () => {
+    jest.mocked(simulatorBuildRequiresCodeSigning).mockReturnValueOnce(true);
+    jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce('simulator-team');
+    await expect(getIosBuildRequestAsync(baseProps)).resolves.toMatchObject({
+      buildArgs: expect.arrayContaining(['DEVELOPMENT_TEAM=simulator-team']),
+    });
+  });
+
+  it('passes build timing diagnostics through to Compile', async () => {
+    jest.spyOn(env, 'EXPO_PROFILE', 'get').mockReturnValueOnce(true);
+    await expect(getIosBuildRequestAsync(baseProps)).resolves.toMatchObject({
+      buildArgs: [...simulatorRequest.buildArgs, '-showBuildTimingSummary'],
+    });
+  });
+
+  it('preserves Xcode project input and Release configuration', async () => {
+    await expect(
+      getIosBuildRequestAsync({
+        ...baseProps,
+        configuration: 'Release',
+        xcodeProject: { name: '/project/MyApp.xcodeproj', isWorkspace: false },
+      })
+    ).resolves.toEqual({
+      ...simulatorRequest,
+      source: { kind: 'project', path: '/project/MyApp.xcodeproj' },
+      configuration: 'Release',
+    });
+  });
+
+  it.each([
+    ['iOS', 'iOS', 'iphonesimulator'],
+    ['tvOS', 'tvOS', 'appletvsimulator'],
+    ['watchOS', 'watchOS', 'watchsimulator'],
+    ['xrOS', 'visionOS', 'xrsimulator'],
+  ] as const)('preserves generic %s simulator builds', async (osType, destination, platform) => {
+    await expect(getIosBuildRequestAsync({ ...baseProps, device: null, osType })).resolves.toEqual({
+      ...simulatorRequest,
+      destination: `generic/platform=${destination} Simulator`,
+      platform,
+    });
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['tvOS', 'appletvos'],
+    ['watchOS', 'watchos'],
+    ['xrOS', 'xros'],
+  ] as const)('preserves physical %s destinations', async (osType, platform) => {
+    await expect(
+      getIosBuildRequestAsync({ ...baseProps, osType, isSimulator: false })
+    ).resolves.toMatchObject({ destination: 'id=demo-udid', platform });
+  });
+
+  it('builds an iOS app for a Mac destination designed for iPad', async () => {
+    await expect(
+      getIosBuildRequestAsync({
+        ...baseProps,
+        isSimulator: false,
+        device: { udid: 'mac-udid', name: 'My Mac', osType: 'macOS' },
+      })
+    ).resolves.toMatchObject({ destination: 'id=mac-udid', platform: 'iphoneos' });
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledWith(baseProps.projectRoot);
+  });
+
+  it('reports unsupported macOS builds before invoking Compile', async () => {
+    await expect(
+      getIosBuildRequestAsync({ ...baseProps, osType: 'macOS', isSimulator: false })
+    ).rejects.toThrow('does not support macOS');
+    expect(buildIos).not.toHaveBeenCalled();
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe(getProcessOptions, () => {
+  it('preserves Run bundling inputs without mutating the parent environment', () => {
+    const envBefore = { ...process.env };
+    expect(
+      getProcessOptions({
+        packager: false,
+        shouldSkipInitialBundling: true,
+        terminal: 'terminal',
+        port: 8082,
+        eagerBundleOptions: '{"bundle":true}',
+      })
+    ).toEqual({
+      env: {
+        ...envBefore,
+        RCT_TERMINAL: 'terminal',
+        SKIP_BUNDLING: '1',
+        __EXPO_EAGER_BUNDLE_OPTIONS: '{"bundle":true}',
+        RCT_NO_LAUNCH_PACKAGER: 'true',
+      },
+    });
+    expect(process.env).toEqual(envBefore);
+  });
+});
+
+function getRunner(options: NativeBuildOptions | undefined): ProcessRunner {
+  if (!options?.runProcess) throw new Error('Compile runner was not provided');
+  return options.runProcess;
+}
+
+function mockNativeBuild(code: number | null, stdout: string, stderr = '') {
+  const { ChildProcess } = jest.requireActual('child_process') as typeof import('child_process');
+  jest.mocked(spawn).mockImplementationOnce(() => {
+    const child = Object.assign(new ChildProcess(), {
+      stdin: new PassThrough(),
+      stdout: new PassThrough(),
+      stderr: new PassThrough(),
+    });
+    queueMicrotask(() => {
+      child.stdout.write(stdout);
+      child.stderr.write(stderr);
+      child.emit('close', code, code === null ? 'SIGINT' : null);
+    });
+    return child;
+  });
+}
+
+function mockCompileBuild() {
+  jest.mocked(buildIos).mockImplementationOnce(async (request, options) => {
+    await getRunner(options)('/usr/bin/xcrun', ['xcodebuild', '-scheme', request.scheme, 'build'], {
+      cwd: request.cwd,
+      env: options?.env,
+      outputMode: 'stderr',
+      signal: undefined,
+    });
+    return ['/built/My App.app'];
+  });
+}
+
+describe(buildAsync, () => {
+  beforeEach(() => {
+    vol.fromJSON({ '/path/to/project/package.json': '{}' });
+    jest.mocked(buildIos).mockReset().mockResolvedValue(['/built/My App.app']);
+  });
+  afterEach(() => {
+    vol.reset();
+    jest.useRealTimers();
+  });
+
+  it('returns the checked artifact path without reading build logs', async () => {
+    await expect(buildAsync(baseProps)).resolves.toBe('/built/My App.app');
+    expect(buildIos).toHaveBeenCalledWith(simulatorRequest, {
+      env: expect.objectContaining({ RCT_NO_LAUNCH_PACKAGER: 'true' }),
+      runProcess: expect.any(Function),
+    });
+  });
+
+  it('keeps extended-attribute cleanup before building', async () => {
+    vol.fromJSON({ '/path/to/project/ios/project.pbxproj': '' });
+    await buildAsync(baseProps);
+    expect(spawnAsync).toHaveBeenCalledWith('xattr', [
+      '-r',
+      '-d',
+      'com.apple.FinderInfo',
+      '/path/to/project/ios',
+    ]);
+    expect(spawnAsync).toHaveBeenCalledWith('xattr', [
+      '-r',
+      '-d',
+      'com.apple.provenance',
+      '/path/to/project/ios',
+    ]);
+  });
+
+  it('delegates metadata capture to the package process runner', async () => {
+    const metadataOptions = {
+      cwd: baseProps.projectRoot,
+      env: { NODE_ENV: 'development' },
+      outputMode: 'capture',
+      signal: undefined,
+    } as const;
+    jest.mocked(runProcess).mockResolvedValueOnce({
+      status: 'exited',
+      exitCode: 0,
+      stdout: '[]',
+      stderr: '',
+    });
+    jest.mocked(buildIos).mockImplementationOnce(async (_request, options) => {
+      await expect(
+        getRunner(options)(
+          '/usr/bin/xcrun',
+          ['xcodebuild', '-showBuildSettings', '-json'],
+          metadataOptions
+        )
+      ).resolves.toEqual({ status: 'exited', exitCode: 0, stdout: '[]', stderr: '' });
+      return ['/built/My App.app'];
+    });
+    await buildAsync(baseProps);
+    expect(runProcess).toHaveBeenCalledWith(
+      '/usr/bin/xcrun',
+      ['xcodebuild', '-showBuildSettings', '-json'],
+      metadataOptions
+    );
+    expect(spawn).not.toHaveBeenCalled();
+  });
+
+  it('keeps native build formatting and full build logs', async () => {
+    mockCompileBuild();
+    mockNativeBuild(0, '** BUILD SUCCEEDED **\n', 'native warning\n');
+    await expect(buildAsync(baseProps)).resolves.toBe('/built/My App.app');
+    expect(spawn).toHaveBeenCalledWith(
+      '/usr/bin/xcrun',
+      ['xcodebuild', '-scheme', 'MyApp', 'build'],
+      {
+        cwd: baseProps.projectRoot,
+        env: expect.objectContaining({ RCT_NO_LAUNCH_PACKAGER: 'true' }),
+        signal: undefined,
+      }
+    );
+    expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Planning build'));
+    expect(vol.readFileSync('/path/to/project/.expo/xcodebuild.log', 'utf8')).toBe(
+      '** BUILD SUCCEEDED **\n'
+    );
+    expect(vol.readFileSync('/path/to/project/.expo/xcodebuild-error.log', 'utf8')).toBe(
+      'native warning\n'
+    );
+  });
+
+  it('retries a locked Xcode database and returns the successful artifact', async () => {
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+    mockCompileBuild();
+    mockNativeBuild(65, 'database is locked; there are two concurrent builds running\n');
+    mockNativeBuild(0, '** BUILD SUCCEEDED **\n');
+    const result = expect(buildAsync(baseProps)).resolves.toBe('/built/My App.app');
+    await jest.runAllTimersAsync();
+    await result;
+    expect(spawn).toHaveBeenCalledTimes(2);
+    expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('retrying in 1s'));
+  });
+
+  it('reports stderr failures and keeps the build log path', async () => {
+    mockCompileBuild();
+    mockNativeBuild(65, '** BUILD FAILED **\n', 'error: native build failed\n');
+    await expect(buildAsync(baseProps)).rejects.toThrow('native build failed');
+    expect(vol.readFileSync('/path/to/project/.expo/xcodebuild-error.log', 'utf8')).toBe(
+      'error: native build failed\n'
+    );
+  });
+
+  it.each([null, 75])('treats native build code %s as an interruption', async (code) => {
+    mockCompileBuild();
+    mockNativeBuild(code, '** BUILD INTERRUPTED **\n');
+    await expect(buildAsync(baseProps)).rejects.toBeInstanceOf(AbortCommandError);
+  });
+
+  it('reports package metadata or verification failures as Run errors', async () => {
+    const error = new CompileError('The selected scheme has no .app product');
+    jest.mocked(buildIos).mockRejectedValueOnce(error);
+    const result = buildAsync(baseProps);
+    await expect(result).rejects.toMatchObject({
+      code: 'XCODE_BUILD',
+      message: error.message,
+      cause: error,
+    });
+    await expect(result).rejects.toBeInstanceOf(CommandError);
+  });
+
+  it('preserves cancellation from the package process runner', async () => {
+    jest
+      .mocked(buildIos)
+      .mockRejectedValueOnce(new CompileError('cancelled', { signal: 'SIGTERM' }));
+    await expect(buildAsync(baseProps)).rejects.toBeInstanceOf(AbortCommandError);
+  });
+
+  it.each([{ paths: [] }, { paths: ['/built/A.app', '/built/B.app'] }])(
+    'rejects ambiguous or absent artifacts $paths',
+    async ({ paths }) => {
+      jest.mocked(buildIos).mockResolvedValueOnce(paths);
+      await expect(buildAsync(baseProps)).rejects.toThrow('Cannot select an app to install');
+    }
+  );
 });
 
 describe(_assertXcodeBuildResults, () => {
@@ -296,47 +477,5 @@ describe(_extractXcodeBuildErrorLines, () => {
       'script.sh: error: config generation failed',
       'error: the following command failed with exit code 1 but produced no further output',
     ]);
-  });
-});
-
-describe(matchEstimatedBinaryPath, () => {
-  const fixture = `Command line invocation:
-    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace /Users/evanbacon/Documents/GitHub/lab/dec3-52blank/ios/dec352blank.xcworkspace -configuration Debug -scheme dec352blank -destination id=7A29311A-FD92-4013-BF22-7003D5B915D9
-
-User defaults from command line:
-    IDEPackageSupportUseBuiltinSCM = YES
-
-Prepare packages
-
-ComputeTargetDependencyGraph
-note: Building targets in dependency order
-note: Target dependency graph (2 targets)
-    Target 'dec352blank' in project 'dec352blank'
-        ➜ Implicit dependency on target 'Pods-dec352blank' in project 'Pods' via file 'libPods-dec352blank.a' in build phase 'Link Binary'
-    Target 'Pods-dec352blank' in project 'Pods' (no dependencies)
-
-GatherProvisioningInputs
-
-CreateBuildDescription
-
-ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.1.sdk /Users/evanbacon/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.1-22B74-3d93aac3a03ebac1dd8474c5def773dc.sdkstatcache
-    cd /Users/evanbacon/Documents/GitHub/lab/dec3-52blank/ios
-    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.1.sdk -o /Users/evanbacon/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator18.1-22B74-3d93aac3a03ebac1dd8474c5def773dc.sdkstatcache
-
-ProcessInfoPlistFile /Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Products/Debug-iphonesimulator/dec352blank.app/Info.plist /Users/evanbacon/Documents/GitHub/lab/dec3-52blank/ios/dec352blank/Info.plist (in target 'dec352blank' from project 'dec352blank')
-    cd /Users/evanbacon/Documents/GitHub/lab/dec3-52blank/ios
-    builtin-infoPlistUtility /Users/evanbacon/Documents/GitHub/lab/dec3-52blank/ios/dec352blank/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Products/Debug-iphonesimulator/dec352blank.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Intermediates.noindex/dec352blank.build/Debug-iphonesimulator/dec352blank.build/SplashScreen-SBPartialInfo.plist -additionalcontentfile /Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Intermediates.noindex/dec352blank.build/Debug-iphonesimulator/dec352blank.build/assetcatalog_generated_info.plist -o /Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Products/Debug-iphonesimulator/dec352blank.app/Info.plist
-
-** BUILD SUCCEEDED **
-`;
-  it(`matches binary path`, () => {
-    expect(matchEstimatedBinaryPath(fixture)).toBe(
-      '/Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Products/Debug-iphonesimulator/dec352blank.app'
-    );
-  });
-  it(`matches binary path as a fallback`, () => {
-    expect(getAppBinaryPath(fixture)).toBe(
-      '/Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Products/Debug-iphonesimulator/dec352blank.app'
-    );
   });
 });

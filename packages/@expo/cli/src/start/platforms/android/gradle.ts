@@ -2,24 +2,18 @@ import type { SpawnResult } from '@expo/spawn-async';
 import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 
-import { env } from '../../../utils/env';
 import { AbortCommandError } from '../../../utils/errors';
 import { event } from '../events';
 
-function upperFirst(name: string) {
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
-/** Format gradle assemble arguments. Exposed for testing.  */
-export function formatGradleArguments(
-  cmd: 'assemble' | 'install',
-  {
-    appName,
-    variant,
-    tasks = [cmd + upperFirst(variant)],
-  }: { tasks?: string[]; variant: string; appName: string }
-): string[] {
-  return appName ? tasks.map((task) => `${appName}:${task}`) : tasks;
+export function formatGradleInstallArguments({
+  appName,
+  variant,
+}: {
+  variant: string;
+  appName: string;
+}): string[] {
+  const task = `install${variant.charAt(0).toUpperCase() + variant.slice(1)}`;
+  return [appName ? `${appName}:${task}` : task];
 }
 
 function resolveGradleWPath(androidProjectPath: string): string {
@@ -28,68 +22,6 @@ function resolveGradleWPath(androidProjectPath: string): string {
 
 function getPortArg(port: number): string {
   return `-PreactNativeDevServerPort=${port}`;
-}
-
-function getActiveArchArg(architectures: string): string {
-  return `-PreactNativeArchitectures=${architectures}`;
-}
-
-/**
- * Build the Android project using Gradle.
- *
- * @param androidProjectPath - Path to the Android project like `projectRoot/android`.
- * @param props.variant - Variant to install.
- * @param props.appName - Name of the 'app' folder, this appears to always be `app`.
- * @param props.port - Dev server port to pass to the install command.
- * @param props.buildCache - Should use the `--build-cache` flag, enabling the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html).
- * @param props.architectures - Architectures to build for.
- * @returns - A promise resolving to spawn results.
- */
-export async function assembleAsync(
-  androidProjectPath: string,
-  {
-    variant,
-    port,
-    appName,
-    buildCache,
-    architectures,
-    eagerBundleOptions,
-  }: {
-    variant: string;
-    port?: number;
-    appName: string;
-    buildCache?: boolean;
-    architectures?: string;
-    eagerBundleOptions?: string;
-  }
-): Promise<SpawnResult> {
-  const task = formatGradleArguments('assemble', { variant, appName });
-  const args = [
-    ...task,
-    // ignore linting errors
-    '-x',
-    'lint',
-    // ignore tests
-    '-x',
-    'test',
-    '--configure-on-demand',
-  ];
-
-  if (buildCache) args.push('--build-cache');
-
-  // Generate a profile under `/android/app/build/reports/profile`
-  if (env.EXPO_PROFILE) args.push('--profile');
-
-  return await spawnGradleAsync(androidProjectPath, {
-    port,
-    architectures,
-    args,
-    env: eagerBundleOptions
-      ? {
-          __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
-        }
-      : {},
-  });
 }
 
 /**
@@ -107,42 +39,51 @@ export async function installAsync(
     variant,
     appName,
     port,
+    deviceId,
+    architectures,
+    eagerBundleOptions,
   }: {
     variant: string;
     appName: string;
     port?: number;
+    deviceId: string;
+    architectures?: string;
+    eagerBundleOptions?: string;
   }
 ): Promise<SpawnResult> {
-  const args = formatGradleArguments('install', { variant, appName });
-  return await spawnGradleAsync(androidProjectPath, { port, args });
+  const args = formatGradleInstallArguments({ variant, appName });
+  if (architectures) args.push(`-PreactNativeArchitectures=${architectures}`);
+  return await spawnGradleAsync(androidProjectPath, {
+    port,
+    args,
+    env: {
+      ...process.env,
+      ANDROID_SERIAL: deviceId,
+      ...(eagerBundleOptions ? { __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions } : {}),
+    },
+  });
 }
 
 export async function spawnGradleAsync(
   projectRoot: string,
-  {
-    port,
-    architectures,
-    args,
-    env,
-  }: { port?: number; architectures?: string; args: string[]; env?: Record<string, string> }
+  { port, args, env = process.env }: { port?: number; args: string[]; env?: NodeJS.ProcessEnv }
 ): Promise<SpawnResult> {
   const gradlew = resolveGradleWPath(projectRoot);
   if (port != null) args.push(getPortArg(port));
-  if (architectures) args.push(getActiveArchArg(architectures));
   event('gradle_spawn', { command: `${gradlew} ${args.join(' ')}` });
   try {
     return await spawnAsync(gradlew, args, {
       cwd: projectRoot,
       stdio: 'inherit',
-      env: {
-        ...process.env,
-        ...(env ?? {}),
-      },
+      env,
     });
-  } catch (error: any) {
-    // User aborted the command with ctrl-c
-    if (error.status === 130) {
-      // Fail silently
+  } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      (('status' in error && error.status === 130) ||
+        ('signal' in error && error.signal === 'SIGINT'))
+    ) {
       throw new AbortCommandError();
     }
     throw error;

@@ -140,9 +140,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
     // Spawn the `xcodebuild` process to create the app binary.
     const done = event.span();
-    let buildOutput: string;
     try {
-      buildOutput = await XcodeBuild.buildAsync({
+      binaryPath = await XcodeBuild.buildAsync({
         ...props,
         eagerBundleOptions,
       });
@@ -157,9 +156,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       deviceId: props.device?.udid ?? null,
     });
 
-    // Find the path to the built app binary, this will be used to install the binary
-    // on a device.
-    binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
     // We only support build cache for simulator builds for now.
     shouldUpdateBuildCache = props.isSimulator;
   }
