@@ -6,6 +6,7 @@ import { describe, it } from 'node:test';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
+import type { SPMConfig } from './SPMConfig.types';
 import { getTargetExcludePatterns } from './SPMGenerator';
 
 describe('getTargetExcludePatterns', () => {
@@ -46,14 +47,10 @@ describe('getTargetExcludePatterns', () => {
 describe('expo-camera source selection', () => {
   it('excludes ios/Tests even though spm.config.json does not list it', async () => {
     const packagePath = path.join(getExpoRepositoryRootDir(), 'packages/expo-camera');
-    const config = await fs.readJson(path.join(packagePath, 'spm.config.json'));
-    const product = config.products.find(
-      (candidate: { name: string }) => candidate.name === 'ExpoCamera'
-    );
+    const config: SPMConfig = await fs.readJson(path.join(packagePath, 'spm.config.json'));
+    const product = config.products.find(({ name }) => name === 'ExpoCamera');
     assert.ok(product, 'expo-camera must declare an ExpoCamera product');
-    const target = product.targets.find(
-      (candidate: { type: string }) => candidate.type === 'swift'
-    );
+    const target = product.targets.find((candidate) => candidate.type === 'swift');
     assert.ok(target, 'expo-camera must declare a Swift target');
     assert.ok(
       !(target.exclude ?? []).includes('Tests/**'),

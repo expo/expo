@@ -332,7 +332,7 @@
                 "exclude": {
                     "type": "array",
                     "items": { "type": "string" },
-                    "description": "Paths to exclude from compilation",
+                    "description": "Paths to exclude from compilation. Any `Tests` directory is always excluded, and generated swiftinterfaces are rejected if they import test-only modules.",
                     "default": [ ]
                 },
                 "includeDirectories": {
@@ -419,7 +419,7 @@
                 "exclude": {
                     "type": "array",
                     "items": { "type": "string" },
-                    "description": "Paths to exclude from compilation",
+                    "description": "Paths to exclude from compilation. Any `Tests` directory is always excluded, and generated swiftinterfaces are rejected if they import test-only modules.",
                     "default": [ ]
                 },
                 "includeDirectories": {
@@ -506,7 +506,7 @@
                 "exclude": {
                     "type": "array",
                     "items": { "type": "string" },
-                    "description": "Paths to exclude from compilation",
+                    "description": "Paths to exclude from compilation. Any `Tests` directory is always excluded, and generated swiftinterfaces are rejected if they import test-only modules.",
                     "default": [ ]
                 },
                 "includeDirectories": {
