@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [tvOS] Attach the developer-menu window to an active scene before showing it when initialized before scene activation. ([#50036](https://github.com/expo/expo/pull/50036) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
