@@ -324,6 +324,7 @@
     "react-native-screens": "^4.27.0",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.12.2",
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
@@ -343,6 +344,7 @@
     "react-native-safe-area-context": ">= 5.4.0",
     "react-native-screens": "^4.27.0",
     "react-native-web": "*",
+    "react-native-worklets": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
@@ -365,6 +367,9 @@
       "optional": true
     },
     "react-native-web": {
+      "optional": true
+    },
+    "react-native-worklets": {
       "optional": true
     },
     "react-server-dom-webpack": {
