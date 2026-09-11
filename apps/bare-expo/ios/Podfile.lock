@@ -270,9 +270,11 @@ PODS:
     - ExpoModulesCore
   - ExpoAppIntents (0.2.0):
     - ExpoModulesCore
+    - ExpoUI
   - ExpoAppIntents/Tests (0.2.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
+    - ExpoUI
   - ExpoAppleAuthentication (58.0.0):
     - ExpoModulesCore
   - ExpoAppMetrics (58.0.0):
@@ -350,11 +352,11 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (58.0.0):
     - ExpoModulesCore
-  - ExpoCamera (58.0.0):
+  - ExpoCamera (58.0.1):
     - ExpoModulesCore
-  - ExpoCamera/Tests (58.0.0):
+  - ExpoCamera/Tests (58.0.1):
     - ExpoModulesCore
-  - ExpoCameraBarcodeScanning (58.0.0):
+  - ExpoCameraBarcodeScanning (58.0.1):
     - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -365,9 +367,9 @@ PODS:
   - ExpoClipboard/Tests (58.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoContacts (58.0.0):
+  - ExpoContacts (58.0.1):
     - ExpoModulesCore
-  - ExpoContacts/Tests (58.0.0):
+  - ExpoContacts/Tests (58.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoCrypto (58.0.0):
@@ -405,10 +407,10 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImageManipulator (58.0.0):
+  - ExpoImageManipulator (58.0.1):
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImageManipulator/Tests (58.0.0):
+  - ExpoImageManipulator/Tests (58.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - SDWebImageWebPCoder
@@ -459,9 +461,9 @@ PODS:
     - React-Core
   - ExpoMailComposer (58.0.0):
     - ExpoModulesCore
-  - ExpoMaps (58.0.0):
+  - ExpoMaps (58.0.1):
     - ExpoModulesCore
-  - ExpoMaps/Tests (58.0.0):
+  - ExpoMaps/Tests (58.0.1):
     - ExpoModulesCore
   - ExpoMediaLibrary (58.0.0):
     - ExpoModulesCore
@@ -670,9 +672,9 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
-  - ExpoVideo (58.0.0):
+  - ExpoVideo (58.0.1):
     - ExpoModulesCore
-  - ExpoVideo/Tests (58.0.0):
+  - ExpoVideo/Tests (58.0.1):
     - ExpoModulesCore
   - ExpoVideoDashSupportModule (1.0.0):
     - ExpoModulesCore
@@ -3872,7 +3874,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: a20b16f64708f60dd367bc043d60660e71154bb1
   ExpoAgeRange: a7a565a1af2aa08232371ecfaab3d6201fd4b5c8
   ExpoAppIntegrity: 091164fbaaeeee3f99c27002660d5b85da52b672
-  ExpoAppIntents: 85c68352be0e339736cd38c02d839b0d623f05ea
+  ExpoAppIntents: c9da69e5bc10b2037055965922ea8da92b2d4ae7
   ExpoAppleAuthentication: 7919e8d2780c50d6740afd328c00691da0b642a8
   ExpoAppMetrics: a19d3379043425278e35c906309ba9f78d6b78b3
   ExpoAsset: 96da58295a3310957b99f272e5341706d01fcfab
@@ -3885,11 +3887,11 @@ SPEC CHECKSUMS:
   ExpoBrightness: f59bcef8e66043a463c154f4944356aaecec9284
   ExpoBrownfield: 9623d64b014910f86d6781834490c7748cfab461
   ExpoCalendar: f3688529abf515dc56fb94f038cb4b70420a57cb
-  ExpoCamera: 254ae3791b4b0d43b643c42b35aa3e9350553bfd
-  ExpoCameraBarcodeScanning: 0624a862d23a977abb7aacbec2a91155a50bfcd8
+  ExpoCamera: 4d2393afca60e3994f0a084dc7129b13bd564a76
+  ExpoCameraBarcodeScanning: 94b1716a58b6f6ef3c39e891bd1cd53aab396e7a
   ExpoCellular: e028b273e334d679ef1183a323b7efca0d8f6faa
   ExpoClipboard: 99c3bb582dab0413691ea9f0459b491e9a3b1fd2
-  ExpoContacts: 721756a9dabf8dfdc96f26e6f91b1468b899c83c
+  ExpoContacts: 4adf01f83d2e7c024a61f80a263ee796b3eb8c4e
   ExpoCrypto: c3510a3f9f261eadbbb60a2d1fe6c9aaf4899b6d
   ExpoDevice: 1857278b7456f483476ee4c04a42278b487dadc3
   ExpoDocumentPicker: 9ad03cbb6ee50e26e78a317ea545d664096c9308
@@ -3900,7 +3902,7 @@ SPEC CHECKSUMS:
   ExpoGlassEffect: d91bb5e9d76d74bcea5ff2682ad3747b14713d72
   ExpoHaptics: db1469b39cb632e638fdb04779ae982848d0780a
   ExpoImage: 402597142b2753675f3bb2c77942c18c1b30c266
-  ExpoImageManipulator: be6afbb01abbc5a627bebcf94bba6953fc5b80dd
+  ExpoImageManipulator: 43957818018dc5a8d21375f3389147eb18353d43
   ExpoImagePicker: 8592eadd2b5db6eacfa1324f94fa58f77631a5e7
   ExpoInsights: 3ad09d2f4be6b049091c2859d18c662c1cd07be5
   ExpoKeepAwake: 87abe093878722bb06cae6d3a1eee4217cb3cd65
@@ -3912,7 +3914,7 @@ SPEC CHECKSUMS:
   ExpoLocation: b366f1da3b5978ac78d2a827e47664ef84ca3a0f
   ExpoLogBox: d6a03d1f85af593fff3fd27f42891cb2feec0e8f
   ExpoMailComposer: 5be4d8949cc37fc8b8f49fb598394274aa228fab
-  ExpoMaps: c4128c505a9c433c4f739b10360552297e507b7f
+  ExpoMaps: 32baa9310a8dc4535a267d95b702062130457b8d
   ExpoMediaLibrary: 759e99e8e841f8113030bb278fc64b24fc1910f2
   ExpoMeshGradient: 7c5bf9b61a993ee8aed45d42ecfa5796fd082ed9
   ExpoModulesCore: a72b6083463f13993075a1bc3402502a81ab26b3
@@ -3940,7 +3942,7 @@ SPEC CHECKSUMS:
   ExpoTaskManager: 4e4f3870858c55368137114b14f7fda9fa030577
   ExpoTrackingTransparency: 70c95b35095135ff067b0ba3ec5dc8b9e6f3b8f2
   ExpoUI: 28b017b9b375f9888231bbab2a248a974648f1c4
-  ExpoVideo: aef420119f8c842041ad47f867bedf6c540d3c73
+  ExpoVideo: 3cedcb72dd5110def73469149046cd09c8be8860
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 425753b9da57163310b03f4bafaad28bb9971fe0
   ExpoWebBrowser: 68251c42a3cc5ca41d7299b3de477ed19c526e01
