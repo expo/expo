@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-private enum NavigationSplitViewVisibilityOptions: String, Enumerable {
+internal enum NavigationSplitViewVisibilityOptions: String, Enumerable {
   case automatic
   case all
   case doubleColumn
@@ -19,11 +19,12 @@ private enum NavigationSplitViewVisibilityOptions: String, Enumerable {
   }
 }
 
-private enum NavigationSplitViewColumnOptions: String, Enumerable {
+internal enum NavigationSplitViewColumnOptions: String, Enumerable {
   case sidebar
   case content
   case detail
 
+  @available(iOS 17.0, *)
   var value: NavigationSplitViewColumn {
     switch self {
     case .sidebar: return .sidebar
@@ -43,19 +44,21 @@ internal final class NavigationSplitViewProps: UIBaseViewProps {
 internal struct NavigationSplitViewView: ExpoSwiftUI.View {
   @ObservedObject var props: NavigationSplitViewProps
   @State private var uncontrolledColumnVisibility = NavigationSplitViewVisibility.automatic
-  @State private var uncontrolledPreferredCompactColumn = NavigationSplitViewColumn.sidebar
+  @State private var uncontrolledPreferredCompactColumn = NavigationSplitViewColumnOptions.sidebar
 
   var body: some View {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 17.0, *) {
+      splitViewWithPreferredCompactColumn
+    } else if #available(iOS 16.0, *) {
       splitView
     } else {
       detail
     }
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 17.0, *)
   @ViewBuilder
-  private var splitView: some View {
+  private var splitViewWithPreferredCompactColumn: some View {
     if let content = props.children?.slot("content") {
       NavigationSplitView(
         columnVisibility: columnVisibilityBinding,
@@ -72,6 +75,26 @@ internal struct NavigationSplitViewView: ExpoSwiftUI.View {
         columnVisibility: columnVisibilityBinding,
         preferredCompactColumn: preferredCompactColumnBinding
       ) {
+        sidebar
+      } detail: {
+        detail
+      }
+    }
+  }
+
+  @available(iOS 16.0, *)
+  @ViewBuilder
+  private var splitView: some View {
+    if let content = props.children?.slot("content") {
+      NavigationSplitView(columnVisibility: columnVisibilityBinding) {
+        sidebar
+      } content: {
+        content
+      } detail: {
+        detail
+      }
+    } else {
+      NavigationSplitView(columnVisibility: columnVisibilityBinding) {
         sidebar
       } detail: {
         detail
@@ -100,15 +123,16 @@ internal struct NavigationSplitViewView: ExpoSwiftUI.View {
     )
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 17.0, *)
   private var preferredCompactColumnBinding: Binding<NavigationSplitViewColumn> {
     Binding(
-      get: { props.preferredCompactColumn?.value ?? uncontrolledPreferredCompactColumn },
+      get: { (props.preferredCompactColumn ?? uncontrolledPreferredCompactColumn).value },
       set: { value in
+        let option = columnOption(value)
         if props.preferredCompactColumn == nil {
-          uncontrolledPreferredCompactColumn = value
+          uncontrolledPreferredCompactColumn = option
         }
-        props.onPreferredCompactColumnChange(["preferredCompactColumn": columnName(value)])
+        props.onPreferredCompactColumnChange(["preferredCompactColumn": option.rawValue])
       }
     )
   }
@@ -123,12 +147,13 @@ internal struct NavigationSplitViewView: ExpoSwiftUI.View {
     }
   }
 
-  private func columnName(_ value: NavigationSplitViewColumn) -> String {
+  @available(iOS 17.0, *)
+  private func columnOption(_ value: NavigationSplitViewColumn) -> NavigationSplitViewColumnOptions {
     switch value {
-    case .sidebar: return "sidebar"
-    case .content: return "content"
-    case .detail: return "detail"
-    @unknown default: return "sidebar"
+    case .sidebar: return .sidebar
+    case .content: return .content
+    case .detail: return .detail
+    @unknown default: return .sidebar
     }
   }
 }
