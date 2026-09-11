@@ -25,6 +25,7 @@ import { Frameworks } from '../Frameworks';
 import type { BuildFlavor } from '../Prebuilder.types';
 import { buildSharedSPMDependencyAsync } from '../SPMBuild';
 import type { SPMPackageDependencyConfig, SPMProduct, SPMTarget } from '../SPMConfig.types';
+import { getTargetExcludePatterns } from '../SPMGenerator';
 import {
   getVersionsInfoAsync,
   setForceNonInteractive,
@@ -300,7 +301,7 @@ function collectTargetInputPaths(pkg: SPMPackageSource, target: SPMTarget): stri
   return glob
     .sync('**/*', {
       cwd: targetSourcePath,
-      ignore: target.exclude ?? [],
+      ignore: getTargetExcludePatterns(target),
       nodir: true,
     })
     .map((file) => path.join(targetSourcePath, file));
