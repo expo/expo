@@ -649,6 +649,7 @@ export const eas = [
     makePage('eas-insights/app-usage.mdx'),
     makePage('eas-insights/workflows.mdx'),
     makePage('eas-insights/maestro.mdx'),
+    makePage('eas-insights/eas-cli.mdx'),
   ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
