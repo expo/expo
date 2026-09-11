@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Hold on to the main session's JS wrapper so `getMainSession()` always returns the same object and `addMetric` on it can no longer fail with "Cannot use shared object that was already released" on Android. ([#50055](https://github.com/expo/expo/pull/50055) by [@bjjeong](https://github.com/bjjeong))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
