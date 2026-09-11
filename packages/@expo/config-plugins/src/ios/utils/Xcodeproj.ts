@@ -334,8 +334,12 @@ export function ensureGroupRecursively(project: XcodeProject, filepath: string):
  * Get the pbxproj for the given path
  */
 export function getPbxproj(projectRoot: string): XcodeProject {
-  const projectPath = Paths.getPBXProjectPath(projectRoot);
-  const project = xcode.project(projectPath);
+  return readXcodeProject(Paths.getPBXProjectPath(projectRoot));
+}
+
+/** Read an Xcode project from an explicit `project.pbxproj` file path. */
+export function readXcodeProject(projectFilePath: string): XcodeProject {
+  const project = xcode.project(projectFilePath);
   project.parseSync();
   return project;
 }

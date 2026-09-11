@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
-import { buildIos, CompileError, runProcess } from '@ramonclaudio/compile';
+import { buildIos, CompileError } from '@ramonclaudio/compile';
 import type {
   IosBuildPlatform,
   IosBuildRequest,
@@ -23,7 +23,8 @@ import { getUserTerminal } from '../../utils/terminal';
 import type { BuildProps, ProjectInfo } from './XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
 import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
-import { resolveInstallAppPathAsync } from './resolveInstallAppPath';
+import { parseXcodeBuildProducts, resolveInstallAppPathAsync } from './resolveInstallAppPath';
+import { runXcodeProcessAsync } from './runXcodeProcess';
 
 // Error messages that indicate concurrent Xcode build failures.
 // When multiple builds run simultaneously, Xcode's build database can become locked.
@@ -170,7 +171,10 @@ function getBuildPlatform(osType: OSType, isSimulator: boolean): IosBuildPlatfor
     case 'xrOS':
       return isSimulator ? 'xrsimulator' : 'xros';
     case 'macOS':
-      throw new CommandError('UNSUPPORTED_PLATFORM', 'Run iOS does not support macOS app builds.');
+      throw new CommandError(
+        'UNSUPPORTED_PLATFORM',
+        'expo run:ios does not support macOS app builds.'
+      );
     default:
       return isSimulator ? 'iphonesimulator' : 'iphoneos';
   }
@@ -298,10 +302,11 @@ export async function buildAsync(props: BuildProps): Promise<string> {
   });
 
   let appPaths: readonly string[];
+  let buildSettingsOutput: string | undefined;
   try {
     appPaths = await buildIos(request, {
       env: buildEnv,
-      runProcess(command, args, options) {
+      async runProcess(command, args, options) {
         if (
           command === '/usr/bin/xcrun' &&
           args[0] === 'xcodebuild' &&
@@ -309,7 +314,17 @@ export async function buildAsync(props: BuildProps): Promise<string> {
         ) {
           return runFormattedBuildAsync(command, args, options, props);
         }
-        return runProcess(command, args, options);
+        const result = await runXcodeProcessAsync(command, args, options);
+        if (
+          command === '/usr/bin/xcrun' &&
+          args[0] === 'xcodebuild' &&
+          args.includes('-showBuildSettings') &&
+          result.status === 'exited' &&
+          result.exitCode === 0
+        ) {
+          buildSettingsOutput = result.stdout;
+        }
+        return result;
       },
     });
   } catch (error) {
@@ -322,7 +337,13 @@ export async function buildAsync(props: BuildProps): Promise<string> {
     throw error;
   }
 
-  return resolveInstallAppPathAsync(props, appPaths);
+  return resolveInstallAppPathAsync(
+    props,
+    appPaths,
+    appPaths.length > 1 && buildSettingsOutput !== undefined
+      ? parseXcodeBuildProducts(buildSettingsOutput, request.cwd)
+      : []
+  );
 }
 
 async function runFormattedBuildAsync(
