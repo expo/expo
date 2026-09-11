@@ -1,10 +1,19 @@
 {
   "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": ["ExpoHeadModule", "LinkPreviewNativeModule", "RouterToolbarModule"],
+    "modules": [
+      "ExpoHeadModule",
+      "LinkPreviewNativeModule",
+      "RouterToolbarModule"
+    ],
     "appDelegateSubscribers": ["ExpoHeadAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.router.ExpoRouterModule"]
+    "modules": ["expo.modules.router.ExpoRouterModule"],
+    "publication": {
+      "groupId": "expo.modules.router",
+      "artifactId": "expo.modules.router",
+      "repository": "local-maven-repo"
+    }
   }
 }
