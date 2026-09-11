@@ -10,27 +10,11 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 The `expo-observe` library records JavaScript errors and native crashes from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
 
-## View errors
-
-Open your project and navigate to [**Observe** > **Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors).
-
 <ContentSpotlight
   alt="The Errors page of the EAS Observe dashboard, showing the crash-free sessions chart and the list of distinct errors."
   src="/static/images/expo-observe/observe-errors-light.webp"
   darkSrc="/static/images/expo-observe/observe-errors-dark.webp"
 />
-
-The **Crash-free sessions** card shows the share of sessions in the selected time range that finished without a fatal error. It also shows crash-free users, fatal and non-fatal counts, and the number of affected users.
-
-**Distinct errors** lists the errors recorded in the selected time range, grouped by error. The **Source** column tells you where an error came from:
-
-| Source     | Description                                        |
-| ---------- | -------------------------------------------------- |
-| JavaScript | An error thrown by your app's JavaScript           |
-| Native     | A crash in native code, reported by Android or iOS |
-| Other      | An error recorded by another part of the runtime   |
-
-Filter the list by source, by severity (**Fatal** or **Non-fatal**), by platform, by environment, and by release. Fatal errors are reported on the app's next launch, so a recent crash can take time to appear.
 
 ## JavaScript errors
 
@@ -168,6 +152,22 @@ The source code embedded in the source map (`sourcesContent`) is removed before 
 Source maps only apply to JavaScript. Native stack traces are not symbolicated in the dashboard.
 
 On Android, frames from Java and Kotlin exceptions already carry the class, method, and line number. On iOS, frames are resolved to symbol names on the device where the crash happened, so you see function names but no file names or line numbers. A frame that cannot be resolved is shown as a binary name and an offset, such as `MyApp + 19160`.
+
+## View errors
+
+Open your project and navigate to [**Observe** > **Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors).
+
+The **Crash-free sessions** card shows the share of sessions in the selected time range that finished without a fatal error. It also shows crash-free users, fatal and non-fatal counts, and the number of affected users.
+
+**Distinct errors** lists the errors recorded in the selected time range, grouped by error. The **Source** column tells you where an error came from:
+
+| Source     | Description                                        |
+| ---------- | -------------------------------------------------- |
+| JavaScript | An error thrown by your app's JavaScript           |
+| Native     | A crash in native code, reported by Android or iOS |
+| Other      | An error recorded by another part of the runtime   |
+
+Filter the list by source, by severity (**Fatal** or **Non-fatal**), by platform, by environment, and by release. Fatal errors are reported on the app's next launch, so a recent crash can take time to appear.
 
 ## Still to come
 
