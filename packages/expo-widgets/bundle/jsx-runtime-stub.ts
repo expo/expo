@@ -4,63 +4,16 @@ export type ReactElementNode = {
   type: unknown;
   key: string | null;
   props: Record<string, any>;
+  __expoWidgetIdentity?: string;
 };
-
-function ReactElement(
-  type: unknown,
-  key: string | null,
-  props: Record<string, any>
-): ReactElementNode {
-  if (typeof type === 'function') {
-    return (type as any)(props);
-  }
-
-  const element = {
-    type,
-    key,
-    props,
-  };
-
-  return element;
-}
 
 function jsxProd(
   type: unknown,
   config: any,
   maybeKey?: string | number | bigint
 ): ReactElementNode {
-  let key = null;
-  if (maybeKey !== undefined) {
-    key = '' + maybeKey;
-  }
-  if (hasValidKey(config)) {
-    key = '' + config.key;
-  }
-
-  let props: Record<string, any>;
-  if (!('key' in config)) {
-    props = config;
-  } else {
-    props = {};
-    for (const propName in config) {
-      if (propName !== 'key') {
-        props[propName] = config[propName];
-      }
-    }
-  }
-
-  // React flattens nested children arrays (e.g. a `.map()` result mixed with sibling
-  // elements) during reconciliation. There is no reconciler here - the element tree is
-  // serialized for the native widget parsers, which expect a flat children list.
-  if (Array.isArray(props.children)) {
-    props.children = props.children.flat(Infinity);
-  }
-
-  return ReactElement(type, key, props);
-}
-
-function hasValidKey(config: any) {
-  return config.key !== undefined;
+  const { key = maybeKey, ...props } = config;
+  return { type, key: key === undefined ? null : String(key), props };
 }
 
 const jsxFileName = 'widget';
