@@ -147,7 +147,7 @@ When you build locally or with another service, you will need to set the channel
 
 ### Android
 
-In **android/app/src/main/AndroidManifest.xml**, add the request headers `meta-data` entry:
+In **android/app/src/main/AndroidManifest.xml**, add the request headers `meta-data` entry inside the `<application>` element:
 
 ```xml android/app/src/main/AndroidManifest.xml
 <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;your-channel-name&quot;}"/>
