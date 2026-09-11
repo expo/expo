@@ -24,36 +24,28 @@ function mockProject() {
 }
 describe(getDefaultConfig, () => {
   beforeEach(() => {
-    delete process.env.EAS_METRO_CACHE_OUTPUT_DIR;
-    delete process.env.EAS_METRO_CACHE_RESTORE_DIR;
+    delete process.env.EXPO_METRO_CACHE_DIR;
     mockProject();
   });
   afterEach(() => {
-    delete process.env.EAS_METRO_CACHE_OUTPUT_DIR;
-    delete process.env.EAS_METRO_CACHE_RESTORE_DIR;
+    delete process.env.EXPO_METRO_CACHE_DIR;
     vol.reset();
   });
   afterAll(() => {
     console.error = consoleError;
   });
 
-  it.each([
-    [undefined, undefined],
-    ['/cache/output', undefined],
-    [undefined, '/cache/restored'],
-  ])('keeps one default store with output=%s and restored=%s', (output, restored) => {
-    if (output) {
-      process.env.EAS_METRO_CACHE_OUTPUT_DIR = output;
+  it.each([undefined, ''])('keeps the default store with cache root=%s', (root) => {
+    if (root !== undefined) {
+      process.env.EXPO_METRO_CACHE_DIR = root;
     }
-    if (restored) {
-      process.env.EAS_METRO_CACHE_RESTORE_DIR = restored;
-    }
-    expect(getDefaultConfig(projectRoot).cacheStores).toHaveLength(1);
+    const stores = getDefaultConfig(projectRoot).cacheStores;
+    expect(stores).toHaveLength(1);
+    expect(Array.isArray(stores) && stores[0]).toBeInstanceOf(FileStore);
   });
 
   it('collects restored hits and new transforms without unused restored entries', async () => {
-    process.env.EAS_METRO_CACHE_OUTPUT_DIR = '/cache/output';
-    process.env.EAS_METRO_CACHE_RESTORE_DIR = '/cache/restored';
+    process.env.EXPO_METRO_CACHE_DIR = '/cache';
     const restored = new FileStore<Buffer>({ root: '/cache/restored' });
     const output = new FileStore<Buffer>({ root: '/cache/output' });
     const reusedKey = Buffer.from('aabb', 'hex');
@@ -68,11 +60,11 @@ describe(getDefaultConfig, () => {
     if (!Array.isArray(stores)) {
       throw new Error('Expected an array of cache stores');
     }
-    expect(stores).toHaveLength(2);
+    expect(stores).toHaveLength(1);
     const cache = new Cache<Buffer>(stores);
     expect(await cache.get(reusedKey)).toEqual(reusedValue);
-    // Transformer calls set after both cache hits and newly computed transforms.
-    await cache.set(reusedKey, reusedValue);
+    // A read alone must collect the restored entry.
+    expect(await output.get(reusedKey)).toEqual(reusedValue);
     expect(await cache.get(newKey)).toBeNull();
     await cache.set(newKey, newValue);
 

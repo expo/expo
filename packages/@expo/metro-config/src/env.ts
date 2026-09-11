@@ -1,20 +1,9 @@
 import { boolish, int, string } from 'getenv';
 
 class Env {
-  /**
-   * Output directory for Metro transforms used or created during a build.
-   * Used together with EAS_METRO_CACHE_RESTORE_DIR.
-   */
-  get EAS_METRO_CACHE_OUTPUT_DIR(): string {
-    return string('EAS_METRO_CACHE_OUTPUT_DIR', '');
-  }
-
-  /**
-   * Directory containing Metro transforms restored from a previous build.
-   * Used together with EAS_METRO_CACHE_OUTPUT_DIR.
-   */
-  get EAS_METRO_CACHE_RESTORE_DIR(): string {
-    return string('EAS_METRO_CACHE_RESTORE_DIR', '');
+  /** Absolute parent directory for restored/ and output/ Metro transform caches. */
+  get EXPO_METRO_CACHE_DIR(): string {
+    return string('EXPO_METRO_CACHE_DIR', '');
   }
 
   /** Enable debug logging */

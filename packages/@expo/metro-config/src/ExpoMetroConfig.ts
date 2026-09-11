@@ -17,6 +17,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { FileStore } from './binary-file-store';
+import { BuildCacheStore } from './build-cache-store';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
 import { event } from './events';
@@ -281,19 +282,14 @@ export function getDefaultConfig(
 
   const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
-  const outputCacheRoot = env.EAS_METRO_CACHE_OUTPUT_DIR;
-  const restoredCacheRoot = env.EAS_METRO_CACHE_RESTORE_DIR;
-  // EAS supplies distinct absolute paths and starts each job with an empty output directory.
-  // Metro promotes restored hits into the first store and writes new transforms there too.
-  // After bundling processes exit, EAS archives only the output directory, excluding unused
-  // restored entries. Both stores remain writable and are cleared by Metro's cache reset.
-  const cacheStores =
-    outputCacheRoot && restoredCacheRoot
-      ? [
-          new FileStore<any>({ root: outputCacheRoot }),
-          new FileStore<any>({ root: restoredCacheRoot }),
-        ]
-      : [new FileStore<any>({ root: path.join(os.tmpdir(), 'metro-cache') })];
+  const cacheRoot = env.EXPO_METRO_CACHE_DIR;
+  // The build runner restores an archive into root/restored and starts each job with
+  // an empty root/output. Keep output across Metro invocations in the same job.
+  // After bundling processes exit, archive only output to exclude unused restored entries.
+  // One store keeps these directories together when projects reorder cacheStores.
+  const cacheStores = cacheRoot
+    ? [new BuildCacheStore<any>({ root: cacheRoot })]
+    : [new FileStore<any>({ root: path.join(os.tmpdir(), 'metro-cache') })];
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
