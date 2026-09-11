@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [tvOS] Attach the developer-menu window to an active scene before showing it when initialized before scene activation.
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
