@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { CommandError } from '../utils/errors';
 import { loadEnvFiles } from '../utils/nodeEnv';
 import type { CompileCommandRequest } from './args';
-import { assertAndroidArtifactAbisAsync, resolveAndroidDeviceAsync } from './resolveAndroidDevice';
+import { resolveAndroidDeviceAsync } from './resolveAndroidDevice';
 
 export async function compileAsync(request: CompileCommandRequest): Promise<readonly string[]> {
   if (request.platform === 'ios' && process.platform !== 'darwin') {
@@ -23,20 +23,23 @@ export async function compileAsync(request: CompileCommandRequest): Promise<read
       return compileAndroid(nativeRequest, { outputMode: 'quiet' });
     }
     const architectures = await resolveAndroidDeviceAsync(device);
-    const artifacts = await compileAndroid(nativeRequest, {
-      outputMode: 'quiet',
-      env: {
-        ...process.env,
-        GRADLE_OPTS: [
-          process.env.GRADLE_OPTS,
-          `-Dorg.gradle.project.android.injected.build.abi=${architectures.join(',')}`,
-        ]
-          .filter(Boolean)
-          .join(' '),
-      },
-    });
-    await assertAndroidArtifactAbisAsync(artifacts, architectures);
-    return artifacts;
+    return compileAndroid(
+      { ...nativeRequest, expectedArchitectures: architectures },
+      {
+        outputMode: 'quiet',
+        env: {
+          ...process.env,
+          GRADLE_OPTS: [
+            process.env.GRADLE_OPTS,
+            `-Dorg.gradle.project.android.injected.build.abi=${architectures.join(',')}`,
+            // React Native configures APK packaging separately from AGP's build ABI.
+            `-Dorg.gradle.project.reactNativeArchitectures=${architectures.join(',')}`,
+          ]
+            .filter(Boolean)
+            .join(' '),
+        },
+      }
+    );
   }
   return compileIos(request, {
     outputMode: 'quiet',

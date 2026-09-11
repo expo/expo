@@ -242,7 +242,8 @@ export async function installAsync(
 ) {
   // TODO: Handle the `INSTALL_FAILED_INSUFFICIENT_STORAGE` error.
   return await getServer().runDeviceMutationAsync(
-    adbArgs(device.pid, 'install', '-r', '-d', '--user', env.EXPO_ADB_USER, filePath),
+    // Device-targeted Gradle builds mark their APKs as test-only.
+    adbArgs(device.pid, 'install', '-r', '-d', '-t', '--user', env.EXPO_ADB_USER, filePath),
     'app install',
     signal
   );
