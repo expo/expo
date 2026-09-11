@@ -1742,72 +1742,61 @@ describe('extractFrontmatter', () => {
   });
 });
 
-describe('angle brackets in re-injected text', () => {
-  const cases: [name: string, html: string, expected: string][] = [
-    [
-      'tab label',
-      '<main><div data-md="tabs"><div role="tablist"><button role="tab">Using &lt;Stack&gt; navigator</button></div><div role="tabpanel"><p>body</p></div></div></main>',
-      'Using <Stack> navigator',
-    ],
-    [
-      'collapsible summary',
-      '<main><details data-md="collapsible"><summary>Using &lt;Stack&gt; navigator</summary><p>body</p></details></main>',
-      'Using <Stack> navigator',
-    ],
-    [
-      'prerequisites summary',
-      '<main><details data-md="prerequisites"><summary>Install &lt;Foo&gt; first</summary><p>body</p></details></main>',
-      'Install <Foo> first',
-    ],
-    [
-      'requirement title',
-      '<main><details data-md="prerequisites"><summary>Prereqs</summary><div data-md="requirement-title">A &lt;Bar&gt; module</div></details></main>',
-      'A <Bar> module',
-    ],
-    [
-      'homepage link label',
-      '<main><a data-md="link" href="/launch"><span>Try &lt;Launch&gt;</span></a></main>',
-      'Try <Launch>',
-    ],
-    [
-      'card link title',
-      '<main><a href="/guide" data-md="card-link"><div><span data-text="true">Using &lt;Stack&gt;</span><p data-text="true">Wrap &lt;Slot&gt; here.</p></div></a></main>',
-      'Using <Stack> — Wrap <Slot> here.',
-    ],
-    [
-      'api platforms list',
-      '<main><div data-md="api-platforms"><span data-md="platform-badge"><span>&lt;iOS&gt;</span></span></div></main>',
-      'Supported platforms: <iOS>.',
-    ],
-    [
-      'table cell blockquote',
-      '<main><table><tr><td><blockquote>Use &lt;Stack&gt; here</blockquote></td></tr></table></main>',
-      'Use <Stack> here',
-    ],
-    [
-      'platform badge',
-      '<main><p>Config<span data-md="platform-badge"><span>&lt;iOS&gt;</span></span></p></main>',
-      'Config, <iOS>',
-    ],
-  ];
+describe('agent prompt blocks', () => {
+  function fence(text: string) {
+    return `<div class="code-block-wrapper"><pre data-md-lang="text" data-text="true"><div><code>${text}</code></div></pre></div>`;
+  }
 
-  it.each(cases)('keeps angle-bracketed text in the %s', (_name, html, expected) => {
-    const $ = cheerio.load(html);
-    cleanHtml($, $('main'));
-    expect($('main').text().replace(/\s+/g, ' ').trim()).toContain(expected);
-  });
+  function agentPromptHtml(body: string) {
+    return [
+      '<main>',
+      '<h1>Get started with EAS Update</h1>',
+      '<div data-testid="agent-prompt">',
+      '<div><svg viewBox="0 0 24 24"><path d="M0 0"/></svg><div>',
+      '<h2 data-heading="true">Set up EAS Update with an AI agent</h2>',
+      '<p>Paste this into an agent.</p>',
+      '</div><div><button>Copy prompt</button></div></div>',
+      '<div><button data-md="skip" aria-expanded="false">Show prompt</button><div hidden="">',
+      body,
+      '</div></div>',
+      '</div>',
+      '<p>EAS Update ships over-the-air updates.</p>',
+      '</main>',
+    ].join('');
+  }
 
-  it('keeps angle-bracketed text inside an unknown tag in code', () => {
-    const $ = cheerio.load('<main><code><promise>Array&lt;Bar&gt;</promise></code></main>');
-    cleanHtml($, $('main'));
-    expect($('main').text()).toBe('<promise>Array<Bar></promise>');
-  });
-
-  it('escapes ampersands so they survive as literal text', () => {
-    const $ = cheerio.load(
-      '<main><details data-md="collapsible"><summary>Tips &amp; tricks</summary><p>body</p></details></main>'
+  it('renders a single prompt as a section with one code block', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(fence('Install expo-updates.\n\nRun `eas update:configure`.'))
     );
-    cleanHtml($, $('main'));
-    expect($('h4').text()).toBe('Tips & tricks');
+    expect(md).toContain('## Set up EAS Update with an AI agent');
+    expect(md).toContain('Paste this into an agent.');
+    expect(md).toContain('```text\nInstall expo-updates.\n\nRun `eas update:configure`.\n```');
+    expect(md).not.toContain('Show prompt');
+    expect(md).not.toContain('Copy prompt');
+    expect(md).not.toContain('###');
+    expect(md).toContain('EAS Update ships over-the-air updates.');
+  });
+
+  it('keeps every option under its own heading, hidden ones included', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(
+        [
+          '<section data-agent-prompt-option="build-locally">',
+          '<h3 class="sr-only">Build locally</h3>',
+          fence('Run `npx expo run:ios`.'),
+          '</section>',
+          '<section data-agent-prompt-option="build-with-eas" hidden="">',
+          '<h3 class="sr-only">Build with EAS</h3>',
+          fence('Run `eas build`.'),
+          '</section>',
+        ].join('')
+      )
+    );
+    expect(md).toContain('### Build locally');
+    expect(md).toContain('### Build with EAS');
+    expect(md).toContain('Run `npx expo run:ios`.');
+    expect(md).toContain('Run `eas build`.');
+    expect(md.indexOf('### Build locally')).toBeLessThan(md.indexOf('Run `npx expo run:ios`.'));
   });
 });

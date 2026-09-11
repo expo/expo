@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add [nub](https://nubjs.com/) package manager support ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.14.0 — 2026-09-10
+
+### 🎉 New features
+
+- Add [nub](https://nubjs.com/) package manager support ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
 
 ## 1.13.1 - 2026-07-15
 

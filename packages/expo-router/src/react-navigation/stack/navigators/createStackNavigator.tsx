@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
+import { useClearGuardedRoutes } from '../../../layouts/useClearGuardedRoutes';
 import type { NavigatorContentProps } from '../../../standard-navigation';
 import { type Route, useLocale } from '../../native';
 import type {
@@ -13,6 +14,7 @@ import { StackView } from '../views/Stack/StackView';
 
 export interface StackNavigatorCreateProps {
   pop: (count: number, sourceRouteKey: string) => void;
+  removeRoutes: (routeNames: string[]) => void;
   restoreRoute: (route: Route<string>) => boolean;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
@@ -35,12 +37,14 @@ function StackNavigatorContent({
   descriptors,
   emitter,
   pop,
+  removeRoutes,
   restoreRoute,
   subscribePopToTopOnParentTabPress,
   ...rest
 }: StackNavigatorContentProps) {
   const { direction } = useLocale();
 
+  useClearGuardedRoutes(removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   if (state.routes.length === 0) {

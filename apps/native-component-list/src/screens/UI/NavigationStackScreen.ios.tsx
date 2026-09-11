@@ -6,6 +6,8 @@ import {
   Image,
   Label,
   List,
+  NavigationDestination,
+  NavigationLink,
   NavigationStack,
   Section,
   Spacer,
@@ -152,6 +154,7 @@ export default function NavigationStackScreen() {
   const [selected, setSelected] = React.useState<Selection | null>(null);
   const [isPresented, setIsPresented] = React.useState(false);
   const [descending, setDescending] = React.useState(false);
+  const [path, setPath] = React.useState<string[]>([]);
 
   const sort = (birds: readonly Bird[]) =>
     [...birds].sort((a, b) =>
@@ -160,7 +163,7 @@ export default function NavigationStackScreen() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <NavigationStack>
+      <NavigationStack path={path} onPathChange={setPath}>
         {/* The title and the sort button both belong to the bar this stack provides. */}
         <Toolbar modifiers={[navigationTitle('Birds')]}>
           <BottomSheet
@@ -212,6 +215,12 @@ export default function NavigationStackScreen() {
                     ))}
                   </Section>
                 ))}
+                <Section title="Pushed screen">
+                  {/* Appends 'about' to the stack's path, which mounts the destination below. */}
+                  <NavigationLink value="about">
+                    <Text>About this list</Text>
+                  </NavigationLink>
+                </Section>
               </List>
             }>
             {/* A sheet has no navigation bar of its own. The stack adds one, which gives the
@@ -267,6 +276,19 @@ export default function NavigationStackScreen() {
             />
           </Toolbar.Content>
         </Toolbar>
+        <NavigationDestination value="about">
+          <VStack
+            alignment="leading"
+            spacing={12}
+            modifiers={[padding({ all: 20 }), navigationTitle('About')]}>
+            <Text modifiers={[font({ textStyle: 'headline' })]}>British garden birds</Text>
+            <Text>
+              Each habitat lists the species you are most likely to see there. Tap a bird to open
+              its description in a sheet.
+            </Text>
+            <Spacer />
+          </VStack>
+        </NavigationDestination>
       </NavigationStack>
     </Host>
   );

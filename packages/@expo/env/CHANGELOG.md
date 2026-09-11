@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.5.0 — 2026-09-10
+
+### 🎉 New features
+
 - Add `setNodeEnv` for Expo commands and tools. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes

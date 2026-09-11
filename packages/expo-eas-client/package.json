@@ -1,6 +1,6 @@
 {
   "name": "expo-eas-client",
-  "version": "57.0.1",
+  "version": "58.0.0",
   "description": "Stable client identifier for EAS services",
   "keywords": [
     "EASClient",

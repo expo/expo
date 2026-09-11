@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - [iOS] Report `isLiquidGlassAvailable` as `true` in apps built with the iOS 27 SDK, which ignores `UIDesignRequiresCompatibility`. ([#49850](https://github.com/expo/expo/pull/49850) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others

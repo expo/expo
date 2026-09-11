@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "57.0.8",
+  "version": "58.0.0",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "keywords": [
     "brownfield",

@@ -46,6 +46,7 @@ const RNStack = unstable_integrateWithRouter<
   StackRouterOptions,
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
+  activityDefaultThreshold: 2,
   createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
     pop: makePopAction(dispatchSync, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),

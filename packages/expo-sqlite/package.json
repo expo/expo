@@ -1,6 +1,6 @@
 {
   "name": "expo-sqlite",
-  "version": "57.0.1",
+  "version": "58.0.0",
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "keywords": [
     "async-storage",

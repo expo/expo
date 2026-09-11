@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [Android] Remove `SessionManager` insert listeners and `JsMetric.metricId` ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
 - [iOS] [Android] Rename JavaScript exception log events from `exception` to `js.exception`. ([#49594](https://github.com/expo/expo/pull/49594) by [@Ubax](https://github.com/Ubax))
 

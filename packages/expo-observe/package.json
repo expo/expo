@@ -1,6 +1,6 @@
 {
   "name": "expo-observe",
-  "version": "57.0.9",
+  "version": "58.0.0",
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
   "keywords": [
     "EAS",

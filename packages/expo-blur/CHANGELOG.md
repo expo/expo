@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - Fix `BlurView` not applying border radius styles to the native blur layer. ([#45691](https://github.com/expo/expo/pull/45691) by [@mvincentong](https://github.com/mvincentong)) and [@behenate](https://github.com/behenate)
 - [Android] Fix content inside a `BlurTargetView` disappearing during screen exit animations. ([#48141](https://github.com/expo/expo/pull/48141) by [@alok-debnath](https://github.com/alok-debnath))
 

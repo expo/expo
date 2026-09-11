@@ -1,0 +1,168 @@
+---
+title: Query EAS Insights with EAS CLI
+sidebar_title: EAS CLI
+description: Query EAS Workflows and Maestro insights from the terminal with the eas workflow:insights commands.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+The metrics the [Workflows](/eas-insights/workflows/) and [Maestro](/eas-insights/maestro/) tabs of EAS Insights show are also available from the terminal. Use the `eas workflow:insights` commands to check run health, find flaky flows, and feed the numbers into your own reports.
+
+For update and channel usage, see [`eas update:insights`](/eas/cli/#eas-update-insights-groupid) and [`eas channel:insights`](/eas/cli/#eas-channel-insights) in the EAS CLI reference.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="The EAS CLI">
+    Follow the [instructions for installing the CLI](/eas/cli/#installation).
+  </Requirement>
+  <Requirement title="A project that runs EAS Workflows">
+    Follow [Get started with EAS Workflows](/eas/workflows/get-started/). For Maestro insights, the
+    project also needs a workflow with a [`maestro` job](/eas/workflows/pre-packaged-jobs/#maestro).
+    Results appear automatically as your workflows run.
+  </Requirement>
+  <Requirement title="Authentication to the EAS CLI from your project directory">
+    Log in with `eas login`. By default, each command reads the project ID from the app config in
+    the current directory. Pass `--project-id` to query a project from anywhere, using an account
+    that has access to it:
+    <Terminal cmd={['$ eas workflow:insights --project-id <project-id>']} />
+  </Requirement>
+</Prerequisites>
+
+## Plans and lookback limits
+
+Workflows and Maestro insights are available on the Production and Enterprise plans. See [EAS pricing](https://expo.dev/pricing) for what each plan includes.
+
+Each plan also limits how far back a time range can start:
+
+- **Production**: The last 30 days.
+- **Enterprise**: The last 365 days.
+
+The limit applies to the plan of the account that owns the project. When a time range starts earlier than the plan allows, the command fails and tells you how many days your plan includes.
+
+## Commands
+
+| Command                         | What it shows                                                                |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| `eas workflow:insights`         | Run counts, success rate, and per-workflow trends                            |
+| `eas workflow:insights:maestro` | Pass and flake rates for your Maestro flows, or the history of a single flow |
+
+Both commands accept these flags:
+
+- `--days <number>`: Show data from the last N days. Defaults to 7.
+- `--start <ISO date>` and `--end <ISO date>`: Set an explicit time range. Mutually exclusive with `--days`. Pass `--start` on its own to include everything up to now. `--end` on its own fails.
+- `--workflow <file name>`: Only include runs of this workflow file, such as **ci.yml**. Include the extension, and repeat the flag for several workflows. A workflow becomes available to this flag after its first run. A name the project does not know fails the command and lists the names it does know.
+- `--git-ref <ref>`: Only include runs requested for this git ref. The command treats a bare name such as `main` as a branch and expands it to `refs/heads/main`. For anything else, pass the full ref, such as `refs/tags/v1.0.0`. The command matches a full 40-character commit SHA as `eas workflow:run` recorded it.
+- `--limit <number>`: How many rows to list. Defaults to 50. The command rejects a value outside 1 to 100.
+- `--project-id <id>`: Query a project without running inside its directory.
+- `--json`: Machine-readable output. Implies `--non-interactive`.
+- `--non-interactive`: Fail instead of prompting.
+
+Insights include finished runs only. Time ranges are queried in whole UTC periods, so a command can report a slightly wider range than the one you asked for. Overview metrics compare the selected time range with the previous period of equal length. The exception is `eas workflow:insights:maestro --flow`, which reports one flow's numbers for the selected range alone. The data is aggregated for trend analysis and can lag behind real time. Use it to investigate trends rather than as an authoritative record.
+
+Run any command with `--help` to see the flags supported by your installed EAS CLI version.
+
+## `eas workflow:insights`
+
+Shows the same overview, runs-over-time breakdown, and workflows table as the Workflows tab. Use it to see how often your workflows run and succeed, and which ones fail most.
+
+<Terminal
+  cmd={[
+    '# Last 7 days, all workflows',
+    '$ eas workflow:insights',
+    '',
+    '# One workflow, last 30 days',
+    '$ eas workflow:insights --workflow ci.yml --days 30',
+    '',
+    '# Only failed runs on the main branch',
+    '$ eas workflow:insights --status FAILURE --git-ref main',
+    '',
+    '# Only runs started by a GitHub push',
+    '$ eas workflow:insights --trigger GITHUB_PUSH',
+  ]}
+/>
+
+Command flags:
+
+- `--status <status>`: Only include runs with this status. One of `SUCCESS`, `FAILURE`, or `CANCELED`. Repeat the flag for several statuses.
+- `--trigger <type>`: Only include runs started by this trigger, such as `MANUAL`, `SCHEDULE`, or `GITHUB_PUSH`. Repeat the flag for several triggers. Run `eas workflow:insights --help` for the full list.
+
+The output has three parts:
+
+- **Overview**: Total runs, success rate, active workflows, and failed runs, each with the change from the previous period.
+- **Runs over time**: Total, successful, failed, and canceled runs per period. Periods are whole UTC intervals, and their size follows the length of the time range. The table lists only the periods that had runs and says so in its heading when it left some out. The table does not appear when nothing ran in the range.
+- **Workflows**: The workflows with the most runs in the time range, with their run counts, success rate, and last run. The **Workflow** column shows the file name, so you can pass a row straight to `--workflow`.
+
+With `--json`, these parts are the `overview`, `runsOverTime`, and `workflows` keys, alongside `project`, `timespan`, and `filters` when a filter is set. Each overview metric is an object with `current` and `previous` values. `runsOverTime` is an object with `granularity` and a `buckets` array that keeps every period, including the empty ones the table leaves out. Each entry in `workflows` carries `fileName` next to the `name` from the workflow file, and `hasMoreWorkflows` tells you whether `--limit` cut the table short.
+
+## `eas workflow:insights:maestro`
+
+Shows the same overview and flows table as the Maestro tab. Use it to find the flows that fail or flake the most. Pass `--flow` to drill into one flow instead, the way selecting a flow in the dashboard does.
+
+<Terminal
+  cmd={[
+    '# Last 7 days, flows with the most failures first',
+    '$ eas workflow:insights:maestro',
+    '',
+    '# Flakiest flows over the last 30 days',
+    '$ eas workflow:insights:maestro --days 30 --sort flake-rate',
+    '',
+    '# Only failed runs of flows tagged smoke',
+    '$ eas workflow:insights:maestro --status FAILED --tag smoke',
+    '',
+    '# The history of one flow, by its path in the repository',
+    '$ eas workflow:insights:maestro --flow .maestro/login.yml --days 30',
+  ]}
+/>
+
+Command flags:
+
+- `--status <status>`: Only include flow runs with this status. One of `PASSED`, `FLAKY`, or `FAILED`, where `PASSED` means passed on the first attempt. Repeat the flag for several statuses.
+- `--tag <tag>`: Only include flow runs with this tag. Repeat the flag for several tags.
+- `--search <text>`: Only list flows whose path contains this text. It narrows the flows table alone, so the overview still covers every flow the other filters match.
+- `--sort <column>`: Sort the flows table by `fails` (default), `runs`, `flakes`, `pass-rate`, `flake-rate`, `p90`, or `last-run`.
+- `--sort-direction <direction>`: `desc` (default) or `asc`.
+- `--flow <path>`: Show one flow's history instead of the overview. Takes the exact path from the **Flow** column, and cannot be combined with `--status`, `--tag`, `--search`, `--sort`, or `--sort-direction`.
+
+The overview shows Maestro runs, pass rate, flaky flows, and average duration, each with the change from the previous period. A flaky run counts as a pass, so a flow can show a high pass rate together with a non-zero flake rate. Below the overview, runs over time uses the same buckets as `eas workflow:insights`. The flows table lists each flow with its runs, pass rate, fails, and flake rate. The table also shows P90 (90th percentile) duration, last run, and the status of that last run. With `--json`, these are the `totals`, `runsOverTime`, and `flows` keys. `totalFlows` and `hasMoreFlows` tell you how many flows matched and whether `--limit` cut the table short.
+
+With `--flow`, the output starts with that flow's runs, pass rate, flaky runs, and P90 duration. It then lists the flow's runs over time, its five most common error patterns, and its most recent runs. `--limit` applies to the recent runs. With `--json`, look for the `totals`, `errorPatterns`, and `recentRuns` keys, plus `totalRecentRuns` and `hasMoreRecentRuns`.
+
+Tables print durations as `450ms` or `12.3s`, and `n/a` where no run reported one. The `--json` output reports durations in milliseconds and leaves out any key whose value is null. Read those with a fallback, such as `jq '.flows[] | {path, p90: (.p90DurationMs // "n/a")}'`.
+
+## Common tasks
+
+**Check how your workflows are doing on the main branch:**
+
+<Terminal cmd={['$ eas workflow:insights --git-ref main --days 30']} />
+
+**Find the Maestro flows to fix first:**
+
+<Terminal
+  cmd={[
+    '# Flows with the most failures over the last 30 days',
+    '$ eas workflow:insights:maestro --days 30',
+    '',
+    '# Then look at the error patterns of the worst one',
+    '$ eas workflow:insights:maestro --flow <flow-path> --days 30',
+  ]}
+/>
+
+**Build an automated report from CI:**
+
+1. Create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project.
+2. Set its access token as the `EXPO_TOKEN` environment variable in your CI job.
+3. Query the project by ID and read the numbers you need from the JSON output.
+
+Non-JSON messages go to stderr, so you can pipe the output straight into a tool such as `jq`. When a command fails, stdout stays empty and the message goes to stderr. The exit code is non-zero, so check it before parsing:
+
+<Terminal
+  cmd={[
+    '# Success rate of all workflows over the last 7 days, as a number',
+    "$ eas workflow:insights --project-id <project-id> --json | jq '.overview.successRatePercent.current'",
+    '',
+    '# Pass rate and P90 duration per flow over the last 7 days, up to 100 flows',
+    "$ eas workflow:insights:maestro --project-id <project-id> --limit 100 --json | jq '.flows[] | {path, passRatePercent, p90DurationMs}'",
+  ]}
+/>

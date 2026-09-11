@@ -1,5 +1,5 @@
 import { act, screen } from '@testing-library/react-native';
-import { use, type ReactNode } from 'react';
+import { use, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { Text, type NativeSyntheticEvent } from 'react-native';
 import type { TabSelectedEvent, TabsHostProps } from 'react-native-screens';
 
@@ -63,6 +63,7 @@ const { Stack: MockedStackV5 } = jest.requireMock(
 const MockedHost = MockedStackV5.Host as unknown as jest.Mock;
 const MockedScreen = MockedStackV5.Screen as unknown as jest.Mock;
 const MockedHeaderConfig = MockedStackV5.HeaderConfig as unknown as jest.Mock;
+let warnSpy: jest.SpyInstance | undefined;
 
 function NativeNavigatorContextProbe() {
   return <Text>{String(use(IsWithinNativeNavigator))}</Text>;
@@ -96,6 +97,11 @@ beforeEach(() => {
   MockedHeaderConfig.mockClear();
 });
 
+afterEach(() => {
+  warnSpy?.mockRestore();
+  warnSpy = undefined;
+});
+
 describe('ExperimentalStack — basic navigation', () => {
   it('marks its routes as nested inside a native navigator', () => {
     renderRouter({
@@ -124,6 +130,40 @@ describe('ExperimentalStack — basic navigation', () => {
 
     expect(screen).toHavePathname('/b');
     expect(router.canDismiss()).toBe(true);
+  });
+
+  it('removes guarded routes from history when a guard flips false', () => {
+    let setGuard: Dispatch<SetStateAction<boolean>>;
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter({
+      _layout: function Layout() {
+        const [guard, setState] = useState(true);
+        setGuard = setState;
+        return (
+          <ExperimentalStack>
+            <ExperimentalStack.Protected guard={guard}>
+              <ExperimentalStack.Screen name="secret" />
+            </ExperimentalStack.Protected>
+            <ExperimentalStack.Screen name="other" />
+          </ExperimentalStack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+      other: () => <Text testID="other">other</Text>,
+    });
+
+    act(() => router.push('/secret'));
+    act(() => router.push('/other'));
+    act(() => setGuard(false));
+    act(() => router.back());
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("ignoring unsupported screenOption 'hidden'")
+    );
+    expect(screen).toHavePathname('/');
+    expect(router.canGoBack()).toBe(false);
   });
 
   it('pops via router.dismiss', () => {

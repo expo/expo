@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'expo.modules.widgets'
-version = '56.0.15'
+version = '58.0.0'
 
 def expoWidgetsPackageDirFile = project.projectDir.parentFile
 def expoWidgetsPackageDir = expoWidgetsPackageDirFile.absolutePath
@@ -39,7 +39,7 @@ android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
-    versionName '56.0.15'
+    versionName '58.0.0'
 
     externalNativeBuild {
       cmake {

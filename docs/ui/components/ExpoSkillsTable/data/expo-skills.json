@@ -2,7 +2,7 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-09-10T08:12:52.780Z"
+    "fetchedAt": "2026-09-11T08:12:51.893Z"
   },
   "totalSkills": 24,
   "skills": [
@@ -63,7 +63,7 @@
     {
       "name": "expo-brownfield",
       "category": "framework",
-      "description": "Integrate Expo and React Native into an existing native iOS or Android app. Use when the user mentions brownfield, embedding React Native in a native app, AAR/XCFramework, or adding Expo to an existing Kotlin/Swift project. Covers both the isolated approach and the integrated approach.",
+      "description": "Integrate Expo and React Native into an existing native iOS or Android app. Use for brownfield, embedding a React Native screen in SwiftUI/UIKit or Kotlin, or AAR/XCFramework packaging. Covers isolated and integrated approaches. For building or distributing a purely native app with EAS, use eas-app-stores.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-brownfield/SKILL.md"
     },
     {

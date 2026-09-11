@@ -28,6 +28,7 @@ export type ScreenTrigger =
       type: 'internal';
       href: Href;
       name: string;
+      activityEnabled?: boolean;
     }
   | {
       type: 'external';
@@ -47,6 +48,7 @@ type TriggerConfig =
       action: JumpToNavigationAction;
       targetState?: PartialState<NavigationState>;
       deep: boolean;
+      activityEnabled?: boolean;
     }
   | { type: 'external'; name: string; href: string };
 
@@ -238,7 +240,10 @@ export function useTriggersToScreens(
       // TODO(https://github.com/expo/expo/pull/48756): Resolved internal-trigger href params need
       // to flow through ExpoTabRouter to placeholder, fallback, and action-recreated routes without
       // restoring Screen.initialParams. Explicit action params must override these defaults.
-      screenProps.push({ name: config.routeNode.route });
+      screenProps.push({
+        name: config.routeNode.route,
+        activityEnabled: config.activityEnabled,
+      });
     }
   }
 

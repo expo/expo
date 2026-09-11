@@ -25,6 +25,7 @@ export * from '../react-navigation/stack';
  * Creates the adapter props required to integrate the JavaScript stack with Expo Router.
  */
 export function unstable_createPropsForJSStack({
+  dispatch,
   dispatchSync,
   navigation,
   state,
@@ -33,6 +34,7 @@ export function unstable_createPropsForJSStack({
 >): StackNavigatorCreateProps {
   return {
     pop: makePopAction(dispatchSync, state.key),
+    removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
     restoreRoute: makeRestoreRouteAction(dispatchSync, state),
     subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
   };
@@ -47,6 +49,7 @@ const JSStack = unstable_integrateWithRouter<
   object,
   StackNavigatorCreateProps
 >(unstable_createStandardStackNavigator, StackRouter, {
+  activityDefaultThreshold: 2,
   createProps: unstable_createPropsForJSStack,
 });
 
