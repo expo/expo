@@ -279,6 +279,14 @@ class MediaController {
     .resume()
   }
 
+  /**
+   Converts seconds to a `CMTime` without losing sub-second precision. A timescale of 1 would
+   truncate fractional skip intervals such as `0.1` or `15.5` down to whole seconds.
+   */
+  static func cmTime(seconds: Double) -> CMTime {
+    return CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+  }
+
   private func enableRemoteCommands(options: LockScreenOptions?) {
     removeRemoteCommandTargets()
 
@@ -322,7 +330,7 @@ class MediaController {
         return .commandFailed
       }
 
-      let seekTime = CMTime(seconds: event.positionTime, preferredTimescale: 1)
+      let seekTime = MediaController.cmTime(seconds: event.positionTime)
       playable.lockScreenPlayer.seek(to: seekTime)
 
       return .success
@@ -338,7 +346,7 @@ class MediaController {
       }
 
       let currentTime = playable.lockScreenPlayer.currentTime()
-      let seekTime = currentTime + CMTime(seconds: event.interval, preferredTimescale: 1)
+      let seekTime = currentTime + MediaController.cmTime(seconds: event.interval)
       playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
 
       return .success
@@ -354,7 +362,7 @@ class MediaController {
       }
 
       let currentTime = playable.lockScreenPlayer.currentTime()
-      let seekTime = currentTime - CMTime(seconds: event.interval, preferredTimescale: 1)
+      let seekTime = currentTime - MediaController.cmTime(seconds: event.interval)
       playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
 
       return .success
