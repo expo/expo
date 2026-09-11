@@ -4,10 +4,7 @@
     "modules": ["CryptoModule", "AesCryptoModule"]
   },
   "android": {
-    "modules": [
-      "expo.modules.crypto.CryptoModule",
-      "expo.modules.crypto.aes.AesCryptoModule"
-    ],
+    "modules": ["expo.modules.crypto.CryptoModule", "expo.modules.crypto.aes.AesCryptoModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.crypto",
