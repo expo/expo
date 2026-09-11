@@ -29,6 +29,10 @@ import {
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
+// NOTE(@kev-flex): not `Infinity`, which `PostponedState` serialises to `null`. React also
+// derives its blocking-render limit from this value, as `progressiveChunkSize * 40`.
+const DISABLE_SIZE_BASED_OUTLINING = Number.MAX_SAFE_INTEGER;
+
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
   // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -163,9 +167,7 @@ export async function getStreamingContent(
         </Head.Provider>
       </ServerDocument>,
       {
-        // TODO(@hassankhan): Experiment and see if we can calculate a better default
-        // We're doubling the default here so non-JavaScript renders show some content
-        progressiveChunkSize: 12800 * 2,
+        progressiveChunkSize: DISABLE_SIZE_BASED_OUTLINING,
         bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
         bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
