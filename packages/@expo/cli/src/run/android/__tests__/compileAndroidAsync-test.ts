@@ -111,7 +111,7 @@ it('passes the Windows Gradle wrapper to Compile', async () => {
 it.each([
   new CompileError('Cancelled', { signal: 'SIGINT' }),
   new CompileError('Cancelled', { exitCode: 130 }),
-])('preserves controlled cancellation for %s', async (error) => {
+])('treats %s as cancellation', async (error) => {
   jest.mocked(buildAndroid).mockRejectedValueOnce(error);
   await expect(
     compileAndroidAsync('/android', { appName: 'app', variant: 'debug' })

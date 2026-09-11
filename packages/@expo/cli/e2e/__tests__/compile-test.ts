@@ -260,11 +260,13 @@ describe('Android device compilation', () => {
       { serial: 'other-device', state: 'device', abis: ['arm64-v8a'] },
       { serial, state: 'device', abis: ['x86_64', 'x86'] },
     ]);
-    const artifact = await writeApkFixture('wifi.apk', ['x86_64', 'x86']);
-    const gradleAbiPath = await writeDeviceGradleFixture([artifact]);
+    const artifact = await writeApkFixture('wifi.apk');
+    const gradleAbiPath = await writeDeviceGradleFixture([artifact], {
+      expectedArchitectures: ['x86_64', 'x86'],
+    });
 
     const gradleOpts =
-      '-Xmx1g "-Dcompile.fixture=with spaces" -Dorg.gradle.project.android.injected.build.abi=arm64-v8a';
+      '-Xmx1g "-Dcompile.fixture=with spaces" -Dorg.gradle.project.android.injected.build.abi=arm64-v8a -Dorg.gradle.project.reactNativeArchitectures=arm64-v8a';
     const result = await runCompile(['compile:android', '--dev', '--device', serial], {
       ...adb.env,
       GRADLE_OPTS: gradleOpts,
@@ -274,7 +276,7 @@ describe('Android device compilation', () => {
     expect(result.stderr).toBe('');
     expect(await fs.readFile(gradleAbiPath, 'utf8')).toBe('x86_64,x86');
     expect(await fs.readFile(path.join(projectRoot, 'gradle-options.txt'), 'utf8')).toBe(
-      `${gradleOpts} -Dorg.gradle.project.android.injected.build.abi=x86_64,x86`
+      `${gradleOpts} -Dorg.gradle.project.android.injected.build.abi=x86_64,x86 -Dorg.gradle.project.reactNativeArchitectures=x86_64,x86`
     );
     expect(await fs.readFile(adb.commandsPath, 'utf8')).toBe(
       `devices -l\n-s ${serial} shell 'getprop' 'ro.product.cpu.abilist'\n`
@@ -287,8 +289,10 @@ describe('Android device compilation', () => {
       { serial: 'locked-device', state: 'unauthorized', abis: [] },
       { serial, state: 'device', abis: ['arm64-v8a'] },
     ]);
-    const artifact = await writeApkFixture('usb.apk', ['arm64-v8a']);
-    const gradleAbiPath = await writeDeviceGradleFixture([artifact]);
+    const artifact = await writeApkFixture('usb.apk');
+    const gradleAbiPath = await writeDeviceGradleFixture([artifact], {
+      expectedArchitectures: ['arm64-v8a'],
+    });
 
     const result = await runCompile(['compile', 'android', '--dev', '--device'], adb.env);
     expect(result.exitCode).toBe(0);
@@ -303,8 +307,11 @@ describe('Android device compilation', () => {
   itNotWindows('falls back to the single ABI property and copies a production APK', async () => {
     const serial = 'older-device';
     const adb = await writeAdbFixture([{ serial, state: 'device', abis: [], abi: 'arm64-v8a' }]);
-    const artifact = await writeApkFixture('fallback.apk', ['arm64-v8a']);
-    const gradleAbiPath = await writeDeviceGradleFixture([artifact], 'compileAndroidProductionApk');
+    const artifact = await writeApkFixture('fallback.apk');
+    const gradleAbiPath = await writeDeviceGradleFixture([artifact], {
+      task: 'compileAndroidProductionApk',
+      expectedArchitectures: ['arm64-v8a'],
+    });
 
     const result = await runCompile(
       ['compile:android', '--prod', '--device', serial, '--output-dir', './output'],
@@ -329,14 +336,21 @@ describe('Android device compilation', () => {
       await fs.writeFile(artifact, 'artifact fixture without device ABI validation');
       const gradleAbiPath = await writeDeviceGradleFixture([artifact]);
 
+      const gradleOpts = abi
+        ? `-Dorg.gradle.project.android.injected.build.abi=${abi} -Dorg.gradle.project.reactNativeArchitectures=${abi}`
+        : undefined;
       const result = await runCompile(['compile:android', '--dev'], {
         ...adb.env,
-        GRADLE_OPTS: abi ? `-Dorg.gradle.project.android.injected.build.abi=${abi}` : undefined,
+        GRADLE_OPTS: gradleOpts,
+        COMPILE_ANDROID_EXPECTED_ARCHITECTURES: 'arm64-v8a',
       });
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toBe(`${artifact}\n`);
       expect(result.stderr).toBe('');
       expect(await fs.readFile(gradleAbiPath, 'utf8')).toBe(abi ?? '<unset>');
+      expect(await fs.readFile(path.join(projectRoot, 'gradle-options.txt'), 'utf8')).toBe(
+        gradleOpts ?? ''
+      );
       await expect(fs.stat(adb.commandsPath)).rejects.toMatchObject({ code: 'ENOENT' });
     }
   );
@@ -348,12 +362,13 @@ describe('Android device compilation', () => {
         { serial: 'second-device', state: 'device' as const, abis: ['x86'] },
       ],
       args: ['--device'],
-      error: /exactly one attached, authorized Android device.*Found 2/,
+      error: /exactly one connected, authorized Android device.*Found 2/,
     },
     {
       devices: [{ serial: 'locked-device', state: 'unauthorized' as const, abis: [] }],
       args: ['--device', 'locked-device'],
-      error: /Android device "locked-device" must match exactly one attached, authorized device/,
+      error:
+        /Android device "locked-device" must match exactly one connected, authorized device that is ready for commands/,
     },
   ])(
     'rejects $args before Gradle when device selection fails',
@@ -370,21 +385,57 @@ describe('Android device compilation', () => {
     }
   );
 
-  itNotWindows('rejects an incompatible APK even when another returned APK matches', async () => {
+  itNotWindows('returns Gradle artifacts without looking for jar or JAVA_HOME', async () => {
     const adb = await writeAdbFixture([
       { serial: 'usb-device', state: 'device', abis: ['arm64-v8a'] },
     ]);
-    const matching = await writeApkFixture('first-arm64.apk', ['arm64-v8a']);
-    const incompatible = await writeApkFixture('second-x86.apk', ['x86']);
-    await writeDeviceGradleFixture([matching, incompatible]);
+    const artifact = await writeApkFixture('without-jar.apk');
+    const gradleAbiPath = await writeDeviceGradleFixture([artifact], {
+      expectedArchitectures: ['arm64-v8a'],
+    });
+    const tools = path.join(projectRoot, 'tools');
+    await fs.mkdir(tools);
+    await fs.symlink(process.execPath, path.join(tools, 'node'));
+    await fs.symlink('/usr/bin/dirname', path.join(tools, 'dirname'));
 
-    const result = await runCompile(['compile:android', '--dev', '--device'], adb.env);
-    expect(result.exitCode).toBe(1);
-    expect(result.stdout).toBe('');
-    expect(result.stderr).toContain(`Android artifact "${incompatible}"`);
-    expect(result.stderr).toContain('contains native libraries for x86');
-    expect(result.stderr).toContain('device supports arm64-v8a');
+    const result = await runCompile(['compile:android', '--dev', '--device'], {
+      ...adb.env,
+      JAVA_HOME: undefined,
+      PATH: tools,
+    });
+    expect(result.stderr).toBe('');
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe(`${artifact}\n`);
+    expect(await fs.readFile(gradleAbiPath, 'utf8')).toBe('arm64-v8a');
   });
+
+  itNotWindows.each([
+    'Cannot inspect Android artifact "app.apk": invalid ZIP file.',
+    'Android artifact "app.apk" contains native libraries for x86, but expected arm64-v8a.',
+  ])(
+    'reports Gradle validation failures before copying or printing artifacts: %s',
+    async (failure) => {
+      const adb = await writeAdbFixture([
+        { serial: 'usb-device', state: 'device', abis: ['arm64-v8a'] },
+      ]);
+      const artifact = await writeApkFixture('app.apk');
+      await writeDeviceGradleFixture([artifact], {
+        expectedArchitectures: ['arm64-v8a'],
+        failure,
+      });
+
+      const result = await runCompile(
+        ['compile:android', '--dev', '--device', '--output-dir', './output'],
+        adb.env
+      );
+      expect(result.exitCode).toBe(1);
+      expect(result.stdout).toBe('');
+      expect(result.stderr).toContain(failure);
+      await expect(fs.stat(path.join(projectRoot, 'output'))).rejects.toMatchObject({
+        code: 'ENOENT',
+      });
+    }
+  );
 });
 
 it('copies a reported AAB to an output directory relative to the supplied project', async () => {
@@ -430,6 +481,38 @@ it('preserves a Gradle process failure code and diagnostics', async () => {
   expect(result.stderr).toContain('native stdout');
   expect(result.stderr).toContain('native stderr');
   expect(result.stderr).not.toMatch(/\n\s+at /);
+});
+
+it('preserves full native output when a Gradle failure exceeds the diagnostic tail', async () => {
+  const logRoot = path.join(await fs.realpath(projectRoot), 'native logs');
+  await fs.mkdir(logRoot);
+  const stdout = 'early native stdout diagnostic\n' + 'native stdout detail\n'.repeat(1_000);
+  const stderr = 'early native stderr diagnostic\n' + 'native stderr detail\n'.repeat(1_000);
+  await writeGradleFixture([
+    `process.stdout.write(${JSON.stringify(stdout)});`,
+    `process.stderr.write(${JSON.stringify(stderr)});`,
+    'process.exitCode = 23;',
+  ]);
+
+  const result = await runCompile(['compile:android', '--dev'], {
+    TMPDIR: logRoot,
+    TMP: logRoot,
+    TEMP: logRoot,
+  });
+  expect(result.exitCode).toBe(23);
+  expect(result.stdout).toBe('');
+  expect(result.stderr).toContain('Gradle failed with exit code 23');
+  expect(result.stderr).not.toContain('early native stdout diagnostic');
+  expect(result.stderr).not.toContain('early native stderr diagnostic');
+  expect(result.stderr).not.toMatch(/\n\s+at /);
+
+  const logFilePath = result.stderr.match(/^Full native output saved to (.+)$/m)?.[1];
+  if (!logFilePath) throw new Error(`Compile did not report the native log path: ${result.stderr}`);
+  expect(path.isAbsolute(logFilePath)).toBe(true);
+  expect((await fs.realpath(logFilePath)).startsWith(logRoot + path.sep)).toBe(true);
+  const output = await fs.readFile(logFilePath, 'utf8');
+  expect(output).toContain(stdout);
+  expect(output).toContain(stderr);
 });
 
 itNotWindows.each([
@@ -529,31 +612,32 @@ async function writeAdbFixture(
   return { env: { ANDROID_HOME: sdkRoot, ANDROID_SDK_ROOT: sdkRoot }, commandsPath };
 }
 
-async function writeApkFixture(name: string, abis: string[]) {
-  const contents = path.join(projectRoot, `${name}.contents`);
-  for (const abi of abis) {
-    const libraryDirectory = path.join(contents, 'lib', abi);
-    await fs.mkdir(libraryDirectory, { recursive: true });
-    await fs.writeFile(path.join(libraryDirectory, 'libfixture.so'), 'native library fixture');
-  }
+async function writeApkFixture(name: string) {
   const artifact = path.join(projectRoot, name);
-  const jar = process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, 'bin', 'jar') : 'jar';
-  await execa(jar, ['cf', artifact, '-C', contents, '.']);
+  await fs.writeFile(artifact, 'artifact fixture returned by Gradle');
   return artifact;
 }
 
 async function writeDeviceGradleFixture(
   artifacts: string[],
-  task = 'compileAndroidDevelopmentApk'
+  {
+    task = 'compileAndroidDevelopmentApk',
+    expectedArchitectures = [],
+    failure,
+  }: { task?: string; expectedArchitectures?: string[]; failure?: string } = {}
 ) {
   const abiPath = path.join(projectRoot, 'gradle-abi.txt');
   await writeGradleFixture([
     'const fs = require("node:fs");',
     `if (process.argv[2] !== ${JSON.stringify(task)}) throw new Error("Unexpected Gradle task: " + process.argv[2]);`,
+    `if ((process.env.COMPILE_ANDROID_EXPECTED_ARCHITECTURES ?? "") !== ${JSON.stringify(expectedArchitectures.join(','))}) throw new Error("Unexpected architecture constraint");`,
     'const options = process.env.GRADLE_OPTS ?? "";',
     'const abi = [...options.matchAll(/(?:^|\\s)-Dorg\\.gradle\\.project\\.android\\.injected\\.build\\.abi=([^\\s]+)/g)].at(-1)?.[1];',
     `fs.writeFileSync(${JSON.stringify(abiPath)}, abi ?? "<unset>");`,
     `fs.writeFileSync(${JSON.stringify(path.join(projectRoot, 'gradle-options.txt'))}, options);`,
+    ...(failure === undefined
+      ? []
+      : [`console.error(${JSON.stringify(failure)}); process.exit(1);`]),
     `fs.writeFileSync(process.env.COMPILE_ANDROID_REPORT, ${JSON.stringify(JSON.stringify({ paths: artifacts }))});`,
   ]);
   return abiPath;

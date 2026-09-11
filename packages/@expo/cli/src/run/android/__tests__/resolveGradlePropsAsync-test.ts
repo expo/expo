@@ -19,7 +19,7 @@ describe(resolveGradlePropsAsync, () => {
   });
 
   it.each([undefined, 'debug', 'Release', 'freeDebug', 'paidRelease', 'firstSecondThird'])(
-    'builds all architectures when requested for %s',
+    'uses Gradle architecture defaults when allArch is enabled for %s',
     async (variant) => {
       expect(await resolveGradlePropsAsync({ variant, allArch: true }, testDevice)).toEqual({
         appName: 'app',
@@ -43,7 +43,7 @@ describe(resolveGradlePropsAsync, () => {
   );
 
   it.each(['release', 'Release', 'paidRelease', 'preview'])(
-    'builds all architectures for %s',
+    'uses Gradle architecture defaults for %s',
     async (variant) => {
       expect(await resolveGradlePropsAsync({ variant }, testDevice)).toEqual({
         appName: 'app',

@@ -245,7 +245,7 @@ describe(resolveCompileRequest, () => {
     );
   });
 
-  it('leaves a relative output directory for resolution against the project root', () => {
+  it('keeps relative output directories unchanged', () => {
     expect(
       parseRequest(['./my-project', '--dev', '--output-dir', '../artifacts with spaces'], 'android')
     ).toMatchObject({

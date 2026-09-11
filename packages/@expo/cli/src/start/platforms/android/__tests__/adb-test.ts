@@ -4,6 +4,7 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 
+import { env } from '../../../../utils/env';
 import { CommandError } from '../../../../utils/errors';
 import { ora } from '../../../../utils/ora';
 import type { ADBServer } from '../ADBServer';
@@ -17,6 +18,7 @@ import {
   isBootAnimationCompleteAsync,
   isDeviceBootedAsync,
   isPackageInstalledAsync,
+  installAsync,
   launchActivityAsync,
   sanitizeAdbDeviceName,
   waitForAttachedDevicesAsync,
@@ -69,6 +71,21 @@ const getServer = () => jest.mocked(getServerBase());
 const device = asDevice({ name: 'Pixel 5', pid: '123' });
 
 const deviceListResult = (stdout: string) => stdout;
+
+describe(installAsync, () => {
+  it('allows test-only APKs and preserves the device, user, and cancellation signal', async () => {
+    const signal = new AbortController().signal;
+    const filePath = '/build output/app-debug.apk';
+    getServer().runDeviceMutationAsync.mockResolvedValueOnce('Success');
+
+    await expect(installAsync(device, { filePath }, signal)).resolves.toBe('Success');
+    expect(getServer().runDeviceMutationAsync).toHaveBeenCalledWith(
+      ['-s', '123', 'install', '-r', '-d', '-t', '--user', env.EXPO_ADB_USER, filePath],
+      'app install',
+      signal
+    );
+  });
+});
 
 describe(openUrlAsync, () => {
   it(`quotes the url`, async () => {

@@ -120,7 +120,7 @@ it('keeps eager production bundling and the selected variant', async () => {
   );
 });
 
-it('keeps Gradle installation for APK sets that need native device selection', async () => {
+it('uses Gradle to install when no APK is selected', async () => {
   jest.mocked(resolveInstallApkPathAsync).mockResolvedValueOnce(null);
   await runAndroidAsync('/', {});
   expect(installAsync).toHaveBeenCalledWith('/android', {

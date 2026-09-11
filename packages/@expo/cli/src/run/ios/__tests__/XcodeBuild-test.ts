@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
-import { buildIos, CompileError, runProcess } from '@ramonclaudio/compile';
+import { buildIos, CompileError } from '@ramonclaudio/compile';
 import type { NativeBuildOptions, ProcessRunner } from '@ramonclaudio/compile';
 import { spawn } from 'child_process';
 import { vol } from 'memfs';
@@ -22,14 +22,15 @@ import {
 import type { BuildProps } from '../XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from '../codeSigning/configureCodeSigning';
 import { simulatorBuildRequiresCodeSigning } from '../codeSigning/simulatorCodeSigning';
+import { runXcodeProcessAsync } from '../runXcodeProcess';
 
 jest.mock('../codeSigning/configureCodeSigning');
 jest.mock('../codeSigning/simulatorCodeSigning');
+jest.mock('../runXcodeProcess');
 jest.mock('../../../log');
 jest.mock('@ramonclaudio/compile', () => ({
   ...jest.requireActual('@ramonclaudio/compile'),
   buildIos: jest.fn(),
-  runProcess: jest.fn(),
 }));
 
 const fs = jest.requireActual('fs') as typeof import('fs');
@@ -218,6 +219,7 @@ describe(buildAsync, () => {
   beforeEach(() => {
     vol.fromJSON({ '/path/to/project/package.json': '{}' });
     jest.mocked(buildIos).mockReset().mockResolvedValue(['/built/My App.app']);
+    jest.mocked(runXcodeProcessAsync).mockReset();
   });
   afterEach(() => {
     vol.reset();
@@ -249,14 +251,14 @@ describe(buildAsync, () => {
     ]);
   });
 
-  it('delegates metadata capture to the package process runner', async () => {
+  it('captures metadata with the attached Xcode process runner', async () => {
     const metadataOptions = {
       cwd: baseProps.projectRoot,
       env: { NODE_ENV: 'development' },
       outputMode: 'capture',
       signal: undefined,
     } as const;
-    jest.mocked(runProcess).mockResolvedValueOnce({
+    jest.mocked(runXcodeProcessAsync).mockResolvedValueOnce({
       status: 'exited',
       exitCode: 0,
       stdout: '[]',
@@ -273,13 +275,101 @@ describe(buildAsync, () => {
       return ['/built/My App.app'];
     });
     await buildAsync(baseProps);
-    expect(runProcess).toHaveBeenCalledWith(
+    expect(runXcodeProcessAsync).toHaveBeenCalledWith(
       '/usr/bin/xcrun',
       ['xcodebuild', '-showBuildSettings', '-json'],
       metadataOptions
     );
     expect(spawn).not.toHaveBeenCalled();
   });
+
+  it('lets Compile report malformed metadata before resolving the runnable', async () => {
+    jest.mocked(runXcodeProcessAsync).mockResolvedValueOnce({
+      status: 'exited',
+      exitCode: 0,
+      stdout: 'invalid JSON',
+      stderr: '',
+    });
+    const metadataError = new CompileError('Xcode build settings returned invalid JSON.');
+    jest.mocked(buildIos).mockImplementationOnce(async (request, options) => {
+      await getRunner(options)('/usr/bin/xcrun', ['xcodebuild', '-showBuildSettings', '-json'], {
+        cwd: request.cwd,
+        env: options?.env,
+        outputMode: 'capture',
+        signal: undefined,
+      });
+      throw metadataError;
+    });
+    await expect(buildAsync(baseProps)).rejects.toMatchObject({
+      code: 'XCODE_BUILD',
+      message: metadataError.message,
+      cause: metadataError,
+    });
+  });
+
+  it.each(['Debug', 'Release'] as const)(
+    'selects the runnable using captured %s build settings when product names change',
+    async (configuration) => {
+      const projectPath = '/path/to/project/ios/MyApp.xcodeproj';
+      const appPath = `/built/MyApp-${configuration}.app`;
+      vol.fromJSON({
+        [`${projectPath}/project.pbxproj`]: `{
+          objects = {
+/* Begin PBXNativeTarget section */
+            A10000000000000000000001 = { isa = PBXNativeTarget; name = MyApp; };
+/* End PBXNativeTarget section */
+          };
+        }
+`,
+        '/path/to/project/ios/MyApp.xcworkspace/xcshareddata/xcschemes/MyApp.xcscheme': `
+          <Scheme version="1.3">
+            <LaunchAction>
+              <BuildableProductRunnable>
+                <BuildableReference
+                  BuildableName="MyApp.app"
+                  BlueprintName="CachedTargetName"
+                  BlueprintIdentifier="A10000000000000000000001"
+                  ReferencedContainer="container:MyApp.xcodeproj"/>
+              </BuildableProductRunnable>
+            </LaunchAction>
+          </Scheme>`,
+      });
+      jest.mocked(runXcodeProcessAsync).mockResolvedValueOnce({
+        status: 'exited',
+        exitCode: 0,
+        stdout: JSON.stringify([
+          {
+            target: 'Clip',
+            buildSettings: {
+              PROJECT_FILE_PATH: projectPath,
+              TARGET_BUILD_DIR: '/built',
+              WRAPPER_NAME: 'Clip.app',
+            },
+          },
+          {
+            target: 'MyApp',
+            buildSettings: {
+              PROJECT_FILE_PATH: projectPath,
+              TARGET_BUILD_DIR: '/built',
+              WRAPPER_NAME: `MyApp-${configuration}.app`,
+            },
+          },
+        ]),
+        stderr: '',
+      });
+      jest.mocked(buildIos).mockImplementationOnce(async (request, options) => {
+        await getRunner(options)(
+          '/usr/bin/xcrun',
+          ['xcodebuild', '-configuration', request.configuration, '-showBuildSettings', '-json'],
+          { cwd: request.cwd, env: options?.env, outputMode: 'capture', signal: undefined }
+        );
+        return ['/built/Clip.app', appPath];
+      });
+
+      await expect(buildAsync({ ...baseProps, configuration })).resolves.toBe(appPath);
+      expect(runXcodeProcessAsync).toHaveBeenCalledTimes(1);
+    }
+  );
 
   it('keeps native build formatting and full build logs', async () => {
     mockCompileBuild();
