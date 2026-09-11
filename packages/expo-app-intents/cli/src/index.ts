@@ -7,6 +7,7 @@ type InitCommandOptions = {
   dir?: string;
   directory?: string;
   examples?: string[];
+  visualIntelligence?: boolean;
 };
 
 const TEMPLATES_DIRECTORY_NAME = 'templates';
@@ -29,15 +30,29 @@ export function isInteractive(): boolean {
   return true;
 }
 
+/** Printed before the examples are picked, since it says what picking one gets you. */
+function printScaffoldIntro(directory: string): void {
+  console.log(
+    `App Intents are declared in Swift, compiled into your app target. expo-app-intents\n` +
+      `scaffolds example Swift into ${directory}/ and hands invocations to JavaScript.\n`
+  );
+}
+
 async function runInitCommand(options: InitCommandOptions): Promise<void> {
   const interactive = isInteractive();
   const directory = normalizeDirectory(options.directory ?? options.dir);
-  const examples = await resolveExamplesAsync(interactive, options.examples);
+  printScaffoldIntro(directory);
+  const { examples, visualIntelligence } = await resolveExamplesAsync(
+    interactive,
+    options.examples,
+    options.visualIntelligence ?? false
+  );
 
   await runInit({
     projectRoot: process.cwd(),
     directory,
     examples,
+    visualIntelligence,
     templatesDir:
       process.env.EXPO_APP_INTENTS_TEMPLATES_DIR ??
       path.join(__dirname, '..', '..', TEMPLATES_DIRECTORY_NAME),
@@ -55,7 +70,12 @@ program
   .option('--directory <directory>', 'Alias for --dir.')
   .option(
     '--examples <examples...>',
-    'Examples to include. Use "all", or choose any of: minimal, counter, restaurant, mail.'
+    'Example native code to scaffold. Use "all", or choose any of: minimal, counter, ' +
+      'restaurant, mail.'
+  )
+  .option(
+    '--visual-intelligence',
+    'Extend the mail example with Spotlight indexing, a Transferable export, and an open intent.'
   )
   .action(runInitCommand);
 

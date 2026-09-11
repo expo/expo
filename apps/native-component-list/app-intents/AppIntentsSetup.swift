@@ -8,6 +8,10 @@ final class AppIntentsSetup: Module {
     Name("AppIntentsSetup")
 
     OnCreate {
+      if #available(iOS 18.0, *) {
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
+      }
+
       Task {
         await AppIntentDispatcher.shared.setShortcutsRefreshHandler {
           AppShortcuts.updateAppShortcutParameters()
