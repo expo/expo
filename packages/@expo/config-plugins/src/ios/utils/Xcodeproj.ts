@@ -56,31 +56,30 @@ export function resolvePathOrProject(
   return projectRootOrProject;
 }
 
+const NEITHER_LETTER_NOR_NUMBER = /[^\p{L}\p{N}]+/gu;
+const COMBINING_MARKS = /\p{M}+/gu;
+const NOT_ASCII_ALPHANUMERIC = /[\W_]+/g;
+
 // TODO: come up with a better solution for using app.json expo.name in various places
+/**
+ * Returns an ASCII identifier for `name`, used as the Xcode project and target name.
+ * Symbols carry no name information and are dropped ('A & B' -> 'AB', 'Expo®' -> 'Expo').
+ * Letters keep their base form ('Árbók' -> 'Arbok', 'Æøå' -> 'AEoa', 'Ǉubljana' -> 'LJubljana').
+ * A name with no usable letters falls back to a slugify of the whole name
+ * ('♥' -> 'love'), then to 'app'.
+ */
 export function sanitizedName(name: string) {
-  // Symbols carry no name information: drop them so 'A & B' stays 'AB' and 'Expo®'
-  // stays 'Expo'. Then strip diacritics via NFKD before slugify, because slugify
-  // deletes letters absent from its charmap ('Ċ' would vanish instead of becoming
-  // 'C'). NFKD also decomposes compatibility letters and numbers ('ﬁ' becomes 'fi',
-  // 'Ǉ' becomes 'LJ', fullwidth 'Ｅ' becomes 'E'); symbols like '™' are already
-  // dropped, so they do not turn into letters. slugify then transliterates letters
-  // that NFKD cannot decompose (ø, æ, ł, ß). Symbol-only names fall back to a
-  // slugify of the full name ('♥' becomes 'love'), then to the name `app`.
+  // NFKD before slugify, or letters are lost: 'Ċ' decomposes to 'C' + a combining mark
+  // that the next line drops, while slugify deletes it outright.
   const lettersAndNumbers = name
-    .replace(/[^\p{L}\p{N}]+/gu, '')
+    .replace(NEITHER_LETTER_NOR_NUMBER, '')
     .normalize('NFKD')
-    .replace(/\p{M}+/gu, '');
-  return (
-    sanitizedNameForProjects(slugify(lettersAndNumbers)) ||
-    sanitizedNameForProjects(slugify(name)) ||
-    'app'
-  );
+    .replace(COMBINING_MARKS, '');
+  return toAsciiIdentifier(slugify(lettersAndNumbers)) || toAsciiIdentifier(slugify(name)) || 'app';
 }
 
-// Normalize before stripping so diacritics decompose into combining marks that
-// `\W` removes, keeping the base letters ("Árbók" -> "Arbok", not "rbk").
-function sanitizedNameForProjects(name: string) {
-  return name.normalize('NFKD').replace(/[\W_]+/g, '');
+function toAsciiIdentifier(name: string) {
+  return name.replace(NOT_ASCII_ALPHANUMERIC, '');
 }
 
 // TODO: it's silly and kind of fragile that we look at app config to determine

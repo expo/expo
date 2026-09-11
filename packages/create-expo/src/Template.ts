@@ -303,6 +303,17 @@ export async function getTemplateFilesToRenameAsync({
   });
 }
 
+/**
+ * Substitutes the template's placeholder app name inside the given files. Only file
+ * contents are rewritten, and only three tokens: `Hello App Display Name`, `HelloWorld`
+ * and `helloworld`.
+ *
+ * File and directory names are renamed separately during template extraction, from the
+ * same `sanitizedName` call.
+ *
+ * What this writes is final: unlike `expo prebuild`, `create-expo` runs no config mods
+ * that would rewrite `app_name` afterwards.
+ */
 export async function renameTemplateAppNameAsync({
   cwd,
   name,
@@ -338,13 +349,8 @@ export async function renameTemplateAppNameAsync({
       debug(`Renaming app name in file: ${absoluteFilePath}`);
 
       const extension = path.extname(file);
-      // Escaping applies only to the display name; the sanitized project
-      // identifiers derive from the raw name so they match across all files.
-      // `.xml` files in the rename config are Android resources; `.plist` is
-      // generic XML.
-      // This is the final output here: unlike `expo prebuild`, `create-expo`
-      // runs no config mods that would rewrite `app_name` afterwards.
-      const safeName =
+      // `.xml` files in the rename config are Android resources; `.plist` is generic XML.
+      const escapedDisplayName =
         extension === '.xml'
           ? escapeAndroidResourceValue(name)
           : extension === '.plist'
@@ -353,7 +359,7 @@ export async function renameTemplateAppNameAsync({
 
       try {
         const replacement = contents
-          .replace(/Hello App Display Name/g, () => safeName)
+          .replace(/Hello App Display Name/g, () => escapedDisplayName)
           .replace(/HelloWorld/g, sanitizedName(name))
           .replace(/helloworld/g, sanitizedName(name).toLowerCase());
 
