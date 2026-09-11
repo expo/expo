@@ -56,8 +56,8 @@ describe(getDefaultConfig, () => {
         process.env.EXPO_METRO_CACHE_RESTORE_DIR = restoredRoot;
       }
       const stores = getDefaultConfig(projectRoot).cacheStores;
-      if (!Array.isArray(stores)) {
-        throw new Error('Expected an array of cache stores');
+      if (!Array.isArray(stores) || !stores[0]) {
+        throw new Error('Expected a non-empty array of cache stores');
       }
       expect(stores).toHaveLength(1);
       expect(stores[0]).toBeInstanceOf(FileStore);
@@ -76,8 +76,8 @@ describe(getDefaultConfig, () => {
     const value = Buffer.from('module');
     await fileStore.set(key, value);
     const stores = getDefaultConfig(projectRoot).cacheStores;
-    if (!Array.isArray(stores)) {
-      throw new Error('Expected an array of cache stores');
+    if (!Array.isArray(stores) || !stores[0]) {
+      throw new Error('Expected a non-empty array of cache stores');
     }
     expect(stores).toHaveLength(1);
     expect(stores[0]).toBeInstanceOf(FileStore);
