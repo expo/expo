@@ -1,5 +1,7 @@
 import { Cache } from '@expo/metro/metro-cache';
 import { vol } from 'memfs';
+import os from 'os';
+import path from 'path';
 
 import { getDefaultConfig, createStableModuleIdFactory } from '../ExpoMetroConfig';
 import { FileStore } from '../binary-file-store';
@@ -47,13 +49,43 @@ describe(getDefaultConfig, () => {
     expect(Array.isArray(stores) && stores[0]).toBeInstanceOf(FileStore);
   });
 
-  it.each(['EXPO_METRO_CACHE_RESTORE_DIR', 'EXPO_METRO_CACHE_OUTPUT_DIR'])(
-    'rejects partial configuration with only %s set',
-    (name) => {
-      process.env[name] = '/cache';
-      expect(() => getDefaultConfig(projectRoot)).toThrow('must be set together');
+  it.each([undefined, '/cache/restored'])(
+    'uses the default directory without output, with restored=%s',
+    async (restoredRoot) => {
+      if (restoredRoot) {
+        process.env.EXPO_METRO_CACHE_RESTORE_DIR = restoredRoot;
+      }
+      const stores = getDefaultConfig(projectRoot).cacheStores;
+      if (!Array.isArray(stores)) {
+        throw new Error('Expected an array of cache stores');
+      }
+      expect(stores).toHaveLength(1);
+      expect(stores[0]).toBeInstanceOf(FileStore);
+      const key = Buffer.from('aabb', 'hex');
+      const value = Buffer.from('module');
+      await stores[0].set(key, value);
+      const defaultStore = new FileStore({ root: path.join(os.tmpdir(), 'metro-cache') });
+      expect(await defaultStore.get(key)).toEqual(value);
     }
   );
+
+  it('uses output alone for regular file store reads and writes', async () => {
+    process.env.EXPO_METRO_CACHE_OUTPUT_DIR = '/cache/custom';
+    const fileStore = new FileStore({ root: '/cache/custom' });
+    const key = Buffer.from('aabb', 'hex');
+    const value = Buffer.from('module');
+    await fileStore.set(key, value);
+    const stores = getDefaultConfig(projectRoot).cacheStores;
+    if (!Array.isArray(stores)) {
+      throw new Error('Expected an array of cache stores');
+    }
+    expect(stores).toHaveLength(1);
+    expect(stores[0]).toBeInstanceOf(FileStore);
+    expect(await stores[0].get(key)).toEqual(value);
+    const updated = Buffer.from('updated module');
+    await stores[0].set(key, updated);
+    expect(await fileStore.get(key)).toEqual(updated);
+  });
 
   it('collects restored hits and new transforms without unused restored entries', async () => {
     process.env.EXPO_METRO_CACHE_RESTORE_DIR = '/cache/restored';

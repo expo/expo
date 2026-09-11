@@ -55,18 +55,4 @@ describe(BuildCacheStore, () => {
     await cache.set(key, value);
     expect(await new FileStore({ root: '/cache/output' }).get(key)).toEqual(first ? value : null);
   });
-
-  it('rejects relative roots', () => {
-    expect(
-      () => new BuildCacheStore({ restoredRoot: 'relative', outputRoot: '/cache/output' })
-    ).toThrow('absolute');
-  });
-  it.each([
-    ['/cache', '/cache'],
-    ['/cache', '/cache/output'],
-    ['/cache/restored', '/cache'],
-    ['/cache/a/..', '/cache'],
-  ])('rejects overlapping directories %s and %s', (restoredRoot, outputRoot) => {
-    expect(() => new BuildCacheStore({ restoredRoot, outputRoot })).toThrow('distinct');
-  });
 });

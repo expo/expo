@@ -284,11 +284,6 @@ export function getDefaultConfig(
 
   const restoredRoot = env.EXPO_METRO_CACHE_RESTORE_DIR;
   const outputRoot = env.EXPO_METRO_CACHE_OUTPUT_DIR;
-  if (!!restoredRoot !== !!outputRoot) {
-    throw new Error(
-      'EXPO_METRO_CACHE_RESTORE_DIR and EXPO_METRO_CACHE_OUTPUT_DIR must be set together'
-    );
-  }
   // The build runner supplies separate absolute directories and starts each job with
   // an empty output directory. Keep output across Metro invocations in the same job.
   // After bundling processes exit, archive only output to exclude unused restored entries.
@@ -296,7 +291,7 @@ export function getDefaultConfig(
   const cacheStores =
     restoredRoot && outputRoot
       ? [new BuildCacheStore<any>({ restoredRoot, outputRoot })]
-      : [new FileStore<any>({ root: path.join(os.tmpdir(), 'metro-cache') })];
+      : [new FileStore<any>({ root: outputRoot || path.join(os.tmpdir(), 'metro-cache') })];
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
