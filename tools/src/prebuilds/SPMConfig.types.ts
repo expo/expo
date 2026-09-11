@@ -91,7 +91,9 @@ export interface SourceTarget {
   headerPattern?: string;
   /** Names of other targets this target depends on */
   dependencies?: string[];
-  /** Paths to exclude from compilation */
+  /** Paths to exclude from compilation. Any `Tests` directory is always excluded (glob
+   * `**\/Tests\/**`), and the generated `.swiftinterface` files are checked for test-only
+   * imports such as `Testing`. */
   exclude?: string[];
   /** Header search paths relative to the target path */
   includeDirectories?: string[];

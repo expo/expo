@@ -20,6 +20,7 @@ import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { assertSafeSPMIdentifier } from './SPMIdentifier';
+import { findTestOnlyImports } from './SwiftInterfaceChecks';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -1308,6 +1309,19 @@ const copySwiftModuleInterfacesAsync = async (
     // Post-process .swiftinterface files to fix internal module references
     if (file.endsWith('.swiftinterface')) {
       await fixSwiftInterfaceModuleReferencesAsync(destFile, spmConfig);
+
+      const testOnlyImports = findTestOnlyImports(await fs.readFile(destFile, 'utf8'));
+      if (testOnlyImports.length > 0) {
+        spinner.fail(`Test-only imports in ${product.name}.swiftinterface (${slice})`);
+        throw new Error(
+          `The ${product.name}.swiftinterface for slice ${slice} imports test-only modules ` +
+            `(${testOnlyImports.join(', ')}), so every app linking this prebuilt framework would fail ` +
+            `with "unable to resolve module dependency: Testing". Unit tests were compiled into the ` +
+            `framework — usually a \`Tests/\` directory outside the pipeline's default exclusion, or a ` +
+            `non-test source importing Testing. Move test sources under \`Tests/\`, or add the directory ` +
+            `to the target's \`exclude\` in spm.config.json, then rebuild.`
+        );
+      }
     }
   }
 
