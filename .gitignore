@@ -10,6 +10,7 @@ bare-apps
 # Node
 node_modules
 .expo-prebuild
+.expo-prebuild-android
 npm-debug.log
 yarn-error.log
 
@@ -136,6 +137,7 @@ docs/pages/versions/*/react-native/*.diff
 
 # Prebuilds
 /packages/**/prebuilds/
+/packages/**/local-maven-repo/
 /packages/**/xcframeworks/
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
