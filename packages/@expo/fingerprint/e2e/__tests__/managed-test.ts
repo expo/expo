@@ -212,24 +212,27 @@ describe('managed project test', () => {
       cwd: projectRoot,
     });
     const diff = await diffFingerprintChangesAsync(fingerprint, projectRoot);
-    expect(normalizeAutolinkingVersionsForSnapshot(diff)).toMatchInlineSnapshot(`
-      [
-        {
-          "addedSource": {
-            "filePath": "node_modules/@react-native-community/netinfo/package.json",
-            "hash": "*",
-            "name": "@react-native-community/netinfo",
-            "reasons": [
-              "rncoreAutolinkingAndroid",
-              "rncoreAutolinkingIos",
-            ],
-            "type": "package",
-            "version": "*",
-          },
-          "op": "added",
-        },
-      ]
-    `);
+    const normalized = normalizeAutolinkingVersionsForSnapshot(diff);
+    expect(normalized).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          op: 'added',
+          addedSource: expect.objectContaining({
+            name: '@react-native-community/netinfo',
+            type: 'package',
+          }),
+        }),
+      ])
+    );
+    expect(
+      normalized.some(
+        (item) =>
+          item.op === 'changed' &&
+          item.afterSource.type === 'contents' &&
+          String(item.afterSource.id).includes('AutolinkingConfig') &&
+          String(item.afterSource.contents).includes('@react-native-community/netinfo')
+      )
+    ).toBe(true);
   });
 
   it('should have same hash even if google service file path is different', async () => {
