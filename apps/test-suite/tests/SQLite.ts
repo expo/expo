@@ -97,6 +97,13 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       await db.closeAsync();
     });
 
+    it('should enable SQLITE_ENABLE_API_ARMOR', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      const rows = await db.getAllAsync<{ compile_options: string }>('PRAGMA compile_options');
+      expect(rows.map((row) => row.compile_options)).toContain('ENABLE_API_ARMOR');
+      await db.closeAsync();
+    });
+
     it('should support utf-8', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(
@@ -445,6 +452,51 @@ CREATE TABLE IF NOT EXISTS posts (post_id INTEGER PRIMARY KEY NOT NULL, content 
       expect((await db.getAllAsync('SELECT * FROM posts')).length).toBe(0);
 
       await db.runAsync('PRAGMA foreign_keys = OFF');
+      await db.closeAsync();
+    });
+
+    it('should run a whole script with comments via execAsync', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+-- set up the table
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+/* seed it */
+INSERT INTO users (user_id, name) VALUES (1, 'Tim Duncan');
+-- done
+`);
+      const rows = await db.getAllAsync('SELECT * FROM users');
+      expect(rows.length).toBe(1);
+      await db.closeAsync();
+    });
+
+    it('should prepare a statement that follows a comment', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+      const statement = await db.prepareAsync('-- pick everything\nSELECT * FROM users');
+      expect(await statement.getColumnNamesAsync()).toEqual(['user_id', 'name']);
+      await statement.finalizeAsync();
+      await db.closeAsync();
+    });
+
+    it('should keep the database usable after empty SQL', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+      // sqlite3_prepare_v2 returns SQLITE_OK with a null statement for these.
+      // Without SQLITE_ENABLE_API_ARMOR, run() SIGSEGVs in clear_bindings.
+      for (const source of ['\n', '   ', '-- nothing to run', ';']) {
+        try {
+          await db.runAsync(source);
+        } catch {}
+      }
+      await db.runAsync("INSERT INTO users (name) VALUES ('ok')");
+      expect((await db.getAllAsync('SELECT * FROM users')).length).toBe(1);
       await db.closeAsync();
     });
 

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Built the vendored SQLite with `SQLITE_ENABLE_API_ARMOR` so misuse returns `SQLITE_MISUSE` instead of crashing. ([#49068](https://github.com/expo/expo/pull/49068) by [@kudo](https://github.com/kudo))
+
 ## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
