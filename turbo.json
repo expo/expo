@@ -77,6 +77,7 @@
         "!android/**/build/**",
         "!android/**/.gradle/**",
         "!android/**/.cxx/**",
+        "node_modules/react-native/package.json",
         "$TURBO_ROOT$/tools/android-precompile/**",
         "$TURBO_ROOT$/tools/src/prebuilds/**"
       ],
