@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove the module class declaration from `expo-module.config.json`; the `@ExpoModule`-annotated class is now detected automatically by autolinking. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
 - [iOS] Derive the prebuilt XCFramework's target layout from a checked-in `Package.swift` instead of generating it at build time. The built artifact is unchanged. ([#50417](https://github.com/expo/expo/pull/50417) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.1 — 2026-09-14
