@@ -1,5 +1,12 @@
 import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
+import Git from '../../Git';
+import logger from '../../Logger';
+import { Task } from '../../TasksRunner';
+import { runWithSpinner } from '../../Utils';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { addTemplateTarball } from './addTemplateTarball';
 import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
@@ -25,11 +32,6 @@ import { updatePackageVersions } from './updatePackageVersions';
 import { updateProjectTemplates } from './updateProjectTemplates';
 import { updateVersionsEndpoint } from './updateVersionsEndpoint';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
-import Git from '../../Git';
-import logger from '../../Logger';
-import { Task } from '../../TasksRunner';
-import { runWithSpinner } from '../../Utils';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, yellow } = chalk;
 
@@ -41,7 +43,7 @@ const cleanWorkingTree = new Task<TaskArgs>(
     name: 'cleanWorkingTree',
     dependsOn: [],
   },
-  async () => {
+  async (parcels: Parcel[]) => {
     await runWithSpinner(
       'Cleaning up the working tree',
       async () => {
@@ -54,17 +56,19 @@ const cleanWorkingTree = new Task<TaskArgs>(
             'pnpm-lock.yaml',
           ],
         });
-        // Remove local repositories.
-        await Git.cleanAsync({
-          recursive: true,
-          force: true,
-          paths: ['packages/**/local-maven-repo/**'],
-        });
+        // Remove package-root staging directories while retaining their separate Turbo outputs.
+        await Promise.all(
+          parcels.flatMap(({ pkg }) =>
+            ['prebuilds', 'local-maven-repo'].map((directory) =>
+              fs.remove(path.join(pkg.path, directory))
+            )
+          )
+        );
         // Remove tarballs.
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'packages/**/prebuilds/**', 'templates/**/*.tgz'],
+          paths: ['packages/**/*.tgz', 'templates/**/*.tgz'],
         });
       },
       'Cleaned up the working tree'
