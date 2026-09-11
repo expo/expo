@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Migrate the main module to the Expo Modules API 2.0 macros. ([#49894](https://github.com/expo/expo/pull/49894) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
