@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Give `MaterialTopTabBarProps` a real type instead of `any`, so custom top tab bars passed to `tabBar` are type-checked. ([#49885](https://github.com/expo/expo/pull/49885) by [@ahmdshrif](https://github.com/ahmdshrif))
+
 ### 💡 Others
 
 ## 57.0.21 — 2026-09-11
