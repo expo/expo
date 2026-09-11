@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Use scene-aware windows and safe areas for the developer menu, and position its floating button using the window width. ([#48171](https://github.com/expo/expo/pull/48171), [#48317](https://github.com/expo/expo/pull/48317))
+
 ### 💡 Others
 
 ## 57.0.18 — 2026-09-01

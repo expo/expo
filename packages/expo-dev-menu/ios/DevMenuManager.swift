@@ -486,15 +486,13 @@ open class DevMenuManager: NSObject {
       DispatchQueue.main.async {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
-#elseif os(tvOS)
-        self.window?.makeKeyAndVisible()
 #else
+#if !os(tvOS)
         self.updateFABVisibility()
+#endif
 
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-          self.window?.windowScene = windowScene
+          self.window?.windowScene = SceneGeometry.foregroundActiveScene()
         }
         self.window?.makeKeyAndVisible()
 #endif
@@ -603,8 +601,7 @@ open class DevMenuManager: NSObject {
       guard let self else { return }
 
       if self.fabWindow == nil {
-        if let windowScene = UIApplication.shared.connectedScenes
-          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+        if let windowScene = SceneGeometry.foregroundActiveScene() {
           self.setupFABWindowIfNeeded(for: windowScene)
         }
       }
