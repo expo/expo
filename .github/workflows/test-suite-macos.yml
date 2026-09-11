@@ -28,6 +28,7 @@ on:
       - packages/expo-sqlite/**
       - packages/expo-structured-headers/**
       - packages/expo-symbols/**
+      - packages/expo-ui/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
       - packages/expo-web-browser/**
