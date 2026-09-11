@@ -12,8 +12,8 @@ import expo.modules.calendar.next.domain.model.calendar.CalendarAccount
  * them; only the writes the provider would otherwise reject.
  *
  * Writing through this URI also tells the provider that the row is already in sync with the
- * server, so the affected event has to be marked dirty afterwards for the change to be pushed.
- * See [expo.modules.calendar.next.domain.repositories.event.EventRepository.markDirty].
+ * server, so the affected event has to be flagged as dirty for the change to be pushed. See
+ * [expo.modules.calendar.next.domain.repositories.extendedproperty.ExtendedPropertyRepository].
  */
 internal fun Uri.asSyncAdapter(account: CalendarAccount): Uri = buildUpon()
   .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
