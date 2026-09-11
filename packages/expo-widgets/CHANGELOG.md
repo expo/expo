@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Preserve SwiftUI view identity across widget and Live Activity updates so system update animations can run. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
-- [Android] Fix Gradle build failure when no Android widget is configured. ([#50043](https://github.com/expo/expo/pull/50043) by [@keith-kurak](https://github.com/keith-kurak))
+- [Android] Fix Gradle build failure when no Android widget is configured. ([#50038](https://github.com/expo/expo/pull/50038) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 💡 Others
 
