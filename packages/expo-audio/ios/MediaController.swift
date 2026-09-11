@@ -329,7 +329,8 @@ class MediaController {
     }
     remoteCommandTargets.append((remoteCommandCenter.changePlaybackPositionCommand, changePlaybackPositionTarget))
 
-    remoteCommandCenter.skipForwardCommand.preferredIntervals = [10.0]
+    let forwardInterval = options?.seekForwardIntervalSeconds ?? 10.0
+    remoteCommandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: max(forwardInterval, 0.1))]
     let skipForwardTarget = remoteCommandCenter.skipForwardCommand.addTarget { [weak self] event in
       guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {
@@ -344,7 +345,8 @@ class MediaController {
     }
     remoteCommandTargets.append((remoteCommandCenter.skipForwardCommand, skipForwardTarget))
 
-    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [10.0]
+    let backwardInterval = options?.seekBackwardIntervalSeconds ?? 10.0
+    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: max(backwardInterval, 0.1))]
     let skipBackwardTarget = remoteCommandCenter.skipBackwardCommand.addTarget { [weak self] event in
       guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {
