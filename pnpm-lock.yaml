@@ -3514,7 +3514,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.1
       slugify:
-        specifier: ^1.6.8
+        specifier: ^1.6.6
         version: 1.6.8
       update-check:
         specifier: ^1.5.4

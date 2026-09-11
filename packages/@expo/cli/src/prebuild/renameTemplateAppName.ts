@@ -124,6 +124,14 @@ export async function getTemplateFilesToRenameAsync(
   });
 }
 
+/**
+ * Substitutes the template's placeholder app name inside the given files. Only file
+ * contents are rewritten, and only three tokens: `Hello App Display Name`, `HelloWorld`
+ * and `helloworld`.
+ *
+ * File and directory names are renamed separately during template extraction, from the
+ * same `sanitizedName` call.
+ */
 export async function renameTemplateAppNameAsync(
   cwd: string,
   {
@@ -158,16 +166,8 @@ export async function renameTemplateAppNameAsync(
       debugEvent('rename_file', { path: debugEvent.path(absoluteFilePath) });
 
       const extension = path.extname(file);
-      // Escaping applies only to the display name; the sanitized project
-      // identifiers derive from the raw name so they match across all files.
-      // `.xml` files in the rename config are Android resources; `.plist` is
-      // generic XML.
-      // Under `expo prebuild`, `AndroidConfig.Name.withName` later overwrites
-      // `app_name` from the raw config name, escaped by the same
-      // `escapeAndroidString`. This escaping keeps the file valid until the
-      // mods run, and is the final output for custom rename configs and for
-      // `create-expo`, which runs no mods.
-      const safeName =
+      // `.xml` files in the rename config are Android resources; `.plist` is generic XML.
+      const escapedDisplayName =
         extension === '.xml'
           ? escapeAndroidResourceValue(name)
           : extension === '.plist'
@@ -176,7 +176,7 @@ export async function renameTemplateAppNameAsync(
 
       try {
         const replacement = contents
-          .replace(/Hello App Display Name/g, () => safeName)
+          .replace(/Hello App Display Name/g, () => escapedDisplayName)
           .replace(/HelloWorld/g, IOSConfig.XcodeUtils.sanitizedName(name))
           .replace(/helloworld/g, IOSConfig.XcodeUtils.sanitizedName(name).toLowerCase());
 
