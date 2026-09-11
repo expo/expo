@@ -1,6 +1,7 @@
 .DS_Store
 .build
 .DerivedData
+/DerivedData/
 .swiftpm
 
 # Generated module map for the `jsi` Clang module (written by build-xcframework.sh)
