@@ -1,0 +1,56 @@
+---
+title: NavigationSplitView
+description: A SwiftUI NavigationSplitView component for adaptive two- and three-column layouts.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI NavigationSplitView matches the official SwiftUI [NavigationSplitView API](https://developer.apple.com/documentation/swiftui/navigationsplitview). It displays two or three columns on wide screens and collapses to a navigation stack when space is limited.
+
+For file-based routed layouts, use [Expo Router SplitView](/versions/latest/sdk/router/split-view/) instead.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+Pass the leading column to `sidebar`, an optional middle column to `content`, and the trailing detail column as children.
+
+```tsx
+import {
+  Host,
+  List,
+  NavigationSplitView,
+  Text,
+} from '@expo/ui/swift-ui';
+
+export default function MailScreen() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <NavigationSplitView
+        sidebar={
+          <List>
+            <Text>Inbox</Text>
+            <Text>Drafts</Text>
+          </List>
+        }>
+        <Text>Select a mailbox</Text>
+      </NavigationSplitView>
+    </Host>
+  );
+}
+```
+
+Use `columnVisibility` with `onColumnVisibilityChange` to control which columns are visible. Use `preferredCompactColumn` with `onPreferredCompactColumnChange` to control which column appears when the layout collapses.
+
+## API
+
+<APISection
+  packageName="expo-ui/swift-ui/navigationsplitview"
+  apiName="NavigationSplitView"
+/>

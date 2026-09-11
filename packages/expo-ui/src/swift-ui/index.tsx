@@ -28,6 +28,7 @@ export * from './Menu';
 export * from './NavigationDestination';
 export * from './NavigationLink';
 export * from './NavigationStack';
+export * from './NavigationSplitView';
 export * from './Picker';
 export * from './ProgressView';
 export * from './Section';

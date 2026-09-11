@@ -155,6 +155,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'NavigationSplitView component',
+    route: 'ui/navigation-split-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationSplitViewScreen'));
+    },
+  },
+  {
     name: 'Menu component',
     route: 'ui/menu',
     options: {},

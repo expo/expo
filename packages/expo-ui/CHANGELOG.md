@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `NavigationSplitView` component for adaptive two- and three-column layouts.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
