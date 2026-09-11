@@ -282,14 +282,21 @@ export function getDefaultConfig(
 
   const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
-  const cacheRoot = env.EXPO_METRO_CACHE_DIR;
-  // The build runner restores an archive into root/restored and starts each job with
-  // an empty root/output. Keep output across Metro invocations in the same job.
+  const restoredRoot = env.EXPO_METRO_CACHE_RESTORE_DIR;
+  const outputRoot = env.EXPO_METRO_CACHE_OUTPUT_DIR;
+  if (!!restoredRoot !== !!outputRoot) {
+    throw new Error(
+      'EXPO_METRO_CACHE_RESTORE_DIR and EXPO_METRO_CACHE_OUTPUT_DIR must be set together'
+    );
+  }
+  // The build runner supplies separate absolute directories and starts each job with
+  // an empty output directory. Keep output across Metro invocations in the same job.
   // After bundling processes exit, archive only output to exclude unused restored entries.
   // One store keeps these directories together when projects reorder cacheStores.
-  const cacheStores = cacheRoot
-    ? [new BuildCacheStore<any>({ root: cacheRoot })]
-    : [new FileStore<any>({ root: path.join(os.tmpdir(), 'metro-cache') })];
+  const cacheStores =
+    restoredRoot && outputRoot
+      ? [new BuildCacheStore<any>({ restoredRoot, outputRoot })]
+      : [new FileStore<any>({ root: path.join(os.tmpdir(), 'metro-cache') })];
 
   const serverRoot = getMetroServerRoot(projectRoot);
 

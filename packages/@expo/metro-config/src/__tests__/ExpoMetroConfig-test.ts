@@ -24,11 +24,13 @@ function mockProject() {
 }
 describe(getDefaultConfig, () => {
   beforeEach(() => {
-    delete process.env.EXPO_METRO_CACHE_DIR;
+    delete process.env.EXPO_METRO_CACHE_RESTORE_DIR;
+    delete process.env.EXPO_METRO_CACHE_OUTPUT_DIR;
     mockProject();
   });
   afterEach(() => {
-    delete process.env.EXPO_METRO_CACHE_DIR;
+    delete process.env.EXPO_METRO_CACHE_RESTORE_DIR;
+    delete process.env.EXPO_METRO_CACHE_OUTPUT_DIR;
     vol.reset();
   });
   afterAll(() => {
@@ -37,15 +39,25 @@ describe(getDefaultConfig, () => {
 
   it.each([undefined, ''])('keeps the default store with cache root=%s', (root) => {
     if (root !== undefined) {
-      process.env.EXPO_METRO_CACHE_DIR = root;
+      process.env.EXPO_METRO_CACHE_RESTORE_DIR = root;
+      process.env.EXPO_METRO_CACHE_OUTPUT_DIR = root;
     }
     const stores = getDefaultConfig(projectRoot).cacheStores;
     expect(stores).toHaveLength(1);
     expect(Array.isArray(stores) && stores[0]).toBeInstanceOf(FileStore);
   });
 
+  it.each(['EXPO_METRO_CACHE_RESTORE_DIR', 'EXPO_METRO_CACHE_OUTPUT_DIR'])(
+    'rejects partial configuration with only %s set',
+    (name) => {
+      process.env[name] = '/cache';
+      expect(() => getDefaultConfig(projectRoot)).toThrow('must be set together');
+    }
+  );
+
   it('collects restored hits and new transforms without unused restored entries', async () => {
-    process.env.EXPO_METRO_CACHE_DIR = '/cache';
+    process.env.EXPO_METRO_CACHE_RESTORE_DIR = '/cache/restored';
+    process.env.EXPO_METRO_CACHE_OUTPUT_DIR = '/cache/output';
     const restored = new FileStore<Buffer>({ root: '/cache/restored' });
     const output = new FileStore<Buffer>({ root: '/cache/output' });
     const reusedKey = Buffer.from('aabb', 'hex');

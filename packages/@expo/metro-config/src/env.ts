@@ -1,9 +1,14 @@
 import { boolish, int, string } from 'getenv';
 
 class Env {
-  /** Absolute parent directory for restored/ and output/ Metro transform caches. */
-  get EXPO_METRO_CACHE_DIR(): string {
-    return string('EXPO_METRO_CACHE_DIR', '');
+  /** Absolute directory containing transforms restored from a previous build. Requires EXPO_METRO_CACHE_OUTPUT_DIR. */
+  get EXPO_METRO_CACHE_RESTORE_DIR(): string {
+    return string('EXPO_METRO_CACHE_RESTORE_DIR', '');
+  }
+
+  /** Absolute directory for transforms used by this build. Requires EXPO_METRO_CACHE_RESTORE_DIR. */
+  get EXPO_METRO_CACHE_OUTPUT_DIR(): string {
+    return string('EXPO_METRO_CACHE_OUTPUT_DIR', '');
   }
 
   /** Enable debug logging */
