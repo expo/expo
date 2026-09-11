@@ -142,11 +142,12 @@ class ExtendedPropertyRepositoryTest {
   // region upsert
 
   @Test
-  fun `given a name and a value, when upsert, then deletes and inserts in one batch through the sync adapter URI`() = runTest {
+  fun `given a name and a value, when upsert, then flags the event, deletes and inserts in one batch`() = runTest {
     // Given
     val authoritySlot = slot<String>()
     val operationsSlot = slot<ArrayList<ContentProviderOperation>>()
     every { contentResolver.applyBatch(capture(authoritySlot), capture(operationsSlot)) } returns arrayOf(
+      ContentProviderResult(1),
       ContentProviderResult(1),
       ContentProviderResult(Uri.parse("content://com.android.calendar/extendedproperties/7"))
     )
@@ -159,17 +160,17 @@ class ExtendedPropertyRepositoryTest {
     )
 
     // Then
-    // The provider applies a batch as one transaction, so the row a concurrent write could have
-    // left behind is gone and the new one is in place without a window between the two.
+    // The provider applies a batch as one transaction, so the event is flagged before the rows it
+    // covers move, the row a concurrent write could have left behind is gone, and the new one is
+    // in place without a window between the two.
     Assert.assertEquals(ExtendedPropertyId(7L), result)
     Assert.assertEquals(CalendarContract.AUTHORITY, authoritySlot.captured)
-    Assert.assertEquals(2, operationsSlot.captured.size)
-    Assert.assertTrue(operationsSlot.captured[0].isDelete)
-    Assert.assertTrue(operationsSlot.captured[1].isInsert)
-    operationsSlot.captured.forEach { operation ->
-      Assert.assertEquals("true", operation.uri.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
-      Assert.assertEquals("user@example.com", operation.uri.getQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME))
-      Assert.assertEquals("com.google", operation.uri.getQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE))
+    Assert.assertEquals(3, operationsSlot.captured.size)
+    assertFlagsTheEvent(operationsSlot.captured.first())
+    Assert.assertTrue(operationsSlot.captured[1].isDelete)
+    Assert.assertTrue(operationsSlot.captured[2].isInsert)
+    operationsSlot.captured.drop(1).forEach { operation ->
+      assertRunsAsSyncAdapter(operation)
     }
   }
 
@@ -205,33 +206,35 @@ class ExtendedPropertyRepositoryTest {
   // region deleteByName
 
   @Test
-  fun `given a name, when deleteByName, then removes every matching row through the sync adapter URI`() = runTest {
+  fun `given a name, when deleteByName, then flags the event and removes every matching row in one batch`() = runTest {
     // Given
-    val uriSlot = slot<Uri>()
-    val whereSlot = slot<String>()
-    val selectionArgsSlot = slot<Array<String>>()
-    every {
-      contentResolver.delete(capture(uriSlot), capture(whereSlot), capture(selectionArgsSlot))
-    } returns 2
+    val operationsSlot = slot<ArrayList<ContentProviderOperation>>()
+    every { contentResolver.applyBatch(any(), capture(operationsSlot)) } returns arrayOf(
+      ContentProviderResult(1),
+      ContentProviderResult(2)
+    )
 
     // When
     val result = repository.deleteByName(EventId(42L), account, "private:x-owner")
 
     // Then
-    // Selecting on the name rather than on a row id removes the duplicates the table allows.
+    // The deletion is what the batch is for, the flag travels with it so the event carries it
+    // before the rows go away.
     Assert.assertTrue(result)
-    Assert.assertEquals("true", uriSlot.captured.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
-    Assert.assertEquals(
-      "${CalendarContract.ExtendedProperties.EVENT_ID} = ? AND ${CalendarContract.ExtendedProperties.NAME} = ?",
-      whereSlot.captured
-    )
-    Assert.assertArrayEquals(arrayOf("42", "private:x-owner"), selectionArgsSlot.captured)
+    Assert.assertEquals(2, operationsSlot.captured.size)
+    assertFlagsTheEvent(operationsSlot.captured.first())
+    val deletion = operationsSlot.captured.last()
+    Assert.assertTrue(deletion.isDelete)
+    assertRunsAsSyncAdapter(deletion)
   }
 
   @Test
   fun `given no matching row, when deleteByName, then returns false`() = runTest {
     // Given
-    every { contentResolver.delete(any(), any(), any()) } returns 0
+    every { contentResolver.applyBatch(any(), any()) } returns arrayOf(
+      ContentProviderResult(1),
+      ContentProviderResult(0)
+    )
 
     // When
     val result = repository.deleteByName(EventId(42L), account, "private:x-owner")
@@ -240,9 +243,36 @@ class ExtendedPropertyRepositoryTest {
     Assert.assertFalse(result)
   }
 
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when deleteByName, then throws PermissionException`() = runTest {
+    // Given
+    every { contentResolver.applyBatch(any(), any()) } throws SecurityException()
+
+    // When / Then
+    repository.deleteByName(EventId(42L), account, "private:x-owner")
+  }
+
   // endregion
 
   // region helpers
+
+  private fun assertFlagsTheEvent(operation: ContentProviderOperation) {
+    // The provider sets `dirty` on any update it does not attribute to a sync adapter, so the
+    // event goes through the plain URI, and `HAS_EXTENDED_PROPERTIES` is what keeps Google's sync
+    // adapter from dropping the rows on the next sync.
+    Assert.assertTrue(operation.isUpdate)
+    Assert.assertEquals("42", operation.uri.lastPathSegment)
+    Assert.assertNull(operation.uri.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
+    val values = requireNotNull(operation.resolveValueBackReferences(emptyArray(), 0))
+    Assert.assertEquals(1, values.size())
+    Assert.assertEquals(1, values.getAsInteger(CalendarContract.Events.HAS_EXTENDED_PROPERTIES))
+  }
+
+  private fun assertRunsAsSyncAdapter(operation: ContentProviderOperation) {
+    Assert.assertEquals("true", operation.uri.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
+    Assert.assertEquals("user@example.com", operation.uri.getQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME))
+    Assert.assertEquals("com.google", operation.uri.getQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE))
+  }
 
   private fun emptyCursor(): Cursor {
     // Empty cursor requires at least one column for MatrixCursor

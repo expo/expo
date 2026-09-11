@@ -117,16 +117,11 @@ class ExpoCalendarEvent(
     val account = requireOwningAccount()
     requireSyncSafeName(name, account)
     extendedPropertyRepository.upsert(eventId, account, extendedPropertyMapper.toInput(name, value))
-    eventRepository.markDirty(eventId)
   }
 
   suspend fun deleteExtendedProperty(name: String): Boolean {
     val account = requireOwningAccount()
-    val deleted = extendedPropertyRepository.deleteByName(eventId, account, name)
-    if (deleted) {
-      eventRepository.markDirty(eventId)
-    }
-    return deleted
+    return extendedPropertyRepository.deleteByName(eventId, account, name)
   }
 
   /**
