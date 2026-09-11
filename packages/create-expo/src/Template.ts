@@ -168,12 +168,42 @@ export async function extractAndPrepareTemplateAppAsync(
   return projectRoot;
 }
 
+// Android resource XML (strings.xml): aapt2 resolves XML entities before its
+// own escape rules, so only &, <, > take entities; the rest (quotes, @, ?,
+// whitespace) needs Android's backslash escapes. The backslash escaping is a
+// copy of `XML.escapeAndroidString` from `@expo/config-plugins`, which this
+// package does not depend on.
+function escapeAndroidResourceValue(original: string): string {
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  const escaped = noGt.replace(/[\n\r\t'"@?\\]/g, (m) => {
+    switch (m) {
+      case '"':
+      case "'":
+      case '@':
+      case '?':
+      case '\\':
+        return '\\' + m;
+      case '\n':
+        return '\\n';
+      case '\r':
+        return '\\r';
+      case '\t':
+        return '\\t';
+      default:
+        throw new Error(`Cannot escape unhandled XML character: ${m}`);
+    }
+  });
+  return escaped.match(/(^\s|\s$)/) ? `"${escaped}"` : escaped;
+}
+
 function escapeXMLCharacters(original: string): string {
-  const noAmps = original.replace('&', '&amp;');
-  const noLt = noAmps.replace('<', '&lt;');
-  const noGt = noLt.replace('>', '&gt;');
-  const noApos = noGt.replace('"', '\\"');
-  return noApos.replace("'", "\\'");
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  const noQuots = noGt.replace(/"/g, '&quot;');
+  return noQuots.replace(/'/g, '&apos;');
 }
 
 /**
@@ -307,15 +337,25 @@ export async function renameTemplateAppNameAsync({
 
       debug(`Renaming app name in file: ${absoluteFilePath}`);
 
-      const safeName = ['.xml', '.plist'].includes(path.extname(file))
-        ? escapeXMLCharacters(name)
-        : name;
+      const extension = path.extname(file);
+      // Escaping applies only to the display name; the sanitized project
+      // identifiers derive from the raw name so they match across all files.
+      // `.xml` files in the rename config are Android resources; `.plist` is
+      // generic XML.
+      // This is the final output here: unlike `expo prebuild`, `create-expo`
+      // runs no config mods that would rewrite `app_name` afterwards.
+      const safeName =
+        extension === '.xml'
+          ? escapeAndroidResourceValue(name)
+          : extension === '.plist'
+            ? escapeXMLCharacters(name)
+            : name;
 
       try {
         const replacement = contents
-          .replace(/Hello App Display Name/g, safeName)
-          .replace(/HelloWorld/g, sanitizedName(safeName))
-          .replace(/helloworld/g, sanitizedName(safeName.toLowerCase()));
+          .replace(/Hello App Display Name/g, () => safeName)
+          .replace(/HelloWorld/g, sanitizedName(name))
+          .replace(/helloworld/g, sanitizedName(name).toLowerCase());
 
         if (replacement === contents) {
           return;
