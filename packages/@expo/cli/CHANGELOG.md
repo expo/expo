@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Note in `expo start --help` that setting `CI=1` turns off file watching and Fast Refresh, and how to run without the interactive UI instead. ([#50843](https://github.com/expo/expo/pull/50843) by [@huntie](https://github.com/huntie))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
