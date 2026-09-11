@@ -36,19 +36,14 @@ internal final class SystemMenuTouchGate: UIGestureRecognizer, UIGestureRecogniz
     the dismiss animation pass through to the app again. `accessibilityViewIsModal` is how UIKit
     marks the container as blocking the content behind it — a semantic signal beside the class name.
    */
-  static func isOpenContextMenuContainer(
-    className: String,
-    isUserInteractionEnabled: Bool,
-    accessibilityViewIsModal: Bool
-  ) -> Bool {
-    return isUserInteractionEnabled && accessibilityViewIsModal && isContextMenuContainerClassName(className)
+  static func isOpenContextMenuContainer(className: String, isUserInteractionEnabled: Bool) -> Bool {
+    return isUserInteractionEnabled && isContextMenuContainerClassName(className)
   }
 
   static func isContextMenuContainer(_ view: UIView) -> Bool {
     return isOpenContextMenuContainer(
       className: NSStringFromClass(type(of: view)),
-      isUserInteractionEnabled: view.isUserInteractionEnabled,
-      accessibilityViewIsModal: view.accessibilityViewIsModal
+      isUserInteractionEnabled: view.isUserInteractionEnabled
     )
   }
 
