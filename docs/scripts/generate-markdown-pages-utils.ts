@@ -378,6 +378,10 @@ export function convertMdxInstructionToMarkdown(
 const DARK_IMAGE_VARIANTS =
   'img[class~="light:hidden"], picture[class~="light:hidden"] img, img[class~="hidden"][class~="dark:block"]';
 
+function escapeHtml(value: string) {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
   // Must run before the button removal below, since labels live in the buttons.
@@ -394,7 +398,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       .each((i, panel) => {
         const label = ownLabels[i];
         if (label) {
-          $(panel).prepend(`<h4>${label}</h4>`);
+          $(panel).prepend(`<h4>${escapeHtml(label)}</h4>`);
         }
       });
   });
@@ -405,7 +409,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $label = $summary.find('[data-text="true"]').first();
     const summaryText = ($label.length ? $label : $summary).text().replace(/\s+/g, ' ').trim();
     if (summaryText) {
-      $summary.replaceWith(`<h4>${summaryText}</h4>`);
+      $summary.replaceWith(`<h4>${escapeHtml(summaryText)}</h4>`);
     } else {
       $summary.remove();
     }
@@ -418,7 +422,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     $summary.find('[data-md="skip"]').remove();
     const headingText = $summary.text().replace(/\s+/g, ' ').trim();
     if (headingText) {
-      $summary.replaceWith(`<h4>${headingText}</h4>`);
+      $summary.replaceWith(`<h4>${escapeHtml(headingText)}</h4>`);
     } else {
       $summary.remove();
     }
@@ -426,7 +430,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const $title = $(title);
       const titleText = $title.text().replace(/\s+/g, ' ').trim();
       if (titleText) {
-        $title.replaceWith(`<h5>${titleText}</h5>`);
+        $title.replaceWith(`<h5>${escapeHtml(titleText)}</h5>`);
       }
     });
     $details.replaceWith($details.contents());
@@ -527,7 +531,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const href = $el.attr('href');
     const text = $el.text().trim();
     if (href && text) {
-      $el.replaceWith(`<p><a href="${href}">${text}</a></p>`);
+      $el.replaceWith(`<p><a href="${href}">${escapeHtml(text)}</a></p>`);
     } else {
       $el.remove();
     }
@@ -564,7 +568,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
     });
     if (platforms.length > 0) {
-      $el.replaceWith('<p>Supported platforms: ' + platforms.join(', ') + '.</p>');
+      $el.replaceWith('<p>Supported platforms: ' + platforms.map(escapeHtml).join(', ') + '.</p>');
     } else {
       $el.remove();
     }
@@ -582,7 +586,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
     const platformText = $el.find('span').last().text().trim();
     if (platformText) {
-      $el.replaceWith(`, ${platformText}`);
+      $el.replaceWith(`, ${escapeHtml(platformText)}`);
     }
   });
   // Fallback: extract platform badges that lack data-md but have the old CSS class pattern
@@ -596,7 +600,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
       const platformText = $el.find('span').last().text().trim();
       if (platformText) {
-        $el.replaceWith(`, ${platformText}`);
+        $el.replaceWith(`, ${escapeHtml(platformText)}`);
       }
     }
   });
@@ -634,8 +638,8 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const title = texts[0];
       const desc = texts.slice(1).join(' — ');
       const replacement = desc
-        ? `<p><a href="${href}">${title}</a> — ${desc}</p>`
-        : `<p><a href="${href}">${title}</a></p>`;
+        ? `<p><a href="${href}">${escapeHtml(title)}</a> — ${escapeHtml(desc)}</p>`
+        : `<p><a href="${href}">${escapeHtml(title)}</a></p>`;
       $a.replaceWith(replacement);
     }
   });
@@ -692,11 +696,6 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       $div.replaceWith(second.html()!);
     }
   });
-
-  // Escape before re-injecting as HTML: cheerio would otherwise parse a generic
-  // like Promise<PermissionResponse> as a tag and lowercase the type name.
-  const escapeHtml = (value: string) =>
-    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   // Convert API returns sections to inline "Returns: type" text.
   main.find('[data-md="api-returns"]').each((_, el) => {
@@ -791,7 +790,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
         if (tag && !knownHtmlTags.has(tag)) {
           const $child = $(child);
           const inner = $child.text();
-          $child.replaceWith(inner ? `&lt;${tag}&gt;${inner}&lt;/${tag}&gt;` : `&lt;${tag}&gt;`);
+          $child.replaceWith(
+            inner ? `&lt;${tag}&gt;${escapeHtml(inner)}&lt;/${tag}&gt;` : `&lt;${tag}&gt;`
+          );
         }
       });
   });
@@ -855,7 +856,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     while (hasBlocks) {
       hasBlocks = false;
       $cell.find('blockquote').each((_, el) => {
-        $(el).replaceWith('%%MD_SEP%%' + $(el).text().trim());
+        $(el).replaceWith('. ' + escapeHtml($(el).text().trim()));
         hasBlocks = true;
       });
       $cell.find('p').each((_, el) => {
