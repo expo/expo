@@ -4,14 +4,36 @@ import * as React from 'react';
 
 import type { RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
+import type { NavigationTransitionMode } from './types';
 
 type Props = {
   processIntent: (intent: RoutingIntent) => void;
 };
 
+export function shouldUseTransition(
+  intents: RoutingIntent[],
+  mode: NavigationTransitionMode
+): boolean {
+  if (
+    mode === 'never' ||
+    intents.some(
+      (intent) => intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.noTransitions
+    )
+  ) {
+    return false;
+  }
+
+  return (
+    mode === 'always' ||
+    intents.every(
+      (intent) => intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.event === 'PRELOAD'
+    )
+  );
+}
+
 export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
-  const { dequeue, startTransition } = React.use(RoutingQueueApiContext)!;
+  const { dequeue, startTransition, transitionMode } = React.use(RoutingQueueApiContext)!;
   const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
@@ -25,7 +47,7 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
     // "Bundling..." toast for async routes). Design a fallback UX for pending navigation.
     // Dequeue urgently so a later enqueue is not rebased on a stale queue.
     dequeue(intents);
-    startTransition(() => {
+    const process = () => {
       for (const intent of intents) {
         // Only catches errors thrown while dispatching. The navigation reducer runs
         // during the next render, so errors from it surface there, not here.
@@ -45,8 +67,14 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
           );
         }
       }
-    });
-  }, [dequeue, intents, processIntent, startTransition]);
+    };
+
+    if (shouldUseTransition(intents, transitionMode)) {
+      startTransition(process);
+    } else {
+      process();
+    }
+  }, [dequeue, intents, processIntent, startTransition, transitionMode]);
 
   return null;
 }

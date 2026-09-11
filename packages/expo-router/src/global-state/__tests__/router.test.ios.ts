@@ -54,6 +54,7 @@ jest.mock('../../link/href', () => ({
 }));
 
 const mockAdd = jest.fn();
+const mockSetTransitionMode = jest.fn();
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;
@@ -67,7 +68,7 @@ beforeEach(() => {
 it('throws before the module-level router is installed', () => {
   expect(() => navigate('/first')).toThrow('first render');
 
-  Object.assign(router, createImperativeRouter(mockAdd));
+  Object.assign(router, createImperativeRouter(mockAdd, mockSetTransitionMode));
 });
 
 describe('canDismiss', () => {
@@ -265,6 +266,24 @@ describe('router action functions', () => {
         }),
       })
     );
+  });
+
+  it('push forwards the noTransitions option', () => {
+    push('/path', { noTransitions: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'NAVIGATE_TO_HREF',
+      payload: {
+        href: '/path',
+        options: { event: 'PUSH', noTransitions: true },
+      },
+    });
+  });
+
+  it('sets the transition mode for subsequent queue batches', () => {
+    router.setTransitionMode('preload-only');
+
+    expect(mockSetTransitionMode).toHaveBeenCalledWith('preload-only');
   });
 
   it('replace enqueues NAVIGATE_TO_HREF intent with REPLACE event', () => {

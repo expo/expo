@@ -18,7 +18,9 @@ function actionIntent(type: string): RoutingIntent {
 
 function RouterBridge() {
   const api = use(RoutingQueueApiContext)!;
-  return <ImperativeRoutingQueueBridge enqueue={api.enqueue} />;
+  return (
+    <ImperativeRoutingQueueBridge enqueue={api.enqueue} setTransitionMode={api.setTransitionMode} />
+  );
 }
 
 it('does not install the module-level router from the provider', () => {
@@ -51,6 +53,27 @@ it('installs the module-level router after the bridge commits', () => {
       payload: { href: '/test', options: { event: 'PUSH' } },
     },
   ]);
+});
+
+it('updates the global transition mode from the module-level router', () => {
+  let mode: NonNullable<ContextType<typeof RoutingQueueApiContext>>['transitionMode'] | undefined;
+
+  function Consumer() {
+    mode = use(RoutingQueueApiContext)!.transitionMode;
+    return null;
+  }
+
+  render(
+    <RoutingQueueProvider>
+      <Consumer />
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
+  expect(mode).toBe('always');
+
+  act(() => router.setTransitionMode('never'));
+
+  expect(mode).toBe('never');
 });
 
 it('restores the throwing router after the provider unmounts', () => {

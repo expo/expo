@@ -1,12 +1,19 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { RoutingQueueDrainer } from '../RoutingQueueDrainer';
+import { RoutingQueueDrainer, shouldUseTransition } from '../RoutingQueueDrainer';
 import type { RoutingIntent } from '../routingQueue';
 import { RoutingQueueProvider, useEnqueueRoutingIntent } from '../routingQueueContext';
 
 function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
+}
+
+function navigate(event: string, noTransitions?: boolean): RoutingIntent {
+  return {
+    type: 'NAVIGATE_TO_HREF',
+    payload: { href: '/test', options: { event, noTransitions } },
+  };
 }
 
 function actionType(intent: RoutingIntent): string {
@@ -138,4 +145,27 @@ it('continues after processIntent throws synchronously', () => {
   expect(processIntent).toHaveBeenCalledTimes(2);
   expect(warning).toHaveBeenCalledWith(expect.stringContaining('failed'));
   warning.mockRestore();
+});
+
+describe(shouldUseTransition, () => {
+  it('uses transitions by default', () => {
+    expect(shouldUseTransition([actionIntent('GO_BACK')], 'always')).toBe(true);
+  });
+
+  it('disables transitions globally', () => {
+    expect(shouldUseTransition([navigate('PRELOAD')], 'never')).toBe(false);
+  });
+
+  it('uses transitions only when the entire batch consists of preloads', () => {
+    expect(shouldUseTransition([navigate('PRELOAD'), navigate('PRELOAD')], 'preload-only')).toBe(
+      true
+    );
+    expect(shouldUseTransition([navigate('PRELOAD'), navigate('PUSH')], 'preload-only')).toBe(
+      false
+    );
+  });
+
+  it('disables the transition for a batch containing an opted-out operation', () => {
+    expect(shouldUseTransition([navigate('PUSH'), navigate('PUSH', true)], 'always')).toBe(false);
+  });
 });

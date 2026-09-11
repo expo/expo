@@ -15,7 +15,7 @@ import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
 import { navigationRef } from './navigationRef';
 import type { RoutingIntent } from './routingQueue';
-import type { LinkToOptions, NavigationOptions } from './types';
+import type { LinkToOptions, NavigationOptions, NavigationTransitionMode } from './types';
 
 function assertIsMounted() {
   if (navigationRef.current == null) {
@@ -266,6 +266,11 @@ export type ImperativeRouter = {
    * Prefetches a route in the background before navigating to it.
    */
   prefetch: (href: Href, options?: NavigationOptions) => void;
+  /**
+   * Configures which queued navigation operations use React transitions. A `preload-only` batch
+   * uses a transition only when every operation in the batch is a preload.
+   */
+  setTransitionMode: (mode: NavigationTransitionMode) => void;
 };
 
 /**
@@ -276,7 +281,10 @@ type InternalRouter = ImperativeRouter & {
   linkTo: (href: Href | string, options?: LinkToOptions) => void;
 };
 
-export function createImperativeRouter(enqueue: (intent: RoutingIntent) => void): InternalRouter {
+export function createImperativeRouter(
+  enqueue: (intent: RoutingIntent) => void,
+  setTransitionMode: (mode: NavigationTransitionMode) => void = throwBeforeFirstRender
+): InternalRouter {
   return {
     navigate: (href, options) => navigateImpl(enqueue, href, options),
     push: (href, options) => pushImpl(enqueue, href, options),
@@ -290,6 +298,7 @@ export function createImperativeRouter(enqueue: (intent: RoutingIntent) => void)
     canGoBack,
     reload,
     prefetch: (href, options) => prefetchImpl(enqueue, href, options),
+    setTransitionMode,
     setParams: setParams as ImperativeRouter['setParams'],
     linkTo: (href, options) => linkToImpl(enqueue, href, options),
   };
@@ -312,6 +321,7 @@ export const unboundRouter: InternalRouter = {
   canGoBack: throwBeforeFirstRender,
   reload: throwBeforeFirstRender,
   prefetch: throwBeforeFirstRender,
+  setTransitionMode: throwBeforeFirstRender,
   setParams: throwBeforeFirstRender,
   linkTo: throwBeforeFirstRender,
 };

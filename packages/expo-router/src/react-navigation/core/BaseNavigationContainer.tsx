@@ -310,7 +310,10 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
                   <ThemeProvider value={theme}>{children}</ThemeProvider>
                 </EnsureSingleNavigator>
               </RouterRegistrySettersContext.Provider>
-              <ImperativeRoutingQueueBridge enqueue={routingQueue.enqueue} />
+              <ImperativeRoutingQueueBridge
+                enqueue={routingQueue.enqueue}
+                setTransitionMode={routingQueue.setTransitionMode}
+              />
               <RoutingQueueDrainer processIntent={processIntent} />
             </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>

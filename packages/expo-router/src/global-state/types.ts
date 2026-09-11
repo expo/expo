@@ -10,6 +10,12 @@ export type LinkToOptions = {
   event?: string;
 
   /**
+   * Whether to skip the React transition for this navigation operation. Because queued operations
+   * are drained together, this disables transitions for the entire batch.
+   */
+  noTransitions?: boolean;
+
+  /**
    * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.
    * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
@@ -31,3 +37,5 @@ export type LinkToOptions = {
 };
 
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
+
+export type NavigationTransitionMode = 'always' | 'never' | 'preload-only';
