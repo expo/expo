@@ -60,7 +60,6 @@ private const val EXPO_CURRENT_UPDATE_ID_HEADER = "Expo-Current-Update-ID"
 private const val EXPO_REQUESTED_UPDATE_ID_HEADER = "Expo-Requested-Update-ID"
 private const val EXPO_EMBEDDED_UPDATE_ID_HEADER = "Expo-Embedded-Update-ID"
 
-/** Supplied by callers that hold a `Context`, so the downloader needs no APK access of its own. */
 internal typealias EmbeddedAssetExtractor = (AssetEntity, File) -> Unit
 
 /**
