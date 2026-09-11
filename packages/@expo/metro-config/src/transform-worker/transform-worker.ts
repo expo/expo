@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
-import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
+import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import countLines from '@expo/metro/metro/lib/countLines';
 import { relative, dirname } from 'node:path';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
 import { getBrowserslistTargets } from './browserslist';
+import type { Dependency } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
 import {
   collectCssImports,
@@ -27,9 +27,10 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { transformShim } from './transformShim';
+import type { ExpoCustomTransformOptions, ExpoJsTransformerConfig } from './types';
 
 export interface TransformResponse {
-  readonly dependencies: readonly TransformResultDependency[];
+  readonly dependencies: readonly Dependency[];
   // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
   // MetroSourceMapSegmentTuple[]`. Metro readers still see plain tuples
   // because the `Bundler.transformFile` wrapper swaps the
@@ -53,7 +54,7 @@ function getStringArray(value: any): string[] | undefined {
 }
 
 export async function transform(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
@@ -62,10 +63,18 @@ export async function transform(
   const done = debugEvent.span();
   try {
     const result = await transformImpl(config, projectRoot, filename, data, options);
+    const customTransformOptions = options.customTransformOptions as
+      | ExpoCustomTransformOptions
+      | undefined;
+    if (customTransformOptions?.prewarm === '1') {
+      for (const output of result.output) {
+        (output as ExpoJsOutput).data.skipCache = true;
+      }
+    }
     done('file', {
       file: toPosixPath(filename),
       platform: options.platform ?? null,
-      environment: options.customTransformOptions?.environment ?? null,
+      environment: customTransformOptions?.environment ?? null,
       type: options.type,
       deps: result.dependencies.length,
       cached: false,
@@ -78,7 +87,7 @@ export async function transform(
 }
 
 async function transformImpl(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
@@ -235,7 +244,7 @@ function isReactServerEnvironment(options: JsTransformOptions): boolean {
 }
 
 async function transformCss(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
@@ -291,6 +300,7 @@ async function transformCss(
         type: 'js/module',
         data: {
           ...jsModuleResults.output[0]!.data,
+          skipCache: !!postcssResults.hasPostcss || undefined,
 
           // Append additional css metadata for static extraction.
           css: {
@@ -372,6 +382,7 @@ async function transformCss(
       data: {
         ...(jsModuleResults.output[0] as ExpoJsOutput).data,
         css: cssOutput,
+        skipCache: !!postcssResults.hasPostcss || undefined,
       },
     },
   ];

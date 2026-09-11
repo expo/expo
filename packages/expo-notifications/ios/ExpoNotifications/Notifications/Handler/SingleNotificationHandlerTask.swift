@@ -3,6 +3,12 @@
 import ExpoModulesCore
 import UIKit
 
+/**
+ Presentation options for a notification whose handler didn't answer in time. This matches the behavior that
+ the built-in JS notification handler asks for, so a slow handler doesn't drop the notification.
+ */
+let defaultPresentationOptions: UNNotificationPresentationOptions = [.banner, .list, .sound, .badge]
+
 public protocol SingleNotificationHandlerTaskDelegate: AnyObject {
   func taskDidFinish(_ task: SingleNotificationHandlerTask)
   func handleNotification(_ notification: UNNotification)
@@ -37,7 +43,7 @@ public class SingleNotificationHandlerTask {
   @objc
   public func timeout() {
     delegate.handleNotificationTimeout(notification)
-    finish()
+    _ = processNotificationWithOptions(defaultPresentationOptions)
   }
 
   public func processNotificationWithOptions(_ options: UNNotificationPresentationOptions) -> Bool {

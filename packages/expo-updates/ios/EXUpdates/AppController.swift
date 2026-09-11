@@ -273,6 +273,7 @@ public class AppController: NSObject {
       let updatesDatabase = UpdatesDatabase()
       do {
         let directory = try initializeUpdatesDirectory()
+        UpdatesUtils.setExcludedFromBackup(directory, excluded: config.excludeFromBackup, logger: logger)
         try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory, logger: logger)
         _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
         UpdatesControllerRegistry.sharedInstance.controller = _sharedInstance as? (any UpdatesInterface)

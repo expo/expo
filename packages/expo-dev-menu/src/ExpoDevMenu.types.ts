@@ -24,5 +24,6 @@ export type ExpoDevMenu = {
   openMenu(): void;
   closeMenu(): void;
   hideMenu(): void;
+  setToolsButtonVisible(visible: boolean): void;
   addDevMenuCallbacks(callbacks: { name: string; shouldCollapse?: boolean }[]): void;
 };

@@ -29,6 +29,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let handle: FileHandle
   private let didAccessSecurityScope: Bool
   private var isClosed = false
+  private let lock = NSLock()  // non-reentrant. Don't use it in recursive calls
 
   init(file: FileSystemFile, mode: FileMode?) throws {
     self.file = file
@@ -60,9 +61,15 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func read(_ length: Int) throws -> Data {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     if self.mode.writeOnly {
       throw UnableToReadHandleException("File opened write-only")
     }
+
     do {
       let data = try handle.read(upToCount: length)
       return data ?? Data()
@@ -72,9 +79,15 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func write(_ bytes: Data) throws {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     if self.mode.readOnly {
       throw UnableToWriteHandleException("File opened read-only")
     }
+
     try handle.write(contentsOf: bytes)
   }
 
@@ -83,6 +96,11 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func close() throws {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     guard !isClosed else { return }
     isClosed = true
     defer {
@@ -95,17 +113,33 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
 
   var offset: UInt64? {
     get {
-      try? handle.offset()
+      lock.lock()
+      defer {
+        lock.unlock()
+      }
+
+      return try? handle.offset()
     }
     set(newOffset) {
       guard let newOffset else {
         return
       }
+
+      lock.lock()
+      defer {
+        lock.unlock()
+      }
+
       handle.seek(toFileOffset: newOffset)
     }
   }
 
   var size: UInt64? {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     do {
       let offset = try handle.offset()
       let size = try handle.seekToEnd()

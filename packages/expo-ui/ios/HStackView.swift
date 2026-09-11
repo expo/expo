@@ -41,7 +41,7 @@ public struct HStackView: ExpoSwiftUI.View {
   public var body: some View {
     HStack(
       alignment: props.alignment?.toVerticalAlignment() ?? .center,
-      spacing: CGFloat(props.spacing ?? 0)) {
+      spacing: props.spacing.map { CGFloat($0) }) {
         Children()
     }
   }

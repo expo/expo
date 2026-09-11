@@ -97,7 +97,7 @@ export function createRequestHandler({
     let request = incomingRequest;
     let url = new URL(request.url);
     const globalOverrides = manifest.headers ? { headers: manifest.headers } : undefined;
-    // `pageHeaders` rules only apply to HTML responses
+    // `pageHeaders` rules apply to HTML and loader responses, matched on the request pathname.
     const pageOverrides = { headers: resolveRouteHeaders(url.pathname) };
 
     if (manifest.middleware) {
@@ -170,7 +170,7 @@ export function createRequestHandler({
             'api',
             route,
             await getLoaderData(loaderRequest, route),
-            globalOverrides
+            pageOverrides
           );
         }
 

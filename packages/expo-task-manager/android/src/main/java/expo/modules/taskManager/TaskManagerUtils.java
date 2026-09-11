@@ -206,12 +206,13 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
         .setRequiresDeviceIdle(false);
 
     if (Build.VERSION.SDK_INT < 28) {
-      // For Android versions below 28 (Android 9 and below)
+      // For Android versions below 28 (Android 8.1 and below)
       jobBuilder.setMinimumLatency(0)
           .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE);
     } else if (Build.VERSION.SDK_INT < 31) {
       // For Android 9 (API 28) to Android 11 (API 30)
-      jobBuilder.setImportantWhileForeground(true);
+      jobBuilder.setImportantWhileForeground(true)
+          .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE);
     } else {
       // For Android 12 (API 31) and above
       jobBuilder.setExpedited(true);

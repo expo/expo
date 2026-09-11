@@ -10,7 +10,12 @@ public class ExpoLinkingModule: Module {
     Events(onURLReceived)
 
     OnStartObserving(onURLReceived) {
-      NotificationCenter.default.addObserver(self, selector: #selector(handleURLReceivedNotification), name: onURLReceivedNotification, object: nil)
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(handleURLReceivedNotification),
+        name: onURLReceivedNotification,
+        object: nil
+      )
     }
 
     OnStopObserving(onURLReceived) {

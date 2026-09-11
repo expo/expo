@@ -1,11 +1,10 @@
-/* eslint-env jest */
 import { resolveEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -55,7 +54,6 @@ jest.unmock('resolve-from');
           E2E_ROUTER_ASYNC: 'development',
 
           EXPO_USE_STATIC: 'single',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
 
           E2E_RSC_ENABLED: '1',
           TEST_SECRET_VALUE: 'test-secret',

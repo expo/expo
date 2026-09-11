@@ -69,6 +69,20 @@ export function extractFrontmatter(mdxPath: string): string | null {
   return '---\n' + filtered + '---\n';
 }
 
+const HEADING_NODE_NAMES = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
+const BLOCK_SELECTOR = 'p, div, h1, h2, h3, h4, h5, h6';
+
+function findAncestor(node: HTMLElement, nodeNames: string[]): HTMLElement | null {
+  let current = node.parentNode as HTMLElement | null;
+  while (current) {
+    if (nodeNames.includes(current.nodeName)) {
+      return current;
+    }
+    current = current.parentNode as HTMLElement | null;
+  }
+  return null;
+}
+
 function createTurndownService(): TurndownService {
   const turndown = new TurndownService({
     headingStyle: 'atx',
@@ -85,14 +99,51 @@ function createTurndownService(): TurndownService {
       const lang =
         node.getAttribute('data-md-lang') ?? code.className?.match(/language-(\w+)/)?.[1] ?? '';
       const text = code.textContent ?? '';
-      return `\n\n\`\`\`${lang}\n${text.trim()}\n\`\`\`\n\n`;
+      const info = [lang, node.getAttribute('data-md-label')].filter(Boolean).join(' ');
+      return `\n\n\`\`\`${info}\n${text.trim()}\n\`\`\`\n\n`;
     },
   });
 
-  // Remove images — they reference local/CDN paths that won't work in plain markdown
+  // Drop the image itself — the local/CDN path won't resolve in plain markdown — but keep
+  // the alt text, which is the only part of an image a text consumer can read. Icons inside
+  // headings are chrome, and an image inside a link supplies that link's text.
   turndown.addRule('images', {
     filter: 'img',
-    replacement: () => '',
+    replacement: (_content: string, node: HTMLElement) => {
+      const alt = (node.getAttribute('alt') ?? '').trim();
+      if (!alt || findAncestor(node, HEADING_NODE_NAMES)) {
+        return '';
+      }
+      const link = findAncestor(node, ['A']);
+      if (link) {
+        return (link.textContent ?? '').trim() ? '' : alt;
+      }
+      return `\n\nImage: ${alt}\n\n`;
+    },
+  });
+
+  // The @expo/ui component index renders as a card grid on the web. Its thumbnails are
+  // dropped by the images rule above, which would leave a bare list of links, so rebuild
+  // the equivalent markdown table and keep the descriptions in .md and the llms bundles.
+  turndown.addRule('uiComponentGrid', {
+    filter: (node: HTMLElement) =>
+      node.nodeName === 'DIV' && node.getAttribute('data-md') === 'ui-component-grid',
+    replacement: (_content: string, node: HTMLElement) => {
+      const rows = Array.from(node.querySelectorAll('a'))
+        .map(card => {
+          const title = (card.textContent ?? '').trim();
+          const href = card.getAttribute('href') ?? '';
+          const description = card.getAttribute('data-md-description') ?? '';
+          return title ? `| [\`${title}\`](${href}) | ${description} |` : '';
+        })
+        .filter(Boolean);
+
+      if (rows.length === 0) {
+        return '';
+      }
+
+      return `\n\n${['| Component | Description |', '| --- | --- |', ...rows].join('\n')}\n\n`;
+    },
   });
 
   return turndown;
@@ -101,6 +152,26 @@ function createTurndownService(): TurndownService {
 const turndown = createTurndownService();
 // Keep in sync with ui/components/Snippet/blocks/packageManagerStore.ts.
 const PACKAGE_MANAGER_MARKDOWN_ORDER = ['npm', 'yarn', 'pnpm', 'bun'] as const;
+
+function toTerminalLines(rawLines: unknown): string[] {
+  if (!Array.isArray(rawLines)) {
+    return [];
+  }
+  const lines = rawLines
+    .filter((line): line is string => typeof line === 'string')
+    .map(line => line.replace(/^\$\s*/, '').trim());
+  while (lines.length > 0 && lines[0] === '') {
+    lines.shift();
+  }
+  while (lines.length > 0 && lines.at(-1) === '') {
+    lines.pop();
+  }
+  return lines;
+}
+
+function hasTerminalCommand(lines: string[]): boolean {
+  return lines.some(line => line !== '' && !line.startsWith('#'));
+}
 
 /**
  * Recursively find all index.html files in a directory, skipping internal directories.
@@ -304,6 +375,13 @@ export function convertMdxInstructionToMarkdown(
  * Clean up the HTML before conversion: remove non-content elements,
  * normalize terminal blocks, and strip decorative artifacts.
  */
+const DARK_IMAGE_VARIANTS =
+  'img[class~="light:hidden"], picture[class~="light:hidden"] img, img[class~="hidden"][class~="dark:block"]';
+
+function escapeHtml(value: string) {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
   // Must run before the button removal below, since labels live in the buttons.
@@ -320,7 +398,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       .each((i, panel) => {
         const label = ownLabels[i];
         if (label) {
-          $(panel).prepend(`<h4>${label}</h4>`);
+          $(panel).prepend(`<h4>${escapeHtml(label)}</h4>`);
         }
       });
   });
@@ -331,7 +409,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $label = $summary.find('[data-text="true"]').first();
     const summaryText = ($label.length ? $label : $summary).text().replace(/\s+/g, ' ').trim();
     if (summaryText) {
-      $summary.replaceWith(`<h4>${summaryText}</h4>`);
+      $summary.replaceWith(`<h4>${escapeHtml(summaryText)}</h4>`);
     } else {
       $summary.remove();
     }
@@ -344,7 +422,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     $summary.find('[data-md="skip"]').remove();
     const headingText = $summary.text().replace(/\s+/g, ' ').trim();
     if (headingText) {
-      $summary.replaceWith(`<h4>${headingText}</h4>`);
+      $summary.replaceWith(`<h4>${escapeHtml(headingText)}</h4>`);
     } else {
       $summary.remove();
     }
@@ -352,14 +430,41 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const $title = $(title);
       const titleText = $title.text().replace(/\s+/g, ' ').trim();
       if (titleText) {
-        $title.replaceWith(`<h5>${titleText}</h5>`);
+        $title.replaceWith(`<h5>${escapeHtml(titleText)}</h5>`);
       }
     });
     $details.replaceWith($details.contents());
   });
 
   // Remove interactive/decorative elements
-  main.find('button').remove();
+  // Most buttons are UI chrome, but some wrap page content: a selectable card carries a
+  // title and a description, and a lightbox button wraps a ContentSpotlight image. Tab
+  // labels come from the tabs rule above, and toggles, snippet actions and skip-marked
+  // buttons hold nothing worth keeping.
+  main.find('button').each((_, el) => {
+    const $button = $(el);
+    const isControl =
+      $button.attr('role') === 'tab' ||
+      $button.attr('aria-pressed') !== undefined ||
+      $button.closest('[data-md="skip"], [data-md="snippet-header"], [data-md="terminal"]').length >
+        0;
+    if (isControl) {
+      $button.remove();
+      return;
+    }
+    const textBlocks = $button
+      .find(BLOCK_SELECTOR)
+      .filter(
+        (_, block) => $(block).find(BLOCK_SELECTOR).length === 0 && $(block).text().trim() !== ''
+      ).length;
+    if ($button.parent().is('figure') || textBlocks > 1) {
+      $button.replaceWith($button.contents());
+      return;
+    }
+    $button.remove();
+  });
+
+  main.find(DARK_IMAGE_VARIANTS).remove();
   main.find('style').remove();
 
   // Preserve semantic SVG icons as text before blanket SVG removal.
@@ -426,7 +531,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const href = $el.attr('href');
     const text = $el.text().trim();
     if (href && text) {
-      $el.replaceWith(`<p><a href="${href}">${text}</a></p>`);
+      $el.replaceWith(`<p><a href="${href}">${escapeHtml(text)}</a></p>`);
     } else {
       $el.remove();
     }
@@ -463,7 +568,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
     });
     if (platforms.length > 0) {
-      $el.replaceWith('<p>Supported platforms: ' + platforms.join(', ') + '.</p>');
+      $el.replaceWith('<p>Supported platforms: ' + platforms.map(escapeHtml).join(', ') + '.</p>');
     } else {
       $el.remove();
     }
@@ -481,7 +586,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
     const platformText = $el.find('span').last().text().trim();
     if (platformText) {
-      $el.replaceWith(`, ${platformText}`);
+      $el.replaceWith(`, ${escapeHtml(platformText)}`);
     }
   });
   // Fallback: extract platform badges that lack data-md but have the old CSS class pattern
@@ -495,7 +600,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
       const platformText = $el.find('span').last().text().trim();
       if (platformText) {
-        $el.replaceWith(`, ${platformText}`);
+        $el.replaceWith(`, ${escapeHtml(platformText)}`);
       }
     }
   });
@@ -513,6 +618,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // elements (span, p, li, blockquote, code, pre). It's core infrastructure, not fragile.
   main.find('[data-md="card-link"], a:has(div)').each((_, el) => {
     const $a = $(el);
+    // @expo/ui component cards match `a:has(div)` too, but the grid has a dedicated rule
+    // that rebuilds it as a table and needs each card's data attributes intact.
+    if ($a.closest('[data-md="ui-component-grid"]').length > 0) {
+      return;
+    }
     const href = $a.attr('href');
     if (!href) {
       return;
@@ -528,59 +638,25 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const title = texts[0];
       const desc = texts.slice(1).join(' — ');
       const replacement = desc
-        ? `<p><a href="${href}">${title}</a> — ${desc}</p>`
-        : `<p><a href="${href}">${title}</a></p>`;
+        ? `<p><a href="${href}">${escapeHtml(title)}</a> — ${escapeHtml(desc)}</p>`
+        : `<p><a href="${href}">${escapeHtml(title)}</a></p>`;
       $a.replaceWith(replacement);
     }
   });
 
-  // Remove snippet headers (file labels, "Terminal" labels above code blocks).
+  // Move snippet header labels (file names, example captions) onto the code block so the
+  // fence keeps them, then drop the header. Terminal headers carry no label worth keeping.
   // data-md="snippet-header" is the stable marker (from SnippetHeader component).
-  main.find('[data-md="snippet-header"]').remove();
-
-  // Convert tabbed Terminal blocks (package manager variants) into a single shell block.
-  // data-md="terminal" is the stable marker; data-md-commands contains all manager commands.
-  main.find('[data-md="terminal"][data-md-commands]').each((_, el) => {
-    const $el = $(el);
-    const commandsJson = $el.attr('data-md-commands');
-    if (!commandsJson) {
-      return;
-    }
-
-    const commands = JSON.parse(commandsJson) as Record<string, unknown>;
-    const lines: string[] = [];
-
-    for (const manager of PACKAGE_MANAGER_MARKDOWN_ORDER) {
-      const rawCommands = commands[manager];
-      if (!Array.isArray(rawCommands) || rawCommands.length === 0) {
-        continue;
+  main.find('[data-md="snippet-header"]').each((_, el) => {
+    const $header = $(el);
+    if ($header.closest('[data-md="terminal"]').length === 0) {
+      const label = $header.text().trim();
+      const $pre = $header.parent().find('pre').first();
+      if (label && $pre.length > 0) {
+        $pre.attr('data-md-label', label);
       }
-
-      const managerLines = rawCommands
-        .filter((line): line is string => typeof line === 'string')
-        .map(line => line.replace(/^\$\s*/, '').trim())
-        // Preserve existing terminal behavior: drop source comment lines.
-        .filter(line => line.length > 0 && !line.startsWith('#'));
-
-      // Skip heading-only sections (for example, comment-only manager arrays).
-      if (managerLines.length === 0) {
-        continue;
-      }
-
-      if (lines.length > 0) {
-        lines.push('');
-      }
-      lines.push(`# ${manager}`);
-      lines.push(...managerLines);
     }
-
-    if (lines.length > 0) {
-      const $pre = $('<pre></pre>');
-      const $code = $('<code class="language-sh"></code>');
-      $code.text(lines.join('\n'));
-      $pre.append($code);
-      $el.replaceWith($pre);
-    }
+    $header.remove();
   });
 
   // Remove orphaned step numbers: replace step containers with just the content.
@@ -628,14 +704,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const typeText =
       codeEl.length > 0 ? codeEl.text().trim() : $el.text().replace('Returns:', '').trim();
     if (typeText) {
-      $el.replaceWith('<p>Returns: <code>' + typeText + '</code></p>');
+      $el.replaceWith('<p>Returns: <code>' + escapeHtml(typeText) + '</code></p>');
     }
   });
 
   // Convert API parameter name spans to <code> for backtick formatting.
   main.find('[data-md="api-param-name"]').each((_, el) => {
     const $el = $(el);
-    $el.replaceWith('<code>' + $el.text() + '</code>');
+    $el.replaceWith('<code>' + escapeHtml($el.text()) + '</code>');
   });
 
   // Preserve angle brackets around unknown HTML elements in type signatures.
@@ -714,7 +790,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
         if (tag && !knownHtmlTags.has(tag)) {
           const $child = $(child);
           const inner = $child.text();
-          $child.replaceWith(inner ? `&lt;${tag}&gt;${inner}&lt;/${tag}&gt;` : `&lt;${tag}&gt;`);
+          $child.replaceWith(
+            inner ? `&lt;${tag}&gt;${escapeHtml(inner)}&lt;/${tag}&gt;` : `&lt;${tag}&gt;`
+          );
         }
       });
   });
@@ -755,41 +833,53 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
 
     // data-md="callout" — inline the callout text (e.g. deprecation warnings).
     // The callout's visible text (like "Deprecated: use X instead") is already meaningful;
-    // just extract it and drop the blockquote/svg/div wrapper structure.
-    // Target the <p> inside the callout to avoid picking up SVG alt text.
+    // just extract it and drop the blockquote/svg/div wrapper structure. Every paragraph and
+    // list item counts, and a callout whose body is bare inline markup has neither.
     $cell.find('[data-md="callout"]').each((_, el) => {
-      const text = $(el).find('p').first().text().trim();
-      $(el).replaceWith(text ? text + ' ' : '');
+      const $callout = $(el);
+      const $blocks = $callout.find('p, li');
+      const text = (
+        $blocks.length > 0
+          ? $blocks
+              .map((_, block) => $(block).text().trim())
+              .get()
+              .filter(Boolean)
+              .join(' ')
+          : $callout.text()
+      )
+        .replace(/\s+/g, ' ')
+        .trim();
+      $callout.replaceWith(text ? '%%MD_SEP%%' + escapeHtml(text) + ' ' : '');
     });
 
-    // Generic block flattening — loop until stable since nested divs require multiple passes.
-    // Prepend ". " when unwrapping so adjacent blocks read as separate sentences, then
-    // clean up artifacts (double periods, leading separators) after the loop.
     let hasBlocks = true;
     while (hasBlocks) {
       hasBlocks = false;
       $cell.find('blockquote').each((_, el) => {
-        $(el).replaceWith('. ' + $(el).text().trim());
+        $(el).replaceWith('. ' + escapeHtml($(el).text().trim()));
         hasBlocks = true;
       });
       $cell.find('p').each((_, el) => {
-        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
       $cell.find('div').each((_, el) => {
-        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
     }
-    // Clean up artifacts from block flattening:
-    // - Collapse ". ." / ".." from nested unwrapping
-    // - Trim leading ". " at cell start
-    // - Remove orphan "-" after periods (upstream renders a bare dash for empty descriptions)
-    const cellHtml = $cell
-      .html()!
-      .replace(/\.\s*\.\s*/g, '. ')
-      .replace(/^\s*\.\s*/, '')
-      .replace(/\.\s*-\s*$/, '.');
+    const blocks: string[] = [];
+    let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
+      blocks.push(match);
+      return `%%MD_CODE_${blocks.length - 1}%%`;
+    });
+    cellHtml = cellHtml
+      .replace(/(?:%%MD_SEP%%)+/g, '%%MD_SEP%%')
+      .replace(/^\s*%%MD_SEP%%\s*/, '')
+      .replace(/\.\s*%%MD_SEP%%/g, '. ')
+      .replace(/%%MD_SEP%%/g, '. ')
+      .replace(/\.\s*-\s*$/, '.')
+      .replace(/%%MD_CODE_(\d+)%%/g, (_, i) => blocks[Number(i)]);
     $cell.html(cellHtml);
   });
 
@@ -827,7 +917,52 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
     });
     if (lines.length > 0) {
-      $table.replaceWith(`<pre><code class="language-diff">${lines.join('\n')}</code></pre>`);
+      const $pre = $('<pre></pre>');
+      const $code = $('<code class="language-diff"></code>');
+      $code.text(lines.join('\n'));
+      $pre.append($code);
+      $table.replaceWith($pre);
+    }
+  });
+
+  // Convert Terminal blocks into a single shell block, rebuilt from the author's own lines.
+  // data-md="terminal" is the stable marker; data-md-commands holds the cmd prop, either a
+  // plain line array or one array per package manager.
+  main.find('[data-md="terminal"][data-md-commands]').each((_, el) => {
+    const $el = $(el);
+    const commandsJson = $el.attr('data-md-commands');
+    if (!commandsJson) {
+      return;
+    }
+
+    const commands = JSON.parse(commandsJson) as unknown;
+    const lines: string[] = [];
+
+    if (Array.isArray(commands)) {
+      lines.push(...toTerminalLines(commands));
+    } else {
+      for (const manager of PACKAGE_MANAGER_MARKDOWN_ORDER) {
+        const managerLines = toTerminalLines((commands as Record<string, unknown>)[manager]);
+
+        // Skip heading-only sections (for example, comment-only manager arrays).
+        if (!hasTerminalCommand(managerLines)) {
+          continue;
+        }
+
+        if (lines.length > 0 && lines.at(-1) !== '') {
+          lines.push('');
+        }
+        lines.push(`# ${manager}`);
+        lines.push(...managerLines);
+      }
+    }
+
+    if (lines.length > 0) {
+      const $pre = $('<pre></pre>');
+      const $code = $('<code class="language-sh"></code>');
+      $code.text(lines.join('\n'));
+      $pre.append($code);
+      $el.replaceWith($pre);
     }
   });
 
@@ -843,9 +978,36 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
     });
     if (codeTexts.length > 0) {
-      $el.replaceWith(`<pre><code class="language-sh">${codeTexts.join('\n')}</code></pre>`);
+      const $pre = $('<pre></pre>');
+      const $code = $('<code class="language-sh"></code>');
+      $code.text(codeTexts.join('\n'));
+      $pre.append($code);
+      $el.replaceWith($pre);
     }
   });
+}
+
+export function insertAgentInstructionsAfterH1(
+  markdown: string,
+  block: string,
+  description?: string | null
+): string {
+  const h1 = markdown.match(/^# .*$/m);
+  if (h1?.index === undefined) {
+    return `${block}\n${markdown}`;
+  }
+
+  let insertAt = h1.index + h1[0].length;
+
+  if (description) {
+    const normalize = (text: string) => text.replace(/\\/g, '').replace(/\s+/g, ' ').trim();
+    const paragraph = markdown.slice(insertAt).match(/^\n+([^\n]+)/);
+    if (paragraph && normalize(paragraph[1]).startsWith(normalize(description).slice(0, 40))) {
+      insertAt += paragraph[0].length;
+    }
+  }
+
+  return `${markdown.slice(0, insertAt)}\n\n${block.trimEnd()}${markdown.slice(insertAt)}`;
 }
 
 /**
@@ -996,6 +1158,10 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
 
   if (CI_CSS_CLASS_PATTERN.test(prose)) {
     errors.push('Contains CSS class names in text');
+  }
+
+  if (markdown.includes('. .')) {
+    errors.push('Contains ". ." (corrupted ellipsis or doubled period)');
   }
 
   return errors.filter(error => !exemptions.some(ex => error.startsWith(ex)));

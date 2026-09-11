@@ -1,10 +1,10 @@
 import type { ExpoConfig } from '@expo/config-types';
 import type { XCBuildConfiguration } from 'xcode';
 
-import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
-import { findFirstNativeTarget } from './Target';
 import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
+import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
+import { findFirstNativeTarget } from './Target';
 import { getBuildConfigurationsForListId } from './utils/Xcodeproj';
 
 /**

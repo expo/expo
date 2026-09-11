@@ -309,6 +309,54 @@ describe('runAsync', () => {
     expect(result.issues[1]).toContain('@expo/metro-runtime');
   });
 
+  it('checks the @expo/dom-webview chain when expo depends on it', async () => {
+    const expoDir = `${projectRoot}/node_modules/expo`;
+
+    setupNodeModules(
+      {
+        expo: { version: '56.0.15', dependencies: { '@expo/dom-webview': '~56.0.6' } },
+        '@expo/dom-webview': { version: '55.0.6' },
+      },
+      {
+        [`${projectRoot} > expo`]: expoDir,
+        [`${expoDir} > @expo/dom-webview`]: `${projectRoot}/node_modules/@expo/dom-webview`,
+      }
+    );
+
+    const check = new DependencyVersionOverrideCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'test', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toHaveLength(2);
+    expect(result.issues[1]).toContain('@expo/dom-webview');
+    expect(result.issues[1]).toContain('55.0.6');
+  });
+
+  it('skips the @expo/dom-webview chain when expo does not depend on it', async () => {
+    const expoDir = `${projectRoot}/node_modules/expo`;
+
+    setupNodeModules(
+      {
+        // SDK 55 expo only declares @expo/dom-webview as an optional peer dependency
+        expo: { version: '55.0.29', dependencies: {} },
+        '@expo/dom-webview': { version: '55.0.6' },
+      },
+      {
+        [`${projectRoot} > expo`]: expoDir,
+        [`${expoDir} > @expo/dom-webview`]: `${projectRoot}/node_modules/@expo/dom-webview`,
+      }
+    );
+
+    const check = new DependencyVersionOverrideCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'test', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
   it('resolves packages from isolated node_modules (pnpm-style)', async () => {
     const expoDir = `${projectRoot}/node_modules/.pnpm/expo@53.0.0/node_modules/expo`;
     const metroWrapperDir = `${projectRoot}/node_modules/.pnpm/@expo+metro@1.0.0/node_modules/@expo/metro`;

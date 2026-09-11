@@ -1,0 +1,283 @@
+---
+title: ツールを準備する
+description: この章では、AI コーディングエージェント、Node.js、Expo Go をインストールし、エージェントに Expo について教えます。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+この章では、ゼロの状態から必要なものをすべてインストールします。全章の中でいちばん長い章です。ツールの準備が終われば、ここからが本番です。残りのチュートリアルはスムーズに進みます。
+
+<Prerequisites>
+  <Requirement title="コンピュータ">
+    macOS、Windows、Linux のいずれかが動作するコンピュータ。
+  </Requirement>
+  <Requirement title="スマートフォン">
+    Android または iOS のスマートフォンを、コンピュータと同じ Wi-Fi ネットワークに接続しておきます。
+  </Requirement>
+  <Requirement title="AI エージェントとそのアカウント">
+    AI コーディングエージェントと、選んだサービスのアカウント。
+  </Requirement>
+  <Requirement title="約 20 分">セットアップにかかる時間の目安です。</Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## ターミナルを開く
+
+ターミナルは、AI エージェントとやり取りするためのアプリです。
+
+- macOS では、標準搭載の **Terminal** アプリを開きます。Spotlight 検索（<kbd>Cmd ⌘</kbd> + <kbd>Space</kbd>）を開いて "Terminal" と入力すると見つかります。
+- Windows では、スタートメニューから **PowerShell** を開きます。この章では、いくつかのコマンドをここに入力します。それぞれコピーして貼り付けられるように用意してあります。
+
+<ContentSpotlight
+  alt="macOS の空のターミナルウィンドウ"
+  caption="ターミナルの見た目は OS や設定によって異なりますが、動作は同じです。"
+  src="/static/images/tutorial/terminal.webp"
+  className="max-w-[640px]"
+/>
+
+> **Cursor** を使う予定なら、このチュートリアルのほとんどをターミナルの代わりに Cursor のビジュアルエディタ内で進めることになります。ただし、アプリを実行する際にはターミナルを使うので、手元に用意しておいてください。
+
+</Step>
+
+<Step label="2">
+
+## AI エージェントをインストールする
+
+すでに AI コーディングエージェントを使っている場合は、次のステップに進んでください。まだの場合は、以下から 1 つ選んでください。このチュートリアルはどれを選んでも同じように進められます。
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+次のコマンドをターミナルウィンドウで実行して、[Claude Code](https://claude.com/claude-code) をインストールします。
+
+<Terminal cmd={['$ curl -fsSL https://claude.ai/install.sh | bash']} />
+
+> **Windows の場合:** PowerShell で Claude Code をインストールするには `irm https://claude.ai/install.ps1 | iex` を実行します。
+
+続いてターミナルで `claude` を実行し、案内に従ってサインインします。うまくいかない場合は [Claude Code セットアップガイド](https://code.claude.com/docs/en/setup) を参照してください。
+
+</Tab>
+
+<Tab label="Codex">
+
+次のコマンドをターミナルウィンドウで実行して、[Codex](https://developers.openai.com/codex/cli) をインストールします。
+
+<Terminal cmd={['$ curl -fsSL https://chatgpt.com/codex/install.sh | sh']} />
+
+続いてターミナルで `codex` を実行し、案内に従って ChatGPT アカウントでサインインします。うまくいかない場合は [Codex CLI のドキュメント](https://developers.openai.com/codex/cli) を参照してください。
+
+</Tab>
+
+<Tab label="Cursor">
+
+[Cursor](https://cursor.com) をダウンロードし、ほかのアプリと同じようにインストールします。Cursor は AI エージェントを内蔵したビジュアルコードエディタで、ターミナルの代わりにエージェントパネルにプロンプトを入力して使います。
+
+</Tab>
+
+</Tabs>
+
+ほかのエージェントでも構いません。ファイルを編集し、コンピュータ上でコマンドを実行できるエージェントであれば、このチュートリアルを進められます。
+
+</Step>
+
+<Step label="3">
+
+## Node.js をインストールする
+
+最初のプロンプトを実行して、Node.js をインストールしましょう。
+
+Node.js は、Expo の開発ツールを動かすランタイムです。次のプロンプトを実行して、エージェントに [nodejs.org](https://nodejs.org/en) から **長期サポート（LTS）** 版をダウンロードするよう指示しましょう。
+
+```text プロンプト|wrap
+私はまっさらな環境で Expo の "Build with AI" チュートリアルを進めていて、プログラミングの経験はありません。私のコンピュータに Node.js の最新の LTS 版をインストールして。
+
+- まず、これからやることを 1〜2 文の平易な言葉で教えて。
+- 私の OS を検出して、その OS に最も確実な方法でインストールして。
+- 完了したら、`node --version` と `npm --version` の出力を見せてうまくいったか確認して。反映させるために何か開き直す必要があれば、それも教えて。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+I'm following the Expo "Build with AI" tutorial on a brand-new setup and I have no programming experience. Please install the latest LTS version of Node.js on my computer.
+
+- First, tell me in one or two plain sentences what you're about to do.
+- Detect my operating system and use the most reliable method for it.
+- When you're done, verify it worked by showing me the output of `node --version` and `npm --version`, and tell me if I need to reopen anything for it to take effect.
+```
+
+</Collapsible>
+
+うまくいったか確認するには、新しいターミナルウィンドウを開いて次のコマンドを実行します。現在インストールされている Node.js のバージョン番号が表示されるはずです。
+
+<Terminal cmd={['$ node --version']} />
+
+</Step>
+
+<Step label="4">
+
+## Expo Go をインストールして Expo アカウントを作成する
+
+Expo Go は、アプリストアへの公開なしに、開発中のプロジェクトをスマートフォンでテストできる無料のアプリです。エージェントがコードを変更するたびに、スマートフォン上のアプリが数秒で更新されます。
+
+1. スマートフォンで、Google Play ストアまたは Apple App Store から [Expo Go](https://expo.dev/go) をインストールします。
+2. コンピュータで [expo.dev/signup](https://expo.dev/signup) にアクセスし、無料アカウントを作成します。
+3. スマートフォンで Expo Go を開き、同じアカウントでサインインします。
+
+</Step>
+
+<Step label="5">
+
+## エージェントに Expo について教える
+
+Expo Skills は、AI エージェントに Expo アプリの上手な作り方を教える指示ファイル群です。どのライブラリを使うべきか、画面をどう構成するか、よくある間違いをどう避けるかをエージェントに伝えます。エージェントから良い結果を引き出すうえで、これをインストールすることが最も効果があります。
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+`claude` を起動し、その中で次のコマンドを実行します。
+
+<Terminal cmd={['$ /plugin install expo@claude-plugins-official']} />
+
+</Tab>
+
+<Tab label="Codex">
+
+ターミナルで次のコマンドを実行します。
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+</Tab>
+
+<Tab label="Cursor">
+
+ターミナルで次のコマンドを実行します。
+
+<Terminal cmd={['$ npx skills add expo/skills']} />
+
+{/* vale off */}
+
+続いて Cursor を再起動し、**Settings** > **Rules, Skills, Subagents** > **Skills** にスキルが表示されていることを確認します。
+
+{/* vale on */}
+
+</Tab>
+
+</Tabs>
+
+<BoxLink
+  title="Expo Skills"
+  Icon={BookOpen02Icon}
+  description="すべてのエージェント向けのインストール手順と、利用可能なスキルの一覧を確認できます。"
+  href="/skills/"
+/>
+
+</Step>
+
+<Step label="6">
+
+## Expo MCP サーバーを接続する
+
+Expo MCP サーバーは、エージェントに Expo のツールへの直接アクセスを与えます。最新の Expo ドキュメントを読んだり、適切なパッケージをインストールしたり、プロジェクトを調べたりできるようになります。
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+ターミナルで次のコマンドを実行します。
+
+<Terminal cmd={['$ claude mcp add --transport http expo https://mcp.expo.dev/mcp']} />
+
+続いて `claude` を起動し、その中で `/mcp` を実行して、前のステップで作成した Expo アカウントでサインインします。
+
+</Tab>
+
+<Tab label="Codex">
+
+ターミナルで次のコマンドを実行し、案内が表示されたら前のステップで作成した Expo アカウントでサインインします。
+
+<Terminal cmd={['$ codex mcp add expo --url https://mcp.expo.dev/mcp']} />
+
+</Tab>
+
+<Tab label="Cursor">
+
+次のリンクをクリックして Cursor 用の MCP サーバーをインストールし、前のステップで作成した Expo アカウントでサインインします。
+
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=expo&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D">
+  <img
+    src="https://cursor.com/deeplink/mcp-install-light.svg"
+    alt="Install MCP server"
+    className="hidden max-w-48 dark:block"
+  />
+  <img
+    src="https://cursor.com/deeplink/mcp-install-dark.svg"
+    alt="Install MCP server"
+    className="block max-w-48 dark:hidden"
+  />
+</a>
+
+</Tab>
+
+</Tabs>
+
+<Collapsible summary="任意: エージェントにアプリを見せて操作させる">
+
+MCP サーバーは、ローカル機能も提供しています。追加のセットアップを行うと、マルチモーダルなエージェントがシミュレータ上で動くアプリのスクリーンショットを撮り、ボタンをタップし、自分の作業を自ら検証できるようになります。これにはコンピュータ上のシミュレータが必要なため（iOS の場合は macOS のみ）、このチュートリアルの範囲外です。この先の章では、スマートフォンでアプリを確認するのは **あなた** の役目です。あとで試してみたい場合は、[ローカル機能のセットアップ](/mcp/#set-up-local-capabilities-recommended) を参照してください。
+
+</Collapsible>
+
+<BoxLink
+  title="Expo MCP サーバー"
+  Icon={BookOpen02Icon}
+  description="詳しいインストール手順、利用できるツール、データプライバシーの詳細を確認できます。"
+  href="/mcp/"
+/>
+
+</Step>
+
+<Step label="7">
+
+## セットアップを確認する
+
+すべてがうまくつながっているか確認しましょう。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+Expo MCP サーバーを使って Expo のドキュメントで "expo-image-picker" を検索して、それが何をするものか 1 文で教えて。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Use the Expo MCP server to search the Expo documentation for "expo-image-picker" and tell me in one sentence what it does.
+```
+
+</Collapsible>
+
+**表示されるもの**: エージェントが Expo のドキュメントツールを呼び出し、デバイスの写真ライブラリから画像を選ぶ機能についての説明を 1 文で返します。代わりに接続エラーや認証エラーが表示された場合は、前のステップのサインイン部分をやり直してください。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/build-with-ai/set-up-your-tools"
+  name="BUILD_WITH_AI"
+  chapterTitle="第 1 章：ツールを準備する"
+  summary="これでツールが揃いました。Expo アプリの作り方を知っている AI エージェント、ツール群を動かす Node.js、そして結果を確認するためのスマートフォン上の Expo Go です。"
+  nextChapterDescription="次の章では、エージェントが新しいアプリを作成し、それをスマートフォンで実際に動かして確認します。"
+  nextChapterTitle="最初のアプリを作成する"
+  nextChapterLink="/ja/tutorial/build-with-ai/create-your-first-app"
+/>

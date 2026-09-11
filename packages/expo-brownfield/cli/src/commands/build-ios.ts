@@ -6,6 +6,7 @@ import {
   resolveBuildConfigIos,
   validateHostProvided,
   validatePrebuild,
+  validateSchemeCollision,
   shipSwiftPackage,
   shipFrameworks,
 } from '../utils';
@@ -16,15 +17,16 @@ const buildIos = async (command: Command) => {
   const config = resolveBuildConfigIos(opts);
   printIosConfig(config);
   validateHostProvided(config);
+  validateSchemeCollision(config);
 
   await buildFramework(config);
 
   if (config.output !== 'frameworks') {
     // Ship frameworks as swift package
-    shipSwiftPackage(config);
+    await shipSwiftPackage(config);
   } else {
     // Ship frameworks as standalone XCFrameworks
-    shipFrameworks(config);
+    await shipFrameworks(config);
   }
 };
 

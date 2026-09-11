@@ -1,0 +1,74 @@
+---
+title: 画像を保存する
+description: この章では、AI エージェントに指示して、装飾した写真をスマートフォンに保存し、任意でブラウザでも動作するようにします。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+
+この章では、最後のコア機能を追加します。ステッカーごと写真をスマートフォンの写真ライブラリに保存する機能です。
+
+<Step label="1">
+
+## 写真ライブラリに保存する
+
+次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+オプションの並びに、ダウンロードアイコン付きの "Save" を追加して。タップしたら、react-native-view-shot ライブラリを使って画面全体ではなくステッカー付きの写真だけをキャプチャし、expo-media-library ライブラリを使ってスマートフォンの写真ライブラリに保存して。必要であれば初回にアクセス許可を求め、画像が保存されたことを知らせるアラートを表示して。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Add a "Save" option to the row of options, with a download icon. When I tap it, capture just the photo with the sticker on it (not the whole screen) using the react-native-view-shot library, and save the result to my phone's photo library using the expo-media-library library. Ask for permission the first time if needed, and show an alert confirming that the image was saved.
+```
+
+</Collapsible>
+
+**表示されるもの**: **Save** をタップすると、初回は写真への保存許可が求められます。**Allow**（許可）をタップすると、アプリが確認メッセージを表示します。スマートフォンの写真ギャラリーを開いてみましょう。ステッカーが焼き込まれた写真がそこにあり、どこにでも共有できる状態になっています。
+
+</Step>
+
+<Step label="2">
+
+## web でも動くようにする（任意）
+
+このアプリはスマートフォン専用ではありません。同じプロジェクトは web ブラウザでも動作します。開発サーバーを実行しているターミナルウィンドウで <kbd>W</kbd> を押すと、アプリがブラウザで開きます。**Save** を除いて、すべて動作します。スマートフォンで画像をキャプチャするライブラリは web では動作しないためです。
+
+<Collapsible summary="Save オプションを web でも動くようにしたい場合">
+
+次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+アプリが web ブラウザで動作しているときも Save オプションが使えるようにして。react-native-view-shot ライブラリは web に対応していないので、プラットフォームが web の場合は代わりに dom-to-image ライブラリを使って画像をキャプチャし、ファイルとしてダウンロードして。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Make the Save option also work when the app runs in a web browser. The react-native-view-shot library doesn't support the web, so when the platform is web, use the dom-to-image library to capture the image and download it as a file instead.
+```
+
+</Collapsible>
+
+**表示されるもの**: ブラウザで写真を選び、ステッカーを追加して **Save** をクリックすると、画像がファイルとしてダウンロードされます。これが Expo アプリでのプラットフォームごとの違いの扱い方です。1 つのアプリの中に、必要な箇所だけ小さくプラットフォーム別の分岐を用意します。
+
+</Collapsible>
+
+</Step>
+
+> 結果が期待どおりにならない場合は、見えているものをそのままエージェントに伝えてください。[うまくいかないとき](/ja/tutorial/build-with-ai/create-your-first-app/#うまくいかないとき) に対処法があります。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/build-with-ai/save-your-creation"
+  name="BUILD_WITH_AI"
+  chapterTitle="第 5 章：画像を保存する"
+  summary="StickerSmash はこれで機能が出そろいました。写真を選び、ステッカーをぺたりと貼り、その結果をスマートフォンに、そしてブラウザでも保存できます。残るはあと 1 章です。"
+  nextChapterDescription="次の章では、ステータスバー・スプラッシュスクリーン・アプリアイコンを仕上げて、次のステップに進みます。"
+  nextChapterTitle="仕上げ"
+  nextChapterLink="/ja/tutorial/build-with-ai/finishing-touches"
+/>

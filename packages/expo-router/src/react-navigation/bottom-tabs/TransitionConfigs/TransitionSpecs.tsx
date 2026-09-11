@@ -6,7 +6,11 @@ export const FadeSpec: TransitionSpec = {
   animation: 'timing',
   config: {
     duration: 150,
-    easing: Easing.in(Easing.linear),
+    // Resolve lazily so this module evaluates in React Server Components.
+    // Reading `easing` still needs the client on native — `Easing` throws on the server there.
+    get easing() {
+      return Easing.in(Easing.linear);
+    },
   },
 };
 
@@ -14,6 +18,10 @@ export const ShiftSpec: TransitionSpec = {
   animation: 'timing',
   config: {
     duration: 150,
-    easing: Easing.inOut(Easing.ease),
+    // Resolve lazily so this module evaluates in React Server Components.
+    // Reading `easing` still needs the client on native — `Easing` throws on the server there.
+    get easing() {
+      return Easing.inOut(Easing.ease);
+    },
   },
 };

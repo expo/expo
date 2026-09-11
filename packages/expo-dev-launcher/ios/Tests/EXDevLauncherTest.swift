@@ -1,17 +1,16 @@
-import Quick
-import Nimble
+import Testing
 
 @testable import EXDevLauncher
 
-class EXDevLauncherTest: QuickSpec {
-  override class func spec() {
-    it("exported constants should contain correct fields") {
-      let module = EXDevLauncher()
+@Suite("EXDevLauncher")
+struct EXDevLauncherTest {
+  @Test
+  func `exported constants should contain correct fields`() {
+    let module = EXDevLauncher()
 
-      let exportedConstants = module.constantsToExport()!
+    let exportedConstants = module.constantsToExport()!
 
-      expect(exportedConstants["manifestString"]).toNot(beNil())
-      expect(exportedConstants["manifestURL"]).toNot(beNil())
-    }
+    #expect(exportedConstants["manifestString"] != nil)
+    #expect(exportedConstants["manifestURL"] != nil)
   }
 }

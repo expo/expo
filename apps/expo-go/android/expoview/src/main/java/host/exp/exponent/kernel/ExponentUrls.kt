@@ -3,9 +3,12 @@ package host.exp.exponent.kernel
 
 import android.net.Uri
 import expo.modules.jsonutils.require
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
+import host.exp.exponent.ExponentManifest
 import okhttp3.Request
 import org.json.JSONObject
+import java.net.URI
 
 object ExponentUrls {
   private val HTTPS_HOSTS = setOf(
@@ -26,6 +29,42 @@ object ExponentUrls {
     val uri = Uri.parse(rawUrl)
     val useHttps = isHttpsHost(uri.host) || rawUrl.startsWith("exps")
     return uri.buildUpon().scheme(if (useHttps) "https" else "http").build().toString()
+  }
+
+  @JvmStatic fun resolveManifestUrl(rawUrl: String, manifestUrl: String): String {
+    val baseUrl = ExponentManifest.httpManifestUrl(manifestUrl).toString()
+    return try {
+      URI(baseUrl).withRootPath().resolve(rawUrl).toString()
+    } catch (e: Exception) {
+      rawUrl
+    }
+  }
+
+  /**
+   * Works around Android's [URI.resolve] dropping the separator between the authority and a
+   * path-relative reference when the base path is empty, which splices the reference's first
+   * segment onto the port. A manifest URL without a path reaches this in the normal case, since
+   * building the HTTP manifest URL normalizes a missing path to an empty one.
+   */
+  private fun URI.withRootPath(): URI {
+    if (rawAuthority == null || !rawPath.isNullOrEmpty()) {
+      return this
+    }
+    // A base query or fragment is dropped during resolution anyway, so it doesn't need carrying.
+    return URI("$scheme://$rawAuthority/")
+  }
+
+  /**
+   * The HTTP(S) URL the JS bundle is loaded from, resolved against the URL the manifest was served
+   * from.
+   *
+   * This is the address the device actually reached, so it's what other development server requests
+   * must be built from. It's preferred over the manifest's `debuggerHost`, which holds the address
+   * the development server believes it has, and which is unreachable whenever the server is reached
+   * through something it can't observe, such as a proxy or a tunnel.
+   */
+  @JvmStatic fun bundleUrlFromManifest(manifest: Manifest, manifestUrl: String): String {
+    return toHttp(resolveManifestUrl(manifest.getBundleURL(), manifestUrl))
   }
 
   @JvmStatic fun addExponentHeadersToUrl(urlString: String): Request.Builder {

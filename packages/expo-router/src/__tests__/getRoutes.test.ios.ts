@@ -601,26 +601,25 @@ describe('anchor', () => {
   });
 
   it(`throws if anchor does not match a route`, () => {
-    expect(() => {
+    expect(() =>
       getRoutes(
         inMemoryContext({
           _layout: {
-            unstable_settings: {
-              anchor: 'c',
-            },
+            unstable_settings: { anchor: 'c' },
             default: () => null,
           },
           a: () => null,
           b: () => null,
-        })
-      );
-    }).toThrowErrorMatchingInlineSnapshot(
-      `"Layout ./_layout.js has invalid anchor 'c'. Valid options are: 'a', 'b'"`
+        }),
+        { skipGenerated: true }
+      )
+    ).toThrow(
+      'The initial route name "c" was not found in the layout at "./_layout.js". Available routes are: "a", "b". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
     );
   });
 
   it(`throws if anchor with group selection does not match a route`, () => {
-    expect(() => {
+    expect(() =>
       getRoutes(
         inMemoryContext({
           '(a,b)/_layout': {
@@ -635,11 +634,46 @@ describe('anchor', () => {
             default: () => null,
           },
           '(a,b)/c': () => null,
-        })
-      );
-    }).toThrowErrorMatchingInlineSnapshot(
-      `"Layout ./(a,b)/_layout.js has invalid anchor 'd' for group '(b)'. Valid options are: 'c'"`
+        }),
+        { skipGenerated: true }
+      )
+    ).toThrow(
+      'The initial route name "d" for group "b" was not found in the layout at "./(a,b)/_layout.js". Available routes are: "c". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
     );
+  });
+
+  it(`does not label a shared anchor as group-specific`, () => {
+    expect(() =>
+      getRoutes(
+        inMemoryContext({
+          '(a)/_layout': {
+            unstable_settings: { anchor: 'missing' },
+            default: () => null,
+          },
+          '(a)/index': () => null,
+        }),
+        { skipGenerated: true }
+      )
+    ).toThrow(
+      'The initial route name "missing" was not found in the layout at "./(a)/_layout.js". Available routes are: "index".'
+    );
+  });
+
+  it(`resolves a directory anchor to its index route entry point`, () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        _layout: {
+          unstable_settings: { anchor: 'a' },
+          default: () => null,
+        },
+        'a/index': () => null,
+        b: () => null,
+      }),
+      { skipGenerated: true }
+    );
+
+    expect(routes?.initialRouteName).toBe('a/index');
+    expect(routes?.children[0]?.entryPoints).toContain('./a/index.js');
   });
 });
 

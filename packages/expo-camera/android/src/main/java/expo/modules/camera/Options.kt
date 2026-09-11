@@ -31,7 +31,8 @@ data class SavePictureOptions(
 @OptimizedRecord
 data class RecordingOptions(
   @Field val maxDuration: Int = 0,
-  @Field val maxFileSize: Int = 0
+  @Field val maxFileSize: Int = 0,
+  @Field val progressUpdateInterval: Double = 0.5
 ) : Record
 
 enum class PictureFormat(val value: String) : Enumerable {

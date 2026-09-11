@@ -1,5 +1,3 @@
-// import { resolveDestinationsAsync } from './appleDestinations';
-import { promptDeviceAsync } from './promptDevice';
 import * as Log from '../../../log';
 import {
   AppleDeviceManager,
@@ -14,6 +12,8 @@ import { profile } from '../../../utils/profile';
 import { logDeviceArgument } from '../../hints';
 import type { BuildProps } from '../XcodeBuild.types';
 import * as AppleDevice from '../appleDevice/AppleDevice';
+// import { resolveDestinationsAsync } from './appleDestinations';
+import { promptDeviceAsync } from './promptDevice';
 
 type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;
 

@@ -4,15 +4,6 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { assertSystemRequirementsAsync } from './assertSystemRequirements';
-import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunning';
-import {
-  getBestBootedSimulatorAsync,
-  getBestUnbootedSimulatorAsync,
-  getSelectableSimulatorsAsync,
-} from './getBestSimulator';
-import { promptAppleDeviceAsync } from './promptAppleDevice';
-import * as SimControl from './simctl';
 import { delayAsync, waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
@@ -22,6 +13,15 @@ import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import type { BaseResolveDeviceProps } from '../PlatformManager';
 import { event } from '../events';
+import { assertSystemRequirementsAsync } from './assertSystemRequirements';
+import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunning';
+import {
+  getBestBootedSimulatorAsync,
+  getBestUnbootedSimulatorAsync,
+  getSelectableSimulatorsAsync,
+} from './getBestSimulator';
+import { promptAppleDeviceAsync } from './promptAppleDevice';
+import * as SimControl from './simctl';
 
 const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 

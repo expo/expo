@@ -22,7 +22,7 @@ export type SurfaceType = 'textureView' | 'surfaceView';
 
 export interface VideoViewProps extends ViewProps {
   /**
-   * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup) hook to create one.
+   * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup-playerbuilderoptions) hook to create one.
    */
   player?: VideoPlayer | null;
 

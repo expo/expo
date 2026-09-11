@@ -9,13 +9,14 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
+import { getPrecompileDir } from '../Directories';
+import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
-import { getPrecompileDir } from '../Directories';
-import { getPackageByName } from '../Packages';
 import {
   ObjcTarget,
   SwiftTarget,
@@ -61,6 +62,30 @@ function findXCFrameworkHeadersDir(xcframeworkPath: string): string | null {
           return headersDir;
         }
       }
+    }
+  }
+  return null;
+}
+
+/**
+ * Finds the Headers directory of a headers-only xcframework (one whose slices contain a `Headers/`
+ * directory directly, with no `.framework` wrapper — e.g. ReactNativeHeaders.xcframework). The
+ * directory is identified by the presence of a `module.modulemap` and is architecture-independent,
+ * so the first matching slice is used.
+ * @param xcframeworkPath Absolute path to the .xcframework directory
+ * @returns Absolute path to the slice's Headers directory, or null if not found
+ */
+function findModularHeadersDir(xcframeworkPath: string): string | null {
+  if (!fs.existsSync(xcframeworkPath)) {
+    return null;
+  }
+  for (const entry of fs.readdirSync(xcframeworkPath, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const headersDir = path.join(xcframeworkPath, entry.name, 'Headers');
+    if (fs.existsSync(path.join(headersDir, 'module.modulemap'))) {
+      return headersDir;
     }
   }
   return null;
@@ -494,8 +519,14 @@ const ARTIFACT_RELATIVE_PATHS: Record<
   string,
   {
     xcframeworkPath: string;
-    includeDirectories: string[];
-    vfsOverlayFile?: string;
+    /** Include roots relative to the xcframework, for dependencies without a clang module map. */
+    includeDirectories?: string[];
+    /**
+     * Headers-only xcframework (e.g. ReactNativeHeaders.xcframework) shipping a flattened clang
+     * module map under <slice>/Headers/module.modulemap. Consumers get `-fmodule-map-file` plus
+     * `-I` to the headers dir.
+     */
+    moduleMapXcframework?: string;
     /** Display name used in Package.swift */
     displayName: string;
     /** Key on ArtifactPaths for the flavor-specific base path */
@@ -516,8 +547,7 @@ const ARTIFACT_RELATIVE_PATHS: Record<
   },
   react: {
     xcframeworkPath: 'React.xcframework',
-    includeDirectories: ['Headers', 'React_Core'],
-    vfsOverlayFile: 'React-VFS.yaml',
+    moduleMapXcframework: 'ReactNativeHeaders.xcframework',
     displayName: 'React',
     artifactKey: 'react',
     cacheDirName: 'react',
@@ -571,7 +601,6 @@ function getExternalDependencyConfig(
     name: config.displayName,
     path: relativePath,
     includeDirectories: config.includeDirectories,
-    hasVfsOverlay: !!config.vfsOverlayFile,
     debugBasePath: path.join(artifactPaths.cachePath, config.cacheDirName, version, 'debug'),
     releaseBasePath: path.join(artifactPaths.cachePath, config.cacheDirName, version, 'release'),
   };
@@ -893,13 +922,18 @@ export function buildSwiftSettings(
   // Define RCT_NEW_ARCH_ENABLED for Fabric support
   settings.push('.define("RCT_NEW_ARCH_ENABLED")');
 
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge) behind it, so the prebuild must match.
+  settings.push('.define("RCT_REMOVE_LEGACY_ARCH")');
+
   // Common C++ flags (not path-dependent)
   // Note: -fcxx-modules is intentionally omitted (see buildCSettings comment).
   const commonCxxFlags: string[] = ['-Xcc', '-fmodules'];
 
-  // Add VFS overlays and header maps per configuration
+  // Add module maps and header maps per configuration
   // For Swift, each flag needs to be wrapped with -Xcc to pass it to the underlying Clang compiler
-  const { debug, release } = collectVfsAndHeaderMapFlags(
+  const { debug, release } = collectHeaderMapFlags(
     externalDeps,
     artifactPaths,
     packageSwiftDir,
@@ -1022,10 +1056,16 @@ function buildCSettings(
   cSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
   cxxSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
 
-  // Enable Clang modules for ObjC/React module maps (VFS overlays).
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge in react-native-skia) behind it, so the prebuild must match.
+  cSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
+  cxxSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
+
+  // Enable Clang modules for ObjC/React module maps.
   // Note: -fcxx-modules is intentionally omitted — it enforces strict C++ standard library
   // module imports (e.g. "must import 'std.optional'"), which breaks third-party code that
-  // relies on transitive includes. Only -fmodules is needed for React's VFS module maps.
+  // relies on transitive includes. Only -fmodules is needed for React's module maps.
   cSettings.push('.unsafeFlags(["-fmodules"])');
   cxxSettings.push('.unsafeFlags(["-fmodules"])');
 
@@ -1152,72 +1192,31 @@ function buildCSettings(
     addDefinesAndFlags(cxxFlags, cxxSettings);
   }
 
-  // Add VFS overlays and header maps for React if present
+  // Add module maps and header maps for React if present
   // Returns separate flag sets for debug and release configurations
-  const { debug: vfsDebug, release: vfsRelease } = collectVfsAndHeaderMapFlags(
+  const { debug: headerDebug, release: headerRelease } = collectHeaderMapFlags(
     externalDeps,
     artifactPaths,
     packageSwiftDir,
     buildType
   );
 
-  // Debug/release-specific VFS overlay and header map flags
-  pushUnsafeFlags([cSettings, cxxSettings], vfsDebug, 'debug');
-  pushUnsafeFlags([cSettings, cxxSettings], vfsRelease, 'release');
+  pushUnsafeFlags([cSettings, cxxSettings], headerDebug, 'debug');
+  pushUnsafeFlags([cSettings, cxxSettings], headerRelease, 'release');
 
   return { cSettings, cxxSettings };
 }
 
 /**
- * Extracts the root path from a VFS overlay YAML file.
- * The VFS overlay YAML has a structure like:
- * ```
- * version: 0
- * case-sensitive: false
- * roots:
- *   - name: '/path/to/root'
- * ```
- * This function parses the YAML and returns the first root's name path.
- */
-function extractVFSOverlayRootPath(vfsOverlayPath: string): string | null {
-  try {
-    const yamlContent = fs.readFileSync(vfsOverlayPath, 'utf-8');
-    const lines = yamlContent.split('\n');
-    let inRoots = false;
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-
-      if (trimmed === 'roots:') {
-        inRoots = true;
-        continue;
-      }
-
-      if (inRoots && trimmed.startsWith('- name:')) {
-        // Extract the path from "- name: '/path/to/root'" or "- name: '/path/to/root'"
-        const nameValue = trimmed.substring('- name:'.length).trim();
-        // Remove quotes if present
-        const cleanPath = nameValue.replace(/^['"]|['"]$/g, '');
-        return cleanPath;
-      }
-    }
-  } catch (error) {
-    console.warn(`[WARNING] Could not read VFS overlay file: ${vfsOverlayPath}`, error);
-  }
-
-  return null;
-}
-
-/**
- * Collects VFS overlay, header map, and include directory flags for external dependencies.
+ * Collects module map, header map, and include directory flags for external dependencies.
  * Returns separate flag sets for debug and release configurations.
  * All paths use .when(configuration:) so a single Package.swift works for both flavors.
  * @param externalDeps - External dependency names
  * @param artifactPaths - Paths to downloaded artifacts from centralized cache
  * @param packageSwiftDir - Directory where Package.swift is located (for computing relative paths)
- * @param buildType - Current build flavor (for reading VFS overlay from the built flavor)
+ * @param buildType - Current build flavor
  */
-function collectVfsAndHeaderMapFlags(
+function collectHeaderMapFlags(
   externalDeps: string[],
   artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string,
@@ -1238,44 +1237,61 @@ function collectVfsAndHeaderMapFlags(
       buildType
     );
     if (config) {
-      // Add VFS overlay per configuration — each flavor has its own VFS YAML
-      // with absolute paths pointing to its specific artifact directory.
-      // Paths are emitted as absolute strings since Package.swift is a generated file.
-      if (config.hasVfsOverlay) {
-        const artifactConfig = ARTIFACT_RELATIVE_PATHS[depName.toLowerCase()];
-        const vfsFile = artifactConfig?.vfsOverlayFile;
-        if (vfsFile) {
-          // Debug VFS overlay
-          if (config.debugBasePath) {
-            const debugVfsAbsPath = path.join(config.debugBasePath, vfsFile);
-            if (fs.existsSync(debugVfsAbsPath)) {
-              debug.push('-ivfsoverlay', debugVfsAbsPath);
+      const lowerName = depName.toLowerCase();
+      const artifactConfig = ARTIFACT_RELATIVE_PATHS[lowerName];
 
-              const vfsRootPath = extractVFSOverlayRootPath(debugVfsAbsPath);
-              if (vfsRootPath) {
-                debug.push('-I', vfsRootPath);
-              }
-            }
+      // React's lowercase `react/`, `yoga/`, … namespaces are served by the flattened clang module
+      // map in ReactNativeHeaders.xcframework. Activate the module map (so the includes are
+      // modular) and add the headers dir to the search path (so they resolve). `<React/X.h>` keeps
+      // resolving via the React.framework binary target.
+      //
+      // The `continue` keeps React out of the include-directory branch below: an include root into
+      // React.xcframework is redundant once the module map is active — verified by prebuilding
+      // ExpoModulesCore (C++ target, consumes the react/ and yoga/ namespaces) and ExpoCrypto
+      // against 0.87.0-rc.3 artifacts, where both flavors compose and verify without one.
+      const moduleMapXcframework = artifactConfig?.moduleMapXcframework;
+      if (lowerName === 'react' && moduleMapXcframework) {
+        const pushModularFlags = (
+          flags: string[],
+          basePath: string | undefined,
+          flavor: BuildFlavor
+        ) => {
+          if (!basePath) {
+            return;
           }
-
-          // Release VFS overlay
-          if (config.releaseBasePath) {
-            const releaseVfsAbsPath = path.join(config.releaseBasePath, vfsFile);
-            if (fs.existsSync(releaseVfsAbsPath)) {
-              release.push('-ivfsoverlay', releaseVfsAbsPath);
-
-              const vfsRootPath = extractVFSOverlayRootPath(releaseVfsAbsPath);
-              if (vfsRootPath) {
-                release.push('-I', vfsRootPath);
-              }
+          const headersDir = findModularHeadersDir(path.join(basePath, moduleMapXcframework));
+          if (!headersDir) {
+            // Both flavors' flags are emitted every run, but only the one being built has to be on
+            // disk. The other may be mid-download — Artifacts.downloadArtifactAsync creates the
+            // flavor directory before it extracts into it, and the pipeline downloads flavors
+            // concurrently — or simply absent, since `et prebuild --flavor Debug` never fetches
+            // release. Its flags are inert here either way, so only fail for the built flavor.
+            if (flavor !== buildType) {
+              return;
             }
+            throw new Error(
+              `The React Native artifact at ${basePath} has no usable ${moduleMapXcframework}, so ` +
+                `the lowercase react/ and yoga/ header namespaces cannot be resolved.\n` +
+                `React Native 0.87 and newer ship that headers-only sidecar next to React.xcframework; ` +
+                `an artifact without it is incomplete or predates that layout.\n` +
+                `Delete that folder and re-run the prebuild to download the artifact again, or check ` +
+                `that the pinned React Native version is 0.87 or newer.`
+            );
           }
-        }
+          // clang requires the joined `-fmodule-map-file=<path>` form; it rejects the
+          // space-separated variant. `-I` adds the headers dir to the search path so the
+          // `<react/…>`, `<yoga/…>` includes resolve.
+          flags.push(`-fmodule-map-file=${path.join(headersDir, 'module.modulemap')}`);
+          flags.push('-I', headersDir);
+        };
+        pushModularFlags(debug, config.debugBasePath, 'Debug');
+        pushModularFlags(release, config.releaseBasePath, 'Release');
+        continue;
       }
 
       // Add include directories per configuration (debug/release) as absolute paths.
       // Hermes is excluded here because its destroot/include/ contains jsi/ headers
-      // that conflict with the identical jsi/ headers provided by the React VFS overlay.
+      // that conflict with the identical jsi/ headers provided by React.
       // Hermes include paths are instead passed via xcodebuild OTHER_CFLAGS, which
       // makes them available to the compiler but invisible to the Clang dependency scanner.
       if (config.includeDirectories && depName.toLowerCase() !== 'hermes') {
@@ -1330,7 +1346,7 @@ async function buildPackageSwiftContext(
   // Used to auto-resolve header include paths with .when(configuration:) modifiers
   // so a single Package.swift works for both debug and release builds.
   // Only includes flavor-dependent deps (expo/external packages), not RN ecosystem deps
-  // whose headers are already handled by collectVfsAndHeaderMapFlags.
+  // whose headers are already handled by collectHeaderMapFlags.
   const xcframeworkPaths = new Map<
     string,
     { buildPath: string; productName: string; versionPrefix?: string }
@@ -1372,7 +1388,7 @@ async function buildPackageSwiftContext(
         linkedFrameworks: [],
       });
       // RN ecosystem deps (Hermes, React, etc.) don't need xcframeworkPaths tracking —
-      // their headers are already resolved via collectVfsAndHeaderMapFlags.
+      // their headers are already resolved via collectHeaderMapFlags.
       continue;
     }
 
@@ -1385,7 +1401,11 @@ async function buildPackageSwiftContext(
       const productName = isScoped ? parts[2] : parts[1];
 
       // XCFrameworks are in the centralized build directory
-      const depBuildPath = path.join(getPrecompileDir(), '.build', packageName);
+      const dependencyPackage = getPackageByName(packageName);
+      const depBuildPath =
+        usesPackageLocalBuildPath(pkg) && dependencyPackage
+          ? getPackageLocalBuildPath(dependencyPackage)
+          : path.join(getPrecompileDir(), '.build', packageName);
       const xcframeworkPath = Frameworks.getFrameworkPath(depBuildPath, productName, buildType);
 
       if (await fs.pathExists(xcframeworkPath)) {
@@ -1470,15 +1490,22 @@ async function buildPackageSwiftContext(
       const packageName = spmPkg.packageName || derivePackageNameFromUrl(spmPkg.url);
 
       // Check if this SPM dep has been built as a shared xcframework
-      const sharedXCFrameworkPath = Frameworks.getSharedSPMDepFrameworkPath(
-        spmPkg.productName,
-        buildType
-      );
-      if (fs.existsSync(sharedXCFrameworkPath)) {
+      const packageLocal = usesPackageLocalBuildPath(pkg);
+      const preparedXCFrameworkPath = packageLocal
+        ? path.join(
+            pkg.buildPath,
+            'intermediates',
+            'spm-deps',
+            spmPkg.productName,
+            buildType.toLowerCase(),
+            `${spmPkg.productName}.xcframework`
+          )
+        : Frameworks.getSharedSPMDepFrameworkPath(spmPkg.productName, buildType);
+      if (fs.existsSync(preparedXCFrameworkPath)) {
         // Use as binary target instead of SPM package dependency
-        const relativePath = path.relative(packageSwiftDir, sharedXCFrameworkPath);
+        const relativePath = path.relative(packageSwiftDir, preparedXCFrameworkPath);
         spinner.info(
-          `Using shared SPM dep: ${spmPkg.productName} → .binaryTarget(path: "${relativePath}")`
+          `Using prepared SPM dep: ${spmPkg.productName} → .binaryTarget(path: "${relativePath}")`
         );
         resolvedTargets.push({
           type: 'binary',

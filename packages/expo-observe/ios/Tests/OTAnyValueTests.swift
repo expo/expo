@@ -247,7 +247,8 @@ struct OTAnyValueCodableTests {
       .kvlist([
         OTKeyValue(key: "a", value: .int(1)),
         OTKeyValue(key: "b", value: .string("x")),
-      ]))
+      ])
+    )
     #expect(json.count == 1)
     let kvlistValue = try #require(json["kvlistValue"] as? [String: Any])
     let values = try #require(kvlistValue["values"] as? [[String: Any]])

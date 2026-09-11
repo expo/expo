@@ -44,7 +44,7 @@ export interface WebViewStyle {
   /** @platform web */
   backgroundClip?: string;
   /** @platform web */
-  backgroundImage?: string;
+  backgroundImage?: NativeViewStyle['backgroundImage'] | string;
   /** @platform web */
   backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
   /** @platform web */

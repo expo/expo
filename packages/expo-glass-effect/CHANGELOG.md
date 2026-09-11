@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [iOS] Report `isLiquidGlassAvailable` as `true` in apps built with the iOS 27 SDK, which ignores `UIDesignRequiresCompatibility`. ([#49850](https://github.com/expo/expo/pull/49850) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Changed the type of the `GlassView` `tintColor` prop from `string` to `ColorValue`, which the native implementation already accepted, so `PlatformColor` and `DynamicColorIOS` values now type-check. ([#49893](https://github.com/expo/expo/pull/49893) by [@johankasperi](https://github.com/johankasperi))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.4 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

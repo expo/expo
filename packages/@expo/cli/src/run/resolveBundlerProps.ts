@@ -1,6 +1,6 @@
 import { Log } from '../log';
 import { CommandError } from '../utils/errors';
-import { resolvePortAsync } from '../utils/port';
+import { isValidPort, resolveMetroPortAsync } from '../utils/port';
 
 export interface BundlerProps {
   /** Port to start the dev server on. */
@@ -28,14 +28,17 @@ export async function resolveBundlerPropsAsync(
 
   // Resolve the port if the bundler is used.
   let port = options.bundler
-    ? await resolvePortAsync(projectRoot, { reuseExistingPort: true, defaultPort: options.port })
+    ? await resolveMetroPortAsync(projectRoot, {
+        reuseExistingPort: true,
+        defaultPort: options.port,
+      })
     : null;
 
   // Skip bundling if the port is null -- meaning skip the bundler if the port is already running the app.
   options.bundler = !!port;
   if (!port) {
-    // Use explicit user-provided port, or the default port
-    port = options.port ?? 8081;
+    // Use a valid user-provided port, or the default port
+    port = isValidPort(options.port) ? options.port : 8081;
   }
   Log.debug(`Resolved port: ${port}, start dev server: ${options.bundler}`);
 

@@ -18,6 +18,7 @@ import com.bumptech.glide.util.Preconditions
 import com.bumptech.glide.util.Synthetic
 import expo.modules.core.utilities.ifNull
 import expo.modules.image.enums.ContentFit
+import expo.modules.image.enums.ImageCacheType
 import expo.modules.kotlin.tracing.endAsyncTraceBlock
 import java.lang.ref.WeakReference
 import kotlin.math.max
@@ -41,6 +42,11 @@ class ImageViewWrapperTarget(
    * Whether the target is used - the asset loaded by it has been drawn in the image view
    */
   var isUsed = false
+
+  /**
+   * Where the loaded resource was resolved from, set by [expo.modules.image.events.GlideRequestListener]
+   */
+  var cacheType: ImageCacheType = ImageCacheType.NONE
 
   /**
    * The main source height where -1 means unknown

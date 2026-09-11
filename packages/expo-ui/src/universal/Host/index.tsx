@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
  */
 export function Host({
   children,
-  colorScheme = 'unspecified',
+  colorScheme,
   seedColor,
   ignoreSafeArea,
   layoutDirection,
@@ -43,7 +43,8 @@ export function Host({
   useViewportSizeMeasurement = false,
   ...rest
 }: UniversalHostProps) {
-  const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
+  const dataSet =
+    colorScheme === 'light' || colorScheme === 'dark' ? { theme: colorScheme } : undefined;
   const primaryColorScale = useMemo(() => generatePrimaryColorScale(seedColor), [seedColor]);
 
   const dir =

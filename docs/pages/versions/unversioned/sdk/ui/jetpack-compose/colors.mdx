@@ -8,8 +8,9 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
-@expo/ui/jetpack-compose exposes the [Material 3 color palette](https://m3.material.io/styles/color/system/overview) used by Jetpack Compose so you can pick a palette source and have every component under a [`<Host>`](./host) theme from it consistently.
+Expo UI Jetpack Compose exposes the [Material 3 color palette](https://m3.material.io/styles/color/system/overview) used by Jetpack Compose so you can pick a palette source and have every component under a [`<Host>`](./host) theme from it consistently.
 
 The palette source depends on the options you pass:
 
@@ -27,12 +28,18 @@ The palette source depends on the options you pass:
 
 [`Host`](./host) accepts `seedColor` and `colorScheme` props directly. This is the recommended way to theme a Compose subtree. Native Compose components under this `Host` render with the seeded palette and any descendant that calls [`useMaterialColors()`](#usematerialcolorsoptions) without arguments receives the same palette from the Host's context.
 
-```tsx BrandedHostExample.tsx
+<ComponentExample
+  title="BrandedHostExample.tsx"
+  src="/static/images/expo-ui/examples/colors-branded-host-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/colors-branded-host-android-dark.webp"
+  alt="A button in a light purple container with dark purple text, themed from the seed color">
+
+```tsx
 import { Button, Host, Text } from '@expo/ui/jetpack-compose';
 
 export default function BrandedHostExample() {
   return (
-    <Host seedColor="#8E24AA" colorScheme="dark" style={{ flex: 1 }}>
+    <Host seedColor="#8E24AA" colorScheme="dark" matchContents>
       <Button onClick={() => {}}>
         <Text>Themed from the seed</Text>
       </Button>
@@ -41,18 +48,34 @@ export default function BrandedHostExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Reading the current palette inside Host
 
 Call [`useMaterialColors()`](#usematerialcolorsoptions) without arguments inside a [`<Host>`](./host) to read the Host's current palette. The hook returns a reference-stable [`MaterialColors`](#materialcolors) object and does not cross the native bridge on re-renders.
 
-```tsx MaterialColorsExample.tsx
-import { Column, Host, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="MaterialColorsExample.tsx"
+  src="/static/images/expo-ui/examples/colors-palette-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/colors-palette-android-dark.webp"
+  alt="A surface panel printing the current primary and surface hex values">
+
+```tsx
+import {
+  Column,
+  Host,
+  Surface,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { padding } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function MaterialColorsExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <PaletteInspector />
+      <Surface>
+        <PaletteInspector />
+      </Surface>
     </Host>
   );
 }
@@ -60,7 +83,9 @@ export default function MaterialColorsExample() {
 function PaletteInspector() {
   const colors = useMaterialColors();
   return (
-    <Column modifiers={[padding(16, 16, 16, 16)]} verticalArrangement={{ spacedBy: 8 }}>
+    <Column
+      modifiers={[padding(16, 16, 16, 16)]}
+      verticalArrangement={{ spacedBy: 8 }}>
       <Text>Primary: {colors.primary}</Text>
       <Text>Surface: {colors.surface}</Text>
     </Column>
@@ -68,40 +93,74 @@ function PaletteInspector() {
 }
 ```
 
+</ComponentExample>
+
 ### Computing a specific palette with arguments
 
 Pass arguments to [`useMaterialColors()`](#usematerialcolorsoptions) to compute a palette on demand, even outside a `<Host>`. The `colorScheme` takes `'light'` or `'dark'`, you can omit it to follow the system.
 
-```tsx UseMaterialColorsExample.tsx
-import { Column, Host, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="UseMaterialColorsExample.tsx"
+  src="/static/images/expo-ui/examples/colors-use-material-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/colors-use-material-colors-android-dark.webp"
+  alt="A surface panel printing three primary hex values for the dark, branded, and branded dark palettes">
+
+```tsx
+import {
+  Column,
+  Host,
+  Surface,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { padding } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function UseMaterialColorsExample() {
   const dark = useMaterialColors({ colorScheme: 'dark' });
   const brand = useMaterialColors({ seedColor: '#8E24AA' });
-  const brandedDark = useMaterialColors({ colorScheme: 'dark', seedColor: '#8E24AA' });
+  const brandedDark = useMaterialColors({
+    colorScheme: 'dark',
+    seedColor: '#8E24AA',
+  });
 
   return (
     <Host style={{ flex: 1 }}>
-      <Column modifiers={[padding(16, 16, 16, 16)]} verticalArrangement={{ spacedBy: 8 }}>
-        <Text>Dark primary: {dark.primary}</Text>
-        <Text>Brand primary: {brand.primary}</Text>
-        <Text>Branded dark primary: {brandedDark.primary}</Text>
-      </Column>
+      <Surface>
+        <Column
+          modifiers={[padding(16, 16, 16, 16)]}
+          verticalArrangement={{ spacedBy: 8 }}>
+          <Text>Dark primary: {dark.primary}</Text>
+          <Text>Brand primary: {brand.primary}</Text>
+          <Text>Branded dark primary: {brandedDark.primary}</Text>
+        </Column>
+      </Surface>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Reading colors outside React components
 
 ```tsx GetMaterialColorsExample.tsx
-import { getMaterialColors, isDynamicColorAvailable } from '@expo/ui/jetpack-compose';
+import {
+  getMaterialColors,
+  isDynamicColorAvailable,
+} from '@expo/ui/jetpack-compose';
 
 const palette = getMaterialColors({ seedColor: '#8E24AA' });
-console.log('available:', isDynamicColorAvailable, 'primary:', palette.primary);
+console.log(
+  'available:',
+  isDynamicColorAvailable,
+  'primary:',
+  palette.primary
+);
 ```
 
 ## API
 
-<APISection packageName="expo-ui/jetpack-compose/colors" apiName="MaterialColors" />
+<APISection
+  packageName="expo-ui/jetpack-compose/colors"
+  apiName="MaterialColors"
+/>

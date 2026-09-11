@@ -71,11 +71,14 @@ public final class UpdatesLogReader {
   }
 
   private func logStringToFilteredLogEntry(entryString: String, epoch: UInt) -> UpdatesLogEntry? {
-    if entryString.lengthOfBytes(using: .utf8) < 2 {
+    // NOTE: the guard must count Characters, not UTF-8 bytes. Every log line is prefixed
+    // with a multi-byte emoji (see ExpoModulesCore.LogType.prefix), so a truncated line
+    // containing only the prefix passes a byte-length guard and then traps in
+    // index(_:offsetBy:) with "String index is out of bounds" -> SIGABRT.
+    if entryString.count < 2 {
       return nil
     }
-    let suffixFrom = entryString.index(entryString.startIndex, offsetBy: 2)
-    let entryStringSuffix = String(entryString.suffix(from: suffixFrom))
+    let entryStringSuffix = String(entryString.dropFirst(2))
     let entry = UpdatesLogEntry.create(from: entryStringSuffix)
     return entry?.timestamp ?? 0 >= epoch ? entry : nil
   }

@@ -82,7 +82,7 @@ Then, remove your lockfile and re-install the dependencies:
 
 If you're using `sentry-expo` or `@sentry/react-native`, these depend on `@sentry/cli`, which updates source maps to Sentry during your build. The `@sentry/cli` package has a `postinstall` script which needs to run for the "upload source maps" script to become available.
 
-To fix this, add `@sentry/cli` to your [trusted dependencies](/#trusted-dependencies) array in **package.json**:
+To fix this, add `@sentry/cli` to your [trusted dependencies](#trusted-dependencies) array in **package.json**:
 
 ```json package.json
 "trustedDependencies": ["@sentry/cli"]

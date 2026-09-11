@@ -66,12 +66,12 @@ export type CameraMoveEvent = {
 export type MapsModule = {
   /**
    * Asks the user to grant permissions for location.
-   * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+   * @return A promise that fulfills with an object of type [`PermissionResponse`](expo/#permissionresponse).
    */
   requestPermissionsAsync(): Promise<PermissionResponse>;
   /**
    * Checks user's permissions for accessing location.
-   * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+   * @return A promise that fulfills with an object of type [`PermissionResponse`](expo/#permissionresponse).
    */
   getPermissionsAsync(): Promise<PermissionResponse>;
 };

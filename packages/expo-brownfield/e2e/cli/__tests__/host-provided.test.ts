@@ -60,7 +60,12 @@ describe('validateHostProvided', () => {
    * `version: null` to skip the Info.plist write (exercises the unknown-version fallback).
    */
   const writeXcframeworkAt = (baseDir: string, frameworkName: string, version: string | null) => {
-    const sliceDir = path.join(baseDir, `${frameworkName}.xcframework`, 'ios-arm64', `${frameworkName}.framework`);
+    const sliceDir = path.join(
+      baseDir,
+      `${frameworkName}.xcframework`,
+      'ios-arm64',
+      `${frameworkName}.framework`
+    );
     fs.mkdirSync(sliceDir, { recursive: true });
     if (version !== null) {
       fs.writeFileSync(

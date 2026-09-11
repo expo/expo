@@ -3,7 +3,7 @@ import type { DocumentPickerOptions, DocumentPickerResult } from './types';
 
 // @needsAudit
 /**
- * Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem/#filesystemcachedirectory).
+ * Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem/#cache).
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).
  * > Therefore, calling `getDocumentAsync` in `componentDidMount`, for example, will **not** work as
  * > intended. The `cancel` event will not be returned in the browser due to platform restrictions and

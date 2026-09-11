@@ -283,6 +283,13 @@ public final class VideoModule: Module {
         return player.currentVideoTrack
       }
 
+      Property("maxResolution") { player -> VideoSize? in
+        return player.maxResolution
+      }
+      .set { (player, maxResolution: VideoSize?) in
+        player.maxResolution = maxResolution
+      }
+
       Property("availableSubtitleTracks") { player -> [SubtitleTrack] in
         return player.subtitles.availableSubtitleTracks
       }

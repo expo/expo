@@ -16,7 +16,6 @@ import type { Ora } from 'ora';
 import { EOL } from 'os';
 import path from 'path';
 
-import { xcrunAsync } from './xcrun';
 import { getExpoHomeDirectory } from '../../../api/user/UserSettings';
 import * as Log from '../../../log';
 import { createTempFilePath } from '../../../utils/createTempPath';
@@ -26,6 +25,7 @@ import { isInteractive } from '../../../utils/interactive';
 import { ora } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
 import { event } from '../events';
+import { xcrunAsync } from './xcrun';
 
 const DEVICE_CTL_EXISTS_PATH = path.join(getExpoHomeDirectory(), 'devicectl-exists');
 
@@ -58,7 +58,7 @@ type DeviceCtlHardwareProperties = {
   platform: AnyEnum<'iOS' | 'xrOS'>;
   /** "iPhone15,3" */
   productType: AnyEnum<'iPhone13,4' | 'iPhone15,3'>;
-  reality: AnyEnum<'physical'>;
+  reality: AnyEnum<'physical' | 'simulated'>;
   /** "X2X1CC1XXX" */
   serialNumber: string;
   supportedCPUTypes: DeviceCtlCpuType[];
@@ -167,7 +167,7 @@ export async function getConnectedAppleDevicesAsync() {
   ]);
   const devicesJson = await JsonFile.readAsync(tmpPath);
 
-  if (![2, 3].includes((devicesJson as any)?.info?.jsonVersion)) {
+  if (![2, 3, 5].includes((devicesJson as any)?.info?.jsonVersion)) {
     Log.warn(
       'Unexpected devicectl JSON version output from devicectl. Connecting to physical Apple devices may not work as expected.'
     );
@@ -175,7 +175,9 @@ export async function getConnectedAppleDevicesAsync() {
 
   assertDevicesJson(devicesJson);
 
-  return devicesJson.result.devices as DeviceCtlDevice[];
+  return (devicesJson.result.devices as DeviceCtlDevice[]).filter(
+    (device) => device?.hardwareProperties?.reality !== 'simulated'
+  );
 }
 
 function assertDevicesJson(
@@ -295,7 +297,6 @@ async function installAppWithDeviceCtlInternalAsync(
           updateProgress(100);
         }
       });
-
     });
 
     let stderrBuffer = '';

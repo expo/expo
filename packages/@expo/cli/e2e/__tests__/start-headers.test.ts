@@ -1,6 +1,6 @@
+import { createExpoStart } from '../utils/expo';
 /* eslint-env jest */
 import { getRouterE2ERoot } from './utils';
-import { createExpoStart } from '../utils/expo';
 
 describe('server headers', () => {
   const projectRoot = getRouterE2ERoot();

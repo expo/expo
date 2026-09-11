@@ -118,6 +118,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Video Tracks',
+    route: 'video/tracks',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoTracksScreen'));
+    },
+  },
+  {
     name: 'Generating video thumbnails',
     route: 'video/thumbnails',
     options: {},

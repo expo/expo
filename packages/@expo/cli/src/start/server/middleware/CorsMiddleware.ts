@@ -1,6 +1,23 @@
 import type { ExpoConfig } from '@expo/config';
 
+import { parseForwardedRequestInfo } from './resolveForwarded';
 import type { ServerRequest, ServerResponse } from './server.types';
+
+/**
+ * Normalize a forwarded address to a `host` comparable with an `Origin` header, dropping the port
+ * when it's the default for the protocol, as the browser does.
+ */
+function getForwardedHost(req: ServerRequest): string | null {
+  const forwarded = parseForwardedRequestInfo(req);
+  if (!forwarded?.authority) {
+    return null;
+  }
+  try {
+    return new URL(`${forwarded.protocol ?? 'http'}://${forwarded.authority}`).host;
+  } catch {
+    return null;
+  }
+}
 
 const DEFAULT_ALLOWED_CORS_HOSTS = [
   'devtools', // Support local Chrome DevTools `devtools://devtools`
@@ -43,7 +60,9 @@ export function createCorsMiddleware(exp: ExpoConfig) {
   return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (typeof req.headers.origin === 'string') {
       const { host, hostname } = new URL(req.headers.origin);
-      const isSameOrigin = host === req.headers.host;
+      // A forwarded request reaches us with the proxy's address in `Origin` and, depending on the
+      // proxy, our own address in `Host`. Both name this dev server, so both count as same-origin.
+      const isSameOrigin = host === req.headers.host || host === getForwardedHost(req);
       const isLocalhost = _isLocalHostname(hostname);
       const isAllowedHost = allowedHosts.includes(host) || isLocalhost;
       if (!isSameOrigin && !isAllowedHost) {

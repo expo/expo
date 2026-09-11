@@ -265,7 +265,7 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   if (options.canary) {
     if (!process.env.CI) {
       logger.info(
-        `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-canaries.yml`
+        `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-packages.yml`
       );
     }
     if (options.packageNames.length > 0) {

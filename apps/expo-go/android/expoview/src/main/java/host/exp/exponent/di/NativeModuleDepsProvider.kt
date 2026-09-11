@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.facebook.proguard.annotations.DoNotStrip
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
 import host.exp.exponent.ExpoHandler
 import host.exp.exponent.ExponentManifest
@@ -54,7 +53,7 @@ class NativeModuleDepsProvider(application: Application) {
 
   @Inject
   @DoNotStrip
-  val mUpdatesDatabaseHolder: DatabaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(mContext, Dispatchers.IO))
+  val mUpdatesDatabase: UpdatesDatabase = UpdatesDatabase.getInstance(mContext, Dispatchers.IO)
 
   private val classToInstanceMap = mutableMapOf<Class<*>, Any>()
 

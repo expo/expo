@@ -1,6 +1,6 @@
-import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from 'ThemeProvider';
 import AppMetrics, { type Metric } from 'expo-app-metrics';
+import { useFocusEffect } from 'expo-router';
 import * as React from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 

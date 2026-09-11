@@ -3,5 +3,11 @@ import { defineConfig } from 'oxlint';
 
 export default defineConfig({
   extends: [base],
-  ignorePatterns: [...base.ignorePatterns, 'dev-plugin-dist/**', 'web/wa-sqlite/**'],
+  // `dev-plugin-webui` is its own workspace package and lints itself.
+  ignorePatterns: [
+    ...base.ignorePatterns,
+    'dev-plugin-dist/**',
+    'dev-plugin-webui/**',
+    'web/wa-sqlite/**',
+  ],
 });

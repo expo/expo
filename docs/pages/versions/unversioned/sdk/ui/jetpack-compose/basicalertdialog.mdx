@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
@@ -28,7 +29,13 @@ Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog]
 
 ### Basic dialog with custom content
 
-```tsx BasicAlertDialogExample.tsx
+<ComponentExample
+  title="BasicAlertDialogExample.tsx"
+  src="/static/images/expo-ui/examples/basicalertdialog-custom-content-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/basicalertdialog-custom-content-android-dark.webp"
+  alt="A dialog holding custom content: supportive text with a Confirm button at the trailing edge">
+
+```tsx
 import { useState } from 'react';
 import {
   Host,
@@ -59,17 +66,25 @@ export default function BasicAlertDialogExample() {
         <Text>Open dialog</Text>
       </Button>
       {visible && (
-        <BasicAlertDialog onDismissRequest={() => setVisible(false)}>
+        <BasicAlertDialog
+          onDismissRequest={() => setVisible(false)}>
           <Surface
             tonalElevation={6}
-            modifiers={[wrapContentWidth(), wrapContentHeight(), clip(Shapes.RoundedCorner(28))]}>
+            modifiers={[
+              wrapContentWidth(),
+              wrapContentHeight(),
+              clip(Shapes.RoundedCorner(28)),
+            ]}>
             <Column modifiers={[padding(16, 16, 16, 16)]}>
               <Text>
-                This area typically contains the supportive text which presents the details
-                regarding the Dialog's purpose.
+                This area typically contains the supportive text
+                which presents the details regarding the Dialog's
+                purpose.
               </Text>
               <Spacer modifiers={[height(24)]} />
-              <TextButton onClick={() => setVisible(false)} modifiers={[align('centerEnd')]}>
+              <TextButton
+                onClick={() => setVisible(false)}
+                modifiers={[align('end')]}>
                 <Text>Confirm</Text>
               </TextButton>
             </Column>
@@ -81,10 +96,15 @@ export default function BasicAlertDialogExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { BasicAlertDialog } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/basicalertdialog" apiName="BasicAlertDialog" />
+<APISection
+  packageName="expo-ui/jetpack-compose/basicalertdialog"
+  apiName="BasicAlertDialog"
+/>

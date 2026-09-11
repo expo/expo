@@ -1,5 +1,5 @@
-import Foundation
 import ExpoModulesCore
+import Foundation
 
 public class ExpoBlob: Module {
   public func definition() -> ModuleDefinition {

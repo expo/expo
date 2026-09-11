@@ -1,10 +1,10 @@
 import { once } from 'node:events';
 import type { WebSocket } from 'ws';
 
-import { waitForExpect, withMetroServer } from './utils';
 import { Log } from '../../../../../log';
 import { createMessagesSocket } from '../createMessageSocket';
 import { serializeMessage } from '../utils/socketMessages';
+import { waitForExpect, withMetroServer } from './utils';
 
 jest.mock('../../../../../log');
 

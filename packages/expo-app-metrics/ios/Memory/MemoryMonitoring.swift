@@ -22,7 +22,8 @@ final class MemoryMonitoring: MetricReporter, Sendable {
       )
       reportMetrics(snapshot)
       AppMetrics.mainSession.receiveLog(
-        makeMemoryWarningLogRecord(snapshot: snapshot, warningsCount: data.warningsCount))
+        makeMemoryWarningLogRecord(snapshot: snapshot, warningsCount: data.warningsCount)
+      )
     }
   }
 }

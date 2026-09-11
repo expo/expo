@@ -31,6 +31,9 @@ enum DevLauncherLoadErrorMessage {
       }
       return "The request to \(url) timed out. Check that the server is running and reachable from this device."
     case NSURLErrorNotConnectedToInternet:
+      if isLocalhost(host) || isPrivateNetworkHost(host) {
+        return "Could not reach \(url). Make sure this device is on the same Wi-Fi as the dev server and that Local Network access is enabled for this app in Settings > Privacy & Security > Local Network."
+      }
       return "Could not load the app because this device is offline. Connect to a network and try again."
     case NSURLErrorNetworkConnectionLost:
       return "The connection to \(url) was interrupted. Try again."

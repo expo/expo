@@ -52,6 +52,9 @@ On Android and iOS, the plugin allows you to embed font files at build time whic
                 ]
               }
             ]
+          },
+          "ios": {
+            "fonts": ["./path/to/SourceSerif4-ExtraBold.ttf"]
           }
         }
       ]
@@ -73,14 +76,14 @@ On Android and iOS, the plugin allows you to embed font files at build time whic
     {
       name: 'android',
       description:
-        'An array of font definitions to link to the native project on Android. Use the object syntax to embed [xml fonts](https://developer.android.com/develop/ui/views/text-and-emoji/fonts-in-xml) with custom family name.',
-      default: '[]',
+        'An object with a `fonts` array of font definitions to link to the native project on Android. Use the object syntax within `fonts` to embed [xml fonts](https://developer.android.com/develop/ui/views/text-and-emoji/fonts-in-xml) with custom family name.',
+      default: '{}',
     },
     {
       name: 'ios',
       description:
-        'An array of font file paths to link to the native project on iOS. The font family name is taken directly from the font file.',
-      default: '[]',
+        'An object with a `fonts` array of font file paths to link to the native project on iOS. The font family name is taken directly from the font file.',
+      default: '{}',
     },
   ]}
 />

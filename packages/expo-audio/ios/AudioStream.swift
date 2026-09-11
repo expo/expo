@@ -117,12 +117,10 @@ class AudioStream: SharedObject {
     // removeTap above ensures no more data is dispatched to fileWriterQueue;
     // syncing on the queue drains any appends already in flight before closing the writer.
     fileWriterQueue.sync {
-      try? self.fileWriter?.finish()
+      _ = try? self.fileWriter?.finish()
       self.fileWriter = nil
       self.fileWriterError = nil
     }
-
-    try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
   }
 
   func startFileRecording(url: URL, format: AudioStreamFileFormat) throws -> String {
@@ -250,16 +248,15 @@ class AudioStream: SharedObject {
 
     let timestamp = timestampSinceStart(when)
     let channelCount = Int(buffer.format.channelCount)
-    let data: NativeArrayBuffer
+    let data: ArrayBuffer
+    let sampleCount = frameLength * channelCount
 
     if encoding == .int16, let int16Data = buffer.int16ChannelData {
-      let sampleCount = frameLength * channelCount
       let byteCount = sampleCount * MemoryLayout<Int16>.size
-      data = NativeArrayBuffer.copy(of: int16Data[0], count: byteCount)
+      data = ArrayBuffer.copy(of: int16Data[0], count: byteCount)
     } else if let floatData = buffer.floatChannelData {
-      let sampleCount = frameLength * channelCount
       let byteCount = sampleCount * MemoryLayout<Float32>.size
-      data = NativeArrayBuffer.copy(of: floatData[0], count: byteCount)
+      data = ArrayBuffer.copy(of: floatData[0], count: byteCount)
     } else {
       return
     }

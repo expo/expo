@@ -31,7 +31,6 @@ test.describe(inputDir, () => {
       env: {
         EXPO_USE_STATIC: 'single',
         E2E_ROUTER_SRC: testName,
-        E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_ASYNC: 'true',
         CI: '1',
       },

@@ -43,15 +43,15 @@ class NativeDatabase {
   private readonly nodeDb: DatabaseSync;
 
   constructor(databaseName: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array) {
+    if (serializedData != null && !hasDatabaseMethod('deserialize')) {
+      // Without `deserialize()`, write the bytes out and let SQLite open them as an ordinary file.
+      this.nodeDb = new DatabaseSync(writeTempDatabase(serializedData));
+      return;
+    }
     this.nodeDb = new DatabaseSync(databaseName);
     if (serializedData != null) {
-      const deserialize = (this.nodeDb as unknown as { deserialize?: (data: Uint8Array) => void })
+      const deserialize = (this.nodeDb as unknown as { deserialize: (data: Uint8Array) => void })
         .deserialize;
-      if (typeof deserialize !== 'function') {
-        throw new Error(
-          'node:sqlite does not implement deserialize() on this Node version, so the mock cannot deserialize the database.'
-        );
-      }
       deserialize.call(this.nodeDb, serializedData);
     }
   }
@@ -92,14 +92,33 @@ class NativeDatabase {
   }
 
   private _serialize(): Uint8Array {
-    const serialize = (this.nodeDb as unknown as { serialize?: () => Uint8Array }).serialize;
-    if (typeof serialize !== 'function') {
-      throw new Error(
-        'node:sqlite does not implement serialize() on this Node version, so the mock cannot serialize the database.'
-      );
+    if (hasDatabaseMethod('serialize')) {
+      const serialize = (this.nodeDb as unknown as { serialize: () => Uint8Array }).serialize;
+      return serialize.call(this.nodeDb);
     }
-    return serialize.call(this.nodeDb);
+    // Without `serialize()`, `VACUUM INTO` writes an equivalent database to a file we can read back.
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-serialize-'));
+    try {
+      const filePath = path.join(directory, 'database.db');
+      this.nodeDb.exec(`VACUUM INTO '${filePath.replaceAll("'", "''")}'`);
+      return new Uint8Array(fs.readFileSync(filePath));
+    } finally {
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
   }
+}
+
+/** Node 24 ships neither method, so probe and let newer runtimes use the native ones. */
+function hasDatabaseMethod(name: 'serialize' | 'deserialize'): boolean {
+  return typeof (DatabaseSync.prototype as unknown as Record<string, unknown>)[name] === 'function';
+}
+
+/** The file backs the database for its whole lifetime, so it is left for the OS to reap. */
+function writeTempDatabase(serializedData: Uint8Array): string {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-deserialize-'));
+  const filePath = path.join(directory, 'database.db');
+  fs.writeFileSync(filePath, serializedData);
+  return filePath;
 }
 
 /**

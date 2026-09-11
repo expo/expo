@@ -46,7 +46,7 @@ public enum AudioUsage {
 
   public static AudioUsage fromNativeValue(int value) {
     for (AudioUsage usage : AudioUsage.values()) {
-      if (usage.getEnumValue() == value) {
+      if (usage.getNativeValue() == value) {
         return usage;
       }
     }

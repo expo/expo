@@ -23,6 +23,7 @@ import java.net.Proxy
 import java.util.Date
 import java.util.UUID
 import java.util.WeakHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Sentinel header recognised by `NetworkRequestInterceptor` to skip observation. expo-observe's
@@ -159,7 +160,8 @@ class NetworkRequestInterceptor private constructor(
       fallbackStart = startedAt,
       fallbackEnd = endDate,
       totalDuration = totalDuration,
-      error = error
+      error = error,
+      canceled = call.isCanceled()
     )
     monitor.record(snapshot)
   }
@@ -197,7 +199,8 @@ internal fun buildSnapshot(
   fallbackStart: Date,
   fallbackEnd: Date,
   totalDuration: Double,
-  error: IOException?
+  error: IOException?,
+  canceled: Boolean = false
 ): NetworkRequest {
   val redirects = response?.let { buildRedirectChain(it) } ?: emptyList()
 
@@ -216,11 +219,28 @@ internal fun buildSnapshot(
   } else {
     null
   }
-  val responseBytesReceived: Long? = response?.let {
-    val body = phases?.responseBodyBytes?.takeIf { it > 0 }
-      ?: it.body?.contentLength()?.takeIf { it > 0 }
-      ?: 0L
-    responseHeaderBytes + body
+  val responseBytesReceived: Long? = response?.let { received ->
+    val body = received.responseBodyByteCount(phases)
+    // `null` means the body size is genuinely unknown, so the whole count is unknown rather than
+    // the header estimate alone. Reporting headers-only would look like a measured near-empty
+    // response: it understates byte totals, and it still passes the `> 0` filter that decides
+    // which requests form the throughput ratio, so an unmeasured body would drag the denominator
+    // out with no bytes to match.
+    body?.let { responseHeaderBytes + it }
+  }
+
+  // OkHttp reports both halves of a conditional GET: a 304 leaves `networkResponse` set (the
+  // revalidation went out) alongside `cacheResponse` (the body came from disk). A plain cache hit
+  // has only `cacheResponse`, and a normal load only `networkResponse`. No response at all means
+  // nothing classified the fetch.
+  val fetchType = response?.let { received ->
+    val fromCache = received.cacheResponse != null
+    val fromNetwork = received.networkResponse != null
+    when {
+      fromCache && fromNetwork -> NetworkRequest.FetchType.VALIDATED
+      fromCache -> NetworkRequest.FetchType.CACHE
+      else -> NetworkRequest.FetchType.NETWORK
+    }
   }
 
   val timings = NetworkRequest.Timings(
@@ -235,8 +255,14 @@ internal fun buildSnapshot(
     requestEnd = phases?.requestBodyEnd ?: phases?.requestHeadersEnd,
     responseStart = phases?.responseHeadersStart,
     responseEnd = phases?.responseBodyEnd ?: phases?.responseHeadersEnd ?: fallbackEnd,
+    measuredResponseEnd = phases?.responseBodyEnd,
     totalDuration = totalDuration
   )
+
+  // The interceptor only sees failures raised while `chain.proceed` runs. A response body that
+  // breaks after the headers arrive is reported to the event listener instead, and without folding
+  // that in here a truncated transfer would be recorded as the successful response it started as.
+  val failure = error ?: phases?.failure
 
   return NetworkRequest(
     id = id,
@@ -247,9 +273,43 @@ internal fun buildSnapshot(
     requestBytesSent = requestBytesSent,
     responseBytesReceived = responseBytesReceived,
     timings = timings,
-    errorDescription = error?.localizedMessage ?: error?.message,
+    fetchType = fetchType,
+    // Falls back to the class name because an exception is allowed to carry no message at all, and
+    // a null description would read as "this request succeeded" to `isFailed`.
+    errorDescription = failure?.let { it.localizedMessage ?: it.message ?: it.javaClass.simpleName },
+    errorType = failure?.javaClass?.name,
+    // A cancellation reaches this snapshot two ways: as an `IOException` when the call was cut
+    // before or during `chain.proceed`, or with no exception at all when the caller abandoned a
+    // response body it had started reading. Both are intentional aborts, so both are flagged.
+    //
+    // The status check is not about classifying errors: it stops a late cancel from masking a
+    // 4xx or 5xx the server already returned, because `canceled` suppresses both the ERROR
+    // status and `error.type` downstream.
+    canceled = canceled && (failure != null || (response?.code ?: 0) < 400),
     redirects = redirects
   )
+}
+
+/**
+ * On-the-wire size of the response body, or `null` when it can't be determined.
+ *
+ * `EventListener.responseBodyEnd` is the source of truth: it fires on the network layer, below
+ * `GzipSource`, so it reports compressed bytes. It only fires once the caller drains the body,
+ * which a caller that abandons the response never does. `Content-Length` is the fallback for that
+ * case, and it's absent on a chunked response, which is how image and other streamed payloads
+ * usually arrive.
+ *
+ * Zero is a real measurement (a 204, or a 304 revalidation) and is reported as such. `null` is
+ * reserved for "nobody told us", so callers can tell an empty body from an unmeasured one.
+ */
+private fun Response.responseBodyByteCount(
+  phases: NetworkRequestEventListener.PhaseTimings?
+): Long? {
+  phases?.responseBodyBytes?.let {
+    return it
+  }
+  // `contentLength()` returns -1 when the header is absent, which is not a measurement.
+  return body?.contentLength()?.takeIf { it >= 0 }
 }
 
 /**
@@ -268,7 +328,9 @@ internal fun buildRedirectChain(final: Response): List<NetworkRequest.Redirect> 
       NetworkRequest.Redirect(
         fromUrl = prior.request.url.toString(),
         toUrl = next.request.url.toString(),
-        statusCode = prior.code
+        statusCode = prior.code,
+        // OkHttp reports 0 when it has no timestamp for the response.
+        respondedAtMs = prior.receivedResponseAtMillis.takeIf { it > 0 }
       )
     )
     next = prior
@@ -351,6 +413,9 @@ class NetworkRequestEventListener : EventListener() {
   }
 
   override fun callFailed(call: Call, ioe: IOException) {
+    // The interceptor's own `catch` only wraps `chain.proceed`, so a body that breaks after the
+    // headers arrive never reaches it. This is the only place that failure is reported.
+    builder.failure = ioe
     publish(call)
   }
 
@@ -384,7 +449,8 @@ class NetworkRequestEventListener : EventListener() {
     @Volatile var responseHeadersEnd: Date? = null,
     @Volatile var responseBodyEnd: Date? = null,
     @Volatile var requestBodyBytes: Long? = null,
-    @Volatile var responseBodyBytes: Long? = null
+    @Volatile var responseBodyBytes: Long? = null,
+    @Volatile var failure: IOException? = null
   ) {
     fun snapshot() = PhaseTimings(
       fetchStart, dnsStart, dnsEnd,
@@ -394,7 +460,8 @@ class NetworkRequestEventListener : EventListener() {
       requestBodyStart, requestBodyEnd,
       responseHeadersStart, responseHeadersEnd,
       responseBodyEnd,
-      requestBodyBytes, responseBodyBytes
+      requestBodyBytes, responseBodyBytes,
+      failure
     )
   }
 
@@ -408,6 +475,10 @@ class NetworkRequestEventListener : EventListener() {
    * `GzipSource`. They report the bytes actually on the wire, not the (gunzipped, app-layer)
    * view that the interceptor sees. `null` means the corresponding body-end callback never
    * fired (no request body / response not fully consumed / error before headers).
+   *
+   * `failure` carries the exception from `callFailed`. The interceptor's own `catch` only wraps
+   * `chain.proceed`, so a response body that breaks after the headers arrive is reported here and
+   * nowhere else.
    */
   data class PhaseTimings(
     val fetchStart: Date?,
@@ -425,7 +496,8 @@ class NetworkRequestEventListener : EventListener() {
     val responseHeadersEnd: Date?,
     val responseBodyEnd: Date?,
     val requestBodyBytes: Long?,
-    val responseBodyBytes: Long?
+    val responseBodyBytes: Long?,
+    val failure: IOException? = null
   )
 
   companion object {
@@ -466,8 +538,8 @@ private class BodyCloseSignal(
   private val delegate: ResponseBody,
   private val onComplete: () -> Unit
 ) : ResponseBody() {
-  @Volatile
-  private var completed: Boolean = false
+  // EOF and close can race when callers consume and dispose a response on different threads.
+  private val completed = AtomicBoolean(false)
 
   // OkHttp's contract returns the same `BufferedSource` on repeated `source()` calls, so we
   // cache ours too — wrapping twice would fire the completion callback twice.
@@ -495,10 +567,9 @@ private class BodyCloseSignal(
   override fun source(): BufferedSource = signalingSource
 
   private fun fireCompleteOnce() {
-    if (completed) {
+    if (!completed.compareAndSet(false, true)) {
       return
     }
-    completed = true
     onComplete()
   }
 }

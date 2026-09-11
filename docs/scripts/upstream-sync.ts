@@ -6,7 +6,6 @@ import { relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SYNCS = [
-  { label: '@expo/ui component tables', script: 'generate-ui-component-tables', match: 'sdk/ui' },
   { label: 'App config schema', script: 'schema-sync unversioned', match: 'schemas/' },
   { label: 'Expo Skills', script: 'expo-skills-sync', match: 'ExpoSkillsTable' },
   { label: 'EAS CLI reference', script: 'eas-cli-sync', match: 'EASCLIReference' },

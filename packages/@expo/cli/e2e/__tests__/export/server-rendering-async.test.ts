@@ -1,9 +1,7 @@
-/* eslint-env jest */
 import type { RoutesManifest } from 'expo-server/private';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -11,6 +9,7 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

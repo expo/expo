@@ -69,6 +69,17 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
         expect(Font.isLoaded('icomoon')).toBe(true);
         expect(Font.isLoaded('NonExistedFont')).toBe(false);
       });
+
+      it(`loadAsync claims only the name it was given`, async () => {
+        await Font.loadAsync({ 'alias-claim-probe': require('../assets/comic.ttf') });
+
+        expect(Font.isLoaded('alias-claim-probe')).toBe(true);
+
+        // comic.ttf carries the PostScript name "ComicSansMS" which should not be reported
+        expect(Font.isLoaded('ComicSansMS')).toBe(false);
+        expect(Font.getLoadedFonts()).toContain('alias-claim-probe');
+        expect(Font.getLoadedFonts()).not.toContain('ComicSansMS');
+      });
     }
 
     it('allows loading the same font multiple times', async () => {

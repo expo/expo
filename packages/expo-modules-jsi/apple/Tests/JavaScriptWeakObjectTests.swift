@@ -57,7 +57,7 @@ struct JavaScriptWeakObjectTests {
     #expect((weakObject?.lock() != nil) == true)
 
     // Force garbage collection
-    _ = try! runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     // Object should be collected now
     // Note: This test may be flaky depending on GC behavior
@@ -79,7 +79,7 @@ struct JavaScriptWeakObjectTests {
     }
 
     // Force garbage collection
-    _ = try! runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     // After collection, asValue should return undefined
     // Note: This test may be flaky depending on GC behavior

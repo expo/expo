@@ -2,7 +2,6 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getDevServer } from '../getDevServer';
 import { Link } from '../link';
 import { Pressable } from '../views/Pressable';
 
@@ -15,8 +14,7 @@ function createEntryFileAsync() {
     return;
   }
 
-  // Pings middleware in the Expo CLI dev server.
-  return fetch(getDevServer().url + '_expo/touch', {
+  return fetch('/_expo/touch', {
     method: 'POST',
     body: JSON.stringify({ type: 'router_index' }),
   });

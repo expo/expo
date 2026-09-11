@@ -20,8 +20,9 @@ type Options = {
  */
 export function useCurrentRender({ state, navigation, descriptors }: Options) {
   const current = use(CurrentRenderContext);
+  const focusedRoute = state.routes[state.index];
 
-  if (current && navigation.isFocused()) {
-    current.options = descriptors[state.routes[state.index]!.key]!.options;
+  if (current && focusedRoute && navigation.isFocused()) {
+    current.options = descriptors[focusedRoute.key]?.options;
   }
 }

@@ -30,5 +30,18 @@
     "next-env.d.ts",
     "ui/components/EASCLIReference/data/eas-cli-commands.json",
     "components/plugins/permissions/data/android.json"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "pages/versions/unversioned/sdk/ui/swift-ui/*.mdx",
+        "pages/versions/unversioned/sdk/ui/jetpack-compose/*.mdx",
+        "pages/versions/v57.0.0/sdk/ui/swift-ui/*.mdx",
+        "pages/versions/v57.0.0/sdk/ui/jetpack-compose/*.mdx"
+      ],
+      "options": {
+        "printWidth": 68
+      }
+    }
   ]
 }

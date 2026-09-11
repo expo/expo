@@ -439,9 +439,7 @@ open class DevMenuManager: NSObject {
         self.updateFABVisibility()
 
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-          self.window?.windowScene = windowScene
+          self.window?.windowScene = SceneGeometry.foregroundActiveScene()
         }
         self.window?.makeKeyAndVisible()
 #endif
@@ -576,8 +574,7 @@ open class DevMenuManager: NSObject {
       guard let self else { return }
 
       if self.fabWindow == nil {
-        if let windowScene = UIApplication.shared.connectedScenes
-          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+        if let windowScene = SceneGeometry.foregroundActiveScene() {
           self.setupFABWindowIfNeeded(for: windowScene)
         }
       }

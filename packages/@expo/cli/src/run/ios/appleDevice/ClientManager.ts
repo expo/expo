@@ -9,6 +9,7 @@ import type { Socket } from 'net';
 import { Duplex } from 'stream';
 import * as tls from 'tls';
 
+import { CommandError } from '../../../utils/errors';
 import { AFCClient } from './client/AFCClient';
 import { DebugserverClient } from './client/DebugserverClient';
 import { InstallationProxyClient } from './client/InstallationProxyClient';
@@ -17,7 +18,6 @@ import { MobileImageMounterClient } from './client/MobileImageMounterClient';
 import type { ServiceClient } from './client/ServiceClient';
 import type { UsbmuxdDevice, UsbmuxdPairRecord } from './client/UsbmuxdClient';
 import { UsbmuxdClient } from './client/UsbmuxdClient';
-import { CommandError } from '../../../utils/errors';
 
 export class ClientManager {
   private connections: Socket[];

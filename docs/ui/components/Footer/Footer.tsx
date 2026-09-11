@@ -5,8 +5,6 @@ import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
 import { useIntl } from 'react-intl';
 
-import { isEasPath } from '~/common/routes';
-import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRouteWithSection } from '~/types/common';
 import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
@@ -24,8 +22,6 @@ type Props = {
 };
 
 const isDev = process.env.NODE_ENV === 'development';
-const LLMS_SDK_VERSIONS = ['v55.0.0', 'v54.0.0'];
-const LLMS_SDK_LATEST_VERSION = LLMS_SDK_VERSIONS[0];
 
 export const Footer = ({
   title,
@@ -35,23 +31,11 @@ export const Footer = ({
   nextPage,
   modificationDate,
 }: Props) => {
-  const { hasVersion, version } = usePageApiVersion();
   const router = useRouter();
   const intl = useIntl();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
   const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
-  const llmsSdkVersion = version === 'latest' ? LLMS_SDK_LATEST_VERSION : version;
-  const shouldUseLlmsSdkFile = hasVersion && LLMS_SDK_VERSIONS.includes(llmsSdkVersion);
-  const isEasPage = router?.pathname ? isEasPath(router.pathname) : false;
-  const llmsFullFilename = isEasPage
-    ? 'llms-eas.txt'
-    : shouldUseLlmsSdkFile
-      ? `llms-sdk-${llmsSdkVersion}.txt`
-      : 'llms-full.txt';
-  const llmsFullHref = `/${llmsFullFilename}`;
-  const llmsFullLabel = 'llms-full.txt';
-
   const shouldShowModifiedDate = !isExpoPackage && !isTutorial && title;
 
   return (
@@ -74,7 +58,7 @@ export const Footer = ({
             <LinkBase
               href={previousPage.href}
               className={mergeClasses(
-                'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
+                'flex w-full items-center gap-3 rounded-3xl border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
               <ArrowLeftIcon aria-hidden="true" className="shrink-0 text-icon-secondary" />
@@ -93,7 +77,7 @@ export const Footer = ({
             <LinkBase
               href={nextPage.href}
               className={mergeClasses(
-                'flex w-full items-center justify-between gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
+                'flex w-full items-center justify-between gap-3 rounded-3xl border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
               <div>
@@ -120,14 +104,14 @@ export const Footer = ({
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
-            <LlmsTxtLink fullVersionHref={llmsFullHref} fullVersionLabel={llmsFullLabel} />
+            <LlmsTxtLink />
             {!isDev && shouldShowModifiedDate && modificationDate && (
-              <LI className="mt-4! text-xs! text-quaternary!">
+              <LI className="mt-4! text-xs! text-tertiary!">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (
-              <LI className="mt-4! text-xs! text-quaternary!">
+              <LI className="mt-4! text-xs! text-tertiary!">
                 Last updated data is not available in dev mode
               </LI>
             )}

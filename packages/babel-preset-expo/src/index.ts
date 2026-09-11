@@ -1,4 +1,4 @@
-import type { ConfigAPI, TransformOptions } from '@babel/core';
+import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
 import {
@@ -28,6 +28,7 @@ import { syntaxPlugins } from './configs/syntax';
 import { getConfig as getTypeScriptConfig } from './configs/typescript';
 import { WebConfigOptions } from './configs/web';
 import { WebviewConfigOptions } from './configs/webview';
+import { LazyDecoratorsOptions } from './plugins/lazy-decorators-plugin';
 
 interface BabelPresetExpoPlatformOptions {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -166,6 +167,46 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       ? api.caller(getBabelRuntimeVersion)
       : platformOptions.enableBabelRuntime;
 
+  const lazyDecoratorsOptions: LazyDecoratorsOptions = {
+    presetOptions: platformOptions.decorators,
+    transformClassProperties: false,
+    transformPrivateMethods: false,
+    transformPrivateProperties: false,
+  };
+
+  let enginePreset: PluginItem;
+  {
+    const presetOpts = { dev: isDev };
+    if (isDomComponent) {
+      enginePreset = [require('./configs/webview'), presetOpts satisfies WebviewConfigOptions];
+    } else if (isModernEngine) {
+      // web preset already contains private method/property transforms
+      lazyDecoratorsOptions.transformClassProperties = true;
+      enginePreset = [require('./configs/web'), presetOpts satisfies WebConfigOptions];
+    } else {
+      switch (platformOptions.unstable_transformProfile) {
+        case 'hermes-stable':
+        case 'hermes-canary':
+          // hermes-v1 does not contain any of these three transforms
+          lazyDecoratorsOptions.transformClassProperties = true;
+          lazyDecoratorsOptions.transformPrivateMethods = true;
+          lazyDecoratorsOptions.transformPrivateProperties = true;
+          enginePreset = [
+            require('./configs/hermes-v1'),
+            presetOpts satisfies HermesV1ConfigOptions,
+          ];
+          break;
+        case 'hermes-v0':
+        default:
+          enginePreset = [
+            require('./configs/hermes-v0'),
+            presetOpts satisfies HermesV0ConfigOptions,
+          ];
+          break;
+      }
+    }
+  }
+
   // Compute config fragments from helper modules to compose into the presets below.
   const flowFragment = getFlowConfig({ disableFlowStripTypesTransform: false });
   const tsFragment = getTypeScriptConfig();
@@ -185,28 +226,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           lazyImportExportTransform: platformOptions.lazyImports,
         } satisfies ModuleTransformOptions,
       ],
-
-      (() => {
-        const presetOpts = { dev: isDev };
-
-        if (isDomComponent) {
-          return [require('./configs/webview'), presetOpts satisfies WebviewConfigOptions];
-        } else if (isModernEngine) {
-          return [require('./configs/web'), presetOpts satisfies WebConfigOptions];
-        }
-
-        // Select the hermes config based on `unstable_transformProfile`, which is derived from
-        // the caller's `engine` property or overridden by the user.
-        switch (platformOptions.unstable_transformProfile) {
-          case 'hermes-stable':
-          case 'hermes-canary':
-            return [require('./configs/hermes-v1'), presetOpts satisfies HermesV1ConfigOptions];
-          case 'hermes-v0':
-          default:
-            return [require('./configs/hermes-v0'), presetOpts satisfies HermesV0ConfigOptions];
-        }
-      })(),
-
+      enginePreset,
       // Expo-specific plugins and React JSX/compiler/refresh support.
       [
         require('./configs/expo'),
@@ -225,7 +245,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           bundler,
           inlineEnvironmentVariables,
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
-          decorators: platformOptions.decorators,
+          lazyDecorators: lazyDecoratorsOptions,
           reanimated: platformOptions.reanimated,
           worklets: platformOptions.worklets,
           expoUi: platformOptions.expoUi,

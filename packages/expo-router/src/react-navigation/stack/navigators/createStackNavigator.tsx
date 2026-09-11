@@ -1,116 +1,74 @@
 'use client';
 import * as React from 'react';
+import { createStandardNavigator } from 'standard-navigation';
 
-import {
-  createNavigatorFactory,
-  type EventArg,
-  type NavigatorTypeBagBase,
-  type ParamListBase,
-  type StackActionHelpers,
-  StackActions,
-  type StackNavigationState,
-  StackRouter,
-  type StackRouterOptions,
-  type StaticConfig,
-  type TypedNavigator,
-  useLocale,
-  useNavigationBuilder,
-} from '../../native';
+import { useClearGuardedRoutes } from '../../../layouts/useClearGuardedRoutes';
+import type { NavigatorContentProps } from '../../../standard-navigation';
+import { type Route, useLocale } from '../../native';
 import type {
   StackNavigationEventMap,
+  StackNavigationConfig,
   StackNavigationOptions,
-  StackNavigationProp,
-  StackNavigatorProps,
 } from '../types';
 import { StackView } from '../views/Stack/StackView';
 
-function StackNavigator({
-  id,
-  initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
-  children,
-  layout,
-  screenListeners,
-  screenOptions,
-  screenLayout,
-  UNSTABLE_router,
+export interface StackNavigatorCreateProps {
+  pop: (count: number, sourceRouteKey: string) => void;
+  removeRoutes: (routeNames: string[]) => void;
+  restoreRoute: (route: Route<string>) => boolean;
+  subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
+}
+
+export type StandardStackNavigationEventMap = {
+  [Event in keyof StackNavigationEventMap]: StackNavigationEventMap[Event] & {
+    canPreventDefault: false;
+  };
+};
+
+type StackNavigatorContentProps = NavigatorContentProps<
+  StackNavigationOptions,
+  StandardStackNavigationEventMap,
+  StackNavigationConfig,
+  StackNavigatorCreateProps
+>;
+
+function StackNavigatorContent({
+  state,
+  descriptors,
+  emitter,
+  pop,
+  removeRoutes,
+  restoreRoute,
+  subscribePopToTopOnParentTabPress,
   ...rest
-}: StackNavigatorProps) {
+}: StackNavigatorContentProps) {
   const { direction } = useLocale();
 
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
-    StackNavigationState<ParamListBase>,
-    StackRouterOptions,
-    StackActionHelpers<ParamListBase>,
-    StackNavigationOptions,
-    StackNavigationEventMap
-  >(StackRouter, {
-    id,
-    initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
-    children,
-    layout,
-    screenListeners,
-    screenOptions,
-    screenLayout,
-    UNSTABLE_router,
-  });
+  useClearGuardedRoutes(removeRoutes);
+  React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
-  React.useEffect(
-    () =>
-      // @ts-expect-error: there may not be a tab navigator in parent
-      navigation.addListener?.('tabPress', (e) => {
-        const isFocused = navigation.isFocused();
-
-        // Run the operation in the next frame so we're sure all listeners have been run
-        // This is necessary to know if preventDefault() has been called
-        requestAnimationFrame(() => {
-          if (
-            state.index > 0 &&
-            isFocused &&
-            !(e as unknown as EventArg<'tabPress', true>).defaultPrevented
-          ) {
-            // When user taps on already focused tab and we're inside the tab,
-            // reset the stack to replicate native behaviour
-            navigation.dispatch({
-              ...StackActions.popToTop(),
-              target: state.key,
-            });
-          }
-        });
-      }),
-    [navigation, state.index, state.key]
-  );
+  if (state.routes.length === 0) {
+    return null;
+  }
 
   return (
-    <NavigationContent>
-      <StackView
-        {...rest}
-        direction={direction}
-        state={state}
-        describe={describe}
-        descriptors={descriptors}
-        navigation={navigation}
-      />
-    </NavigationContent>
+    <StackView
+      {...rest}
+      direction={direction}
+      state={state}
+      descriptors={descriptors}
+      emit={emitter.emit}
+      pop={pop}
+      restoreRoute={restoreRoute}
+    />
   );
 }
 
-export function createStackNavigator<
-  const ParamList extends ParamListBase,
-  const NavigatorID extends string | undefined = string | undefined,
-  const TypeBag extends NavigatorTypeBagBase = {
-    ParamList: ParamList;
-    NavigatorID: NavigatorID;
-    State: StackNavigationState<ParamList>;
-    ScreenOptions: StackNavigationOptions;
-    EventMap: StackNavigationEventMap;
-    NavigationList: {
-      [RouteName in keyof ParamList]: StackNavigationProp<ParamList, RouteName, NavigatorID>;
-    };
-    Navigator: typeof StackNavigator;
-  },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(StackNavigator)(config);
-}
+/**
+ * Creates a JavaScript stack navigator compatible with `standard-navigation`.
+ */
+export const unstable_createStandardStackNavigator = createStandardNavigator<
+  StackNavigationOptions,
+  StandardStackNavigationEventMap,
+  StackNavigatorCreateProps
+>(StackNavigatorContent);

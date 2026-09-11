@@ -48,6 +48,7 @@ fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, runtimeVersion:
   val requestHeaders = hashMapOf(
     "Expo-Updates-Environment" to "DEVELOPMENT"
   )
+  requestHeaders.putAll(getForwardedHeaders(url))
   if (installationID != null) {
     requestHeaders["Expo-Dev-Client-ID"] = installationID
   }
@@ -60,5 +61,15 @@ fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, runtimeVersion:
     "enabled" to true,
     "requestHeaders" to requestHeaders,
     "runtimeVersion" to runtimeVersion
+  )
+}
+
+private fun getForwardedHeaders(url: Uri): Map<String, String> {
+  val authority = url.encodedAuthority ?: return emptyMap()
+  val scheme = url.scheme ?: return emptyMap()
+  return mutableMapOf(
+    "Forwarded" to "host=\"$authority\";proto=$scheme",
+    "X-Forwarded-Host" to authority,
+    "X-Forwarded-Proto" to scheme
   )
 }

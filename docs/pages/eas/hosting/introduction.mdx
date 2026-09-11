@@ -11,6 +11,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { FAQ } from '~/ui/components/FAQ';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 
 **EAS Hosting** is a service from EAS (Expo Application Services) for quickly deploying your web projects built using [Expo Router](/router/introduction/) and React Native web. It seamlessly integrates with the Expo CLI, allowing you to automate the deployment of API routes, server functions, and server-side assets.
@@ -37,6 +38,12 @@ To publish your web app, run the following command:
 <Terminal cmd={['$ eas deploy']} />
 
 Once your deployment is complete, the EAS CLI will output a preview URL to access your deployed web app.
+
+### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it how to deploy your web app and API routes:
+
+<RelatedSkills names={['eas-hosting']} />
 
 ## Why EAS Hosting
 

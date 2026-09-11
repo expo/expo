@@ -2,6 +2,7 @@ package expo.modules.kotlin.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -113,6 +114,15 @@ abstract class ExpoComposeView<T : ComposeProps>(
     }
   }
 
+  override fun dispatchConfigurationChanged(newConfig: Configuration) {
+    super.dispatchConfigurationChanged(newConfig)
+    // React Native owns this view's bounds and may not schedule another Android layout pass
+    // when a configuration change leaves its Yoga layout unchanged.
+    if (withHostingView && isAttachedToWindow && isLaidOut) {
+      requestLayout()
+    }
+  }
+
   /**
    * Validates that this non-hosting Compose view has a valid Compose parent.
    *
@@ -193,6 +203,15 @@ abstract class ExpoComposeView<T : ComposeProps>(
     if (withHostingView) {
       clipChildren = false
       clipToPadding = false
+      addOnAttachStateChangeListener(
+        OnAttachAfterDetachmentListener(
+          onAttachAfterDetachment = {
+            // Restore the Android layout pass after a real detach. The listener deliberately
+            // ignores the first attach and React Native's same-loop reparenting.
+            requestLayout()
+          }
+        )
+      )
       addComposeView()
     } else {
       this.visibility = GONE

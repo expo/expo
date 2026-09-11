@@ -362,7 +362,6 @@ describe('Setting Stack.Screen options in preview', () => {
     expect(screen.getByTestId('preview')).toBeVisible();
     expect(headerTitle.mock.calls).toStrictEqual([
       [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
-      [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     ]);
     expect(consoleWarnSpy).toHaveBeenCalled();
   });

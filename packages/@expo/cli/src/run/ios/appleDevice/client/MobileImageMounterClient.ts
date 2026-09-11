@@ -8,9 +8,9 @@
 import * as fs from 'fs';
 import type { Socket } from 'net';
 
-import { ResponseError, ServiceClient } from './ServiceClient';
 import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
 import { isLockdownResponse, LockdownProtocolClient } from '../protocol/LockdownProtocol';
+import { ResponseError, ServiceClient } from './ServiceClient';
 
 export type MIMMountResponse = LockdownResponse;
 

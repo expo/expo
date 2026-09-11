@@ -113,6 +113,8 @@ export enum FileMode {
  * Obtain a `FileHandle` by calling [`File.open()`](#openmode) on a `File` instance.
  * The handle maintains an internal byte offset that advances automatically with each
  * read or write. Set the `offset` property to seek to an arbitrary position.
+ * Async operations on the same handle are not guaranteed to run in the order they are called.
+ * To ensure ordering, always `await` async operations on the same handle.
  *
  * Always call `close()` when finished to release the underlying file descriptor.
  * Failing to close a handle may prevent the file from being deleted, moved, or
@@ -224,15 +226,26 @@ export type FileInfo = {
   creationTime?: number;
   /**
    * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+   *
+   * @deprecated Use `await file.digest('MD5')` instead.
    */
   md5?: string;
 };
 
+/**
+ * Algorithm used to calculate a file digest.
+ */
+export type FileDigestAlgorithm = 'MD5' | 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
+
+/**
+ * @deprecated Use `await file.digest('MD5')` to calculate an MD5 digest.
+ */
 export type InfoOptions = {
   /**
    * Whether to return the MD5 hash of the file.
    *
    * @default false
+   * @deprecated Use `await file.digest('MD5')` instead.
    */
   md5?: boolean;
 };

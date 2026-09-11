@@ -12,8 +12,78 @@ import {
   convertMdxInstructionToMarkdown,
   extractFrontmatter,
   findMdxSource,
+  insertAgentInstructionsAfterH1,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
+
+describe('insertAgentInstructionsAfterH1', () => {
+  const block =
+    '<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n';
+
+  it('inserts the block below the first H1', () => {
+    const markdown = '# Page title\n\nFirst paragraph.\n\n## First section\n\nMore.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(
+      '# Page title\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nFirst paragraph.\n\n## First section\n\nMore.'
+    );
+  });
+
+  it('targets the first H1 even when content precedes it', () => {
+    const markdown = 'Intro line.\n\n# Page title\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result.indexOf('# Page title')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(result.indexOf('Body.'));
+  });
+
+  it('prepends the block when no H1 exists', () => {
+    const markdown = 'This page redirects to another page.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+
+  it('does not treat an H2 as an H1', () => {
+    const markdown = '## Only a section heading\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+
+  it('keeps the description paragraph attached to the title', () => {
+    const markdown = '# Create a project\n\nLearn how to create a new Expo project.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'Learn how to create a new Expo project.'
+    );
+
+    expect(result).toBe(
+      '# Create a project\n\nLearn how to create a new Expo project.\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nBody.'
+    );
+  });
+
+  it('matches a description paragraph that turndown escaped', () => {
+    const markdown = '# Page\n\nUse \\[brackets\\] carefully.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block, 'Use [brackets] carefully.');
+
+    expect(result.indexOf('carefully.')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+  });
+
+  it('inserts below the H1 when the next paragraph is not the description', () => {
+    const markdown = '# Page title\n\nRegular first paragraph.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'A description not on the page.'
+    );
+
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(
+      result.indexOf('Regular first paragraph.')
+    );
+  });
+});
 
 describe('convertMdxInstructionToMarkdown', () => {
   it('converts scene JSX components and inlines helper MDX', () => {
@@ -573,7 +643,7 @@ describe('terminal snippet labels', () => {
     expect(md).toContain('yarn add expo');
     expect(md).toContain('pnpm add expo');
     expect(md).toContain('bun add expo');
-    expect(md).not.toContain('# npm comment');
+    expect(md).toContain('# npm comment');
   });
 
   it('skips empty/comment-only manager sections, ignores unknown keys, and preserves angle brackets', () => {
@@ -967,6 +1037,12 @@ describe('checkPage (check-markdown-pages)', () => {
     const errors = checkPage(md);
     expect(errors.some(error => error.includes('Unbalanced code fences'))).toBe(true);
   });
+
+  it('detects doubled periods', () => {
+    expect(
+      checkPage('# Title\n\n| Parameter | Type |\n| --- | --- |\n| `. .uris` | `string[]` |\n')
+    ).toEqual(['Contains ". ." (corrupted ellipsis or doubled period)']);
+  });
 });
 
 describe('collapsible/details', () => {
@@ -1192,6 +1268,18 @@ describe('blockquote in table cells', () => {
     expect(md).not.toContain('> Allows');
     expect(md).toContain('Allows read only access to phone state');
   });
+
+  it('preserves ... in table cells and does not emit doubled periods', () => {
+    const html = `<main><table><thead><tr><th>Name</th><th>Description</th></tr></thead>
+      <tbody><tr>
+        <td><code>...uris</code></td>
+        <td><div><p>Deprecated: use X instead.</p></div><div><p>More.</p></div></td>
+      </tr></tbody></table></main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('...uris');
+    expect(md).not.toContain('. .');
+    expect(md).not.toContain('instead..');
+  });
 });
 
 describe('font-semibold to bold', () => {
@@ -1232,6 +1320,26 @@ describe('API returns section', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('Returns:');
     expect(md).toMatch(/Returns: .?Promise.?/);
+  });
+
+  it('preserves the casing of generic type arguments', () => {
+    const html = [
+      '<main><h3>getPermissionsAsync()</h3>',
+      '<div data-md="api-returns" class="flex flex-row items-start gap-2">',
+      '<div class="flex flex-row items-center gap-2">',
+      '<span class="text-sm">Returns:</span>',
+      '</div>',
+      '<code>',
+      '<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>',
+      '<span class="text-quaternary">&lt;</span>',
+      '<span>PermissionResponse</span>',
+      '<span class="text-quaternary">&gt;</span>',
+      '</code>',
+      '</div></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Promise<PermissionResponse>');
+    expect(md).not.toContain('permissionresponse');
   });
 });
 
@@ -1631,5 +1739,64 @@ describe('extractFrontmatter', () => {
   it('returns null when all fields are UI-only', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'only-ui-fields.mdx'));
     expect(result).toBeNull();
+  });
+});
+
+describe('agent prompt blocks', () => {
+  function fence(text: string) {
+    return `<div class="code-block-wrapper"><pre data-md-lang="text" data-text="true"><div><code>${text}</code></div></pre></div>`;
+  }
+
+  function agentPromptHtml(body: string) {
+    return [
+      '<main>',
+      '<h1>Get started with EAS Update</h1>',
+      '<div data-testid="agent-prompt">',
+      '<div><svg viewBox="0 0 24 24"><path d="M0 0"/></svg><div>',
+      '<h2 data-heading="true">Set up EAS Update with an AI agent</h2>',
+      '<p>Paste this into an agent.</p>',
+      '</div><div><button>Copy prompt</button></div></div>',
+      '<div><button data-md="skip" aria-expanded="false">Show prompt</button><div hidden="">',
+      body,
+      '</div></div>',
+      '</div>',
+      '<p>EAS Update ships over-the-air updates.</p>',
+      '</main>',
+    ].join('');
+  }
+
+  it('renders a single prompt as a section with one code block', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(fence('Install expo-updates.\n\nRun `eas update:configure`.'))
+    );
+    expect(md).toContain('## Set up EAS Update with an AI agent');
+    expect(md).toContain('Paste this into an agent.');
+    expect(md).toContain('```text\nInstall expo-updates.\n\nRun `eas update:configure`.\n```');
+    expect(md).not.toContain('Show prompt');
+    expect(md).not.toContain('Copy prompt');
+    expect(md).not.toContain('###');
+    expect(md).toContain('EAS Update ships over-the-air updates.');
+  });
+
+  it('keeps every option under its own heading, hidden ones included', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(
+        [
+          '<section data-agent-prompt-option="build-locally">',
+          '<h3 class="sr-only">Build locally</h3>',
+          fence('Run `npx expo run:ios`.'),
+          '</section>',
+          '<section data-agent-prompt-option="build-with-eas" hidden="">',
+          '<h3 class="sr-only">Build with EAS</h3>',
+          fence('Run `eas build`.'),
+          '</section>',
+        ].join('')
+      )
+    );
+    expect(md).toContain('### Build locally');
+    expect(md).toContain('### Build with EAS');
+    expect(md).toContain('Run `npx expo run:ios`.');
+    expect(md).toContain('Run `eas build`.');
+    expect(md.indexOf('### Build locally')).toBeLessThan(md.indexOf('Run `npx expo run:ios`.'));
   });
 });

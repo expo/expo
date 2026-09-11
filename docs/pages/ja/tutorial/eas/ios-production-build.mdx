@@ -1,0 +1,187 @@
+---
+title: iOS 向けの本番ビルドを作成する
+sidebar_title: iOS 本番ビルド
+description: iOS 向けの本番ビルドを作成する流れと、リリースプロセスを自動化する方法を学びます。
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、サンプルアプリの本番バージョンを作成し、TestFlight を使ってテストに提出します。そのあと App Store の審査に提出して、App Store に掲載します。
+
+<VideoBoxLink
+  videoId="VZL_e0cEwo8"
+  title="視聴：iOS 向けの本番ビルドを作成してリリースする"
+  description="EAS で iOS の本番ビルドを作成し、TestFlight でテストして、App Store に提出します。"
+/>
+
+---
+
+<Prerequisites>
+  <Requirement title="Apple Developer アカウント">
+    作成方法は [Apple Developer Portal](https://developer.apple.com/account/) を参照してください。
+  </Requirement>
+  <Requirement title="eas.json の production ビルドプロファイル">
+    **eas.json** に `production`
+    ビルドプロファイルがあることを確認してください。デフォルトで追加されています。
+  </Requirement>
+</Prerequisites>
+
+## iOS 向けの本番ビルド
+
+[iOS の本番ビルド](/build/eas-json/#production-builds) は Apple の App Store Connect 向けに最適化されており、TestFlight でテスターに、App Store で一般ユーザーにビルドを配布できます。このビルド種別はシミュレーターや実機に直接インストールすることはできず、App Store Connect 経由でのみ配布できます。
+
+<Step label="1">
+
+## 配布用プロビジョニングプロファイルを作成する
+
+ターミナルで `eas credentials` コマンドを実行し、EAS CLI の質問に次のように答えます。
+
+- **Select platform**（プラットフォームを選んでください）iOS を選びます。
+- **Which build profile do you want to configure?**（どのビルドプロファイルを設定しますか？）production を選びます。
+- **Do you want to log in to your Apple account?**（Apple アカウントにログインしますか？）<kbd>Y</kbd> を押します。これで Apple Developer アカウントにログインします。
+- **What do you want to do?**（何をしますか？）**Build credentials** を選び、**All: Set up all the required credentials to build your project**（プロジェクトのビルドに必要な認証情報をすべてセットアップする）を選びます。
+- 続いて、以前の Distribution Certificate を再利用するか尋ねられます。<kbd>Y</kbd> を押します。
+- **Generate a new Apple Provisioning Profile?**（新しい Apple プロビジョニングプロファイルを生成しますか？）<kbd>Y</kbd> を押します。これが本番アプリ用のプロビジョニングプロファイルになります。
+- プロファイルが作成されたら、<kbd>Ctrl</kbd> + <kbd>C</kbd> で EAS CLI を終了します。
+
+</Step>
+
+<Step label="2">
+
+## 本番ビルドを作成する
+
+デフォルトの `production` プロファイルで iOS の本番ビルドを作成するには、ターミナルを開いて次のコマンドを実行します。EAS の設定では `production` がデフォルトプロファイルになっているため、`--profile` フラグで明示的に指定する必要はありません。
+
+<Terminal cmd={['$ eas build --platform ios']} />
+
+このコマンドでビルドがキューに入ります。EAS ダッシュボードで **Build Number** が自動的にインクリメントされていることに注目してください。
+
+</Step>
+
+<Step label="3">
+
+## アプリのバイナリを App Store に提出する
+
+直近の EAS Build で作成したアプリのバイナリを提出するには、[`eas submit`](/submit/ios/) コマンドを実行します。
+
+<Terminal cmd={['$ eas submit --platform ios']} />
+
+このコマンドを実行したら、次のようにします。
+
+- **Select a build from EAS.**（EAS からビルドを選んでください）最新のビルド ID を選びます。
+- **表示される手順に従って Apple アカウントにログインします。** **Reuse this App Store Connect API Key?**（この App Store Connect API キーを再利用しますか？）と尋ねられたら <kbd>Y</kbd> を押します。
+
+これで提出プロセスが始まります。
+
+</Step>
+
+<Step label="4">
+
+## 内部テストバージョンをリリースする
+
+提出プロセスが完了したら、web ブラウザーから Apple Developer アカウントにログインします。
+
+- **[Apps](https://appstoreconnect.apple.com/apps)** をクリックすると、アプリのアイコンが見えます。
+- アプリ名をクリックし、ナビゲーションタブのメニューから **TestFlight** をクリックします。提出直後の場合、TestFlight で配布できるようになるまで Apple の処理に数分かかることがあります。
+
+> **info** **[iOS 実機向け開発ビルドの章](/ja/tutorial/eas/ios-development-build-for-devices/) を飛ばした場合のみ:** **iOS app only uses standard/exempt encryption?**（この iOS アプリは標準的な、または適用除外の暗号化のみを使いますか？）と尋ねられます。<kbd>Y</kbd> を押してデフォルト値を選びます。このアプリは暗号化を使っていないため、**Info.plist** ファイルの `ITSAppUsesNonExemptEncryption` が `NO` に設定され、TestFlight や Apple App Store にリリースする際のコンプライアンスチェックが処理されます。自分のアプリをリリースする際に暗号化を使っている場合は、`N` を選べば次回からこの質問を省略できます。
+
+- App Store Connect の **Internal Testing** でテストグループを作成します。これでテストユーザーを招待できます。
+
+<ContentSpotlight
+  alt="Create a test user group in App Store Connect"
+  src="/static/images/tutorial/eas/app-store-01.webp"
+  className="max-w-[800px]"
+/>
+
+- グループを作成すると、すべてのテストユーザーにメールが送られます。
+
+<ContentSpotlight
+  alt="Email sent to test users for internal testing"
+  src="/static/images/tutorial/eas/app-store-02.jpg"
+  className="max-w-[240px]"
+/>
+
+- メール内の **View in TestFlight** をクリックして招待を承諾し、**Install** をタップします。
+
+<ContentSpotlight
+  alt="TestFlight app showing the app to install"
+  src="/static/images/tutorial/eas/app-store-03.jpg"
+  className="max-w-[240px]"
+/>
+
+これでアプリがデバイスにダウンロードされ、テストできるようになります。
+
+> **Note**: 内部テストと同じように、TestFlight で外部テスターを招待するグループも作成できます。内部テストの上限が 100 名なのに対し、TestFlight では最大 10,000 名のテスターにテストリリースを外部共有でき、公開用の共有リンクも提供されます。手順の詳細は [TestFlight で iOS アプリを配布する](/submit/testflight/) を参照してください。
+
+</Step>
+
+<Step label="5">
+
+## アプリを Apple App Store に提出する
+
+App Store への提出に向けてアプリを準備するには、**App Store** タブに移動します。
+
+- メタデータを入力し、Apple のガイドラインに沿ったスクリーンショットを用意して、**General** の項目も埋めます。
+
+<ContentSpotlight
+  alt="App Store Connect showing the app details and screenshots"
+  src="/static/images/tutorial/eas/app-store-04.png"
+  className="max-w-[800px]"
+/>
+
+- 続いて、ビルドを手動で選択します。
+
+<ContentSpotlight
+  alt="App Store Connect showing the build selection for the app"
+  src="/static/images/tutorial/eas/app-store-05.png"
+  className="max-w-[800px]"
+/>
+
+> **App Store 掲載情報を整える**: ストア掲載に向けてアプリを準備するには、スクリーンショットやプレビューの作り方について [アプリストア用アセットを作成する](/guides/store-assets/) を参照してください。
+
+- アプリの準備ができたら **Submit to App Review** をクリックします。その後 Apple がアプリを審査し、承認されるとアプリが App Store に公開されます。
+
+<ContentSpotlight
+  alt="App Store Connect showing the app submission for review"
+  src="/static/images/tutorial/eas/app-store-06.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="6">
+
+## 提出の自動化
+
+今後のリリースでは、`eas build` に [`--auto-submit`](/build/automate-submissions/) フラグを付けることで、ビルドの作成と App Store への提出を 1 ステップにまとめて効率化できます。
+
+<Terminal cmd={['$ eas build --platform ios --auto-submit']} />
+
+> **Note:** このコマンドは内部テスト用にビルドを TestFlight へ自動アップロードしますが、App Store の審査へ自動的に提出はしません。一般公開の準備ができたら、TestFlight から App Store へビルドを手動で昇格させる必要があります。詳しくは [アプリストアへのデフォルトの提出動作](/build/automate-submissions/#default-submission-behavior-for-app-stores) を参照してください。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/ios-production-build"
+  chapterTitle="第 9 章：iOS 向けの本番ビルドを作成する"
+  summary={
+    <>
+      本番向けの iOS ビルドを作成し、TestFlight と <CODE>eas submit</CODE> を使った Apple App Store
+      への配布について確認して、<CODE>--auto-submit</CODE> でリリースプロセスを自動化しました。
+    </>
+  }
+  nextChapterDescription="次の章では、EAS Update を使って OTA（アプリストアを介さない）アップデートを配信し、チームにプレビューを共有する方法を学びます。"
+  nextChapterTitle="チームにプレビューを共有する"
+  nextChapterLink="/ja/tutorial/eas/team-development/"
+/>

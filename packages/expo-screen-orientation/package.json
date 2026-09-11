@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-orientation",
-  "version": "56.0.5",
+  "version": "58.0.0",
   "description": "Expo universal module for managing device's screen orientation",
   "keywords": [
     "expo",

@@ -15,6 +15,9 @@ import {
   buttonStyle,
   foregroundStyle,
   labelStyle,
+  menuIndicator,
+  menuOrder,
+  menuStyle,
   pickerStyle,
   tag,
 } from '@expo/ui/swift-ui/modifiers';
@@ -113,6 +116,28 @@ export default function MenuScreen() {
           <Menu label="Styled Menu" modifiers={[buttonStyle('borderedProminent')]}>
             <Button onPress={() => console.log('Styled 1')} label="Styled Action 1" />
             <Button onPress={() => console.log('Styled 2')} label="Styled Action 2" />
+          </Menu>
+        </Section>
+
+        <Section title="Menu with fixed item order">
+          {/* Menus opening upward reverse their items with the default automatic
+              order. menuOrder('fixed') keeps First/Second/Third top to bottom. */}
+          <Menu label="Fixed Order" modifiers={[menuOrder('fixed')]}>
+            <Button onPress={() => console.log('First')} label="First" />
+            <Button onPress={() => console.log('Second')} label="Second" />
+            <Button onPress={() => console.log('Third')} label="Third" />
+          </Menu>
+        </Section>
+
+        <Section title="Menu with a plain trigger">
+          {/* Under the Mac idiom on Mac Catalyst, Menu renders as an AppKit pull-down:
+              bordered chrome and a chevron replace the custom label. This combination
+              keeps the label as the entire trigger, on Catalyst and on iOS alike. */}
+          <Menu
+            label={<Text modifiers={[foregroundStyle('accentColor')]}>Plain Trigger</Text>}
+            modifiers={[menuStyle('button'), buttonStyle('plain'), menuIndicator('hidden')]}>
+            <Button onPress={() => console.log('Plain 1')} label="Plain Action 1" />
+            <Button onPress={() => console.log('Plain 2')} label="Plain Action 2" />
           </Menu>
         </Section>
 

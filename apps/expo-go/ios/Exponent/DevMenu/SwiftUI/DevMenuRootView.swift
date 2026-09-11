@@ -5,6 +5,7 @@ import SwiftUI
 struct DevMenuRootView: View {
   @StateObject private var viewModel = DevMenuViewModel(manager: DevMenuManager.shared)
   @State private var navigationId = UUID()
+  @State private var isSourceExplorerPresented = false
 
   var body: some View {
     let mainView = VStack(spacing: 0) {
@@ -24,12 +25,28 @@ struct DevMenuRootView: View {
     }
 
     NavigationView {
-      mainView
+      ZStack {
+        mainView
+
+        NavigationLink(
+          destination: SourceMapExplorerView(),
+          isActive: $isSourceExplorerPresented
+        ) {
+          EmptyView()
+        }
+        .hidden()
+      }
     }
     .navigationViewStyle(.stack)
     .id(navigationId)
     .onReceive(DevMenuManager.shared.menuWillShowPublisher) { _ in
+      isSourceExplorerPresented = false
       navigationId = UUID()
+    }
+    .onReceive(DevMenuManager.shared.sourceExplorerPresentationPublisher) { shouldPresent in
+      guard shouldPresent else { return }
+      isSourceExplorerPresented = true
+      DevMenuManager.shared.sourceExplorerDidPresent()
     }
   }
 }

@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+
 import { DataTable } from '@/components/DataTable';
 import { InsertForm } from '@/components/InsertForm';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -12,8 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import type { ColumnInfo, QueryResult } from '@/types';
-import { toast } from 'sonner';
 
 interface DataBrowserProps {
   tableName: string;

@@ -1,17 +1,17 @@
 import chalk from 'chalk';
 import path from 'path';
 
-import * as XcodeBuild from './XcodeBuild';
-import type { BuildProps } from './XcodeBuild.types';
-import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 import { Log } from '../../log';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
 import { launchBinaryOnMacAsync } from '../../start/platforms/ios/devicectl';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
-import { event } from '../events';
 import type { DevServerManager } from '../../start/server/DevServerManager';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
+import { event } from '../events';
+import * as XcodeBuild from './XcodeBuild';
+import type { BuildProps } from './XcodeBuild.types';
+import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 
 type BinaryLaunchInfo = {
   bundleId: string;

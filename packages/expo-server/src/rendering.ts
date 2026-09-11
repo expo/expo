@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { type ImmutableRequest } from './ImmutableRequest';
-import type { AssetInfo, GetStreamingContentOptions } from './manifest';
+import type { AssetInfo, GetStaticContentOptions, GetStreamingContentOptions } from './manifest';
 import type { Metadata } from './metadata';
 
 export interface MatchedRouteMetadata {
@@ -21,6 +21,16 @@ export interface ResolveMetadataOptions {
 }
 
 /**
+ * The legacy SSR render module exported from `_expo/server/render.js`.
+ *
+ * {@link import('@expo/router-server/src/static/renderStaticContent')}
+ */
+export interface LegacyServerRenderModule {
+  /** {@type import('@expo/router-server/src/static/renderStaticContent').getStaticContent} */
+  getStaticContent(location: URL, options?: GetStaticContentOptions): Promise<string>;
+}
+
+/**
  * The SSR render module exported from `_expo/server/render.js`.
  *
  * {@link import('@expo/router-server/src/static/renderStreamingContent')}
@@ -34,6 +44,8 @@ export interface ServerRenderModule {
   ): Promise<ReadableStream<Uint8Array>>;
 }
 
+export type MaybeLegacyServerRenderModule = LegacyServerRenderModule | ServerRenderModule;
+
 export interface RenderOptions {
   loader?: { data: unknown; key: string };
   metadata?: ResolvedMetadata | null;
@@ -43,7 +55,7 @@ export interface RenderOptions {
 export type SsrRenderFn = (
   request: Request,
   options?: RenderOptions
-) => Promise<ReadableStream<Uint8Array>>;
+) => Promise<string | ReadableStream<Uint8Array>>;
 
 /** Module exported from loader bundle, typically `_expo/loaders/[ROUTE].js` */
 export interface LoaderModule {
@@ -51,4 +63,10 @@ export interface LoaderModule {
     request: ImmutableRequest | undefined,
     params: Record<string, string>
   ): Promise<unknown> | unknown;
+}
+
+export function isStreamingRenderer(
+  module: LegacyServerRenderModule | ServerRenderModule
+): module is ServerRenderModule {
+  return 'getStreamingContent' in module;
 }

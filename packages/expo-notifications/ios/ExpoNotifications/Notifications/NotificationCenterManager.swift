@@ -33,8 +33,69 @@ public extension NotificationDelegate {
 }
 
 /**
+ Completion handler that takes the presentation options of a delegate, and drops them because
+ another delegate answers the notification center instead.
+ */
+private let discardPresentationOptions: (UNNotificationPresentationOptions) -> Void = { _ in }
+
+/**
+ The delegates of `NotificationCenterManager`, and the responses that arrived before any delegate
+ could handle them.
+
+ The manager is a process-wide singleton, but app contexts are not: the modules of an incoming
+ context register themselves while an outgoing context tears its own down, which happens on every
+ dev-client reload and on `Updates.reloadAsync()`. Both arrays are therefore written from more than
+ one thread at a time, so they live behind a lock.
+ */
+internal final class NotificationDelegateRegistry {
+  private let state = Mutex(State())
+
+  private struct State {
+    var delegates: [NotificationDelegate] = []
+    var pendingResponses: [UNNotificationResponse] = []
+  }
+
+  /**
+   A snapshot of the delegates. Callers iterate the snapshot instead of holding the lock across a
+   delegate callback: `add` hands back the pending responses so that the caller can offer them to
+   the delegate it just added, and a delegate is free to add or remove delegates from there.
+   */
+  var delegates: [NotificationDelegate] {
+    state.withLock { $0.delegates }
+  }
+
+  var pendingResponses: [UNNotificationResponse] {
+    state.withLock { $0.pendingResponses }
+  }
+
+  /**
+   Adds the delegate, and returns the responses that it still has to be offered.
+   */
+  func add(_ delegate: NotificationDelegate) -> [UNNotificationResponse] {
+    state.withLock { state in
+      state.delegates.append(delegate)
+      return state.pendingResponses
+    }
+  }
+
+  func remove(_ delegate: AnyObject) {
+    state.withLock { $0.delegates.removeAll { $0 === delegate } }
+  }
+
+  func appendPendingResponse(_ response: UNNotificationResponse) {
+    state.withLock { $0.pendingResponses.append(response) }
+  }
+
+  func removeAllPendingResponses() {
+    state.withLock { $0.pendingResponses.removeAll() }
+  }
+}
+
+/**
  Singleton that sets itself as the UserNotificationCenter delegate,
  and calls its own delegates in response to notification center calls.
+ The notification center keeps a single delegate, so a delegate that another library set before
+ us becomes the chained delegate and receives every notification center call too.
  */
 public class NotificationCenterManager: NSObject,
   UNUserNotificationCenterDelegate,
@@ -42,40 +103,76 @@ public class NotificationCenterManager: NSObject,
   @objc
   public static let shared = NotificationCenterManager()
 
-  var delegates: [NotificationDelegate] = []
-  var pendingResponses: [UNNotificationResponse] = []
-  let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()
+  private let registry = NotificationDelegateRegistry()
+
+  var delegates: [NotificationDelegate] {
+    registry.delegates
+  }
+
+  var pendingResponses: [UNNotificationResponse] {
+    registry.pendingResponses
+  }
+
+  /**
+   Delegate of the notification center that another library set before us. We forward every
+   notification center call to it, so that the other library keeps working.
+   */
+  private weak var chainedDelegate: UNUserNotificationCenterDelegate?
 
   private override init() {
     super.init()
-    if UNUserNotificationCenter.current().delegate != nil {
+    install()
+  }
+
+  /**
+   Sets this manager as the delegate of the notification center, and keeps the delegate of another
+   library in the chain, so that both this manager and the other library receive notification
+   center calls. Call this from your app if a library sets its own delegate after
+   expo-notifications has started.
+   */
+  @objc
+  public func installAsNotificationCenterDelegate() {
+    install()
+  }
+
+  private func install() {
+    let notificationCenter = UNUserNotificationCenter.current()
+    let previousDelegate = notificationCenter.delegate
+    if previousDelegate === self {
+      return
+    }
+    notificationCenter.delegate = self
+    guard let previousDelegate else {
+      return
+    }
+    // A library that swizzles `setDelegate:` can keep its own delegate in the notification center
+    // and forward the calls to the delegate that we set. Chaining back to such a library would
+    // call it again for every call that it forwards, without an end.
+    guard notificationCenter.delegate === self else {
       NSLog(
-        "[expo-notifications] NotificationCenterManager encountered an already present delegate of " +
-        "UNUserNotificationCenter. NotificationCenterManager will not overwrite the value not to break other " +
-        "features of your app. In return, expo-notifications may not work properly. To fix this problem either " +
-        "remove setting of the second delegate, or set the delegate to an instance of NotificationCenterManager " +
-        "manually afterwards."
+        "[expo-notifications] Couldn't become the delegate of UNUserNotificationCenter, because " +
+        "\(type(of: previousDelegate)) keeps that delegate for itself. expo-notifications works only if that " +
+        "library forwards notification center calls to the delegate that it replaced. If notifications don't " +
+        "arrive, stop the other library from setting the delegate, or call " +
+        "NotificationCenterManager.shared.installAsNotificationCenterDelegate() after the other library sets it."
       )
       return
     }
-    UNUserNotificationCenter.current().delegate = self
+    chainedDelegate = previousDelegate
   }
 
   public func addDelegate(_ delegate: NotificationDelegate) {
-    delegates.append(delegate)
     var handled = false
-    for pendingResponse in pendingResponses {
+    for pendingResponse in registry.add(delegate) {
       handled = delegate.didReceive(pendingResponse, completionHandler: {}) || handled
     }
     if handled {
-      pendingResponses.removeAll()
+      registry.removeAllPendingResponses()
     }
   }
 
   public func removeDelegate(_ delegate: AnyObject) {
-    if let index = delegates.firstIndex(where: { $0 === delegate }) {
-      delegates.remove(at: index)
-    }
+    registry.remove(delegate)
   }
 
   // MARK: - Called by PushTokenAppDelegateSubscriber
@@ -103,8 +200,25 @@ public class NotificationCenterManager: NSObject,
     for delegate in delegates {
       handled = delegate.willPresent(notification, completionHandler: completionHandler) || handled
     }
-    if !handled {
-      completionHandler([])
+
+    if handled {
+      // One of our own delegates answers, so the chained delegate doesn't answer.
+      chainedDelegate?.userNotificationCenter?(
+        center,
+        willPresent: notification,
+        withCompletionHandler: discardPresentationOptions
+      )
+    } else {
+      // None of our own delegates answers, so the chained delegate answers instead.
+      let answered: Void? = chainedDelegate?.userNotificationCenter?(
+        center,
+        willPresent: notification,
+        withCompletionHandler: completionHandler
+      )
+      if answered == nil {
+        // There's no chained delegate, or it doesn't present notifications, so present nothing.
+        completionHandler([])
+      }
     }
   }
 
@@ -118,8 +232,9 @@ public class NotificationCenterManager: NSObject,
       handled = delegate.didReceive(response, completionHandler: completionHandler) || handled
     }
     if !handled {
-      pendingResponses.append(response)
+      registry.appendPendingResponse(response)
     }
+    chainedDelegate?.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completionHandler)
     completionHandler()
   }
 
@@ -127,6 +242,7 @@ public class NotificationCenterManager: NSObject,
     for delegate in delegates {
       delegate.openSettings(notification)
     }
+    chainedDelegate?.userNotificationCenter?(center, openSettingsFor: notification)
   }
 
   // MARK: - Called from NotificationsAppDelegateSubscriber

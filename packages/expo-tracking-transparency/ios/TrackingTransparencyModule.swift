@@ -1,5 +1,5 @@
-import ExpoModulesCore
 import AdSupport
+import ExpoModulesCore
 
 public class TrackingTransparencyModule: Module {
   public func definition() -> ModuleDefinition {
@@ -7,7 +7,10 @@ public class TrackingTransparencyModule: Module {
     Name("ExpoTrackingTransparency")
 
     OnCreate {
-      EXPermissionsMethodsDelegate.register([TrackingTransparencyPermissionRequester()], withPermissionsManager: self.appContext?.permissions)
+      EXPermissionsMethodsDelegate.register(
+        [TrackingTransparencyPermissionRequester()],
+        withPermissionsManager: self.appContext?.permissions
+      )
     }
 
     Function("getAdvertisingId") { () -> String in

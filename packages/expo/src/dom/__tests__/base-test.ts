@@ -1,4 +1,4 @@
-jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+jest.mock('../../utils/getDevServer', () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({ url: 'http://localhost:8081' }),
 }));

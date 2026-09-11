@@ -1,4 +1,4 @@
-const { withProjectBuildGradle } = require('@expo/config-plugins');
+const { withProjectBuildGradle } = require('expo/config-plugins');
 const kotlinClassPath = 'org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion';
 
 const withKotlinGradle = (config, version) => {

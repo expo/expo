@@ -7,14 +7,13 @@ import android.os.Bundle
 import androidx.annotation.DeprecatedSinceApi
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
+import expo.modules.medialibrary.next.exceptions.AssetNotFoundException
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.deleteBy
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDisplayName
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDuration
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateModified
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateTaken
@@ -30,6 +29,7 @@ import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetBucketId
+import expo.modules.medialibrary.next.objects.asset.AssetDimensionsResolver
 import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
@@ -51,6 +51,7 @@ class AssetLegacyDelegate(
   contentUri: Uri,
   val assetDeleter: AssetDeleter,
   val assetMapper: AssetMapper,
+  val assetDimensionsResolver: AssetDimensionsResolver,
   val systemPermissionsDelegate: SystemPermissionsDelegate,
   val assetFactory: AssetFactory,
   val assetMover: AssetMover,
@@ -89,21 +90,26 @@ class AssetLegacyDelegate(
       ?: throw AssetPropertyNotFoundException("Filename")
 
   override suspend fun getHeight(): Int {
-    val mediaStoreHeight = contentResolver.queryAssetHeight(contentUri)
-    return assetMapper.mapHeight(mediaStoreHeight, contentUri)
+    val mediaStoreItem = contentResolver.queryAssetMediaStoreItem(contentUri)
+      ?: throw AssetNotFoundException(contentUri)
+    val resolvedItem = assetDimensionsResolver.resolveDimensions(mediaStoreItem)
+    return assetMapper.mapShape(resolvedItem)?.height
       ?: throw AssetPropertyNotFoundException("Height")
   }
 
   override suspend fun getWidth(): Int {
-    val mediaStoreWidth = contentResolver.queryAssetWidth(contentUri)
-    return assetMapper.mapWidth(mediaStoreWidth, contentUri)
+    val mediaStoreItem = contentResolver.queryAssetMediaStoreItem(contentUri)
+      ?: throw AssetNotFoundException(contentUri)
+    val resolvedItem = assetDimensionsResolver.resolveDimensions(mediaStoreItem)
+    return assetMapper.mapShape(resolvedItem)?.width
       ?: throw AssetPropertyNotFoundException("Width")
   }
 
   override suspend fun getShape(): Shape? {
-    val width = getWidth()
-    val height = getHeight()
-    return Shape(width, height).takeIf { width > 0 && height > 0 }
+    val mediaStoreItem = contentResolver.queryAssetMediaStoreItem(contentUri)
+      ?: throw AssetNotFoundException(contentUri)
+    val resolvedItem = assetDimensionsResolver.resolveDimensions(mediaStoreItem)
+    return assetMapper.mapShape(resolvedItem)
   }
 
   override suspend fun getMediaType(): MediaType =
@@ -123,8 +129,10 @@ class AssetLegacyDelegate(
   }
 
   override suspend fun getInfo(): AssetInfo {
-    return contentResolver.queryAssetMediaStoreItem(contentUri)?.let { assetMapper.toDto(it) }
-      ?: throw AssetPropertyNotFoundException("Info")
+    val mediaStoreItem = contentResolver.queryAssetMediaStoreItem(contentUri)
+      ?: throw AssetNotFoundException(contentUri)
+    val resolvedItem = assetDimensionsResolver.resolveDimensions(mediaStoreItem)
+    return assetMapper.toDto(resolvedItem)
   }
 
   override suspend fun getFavorite(): Boolean = false

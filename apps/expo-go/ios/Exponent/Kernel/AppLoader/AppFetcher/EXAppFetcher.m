@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                             error:(void (^)(NSError *))errorBlock
 {
   EXJavaScriptResource *jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self.dataSource bundleResourceNameForAppFetcher:self withManifest:manifest]
-                                                                            remoteUrl:[EXApiUtil bundleUrlFromManifest:manifest]
+                                                                            remoteUrl:[EXApiUtil bundleUrlFromManifest:manifest relativeTo:self.appLoader.manifestUrl]
                                                                       devToolsEnabled:manifest.isUsingDeveloperTool];
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
   jsResource.requestTimeoutInterval = timeoutInterval;
@@ -65,4 +65,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-

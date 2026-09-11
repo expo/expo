@@ -1,9 +1,9 @@
 import type { ComponentProps } from 'react';
 
 import type { Drawer, DrawerNavigatorProps } from '../../../layouts/Drawer';
-import type { DrawerNavigationState, ParamListBase } from '../../native';
+import type { DescriptorRouteProp, DrawerNavigationState, ParamListBase } from '../../native';
 import type { DrawerNavigatorContentProps } from '../navigators/createDrawerNavigator';
-import type { DrawerNavigationHelpers } from '../types';
+import type { DrawerNavigationHelpers, DrawerOptionsArgs } from '../types';
 
 type Expect<T extends true> = T;
 type Equal<A, B> =
@@ -11,6 +11,12 @@ type Equal<A, B> =
 
 type DrawerProps = ComponentProps<typeof Drawer>;
 
+export type _OptionsRouteIsDescriptorRoute = Expect<
+  Equal<DrawerOptionsArgs<ParamListBase>['route'], DescriptorRouteProp<ParamListBase>>
+>;
+export type _OptionsRouteKeyMayBeUndefined = Expect<
+  Equal<DrawerOptionsArgs<ParamListBase>['route']['key'], string | undefined>
+>;
 export type _PublicPropsMatchDrawer = Expect<Equal<DrawerNavigatorProps, DrawerProps>>;
 export type _DrawerStateIsNotPublic = Expect<
   Equal<'drawerState' extends keyof DrawerProps ? true : false, false>

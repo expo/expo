@@ -317,27 +317,7 @@ open class ExpoNotificationBuilder(
     }
 
   protected val largeIcon: Bitmap?
-    /**
-     * The method first tries to get the large icon from the manifest's meta-data [.META_DATA_DEFAULT_ICON_KEY].
-     * If a custom setting is not found, the method falls back to null.
-     *
-     * @return Bitmap containing larger icon or null if a custom settings was not provided.
-     */
-    get() {
-      try {
-        val ai = context.packageManager.getApplicationInfo(
-          context.packageName,
-          PackageManager.GET_META_DATA
-        )
-        if (ai.metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
-          val resourceId = ai.metaData.getInt(META_DATA_LARGE_ICON_KEY)
-          return BitmapFactory.decodeResource(context.resources, resourceId)
-        }
-      } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not fetch large notification icon.", e)
-      }
-      return null
-    }
+    get() = largeIconFromManifest(context)
 
   protected open val icon: Int
     /**
@@ -405,5 +385,22 @@ open class ExpoNotificationBuilder(
       "expo.modules.notifications.default_notification_color"
     const val EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY: String = "expo.notification_request"
     const val EXTRAS_BODY_KEY = "body"
+
+    @JvmStatic
+    fun largeIconFromManifest(context: Context): Bitmap? {
+      try {
+        val metaData = context.packageManager.getApplicationInfo(
+          context.packageName,
+          PackageManager.GET_META_DATA
+        ).metaData
+        if (metaData != null && metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
+          val resourceId = metaData.getInt(META_DATA_LARGE_ICON_KEY)
+          return BitmapFactory.decodeResource(context.resources, resourceId)
+        }
+      } catch (e: Exception) {
+        Log.e("expo-notifications", "Could not fetch large notification icon.", e)
+      }
+      return null
+    }
   }
 }

@@ -26,9 +26,11 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case fileDownloaderFailedUpdateIDsFailure(cause: Error)
   case fileDownloaderUnknownError(cause: Error)
   case remoteAppLoaderAssetMissingUrl
+  case remoteAppLoaderUnsafeAssetFilename(filename: String)
   case remoteAppLoaderHeaderDataError(cause: Error)
   case remoteAppLoaderUnknownError(cause: Error)
   case appLoaderFailedToLoadAllAssets
+  case appLoaderFinishedWithoutManifest
   case appLoaderUnknownError(cause: Error)
   case appLoaderTaskFailedToLaunch(cause: Error?)
   case appLoaderTaskUnexpectedErrorDuringLaunch
@@ -41,6 +43,7 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case appLauncherWithDatabaseAssetCopyFailed
   case appLauncherWithDatabaseUnknownError(cause: Error)
   case appLauncherNoLaunchableUpdates(cause: Error?)
+  case appLauncherLaunchAssetNotFound(updateId: UUID)
   case embeddedAppLoaderEmbeddedManifestLoadFailed
   case startupProcedureDidFinishWithError(cause: Error)
   case startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: Error)
@@ -92,10 +95,14 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Unknown error: \(cause.localizedDescription)"
     case .remoteAppLoaderAssetMissingUrl:
       return "Failed to download asset with no URL provided"
+    case let .remoteAppLoaderUnsafeAssetFilename(filename):
+      return "Failed to download asset: filename \"\(filename)\" would resolve outside the updates directory"
     case let .remoteAppLoaderHeaderDataError(cause):
       return "Error persisting header data to disk: \(cause.localizedDescription)"
     case .appLoaderFailedToLoadAllAssets:
       return "Failed to load all assets"
+    case .appLoaderFinishedWithoutManifest:
+      return "AppLoader finished without a processed update manifest. This is an internal error."
     case let .remoteAppLoaderUnknownError(cause):
       return "Unknown error: \(cause.localizedDescription)"
     case let .appLoaderUnknownError(cause):
@@ -122,6 +129,8 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Unknown error: \(cause.localizedDescription)"
     case let .appLauncherNoLaunchableUpdates(cause):
       return "No launchable updates found in database: \(cause?.localizedDescription ?? "Unknown error")"
+    case let .appLauncherLaunchAssetNotFound(updateId):
+      return "Launch asset not found for update \(updateId). The update cannot launch and will be repaired at the next app launch."
     case .embeddedAppLoaderEmbeddedManifestLoadFailed:
       return "Failed to load embedded manifest. Make sure you have configured expo-updates correctly."
     case let .startupProcedureDidFinishWithError(cause):

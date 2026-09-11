@@ -1,5 +1,5 @@
-import type { ConfigPlugin } from 'expo/config-plugins';
 import withBuildProperties from 'expo-build-properties';
+import type { ConfigPlugin } from 'expo/config-plugins';
 
 import type { PluginConfig } from '../types';
 

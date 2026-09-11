@@ -262,7 +262,19 @@ export function createRouteHandlerMiddleware(
       },
       async getLoaderData(request, route) {
         const response = await options.executeLoaderAsync(route, new ImmutableRequest(request));
-        return response ?? new Response(null, { status: 404 });
+        const result = response ?? new Response(null, { status: 404 });
+        if (result.headers.has('Cache-Control')) {
+          return result;
+        }
+
+        // Default header-less loader responses to `no-store` in development
+        const headers = new Headers(result.headers);
+        headers.set('Cache-Control', 'no-store');
+        return new Response(result.body, {
+          status: result.status,
+          statusText: result.statusText,
+          headers,
+        });
       },
     }
   );

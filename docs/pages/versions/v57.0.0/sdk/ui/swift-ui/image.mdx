@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Icon`](../universal/icon) — it renders the appropriate native component per platform.
@@ -30,17 +31,25 @@ Expo UI Image displays SF Symbols using the SwiftUI [Image API](https://develope
 
 ### Basic SF Symbol
 
-```tsx BasicImageExample.tsx
+<ComponentExample
+  title="BasicImageExample.tsx"
+  src="/static/images/expo-ui/examples/image-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/image-basic-ios-dark.webp"
+  alt="A star SF Symbol rendered at its default size">
+
+```tsx
 import { Host, Image } from '@expo/ui/swift-ui';
 
 export default function BasicImageExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Image systemName="star.fill" />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Custom SF Symbol
 
@@ -60,12 +69,18 @@ export default function CustomImageExample() {
 
 ### With size and color
 
-```tsx ImageSizeColorExample.tsx
+<ComponentExample
+  title="ImageSizeColorExample.tsx"
+  src="/static/images/expo-ui/examples/image-size-color-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/image-size-color-ios-dark.webp"
+  alt="A red heart, an orange star, and a blue bell SF Symbol at increasing sizes">
+
+```tsx
 import { Host, HStack, Image } from '@expo/ui/swift-ui';
 
 export default function ImageSizeColorExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <HStack spacing={16}>
         <Image systemName="heart.fill" size={24} color="red" />
         <Image systemName="star.fill" size={32} color="orange" />
@@ -76,37 +91,65 @@ export default function ImageSizeColorExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With variable value
 
 Some SF Symbols alter their appearance based on a variable value. Use the `variableValue` prop with a value between 0.0 and 1.0 to control the rendered symbol. Requires iOS 16.0+ and SF Symbols 4.0+.
 
-```tsx ImageVariableExample.tsx
+<ComponentExample
+  title="ImageVariableExample.tsx"
+  src="/static/images/expo-ui/examples/image-variable-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/image-variable-ios-dark.webp"
+  alt="Three bar chart SF Symbols with variable values of 0.3, 0.6, and 1.0">
+
+```tsx
 import { Host, HStack, Image } from '@expo/ui/swift-ui';
 
 export default function ImageVariableExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <HStack spacing={16}>
-        <Image systemName="chart.bar.fill" size={32} variableValue={0.3} />
-        <Image systemName="chart.bar.fill" size={32} variableValue={0.6} />
-        <Image systemName="chart.bar.fill" size={32} variableValue={1.0} />
+        <Image
+          systemName="chart.bar.fill"
+          size={32}
+          variableValue={0.3}
+        />
+        <Image
+          systemName="chart.bar.fill"
+          size={32}
+          variableValue={0.6}
+        />
+        <Image
+          systemName="chart.bar.fill"
+          size={32}
+          variableValue={1.0}
+        />
       </HStack>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### With symbol effect
 
 Apply an SF Symbol effect to animate the symbol by passing a [`symbolEffect`](modifiers/#symboleffecteffect-args) modifier from `@expo/ui/swift-ui/modifiers`. This effect runs continuously by default. You can also pass `value` for a discrete trigger that fires once per change, or `isActive` for a boolean toggle that runs the effect while `true`. Requires iOS 17.0 and later.
 
-```tsx ImageSymbolEffectExample.tsx
+<ComponentExample
+  title="ImageSymbolEffectExample.tsx"
+  src="/static/images/expo-ui/examples/image-symbol-effect-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/image-symbol-effect-ios-dark.webp"
+  alt="A blue wifi SF Symbol shown during one frame of the variable color effect animation">
+
+```tsx
 import { Host, Image } from '@expo/ui/swift-ui';
 import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
 
 export default function ImageSymbolEffectExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Image
         systemName="wifi"
         size={48}
@@ -124,10 +167,24 @@ export default function ImageSymbolEffectExample() {
 }
 ```
 
+</ComponentExample>
+
 The following example uses `value` to play `bounce` on each button press. Write to `state.value` from a worklet (or via [`scheduleOnUI`](https://docs.swmansion.com/react-native-worklets/docs/threading/scheduleOnUI)) to trigger the effect.
 
-```tsx ImageSymbolEffectValueExample.tsx
-import { Button, Host, Image, useNativeState, VStack } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="ImageSymbolEffectValueExample.tsx"
+  src="/static/images/expo-ui/examples/image-symbol-effect-value-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/image-symbol-effect-value-ios-dark.webp"
+  alt="An orange bell SF Symbol above a Bounce button">
+
+```tsx
+import {
+  Button,
+  Host,
+  Image,
+  useNativeState,
+  VStack,
+} from '@expo/ui/swift-ui';
 import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
 import { scheduleOnUI } from 'react-native-worklets';
 
@@ -135,13 +192,18 @@ export default function ImageSymbolEffectValueExample() {
   const trigger = useNativeState(0);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack spacing={16}>
         <Image
           systemName="bell.fill"
           size={48}
           color="orange"
-          modifiers={[symbolEffect({ effect: 'bounce', direction: 'up' }, { value: trigger })]}
+          modifiers={[
+            symbolEffect(
+              { effect: 'bounce', direction: 'up' },
+              { value: trigger }
+            ),
+          ]}
         />
         <Button
           label="Bounce"
@@ -158,23 +220,39 @@ export default function ImageSymbolEffectValueExample() {
 }
 ```
 
+</ComponentExample>
+
 The following example uses `isActive` to toggle a continuous `breathe` animation.
 
-```tsx ImageSymbolEffectIsActiveExample.tsx
-import { Host, Image, SyncToggle, useNativeState, VStack } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="ImageSymbolEffectIsActiveExample.tsx"
+  src="/static/images/expo-ui/examples/image-symbol-effect-isactive-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/image-symbol-effect-isactive-ios-dark.webp"
+  alt="A cyan cloud SF Symbol above a Breathe toggle that is turned on">
+
+```tsx
+import {
+  Host,
+  Image,
+  SyncToggle,
+  useNativeState,
+  VStack,
+} from '@expo/ui/swift-ui';
 import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
 
 export default function ImageSymbolEffectIsActiveExample() {
   const isActive = useNativeState(true);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack spacing={16}>
         <Image
           systemName="cloud.fill"
           size={48}
           color="cyan"
-          modifiers={[symbolEffect({ effect: 'breathe' }, { isActive })]}
+          modifiers={[
+            symbolEffect({ effect: 'breathe' }, { isActive }),
+          ]}
         />
         <SyncToggle label="Breathe" isOn={isActive} />
       </VStack>
@@ -182,6 +260,8 @@ export default function ImageSymbolEffectIsActiveExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

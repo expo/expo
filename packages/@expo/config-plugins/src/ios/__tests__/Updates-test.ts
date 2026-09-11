@@ -64,4 +64,30 @@ describe('iOS Updates config', () => {
       EXUpdatesEnableBsdiffPatchSupport: true,
     });
   });
+
+  it('writes EXUpdatesExcludeFromBackup only when updates.excludeFromBackup is true', async () => {
+    const enabled = await Updates.setUpdatesConfigAsync(
+      '/app',
+      {
+        runtimeVersion: '1.0.0',
+        slug: 'my-app',
+        updates: { url: 'https://u.expo.dev/x', excludeFromBackup: true },
+      },
+      {} as any,
+      '0.11.0'
+    );
+    expect(enabled).toMatchObject({ EXUpdatesExcludeFromBackup: true });
+
+    const omitted = await Updates.setUpdatesConfigAsync(
+      '/app',
+      {
+        runtimeVersion: '1.0.0',
+        slug: 'my-app',
+        updates: { url: 'https://u.expo.dev/x' },
+      },
+      {} as any,
+      '0.11.0'
+    );
+    expect(omitted).not.toHaveProperty('EXUpdatesExcludeFromBackup');
+  });
 });

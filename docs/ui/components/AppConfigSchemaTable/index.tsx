@@ -88,8 +88,8 @@ function AppConfigProperty({
     <APIBox
       className={mergeClasses(
         'mb-0! rounded-none! border-b-0! shadow-none!',
-        '[&]:first-of-type:rounded-t-md!',
-        '[&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default!',
+        '[&]:first-of-type:rounded-t-3xl!',
+        '[&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default!',
         'px-4 py-3'
       )}>
       <PropertyName name={name} nestingLevel={nestingLevel} />

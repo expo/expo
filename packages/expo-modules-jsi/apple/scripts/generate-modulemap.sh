@@ -46,10 +46,19 @@ if [[ ! -f "$JSI_UMBRELLA" ]]; then
 fi
 [[ -f "$JSI_UMBRELLA" ]] || { echo "error: cannot locate jsi.h" >&2; exit 1; }
 
+# The umbrella header doesn't include `instrumentation.h`, so declare it explicitly.
+# Otherwise including it warns about a missing `jsi.instrumentation` submodule.
+JSI_INSTRUMENTATION="$(dirname "$JSI_UMBRELLA")/instrumentation.h"
+JSI_EXTRA_HEADERS=""
+if [[ -f "$JSI_INSTRUMENTATION" ]]; then
+  JSI_EXTRA_HEADERS="
+  header \"${JSI_INSTRUMENTATION}\""
+fi
+
 # Avoid touching the file when contents would be identical, so the xcframework
 # hash cache and Xcode don't see a spurious change when inputs are unchanged.
 NEW_CONTENT="module jsi {
-  umbrella header \"${JSI_UMBRELLA}\"
+  umbrella header \"${JSI_UMBRELLA}\"${JSI_EXTRA_HEADERS}
 
   export *
   module * { export * }

@@ -171,6 +171,9 @@ class BranchDetailsViewModel: ObservableObject {
       branch = response.data.app.byId.updateBranchByName
       hasLoadedRemote = true
     } catch {
+      if (error as? APIError)?.isCancellation == true {
+        return
+      }
       self.error = error
     }
   }

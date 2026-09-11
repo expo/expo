@@ -6,10 +6,13 @@ import os from 'os';
 import path from 'path';
 
 import logger from '../Logger';
+import { getPackageByName } from '../Packages';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct } from './SPMConfig.types';
+import { verifyNoTestOnlyImports } from './SwiftInterfaceChecks';
 import { AsyncSpinner, createAsyncSpinner } from './Utils';
 import type {
   XCFrameworkVerificationResult,
@@ -72,6 +75,9 @@ export const FrameworkVerifier = {
           if (!slice.swiftInterfaceTypecheck.success) {
             failures.push(`Swift typecheck failed (${slice.sliceId})`);
           }
+          if (!slice.testOnlyImports.success) {
+            failures.push(`Test-only imports (${slice.sliceId})`);
+          }
           if (!slice.dsymPresent.success) {
             failures.push(`dSYM missing (${slice.sliceId})`);
           }
@@ -118,6 +124,18 @@ export const FrameworkVerifier = {
             logger.log(
               chalk.gray(
                 slice.swiftInterfaceTypecheck.details
+                  .split('\n')
+                  .slice(0, 10)
+                  .map((l) => `        ${l}`)
+                  .join('\n')
+              )
+            );
+          }
+          if (!slice.testOnlyImports.success && slice.testOnlyImports.details) {
+            logger.log(chalk.gray(`      Test-only imports (${slice.sliceId}):`));
+            logger.log(
+              chalk.gray(
+                slice.testOnlyImports.details
                   .split('\n')
                   .slice(0, 10)
                   .map((l) => `        ${l}`)
@@ -1364,7 +1382,8 @@ const verifyAsync = async (
     (r) =>
       !r.modulesPresent.success ||
       !r.modularHeadersValid.success ||
-      !r.swiftInterfaceTypecheck.success
+      !r.swiftInterfaceTypecheck.success ||
+      !r.testOnlyImports.success
   );
 
   return {
@@ -1405,10 +1424,14 @@ const collectDependencyXcframeworkPaths = (
     // We need the package name for the path
     const packageName = dep.includes('/') ? dep.split('/')[0] : dep;
 
+    const dependencyPackage = getPackageByName(packageName);
+    const dependencyBuildPath =
+      usesPackageLocalBuildPath(pkg) && dependencyPackage
+        ? getPackageLocalBuildPath(dependencyPackage)
+        : path.join(pkg.buildPath, '..', packageName);
+
     const depXcframeworksDir = path.join(
-      pkg.buildPath,
-      '..',
-      packageName,
+      dependencyBuildPath,
       'output',
       buildFlavor.toLowerCase(),
       'xcframeworks'
@@ -1478,6 +1501,7 @@ const collectSliceIssues = (report: XCFrameworkSliceVerificationReport): string[
   if (!report.modularHeadersValid.success) issues.push('non-modular-headers');
   if (!report.clangModuleImport.success) issues.push('clang');
   if (!report.swiftInterfaceTypecheck.success) issues.push('swift');
+  if (!report.testOnlyImports.success) issues.push('test-only-imports');
   if (!report.dsymPresent.success) issues.push('dsym-missing');
   if (!report.dsymUuidMatch.success) issues.push('dsym-uuid-mismatch');
   if (!report.dsymDebugPrefixMapping.success) issues.push('dsym-bad-paths');
@@ -1544,6 +1568,8 @@ const verifySlice = async (
     );
   }
 
+  const testOnlyImports = verifyNoTestOnlyImports(slice.frameworkPath);
+
   // dSYM verification: presence, UUID match, and debug prefix mapping
   let dsymPresent: XCFrameworkVerificationResult = { success: true, message: 'Skipped' };
   let dsymUuidMatch: XCFrameworkVerificationResult = { success: true, message: 'Skipped' };
@@ -1571,6 +1597,7 @@ const verifySlice = async (
     modularHeadersValid,
     clangModuleImport,
     swiftInterfaceTypecheck,
+    testOnlyImports,
     dsymPresent,
     dsymUuidMatch,
     dsymDebugPrefixMapping,

@@ -1,9 +1,6 @@
 import { vol } from 'memfs';
 
-import {
-  configureWorkspacesAsync,
-  PNPM_WORKSPACE_FILENAME,
-} from '../configureWorkspaces';
+import { configureWorkspacesAsync, PNPM_WORKSPACE_FILENAME } from '../configureWorkspaces';
 
 jest.mock('fs');
 jest.mock('node:fs', () => require('memfs').fs);
@@ -17,7 +14,7 @@ const seedMonorepo = (
   options: {
     rootWorkspaces?: any;
     extraMembers?: Record<string, any>;
-  } = {},
+  } = {}
 ) => {
   const rootWorkspaces = options.rootWorkspaces ?? ['apps/*', 'packages/*'];
   const json: Record<string, string> = {
@@ -55,11 +52,8 @@ const seedMonorepo = (
       version: '0.0.0',
     }),
   };
-  for (const [filePath, contents] of Object.entries(
-    options.extraMembers ?? {},
-  )) {
-    json[filePath] =
-      typeof contents === 'string' ? contents : JSON.stringify(contents);
+  for (const [filePath, contents] of Object.entries(options.extraMembers ?? {})) {
+    json[filePath] = typeof contents === 'string' ? contents : JSON.stringify(contents);
   }
   vol.fromJSON(json);
 };
@@ -79,9 +73,7 @@ describe(configureWorkspacesAsync, () => {
 
     await configureWorkspacesAsync(projectRoot, 'pnpm');
 
-    expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(
-      false,
-    );
+    expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(false);
     // package.json unchanged.
     expect(readJson(`${projectRoot}/package.json`)).toEqual({
       name: 'single-app',
@@ -92,12 +84,8 @@ describe(configureWorkspacesAsync, () => {
   it('is a no-op when the project root has no package.json', async () => {
     vol.fromJSON({ [`${projectRoot}/.keep`]: '' });
 
-    await expect(
-      configureWorkspacesAsync(projectRoot, 'pnpm'),
-    ).resolves.toBeUndefined();
-    expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(
-      false,
-    );
+    await expect(configureWorkspacesAsync(projectRoot, 'pnpm')).resolves.toBeUndefined();
+    expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(false);
   });
 
   describe('with pnpm', () => {
@@ -118,12 +106,8 @@ describe(configureWorkspacesAsync, () => {
       const tv = readJson(`${projectRoot}/apps/tv/package.json`);
       expect(tv.dependencies['shared-ui']).toBe('workspace:*');
 
-      const yaml = String(
-        vol.readFileSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`),
-      );
-      expect(yaml).toBe(
-        ['packages:', '  - apps/*', '  - packages/*', ''].join('\n'),
-      );
+      const yaml = String(vol.readFileSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`));
+      expect(yaml).toBe(['packages:', '  - apps/*', '  - packages/*', ''].join('\n'));
     });
 
     it('leaves already-"workspace:*" specs untouched (no needless write)', async () => {
@@ -134,9 +118,7 @@ describe(configureWorkspacesAsync, () => {
       const mobile = readJson(`${projectRoot}/apps/mobile/package.json`);
       expect(mobile.dependencies['shared-ui']).toBe('workspace:*');
       // Still writes the YAML file regardless.
-      expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(
-        true,
-      );
+      expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(true);
     });
 
     it('accepts the yarn object form `{ packages: [...] }`', async () => {
@@ -146,14 +128,10 @@ describe(configureWorkspacesAsync, () => {
 
       await configureWorkspacesAsync(projectRoot, 'pnpm');
 
-      expect(
-        readJson(`${projectRoot}/apps/mobile/package.json`).dependencies[
-          'shared-ui'
-        ],
-      ).toBe('workspace:*');
-      expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(
-        true,
+      expect(readJson(`${projectRoot}/apps/mobile/package.json`).dependencies['shared-ui']).toBe(
+        'workspace:*'
       );
+      expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(true);
     });
   });
 
@@ -166,19 +144,15 @@ describe(configureWorkspacesAsync, () => {
       const mobile = readJson(`${projectRoot}/apps/mobile/package.json`);
       expect(mobile.dependencies['shared-ui']).toBe('*');
       expect(mobile.devDependencies['shared-config']).toBe('*');
-      expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(
-        false,
-      );
+      expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(false);
     });
 
     it('leaves already-"*" specs untouched under npm', async () => {
       seedMonorepo('*');
       await configureWorkspacesAsync(projectRoot, 'npm');
-      expect(
-        readJson(`${projectRoot}/apps/mobile/package.json`).dependencies[
-          'shared-ui'
-        ],
-      ).toBe('*');
+      expect(readJson(`${projectRoot}/apps/mobile/package.json`).dependencies['shared-ui']).toBe(
+        '*'
+      );
     });
   });
 
@@ -193,10 +167,8 @@ describe(configureWorkspacesAsync, () => {
         const mobile = readJson(`${projectRoot}/apps/mobile/package.json`);
         expect(mobile.dependencies['shared-ui']).toBe('workspace:*');
         expect(mobile.devDependencies['shared-config']).toBe('workspace:*');
-        expect(
-          vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`),
-        ).toBe(false);
-      },
+        expect(vol.existsSync(`${projectRoot}/${PNPM_WORKSPACE_FILENAME}`)).toBe(false);
+      }
     );
 
     it.each(['yarn', 'bun'] as const)(
@@ -204,12 +176,10 @@ describe(configureWorkspacesAsync, () => {
       async (manager) => {
         seedMonorepo('workspace:*');
         await configureWorkspacesAsync(projectRoot, manager);
-        expect(
-          readJson(`${projectRoot}/apps/mobile/package.json`).dependencies[
-            'shared-ui'
-          ],
-        ).toBe('workspace:*');
-      },
+        expect(readJson(`${projectRoot}/apps/mobile/package.json`).dependencies['shared-ui']).toBe(
+          'workspace:*'
+        );
+      }
     );
   });
 
@@ -254,13 +224,9 @@ describe(configureWorkspacesAsync, () => {
       [`${projectRoot}/apps/empty-dir/.gitkeep`]: '',
     });
 
-    await expect(
-      configureWorkspacesAsync(projectRoot, 'pnpm'),
-    ).resolves.toBeUndefined();
-    expect(
-      readJson(`${projectRoot}/apps/mobile/package.json`).dependencies[
-        'shared-ui'
-      ],
-    ).toBe('workspace:*');
+    await expect(configureWorkspacesAsync(projectRoot, 'pnpm')).resolves.toBeUndefined();
+    expect(readJson(`${projectRoot}/apps/mobile/package.json`).dependencies['shared-ui']).toBe(
+      'workspace:*'
+    );
   });
 });

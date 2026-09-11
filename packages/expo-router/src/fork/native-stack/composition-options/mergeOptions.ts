@@ -1,22 +1,25 @@
-import type { ParamListBase, StackNavigationState } from '../../../react-navigation/native';
-import type { NativeStackDescriptorMap } from '../descriptors-context';
+import type { NativeStackViewState } from '../../../react-navigation/native-stack';
 import type { CompositionRegistry } from './types';
 
 /**
  * Merges composition component options into navigation descriptors.
  *
+ * Expects the projected state where preloaded routes are appended after `index`.
+ *
  * For each descriptor:
  * 1. If no composition options registered → pass through unchanged
- * 2. If route is preloaded AND not focused → skip composition (pass through)
+ * 2. If route is preloaded (positioned after the focused route) → skip composition (pass through)
  * 3. Otherwise → merge descriptor.options with composition options (composition wins)
  */
-export function mergeOptions(
-  descriptors: NativeStackDescriptorMap,
+export function mergeOptions<T extends { options: object }>(
+  descriptors: Record<string, T>,
   registry: CompositionRegistry,
-  state: StackNavigationState<ParamListBase>
-): NativeStackDescriptorMap {
-  const result: NativeStackDescriptorMap = {};
-  const focusedKey = state.routes[state.index]?.key;
+  state: NativeStackViewState
+): Record<string, T> {
+  const result: Record<string, T> = {};
+  const activeRoutes = state.routes.slice(0, state.index + 1);
+  const preloadedRoutes = state.routes.slice(state.index + 1);
+  const focusedKey = activeRoutes[state.index]?.key;
 
   for (const key in descriptors) {
     const descriptor = descriptors[key]!;
@@ -29,7 +32,7 @@ export function mergeOptions(
     }
 
     // Check if route is preloaded and not focused → skip composition
-    const isPreloaded = state.preloadedRoutes?.some((r) => r.key === key) ?? false;
+    const isPreloaded = preloadedRoutes.some((route) => route.key === key);
     if (isPreloaded && key !== focusedKey) {
       result[key] = descriptor;
       continue;
@@ -43,7 +46,7 @@ export function mergeOptions(
       options: mergedOptions,
     };
 
-    result[key] = merged;
+    result[key] = merged as T;
   }
 
   return result;

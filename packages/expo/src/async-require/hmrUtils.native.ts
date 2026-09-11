@@ -1,12 +1,11 @@
 // Based on https://github.com/facebook/react-native/blob/9ab95dd2b5746e8323ad1d65591d5a4ec7718790/packages/react-native/Libraries/Utilities/HMRClient.js
 
-// @ts-expect-error missing types
-import getDevServer from 'react-native/Libraries/Core/Devtools/getDevServer';
 import LogBox from 'react-native/Libraries/LogBox/LogBox';
 // @ts-expect-error missing types
 import NativeRedBox from 'react-native/Libraries/NativeModules/specs/NativeRedBox';
 import DevSettings from 'react-native/Libraries/Utilities/DevSettings';
 
+import getDevServer from '../utils/getDevServer';
 import { HMRMetroBuildError } from './buildErrors';
 
 export function showLoading(message: string, type: 'load' | 'refresh') {

@@ -31,20 +31,20 @@ struct DispatchUtilsBackoffTests {
       random: { 0.999 }
     )
     #expect(delay > base * 0.99)
-    #expect(delay < base)  // strict — `random(in: 0..<1)` excludes 1
+    #expect(delay < base) // strict — `random(in: 0..<1)` excludes 1
   }
 
   /// The exponential schedule doubles between attempts: attempt 2 reaches 2 × base, attempt
   /// 3 reaches 4 × base, …, all multiplied by the jitter draw.
   @Test
   func `attempts two through four double the unjittered ceiling`() {
-    let r: () -> Double = { 0.5 }  // pin jitter to exactly half
+    let r: () -> Double = { 0.5 } // pin jitter to exactly half
     let two = DispatchUtils.computeBackoffDelay(attempt: 2, base: base, cap: cap, random: r)
     let three = DispatchUtils.computeBackoffDelay(attempt: 3, base: base, cap: cap, random: r)
     let four = DispatchUtils.computeBackoffDelay(attempt: 4, base: base, cap: cap, random: r)
-    #expect(two == base * 2 * 0.5)  //  60
-    #expect(three == base * 4 * 0.5)  // 120
-    #expect(four == base * 8 * 0.5)  // 240
+    #expect(two == base * 2 * 0.5) //  60
+    #expect(three == base * 4 * 0.5) // 120
+    #expect(four == base * 8 * 0.5) // 240
   }
 
   /// Once `base * 2^(attempt-1)` would exceed `cap`, the unjittered ceiling clamps to `cap`.

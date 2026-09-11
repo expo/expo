@@ -2,10 +2,8 @@
 // plus some helper inputs and outputs, which we don't need to define
 // our interface types
 import * as http from 'http';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
-import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
+import { respond } from './http';
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
@@ -121,12 +119,4 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   return new Request(url.href, init);
 }
 
-export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
-  res.statusMessage = expoRes.statusText;
-  res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()].flat());
-  if (expoRes.body) {
-    await pipeline(Readable.fromWeb(expoRes.body as NodeReadableStream), res);
-  } else {
-    res.end();
-  }
-}
+export { respond } from './http';

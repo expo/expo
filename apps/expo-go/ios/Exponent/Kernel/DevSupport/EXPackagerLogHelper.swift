@@ -121,15 +121,18 @@ import React
   }
 
   private func createSocket() {
-    let serverHost = bundleURL.host ?? "localhost"
-    let serverPort = bundleURL.port ?? Int(kRCTBundleURLProviderDefaultPort)
     let scheme = (bundleURL.scheme == "exps" || bundleURL.scheme == "https") ? "https" : "http"
 
     var components = URLComponents()
-    components.host = serverHost
     components.scheme = scheme
-    components.port = serverPort
     components.path = "/hot"
+    if let serverHost = bundleURL.host {
+      components.host = serverHost
+      components.port = bundleURL.port
+    } else {
+      components.host = "localhost"
+      components.port = Int(kRCTBundleURLProviderDefaultPort)
+    }
 
     if let url = components.url {
       socket = SRWebSocket(url: url)

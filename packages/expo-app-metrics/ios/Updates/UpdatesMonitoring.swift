@@ -33,7 +33,8 @@ internal class UpdatesMonitoring: MetricReporter {
             )
           } catch {
             logger.warn(
-              "[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)")
+              "[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)"
+            )
           }
         }
       }

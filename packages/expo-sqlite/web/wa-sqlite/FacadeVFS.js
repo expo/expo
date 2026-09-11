@@ -1,7 +1,7 @@
 // Copyright 2024 Roy T. Hashimoto. All Rights Reserved.
 import * as VFS from './VFS.js';
 
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
 // Convenience base class for a JavaScript VFS.
 // The raw xOpen, xRead, etc. function signatures receive only C primitives
@@ -10,8 +10,8 @@ const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 // such as string, Uint8Array, and DataView.
 export class FacadeVFS extends VFS.Base {
   /**
-   * @param {string} name 
-   * @param {object} module 
+   * @param {string} name
+   * @param {object} module
    */
   constructor(name, module) {
     super(name, module);
@@ -19,7 +19,7 @@ export class FacadeVFS extends VFS.Base {
 
   /**
    * Override to indicate which methods are asynchronous.
-   * @param {string} methodName 
+   * @param {string} methodName
    * @returns {boolean}
    */
   hasAsyncMethod(methodName) {
@@ -28,10 +28,10 @@ export class FacadeVFS extends VFS.Base {
     const jMethodName = `j${methodName.slice(1)}`;
     return this[jMethodName] instanceof AsyncFunction;
   }
-  
+
   /**
    * Return the filename for a file id for use by mixins.
-   * @param {number} pFile 
+   * @param {number} pFile
    * @returns {string}
    */
   getFilename(pFile) {
@@ -39,10 +39,10 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {string?} filename 
-   * @param {number} pFile 
-   * @param {number} flags 
-   * @param {DataView} pOutFlags 
+   * @param {string?} filename
+   * @param {number} pFile
+   * @param {number} flags
+   * @param {DataView} pOutFlags
    * @returns {number|Promise<number>}
    */
   jOpen(filename, pFile, flags, pOutFlags) {
@@ -50,8 +50,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {string} filename 
-   * @param {number} syncDir 
+   * @param {string} filename
+   * @param {number} syncDir
    * @returns {number|Promise<number>}
    */
   jDelete(filename, syncDir) {
@@ -59,9 +59,9 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {string} filename 
-   * @param {number} flags 
-   * @param {DataView} pResOut 
+   * @param {string} filename
+   * @param {number} flags
+   * @param {DataView} pResOut
    * @returns {number|Promise<number>}
    */
   jAccess(filename, flags, pResOut) {
@@ -69,8 +69,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {string} filename 
-   * @param {Uint8Array} zOut 
+   * @param {string} filename
+   * @param {Uint8Array} zOut
    * @returns {number|Promise<number>}
    */
   jFullPathname(filename, zOut) {
@@ -83,7 +83,7 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {Uint8Array} zBuf 
+   * @param {Uint8Array} zBuf
    * @returns {number|Promise<number>}
    */
   jGetLastError(zBuf) {
@@ -91,7 +91,7 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
+   * @param {number} pFile
    * @returns {number|Promise<number>}
    */
   jClose(pFile) {
@@ -99,9 +99,9 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {Uint8Array} pData 
-   * @param {number} iOffset 
+   * @param {number} pFile
+   * @param {Uint8Array} pData
+   * @param {number} iOffset
    * @returns {number|Promise<number>}
    */
   jRead(pFile, pData, iOffset) {
@@ -110,9 +110,9 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {Uint8Array} pData 
-   * @param {number} iOffset 
+   * @param {number} pFile
+   * @param {Uint8Array} pData
+   * @param {number} iOffset
    * @returns {number|Promise<number>}
    */
   jWrite(pFile, pData, iOffset) {
@@ -120,8 +120,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} size 
+   * @param {number} pFile
+   * @param {number} size
    * @returns {number|Promise<number>}
    */
   jTruncate(pFile, size) {
@@ -129,8 +129,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} flags 
+   * @param {number} pFile
+   * @param {number} flags
    * @returns {number|Promise<number>}
    */
   jSync(pFile, flags) {
@@ -138,7 +138,7 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
+   * @param {number} pFile
    * @param {DataView} pSize
    * @returns {number|Promise<number>}
    */
@@ -147,8 +147,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} lockType 
+   * @param {number} pFile
+   * @param {number} lockType
    * @returns {number|Promise<number>}
    */
   jLock(pFile, lockType) {
@@ -156,8 +156,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} lockType 
+   * @param {number} pFile
+   * @param {number} lockType
    * @returns {number|Promise<number>}
    */
   jUnlock(pFile, lockType) {
@@ -165,8 +165,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {DataView} pResOut 
+   * @param {number} pFile
+   * @param {DataView} pResOut
    * @returns {number|Promise<number>}
    */
   jCheckReservedLock(pFile, pResOut) {
@@ -201,11 +201,11 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pVfs 
-   * @param {number} zName 
-   * @param {number} pFile 
-   * @param {number} flags 
-   * @param {number} pOutFlags 
+   * @param {number} pVfs
+   * @param {number} zName
+   * @param {number} pFile
+   * @param {number} flags
+   * @param {number} pOutFlags
    * @returns {number|Promise<number>}
    */
   xOpen(pVfs, zName, pFile, flags, pOutFlags) {
@@ -216,9 +216,9 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pVfs 
-   * @param {number} zName 
-   * @param {number} syncDir 
+   * @param {number} pVfs
+   * @param {number} zName
+   * @param {number} syncDir
    * @returns {number|Promise<number>}
    */
   xDelete(pVfs, zName, syncDir) {
@@ -228,10 +228,10 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pVfs 
-   * @param {number} zName 
-   * @param {number} flags 
-   * @param {number} pResOut 
+   * @param {number} pVfs
+   * @param {number} zName
+   * @param {number} flags
+   * @param {number} pResOut
    * @returns {number|Promise<number>}
    */
   xAccess(pVfs, zName, flags, pResOut) {
@@ -242,10 +242,10 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pVfs 
-   * @param {number} zName 
-   * @param {number} nOut 
-   * @param {number} zOut 
+   * @param {number} pVfs
+   * @param {number} zName
+   * @param {number} nOut
+   * @param {number} zOut
    * @returns {number|Promise<number>}
    */
   xFullPathname(pVfs, zName, nOut, zOut) {
@@ -256,9 +256,9 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pVfs 
-   * @param {number} nBuf 
-   * @param {number} zBuf 
+   * @param {number} pVfs
+   * @param {number} nBuf
+   * @param {number} zBuf
    * @returns {number|Promise<number>}
    */
   xGetLastError(pVfs, nBuf, zBuf) {
@@ -268,7 +268,7 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
+   * @param {number} pFile
    * @returns {number|Promise<number>}
    */
   xClose(pFile) {
@@ -277,11 +277,11 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} pData 
-   * @param {number} iAmt 
-   * @param {number} iOffsetLo 
-   * @param {number} iOffsetHi 
+   * @param {number} pFile
+   * @param {number} pData
+   * @param {number} iAmt
+   * @param {number} iOffsetLo
+   * @param {number} iOffsetHi
    * @returns {number|Promise<number>}
    */
   xRead(pFile, pData, iAmt, iOffsetLo, iOffsetHi) {
@@ -292,11 +292,11 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} pData 
-   * @param {number} iAmt 
-   * @param {number} iOffsetLo 
-   * @param {number} iOffsetHi 
+   * @param {number} pFile
+   * @param {number} pData
+   * @param {number} iAmt
+   * @param {number} iOffsetLo
+   * @param {number} iOffsetHi
    * @returns {number|Promise<number>}
    */
   xWrite(pFile, pData, iAmt, iOffsetLo, iOffsetHi) {
@@ -307,9 +307,9 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} sizeLo 
-   * @param {number} sizeHi 
+   * @param {number} pFile
+   * @param {number} sizeLo
+   * @param {number} sizeHi
    * @returns {number|Promise<number>}
    */
   xTruncate(pFile, sizeLo, sizeHi) {
@@ -319,8 +319,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} flags 
+   * @param {number} pFile
+   * @param {number} flags
    * @returns {number|Promise<number>}
    */
   xSync(pFile, flags) {
@@ -329,9 +329,9 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * 
-   * @param {number} pFile 
-   * @param {number} pSize 
+   *
+   * @param {number} pFile
+   * @param {number} pSize
    * @returns {number|Promise<number>}
    */
   xFileSize(pFile, pSize) {
@@ -341,8 +341,8 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} lockType 
+   * @param {number} pFile
+   * @param {number} lockType
    * @returns {number|Promise<number>}
    */
   xLock(pFile, lockType) {
@@ -351,18 +351,18 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} lockType 
+   * @param {number} pFile
+   * @param {number} lockType
    * @returns {number|Promise<number>}
    */
   xUnlock(pFile, lockType) {
     this['log']?.('jUnlock', pFile, lockType);
     return this.jUnlock(pFile, lockType);
-  } 
+  }
 
   /**
-   * @param {number} pFile 
-   * @param {number} pResOut 
+   * @param {number} pFile
+   * @param {number} pResOut
    * @returns {number|Promise<number>}
    */
   xCheckReservedLock(pFile, pResOut) {
@@ -372,21 +372,22 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
-   * @param {number} op 
-   * @param {number} pArg 
+   * @param {number} pFile
+   * @param {number} op
+   * @param {number} pArg
    * @returns {number|Promise<number>}
    */
   xFileControl(pFile, op, pArg) {
     const pArgView = new DataView(
       this._module.HEAPU8.buffer,
-      this._module.HEAPU8.byteOffset + pArg);
+      this._module.HEAPU8.byteOffset + pArg
+    );
     this['log']?.('jFileControl', pFile, op, pArgView);
     return this.jFileControl(pFile, op, pArgView);
   }
 
   /**
-   * @param {number} pFile 
+   * @param {number} pFile
    * @returns {number|Promise<number>}
    */
   xSectorSize(pFile) {
@@ -395,7 +396,7 @@ export class FacadeVFS extends VFS.Base {
   }
 
   /**
-   * @param {number} pFile 
+   * @param {number} pFile
    * @returns {number|Promise<number>}
    */
   xDeviceCharacteristics(pFile) {
@@ -405,64 +406,30 @@ export class FacadeVFS extends VFS.Base {
 
   /**
    * Wrapped DataView for pointer arguments.
-   * Pointers to a single value are passed using DataView. A Proxy
-   * wrapper prevents use of incorrect type or endianness.
-   * @param {'Int32'|'BigInt64'} type 
-   * @param {number} byteOffset 
+   * Pointers to a single value are passed using a DataView-like class.
+   * This wrapper class prevents use of incorrect type or endianness, and
+   * reacquires the underlying buffer when the WebAssembly memory is resized.
+   * @param {'Int32'|'BigInt64'} type
+   * @param {number} byteOffset
    * @returns {DataView}
    */
   #makeTypedDataView(type, byteOffset) {
-    const byteLength = type === 'Int32' ? 4 : 8;
-    const getter = `get${type}`;
-    const setter = `set${type}`;
-    const makeDataView = () => new DataView(
-      this._module.HEAPU8.buffer,
-      this._module.HEAPU8.byteOffset + byteOffset,
-      byteLength);
-    let dataView = makeDataView();
-    return new Proxy(dataView, {
-      get(_, prop) {
-        if (dataView.buffer.byteLength === 0) {
-          // WebAssembly memory resize detached the buffer.
-          dataView = makeDataView();
-        }
-        if (prop === getter) {
-          return function(byteOffset, littleEndian) {
-            if (!littleEndian) throw new Error('must be little endian');
-            return dataView[prop](byteOffset, littleEndian);
-          }
-        }
-        if (prop === setter) {
-          return function(byteOffset, value, littleEndian) {
-            if (!littleEndian) throw new Error('must be little endian');
-            return dataView[prop](byteOffset, value, littleEndian);
-          }
-        }
-        if (typeof prop === 'string' && (prop.match(/^(get)|(set)/))) {
-          throw new Error('invalid type');
-        }
-        const result = dataView[prop];
-        return typeof result === 'function' ? result.bind(dataView) : result;
-      }
-    });
+    // @ts-ignore
+    return new DataViewProxy(this._module, byteOffset, type);
   }
 
   /**
-   * @param {number} byteOffset 
-   * @param {number} byteLength 
+   * Wrapped Uint8Array for buffer arguments.
+   * Memory blocks are passed as a Uint8Array-like class. This wrapper
+   * class reacquires the underlying buffer when the WebAssembly memory
+   * is resized.
+   * @param {number} byteOffset
+   * @param {number} byteLength
+   * @returns {Uint8Array}
    */
   #makeDataArray(byteOffset, byteLength) {
-    let target = this._module.HEAPU8.subarray(byteOffset, byteOffset + byteLength);
-    return new Proxy(target, {
-      get: (_, prop, receiver) => {
-        if (target.buffer.byteLength === 0) {
-          // WebAssembly memory resize detached the buffer.
-          target = this._module.HEAPU8.subarray(byteOffset, byteOffset + byteLength);
-        }
-        const result = target[prop];
-        return typeof result === 'function' ? result.bind(target) : result;
-      }
-    });
+    // @ts-ignore
+    return new Uint8ArrayProxy(this._module, byteOffset, byteLength);
   }
 
   #decodeFilename(zName, flags) {
@@ -495,7 +462,7 @@ export class FacadeVFS extends VFS.Base {
           }
         }
       }
-      return  new TextDecoder().decode(new Uint8Array(charCodes));
+      return new TextDecoder().decode(new Uint8Array(charCodes));
     }
     return zName ? this._module.UTF8ToString(zName) : null;
   }
@@ -504,5 +471,214 @@ export class FacadeVFS extends VFS.Base {
 // Emscripten "legalizes" 64-bit integer arguments by passing them as
 // two 32-bit signed integers.
 function delegalize(lo32, hi32) {
-  return (hi32 * 0x100000000) + lo32 + (lo32 < 0 ? 2**32 : 0);
+  return hi32 * 0x100000000 + lo32 + (lo32 < 0 ? 2 ** 32 : 0);
+}
+
+// This class provides a Uint8Array-like interface for a WebAssembly memory
+// buffer. It is used to access memory blocks passed as arguments to
+// xRead, xWrite, etc. The class reacquires the underlying buffer when the
+// WebAssembly memory is resized, which can happen when the memory is
+// detached and resized by the WebAssembly module.
+//
+// Note that although this class implements the same methods as Uint8Array,
+// it is not a real Uint8Array and passing it to functions that expect
+// a Uint8Array may not work. Use subarray() to get a real Uint8Array
+// if needed.
+class Uint8ArrayProxy {
+  #module;
+
+  #_array = new Uint8Array();
+  get #array() {
+    if (this.#_array.buffer.byteLength === 0) {
+      // WebAssembly memory resize detached the buffer so re-create the
+      // array with the new buffer.
+      this.#_array = this.#module.HEAPU8.subarray(
+        this.byteOffset,
+        this.byteOffset + this.byteLength
+      );
+    }
+    return this.#_array;
+  }
+
+  /**
+   * @param {*} module
+   * @param {number} byteOffset
+   * @param {number} byteLength
+   */
+  constructor(module, byteOffset, byteLength) {
+    this.#module = module;
+    this.byteOffset = byteOffset;
+    this.length = this.byteLength = byteLength;
+  }
+
+  get buffer() {
+    return this.#array.buffer;
+  }
+
+  at(index) {
+    return this.#array.at(index);
+  }
+  copyWithin(target, start, end) {
+    this.#array.copyWithin(target, start, end);
+  }
+  entries() {
+    return this.#array.entries();
+  }
+  every(predicate) {
+    return this.#array.every(predicate);
+  }
+  fill(value, start, end) {
+    this.#array.fill(value, start, end);
+  }
+  filter(predicate) {
+    return this.#array.filter(predicate);
+  }
+  find(predicate) {
+    return this.#array.find(predicate);
+  }
+  findIndex(predicate) {
+    return this.#array.findIndex(predicate);
+  }
+  findLast(predicate) {
+    return this.#array.findLast(predicate);
+  }
+  findLastIndex(predicate) {
+    return this.#array.findLastIndex(predicate);
+  }
+  forEach(callback) {
+    this.#array.forEach(callback);
+  }
+  includes(value, start) {
+    return this.#array.includes(value, start);
+  }
+  indexOf(value, start) {
+    return this.#array.indexOf(value, start);
+  }
+  join(separator) {
+    return this.#array.join(separator);
+  }
+  keys() {
+    return this.#array.keys();
+  }
+  lastIndexOf(value, start) {
+    return this.#array.lastIndexOf(value, start);
+  }
+  map(callback) {
+    return this.#array.map(callback);
+  }
+  reduce(callback, initialValue) {
+    return this.#array.reduce(callback, initialValue);
+  }
+  reduceRight(callback, initialValue) {
+    return this.#array.reduceRight(callback, initialValue);
+  }
+  reverse() {
+    this.#array.reverse();
+  }
+  set(array, offset) {
+    this.#array.set(array, offset);
+  }
+  slice(start, end) {
+    return this.#array.slice(start, end);
+  }
+  some(predicate) {
+    return this.#array.some(predicate);
+  }
+  sort(compareFn) {
+    this.#array.sort(compareFn);
+  }
+  subarray(begin, end) {
+    return this.#array.subarray(begin, end);
+  }
+  toLocaleString(locales, options) {
+    // @ts-ignore
+    return this.#array.toLocaleString(locales, options);
+  }
+  toReversed() {
+    return this.#array.toReversed();
+  }
+  toSorted(compareFn) {
+    return this.#array.toSorted(compareFn);
+  }
+  toString() {
+    return this.#array.toString();
+  }
+  values() {
+    return this.#array.values();
+  }
+  with(index, value) {
+    return this.#array.with(index, value);
+  }
+  [Symbol.iterator]() {
+    return this.#array[Symbol.iterator]();
+  }
+}
+
+// This class provides a DataView-like interface for a WebAssembly memory
+// buffer, restricted to either Int32 or BigInt64 types. It also reacquires
+// the underlying buffer when the WebAssembly memory is resized, which can
+// happen when the memory is detached and resized by the WebAssembly module.
+class DataViewProxy {
+  #module;
+  #type;
+
+  #_view = new DataView(new ArrayBuffer(0));
+  get #view() {
+    if (this.#_view.buffer.byteLength === 0) {
+      // WebAssembly memory resize detached the buffer so re-create the
+      // view with the new buffer.
+      this.#_view = new DataView(
+        this.#module.HEAPU8.buffer,
+        this.#module.HEAPU8.byteOffset + this.byteOffset
+      );
+    }
+    return this.#_view;
+  }
+
+  /**
+   * @param {*} module
+   * @param {number} byteOffset
+   * @param {'Int32'|'BigInt64'} type
+   */
+  constructor(module, byteOffset, type) {
+    this.#module = module;
+    this.byteOffset = byteOffset;
+    this.#type = type;
+  }
+
+  get buffer() {
+    return this.#view.buffer;
+  }
+  get byteLength() {
+    return this.#type === 'Int32' ? 4 : 8;
+  }
+
+  getInt32(byteOffset, littleEndian) {
+    if (this.#type !== 'Int32') {
+      throw new Error('invalid type');
+    }
+    if (!littleEndian) throw new Error('must be little endian');
+    return this.#view.getInt32(byteOffset, littleEndian);
+  }
+  setInt32(byteOffset, value, littleEndian) {
+    if (this.#type !== 'Int32') {
+      throw new Error('invalid type');
+    }
+    if (!littleEndian) throw new Error('must be little endian');
+    this.#view.setInt32(byteOffset, value, littleEndian);
+  }
+  getBigInt64(byteOffset, littleEndian) {
+    if (this.#type !== 'BigInt64') {
+      throw new Error('invalid type');
+    }
+    if (!littleEndian) throw new Error('must be little endian');
+    return this.#view.getBigInt64(byteOffset, littleEndian);
+  }
+  setBigInt64(byteOffset, value, littleEndian) {
+    if (this.#type !== 'BigInt64') {
+      throw new Error('invalid type');
+    }
+    if (!littleEndian) throw new Error('must be little endian');
+    this.#view.setBigInt64(byteOffset, value, littleEndian);
+  }
 }

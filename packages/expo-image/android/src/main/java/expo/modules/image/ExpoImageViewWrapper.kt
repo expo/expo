@@ -20,6 +20,7 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.github.penfeizhou.animation.gif.GifDrawable
 import expo.modules.image.enums.ContentFit
+import expo.modules.image.enums.ImageCacheType
 import expo.modules.image.enums.Priority
 import expo.modules.image.events.GlideRequestListener
 import expo.modules.image.events.OkHttpProgressListener
@@ -274,8 +275,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     // The intention is simply to wait for the Glide code to finish before the content of the underlying views is changed during the same rendering tick.
     mainHandler.postAtFrontOfQueue {
       trace(Trace.tag, "onResourceReady") {
-        val transitionDuration = (transition?.duration ?: 0).toLong()
-
         // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
         if (!isPlaceholder || !target.hasSource) {
           val (newView, previousView) = if (firstView.drawable == null) {
@@ -283,6 +282,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           } else {
             secondView to firstView
           }
+
+          val isInitialDisplay = previousView.drawable == null || previousView.isPlaceholder
+          val transitionDuration = transition
+            ?.takeIf { it.shouldPlay(target.cacheType, isInitialDisplay) }
+            ?.duration
+            ?.toLong()
+            ?: 0L
 
           val clearPreviousView = {
             previousView
@@ -346,6 +352,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             }
 
           configureView(firstView, target, resource, isPlaceholder)
+          val transitionDuration = (transition?.duration ?: 0).toLong()
           if (transitionDuration > 0) {
             firstView.bringToFront()
             firstView.alpha = 0f
@@ -562,6 +569,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         secondTarget
       }
       newTarget.hasSource = sourceToLoad != null
+      newTarget.cacheType = ImageCacheType.NONE
 
       val downsampleStrategy = createDownsampleStrategy(newTarget)
 

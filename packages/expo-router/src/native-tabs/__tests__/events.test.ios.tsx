@@ -115,12 +115,14 @@ it('emits tabPress event onNativeFocusChange', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/second-[-\w]+/);
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+  expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+  expect(TabsScreen.mock.calls[2][0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[3][0].screenKey).toBe('second');
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[2][0].screenKey;
+  const secondTabKey = TabsScreen.mock.calls[3][0].screenKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
@@ -222,12 +224,14 @@ it('does not pop stack on repeated tab press', async () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('a-index')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/a-[-\w]+/);
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+  expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[1][0].screenKey).toBe('a');
+  expect(TabsScreen.mock.calls[2][0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[3][0].screenKey).toBe('a');
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const aTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[2][0].screenKey;
+  const aTabKey = TabsScreen.mock.calls[3][0].screenKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
@@ -328,10 +332,10 @@ it('emits tabPress with isPrevented and does not navigate when a disabled tab is
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[2][0].screenKey;
+  const secondTabKey = TabsScreen.mock.calls[3][0].screenKey;
 
   expect(screen).toHavePathname('/');
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);

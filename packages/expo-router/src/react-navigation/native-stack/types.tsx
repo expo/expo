@@ -7,15 +7,18 @@ import type {
 } from 'react-native';
 import type {
   ScreenProps,
+  ScreenStackProps,
   ScreenStackHeaderConfigProps,
   ScrollEdgeEffect,
   SearchBarProps,
 } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { StandardNavigatorEmit } from '../../standard-navigation';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -78,7 +81,8 @@ export type NativeStackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = NativeStackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<NativeStackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -87,9 +91,19 @@ export type NativeStackNavigationHelpers = NavigationHelpers<
   NativeStackNavigationEventMap
 >;
 
-// We want it to be an empty object because navigator does not have any additional props
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type NativeStackNavigationConfig = {};
+type NativeStackHostNativeProps = Partial<Omit<ScreenStackProps, 'children'>>;
+
+export type NativeStackNavigationConfig = {
+  /**
+   * Props passed to the underlying native stack host implementation in `react-native-screens`.
+   *
+   * > **Note:** This is an unstable API and may change or be removed in minor versions.
+   *
+   * @platform android
+   * @platform ios
+   */
+  unstable_nativeProps?: NativeStackHostNativeProps;
+};
 
 export type NativeStackScreenNativeProps = Partial<
   Omit<ScreenProps, 'children' | 'screenId' | 'activityState'>
@@ -802,12 +816,9 @@ export type NativeStackNavigationOptions = {
    * Only supported on iOS and Android.
    */
   orientation?: ScreenProps['screenOrientation'];
+  // TODO(@ubax): Remove this prop
   /**
-   * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-   * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-   * Requires `react-native-screens` version >=3.16.0.
-   *
-   * Only supported on iOS and Android.
+   * @deprecated This option has no effect in Expo Router.
    */
   freezeOnBlur?: boolean;
   /**
@@ -1203,6 +1214,17 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemMenu
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
+
+export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
+
+export type NativeStackViewEmit = StandardNavigatorEmit<NativeStackNavigationEventMap>;
+
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = Pick<StackNavigationState<ParamListBase>, 'index' | 'routes'>;
 
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,

@@ -149,7 +149,7 @@ export type NativeConstants = {
   deviceName?: string;
   /**
    * The [device year class](https://github.com/facebook/device-year-class) of this device.
-   * @deprecated Moved to `expo-device` as [`Device.deviceYearClass`](./device/#deviceyearclass).
+   * @deprecated Moved to `expo-device` as [`Device.deviceYearClass`](./device/#devicedeviceyearclass).
    */
   deviceYearClass: number | null;
   /**

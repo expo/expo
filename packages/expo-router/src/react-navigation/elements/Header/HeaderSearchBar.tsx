@@ -15,7 +15,7 @@ import {
 import clearIcon from '../../../../assets/react-navigation/elements/clear-icon.png';
 import closeIcon from '../../../../assets/react-navigation/elements/close-icon.png';
 import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
-import { Color } from '../../../utils/color';
+import { alpha } from '../../../utils/color';
 import { useNavigation, useTheme } from '../../native';
 import { PlatformPressable } from '../PlatformPressable';
 import { Text } from '../Text';
@@ -171,10 +171,10 @@ function HeaderSearchBarInternal({
           inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']}
           enterKeyHint={enterKeyHint}
           placeholder={placeholder}
-          placeholderTextColor={Color(textColor)?.alpha(0.5).string()}
+          placeholderTextColor={alpha(textColor, 0.5)}
           cursorColor={colors.primary}
           selectionHandleColor={colors.primary}
-          selectionColor={Color(colors.primary)?.alpha(0.3).string()}
+          selectionColor={alpha(colors.primary, 0.3)}
           style={[
             fonts.regular,
             styles.searchbar,
@@ -185,8 +185,7 @@ function HeaderSearchBarInternal({
               }),
               color: textColor,
               borderBottomColor:
-                Color(textColor)?.alpha(0.2).string() ??
-                (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
+                alpha(textColor, 0.2) ?? (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
             },
           ]}
         />

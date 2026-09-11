@@ -6,10 +6,16 @@ import { Command } from 'commander';
 import { existsSync, readFileSync } from 'fs';
 import { join, resolve } from 'path';
 
-import shouldUpdate from './update';
+import shouldUpdate, { PACKAGE_NAME } from './update';
 import { learnMore } from './utils';
 
-const packageJSON = require('../package.json');
+const packageJSON = () => {
+  try {
+    return require('pod-install/package.json');
+  } catch {
+    return null;
+  }
+};
 
 function info(message: string) {
   if (!program.opts().quiet) {
@@ -84,8 +90,8 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
   }
 }
 
-const program = new Command(packageJSON.name)
-  .version(packageJSON.version)
+const program = new Command(packageJSON()?.name ?? PACKAGE_NAME)
+  .version(packageJSON()?.version ?? '0.0.0')
   .arguments('[project-directory]')
   .usage(`${chalk.green('[project-directory]')} [options]`)
   .description(

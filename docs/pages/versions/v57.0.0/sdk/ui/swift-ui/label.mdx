@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Label matches the official SwiftUI [Label API](https://developer.apple.com/documentation/swiftui/label) and displays a title alongside an icon.
@@ -28,50 +29,83 @@ Expo UI Label matches the official SwiftUI [Label API](https://developer.apple.c
 
 ### Basic label with SF Symbol
 
-```tsx BasicLabelExample.tsx
+<ComponentExample
+  title="BasicLabelExample.tsx"
+  src="/static/images/expo-ui/examples/label-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/label-basic-ios-dark.webp"
+  alt="A star SF Symbol next to the title Favorites">
+
+```tsx
 import { Host, Label } from '@expo/ui/swift-ui';
 
 export default function BasicLabelExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Label title="Favorites" systemImage="star.fill" />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### With custom icon
 
 Use the `icon` prop to provide a custom React node as the icon instead of an SF Symbol.
 
-```tsx LabelCustomIconExample.tsx
+<ComponentExample
+  title="LabelCustomIconExample.tsx"
+  src="/static/images/expo-ui/examples/label-custom-icon-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/label-custom-icon-ios-dark.webp"
+  alt="A purple sparkles SF Symbol next to the title Custom Icon">
+
+```tsx
 import { Host, Label, Image } from '@expo/ui/swift-ui';
 
 export default function LabelCustomIconExample() {
   return (
-    <Host matchContents>
-      <Label title="Custom Icon" icon={<Image systemName="sparkles" size={20} color="purple" />} />
+    <Host style={{ flex: 1 }}>
+      <Label
+        title="Custom Icon"
+        icon={
+          <Image systemName="sparkles" size={20} color="purple" />
+        }
+      />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Icon only
 
 Use the [`labelStyle`](modifiers/#labelstylestyle) modifier with `iconOnly` to display only the icon. Always provide a `title` for accessibility even though it won't be visible.
 
-```tsx LabelIconOnlyExample.tsx
+<ComponentExample
+  title="LabelIconOnlyExample.tsx"
+  src="/static/images/expo-ui/examples/label-icon-only-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/label-icon-only-ios-dark.webp"
+  alt="A gear SF Symbol shown alone, with no visible title text">
+
+```tsx
 import { Host, Label } from '@expo/ui/swift-ui';
 import { labelStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function LabelIconOnlyExample() {
   return (
-    <Host matchContents>
-      <Label title="Settings" systemImage="gear" modifiers={[labelStyle('iconOnly')]} />
+    <Host style={{ flex: 1 }}>
+      <Label
+        title="Settings"
+        systemImage="gear"
+        modifiers={[labelStyle('iconOnly')]}
+      />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

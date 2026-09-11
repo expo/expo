@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -44,52 +45,101 @@ Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@ex
 
 Import any icon directly from its own subpath of `@expo/material-symbols` — each icon resolves to a Metro asset that `Icon` can render natively. For local XML files you add to your project, use `require()` instead (see [Custom styles](#custom-styles-via-expomaterial-symbols-cli) below).
 
-```tsx BasicIcon.tsx
-import { Host, Icon } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="BasicIcon.tsx"
+  src="/static/images/expo-ui/examples/icon-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/icon-basic-android-dark.webp"
+  alt="A house outline icon at the default size">
+
+```tsx
+import {
+  Host,
+  Icon,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import Home from '@expo/material-symbols/home.xml';
 
 export default function BasicIcon() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
-      <Icon source={Home} contentDescription="Home" />
+      <Icon
+        source={Home}
+        tint={colors.onBackground}
+        contentDescription="Home"
+      />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Icon with tint color
 
 Use the `tint` prop to apply a color overlay to the icon.
 
-```tsx TintedIcon.tsx
+<ComponentExample
+  title="TintedIcon.tsx"
+  src="/static/images/expo-ui/examples/icon-tinted-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/icon-tinted-android-dark.webp"
+  alt="A heart outline icon drawn in purple">
+
+```tsx
 import { Host, Icon } from '@expo/ui/jetpack-compose';
 import Favorite from '@expo/material-symbols/favorite.xml';
 
 export default function TintedIcon() {
   return (
     <Host matchContents>
-      <Icon source={Favorite} tint="#6200ee" contentDescription="Favorite" />
+      <Icon
+        source={Favorite}
+        tint="#6200ee"
+        contentDescription="Favorite"
+      />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Icon with size
 
 Specify a custom size in dp using the `size` prop.
 
-```tsx SizedIcon.tsx
-import { Host, Icon } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="SizedIcon.tsx"
+  src="/static/images/expo-ui/examples/icon-sized-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/icon-sized-android-dark.webp"
+  alt="A gear icon drawn at 48 density independent pixels">
+
+```tsx
+import {
+  Host,
+  Icon,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import Settings from '@expo/material-symbols/settings.xml';
 
 export default function SizedIcon() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
-      <Icon source={Settings} size={48} contentDescription="Settings" />
+      <Icon
+        source={Settings}
+        size={48}
+        tint={colors.onBackground}
+        contentDescription="Settings"
+      />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Custom styles via `@expo/material-symbols` CLI
 
@@ -122,17 +172,36 @@ export default function SizedIcon() {
 
 The CLI writes ready-to-use XML vector drawables into your project. Load them with `require()` and pass them to `Icon`.
 
-```tsx CustomIcon.tsx
-import { Host, Icon } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="CustomIcon.tsx"
+  src="/static/images/expo-ui/examples/icon-custom-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/icon-custom-android-dark.webp"
+  alt="A rounded star outline icon downloaded with the material symbols command line tool">
+
+```tsx
+import {
+  Host,
+  Icon,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 
 export default function CustomIcon() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
-      <Icon source={require('./assets/star-rounded.xml')} size={32} contentDescription="Star" />
+      <Icon
+        source={require('./assets/star_rounded.xml')}
+        size={32}
+        tint={colors.onBackground}
+        contentDescription="Star"
+      />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -140,4 +209,7 @@ export default function CustomIcon() {
 import { Icon } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/icon" apiName="Icon" />
+<APISection
+  packageName="expo-ui/jetpack-compose/icon"
+  apiName="Icon"
+/>

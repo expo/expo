@@ -1,10 +1,10 @@
 import fs from 'fs';
 import { vol } from 'memfs';
 
-import rnFixture from './fixtures/react-native-project';
 import type { ExportedConfig, Mod } from '../../Plugin.types';
 import { compileModsAsync, sortMods } from '../mod-compiler';
 import { withMod } from '../withMod';
+import rnFixture from './fixtures/react-native-project';
 
 jest.mock('fs');
 

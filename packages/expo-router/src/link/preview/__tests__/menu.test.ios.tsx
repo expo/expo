@@ -31,7 +31,6 @@ describe('LinkMenu', () => {
   const mockContext = {
     isVisible: true,
     href: '/test',
-    blockPressRef: { current: false },
   };
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (

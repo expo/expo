@@ -741,7 +741,7 @@ You can replace the `eas/build` command call by using these steps in your YAML c
 
 All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
 
-> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024/08-29-c3d-default) for more information.
+> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024-08-29-c3d-default) for more information.
 
 | Input       | Type     | Required    | Description                                                                                                                                                                                                                        |
 | ----------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -918,6 +918,28 @@ build:
         name: List assets
         run: ls assets
 ```
+
+For builds with Git-based project sources, the step uses the build's recorded commit by default. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml example.yml
+build:
+  name: Check out a specific ref
+  steps:
+    # @info #
+    - eas/checkout:
+        inputs:
+          ref: feature/add-icon
+    # @end #
+    - eas/build
+```
+
+`ref` accepts:
+
+- A branch, as a bare name such as `feature/add-icon` or a qualified ref such as `refs/heads/feature/add-icon`. The repository ends up on that branch.
+- A tag, as a qualified ref such as `refs/tags/v1.2.3`. The repository ends up on a detached `HEAD`.
+- A full commit SHA. The repository ends up on a detached `HEAD`.
+
+The `ref` input only works when your project sources come from a Git repository, for example, a build triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Place the step before [`eas/build`](#easbuild), which checks out the project internally.
 
 <EASFunctionDescription name="checkout" />
 
@@ -1741,7 +1763,7 @@ build:
 
 Starts an Android Emulator you can use to test your apps on. Only available when running a build for Android.
 
-> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024/08-29-c3d-default) for more information.
+> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024-08-29-c3d-default) for more information.
 
 ```yaml build-and-test.yml
 build:

@@ -4,13 +4,25 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Remove deprecated allowsVoipAsync ([#47148](https://github.com/expo/expo/pull/47148) by [@Wenszel](https://github.com/Wenszel))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- [Android] Remove deprecated allowsVoipAsync ([#47148](https://github.com/expo/expo/pull/47148) by [@Wenszel](https://github.com/Wenszel))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.5 — 2026-05-21
 

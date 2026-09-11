@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Column`](../universal/column) — it renders the appropriate native component per platform.
@@ -30,12 +31,19 @@ Expo UI VStack matches the official SwiftUI [VStack API](https://developer.apple
 
 ### Basic vertical stack
 
-```tsx BasicVStackExample.tsx
+<ComponentExample
+  title="BasicVStackExample.tsx"
+  src="/static/images/expo-ui/examples/vstack-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/vstack-basic-ios-dark.webp"
+  alt="The words First, Second, and Third stacked one above the other">
+
+```tsx
 import { Host, VStack, Text } from '@expo/ui/swift-ui';
 
 export default function BasicVStackExample() {
+  // Give the host a size when the stack needs room to align its children.
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack spacing={12}>
         <Text>First</Text>
         <Text>Second</Text>
@@ -46,20 +54,30 @@ export default function BasicVStackExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With alignment
 
 The `alignment` prop controls horizontal alignment of children. Available options are: `leading`, `center`, and `trailing`.
 
-```tsx VStackAlignmentExample.tsx
+<ComponentExample
+  title="VStackAlignmentExample.tsx"
+  src="/static/images/expo-ui/examples/vstack-alignment-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/vstack-alignment-ios-dark.webp"
+  alt="Three rectangles of different widths stacked vertically and sharing the same left edge">
+
+```tsx
 import { Host, VStack, Rectangle } from '@expo/ui/swift-ui';
 import { frame } from '@expo/ui/swift-ui/modifiers';
 
 export default function VStackAlignmentExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack spacing={12} alignment="leading">
         <Rectangle modifiers={[frame({ width: 50, height: 50 })]} />
-        <Rectangle modifiers={[frame({ width: 100, height: 50 })]} />
+        <Rectangle
+          modifiers={[frame({ width: 100, height: 50 })]}
+        />
         <Rectangle modifiers={[frame({ width: 75, height: 50 })]} />
       </VStack>
     </Host>
@@ -67,10 +85,15 @@ export default function VStackAlignmentExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { VStack } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/vstack" apiName="VStack" />
+<APISection
+  packageName="expo-ui/swift-ui/vstack"
+  apiName="VStack"
+/>

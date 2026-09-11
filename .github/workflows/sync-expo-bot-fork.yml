@@ -1,0 +1,51 @@
+# Fast-forward expo-bot/expo's default branch after every land on main.
+#
+# /verify --fix pushes to that fork with EXPO_BOT_GITHUB_TOKEN, which is
+# public_repo and must NOT have the `workflow` scope. merge-upstream (and
+# creating a branch at a SHA whose tree has newer .github/workflows/** than
+# the fork default) is refused without that scope — run 31664540660, PAT
+# probe 2026-08-13. A dedicated token that MAY update workflow files lives
+# only in this job: one API call, no checkout of untrusted code, no agent.
+#
+# Add the secret BEFORE merging this workflow:
+#   DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN
+# Fine-grained, resource expo-bot/expo only: Contents write + Workflows write.
+# Classic fallback: public_repo + workflow, owned by expo-bot.
+# Do not reuse EXPO_BOT_GITHUB_TOKEN.
+
+name: Sync expo-bot fork
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-expo-bot-fork
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fast-forward expo-bot/expo
+        env:
+          GH_TOKEN: ${{ secrets.DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN is not set. Add it (Contents + Workflows write on expo-bot/expo) before this job can run."
+            exit 1
+          fi
+          fork="expo-bot/${GITHUB_REPOSITORY#*/}"
+          branch=$(gh api "repos/$fork" --jq .default_branch)
+          if ! out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$branch" 2>&1); then
+            echo "::error::Could not sync $fork ($branch) with ${GITHUB_REPOSITORY}."
+            printf '%s\n' "$out"
+            exit 1
+          fi
+          printf '%s\n' "$out"
+          echo "synced $fork ($branch)"

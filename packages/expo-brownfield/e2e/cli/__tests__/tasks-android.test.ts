@@ -1,5 +1,4 @@
 import { ERROR, TASKS_ANDROID } from '../../utils/output';
-
 import { createTempProject, cleanUpProject } from '../../utils/project';
 import { buildTestCommon, expectPrebuild, tasksAndroidTest } from '../../utils/test';
 
@@ -86,7 +85,6 @@ describe('tasks:android command', () => {
         stderr: [ERROR.MISSING_ARGUMENT('l', 'library', 'library')],
       });
     });
-
   });
 
   /**

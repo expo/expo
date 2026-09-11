@@ -25,6 +25,14 @@ export interface StackScreenProps extends PropsWithChildren {
   name?: StackBaseScreenProps['name'];
 
   /**
+   * Overrides React Activity behavior inherited from the stack. A number specifies how many
+   * screens must be above this route before its content is hidden.
+   *
+   * Only supported when used inside a Layout component.
+   */
+  activityEnabled?: StackBaseScreenProps['activityEnabled'];
+
+  /**
    * Options to configure the screen.
    *
    * Accepts an object or a function returning an object.
@@ -32,21 +40,6 @@ export interface StackScreenProps extends PropsWithChildren {
    * When used inside a page component, pass an options object directly.
    */
   options?: StackBaseScreenProps['options'];
-
-  /**
-   * Redirect to the nearest sibling route.
-   * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
-   *
-   * Only supported when used inside a Layout component.
-   */
-  redirect?: StackBaseScreenProps['redirect'];
-
-  /**
-   * Initial params to pass to the route.
-   *
-   * Only supported when used inside a Layout component.
-   */
-  initialParams?: StackBaseScreenProps['initialParams'];
 
   /**
    * Listeners for navigation events.

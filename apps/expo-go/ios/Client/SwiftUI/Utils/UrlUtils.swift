@@ -23,6 +23,13 @@ func normalizeUrl(_ url: String) -> String {
   return components.joined()
 }
 
+func isUpdatePermalink(_ url: String) -> Bool {
+  guard let components = URLComponents(string: url) else {
+    return false
+  }
+  return components.host == "u.expo.dev" && components.path.hasPrefix("/update/")
+}
+
 func sanitizeUrlString(_ urlString: String) -> String? {
   var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
 

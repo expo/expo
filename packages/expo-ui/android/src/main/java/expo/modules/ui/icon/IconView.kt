@@ -2,9 +2,7 @@ package expo.modules.ui.icon
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -16,19 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
@@ -36,20 +25,14 @@ import expo.modules.ui.ExpoUIModule
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
-import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.OptimizedComposeProps
-
-@OptimizedRecord
-data class Source(
-  @Field val uri: String,
-  @Field val width: Int = 0,
-  @Field val height: Int = 0,
-  @Field val scale: Double = 1.0
-) : Record
+import expo.modules.ui.graphics.ImageSource
+import expo.modules.ui.graphics.rememberDrawablePainter
+import expo.modules.ui.graphics.resolveUri
 
 @OptimizedComposeProps
 data class IconProps(
-  val source: MutableState<Source?> = mutableStateOf(null),
+  val source: MutableState<ImageSource?> = mutableStateOf(null),
   val tint: MutableState<Color?> = mutableStateOf(null),
   val inheritTint: MutableState<Boolean> = mutableStateOf(true),
   val size: MutableState<Int?> = mutableStateOf(null),
@@ -64,11 +47,7 @@ class IconView(context: Context, appContext: AppContext) :
 
   private val iconLoader by lazy {
     val module = appContext.registry.getModule<ExpoUIModule>()
-    val okHttpClient = requireNotNull(module?.okHttpClient) { "ExpoUIModule.okHttpClient is not initialized" }
-    VectorIconLoader(
-      context = context,
-      okHttpClient = okHttpClient
-    )
+    requireNotNull(module?.imageLoader) { "ExpoUIModule.imageLoader is not initialized" }
   }
 
   @Composable
@@ -88,7 +67,7 @@ class IconView(context: Context, appContext: AppContext) :
       imageVector = null
       drawable = null
 
-      val uriString = source?.let { resolveUri(it) }
+      val uriString = source?.resolveUri(context)
       if (uriString != null) {
         // loadFromUri is already a suspend function that handles dispatchers
         val result = iconLoader.loadFromUri(uriString)
@@ -99,7 +78,7 @@ class IconView(context: Context, appContext: AppContext) :
 
     // Convert to Painter (prioritize ImageVector over Drawable)
     val painter = imageVector?.let { rememberVectorPainter(it) }
-      ?: rememberDrawableAsPainter(drawable)
+      ?: rememberDrawablePainter(drawable)
 
     // Render icon if painter available
     if (painter != null) {
@@ -113,56 +92,6 @@ class IconView(context: Context, appContext: AppContext) :
           .then(iconSize?.let { Modifier.size(it.dp) } ?: Modifier)
           .then(ModifierRegistry.applyModifiers(modifiers, appContext, this@Content, globalEventDispatcher))
       )
-    }
-  }
-
-  /**
-   * Resolve Source to URI string, handling resource IDs and local resources.
-   */
-  private fun resolveUri(source: Source): String? {
-    val stringUri = source.uri
-    return try {
-      val uri = Uri.parse(stringUri)
-
-      // If no scheme, try to resolve as local resource
-      if (uri.scheme == null) {
-        ResourceIdHelper.getResourceUri(context, stringUri)?.toString()
-      } else {
-        stringUri
-      }
-    } catch (e: Exception) {
-      // Fallback to resource ID helper
-      ResourceIdHelper.getResourceUri(context, stringUri)?.toString()
-    }
-  }
-
-  @Composable
-  private fun rememberDrawableAsPainter(drawable: Drawable?): Painter? {
-    return remember(drawable) {
-      when (drawable) {
-        null -> null
-        is BitmapDrawable -> BitmapPainter(drawable.bitmap.asImageBitmap())
-        else -> DrawablePainter(drawable.mutate())
-      }
-    }
-  }
-
-  private class DrawablePainter(
-    private val drawable: Drawable
-  ) : Painter() {
-    override val intrinsicSize: Size
-      get() = Size(
-        drawable.intrinsicWidth.toFloat().takeIf { it > 0 } ?: Size.Unspecified.width,
-        drawable.intrinsicHeight.toFloat().takeIf { it > 0 } ?: Size.Unspecified.height
-      )
-
-    override fun DrawScope.onDraw() {
-      drawIntoCanvas { canvas ->
-        with(drawable) {
-          setBounds(0, 0, size.width.toInt(), size.height.toInt())
-          draw(canvas.nativeCanvas)
-        }
-      }
     }
   }
 }

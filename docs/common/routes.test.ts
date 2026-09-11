@@ -1,6 +1,6 @@
 import type { NavigationRoute } from '~/types/common';
 
-import { getBreadcrumbTrail, isReferencePath } from './routes';
+import { getBreadcrumbTrail, getLatestVersionPath, isReferencePath } from './routes';
 
 describe(isReferencePath, () => {
   it('returns true for unversioned pathname', () => {
@@ -17,6 +17,68 @@ describe(isReferencePath, () => {
 
   it('returns false for non-versioned pathname', () => {
     expect(isReferencePath('/build-reference/how-tos/')).toBe(false);
+  });
+});
+
+describe(getLatestVersionPath, () => {
+  const latestRoutes: NavigationRoute[] = [
+    {
+      type: 'section',
+      name: 'Expo SDK',
+      href: '',
+      children: [
+        { type: 'page', name: 'Notifications', href: '/versions/latest/sdk/notifications' },
+        {
+          type: 'group',
+          name: 'Expo UI',
+          href: '',
+          children: [
+            {
+              type: 'page',
+              name: 'Jetpack Compose',
+              href: '/versions/latest/sdk/ui/jetpack-compose',
+              isIndex: true,
+            },
+            { type: 'page', name: 'Box', href: '/versions/latest/sdk/ui/jetpack-compose/box' },
+          ],
+        },
+      ],
+    },
+  ];
+
+  it('maps the pathname to latest when that page exists', () => {
+    expect(getLatestVersionPath(latestRoutes, '/versions/unversioned/sdk/notifications')).toBe(
+      '/versions/latest/sdk/notifications'
+    );
+  });
+
+  it('returns undefined when the page is missing from latest', () => {
+    expect(
+      getLatestVersionPath(latestRoutes, '/versions/unversioned/sdk/ui/jetpack-compose/image')
+    ).toBeUndefined();
+  });
+
+  it('does not match a section index for a missing child page', () => {
+    expect(
+      getLatestVersionPath(latestRoutes, '/versions/unversioned/sdk/ui/jetpack-compose/image/')
+    ).toBeUndefined();
+  });
+
+  it('ignores a trailing slash on the pathname', () => {
+    expect(
+      getLatestVersionPath(latestRoutes, '/versions/unversioned/sdk/ui/jetpack-compose/box/')
+    ).toBe('/versions/latest/sdk/ui/jetpack-compose/box');
+  });
+
+  it('skips null entries in route arrays', () => {
+    const routes = [
+      null,
+      { type: 'page', name: 'Box', href: '/versions/latest/sdk/ui/jetpack-compose/box' },
+    ] as unknown as NavigationRoute[];
+
+    expect(getLatestVersionPath(routes, '/versions/unversioned/sdk/ui/jetpack-compose/box')).toBe(
+      '/versions/latest/sdk/ui/jetpack-compose/box'
+    );
   });
 });
 

@@ -1,0 +1,59 @@
+---
+title: 'チュートリアル：AI エージェントでアプリを構築する'
+sidebar_title: はじめに
+description: AI コーディングエージェントに指示を出しながら、Android、iOS、web で動く Expo アプリを構築するチュートリアルの紹介です。プログラミング経験は必要ありません。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+このチュートリアルでは、自分でコードを書くことなく、Android、iOS、web で動く完全なアプリを 1 つ作り上げます。代わりに、Claude Code や Codex、Cursor といった AI コーディングエージェントに指示を出し、各ステップの結果をその都度自分のスマートフォンで確認します。
+
+このチュートリアルは、**ビルダー**（アプリのアイデアはあるけれど、プログラミングの知識はない人）のためのものです。自分でコードを書きながら学びたい場合は、代わりに [Expo チュートリアル](/ja/tutorial/introduction/) に従ってください。同じアプリを、コードスニペットを 1 つずつ書きながら作っていきます。
+
+## 作るもの
+
+**StickerSmash** というアプリを作ります。写真を選んで絵文字ステッカーを重ね、指でステッカーを動かしたり大きさを変えたりして、その結果を写真ライブラリに保存できるアプリです。
+
+<ContentSpotlight file="tutorial/final.mp4" />
+
+## このチュートリアルの進め方
+
+各章は、同じループを繰り返します。
+
+1. **プロンプト**: 提案されたプロンプトを AI エージェントに貼り付けます。
+2. **ビルド**: エージェントがコードを書き、数秒のうちにスマートフォン上のアプリが更新されます。
+3. **確認**: アプリが指示どおりに動いているか、スマートフォンで実際に確認します。
+4. **再指示**: 何かおかしいと感じたら、見えているものをエージェントに伝えて修正してもらいます。
+
+あなたはプロダクトオーナーであり、テスターです。プログラマーはエージェントです。
+
+AI エージェントは実行するたびに同じ結果を返すとは限らないため、あなたのアプリがこのチュートリアルのスクリーンショットとピクセル単位で一致することはありません。それは想定の範囲内です。プロンプトは求める結果を説明したものであり、スクリーンショットはおおよそこう見えるはずという目安です。プロンプトは自由に書き換えてかまいません。色を変えたり、ボタンの文言を変えたり、自分好みにアレンジしてみましょう。
+
+> **プロンプトの日本語訳について** 各章のプロンプトは日本語に翻訳してあります。アプリに表示される文字列（`"Home screen"` など）は英語のままにしているので、そのまま貼り付ければスクリーンショットと同じ結果になります。英語の原文を確認したいときは、各プロンプトの下にある「英語の原文プロンプト」を開いてください。
+
+## 必要なもの
+
+- macOS、Windows、Linux のいずれかで動くコンピュータ
+- Android または iOS のスマートフォン
+- 約 1 時間。第 1 章でゼロからすべてのツールをインストールする手順を説明するので、事前に用意しておくものはありません
+
+## 章の一覧
+
+1. [ツールを準備する](/ja/tutorial/build-with-ai/set-up-your-tools/)
+2. [最初のアプリを作成する](/ja/tutorial/build-with-ai/create-your-first-app/)
+3. [ホーム画面を構築する](/ja/tutorial/build-with-ai/build-the-home-screen/)
+4. [ステッカーを追加する](/ja/tutorial/build-with-ai/add-stickers/)
+5. [画像を保存する](/ja/tutorial/build-with-ai/save-your-creation/)
+6. [仕上げ](/ja/tutorial/build-with-ai/finishing-touches/)
+
+## 次のステップ
+
+<BoxLink
+  title="ツールを準備する"
+  Icon={BookOpen02Icon}
+  description="AI エージェントと Node.js、Expo Go をインストールし、エージェントに Expo について教えます。"
+  href="/ja/tutorial/build-with-ai/set-up-your-tools/"
+/>

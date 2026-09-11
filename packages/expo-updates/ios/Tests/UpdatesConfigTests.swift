@@ -30,6 +30,7 @@ struct UpdatesConfigTests {
     #expect(config.enableBsdiffPatchSupport == true)
     #expect(config.runtimeVersion == "fake-version-1")
     #expect(config.hasEmbeddedUpdate == true)
+    #expect(config.excludeFromBackup == false)
   }
 
   @Test
@@ -45,6 +46,7 @@ struct UpdatesConfigTests {
       UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://google.com",
       UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["Foo": "Bar"],
       UpdatesConfig.EXUpdatesConfigEnableBsdiffPatchSupportKey: false,
+      UpdatesConfig.EXUpdatesConfigExcludeFromBackupKey: true,
     ]
 
     guard let configNSDictionary = NSDictionary(contentsOfFile: configPlistPath) as? [String: Any] else {
@@ -64,6 +66,7 @@ struct UpdatesConfigTests {
     #expect(config.enableBsdiffPatchSupport == false)
     #expect(config.runtimeVersion == "overridden")
     #expect(config.hasEmbeddedUpdate == true)
+    #expect(config.excludeFromBackup == true)
   }
 
   // MARK: - normalizedURLOrigin

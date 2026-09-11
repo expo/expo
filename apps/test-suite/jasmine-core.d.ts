@@ -1,5 +1,11 @@
 declare module 'jasmine-core/lib/jasmine-core/jasmine' {
-  type JasmineInterface = {
+  /**
+   * The jasmine interface that `TestScreen` passes to every test module as the
+   * first argument of its exported `test` function. Test modules either take it
+   * whole (`test(t: JasmineInterface)`) or destructure the parts they use
+   * (`test({ describe, expect, it }: JasmineInterface)`).
+   */
+  export type JasmineInterface = {
     describe(description: string, specDefinitions: () => void): void;
     fdescribe(description: string, specDefinitions: () => void): void;
     xdescribe(description: string, specDefinitions: () => void): void;
@@ -15,10 +21,11 @@ declare module 'jasmine-core/lib/jasmine-core/jasmine' {
     fail(message?: string | Error): void;
     pending(reason?: string): void;
     spyOn<T extends object>(object: T, method: keyof T): jasmine.Spy;
-    jasmine: {
-      DEFAULT_TIMEOUT_INTERVAL: number;
-      [key: string]: unknown;
-    };
+    /**
+     * The jasmine namespace object, carrying `DEFAULT_TIMEOUT_INTERVAL` and the
+     * asymmetric matchers such as `objectContaining` and `arrayContaining`.
+     */
+    jasmine: typeof jasmine;
     [key: string]: unknown;
   };
 

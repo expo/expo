@@ -1,5 +1,5 @@
 import 'abort-controller/polyfill';
-import { UnavailabilityError } from 'expo';
+import { isRunningInExpoGo, Platform, UnavailabilityError } from 'expo';
 
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
@@ -98,7 +98,12 @@ export async function __handlePersistedRegistrationInfoAsync(
   }
 }
 
-if (ServerRegistrationModule.getRegistrationInfoAsync) {
+if (isRunningInExpoGo() && Platform.OS === 'android') {
+  // Registering the module-scope push token listener would throw and make the import fatal.
+  console.warn(
+    '[expo-notifications] Push notifications (remote notifications) are unavailable in Expo Go on Android since SDK 53. Local notifications remain available. Use a development build for push notifications: https://docs.expo.dev/develop/development-builds/introduction/'
+  );
+} else if (ServerRegistrationModule.getRegistrationInfoAsync) {
   // A global scope (to get all the updates) device push token
   // subscription, never cleared.
   addPushTokenListener(async (token) => {

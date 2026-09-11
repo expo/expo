@@ -2,6 +2,7 @@
 export {};
 
 const mockNativeTarget = {
+  clientId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
@@ -21,6 +22,8 @@ const mockAppMetrics = {
   reportError: jest.fn(),
 };
 
+const mockSetErrorHandlerEnabled = jest.fn();
+
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
 }));
@@ -28,6 +31,7 @@ jest.mock('expo', () => ({
 jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
+  setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -60,7 +64,11 @@ beforeEach(() => {
   jest.resetModules();
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
-  jest.doMock('expo-app-metrics', () => ({ __esModule: true, default: mockAppMetrics }));
+  jest.doMock('expo-app-metrics', () => ({
+    __esModule: true,
+    default: mockAppMetrics,
+    setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
     optionalRouter: undefined,
@@ -146,6 +154,41 @@ describe('module Proxy', () => {
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
     expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('leaves unhandled-error reporting enabled when errorHandlingEnabled is unset', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test' });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(true);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false])('applies errorHandlingEnabled: %s to the error handler', (enabled) => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', errorHandlingEnabled: enabled });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledTimes(1);
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(enabled);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('passes the config through to the native module unchanged', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', errorHandlingEnabled: false });
+    // The native `Config` record has no `errorHandlingEnabled` field, so decoding drops it. This
+    // asserts the JS layer doesn't strip or rewrite the object on its way out, not that native
+    // reads the flag: the gate lives entirely in JS.
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      errorHandlingEnabled: false,
+    });
+  });
+
+  it('applies the latest errorHandlingEnabled on a repeat configure call', () => {
+    const Observe = loadModule();
+    Observe.configure({ errorHandlingEnabled: false });
+    Observe.configure({ errorHandlingEnabled: true });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenNthCalledWith(1, false);
+    expect(mockSetErrorHandlerEnabled).toHaveBeenNthCalledWith(2, true);
   });
 
   it('skips initRouterIntegration by default', () => {
@@ -443,6 +486,12 @@ describe('module Proxy', () => {
     };
     expect(() => Observe.reportError(hostile)).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('exposes the native EAS client id as clientId', () => {
+    const Observe = loadModule();
+    expect(Observe.clientId).toBe('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee');
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('never throws when the native reportError call throws', () => {

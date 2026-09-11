@@ -81,6 +81,7 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey = "EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode"
   public static let EXUpdatesConfigDisableAntiBrickingMeasures = "EXUpdatesDisableAntiBrickingMeasures"
   public static let EXUpdatesConfigEnableBsdiffPatchSupportKey = "EXUpdatesEnableBsdiffPatchSupport"
+  public static let EXUpdatesConfigExcludeFromBackupKey = "EXUpdatesExcludeFromBackup"
 
   public static let EXUpdatesConfigCheckOnLaunchValueAlways = "ALWAYS"
   public static let EXUpdatesConfigCheckOnLaunchValueWifiOnly = "WIFI_ONLY"
@@ -104,6 +105,7 @@ public final class UpdatesConfig: NSObject {
   public let hasEmbeddedUpdate: Bool
   public let originalHasEmbeddedUpdate: Bool
   public let disableAntiBrickingMeasures: Bool
+  public let excludeFromBackup: Bool
   public let hasUpdatesOverride: Bool
 
   private let cachedConfigDictionary: [String: Any]
@@ -124,6 +126,7 @@ public final class UpdatesConfig: NSObject {
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool,
     enableBsdiffPatchSupport: Bool,
     disableAntiBrickingMeasures: Bool,
+    excludeFromBackup: Bool,
     hasUpdatesOverride: Bool
   ) {
     self.cachedConfigDictionary = cachedConfigDictionary
@@ -141,6 +144,7 @@ public final class UpdatesConfig: NSObject {
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
     self.enableBsdiffPatchSupport = enableBsdiffPatchSupport
     self.disableAntiBrickingMeasures = disableAntiBrickingMeasures
+    self.excludeFromBackup = excludeFromBackup
     self.hasUpdatesOverride = hasUpdatesOverride
   }
 
@@ -308,6 +312,7 @@ public final class UpdatesConfig: NSObject {
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode,
       enableBsdiffPatchSupport: enableBsdiffPatchSupport,
       disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config),
+      excludeFromBackup: config.optionalValue(forKey: EXUpdatesConfigExcludeFromBackupKey) ?? false,
       hasUpdatesOverride: configOverride != nil
     )
   }

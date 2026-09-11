@@ -3,25 +3,36 @@ import type { ComponentProps } from 'react';
 import { Children, useMemo } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import { StackRouter } from '../../react-navigation/native';
+import { makePopAction } from '../../react-navigation/native-stack/utils/makePopAction';
+import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../../standard-navigation';
+import { subscribePopToTopOnParentTabPress } from '../../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../../utils/children';
 import { Protected } from '../../views/Protected';
 import { stackRouterOverride } from '../StackClient';
 import { mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
-import { withLayoutContext } from '../withLayoutContext';
-import { createExperimentalStackNavigator } from './createExperimentalStackNavigator';
-import type {
-  ExperimentalStackNavigationEventMap,
-  ExperimentalStackNavigationOptions,
-} from './types';
+import {
+  createStandardExperimentalStackNavigator,
+  type ExperimentalStackNavigatorCreateProps,
+  type StandardExperimentalStackNavigationEventMap,
+} from './createExperimentalStackNavigator';
+import type { ExperimentalStackNavigationOptions } from './types';
 
-const ExperimentalStackNavigator = createExperimentalStackNavigator().Navigator;
-
-const RNExperimentalStack = withLayoutContext<
+const RNExperimentalStack = unstable_integrateWithRouter<
   ExperimentalStackNavigationOptions,
-  typeof ExperimentalStackNavigator,
   StackNavigationState<ParamListBase>,
-  ExperimentalStackNavigationEventMap
->(ExperimentalStackNavigator);
+  StandardExperimentalStackNavigationEventMap,
+  object,
+  object,
+  ExperimentalStackNavigatorCreateProps
+>(createStandardExperimentalStackNavigator, StackRouter, {
+  activityDefaultThreshold: 2,
+  createProps: ({ dispatch, dispatchSync, navigation, state }) => ({
+    pop: makePopAction(dispatchSync, state.key),
+    removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
+  }),
+});
 
 /**
  * Renders the new `react-native-screens/experimental` native stack.
@@ -42,7 +53,13 @@ const ExperimentalStack = Object.assign(
     }, [props.children]);
 
     return (
-      <RNExperimentalStack {...props} children={rnChildren} UNSTABLE_router={stackRouterOverride} />
+      <IsWithinNativeNavigator value>
+        <RNExperimentalStack
+          {...props}
+          children={rnChildren}
+          UNSTABLE_router={stackRouterOverride}
+        />
+      </IsWithinNativeNavigator>
     );
   },
   {

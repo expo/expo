@@ -14,10 +14,13 @@ class IntersectionObserverStub {
   }
 }
 
-Object.defineProperty(window, 'IntersectionObserver', {
-  writable: true,
-  configurable: true,
-  value: IntersectionObserverStub,
-});
+// Guard for test files that opt into `@jest-environment node`, where `window` does not exist.
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: IntersectionObserverStub,
+  });
+}
 
 export {};

@@ -1,6 +1,6 @@
+import CoreServices
 import ExpoModulesCore
 import MessageUI
-import CoreServices
 import MobileCoreServices
 import UniformTypeIdentifiers
 
@@ -44,7 +44,10 @@ public class ExpoSMSModule: Module, SMSResultHandler {
 
     for attachment in options.attachments {
       let utiRef = UTTypeCreatePreferredIdentifierForTag(
-        kUTTagClassMIMEType, attachment.mimeType as CFString, nil)
+        kUTTagClassMIMEType,
+        attachment.mimeType as CFString,
+        nil
+      )
 
       if utiRef == nil {
         throw SMSMimeTypeException(attachment.mimeType)
@@ -59,7 +62,8 @@ public class ExpoSMSModule: Module, SMSResultHandler {
         let attached = messageComposeViewController.addAttachmentData(
           data,
           typeIdentifier: attachment.mimeType,
-          filename: attachment.filename)
+          filename: attachment.filename
+        )
         if !attached {
           throw SMSFileException(attachment.uri)
         }

@@ -1,6 +1,9 @@
 {
   "indentation": { "spaces": 2 },
   "indentConditionalCompilationBlocks": false,
+  "lineBreakBeforeEachArgument": true,
+  "lineBreakBeforeEachGenericRequirement": true,
   "lineLength": 120,
+  "spacesBeforeEndOfLineComments": 1,
   "version": 1
 }

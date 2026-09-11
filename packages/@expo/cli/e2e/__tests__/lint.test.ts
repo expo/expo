@@ -3,14 +3,14 @@ import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { executeExpoAsync } from '../utils/expo';
+import { executeAsync } from '../utils/process';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
-import { executeExpoAsync } from '../utils/expo';
-import { executeAsync } from '../utils/process';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -74,6 +74,7 @@ it('runs `npx expo lint` to install lint in a project', async () => {
     'metro.config.js',
     'package.json',
     'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
   ]);
 
   // Ensure there are no linting errors
@@ -116,6 +117,7 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
     'metro.config.js',
     'package.json',
     'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
   ]);
 
   // Ensure there are no linting errors

@@ -1,6 +1,6 @@
 {
   "name": "expo-print",
-  "version": "56.0.3",
+  "version": "58.0.0",
   "description": "Provides an API for Android and iOS (AirPrint) printing functionality.",
   "keywords": [
     "airprint",
@@ -25,11 +25,13 @@
   "main": "build/Print.js",
   "types": "build/Print.d.ts",
   "scripts": {
+    "precompile-ios": "et prebuild-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest",
+    "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"

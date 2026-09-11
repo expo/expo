@@ -10,8 +10,8 @@ import {
 import { Select } from '~/ui/components/Select';
 
 const options = [
-  { id: 'en', label: '🇺🇸 English' },
-  { id: 'ja', label: '🇯🇵 日本語' },
+  { id: 'en', label: 'English' },
+  { id: 'ja', label: '日本語' },
 ];
 
 export function LanguageSwitcher() {
@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
 
   return (
     <Select
-      className="min-w-35 whitespace-nowrap"
+      className="min-w-25 whitespace-nowrap"
       value={currentLocale}
       onValueChange={onLocaleSelect}
       options={options}

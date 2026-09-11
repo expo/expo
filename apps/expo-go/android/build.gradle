@@ -5,12 +5,17 @@ buildscript {
   ext {
     minSdkVersion = 24
     targetSdkVersion = 36
-    compileSdkVersion = 36
+    compileSdkVersion = 37
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '36.0.0'
-    kotlinVersion = "2.1.20"
-    kspVersion = "2.1.20-2.0.1"
+    buildToolsVersion = '37.0.0'
+    // Kotlin 2.3.20+ is required: earlier K2 releases crash compiling ReactAndroid from
+    // source ("Cannot evaluate IR expression in annotation ... Strange deserialized enum
+    // value") on Java annotations that reference Kotlin const vals, e.g. BaseViewManager's
+    // @ReactProp(name = ViewProps.X). Keep the compose/serialization plugin pins in
+    // expoview/build.gradle in sync with this version.
+    kotlinVersion = "2.3.20"
+    kspVersion = "2.3.10"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -84,7 +89,50 @@ allprojects {
       libs.fresco.imagepipeline.okhttp3,
       libs.fresco.ui.common
     )
+    // Stripe's optional push-provisioning SDK pulls in Google's private play-services-tapandpay,
+    // which AGP 9's lint classpath tries to resolve. Expo Go never uses push provisioning.
+    exclude group: "com.google.android.gms", module: "play-services-tapandpay"
   }
+}
+
+project(":packages:react-native:ReactAndroid").afterEvaluate { reactAndroid ->
+  // react-native 0.87 no longer registers buildCodegenCLI; keep disabling it while the
+  // fork is on an older release. `matching` tolerates the task being absent.
+  reactAndroid.tasks.matching { it.name == "buildCodegenCLI" }.configureEach { it.enabled = false }
+}
+
+// Every module's generateCodegenSchemaFromJavaScript reads react-native-codegen/lib
+// directly, so build it once when it is missing.
+def labCodegenDir = file("$rootDir/../../../react-native-lab/react-native/packages/react-native-codegen")
+tasks.register("buildLabCodegenCli", Exec) {
+  onlyIf { !new File(labCodegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").exists() }
+  workingDir labCodegenDir
+  commandLine "bash", "scripts/oss/build.sh"
+}
+allprojects {
+  tasks.matching { it.name == "generateCodegenSchemaFromJavaScript" }.configureEach {
+    it.dependsOn(":buildLabCodegenCli")
+  }
+}
+
+// Expo Go ships a release build that keeps the JS debugger. React Native gates those native defines
+// behind REACT_NATIVE_DEBUG_OPTIMIZED, and its CMake guard only passes automatically when
+// CMAKE_BUILD_TYPE is Debug. Release maps to RelWithDebInfo, which does not match, so set the flag
+// for every variant. Debug builds already satisfy the guard, so this only changes release.
+def reactAndroidProject = project(":packages:react-native:ReactAndroid")
+reactAndroidProject.plugins.withId("com.android.library") {
+  reactAndroidProject.android.defaultConfig.externalNativeBuild.cmake.arguments.add(
+    "-DREACT_NATIVE_DEBUG_OPTIMIZED=True"
+  )
+}
+
+// Hermes itself also has to keep its debugger in release, which React Native turns off explicitly
+// rather than behind a guard. This runs after the hermes-engine build script so the value it sets can
+// be swapped, and before AGP reads the arguments to create variants.
+project(":packages:react-native:ReactAndroid:hermes-engine").afterEvaluate { hermesEngine ->
+  def releaseCmake = hermesEngine.android.buildTypes.release.externalNativeBuild.cmake
+  releaseCmake.arguments.removeAll { it == "-DHERMES_ENABLE_DEBUGGER=False" }
+  releaseCmake.arguments.add("-DHERMES_ENABLE_DEBUGGER=True")
 }
 
 // This var needs to be defined outside any "remove_from_here" comment blocks

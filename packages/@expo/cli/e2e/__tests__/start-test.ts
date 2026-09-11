@@ -2,13 +2,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import { createExpoStart, executeExpoAsync } from '../utils/expo';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   getRouterE2ERoot,
 } from './utils';
-import { createExpoStart, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -71,7 +71,7 @@ it('runs `npx expo start --help`', async () => {
         --scheme <scheme>               Custom URI protocol to use when launching an app
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
-        --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
+        --private-key-path <path>       Path to private key for code signing. Required to sign development manifests when the project is configured with an expo-updates code signing certificate.
         -h, --help                      Usage info
     "
   `);
@@ -100,7 +100,10 @@ describeSkipWin('server', () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
       linkExpoPackages: ['expo', 'babel-preset-expo'],
     });
-    await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
+    await fs.promises.rm(path.join(projectRoot, '.expo'), {
+      force: true,
+      recursive: true,
+    });
     await expo.startAsync();
   });
   afterAll(async () => {

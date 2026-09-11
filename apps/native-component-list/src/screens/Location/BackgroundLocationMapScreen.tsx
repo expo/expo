@@ -1,9 +1,8 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import * as Location from 'expo-location';
+import { useFocusEffect } from 'expo-router';
+import { type NativeStackNavigationProp } from 'expo-router';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
@@ -39,7 +38,7 @@ const locationActivityTypes: {
 };
 
 interface Props {
-  navigation: StackNavigationProp<any>;
+  navigation: NativeStackNavigationProp<any>;
 }
 
 type Region = {
@@ -301,7 +300,7 @@ function BackgroundLocationMapView() {
                     {state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}
                   </Text>
                   <Text style={styles.text}> background </Text>
-                  <FontAwesome name="location-arrow" size={20} color="white" />
+                  <MaterialCommunityIcons name="near-me" size={20} color="white" />
                   <Text style={styles.text}> indicator</Text>
                 </View>
               </Button>
@@ -325,7 +324,7 @@ function BackgroundLocationMapView() {
           </View>
           <View style={styles.buttonsColumn}>
             <Button style={styles.button} onPress={onCenterMap}>
-              <MaterialIcons name="my-location" size={20} color="white" />
+              <MaterialCommunityIcons name="crosshairs-gps" size={20} color="white" />
             </Button>
           </View>
         </View>

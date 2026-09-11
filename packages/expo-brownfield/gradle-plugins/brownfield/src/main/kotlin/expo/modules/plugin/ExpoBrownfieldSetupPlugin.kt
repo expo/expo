@@ -67,11 +67,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
         return@doLast
       }
       val original = outputFile.readText()
-      val stripped =
-        original
-          .lineSequence()
-          .filter { line -> stripPrefixes.none { prefix -> line.contains(prefix) } }
-          .joinToString("\n")
+      val stripped = stripFusedPackageListEntries(original, stripPrefixes)
       outputFile.writeText(stripped)
       expoProject.logger.lifecycle(
         "brownfield.fused: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"
@@ -330,7 +326,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
    */
   private fun getHermesVersion(project: Project): String {
     val process =
-      ProcessBuilder("node", "--print", "require('hermes-compiler/package.json').version")
+      ProcessBuilder("node", "--print", "require(require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })).version")
         .directory(project.rootProject.projectDir)
         .redirectErrorStream(true)
         .start()

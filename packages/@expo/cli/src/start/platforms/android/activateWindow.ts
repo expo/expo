@@ -1,8 +1,8 @@
 import * as osascript from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
-import type { Device } from './adb';
 import { event } from '../events';
+import type { Device } from './adb';
 
 function getUnixPID(port: number | string): string | undefined {
   // Runs like `lsof -i:8081 -P -t -sTCP:LISTEN`

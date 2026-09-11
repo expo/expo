@@ -41,7 +41,7 @@ describe('sharedArrayBufferDetection', () => {
       const result = getLocalhostUrl();
       expect(result).toBe('http://localhost:8081/_expo/plugins/expo-sqlite/?test=1#hash');
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
     });
 
     it('should handle URLs without port', () => {
@@ -61,7 +61,7 @@ describe('sharedArrayBufferDetection', () => {
       const result = getLocalhostUrl();
       expect(result).toBe('https://localhost/path');
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
     });
   });
 
@@ -91,7 +91,7 @@ describe('sharedArrayBufferDetection', () => {
         value: originalIsSecureContext,
       });
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
     });
 
     it('should include current protocol in result', () => {
@@ -108,7 +108,7 @@ describe('sharedArrayBufferDetection', () => {
       const result = isSharedArrayBufferSupported();
       expect(result.currentProtocol).toBe('https:');
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
     });
 
     it('should detect non-localhost correctly', () => {
@@ -126,7 +126,7 @@ describe('sharedArrayBufferDetection', () => {
       expect(result.isLocalhost).toBe(false);
       expect(result.currentHost).toBe('192.168.1.1');
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
     });
 
     it('should detect localhost correctly', () => {
@@ -144,7 +144,7 @@ describe('sharedArrayBufferDetection', () => {
       expect(result.isLocalhost).toBe(true);
       expect(result.currentHost).toBe('localhost');
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
     });
 
     it('should return all required properties', () => {
@@ -173,7 +173,7 @@ describe('sharedArrayBufferDetection', () => {
       expect(typeof result.currentProtocol).toBe('string');
       expect(typeof result.isLocalhost).toBe('boolean');
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
       Object.defineProperty(window, 'isSecureContext', {
         writable: true,
         value: originalIsSecureContext,

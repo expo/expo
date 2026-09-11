@@ -44,6 +44,11 @@ class DevMenuModule : Module() {
       viewModel.onAction(DevMenuAction.Close)
     }
 
+    AsyncFunction("setToolsButtonVisible") { visible: Boolean ->
+      viewModel.menuPreferences.showFab = visible
+      Unit
+    }
+
     AsyncFunction("addDevMenuCallbacks") { callbacks: List<DevMenuCallback> ->
       val reactContext = appContext.reactContext as? ReactContext
         ?: throw Exceptions.ReactContextLost()

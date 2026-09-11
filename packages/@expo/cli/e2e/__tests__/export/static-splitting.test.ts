@@ -2,7 +2,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import {
   expectChunkPathMatching,
@@ -11,6 +10,7 @@ import {
   getPageHtml,
   getRouterE2ERoot,
 } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -123,9 +123,7 @@ describe('exports static with bundle splitting', () => {
             (source) => source.startsWith('/packages/') || source.startsWith('/node_modules/')
           )
         ).toBe(true);
-        expect(sources.some((source) => source.includes('router-e2e/__e2e__/'))).toBe(
-          false
-        );
+        expect(sources.some((source) => source.includes('router-e2e/__e2e__/'))).toBe(false);
       } else {
         // expect(sourceMap.sources).toEqual(
         //   expect.arrayContaining([

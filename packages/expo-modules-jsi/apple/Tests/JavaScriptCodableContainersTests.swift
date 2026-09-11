@@ -90,7 +90,9 @@ struct JavaScriptCodableContainersTests {
     // An `undefined`-valued property is treated as absent rather than decoded (which would throw
     // for a non-optional value), matching the v1 dictionary converter.
     let decoded = try [String: Int].decode(
-      runtime.eval("({ a: 1, b: undefined })"), in: runtime)
+      runtime.eval("({ a: 1, b: undefined })"),
+      in: runtime
+    )
     #expect(decoded == ["a": 1])
   }
 

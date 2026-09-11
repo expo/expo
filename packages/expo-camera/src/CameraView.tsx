@@ -14,6 +14,8 @@ import type {
   ScanningResult,
   VideoCodec,
   AvailableLenses,
+  LensInfo,
+  RecordingProgress,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
@@ -128,10 +130,10 @@ export default class CameraView extends Component<CameraViewProps> {
   /**
    * Returns the available lenses for the currently selected camera.
    *
-   * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+   * @return An array of `LensInfo` objects containing both the stable `deviceType` identifier and the `localizedName` for display purposes. The `deviceType` can be passed to the `selectedLens` prop.
    * @platform ios
    */
-  async getAvailableLensesAsync(): Promise<string[]> {
+  async getAvailableLensesAsync(): Promise<LensInfo[]> {
     return (await this._cameraRef.current?.getAvailableLenses()) ?? [];
   }
 
@@ -210,7 +212,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
    * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
    *
-   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-1)
+   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-options-1)
    * > to make a permanent copy of the image.
    */
   async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
@@ -354,6 +356,11 @@ export default class CameraView extends Component<CameraViewProps> {
     this.props.onResponsiveOrientationChanged?.(nativeEvent);
   };
 
+  _onRecordingProgress = ({ nativeEvent }: { nativeEvent: RecordingProgress }) => {
+    const { duration, fileSize, maxDuration } = nativeEvent;
+    this.props.onRecordingProgress?.({ duration, fileSize, maxDuration: maxDuration ?? undefined });
+  };
+
   _onObjectDetected =
     (callback?: Function) =>
     ({ nativeEvent }: { nativeEvent: any }) => {
@@ -398,6 +405,7 @@ export default class CameraView extends Component<CameraViewProps> {
         onAvailableLensesChanged={this._onAvailableLensesChanged}
         onPictureSaved={_onPictureSaved}
         onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}
+        onRecordingProgress={this._onRecordingProgress}
       />
     );
   }

@@ -12,12 +12,14 @@ export {
 
 export {
   AssetField,
+  AssetUriVersion,
   MediaSubtype,
   MediaType,
   type Shape,
   type Location,
   type AssetFieldValueMap,
   type AssetInfo,
+  type AssetUriOptions,
   type GranularPermission,
   type MediaLibraryAssetsChangeEvent,
   type MediaTypeFilter,

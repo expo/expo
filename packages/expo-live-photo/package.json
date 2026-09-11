@@ -1,6 +1,6 @@
 {
   "name": "expo-live-photo",
-  "version": "56.0.3",
+  "version": "58.0.0",
   "description": "Library, which makes it possible to display live photos on iOS",
   "keywords": [
     "expo",
@@ -32,10 +32,14 @@
     }
   },
   "scripts": {
+    "precompile-ios": "et prebuild-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
+    "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"

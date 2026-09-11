@@ -36,7 +36,7 @@ export declare class Container {
 
   /**
    * Retrieves the type of the container.
-   * @returns a promise resolving to the [`ContainerType`](#containertype) (for example, 'cardDAV', 'exchange') or `null`.
+   * @returns a promise resolving to the [`ContainerType`](contacts/#containertype) (for example, 'cardDAV', 'exchange') or `null`.
    * @platform ios
    * @example
    * ```ts

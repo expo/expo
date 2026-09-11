@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import { vol } from 'memfs';
 
-import { getDirFromFS } from './utils/getDirFromFS';
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import { getLocales, setLocalesAsync } from '../Locales';
 import { getPbxproj } from '../utils/Xcodeproj';
+import { getDirFromFS } from './utils/getDirFromFS';
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');
@@ -70,6 +70,9 @@ describe('e2e: iOS locales', () => {
           ios: {
             'Localizable.strings': {
               NOTIF_KEY: 'de-notification',
+              'Sample Widget': 'DE Sample Widget',
+              'A sample widget.': 'DE A sample widget.',
+              'A "quoted" key': 'DE A "quoted" key',
             },
           },
           android: {
@@ -92,6 +95,8 @@ describe('e2e: iOS locales', () => {
       {
         locales: {
           fr: 'lang/fr.json',
+          // no Info.plist keys, must not stop the locales listed after it
+          de: 'lang/de.json',
           // doesn't exist
           xx: 'lang/xx.json',
 
@@ -101,8 +106,6 @@ describe('e2e: iOS locales', () => {
           // support backwards compatibility for `locales` structure without platform keys.
           en: 'lang/en.json',
           ar: 'lang/ar.json',
-          // shouldn't have an infoPlist
-          de: 'lang/de.json',
         },
       },
       { project, projectRoot }
@@ -125,18 +128,25 @@ describe('e2e: iOS locales', () => {
     expect(after[infoPlists[0]!]).toMatchSnapshot();
     // Test that the inlined locale is resolved.
     expect(after[infoPlists[1]!]).toMatch(/spanish-name/);
-    expect(after[infoPlists[2]!]).toMatchInlineSnapshot(`"CFBundleDisplayName = "us-name";"`);
+    expect(after[infoPlists[2]!]).toMatchInlineSnapshot(`""CFBundleDisplayName" = "us-name";"`);
     expect(after[infoPlists[3]!]).toMatchInlineSnapshot(`
-      "CFBundleDisplayName = "us-name";
-      app_name = "us-name";"
+      ""CFBundleDisplayName" = "us-name";
+      "app_name" = "us-name";"
     `);
-    expect(after[infoPlists[4]!]).toMatchInlineSnapshot(`"CFBundleDisplayName = "ar-name";"`);
+    expect(after[infoPlists[4]!]).toMatchInlineSnapshot(`""CFBundleDisplayName" = "ar-name";"`);
     expect(localizableStrings).toStrictEqual([
       'ios/testproject/Supporting/ar.lproj/Localizable.strings',
       'ios/testproject/Supporting/de.lproj/Localizable.strings',
     ]);
-    expect(after[localizableStrings[0]!]).toMatchInlineSnapshot(`"NOTIF_KEY = "ar-notification";"`);
-    expect(after[localizableStrings[1]!]).toMatchInlineSnapshot(`"NOTIF_KEY = "de-notification";"`);
+    expect(after[localizableStrings[0]!]).toMatchInlineSnapshot(
+      `""NOTIF_KEY" = "ar-notification";"`
+    );
+    expect(after[localizableStrings[1]!]).toMatchInlineSnapshot(`
+      ""NOTIF_KEY" = "de-notification";
+      "Sample Widget" = "DE Sample Widget";
+      "A sample widget." = "DE A sample widget.";
+      "A \\"quoted\\" key" = "DE A \\"quoted\\" key";"
+    `);
 
     // Test a warning is thrown for an invalid locale JSON file.
     expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(

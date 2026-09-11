@@ -3,6 +3,7 @@
 import Foundation
 import SwiftUI
 import UIKit
+import ExpoModulesCore
 
 enum PerfMonitorConstants {
   static let maxWidth: CGFloat = 360
@@ -139,7 +140,7 @@ final class PerfMonitorPresenter: NSObject {
     }
 
     let targetWidth = min(
-      UIScreen.main.bounds.width * PerfMonitorConstants.screenWidthRatio,
+      SceneGeometry.bounds(for: hostingController.view).width * PerfMonitorConstants.screenWidthRatio,
       PerfMonitorConstants.maxWidth
     )
     return NSValue(cgSize: CGSize(width: targetWidth, height: 176))

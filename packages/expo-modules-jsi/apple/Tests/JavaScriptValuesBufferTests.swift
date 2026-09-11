@@ -51,11 +51,11 @@ struct JavaScriptValuesBufferTests {
     // Allocate a buffer that captures the JS object as an argument; the result is
     // discarded and `deinit` runs at the end of this statement. If `deinit` skipped
     // `deinitialize`, the contained `jsi::Value` would still hold a strong ref and
-    // the weak handle would survive `gc()`.
+    // the weak handle would survive the collection below.
     _ = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue())
     _ = consume object
 
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     let stillAlive = weak.lock() != nil
     #expect(stillAlive == false)

@@ -111,6 +111,11 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
+  /** Overwrite the hostname used in dev server URLs, disregarding the `--host`, `--lan` and `--localhost` arguments. */
+  get REACT_NATIVE_PACKAGER_HOSTNAME(): string | null {
+    return string('REACT_NATIVE_PACKAGER_HOSTNAME', '')?.trim() || null;
+  }
+
   /**
    * Overwrite the dev server URL, disregarding the `--port`, `--host`, `--tunnel`, `--lan`, `--localhost` arguments.
    * This is useful for browser editors that require custom proxy URLs.
@@ -280,23 +285,9 @@ class Env {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
 
-  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
-  get EXPO_UNSTABLE_WEB_MODAL(): boolean {
-    return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
-  }
-
   /** Disable @react-navigation checks for expo-router projects */
   get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
     return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
-  }
-
-  /**
-   * Disable Material Symbols (`md`) icon support in expo-router's NativeTabs on Android.
-   * When enabled, the Metro resolver swaps the Android-specific md icon converter for a no-op
-   * stub, so the `expo-symbols` dependency is tree-shaken out of the Android bundle.
-   */
-  get EXPO_ROUTER_DISABLE_NATIVE_TABS_MD(): boolean {
-    return boolish('EXPO_ROUTER_DISABLE_NATIVE_TABS_MD', false);
   }
 
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */

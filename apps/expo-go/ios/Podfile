@@ -5,6 +5,9 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 ENV['RCT_HERMES_V1_ENABLED'] = '1'
 
+# Expo Go needs a customized Hermes, so build it from source rather than using a released artifact.
+ENV['RCT_BUILD_HERMES_FROM_SOURCE'] = 'true'
+
 # Build Expo Go from Expo's fork of React Native
 ENV['RCT_USE_RN_DEP']  = '0'
 ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
@@ -62,7 +65,9 @@ target 'Expo Go' do
       'expo-widgets',
       'expo-observe'
     ],
-    includeTests: true,
+    # Module unit tests are hosted by bare-expo (BareExpoTests); the Tests
+    # target here is for Expo Go app unit tests only and links no pods.
+    includeTests: false,
     flags: {
       :inhibit_warnings => false
     }
@@ -174,6 +179,6 @@ target 'Expo Go' do
   end
 
   target 'Tests' do
-    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
+    inherit! :search_paths
   end
 end

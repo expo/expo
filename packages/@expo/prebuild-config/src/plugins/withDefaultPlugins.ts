@@ -40,6 +40,7 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Orientation.withOrientation,
     IOSConfig.RequiresFullScreen.withRequiresFullScreen,
     IOSConfig.Scheme.withScheme,
+    IOSConfig.DevServer.withMetroPort,
     IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption,
     IOSConfig.Version.withBuildNumber,
     IOSConfig.Version.withVersion,

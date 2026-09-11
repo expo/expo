@@ -99,10 +99,10 @@ Before you create your app, you have to create the **apps** directory. This dire
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-57 apps/cool-app'],
-    yarn: ['$ yarn create expo-app --template default@sdk-57 apps/cool-app'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-57 apps/cool-app'],
-    bun: ['$ bun create expo --template default@sdk-57 apps/cool-app'],
+    npm: ['$ npx create-expo-app@latest apps/cool-app'],
+    yarn: ['$ yarn create expo-app apps/cool-app'],
+    pnpm: ['$ pnpm create expo-app apps/cool-app'],
+    bun: ['$ bun create expo apps/cool-app'],
   }}
 />
 
@@ -245,6 +245,8 @@ Often, duplicate dependencies won't cause any problems. However, native modules 
 From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true` in your **app.json** to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [autolinking](/modules/autolinking/) links for your native builds.
 
 From **SDK 55**, this is enabled automatically for apps in monorepos.
+
+Packages that aren't native modules can break when they're duplicated too. A library that creates a React context is a common example. To apply the same checks and resolution to those packages, see [Checking packages that aren't native modules](/modules/autolinking/#checking-packages-that-arent-native-modules).
 
 #### Monorepos with TV projects
 

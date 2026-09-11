@@ -138,6 +138,21 @@ export interface TimeIntervalNotificationTrigger {
 }
 
 /**
+ * Controls which `AlarmManager` API schedules a wall-clock trigger on Android.
+ *
+ * - `'bestEffort'`: the default. Uses `setExactAndAllowWhileIdle()`, which delivers at the requested time
+ *   on most devices. Some OEM Android builds defer these alarms by minutes to save battery.
+ *   Without the exact alarm permission, the system may deliver the notification later than requested.
+ * - `'alarmClock'`: uses `setAlarmClock()`. The system delivers these alarms at the requested time
+ *   and does not defer them for battery optimization. Use only for time-critical alarms, such as
+ *   alarm clocks or medication reminders. The status bar shows an alarm icon until the notification
+ *   is delivered. Requires the `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM` permission on Android 12
+ *   and higher. Without the permission, the notification is scheduled as `'bestEffort'`.
+ * @platform android
+ */
+export type NotificationDelivery = 'bestEffort' | 'alarmClock';
+
+/**
  * A trigger related to a daily notification.
  * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
  * @platform android
@@ -146,6 +161,7 @@ export interface DailyNotificationTrigger {
   type: 'daily';
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 /**
@@ -158,6 +174,7 @@ export interface WeeklyNotificationTrigger {
   weekday: number;
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 /**
@@ -170,6 +187,7 @@ export interface MonthlyNotificationTrigger {
   day: number;
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 /**
@@ -183,6 +201,7 @@ export interface YearlyNotificationTrigger {
   month: number;
   hour: number;
   minute: number;
+  delivery?: NotificationDelivery;
 }
 
 // @docsMissing
@@ -305,6 +324,10 @@ export type DailyTriggerInput = {
   channelId?: string;
   hour: number;
   minute: number;
+  /**
+   * @default 'bestEffort'
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -318,6 +341,10 @@ export type WeeklyTriggerInput = {
   weekday: number;
   hour: number;
   minute: number;
+  /**
+   * @default 'bestEffort'
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -331,6 +358,10 @@ export type MonthlyTriggerInput = {
   day: number;
   hour: number;
   minute: number;
+  /**
+   * @default 'bestEffort'
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -345,6 +376,10 @@ export type YearlyTriggerInput = {
   month: number;
   hour: number;
   minute: number;
+  /**
+   * @default 'bestEffort'
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -356,6 +391,10 @@ export type DateTriggerInput = {
   type: SchedulableTriggerInputTypes.DATE;
   date: Date | number;
   channelId?: string;
+  /**
+   * @default 'bestEffort'
+   */
+  delivery?: NotificationDelivery;
 };
 
 /**
@@ -567,7 +606,7 @@ export type NotificationContentInput = {
   badge?: number;
   /**
    * The notification sound. Use `false` for a silent notification.
-   * On Android version 8 and later, control the sounds via [notification channels](#setNotificationChannelAsync).
+   * On Android version 8 and later, control the sounds via [notification channels](#setnotificationchannelasyncchannelid-channel).
    * `defaultCritical` and `defaultRingtone` are applicable only on iOS, with `defaultCritical` requiring the critical alerts entitlement.
    *
    * On iOS, you can also provide a custom sound filename including the extension. The file needs to be added
@@ -610,6 +649,11 @@ export type NotificationContentInput = {
    * @platform ios
    */
   categoryIdentifier?: string;
+  /**
+   * An identifier used to group related notifications together in the notification center.
+   * @platform ios
+   */
+  threadIdentifier?: string;
   /**
    * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
    * to `false` if not provided or is invalid. Corresponds directly to Android's `isOngoing` behavior.
@@ -738,7 +782,7 @@ export interface NotificationAction {
  * Defines a group of notification actions and their behavior. Categories allow you to create custom
  * action buttons that appear with notifications, enabling users to respond to notifications.
  *
- * Categories must be registered with [`setNotificationCategoryAsync`](#notificationssetnotificationcategoryasyncidentifier-actions-options)
+ * Categories must be registered with [`setNotificationCategoryAsync`](#setnotificationcategoryasyncidentifier-actions-options)
  * before they can be used. When scheduling a notification, reference the category by its `identifier` in the
  * [`NotificationContentInput.categoryIdentifier`](#notificationcontentinput) field.
  */
@@ -815,7 +859,7 @@ export {
 
 /**
  * Payload for the background notification handler task.
- * [Read more](#run-javascript-in-response-to-incoming-notifications).
+ * See [Run JavaScript in response to incoming notifications](#run-javascript-in-response-to-incoming-notifications).
  * */
 export type NotificationTaskPayload =
   | NotificationResponse

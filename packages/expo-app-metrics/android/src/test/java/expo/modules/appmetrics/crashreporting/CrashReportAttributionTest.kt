@@ -78,6 +78,18 @@ class CrashReportAttributionTest {
       attribute("crashed-session", CrashOrigin.JVM_FILE)
 
       assertEquals("java.lang.IllegalStateException: boom", storedMessage("crashed-session"))
+      assertEquals(listOf("native.exception"), sessionManager.getLogsForSession("crashed-session").map { it.name })
+    }
+
+  @Test
+  fun `does not duplicate the crash log when a report is reprocessed`() =
+    runTest {
+      sessionManager.startSessionWithIdAt("crashed-session", "2023-11-14T22:00:00.000Z")
+
+      attribute("crashed-session", CrashOrigin.JVM_FILE)
+      attribute("crashed-session", CrashOrigin.JVM_FILE)
+
+      assertEquals(1, sessionManager.getLogsForSession("crashed-session").size)
     }
 
   @Test
@@ -89,6 +101,7 @@ class CrashReportAttributionTest {
 
       assertNull(sessionManager.getCrashReport("never-persisted"))
       assertEquals(1, orphanCount())
+      assertEquals(0, sessionManager.getLogsForSession("never-persisted").size)
     }
 
   @Test
@@ -98,6 +111,7 @@ class CrashReportAttributionTest {
       attribute(null, CrashOrigin.JVM_FILE)
 
       assertEquals(1, orphanCount())
+      assertEquals(0, sessionManager.getLogsForSession("current").size)
     }
 
   // endregion
@@ -114,6 +128,7 @@ class CrashReportAttributionTest {
 
       assertEquals("java.lang.IllegalStateException: native", storedMessage("previous"))
       assertNull(sessionManager.getCrashReport("older"))
+      assertEquals(listOf("native.exception"), sessionManager.getLogsForSession("previous").map { it.name })
     }
 
   @Test
@@ -126,6 +141,7 @@ class CrashReportAttributionTest {
       // Never blame the live session — stored unattributed instead.
       assertNull(sessionManager.getCrashReport("current"))
       assertEquals(1, orphanCount())
+      assertEquals(0, sessionManager.getLogsForSession("current").size)
     }
 
   @Test

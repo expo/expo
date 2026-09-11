@@ -9,6 +9,8 @@ const projectRoot = getRouterE2ERoot();
 const pluginPath = '/_expo/plugins/devtools-e2e';
 
 test.describe('devtools-e2e', () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -19,7 +21,7 @@ test.describe('devtools-e2e', () => {
   });
   let output: ReturnType<typeof processCollectOutput>;
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     const startPromise = expoStart.startAsync();
 
     await expect
@@ -37,7 +39,7 @@ test.describe('devtools-e2e', () => {
     await startPromise;
   });
 
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoStart.stopAsync(true);
   });
 

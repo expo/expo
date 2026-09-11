@@ -33,9 +33,21 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
     DDLogInfo(@"Tried to route invalid url: %@", urlString);
     return;
   }
+  // An external link means the user already has a project to open, so never gate them behind onboarding.
+  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ExpoGoOnboardingFinished"];
+
   EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
   EXKernelAppRecord *destinationApp = nil;
   NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
+
+  // Strip on any change, so stray or invalid device auth params are cleared too.
+  BOOL promptRequested = [EXDeviceLoginLink promptRequestedInURL:urlToRoute];
+  NSURL *verificationURI = [EXDeviceLoginLink verificationURIFromURL:urlToRoute];
+  NSURL *strippedUrl = [EXDeviceLoginLink urlByRemovingDeviceAuthParamsFromURL:urlToRoute];
+  if (![strippedUrl isEqual:urlToRoute]) {
+    [[EXPendingDeviceLogin shared] setPending:promptRequested verificationURI:verificationURI forProjectURL:strippedUrl];
+    urlToRoute = strippedUrl;
+  }
 
   for (NSString *recordId in [appRegistry appEnumerator]) {
     EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];

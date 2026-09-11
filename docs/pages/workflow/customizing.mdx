@@ -30,7 +30,7 @@ When using [development builds](/develop/development-builds/introduction/), usin
 
 - Install the library with npm, for example: `npx expo install react-native-localize`
 - If the library includes a [config plugin](/config-plugins/introduction/), you can specify your preferred configuration in your app config.
-- Create a new development build (either [locally](/guides/local-app-development/) or with [EAS](/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas)).
+- Create a new development build (either [locally](/guides/local-app-development/) or with [EAS](/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build)).
 
 You can now use the library in your application code.
 
@@ -81,7 +81,7 @@ If you intend to write a native module primarily in C++, you may want to explore
 
 ### Creating a local module
 
-If you intend to use your native module in a single app (you can always change your mind later), we recommend [using a "local" Expo module](/modules/get-started/#creating-the-local-expo-module) to write custom native code. Local Expo Modules function similarly to [Expo Modules](/modules/overview) used by library developers and within the Expo SDK, like `expo-camera`, but they are not published on npm. Instead, you create them directly inside your project.
+If you intend to use your native module in a single app (you can always change your mind later), we recommend [using a "local" Expo module](/modules/get-started/#create-the-local-expo-module) to write custom native code. Local Expo Modules function similarly to [Expo Modules](/modules/overview) used by library developers and within the Expo SDK, like `expo-camera`, but they are not published on npm. Instead, you create them directly inside your project.
 
 Creating a local module scaffolds a Swift and Kotlin module inside the `modules` directory in your project, and these modules are automatically linked to your app.
 

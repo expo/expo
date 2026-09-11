@@ -1,0 +1,48 @@
+name: Prepare model env
+description: Set model credential env for later steps.
+
+inputs:
+  c1:
+    required: false
+    default: ''
+  c2:
+    required: false
+    default: ''
+  c3:
+    required: false
+    default: ''
+  c4:
+    required: false
+    default: ''
+  c5:
+    required: false
+    default: ''
+  fallback:
+    required: false
+    default: ''
+  model:
+    required: true
+  run_id:
+    required: false
+    default: ${{ github.run_id }}
+
+outputs:
+  slot:
+    value: ${{ steps.prep.outputs.slot }}
+
+runs:
+  using: composite
+  steps:
+    - name: Prepare model env
+      id: prep
+      shell: bash
+      env:
+        C1: ${{ inputs.c1 }}
+        C2: ${{ inputs.c2 }}
+        C3: ${{ inputs.c3 }}
+        C4: ${{ inputs.c4 }}
+        C5: ${{ inputs.c5 }}
+        C_FALLBACK: ${{ inputs.fallback }}
+        PICK_MODEL: ${{ inputs.model }}
+        PICK_RUN_ID: ${{ inputs.run_id }}
+      run: bash "${{ github.action_path }}/pick.sh"

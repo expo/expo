@@ -17,6 +17,7 @@ type CommonRecordingOptions = {
 
 type NativeRecordingOptions = {
   directory?: RecordingOptions['directory'];
+  fileName?: RecordingOptions['fileName'];
 };
 
 export function createRecordingOptions(
@@ -39,12 +40,14 @@ export function createRecordingOptions(
     return {
       ...commonOptions,
       directory: options.directory,
+      fileName: options.fileName,
       ...options.ios,
     };
   } else if (Platform.OS === 'android') {
     return {
       ...commonOptions,
       directory: options.directory,
+      fileName: options.fileName,
       ...options.android,
     };
   } else {

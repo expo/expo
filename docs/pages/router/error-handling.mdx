@@ -78,6 +78,52 @@ function Route({ ErrorBoundary, Component }) {
 
 When `ErrorBoundary` is not present, the error will be thrown to the nearest parent's `ErrorBoundary` and accepts [`error`](/versions/latest/sdk/router/#error) and [`retry`](/versions/latest/sdk/router/#retry) props.
 
+### Error boundaries for screens in a layout
+
+A screen error boundary keeps navigator UI, such as headers and tab bars, mounted when a screen throws. Configure it on a layout or navigator:
+
+```tsx src/app/_layout.tsx
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
+import { Text } from 'react-native';
+
+function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <Text onPress={retry}>Try again: {error.message}</Text>;
+}
+
+// Configure the boundary for screens in this layout and nested layouts.
+export const unstable_settings = {
+  screenErrorBoundary: ScreenErrorBoundary,
+};
+
+export default function Layout() {
+  return <Stack />;
+}
+```
+
+Alternatively, configure the boundary on the navigator:
+
+```tsx src/app/_layout.tsx
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
+import { Text } from 'react-native';
+
+function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <Text onPress={retry}>Try again: {error.message}</Text>;
+}
+
+// This prop overrides unstable_settings.screenErrorBoundary for the same screens.
+export default function Layout() {
+  return <Stack unstable_screenErrorBoundary={ScreenErrorBoundary} />;
+}
+```
+
+Expo Router applies error boundaries in the following order:
+
+1. `ErrorBoundary` exported from the screen
+2. Navigator-level prop (for example, `Stack`)
+3. `unstable_settings.screenErrorBoundary` declared in the **\_layout.tsx** file
+
+Nested layouts inherit `unstable_settings.screenErrorBoundary` unless they define their own screen error boundary. Set `screenErrorBoundary` to `null` in a nested layout to stop inheriting it.
+
 ### Work in progress
 
 React Native LogBox needs to be presented less aggressively to develop with errors. Currently, it shows for `console.error` and `console.warn`. However, it should ideally only show for uncaught errors.

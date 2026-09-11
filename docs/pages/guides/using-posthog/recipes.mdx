@@ -50,15 +50,18 @@ jobs:
         with:
           event: ota_update_published
           properties:
+            eas/account: ${{ account.name }}
+            eas/project_id: ${{ app.id }}
+            eas/workflow_id: ${{ workflow.id }}
+            eas/update_id: ${{ needs.publish.outputs.first_update_group_id }}
+            eas/runtime_version: ${{ fromJSON(needs.publish.outputs.updates_json || '[]')[0].runtimeVersion }}
             branch: main
-            runtime_version: ${{ fromJSON(needs.publish.outputs.updates_json || '[]')[0].runtimeVersion }}
-            update_group_id: ${{ needs.publish.outputs.first_update_group_id }}
 ```
 
 ### How it works
 
 1. The [`update`](/eas/workflows/pre-packaged-jobs#update) job publishes an EAS Update to the `main` branch.
-2. [`eas/posthog_capture_event`](/eas/workflows/syntax/#easposthog_capture_event) runs after it and records the deploy. Both properties come from the update job's [outputs](/eas/workflows/pre-packaged-jobs#update): the runtime version says which builds can run the update, and the update group ID points at the exact update. With the [`fingerprint` runtime version policy](/eas-update/runtime-versions/), the runtime version changes whenever your native runtime does, based on your project's [fingerprint](/versions/latest/sdk/fingerprint/).
+2. [`eas/posthog_capture_event`](/eas/workflows/syntax/#easposthog_capture_event) runs after it and records the deploy with the [standard EAS properties](/guides/using-posthog/#standard-eas-properties). `eas/account`, `eas/project_id`, and `eas/workflow_id` come from the always-available workflow contexts; `eas/update_id` and `eas/runtime_version` come from the update job's [outputs](/eas/workflows/pre-packaged-jobs#update). With the [`fingerprint` runtime version policy](/eas-update/runtime-versions/), the runtime version changes whenever your native runtime does, based on your project's [fingerprint](/versions/latest/sdk/fingerprint/).
 3. Because no `distinct_id` is set, the event is anonymous and does not create a person profile.
 
 ## Annotate a release
@@ -287,6 +290,9 @@ jobs:
         with:
           event: channel_rollout_cleared
           properties:
+            eas/account: ${{ account.name }}
+            eas/project_id: ${{ app.id }}
+            eas/workflow_id: ${{ workflow.id }}
             error_count: ${{ steps.gate.outputs.value }}
 
   widen:
@@ -336,6 +342,9 @@ jobs:
         with:
           event: feature_went_ga
           properties:
+            eas/account: ${{ account.name }}
+            eas/project_id: ${{ app.id }}
+            eas/workflow_id: ${{ workflow.id }}
             flag: new-checkout
 ```
 
@@ -367,6 +376,9 @@ jobs:
         with:
           event: kill_switch_pulled
           properties:
+            eas/account: ${{ account.name }}
+            eas/project_id: ${{ app.id }}
+            eas/workflow_id: ${{ workflow.id }}
             flag: new-checkout
 ```
 
@@ -418,6 +430,9 @@ jobs:
         with:
           event: auto_kill_switch_pulled
           properties:
+            eas/account: ${{ account.name }}
+            eas/project_id: ${{ app.id }}
+            eas/workflow_id: ${{ workflow.id }}
             flag: new-checkout
 ```
 
@@ -540,12 +555,17 @@ jobs:
       profile: production
 
   mark_release:
-    needs: [submit]
+    needs: [submit, build]
     steps:
       - uses: eas/posthog_capture_event
         with:
           event: store_build_submitted
           properties:
+            eas/account: ${{ account.name }}
+            eas/project_id: ${{ app.id }}
+            eas/workflow_id: ${{ workflow.id }}
+            eas/build_id: ${{ needs.build.outputs.build_id }}
+            eas/channel: ${{ needs.build.outputs.channel }}
             platform: ios
             profile: production
 ```
@@ -555,4 +575,4 @@ jobs:
 - **Credentials come from the connect command.** Every function defaults to the environment variables that `eas integrations:posthog:connect` sets, and each accepts an `api_key` input when you need to override them. To set them yourself, add these as [EAS environment variables](/eas/environment-variables/manage/): `EXPO_PUBLIC_POSTHOG_API_KEY` for `eas/posthog_capture_event`, and `POSTHOG_CLI_API_KEY` plus `POSTHOG_CLI_PROJECT_ID` for every other function. The [syntax reference](/eas/workflows/syntax/#easposthog_capture_event) lists the scope each function requires.
 - **A gate that times out fails the step.** `eas/posthog_wait_for_metric` and `eas/posthog_wait_for_query` have no `ignore_error` input, so a gate that never passes stops the rollout instead of letting it continue.
 - **Gates pass as soon as the condition holds.** A gate checking for a low error count can pass on its first check, including right after a deploy, before users are on the new update. Pair it with an adoption gate, like the one in [Announce a release once users adopt it](#announce-a-release-once-users-adopt-it), when you need errors to have had a chance to surface first.
-- **Scope queries to the current run.** Event and metric queries return historical data. Add a `timestamp > now() - INTERVAL ...` filter, or a property unique to this run, so an old event does not clear a gate immediately. Setting up [release tagging](/guides/using-posthog/#release-tagging) attaches `expo_update_id`, `expo_channel`, and `expo_runtime_version` to every client event, so you can filter a gate on `properties.expo_update_id` to scope it to the exact release.
+- **Scope queries to the current run.** Event and metric queries return historical data. Add a `timestamp > now() - INTERVAL ...` filter, or a property unique to this run, so an old event does not clear a gate immediately. Setting up [release tagging](/guides/using-posthog/#release-tagging) attaches `eas/update_id`, `eas/channel`, and `eas/runtime_version` to every client event, so you can filter a gate on `properties['eas/update_id']` to scope it to the exact release.

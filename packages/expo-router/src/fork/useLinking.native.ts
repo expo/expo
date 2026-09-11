@@ -1,27 +1,36 @@
-import * as ExpoLinking from 'expo-linking';
-import { type RefObject, useEffect, useCallback, useRef } from 'react';
-import { Linking, Platform } from 'react-native';
+import { type RefObject, use, useCallback, useEffect, useEffectEvent } from 'react';
+import { Linking } from 'react-native';
 
 import {
+  completeParsedState,
+  createSeededRootState,
+} from '../global-state/createSeededNavigationState';
+import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
+import {
   type LinkingOptions,
-  getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
+  type NavigationState,
   type ParamListBase,
-  useNavigationIndependentTree,
 } from '../react-navigation/native';
+import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { extractExpoPathFromURL } from './extractPathFromURL';
-
-type ResultState = ReturnType<typeof getStateFromPathDefault>;
+import { getInitialURLWithTimeout } from './getInitialURLWithTimeout';
 
 type Options = LinkingOptions<ParamListBase>;
 
 const linkingHandlers: symbol[] = [];
 
+function getInitialPath(prefixes: string[], url: string) {
+  const path = extractExpoPathFromURL(prefixes, url);
+  return path.startsWith('/') ? path : `/${path}`;
+}
+
 export function useLinking(
   ref: RefObject<NavigationContainerRef<ParamListBase>>,
   {
-    enabled = true,
     prefixes,
     filter,
     config,
@@ -47,41 +56,31 @@ export function useLinking(
       };
     },
     getStateFromPath = getStateFromPathDefault,
-    getActionFromState = getActionFromStateDefault,
-  }: Options,
-  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
+  }: Options
 ) {
-  const independent = useNavigationIndependentTree();
+  const routerConfig = use(RouterConfigContext);
+  const enqueue = useEnqueueRoutingIntent();
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       return undefined;
     }
 
-    if (independent) {
-      return undefined;
-    }
-
-    if (enabled !== false && linkingHandlers.length) {
-      // TODO(@ubax): This check should be removed
-      if (linkingHandlers.length > 1) {
-        console.error(
-          [
-            'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-            "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-            '- Only a single instance of the root component is rendered',
-          ]
-            .join('\n')
-            .trim()
-        );
-      }
+    if (linkingHandlers.length) {
+      console.error(
+        [
+          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
+          "- You don't have multiple NavigationContainers in the app",
+          '- Only a single instance of the root component is rendered',
+        ]
+          .join('\n')
+          .trim()
+      );
     }
 
     const handler = Symbol();
 
-    if (enabled !== false) {
-      linkingHandlers.push(handler);
-    }
+    linkingHandlers.push(handler);
 
     return () => {
       const index = linkingHandlers.indexOf(handler);
@@ -90,71 +89,46 @@ export function useLinking(
         linkingHandlers.splice(index, 1);
       }
     };
-  }, [enabled, independent]);
+  }, []);
 
-  // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
-  // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
-  // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  const enabledRef = useRef(enabled);
-  const prefixesRef = useRef(prefixes);
-  const filterRef = useRef(filter);
-  const configRef = useRef(config);
-  const getInitialURLRef = useRef(getInitialURL);
-  const getStateFromPathRef = useRef(getStateFromPath);
-  const getActionFromStateRef = useRef(getActionFromState);
-
-  useEffect(() => {
-    enabledRef.current = enabled;
-    prefixesRef.current = prefixes;
-    filterRef.current = filter;
-    configRef.current = config;
-    getInitialURLRef.current = getInitialURL;
-    getStateFromPathRef.current = getStateFromPath;
-    getActionFromStateRef.current = getActionFromState;
-  });
-
-  const getStateFromURL = useCallback(
-    (url: string | null | undefined) => {
-      if (!url || (filterRef.current && !filterRef.current(url))) {
-        return undefined;
-      }
-
-      const path = extractExpoPathFromURL(prefixesRef.current, url);
-
-      return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
-    },
-
-    []
-  );
-
-  const getInitialState = useCallback(() => {
-    let state: ResultState | undefined;
-
-    if (enabledRef.current) {
-      const url = getInitialURLRef.current();
-
-      if (url != null) {
-        if (typeof url !== 'string') {
-          return url.then((url) => {
-            const state = getStateFromURL(url);
-
-            if (typeof url === 'string') {
-              // If the link were handled, it gets cleared in NavigationContainer
-              onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
-            }
-
-            return state;
-          });
-        } else {
-          onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
-        }
-      }
-
-      state = getStateFromURL(url);
+  const getStateFromURL = useEffectEvent((url: string | null | undefined) => {
+    if (!url || (filter && !filter(url))) {
+      return undefined;
     }
 
+    const path = extractExpoPathFromURL(prefixes, url);
+    if (path !== undefined) {
+      // TODO(@ubax): check if this is performant
+      // TODO(@ubax): check if ref.current?.getRootState() can be replaced with the context read
+      const segments = getRouteInfoFromState(ref.current?.getRootState()).segments;
+      return getStateFromPath(path, config, segments);
+    }
+    return undefined;
+  });
+
+  const getInitialState = useCallback(() => {
+    const url = getInitialURL();
+    const createInitialState = (url: string | null | undefined) => {
+      let parsedState;
+      if (url && (!filter || filter(url))) {
+        const path = getInitialPath(prefixes, url);
+        parsedState = getStateFromPath(path, config);
+      }
+
+      const routeNode = routerConfig?.routeNode;
+      return routeNode
+        ? createSeededRootState(parsedState, routeNode)
+        : completeParsedState(parsedState, ROOT_CHAIN);
+    };
+
+    if (url != null && typeof url !== 'string') {
+      return url.then(createInitialState);
+    }
+
+    const state = createInitialState(url);
+
     const thenable = {
-      then(onfulfilled?: (state: ResultState | undefined) => void) {
+      then(onfulfilled?: (state: NavigationState | undefined) => void) {
         return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
       },
       catch() {
@@ -162,69 +136,36 @@ export function useLinking(
       },
     };
 
-    return thenable as PromiseLike<ResultState | undefined>;
-  }, [getStateFromURL, onUnhandledLinking, prefixes]);
+    return thenable as PromiseLike<NavigationState | undefined>;
+  }, [config, filter, getInitialURL, getStateFromPath, prefixes, routerConfig]);
 
   useEffect(() => {
     const listener = (url: string) => {
-      if (!enabled) {
-        return;
-      }
-
       const navigation = ref.current;
+      const path = getInitialPath(prefixes, url);
       const state = navigation ? getStateFromURL(url) : undefined;
 
       if (navigation && state) {
-        // If the link were handled, it gets cleared in NavigationContainer
-        onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
         const rootState = navigation.getRootState();
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
           return;
         }
 
-        const action = getActionFromStateRef.current(state, configRef.current);
-
-        if (action !== undefined) {
-          try {
-            navigation.dispatch(action);
-          } catch (e) {
-            // Ignore any errors from deep linking.
-            // This could happen in case of malformed links, navigation object not being initialized etc.
-            console.warn(
-              `An error occurred when trying to handle the link '${url}': ${
-                typeof e === 'object' && e != null && 'message' in e ? e.message : e
-              }`
-            );
-          }
-        } else {
-          navigation.resetRoot(state);
-        }
+        enqueue({
+          type: 'NAVIGATE_TO_HREF',
+          payload: {
+            href: path,
+            originalHref: url,
+            options: { event: 'NAVIGATE' },
+          },
+        });
       }
     };
 
     return subscribe(listener);
-  }, [enabled, getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
+  }, [enqueue, prefixes, ref, subscribe]);
 
   return {
     getInitialState,
   };
-}
-
-export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
-  if (typeof window === 'undefined') {
-    return '';
-  } else if (Platform.OS === 'ios') {
-    // Use the new Expo API for iOS. This has better support for App Clips and handoff.
-    return ExpoLinking.getLinkingURL();
-  }
-
-  return Promise.race([
-    // TODO: Phase this out in favor of expo-linking on Android.
-    Linking.getInitialURL(),
-    new Promise<null>((resolve) =>
-      // Timeout in 150ms if `getInitialState` doesn't resolve
-      // Workaround for https://github.com/facebook/react-native/issues/25675
-      setTimeout(() => resolve(null), 150)
-    ),
-  ]);
 }

@@ -1,6 +1,7 @@
 package expo.modules.updates.loader
 
 import android.content.Context
+import androidx.room.withTransaction
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
@@ -17,6 +18,7 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -164,21 +166,32 @@ abstract class Loader protected constructor(
       database.updateDao().setUpdateScopeKey(existingUpdateEntity, newUpdateEntity.scopeKey)
     }
 
-    if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
+    // A READY update with no launch asset is not actually ready. Fall through to
+    // downloadAllAssets so its assets are re-registered instead of staying broken forever.
+    if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY &&
+      database.updateDao().loadLaunchAssetForUpdate(existingUpdateEntity.id) != null
+    ) {
       // hooray, we already have this update downloaded and ready to go!
       updateEntity = existingUpdateEntity
       return finish()
     } else {
+      val insertUpdateEntityOnFinish: Boolean
       if (existingUpdateEntity == null) {
-        // no update already exists with this ID, so we need to insert it and download everything.
+        // no update already exists with this ID, so we need to download everything.
         updateEntity = newUpdateEntity
-        database.updateDao().insertUpdate(updateEntity!!)
+        // EMBEDDED is already in the launchable set, so a row inserted before its launch asset exists
+        // gets picked as launchable and then fails every launch.
+        insertUpdateEntityOnFinish = newUpdateEntity.status == UpdateStatus.EMBEDDED
+        if (!insertUpdateEntityOnFinish) {
+          database.updateDao().insertUpdate(updateEntity!!)
+        }
       } else {
         // we've already partially downloaded the update, so we should use the existing entity.
         // however, it's not ready, so we should try to download all the assets again.
         updateEntity = existingUpdateEntity
+        insertUpdateEntityOnFinish = false
       }
-      return downloadAllAssets(update)
+      return downloadAllAssets(update, insertUpdateEntityOnFinish)
     }
   }
 
@@ -188,7 +201,7 @@ abstract class Loader protected constructor(
     ERRORED
   }
 
-  private suspend fun downloadAllAssets(update: Update): LoaderResult {
+  private suspend fun downloadAllAssets(update: Update, insertUpdateEntityOnFinish: Boolean): LoaderResult {
     val assetList = update.assetEntityList.distinctBy { it.key }
     assetTotal = assetList.size
 
@@ -235,26 +248,34 @@ abstract class Loader protected constructor(
     assetDownloadJobs.awaitAll()
 
     try {
-      for (asset in existingAssetList) {
-        val existingAssetFound = database.assetDao()
-          .addExistingAssetToUpdate(updateEntity!!, asset, asset.isLaunchAsset)
-        if (!existingAssetFound) {
-          // the database and filesystem have gotten out of sync
-          // do our best to create a new entry for this file even though it already existed on disk
-          // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
-          var hash: ByteArray? = null
-          try {
-            hash = UpdatesUtils.sha256(File(updatesDirectory, asset.relativePath))
-          } catch (_: Exception) {
-          }
-          asset.downloadTime = Date()
-          asset.hash = hash
-          finishedAssetList.add(asset)
+      database.withTransaction {
+        if (insertUpdateEntityOnFinish) {
+          database.updateDao().insertUpdate(updateEntity!!)
         }
-      }
 
-      database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
-      database.updateDao().markUpdateFinished(updateEntity!!)
+        for (asset in existingAssetList) {
+          val existingAssetFound = database.assetDao()
+            .addExistingAssetToUpdate(updateEntity!!, asset, asset.isLaunchAsset)
+          if (!existingAssetFound) {
+            // the database and filesystem have gotten out of sync
+            // do our best to create a new entry for this file even though it already existed on disk
+            // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
+            var hash: ByteArray? = null
+            try {
+              hash = UpdatesUtils.sha256(File(updatesDirectory, asset.relativePath))
+            } catch (_: Exception) {
+            }
+            asset.downloadTime = Date()
+            asset.hash = hash
+            finishedAssetList.add(asset)
+          }
+        }
+
+        database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
+        database.updateDao().markUpdateFinished(updateEntity!!)
+      }
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       throw IOException("Error while adding new update to database", e)
     }

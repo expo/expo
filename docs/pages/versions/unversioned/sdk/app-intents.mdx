@@ -1,0 +1,450 @@
+---
+title: AppIntents
+description: A library for exposing Apple App Intents, Siri, Shortcuts, Spotlight, and Apple Intelligence entry points from Expo apps.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-app-intents'
+packageName: 'expo-app-intents'
+platforms: ['ios', 'tvos', 'macos']
+isAlpha: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample } from '~/ui/components/ConfigSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **This library is currently in [alpha](/more/release-statuses/#alpha) and will frequently experience breaking changes.**
+
+`expo-app-intents` exposes Apple App Intents from your app. It keeps the intent declarations in Swift [inline modules](/modules/inline-modules-reference/) so Apple's build-time metadata extraction can find them. The package provides the JavaScript API, native invocation queue, entity storage, config plugin, and a starter **app-intents** directory for native inline module code.
+
+You cannot create App Intent types dynamically from JavaScript at runtime. Declare the `AppIntent` types you need in Swift. Parameterized intents also require `AppEntity` and `EntityQuery` types. If your app exposes shortcut phrases, you usually declare an `AppShortcutsProvider`. You can leave it out when your app does not use shortcut phrases, such as when it exposes only schema intents. Use this package to deliver invocations to JavaScript and keep dynamic entity values in sync.
+
+## Limitations
+
+With `expo-app-intents`, you can implement many Apple Intelligence features. The package does not currently support [on-screen intelligence](https://developer.apple.com/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri).
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+The initializer writes the required configuration for you:
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-app-intents"],
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": ["app-intents"]
+      }
+    }
+  }
+}
+```
+
+</ConfigPluginExample>
+
+If you use a directory other than **app-intents**, pass the same directory name to the config plugin:
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-app-intents", { "directory": "siri" }]],
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": ["siri"]
+      }
+    }
+  }
+}
+```
+
+</ConfigPluginExample>
+
+## How it works
+
+App Intents differ from most Expo APIs because Apple discovers them at build time. Compile the Swift types that describe your intents, entities, queries, and shortcut phrases into the app target. Xcode's App Intents metadata processor can then extract them. `expo-app-intents` uses Expo inline modules for this app-target Swift and provides an Expo package for the JavaScript API, native storage, and event delivery.
+
+Expo inline modules watch the generated **app-intents** directory, which contains your app-owned Swift code:
+
+- **AppShortcuts.swift** defines your concrete `AppShortcutsProvider` when the selected examples use shortcut phrases. Shortcut phrases are static metadata. The build compiles them into the app, and JavaScript cannot add them dynamically.
+- **AppIntentsSetup.swift** contains the app-target setup required by the selected features. When the app has an `AppShortcutsProvider`, this file connects `AppShortcuts.updateAppShortcutParameters()` to the `expo-app-intents` runtime.
+- The remaining Swift files define concrete `AppIntent`, `AppEntity`, and `EntityQuery` types. They compile into the app target. Expo registers a file as a module only when it contains an Expo module definition.
+
+When an intent runs, complete the native work that Siri or Shortcuts expects in its `perform()` method. Then dispatch the intent to JavaScript:
+
+```swift
+await AppIntentDispatcher.shared.dispatch(
+  name: "orderFood",
+  params: ["dishId": .string(dish.id), "dishName": .string(dish.name)]
+)
+```
+
+`AppIntentDispatcher` is a Swift actor. It records the invocation in native storage first. If the JavaScript runtime is already observing, it then emits an `onIntent` event. This process provides at-least-once delivery. Handle each invocation by `id`, and call `removePendingInvocationAsync(id)` after applying the action.
+
+If Siri or Shortcuts runs while JavaScript is not running, the invocation stays in the pending queue. When your app starts, `useAppIntents()` calls your handler with the current pending invocations and sets `newIntent` to `null`. Each live invocation calls the handler again with the new invocation. You can also read the queue with `getPendingInvocationsAsync()`.
+
+Parameterized intents use native entities. For example, the restaurant template defines `DishEntity` and `DishQuery` in Swift. JavaScript supplies the current dish list with `setEntityCatalogAsync('dish', dishes)`. The native query reads that catalog through `AppIntentEntityStore.shared`, so Siri and Shortcuts can resolve spoken values by identifier, title, or synonym. Calling `setEntityCatalogAsync()` replaces the catalog and requests a shortcut parameter refresh. Call it again whenever those values change.
+
+Schema intents, such as the mail example, are also defined in app-target Swift. Apple divides [app schema domains](https://developer.apple.com/documentation/appintents/app-schema-domains) into two groups. Apple Intelligence and Siri can discover types that conform to a _primary_ domain, such as `mail`, `photos`, or `files`. _Shortcuts-specific_ domains, such as `journal`, `books`, or `reader`, appear only in the Shortcuts app.
+
+A schema intent does not need a shortcut phrase. Its schema conformance makes it discoverable. Xcode extracts the App Intents metadata at build time, so Siri and the Shortcuts app can use the action without an entry in your `AppShortcutsProvider`. The mail example therefore contributes no `AppShortcut`. If none of the examples you select contributes one, the initializer does not write **AppShortcuts.swift**.
+
+Xcode rejects an `AppShortcutsProvider` whose `appShortcuts` body contains no `AppShortcut` with the error `'AppShortcutsProvider' property 'appShortcuts' requires builder syntax`. Add **AppShortcuts.swift** when you have a phrase to declare.
+
+Add an `AppShortcut` only when you want a compiled launch phrase such as "Order food in MyApp". You cannot add phrases conditionally, so a provider that references an availability-gated intent must use the same availability. In this case, consider writing a plain wrapper intent.
+
+The system must also be able to resolve a schema entity. Its default query must be an `EntityStringQuery`, or the entity must be indexed. Xcode rejects a plain `EntityQuery` when it extracts App Intents metadata.
+
+## Native Swift concepts
+
+The initializer provides working Swift examples, but the intent declarations belong to your app. The following sections describe the main native pieces you use to adapt the examples or write your own intents.
+
+### Dispatch an invocation to JavaScript
+
+An intent's `perform()` method produces the result Siri or Shortcuts expects in Swift. Call `AppIntentDispatcher.shared.dispatch()` to also record an invocation for JavaScript:
+
+```swift
+import AppIntents
+internal import ExpoAppIntents
+
+struct SaveNoteIntent: AppIntent {
+  static let title: LocalizedStringResource = "Save Note"
+  static let openAppWhenRun = true
+
+  @Parameter(title: "Text")
+  var text: String
+
+  @MainActor
+  func perform() async throws -> some IntentResult & ProvidesDialog {
+    await AppIntentDispatcher.shared.dispatch(
+      name: "saveNote",
+      params: ["text": .string(text)]
+    )
+
+    return .result(dialog: "Your note was saved.")
+  }
+}
+```
+
+Dispatching is one-way. It saves the invocation and returns without waiting for JavaScript because the intent may run while your app is closed. Return dialogs, values, or other system-facing results from Swift. Use the JavaScript handler to update your app's state when it runs.
+
+`params` accepts JSON-compatible `AppIntentValue` values:
+
+| Swift value                         | JavaScript value |
+| ----------------------------------- | ---------------- |
+| `.string(String)`                   | `string`         |
+| `.int(Int)` and `.double(Double)`   | `number`         |
+| `.bool(Bool)`                       | `boolean`        |
+| `.array([AppIntentValue])`          | array            |
+| `.object([String: AppIntentValue])` | object           |
+| `.null`                             | `null`           |
+
+The value type also supports Swift literals, so you can use values such as `"note"`, `1`, `true`, arrays, and dictionaries directly.
+
+### Read dynamic entities in Swift
+
+Publish current entity values from JavaScript with `setEntityCatalogAsync()`. Your Swift `EntityQuery` reads the same catalog through `AppIntentEntityStore.shared`:
+
+```swift
+struct NoteQuery: EntityStringQuery {
+  func entities(for identifiers: [String]) async throws -> [NoteEntity] {
+    return try await AppIntentEntityStore.shared
+      .entities(ofKind: "note", matching: identifiers)
+      .map(NoteEntity.init(record:))
+  }
+
+  func suggestedEntities() async throws -> [NoteEntity] {
+    return try await AppIntentEntityStore.shared
+      .entities(ofKind: "note")
+      .map(NoteEntity.init(record:))
+  }
+}
+```
+
+The kind string must match the value passed to `setEntityCatalogAsync()`. Each `AppIntentEntityRecord` contains an `id` and a display `title`. It can also contain a `subtitle` and `synonyms`. Convert the record into your concrete `AppEntity` in an initializer such as `init(record:)`. The device stores catalogs, so keep them compact and publish only the values Siri and Shortcuts need.
+
+### Add shortcut phrases when needed
+
+Use an `AppShortcutsProvider` when you want compiled launch phrases such as "Save a note in MyApp".
+
+## Usage
+
+After installing the package, run the initializer from your project root:
+
+<Terminal cmd={['$ npx expo-app-intents init']} />
+
+The command adds the config plugin, enables inline modules for the top-level **app-intents** directory, and writes starter Swift files.
+
+The command also asks which examples to include and preselects only `minimal`. This option writes the setup module without intents, shortcut phrases, or any of the examples below. Pass `--examples` to choose examples without the prompt. This flag is also the only way to select them in a non-interactive run:
+
+<Terminal cmd={['$ npx expo-app-intents init --examples counter restaurant mail']} />
+
+`--examples` accepts `minimal`, `counter`, `restaurant`, `mail`, or `all`. The `all` option selects the three examples described on this page. The command runs non-interactively when `CI` is set to `1` or `true`, `EXPO_NONINTERACTIVE` has a value, or standard input is not attached to an interactive terminal. In these cases, the command scaffolds `minimal` without prompting.
+
+`init` keeps any Swift files that are already in the selected directory. If you run it again to add another example, review the command's warnings before rebuilding. Some existing files may need a small manual update.
+
+Pass `--dir` to generate the module in a directory other than **app-intents**. The initializer writes the same directory name to the config plugin and to the watched directories:
+
+<Terminal cmd={['$ npx expo-app-intents init --dir siri']} />
+
+Keep the App Intents directory at the project root, like the default **app-intents** directory. This location keeps the native declarations easy to find and separate from the rest of the app.
+
+Then rebuild the native project:
+
+<Terminal cmd={['$ npx expo prebuild -p ios', '$ npx expo run:ios']} />
+
+Your app is now set up to use App Intents. Depending on the selected examples, you can add handlers or populate the App Intents from JavaScript:
+
+<Collapsible summary="Handle the counter example">
+
+The counter example dispatches an `increaseCounter` invocation. Mount the hook once near the root of your app. It can then process pending invocations captured while JavaScript was not running and live invocations received while the app is running.
+
+Delivery is at-least-once, so the same invocation can reach your handler more than once. An invocation stays in the pending queue until `removePendingInvocationAsync(id)` completes successfully. Each live invocation delivers a fresh snapshot of that queue.
+
+Keep the identifiers of invocations you have already applied in a ref and skip them. The restaurant and mail examples use the same guard. A ref deduplicates invocations only within one session. If `removePendingInvocationAsync()` fails, the invocation remains pending on the next launch and your handler applies it again. Persist the handled identifiers when you cannot safely reapply an action. The queue holds at most 100 invocations and drops the oldest to make room. An app that never removes invocations eventually loses them.
+
+```tsx
+import { useRef, useState } from 'react';
+import { Text, View } from 'react-native';
+import * as AppIntents from 'expo-app-intents';
+
+export function CounterIntentHandler() {
+  const [count, setCount] = useState(0);
+  const [lastIntentId, setLastIntentId] = useState<string | null>(null);
+  const handledIds = useRef(new Set<string>());
+
+  AppIntents.useAppIntents(async pendingIntents => {
+    for (const invocation of pendingIntents) {
+      if (invocation.name !== 'increaseCounter' || handledIds.current.has(invocation.id)) {
+        continue;
+      }
+      handledIds.current.add(invocation.id);
+
+      setCount(value => value + 1);
+      setLastIntentId(invocation.id);
+      await AppIntents.removePendingInvocationAsync(invocation.id);
+    }
+  });
+
+  return (
+    <View>
+      <Text>Counter: {count}</Text>
+      {lastIntentId ? <Text>Last opened by Siri: {lastIntentId}</Text> : null}
+    </View>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Handle the restaurant example">
+
+The restaurant example uses a dynamic `dish` entity catalog. Seed the catalog from JavaScript after the app starts, and then handle `orderFood` invocations. Calling `setEntityCatalogAsync()` replaces the native catalog and refreshes shortcut parameters. Siri and Shortcuts can then resolve dishes by identifier, title, or synonym. Handle a rejected promise so a failed catalog update appears in your logs instead of becoming an unhandled rejection.
+
+```tsx
+import { useEffect, useRef, useState } from 'react';
+import { Text, View } from 'react-native';
+import * as AppIntents from 'expo-app-intents';
+
+const dishes = [
+  { id: 'margherita-pizza', title: 'Margherita Pizza', synonyms: ['margherita', 'pizza'] },
+  { id: 'spaghetti-carbonara', title: 'Spaghetti Carbonara', synonyms: ['carbonara'] },
+  { id: 'tiramisu', title: 'Tiramisu', synonyms: ['dessert'] },
+];
+
+export function RestaurantIntentHandler() {
+  const [latestOrder, setLatestOrder] = useState<string | null>(null);
+  const handledIds = useRef(new Set<string>());
+
+  useEffect(() => {
+    AppIntents.setEntityCatalogAsync('dish', dishes).catch(error =>
+      console.warn('Could not publish the dish catalog.', error)
+    );
+  }, []);
+
+  AppIntents.useAppIntents(async pendingIntents => {
+    for (const invocation of pendingIntents) {
+      if (invocation.name !== 'orderFood' || handledIds.current.has(invocation.id)) {
+        continue;
+      }
+      handledIds.current.add(invocation.id);
+
+      setLatestOrder(String(invocation.params.dishName || invocation.params.dishId));
+      await AppIntents.removePendingInvocationAsync(invocation.id);
+    }
+  });
+
+  return (
+    <View>
+      <Text>{latestOrder ? `Latest order: ${latestOrder}` : 'No orders yet.'}</Text>
+    </View>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Handle the mail example">
+
+The mail example adopts Apple's `mail` schema domain and has no shortcut phrases. You can reach both intents through Siri, Apple Intelligence, or the Shortcuts app. `createMailDraft` sends `id`, `subject`, `body`, `recipients`, and `attachmentCount`. `deleteMailDrafts` sends an `ids` array. Because deleting is destructive, the schema requires local device authentication and displays a confirmation before the intent runs.
+
+`DeleteDraftIntent` takes an array of `MailDraftEntity` values, so one invocation can delete several drafts. `MailDraftEntityQuery` resolves those entities from the `mailDraft` catalog. Publish the catalog whenever your drafts change. Otherwise, Siri and the Shortcuts app cannot offer a draft, and the delete intent cannot run. Each record maps `title` to the subject and `subtitle` to the body. Native storage preserves the catalog across restarts, so do not publish an empty catalog before your drafts load.
+
+Give every record a non-empty `title`. `setEntityCatalogAsync()` rejects a catalog when any entity has an empty `id` or `title` because Siri cannot resolve the entity. The rejection discards the entire update and keeps the previous catalog. A draft created without a subject provides an empty `subject` string instead of `undefined`. Use `||` instead of `??` for the fallback because `??` preserves the empty string.
+
+```tsx
+import { useEffect, useRef, useState } from 'react';
+import { FlatList, Text } from 'react-native';
+import * as AppIntents from 'expo-app-intents';
+
+type MailDraft = {
+  id: string;
+  subject: string;
+  body: string;
+};
+
+export function MailIntentHandler() {
+  const [drafts, setDrafts] = useState<MailDraft[]>([]);
+  const handledIds = useRef(new Set<string>());
+  const hasPublished = useRef(false);
+
+  useEffect(() => {
+    // The native catalog outlives the app, but `drafts` starts empty, so publishing on the
+    // first render would clear a catalog written by an earlier launch. Wait for a draft.
+    if (drafts.length === 0 && !hasPublished.current) {
+      return;
+    }
+    hasPublished.current = true;
+
+    AppIntents.setEntityCatalogAsync(
+      'mailDraft',
+      drafts.map(draft => ({ id: draft.id, title: draft.subject, subtitle: draft.body }))
+    ).catch(error => console.warn('Could not publish the mail draft catalog.', error));
+  }, [drafts]);
+
+  AppIntents.useAppIntents(async pendingIntents => {
+    for (const invocation of pendingIntents) {
+      const isMailIntent =
+        invocation.name === 'createMailDraft' || invocation.name === 'deleteMailDrafts';
+
+      if (!isMailIntent || handledIds.current.has(invocation.id)) {
+        continue;
+      }
+      handledIds.current.add(invocation.id);
+
+      if (invocation.name === 'createMailDraft') {
+        const body = String(invocation.params.body ?? '');
+        const draft = {
+          id: String(invocation.params.id || invocation.id),
+          // Use `||`, not `??`: a draft with no subject arrives as an empty string.
+          subject: String(invocation.params.subject || body.slice(0, 40) || 'No subject'),
+          body,
+        };
+
+        setDrafts(current => [draft, ...current]);
+      } else {
+        const ids = new Set((invocation.params.ids as string[] | undefined) ?? []);
+
+        setDrafts(current => current.filter(draft => !ids.has(draft.id)));
+      }
+
+      await AppIntents.removePendingInvocationAsync(invocation.id);
+    }
+  });
+
+  return (
+    <FlatList
+      data={drafts}
+      keyExtractor={draft => draft.id}
+      renderItem={({ item }) => (
+        <Text>
+          {item.subject}: {item.body}
+        </Text>
+      )}
+    />
+  );
+}
+```
+
+</Collapsible>
+
+```tsx Basic example
+import * as AppIntents from 'expo-app-intents';
+
+export function AppIntentHandler() {
+  AppIntents.useAppIntents(async (pendingIntents, newIntent) => {
+    for (const invocation of pendingIntents) {
+      switch (invocation.name) {
+        case 'increaseCounter':
+          console.log('Increase counter:', invocation.id === newIntent?.id);
+          break;
+        case 'orderFood':
+          console.log('Dish:', invocation.params.dishName, invocation.id === newIntent?.id);
+          break;
+      }
+
+      await AppIntents.removePendingInvocationAsync(invocation.id);
+    }
+  });
+
+  return null;
+}
+```
+
+Provide dynamic values for parameterized intents from JavaScript:
+
+```ts
+await AppIntents.setEntityCatalogAsync('dish', [
+  { id: 'margherita-pizza', title: 'Margherita Pizza', synonyms: ['margherita', 'pizza'] },
+  { id: 'spaghetti-carbonara', title: 'Spaghetti Carbonara', synonyms: ['carbonara'] },
+]);
+```
+
+The generated entity queries read these values through `await AppIntentEntityStore.shared.entities(ofKind:)`. Siri and Shortcuts can then offer and resolve them as intent parameters.
+
+Classic App Shortcut phrases can interpolate at most one non-array parameter. The generated restaurant order example declares four phrases:
+
+```swift
+"Place an order in \(.applicationName)",
+"Order food in \(.applicationName)",
+"Order \(\.$dish) in \(.applicationName)",
+"Place an order for \(\.$dish) in \(.applicationName)"
+```
+
+The first two phrases do not interpolate a parameter, so Siri asks which dish you want. The last two interpolate the `dish` parameter. This parameter lets Siri run a one-shot command such as "Order Tiramisu in MyApp". Parameterized phrases can create pre-filled tiles in Shortcuts. If an older build created a tile that uses stale parameter values, delete it so iOS can recreate it from the current app metadata.
+
+## Platform constraints
+
+- The native runtime supports iOS 16.4 and later, tvOS 16.4 and later, and macOS 13.4 and later. `expo-app-intents` is not available in Expo Go.
+- The initializer, bundled examples, and build commands on this page focus on iOS. Individual App Intents APIs and schema domains can require newer operating-system versions or be unavailable on other Apple platforms.
+- App Shortcut phrases are compiled into the app and cannot be added dynamically from JavaScript.
+- Every App Shortcut phrase must include `\(.applicationName)`.
+- A single App Shortcut phrase can interpolate at most one non-array parameter.
+- Apps can define at most 10 App Shortcuts.
+- Schema examples require iOS 18 or later and must match one of Apple's [supported App Intent domains](https://developer.apple.com/documentation/appintents/app-schema-domains). Only primary domains are discoverable by Apple Intelligence and Siri.
+- Some schemas require a newer iOS version than their domain. For example, `.mail.openDraft` and `.system.open` require iOS 27 or later.
+
+## Additional resources
+
+Start with the counter example generated by `npx expo-app-intents init`. It demonstrates the basic connection between the JavaScript and Swift runtimes. Then use the restaurant and mail examples to learn about dynamic entities and schema intents.
+
+Use the following Apple resources to learn more about App Intent development:
+
+- [Accelerating app interactions with App Intents](https://developer.apple.com/documentation/appintents/acceleratingappinteractionswithappintents)
+- [Code-along: Make your app available to Siri](https://developer.apple.com/videos/play/wwdc2026/344/)
+- [Making actions and content discoverable by Apple Intelligence](https://developer.apple.com/documentation/AppIntents/making-actions-and-content-discoverable-by-apple-intelligence)
+
+## API
+
+```ts
+import * as AppIntents from 'expo-app-intents';
+```
+
+<APISection packageName="expo-app-intents" apiName="AppIntents" />

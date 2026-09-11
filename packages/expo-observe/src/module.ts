@@ -1,12 +1,12 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics from 'expo-app-metrics';
+import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
-import type { ObserveConfig, ObserveModule } from './types';
+import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
 
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
 
@@ -14,6 +14,10 @@ const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
     if (prop === 'configure') {
       return (config: ObserveConfig) => {
+        // The handler is already installed at this point (it installs on import), so this only
+        // toggles whether it records anything.
+        setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
+
         const routerEnabled = !!config.integrations?.['expo-router'];
         const reactNavigationEnabled = !!config.integrations?.['react-navigation'];
 
@@ -52,6 +56,13 @@ const Observe: ObserveModule = new Proxy(native, {
       return (error: unknown) => reportCaughtError(error);
     }
 
+    if (prop === 'registerIntegration') {
+      return <K extends keyof ObserveIntegrationsConfig>(
+        name: K,
+        callback: (config: ObserveIntegrationsConfig[K]) => void
+      ) => registerIntegrationImpl(target, name, callback);
+    }
+
     // On Android, the native module is a JSI host object, so `prop in target` (and `hasOwnProperty`) report
     // `true` for names it doesn't implement — a host object has no `has` hook. `Object.keys(target)`
     // goes through `getPropertyNames`, which lists the module's actual members, so use it to forward
@@ -62,5 +73,26 @@ const Observe: ObserveModule = new Proxy(native, {
     return Reflect.get(target, prop, receiver);
   },
 });
+
+export function registerIntegrationImpl<K extends keyof ObserveIntegrationsConfig>(
+  target: Pick<ObserveModule, 'addListener' | 'getIntegrations'>,
+  name: K,
+  callback: (config: ObserveIntegrationsConfig[K]) => void
+): void {
+  const integrations = target.getIntegrations();
+  if (integrations) {
+    if (integrations[name]) {
+      callback(integrations[name]);
+    }
+    return;
+  }
+
+  const subscription = target.addListener('configure', ({ integrations }) => {
+    subscription.remove();
+    if (integrations?.[name]) {
+      callback(integrations[name]);
+    }
+  });
+}
 
 export default Observe;

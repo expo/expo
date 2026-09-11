@@ -58,7 +58,7 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
     maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
-    Child(UIComposableScope(), itemIndex)
+    Child(CarouselItemComposableScope(this), itemIndex)
   }
 }
 
@@ -98,7 +98,7 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
     maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
-    Child(UIComposableScope(), itemIndex)
+    Child(CarouselItemComposableScope(this), itemIndex)
   }
 }
 
@@ -132,6 +132,6 @@ fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: Horizo
     userScrollEnabled = props.userScrollEnabled ?: true,
     contentPadding = contentPadding
   ) { itemIndex ->
-    Child(UIComposableScope(), itemIndex)
+    Child(CarouselItemComposableScope(this), itemIndex)
   }
 }

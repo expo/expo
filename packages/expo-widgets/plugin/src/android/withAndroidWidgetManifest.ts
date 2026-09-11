@@ -1,11 +1,11 @@
 import { AndroidConfig, ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 
+import { WidgetConfig } from '../types/WidgetConfig.type';
 import {
   getProviderClassName,
   getWidgetDisplayNameResourceName,
   getWidgetInfoResourceName,
 } from './resourceNames';
-import { WidgetConfig } from '../types/WidgetConfig.type';
 
 const EXPO_WIDGETS_INTERACTION_ACTION = 'expo.modules.widgets.ACTION_WIDGET_INTERACTION';
 const EXPO_WIDGETS_NAME_METADATA = 'expo.modules.widgets.NAME';

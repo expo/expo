@@ -30,10 +30,13 @@ import {
 } from './utils/packageInstaller';
 import { normalizeProjectRootAsync } from './utils/projectRoot';
 
-const packageJSON = require('../package.json');
+let packageJSON = null;
+try {
+  packageJSON = require('install-expo-modules/package.json');
+} catch {}
 
-const program = new Command(packageJSON.name)
-  .version(packageJSON.version)
+const program = new Command(packageJSON?.name ?? 'install-expo-modules')
+  .version(packageJSON?.version ?? '0.0.0')
   .arguments('[project-directory]')
   .usage(`${chalk.green('[project-directory]')} [options]`)
   .description('Install expo-modules into your project')

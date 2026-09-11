@@ -15,6 +15,7 @@ import {
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesExcludeFromBackup,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
   FINGERPRINT_RUNTIME_VERSION_SENTINEL,
@@ -151,21 +152,17 @@ describe(getAppVersion, () => {
   });
   it('returns the platform-specific version when it is set', () => {
     expect(getAppVersion({ version: '2.0.0', ios: { version: '3.1.0' } }, 'ios')).toBe('3.1.0');
-    expect(
-      getAppVersion({ version: '2.0.0', android: { version: '4.2.0' } }, 'android')
-    ).toBe('4.2.0');
+    expect(getAppVersion({ version: '2.0.0', android: { version: '4.2.0' } }, 'android')).toBe(
+      '4.2.0'
+    );
   });
   it('falls back to top-level version when the platform-specific override is unset', () => {
     expect(getAppVersion({ version: '2.0.0' }, 'ios')).toBe('2.0.0');
     expect(getAppVersion({ version: '2.0.0' }, 'android')).toBe('2.0.0');
   });
   it('does not cross platforms — ios override does not affect android and vice versa', () => {
-    expect(getAppVersion({ version: '2.0.0', ios: { version: '3.1.0' } }, 'android')).toBe(
-      '2.0.0'
-    );
-    expect(
-      getAppVersion({ version: '2.0.0', android: { version: '4.2.0' } }, 'ios')
-    ).toBe('2.0.0');
+    expect(getAppVersion({ version: '2.0.0', ios: { version: '3.1.0' } }, 'android')).toBe('2.0.0');
+    expect(getAppVersion({ version: '2.0.0', android: { version: '4.2.0' } }, 'ios')).toBe('2.0.0');
   });
   it('falls back to 1.0.0 when nothing is set', () => {
     expect(getAppVersion({})).toBe('1.0.0');
@@ -189,27 +186,18 @@ describe(getNativeVersion, () => {
     );
   });
   it('prefers ios.version over the top-level version on ios', () => {
-    expect(
-      getNativeVersion(
-        { version, ios: { version: '3.1.0', buildNumber } },
-        'ios'
-      )
-    ).toBe(`3.1.0(${buildNumber})`);
+    expect(getNativeVersion({ version, ios: { version: '3.1.0', buildNumber } }, 'ios')).toBe(
+      `3.1.0(${buildNumber})`
+    );
   });
   it('prefers android.version over the top-level version on android', () => {
     expect(
-      getNativeVersion(
-        { version, android: { version: '4.2.0', versionCode } },
-        'android'
-      )
+      getNativeVersion({ version, android: { version: '4.2.0', versionCode } }, 'android')
     ).toBe(`4.2.0(${versionCode})`);
   });
   it('does not use ios.version when computing the android native version', () => {
     expect(
-      getNativeVersion(
-        { version, ios: { version: '3.1.0' }, android: { versionCode } },
-        'android'
-      )
+      getNativeVersion({ version, ios: { version: '3.1.0' }, android: { versionCode } }, 'android')
     ).toBe(`${version}(${versionCode})`);
   });
   it('throws an error if platform is not recognized', () => {
@@ -241,6 +229,20 @@ describe(getUpdatesUseEmbeddedUpdate, () => {
 
   it('returns true if updates.useEmbeddedUpdate is undefined', () => {
     expect(getUpdatesUseEmbeddedUpdate({ updates: {} })).toBe(true);
+  });
+});
+
+describe(getUpdatesExcludeFromBackup, () => {
+  it('returns true if updates.excludeFromBackup is true', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: { excludeFromBackup: true } })).toBe(true);
+  });
+
+  it('returns false if updates.excludeFromBackup is false', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: { excludeFromBackup: false } })).toBe(false);
+  });
+
+  it('returns false if updates.excludeFromBackup is undefined', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: {} })).toBe(false);
   });
 });
 

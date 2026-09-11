@@ -1,4 +1,4 @@
-import type { ParamListBase, StackNavigationState } from '../../../../react-navigation/native';
+import type { NativeStackViewState } from '../../../../react-navigation/native-stack';
 import type { NativeStackDescriptorMap } from '../../descriptors-context';
 import { mergeOptions } from '../mergeOptions';
 import type { CompositionRegistry } from '../types';
@@ -13,17 +13,13 @@ function createMockDescriptor(options: Record<string, any> = {}): NativeStackDes
   };
 }
 
-function createMockState(
-  overrides: Partial<StackNavigationState<ParamListBase>> = {}
-): StackNavigationState<ParamListBase> {
+/**
+ * Builds the projected state where preloaded routes are appended after `index`.
+ */
+function createMockState(overrides: Partial<NativeStackViewState> = {}): NativeStackViewState {
   return {
-    type: 'stack',
-    key: 'stack-key',
     index: 0,
-    routeNames: ['index'],
-    routes: [{ key: 'route-1', name: 'index', params: undefined }],
-    preloadedRoutes: [],
-    stale: false,
+    routes: [{ key: 'route-1', name: 'index' }],
     ...overrides,
   };
 }
@@ -105,8 +101,11 @@ describe('mergeOptions', () => {
     };
     const state = createMockState({
       index: 0,
-      routes: [{ key: 'route-1', name: 'index', params: undefined }],
-      preloadedRoutes: [{ key: 'route-preloaded', name: 'detail', params: undefined }],
+      routes: [
+        { key: 'route-1', name: 'index' },
+        // Preloaded routes are appended after the focused route
+        { key: 'route-preloaded', name: 'detail' },
+      ],
     });
 
     const result = mergeOptions(descriptors, registry, state);
@@ -126,14 +125,13 @@ describe('mergeOptions', () => {
     const registry: CompositionRegistry = {
       'route-preloaded': [{ title: 'Preloaded Composed' }],
     };
-    // Preloaded route that is also focused (e.g., during preview transition)
+    // A previously preloaded route that became focused (e.g., during preview transition)
     const state = createMockState({
       index: 1,
       routes: [
-        { key: 'route-1', name: 'index', params: undefined },
-        { key: 'route-preloaded', name: 'detail', params: undefined },
+        { key: 'route-1', name: 'index' },
+        { key: 'route-preloaded', name: 'detail' },
       ],
-      preloadedRoutes: [{ key: 'route-preloaded', name: 'detail', params: undefined }],
     });
 
     const result = mergeOptions(descriptors, registry, state);
@@ -173,8 +171,8 @@ describe('mergeOptions', () => {
     const state = createMockState({
       index: 1,
       routes: [
-        { key: 'route-1', name: 'index', params: undefined },
-        { key: 'route-2', name: 'detail', params: undefined },
+        { key: 'route-1', name: 'index' },
+        { key: 'route-2', name: 'detail' },
       ],
     });
 

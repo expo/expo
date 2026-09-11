@@ -2,6 +2,15 @@
 import * as Index from '../';
 
 describe('react-navigation/index re-exports', () => {
+  it('does not export removed APIs', () => {
+    expect(Index).not.toHaveProperty('createStaticNavigation');
+    expect(Index).not.toHaveProperty('createComponentForStaticNavigation');
+    expect(Index).not.toHaveProperty('createPathConfigForStaticNavigation');
+    expect(Index).not.toHaveProperty('NavigationContainer');
+    expect(Index).not.toHaveProperty('BaseNavigationContainer');
+    expect(Index).not.toHaveProperty('UNSTABLE_UnhandledLinkingContext');
+  });
+
   it.each([
     { name: 'core', code: require('../core') },
     { name: 'native', code: require('../native') },
@@ -18,11 +27,11 @@ describe('react-navigation/index re-exports', () => {
  * The tests below ensure that we export all types from subpackages
  */
 
-import type * as NativeType from '../native';
 import type * as CoreType from '../core';
 import type * as ElementsType from '../elements';
-import type * as RoutersType from '../routers';
 import type * as IndexType from '../index';
+import type * as NativeType from '../native';
+import type * as RoutersType from '../routers';
 
 type MissingFromIndexNative = Exclude<keyof typeof NativeType, keyof typeof IndexType>;
 type MissingFromIndexCore = Exclude<keyof typeof CoreType, keyof typeof IndexType>;

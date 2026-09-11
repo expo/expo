@@ -68,6 +68,23 @@ enum ImageTransitionEffect: String, Enumerable {
   }
 }
 
+enum ImageTransitionCacheSkip: String, Enumerable {
+  case none
+  case memory
+  case all
+
+  func skips(cacheType: ImageCacheType) -> Bool {
+    switch self {
+    case .none:
+      return false
+    case .memory:
+      return cacheType == .memory
+    case .all:
+      return cacheType == .memory || cacheType == .disk
+    }
+  }
+}
+
 struct ImageTransition: Record {
   @Field
   var duration: Double = 100
@@ -78,7 +95,17 @@ struct ImageTransition: Record {
   @Field
   var effect: ImageTransitionEffect = .crossDissolve
 
+  @Field
+  var skipOnCacheHit: ImageTransitionCacheSkip = .none
+
   func toAnimationOptions() -> UIView.AnimationOptions {
     return [timing.toAnimationOption(), effect.toAnimationOption()]
+  }
+
+  func shouldPlay(forCacheType cacheType: ImageCacheType, isInitialDisplay: Bool) -> Bool {
+    guard isInitialDisplay else {
+      return true
+    }
+    return !skipOnCacheHit.skips(cacheType: cacheType)
   }
 }

@@ -275,7 +275,8 @@ const configurationValueExpression = (
   parameterName: string,
   parameter: WidgetParameter
 ): string => {
-  const rawValueAccess = parameter.type === 'enum' && !isDynamicEnumParameter(parameter) ? '.rawValue' : '';
+  const rawValueAccess =
+    parameter.type === 'enum' && !isDynamicEnumParameter(parameter) ? '.rawValue' : '';
   return `      "${parameterName}": entry.configuration.${parameterName}${rawValueAccess}`;
 };
 

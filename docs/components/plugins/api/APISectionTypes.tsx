@@ -310,7 +310,7 @@ const renderType = (
           <APISectionDeprecationNote comment={comment} sticky />
           <APIBoxHeader name={name} comment={comment} />
           <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1.5')}>
-            <span className={STYLES_SECONDARY}>Literal Type: </span>
+            <span className={STYLES_SECONDARY}>Literal type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <APICommentTextBlock

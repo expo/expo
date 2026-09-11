@@ -2,8 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({

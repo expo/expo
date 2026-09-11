@@ -137,7 +137,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `create from string beyond Int64 range`() throws {
-    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808")  // Int64.max + 1
+    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808") // Int64.max + 1
     #expect(bigInt.isInt64() == false)
     let str = try bigInt.toString()
     #expect(str == "9223372036854775808")
@@ -169,7 +169,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `asInt64 throws when beyond Int64 range`() throws {
-    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808")  // Int64.max + 1
+    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808") // Int64.max + 1
     #expect(throws: BigIntConversionError.self) {
       try bigInt.asInt64()
     }

@@ -6,8 +6,8 @@ import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { selectAsync } from '../../../utils/prompts';
-import type { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
 import { debugEvent } from '../../events';
+import type { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
 
 type NativeSchemeProps = {
   name: string;

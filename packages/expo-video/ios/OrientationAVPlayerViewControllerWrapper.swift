@@ -51,7 +51,10 @@ internal final class OrientationAVPlayerViewControllerWrapper: VideoPlayerObserv
     #endif
 
     guard hasStalePlayerReference, !isPresenting else {
-      controller.player = player?.ref
+      // Reassigning the same `AVPlayer` tears down and recreates the controller's KVO observers for no benefit.
+      if controller.player !== player?.ref {
+        controller.player = player?.ref
+      }
       return false
     }
 

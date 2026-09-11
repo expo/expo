@@ -15,6 +15,7 @@ interface Playable {
   var isMuted: Boolean
   var previousVolume: Float
   var onPlaybackStateChange: ((Boolean) -> Unit)?
+  var onRelease: (() -> Unit)?
 
   val player: Player
   val appContext: AppContext?
@@ -30,15 +31,17 @@ interface Playable {
 
   fun seekTo(seconds: Double) = player.seekTo((seconds * 1000L).toLong())
 
-  fun setVolume(volume: Float?) = appContext?.mainQueue?.launch {
+  fun setVolume(volume: Float?, rememberVolume: Boolean = true) = appContext?.mainQueue?.launch {
     val boundedVolume = volume?.coerceIn(0f, 1f) ?: 1f
     if (isMuted) {
-      if (boundedVolume > 0f) {
+      if (rememberVolume && boundedVolume > 0f) {
         previousVolume = boundedVolume
       }
       player.volume = 0f
     } else {
-      previousVolume = boundedVolume
+      if (rememberVolume) {
+        previousVolume = boundedVolume
+      }
       player.volume = boundedVolume
     }
   }

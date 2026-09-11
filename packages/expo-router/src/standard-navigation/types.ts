@@ -1,21 +1,55 @@
-import type { createStandardNavigator, NavigatorArgs } from 'standard-navigation';
+import type {
+  createStandardNavigator,
+  NavigatorArgs,
+  NavigatorDescriptor,
+} from 'standard-navigation';
 
 import type {
   DefaultNavigatorOptions,
   DefaultRouterOptions,
+  EventMapBase,
   NavigationAction,
   NavigationHelpers,
   NavigationState,
   ParamListBase,
+  DescriptorRouteProp,
+  RouteSource,
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
+import type { ScreenProps } from '../useScreens';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 export type StandardNavigatorEventMapBase = Record<
   string,
   { data: object | undefined; canPreventDefault: boolean }
 >;
 
+export type StandardNavigatorEmit<EventMap extends Record<string, { data: object | undefined }>> = (
+  event: {
+    [Event in keyof EventMap]: {
+      type: Event;
+      target?: string;
+    } & (undefined extends EventMap[Event]['data']
+      ? { data?: EventMap[Event]['data'] }
+      : { data: EventMap[Event]['data'] });
+  }[keyof EventMap]
+) => void;
+
 export type StandardNavigationAction = NavigateAction | GoBackAction;
+
+export type PlaceholderDescriptorMap = Record<
+  string,
+  {
+    route: DescriptorRouteProp<ParamListBase, string>;
+    options: object;
+    render: () => React.ReactNode;
+    routeSource?: RouteSource;
+  }
+>;
+
+export type DescribePlaceholderRoute = (
+  route: DescriptorRouteProp<ParamListBase, string>
+) => NonNullable<PlaceholderDescriptorMap[string]>;
 
 export type StandardNavigator<
   NavigatorOptions extends object,
@@ -40,6 +74,7 @@ export type StandardUseNavigationBuilderOptions<
 export interface StandardNavigatorCreatePropsFactoryDeps<State extends NavigationState> {
   state: State;
   dispatch: (action: NavigationAction) => void;
+  dispatchSync: (action: NavigationAction) => void;
   navigation: NavigationHelpers<ParamListBase>;
 }
 
@@ -47,9 +82,9 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
  * Allows router-specific information to be exposed via navigator props alongside the standard
  * `state` and `actions`.
  *
- * Receives the raw Expo Router `state` and `dispatch`. Both are internal and may have small
- * breaking changes between releases, so prefer the `state` and `actions` passed to
- * `NavigatorContent` when they suffice.
+ * Receives the processed Expo Router `state` and raw `dispatch`. Both are internal and may have
+ * small breaking changes between releases, so prefer the `state` and `actions` passed to
+ * `NavigatorContent` when they suffice. When `processState` is provided, `state` is its result.
  *
  * @example
  * ```tsx
@@ -78,13 +113,62 @@ type CreatePropsOption<State extends NavigationState, CreateProps extends object
 export type IntegrateWithRouterOptions<
   State extends NavigationState = NavigationState,
   CreateProps extends object = object,
-> = {
+  NavigatorOptions extends object = Record<string, any>,
+  EventMap extends EventMapBase = EventMapBase,
+> = CreatePropsOption<State, CreateProps> & {
   /**
-   * When `true`, only screens explicitly declared as `<Navigator.Screen>` children are rendered;
-   * routes discovered from the filesystem that were not declared are ignored.
+   * Number of screens above a route that hides its content when `activityEnabled` is `true`.
+   * @default 1
    */
-  useOnlyUserDefinedScreens?: boolean;
-} & CreatePropsOption<State, CreateProps>;
+  activityDefaultThreshold?: number;
+  /**
+   * Pre-processes the builder state before it is converted to standard-navigation state.
+   *
+   * @example
+   * ```tsx
+   * processState: (state) => ({
+   *   ...state,
+   *   routes: state.routes.filter((route) => route.params?.hidden !== true),
+   * })
+   * ```
+   */
+  processState?: (
+    state: State,
+    descriptors: PlaceholderDescriptorMap,
+    describe: DescribePlaceholderRoute
+  ) => State;
+  /** Creates additional descriptors before `processState` and navigator rendering. */
+  processDescriptors?: (
+    descriptors: PlaceholderDescriptorMap,
+    state: State,
+    describe: DescribePlaceholderRoute
+  ) => PlaceholderDescriptorMap;
+  /**
+   * Transforms the screens declared as children of the navigator before they are rendered.
+   *
+   * @example
+   * ```tsx
+   * processScreens: (screens) =>
+   *   screens.map((screen) => ({ ...screen, options: { ...screen.options, title: screen.name } })),
+   * ```
+   */
+  processScreens?: (
+    screens: (ScreenProps<NavigatorOptions, State, EventMap> & { name: string })[]
+  ) => (ScreenProps<NavigatorOptions, State, EventMap> & { name: string })[];
+};
+
+/**
+ * A standard-navigation descriptor extended with Expo Router route information.
+ */
+export interface StandardNavigatorDescriptor<
+  NavigatorOptions extends object,
+> extends NavigatorDescriptor<NavigatorOptions> {
+  /**
+   * Indicates whether Expo Router received the route from a layout declaration or inferred it
+   * from the filesystem.
+   */
+  routeSource?: RouteSource;
+}
 
 export type StandardNavigatorContentProps<
   NavigatorOptions extends object,
@@ -151,6 +235,12 @@ export type StandardRouterNavigatorProps<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
-> = StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap> &
-  NavigatorProps &
-  RouterOptions;
+> = Omit<
+  StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap>,
+  'initialRouteName'
+> &
+  Omit<NavigatorProps, 'initialRouteName'> &
+  Omit<RouterOptions, 'initialRouteName'> & {
+    /** A component to render when an individual screen in this navigator throws an error. */
+    unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  };

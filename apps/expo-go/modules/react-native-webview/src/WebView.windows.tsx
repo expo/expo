@@ -10,15 +10,12 @@
  * Licensed under the MIT License.
  */
 
-import React, {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useRef,
-} from 'react';
+import invariant from 'invariant';
+import React, { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { View, Image, ImageSourcePropType, NativeModules } from 'react-native';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import invariant from 'invariant';
+
+import styles from './WebView.styles';
 import { RCTWebView, RCTWebView2 } from './WebViewNativeComponent.windows';
 import {
   useWebViewLogic,
@@ -27,8 +24,6 @@ import {
   defaultRenderLoading,
 } from './WebViewShared';
 import { NativeWebViewWindows, WindowsWebViewProps } from './WebViewTypes';
-
-import styles from './WebView.styles';
 
 const Commands = codegenNativeCommands({
   supportedCommands: [
@@ -43,9 +38,9 @@ const Commands = codegenNativeCommands({
     'loadUrl',
   ],
 });
-const { resolveAssetSource } = Image;
+const resolveAssetSource = (source: ImageSourcePropType) => Image.resolveAssetSource(source);
 
-const WebViewComponent = forwardRef<{}, WindowsWebViewProps>(
+const WebViewComponent = forwardRef<unknown, WindowsWebViewProps>(
   (
     {
       cacheEnabled = true,
@@ -136,10 +131,8 @@ const WebViewComponent = forwardRef<{}, WindowsWebViewProps>(
           Commands.reload(webViewRef.current);
         },
         stopLoading: () => Commands.stopLoading(webViewRef.current),
-        postMessage: (data: string) =>
-          Commands.postMessage(webViewRef.current, data),
-        injectJavaScript: (data: string) =>
-          Commands.injectJavaScript(webViewRef.current, data),
+        postMessage: (data: string) => Commands.postMessage(webViewRef.current, data),
+        injectJavaScript: (data: string) => Commands.injectJavaScript(webViewRef.current, data),
         requestFocus: () => Commands.requestFocus(webViewRef.current),
         clearCache: () => Commands.clearCache(webViewRef.current),
         loadUrl: (url: string) => Commands.loadUrl(webViewRef.current, url),
@@ -151,17 +144,12 @@ const WebViewComponent = forwardRef<{}, WindowsWebViewProps>(
     if (viewState === 'LOADING') {
       otherView = (renderLoading || defaultRenderLoading)();
     } else if (viewState === 'ERROR') {
-      invariant(
-        lastErrorEvent != null,
-        'lastErrorEvent expected to be non-null'
-      );
+      invariant(lastErrorEvent != null, 'lastErrorEvent expected to be non-null');
       otherView = (renderError || defaultRenderError)(
         lastErrorEvent.domain,
         lastErrorEvent.code,
         lastErrorEvent.description
       );
-    } else if (viewState !== 'IDLE') {
-      console.error(`RNCWebView invalid state encountered: ${viewState}`);
     }
 
     const webViewStyles = [styles.container, styles.webView, style];
@@ -185,7 +173,7 @@ const WebViewComponent = forwardRef<{}, WindowsWebViewProps>(
         onOpenWindow={onOpenWindow}
         onSourceChanged={onSourceChanged}
         ref={webViewRef}
-        // TODO: find a better way to type this.
+        // oxlint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         source={resolveAssetSource(source as ImageSourcePropType)}
         style={webViewStyles}
         cacheEnabled={cacheEnabled}

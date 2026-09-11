@@ -260,13 +260,13 @@ EAS Hosting supports server rendering out of the box. Export your app and deploy
 
 ## Comparison with static rendering
 
-| Feature            |     | Static Rendering                                                                      | Server Rendering                |
+| Feature            |     | Static rendering                                                                      | Server rendering                |
 | ------------------ | :-- | ------------------------------------------------------------------------------------- | ------------------------------- |
 | HTML generation    |     | Build time                                                                            | Request time                    |
 | HTML delivery      |     | Complete document                                                                     | Streamed progressively          |
 | Configuration      |     | `web.output: 'static'`                                                                | `web.output: 'server'`          |
 | Dynamic routes     |     | Requires [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) | Works automatically             |
-| Metadata           |     | [`<Head>`](/versions/latest/sdk/router/#head) component                               | [`generateMetadata`](#metadata) |
+| Metadata           |     | [`<Head>`](#using-head-with-server-rendering) component                               | [`generateMetadata`](#metadata) |
 | Server required    |     | <NoIcon />                                                                            | <YesIcon />                     |
 | Time to First Byte |     | Fastest (cached)                                                                      | Slower (rendered per request)   |
 | Hosting            |     | Any static host                                                                       | Server runtime required         |

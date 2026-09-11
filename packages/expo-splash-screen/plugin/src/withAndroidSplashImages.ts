@@ -65,6 +65,10 @@ export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (confi
   ]);
 };
 
+function hasSplashScreenImage(config: BaseAndroidSplashConfig): boolean {
+  return Boolean(config.mdpi || config.hdpi || config.xhdpi || config.xxhdpi || config.xxxhdpi);
+}
+
 /**
  * Deletes all previous splash_screen_images and copies new one to desired drawable directory.
  * If path isn't provided then no new image is placed in drawable directories.
@@ -81,11 +85,29 @@ export async function setSplashImageDrawablesAsync(
   if (drawable != null) {
     await writeSplashScreenDrawablesAsync(projectRoot, drawable);
   } else {
+    if (!hasSplashScreenImage(root)) {
+      await writeTransparentSplashScreenDrawableAsync(projectRoot);
+    }
     await Promise.all([
       setSplashImageDrawablesForThemeAsync(root, 'light', projectRoot, root.imageWidth),
       setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
     ]);
   }
+}
+
+async function writeTransparentSplashScreenDrawableAsync(projectRoot: string) {
+  const androidMainPath = path.join(projectRoot, 'android/app/src/main');
+  const outputPath = path.join(androidMainPath, DRAWABLES_CONFIGS.default.lightPath);
+
+  await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+  await fs.promises.writeFile(
+    outputPath,
+    `<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@android:color/transparent" />
+</layer-list>
+`
+  );
 }
 
 async function clearAllExistingSplashImagesAsync(projectRoot: string) {

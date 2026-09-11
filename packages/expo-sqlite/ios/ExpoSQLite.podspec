@@ -70,18 +70,17 @@ Pod::Spec.new do |s|
     'OTHER_SWIFT_FLAGS' => '$(inherited) ' + swift_flags,
   }
   s.source_files = "**/*.{c,h,m,swift}"
+  s.exclude_files = 'Tests'
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests'
+    test_spec.pod_target_xcconfig = {
+      # The test bundle links the static ExpoModulesCore dependency chain, which contains C++.
+      'OTHER_LDFLAGS' => '-lc++'
+    }
+  end
 
   vendored_frameworks = []
-  if podfile_properties['expo.sqlite.useLibSQL'] == 'true'
-    vendored_frameworks << 'libsql.xcframework'
-    s.private_header_files = [
-      'libsql.xcframework/**/*.h',
-    ]
-    s.exclude_files = ['SQLiteModule.swift', 'sqlite3.c', 'sqlite3.h']
-    Pod::UI.message('SQLite: use libSQL integration')
-  else
-    s.exclude_files = ['libsql/**/*', 'libsql.xcframework/**/*', 'SQLiteModuleLibSQL.swift']
-  end
   if podfile_properties['expo.sqlite.withSQLiteVecExtension'] == 'true'
     vendored_frameworks << 'vec.xcframework'
   end

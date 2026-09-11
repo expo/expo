@@ -166,6 +166,17 @@ object UpdatesUtils {
     }
   }
 
+  /**
+   * Asset filenames are built from manifest-controlled values, so a filename holding a path
+   * separator or a `..` component would resolve outside the updates directory.
+   */
+  fun isSafeFilename(filename: String): Boolean {
+    return filename.isNotEmpty() &&
+      filename != "." &&
+      filename != ".." &&
+      filename.none { it == '/' || it == '\\' || it == '\u0000' }
+  }
+
   fun shouldCheckForUpdateOnLaunch(
     updatesConfiguration: UpdatesConfiguration,
     logger: UpdatesLogger,
