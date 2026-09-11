@@ -33,15 +33,15 @@ You will be guided through the process of selecting the update to edit and asked
 
 When ending an update-based rollout, you have three options:
 
-- **Roll out fully**: To accomplish this end state, progress the rollout as detailed above and set the percentage to 100.
-- **Revert back to previous state**: To accomplish this, run `eas update:revert-update-rollout` which will guide you through reverting back to the previous state.
-- **Supersede it with a new update**: To accomplish this, publish over the rollout as described in [Publishing while a rollout is in progress](#publishing-while-a-rollout-is-in-progress).
+- **Finish the rollout:** Use `eas update:edit` to increase the rollout percentage to 100.
+- **Revert the rollout:** Use `eas update:revert-update-rollout` to restore the control update.
+- **Replace the rollout:** Publish a new update or roll back to the update embedded in the build. See [Replace an active rollout](#replace-an-active-rollout).
 
-### Publishing while a rollout is in progress
+### Replace an active rollout
 
-If you need to publish a fix or roll back before a rollout finishes, you can replace it with a new update. EAS CLI asks you to confirm before ending a rollout for the same branch, platform, and runtime version.
+You can replace an active rollout if you need to publish a fix or roll back before the rollout finishes. When you publish to the same branch, platform, and runtime version, EAS CLI warns you that the new update will end the rollout and asks you to confirm.
 
-Use `--force-end-active-rollout` to confirm this in advance. The flag is required in non-interactive mode when a rollout is in progress. For example, to publish a fix:
+Add `--force-end-active-rollout` to skip the confirmation prompt. The flag is required in non-interactive mode. For example, use the following command to publish a fix:
 
 <Terminal
   cmd={[
@@ -53,15 +53,15 @@ To roll back to the update embedded in the build instead:
 
 <Terminal cmd={['$ eas update:roll-back-to-embedded --force-end-active-rollout']} />
 
-The flag works with `eas update`, `eas update:republish`, `eas update:roll-back-to-embedded`, and `eas update:rollback`.
+You can use the flag with `eas update`, `eas update:republish`, `eas update:roll-back-to-embedded`, and `eas update:rollback`.
 
-The rollout ends when the replacement is available to clients. For signed updates, EAS CLI must finish signing the replacement first. Until then, the existing rollout continues.
+The active rollout continues until the new update is ready. If you use code signing, EAS CLI signs the new update before ending the rollout.
 
-The replacement becomes available to all users on that branch with the matching platform and runtime version, regardless of whether they received the rollout update. Clients receive it according to their app's update checking and loading behavior. A rollback to embedded directs clients to use the update embedded in their build.
+When the rollout ends, the new update becomes available to all users on the matching branch, platform, and runtime version. Each app downloads and launches it according to the app's update behavior. If you publish a rollback to embedded, each app returns to the update embedded in its build instead.
 
-Replacing a rollout preserves the previous update group and its dashboard links. In contrast, `eas update:revert-update-rollout` deletes the rollout update group and republishes the control update, or creates a rollback to embedded if there is no control update.
+Replacing a rollout keeps the rollout update group and its dashboard links. The `eas update:revert-update-rollout` command works differently: it deletes the rollout update group and restores the control update. If the rollout has no control update, the command publishes a rollback to embedded.
 
-You cannot start another rollout for the same branch, platform, and runtime version while one is in progress, even with `--force-end-active-rollout`. To publish with `--rollout-percentage`, first finish the existing rollout with `eas update:edit` or revert it with `eas update:revert-update-rollout`.
+You cannot replace an active rollout with another rollout. To publish a new update with `--rollout-percentage`, first finish the active rollout with `eas update:edit` or revert it with `eas update:revert-update-rollout`.
 
 ### Additional notes
 
