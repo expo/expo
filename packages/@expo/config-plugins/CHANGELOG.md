@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- [iOS] Add `IOSConfig.XcodeUtils.readXcodeProject` to read a specific Xcode project file. ([#49976](https://github.com/expo/expo/pull/49976) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Documented that `UIRequiresFullScreen` no longer opts an app out of resizing as of iOS 27, and noted it in the iPad multitasking warning. ([#48175](https://github.com/expo/expo/pull/48175) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.6 - 2026-07-22
