@@ -6,7 +6,7 @@ description: Record JavaScript errors and native crashes from your app and inves
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview). JavaScript errors require SDK 57 or later. Native crashes require SDK 58 or later. Source maps for EAS Update and more are still to come.
+> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. Source maps for EAS Update and more are still to come.
 
 The `expo-observe` library records JavaScript errors and native crashes from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
 
@@ -109,7 +109,7 @@ Avoid Personally Identifiable Information (PII) in error messages. Everything yo
 
 ## Native crashes
 
-A native crash terminates the app before your JavaScript can react to it, so the report is written on the device and dispatched the next time the app launches. Native crashes are recorded automatically on Android and iOS, and no setup is required. They appear with the **Native** source in the dashboard.
+A native crash terminates the app before your JavaScript can react to it, so the report is written on the device and dispatched the next time the app launches. Native crashes are recorded automatically on Android and iOS with `expo-observe` 57.0.21 or later, and no setup is required. They appear with the **Native** source in the dashboard.
 
 On Android, EAS Observe records uncaught Java and Kotlin exceptions, including the `Caused by` chain. On Android 11 and later, it also reads the crash records the operating system keeps for your app, which covers crashes in native code such as `SIGSEGV` and `SIGABRT`.
 
