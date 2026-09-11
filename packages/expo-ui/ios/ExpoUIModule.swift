@@ -157,6 +157,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(MenuView.self)
 
     ExpoUIView(NavigationStackView.self)
+    ExpoUIView(NavigationLinkView.self)
     ExpoUIView(ToolbarView.self)
 
     ExpoUIView(FormView.self)

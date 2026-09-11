@@ -47,6 +47,7 @@
 - [iOS] Added the `scrollClipDisabled` modifier, which lets content that draws outside a scrollable view's bounds, such as a shadow or a scaled-up card, stay visible instead of being clipped. ([#49780](https://github.com/expo/expo/pull/49780) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Taught the `tint`, `border`, `strokeBorder` and `containerBackground` modifiers to paint with any `ShapeStyle`, matching SwiftUI, where all four take a `ShapeStyle` rather than a color. The `color` parameter of `border` and `strokeBorder` is deprecated in favor of `content`, the name SwiftUI gives it. ([#49838](https://github.com/expo/expo/pull/49838) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `NavigationStack` and `Toolbar` components, the `navigationTitle` modifier, and the `close` button role. ([#49940](https://github.com/expo/expo/pull/49940) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `NavigationLink` component, and the `path` and `onPathChange` props and the `NavigationDestination` component, so a stack can push a destination that is built only when the link is followed. ([#49991](https://github.com/expo/expo/pull/49991) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
@@ -78,6 +79,7 @@
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fix `Host` color scheme type errors on React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fixed `PlatformColor` and `DynamicColorIOS` values dropping the `backgroundColor` and `borderColor` of a universal component. Both were stringified to `"[object Object]"`, which the native color converter rejects, so the modifier was discarded without a trace. ([#49746](https://github.com/expo/expo/pull/49746) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Preserve string-based child identities in `Overlay`, `Background`, and `Mask`. ([#49734](https://github.com/expo/expo/pull/49734) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

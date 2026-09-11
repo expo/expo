@@ -77,7 +77,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/expo-modules-macros-plugin": "0.8.0",
+    "@expo/expo-modules-macros-plugin": "0.10.0",
     "expo-modules-jsi": "workspace:~",
     "invariant": "^2.2.4"
   },

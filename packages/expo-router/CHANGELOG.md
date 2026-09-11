@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Mock `react-native-worklets` in `expo-router/testing-library` so `react-native-gesture-handler` and `react-native-reanimated` load in Jest. ([#50013](https://github.com/expo/expo/pull/50013) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

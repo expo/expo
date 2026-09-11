@@ -7,96 +7,96 @@ importers:
     configDependencies: {}
     packageManagerDependencies:
       pnpm:
-        specifier: 12.2.1
-        version: 12.2.1
+        specifier: 12.3.4
+        version: 12.3.4
 
 packages:
 
-  '@pnpm/exe.darwin-arm64@12.2.1':
-    resolution: {integrity: sha512-efC1yfz2xbyHiMLrQAYtnoo5XP20LeAiYYcyL1962qQagZrMXIB0BoQYeZoPTLggLh0Q4MD7jpZUInU5fWxCgQ==}
+  '@pnpm/exe.darwin-arm64@12.3.4':
+    resolution: {integrity: sha512-PAyUol8T1+/+ViOiXAt51ECA+QnfXCqz6foL4bW+LsoX0NcVd5XVEM2mRQu+LV4oc7uRz9zf9U0P+XFfuQeDAw==}
     cpu: [arm64]
     os: [darwin]
 
-  '@pnpm/exe.darwin-x64@12.2.1':
-    resolution: {integrity: sha512-0bloFmxrvYY5LYex5V6SZySwg+egBk0pOW+YUeOm9fiG2U1wv+qRVLBOUvIzLAeJE7vBlAzxUwXkQAYtr12n+Q==}
+  '@pnpm/exe.darwin-x64@12.3.4':
+    resolution: {integrity: sha512-fxP9JCk0Cdye+ePuj+GJJLMUMTqHGWRdb1dtv4How876uQ2ehxvenpgiYAir/ceO9PsYUZkFTtyZdx+rRu5QOA==}
     cpu: [x64]
     os: [darwin]
 
-  '@pnpm/exe.linux-arm64-musl@12.2.1':
-    resolution: {integrity: sha512-AZl7apVZC4TV1/vTp/bS16XUsHeqx9AHsU4V55joiGR+iR6vl+WF0WlGvGCTjqjICS4q/kThpgNrtG8aqQ9seQ==}
+  '@pnpm/exe.linux-arm64-musl@12.3.4':
+    resolution: {integrity: sha512-FBOt0/7ye6O6q4AllVV5QMviB6qE6fqkeczV/+MDWQsmo+QJrlfsh6X7CpH/tClVpBZEyIbjpUoT8bNhCYBxEg==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-arm64@12.2.1':
-    resolution: {integrity: sha512-S36+tMEGrPz3nwtfFU9kYxbHoi8sV7WJfMO9njEL4jRaShTNaLRERMAqyI2DUCiA5QCr6/a50lt4+pKCV2mCvw==}
+  '@pnpm/exe.linux-arm64@12.3.4':
+    resolution: {integrity: sha512-t71AVA7LRqiKTyZ5xMYaZc2n5DfdpMbfokZuiIOXHBOM03ECnF0t4iYwaBDqJgVjlKYUOwaF/bRQajGNA4cJ4w==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.linux-x64-musl@12.2.1':
-    resolution: {integrity: sha512-4MQClkAk1em55LFZJpeIqb7j+gEqCgX8yC42j9DFWL42q1uMX1e1tvTy2Dtd4NoWQqgdkLxOStZ+D9CYC+28ow==}
+  '@pnpm/exe.linux-x64-musl@12.3.4':
+    resolution: {integrity: sha512-RPmk7Jb/aYaFvL2iyDN/AtMY+hUEsue732WmXpcuQ9tBpMnGyA5py7Z3+e+qmQaJ0zY/4ni9jJiyPBQHujmv6w==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@pnpm/exe.linux-x64@12.2.1':
-    resolution: {integrity: sha512-A/AlR71Leph7qgB3ThSU9yU/vLfre4HmP6nbt3/qt51fzAjQ0xuq7j+cw0f1yDskzOsGzmo5uD6ruefCwLK5uQ==}
+  '@pnpm/exe.linux-x64@12.3.4':
+    resolution: {integrity: sha512-2ZqOlSPkfwX1h5cR+FPiWf8+F+2hZT/3TvhUK5sigHqwaQCIiq8R7CGxhndKs63JtcLi2a1Qpo+wX/EoyfjyJQ==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@pnpm/exe.win32-arm64@12.2.1':
-    resolution: {integrity: sha512-TEGUmroT6NGfo2O2+tHK9Zr1lhP1zLzpwx+QAQV19l8V4ljUoMfz8Os5V9zzNCtIpzyKcK7SuG7fkVbxFgRMzg==}
+  '@pnpm/exe.win32-arm64@12.3.4':
+    resolution: {integrity: sha512-ANyrHqyqco6SXBysUTRF74itDyyraea7IbFsKFdNXTjcFnfycTDx37EwuhdpPYFNSIh2JhUG4fByclsRfiHX7w==}
     cpu: [arm64]
     os: [win32]
 
-  '@pnpm/exe.win32-x64@12.2.1':
-    resolution: {integrity: sha512-V2Q+AF8fCsw8/CC3bWF8kopOmH0aAjgk9m7H7uAQNulOYIJs9YJBiAlgByswmt+igV9axc4dBI//ZlK2NKpDcw==}
+  '@pnpm/exe.win32-x64@12.3.4':
+    resolution: {integrity: sha512-WH/KqBPY/hq2Tb7SgQltEZytimcjgKRaCRL/aM9CI0c67iKc5TVmHUhIiL3Ux9FB4bWn36i6XewUcScQI+zG8w==}
     cpu: [x64]
     os: [win32]
 
-  pnpm@12.2.1:
-    resolution: {integrity: sha512-9Vymiqy561q2nGb4KKmK+JoyKGcDrvH42hMcp+q01nfzS/qF4YZGepGcB5nfi29KokD33CkZszsycxkBBBYmFg==}
+  pnpm@12.3.4:
+    resolution: {integrity: sha512-lhqkH7B32joEpEHZ+OFevAyW2o73ELLrZ7+e58sGEOq9SPH9hfUc/+c4RnhfoPh8VqOocqHYk/hEZ0G1zORUVw==}
     engines: {node: '>=18.*'}
     hasBin: true
 
 snapshots:
 
-  '@pnpm/exe.darwin-arm64@12.2.1':
+  '@pnpm/exe.darwin-arm64@12.3.4':
     optional: true
 
-  '@pnpm/exe.darwin-x64@12.2.1':
+  '@pnpm/exe.darwin-x64@12.3.4':
     optional: true
 
-  '@pnpm/exe.linux-arm64-musl@12.2.1':
+  '@pnpm/exe.linux-arm64-musl@12.3.4':
     optional: true
 
-  '@pnpm/exe.linux-arm64@12.2.1':
+  '@pnpm/exe.linux-arm64@12.3.4':
     optional: true
 
-  '@pnpm/exe.linux-x64-musl@12.2.1':
+  '@pnpm/exe.linux-x64-musl@12.3.4':
     optional: true
 
-  '@pnpm/exe.linux-x64@12.2.1':
+  '@pnpm/exe.linux-x64@12.3.4':
     optional: true
 
-  '@pnpm/exe.win32-arm64@12.2.1':
+  '@pnpm/exe.win32-arm64@12.3.4':
     optional: true
 
-  '@pnpm/exe.win32-x64@12.2.1':
+  '@pnpm/exe.win32-x64@12.3.4':
     optional: true
 
-  pnpm@12.2.1:
+  pnpm@12.3.4:
     optionalDependencies:
-      '@pnpm/exe.darwin-arm64': 12.2.1
-      '@pnpm/exe.darwin-x64': 12.2.1
-      '@pnpm/exe.linux-arm64': 12.2.1
-      '@pnpm/exe.linux-arm64-musl': 12.2.1
-      '@pnpm/exe.linux-x64': 12.2.1
-      '@pnpm/exe.linux-x64-musl': 12.2.1
-      '@pnpm/exe.win32-arm64': 12.2.1
-      '@pnpm/exe.win32-x64': 12.2.1
+      '@pnpm/exe.darwin-arm64': 12.3.4
+      '@pnpm/exe.darwin-x64': 12.3.4
+      '@pnpm/exe.linux-arm64': 12.3.4
+      '@pnpm/exe.linux-arm64-musl': 12.3.4
+      '@pnpm/exe.linux-x64': 12.3.4
+      '@pnpm/exe.linux-x64-musl': 12.3.4
+      '@pnpm/exe.win32-arm64': 12.3.4
+      '@pnpm/exe.win32-x64': 12.3.4
 
 ---
 lockfileVersion: '9.0'
@@ -3874,6 +3874,9 @@ importers:
 
   packages/expo-app-intents:
     dependencies:
+      '@expo/ui':
+        specifier: workspace:^58.0.0
+        version: link:../expo-ui
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -5327,8 +5330,8 @@ importers:
   packages/expo-modules-core:
     dependencies:
       '@expo/expo-modules-macros-plugin':
-        specifier: 0.8.0
-        version: 0.8.0
+        specifier: 0.10.0
+        version: 0.10.0
       expo-modules-jsi:
         specifier: workspace:~
         version: link:../expo-modules-jsi
@@ -5682,6 +5685,9 @@ importers:
       react-native-web:
         specifier: ~0.21.0
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react-native-worklets:
+        specifier: 0.12.2
+        version: 0.12.2(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-server-dom-webpack:
         specifier: ~19.0.8
         version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18)(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.23))
@@ -7950,8 +7956,8 @@ packages:
   '@expo/devcert@1.2.1':
     resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
 
-  '@expo/expo-modules-macros-plugin@0.8.0':
-    resolution: {integrity: sha512-wqDBF+24o8iWGuQece+qkN4js0XjKyxLEQ8Lo4aMQgu8ENXPxwPNz1xGrMxXciMQVOZStWda/u9IVJNG1xI3yw==}
+  '@expo/expo-modules-macros-plugin@0.10.0':
+    resolution: {integrity: sha512-wwwymYWtlTyn9nDcn39/HkbZvFd9eBGBJezJaz+WW+f9HU8K/Ps669PUYCwCNy0Ry1d42eP5qPth33sQRoGFtQ==}
 
   '@expo/material-symbols@0.1.1':
     resolution: {integrity: sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg==}
@@ -16836,7 +16842,7 @@ snapshots:
       '@expo/sudo-prompt': 9.3.2
       debug: 3.2.7
 
-  '@expo/expo-modules-macros-plugin@0.8.0': {}
+  '@expo/expo-modules-macros-plugin@0.10.0': {}
 
   '@expo/material-symbols@0.1.1': {}
 
