@@ -1,64 +1,58 @@
-# @expo/ui
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/ui/">
+    <img
+      src="../../.github/resources/expo-ui.svg"
+      alt="expo-ui"
+      height="64" />
+  </a>
+</p>
 
 A set of native input components that let you build interfaces with Jetpack Compose on Android and SwiftUI on iOS, from React.
 
 ## Main features
 
-- Native Android components built with Jetpack Compose, exported from `@expo/ui/jetpack-compose`
-- Native iOS components built with SwiftUI, exported from `@expo/ui/swift-ui`
-- Universal components that render on Android, iOS, and web from one source, exported from `@expo/ui`
-- Modifiers that mirror the native ones, from `@expo/ui/swift-ui/modifiers` and `@expo/ui/jetpack-compose/modifiers`
-- Drop-in replacements for several React Native community libraries, from `@expo/ui/community/*`
-- The JavaScript API mirrors the native API. Component, prop, and event names match SwiftUI and Jetpack Compose.
+- Real native components. Jetpack Compose on Android, SwiftUI on iOS — not reimplementations.
+- The JavaScript API mirrors the native API. Component, prop, and event names match the platform.
+- Three tiers, so you can pick how much platform detail you want to handle.
+- Modifiers stay modifiers, from `@expo/ui/swift-ui/modifiers` and `@expo/ui/jetpack-compose/modifiers`.
 
-## Drop-in replacements
+## The three tiers
 
-Each of these has an API compatible with the listed library and is backed by `@expo/ui` native components.
+### Platform (low-level)
 
-|                      Replaces                       |              Import from               |
-| :-------------------------------------------------: | :------------------------------------: |
-|               `@gorhom/bottom-sheet`                |   `@expo/ui/community/bottom-sheet`    |
-|      `@react-native-community/datetimepicker`       |  `@expo/ui/community/datetime-picker`  |
-|          `@react-native-community/slider`           |      `@expo/ui/community/slider`       |
-|       `@react-native-masked-view/masked-view`       |    `@expo/ui/community/masked-view`    |
-|              `@react-native-menu/menu`              |       `@expo/ui/community/menu`        |
-|            `@react-native-picker/picker`            |      `@expo/ui/community/picker`       |
-| `@react-native-segmented-control/segmented-control` | `@expo/ui/community/segmented-control` |
-|              `react-native-pager-view`              |    `@expo/ui/community/pager-view`     |
+```js
+import { ... } from '@expo/ui/swift-ui';
+import { ... } from '@expo/ui/jetpack-compose';
+```
 
-## Available components
-
-The lists below are not exhaustive. See the [API documentation](https://docs.expo.dev/versions/latest/sdk/ui/) for the full set and for per-component props.
+One export per platform, each mapping directly onto the underlying native component. Use these when you want the full SwiftUI or Jetpack Compose surface and are willing to write a `.ios` and `.android` file.
 
 ### Universal
 
-Import from `@expo/ui`. These run on Android, iOS, and web.
+```js
+import { ... } from '@expo/ui';
+```
 
-`Host`, `Column`, `Row`, `Spacer`, `ScrollView`, `Text`, `TextInput`, `Button`, `Switch`, `Slider`, `Checkbox`, `Picker`, `List`, `ListItem`, `BottomSheet`, `Collapsible`, `FieldGroup`, `Icon`
+Cross-platform components that run on Android, iOS, and web from one source. Each one is built on top of the platform tier — a universal `Switch` renders a SwiftUI `Toggle` on iOS and a Jetpack Compose `Switch` on Android — so you write once and still get the native experience. This is the tier to start with.
 
-### SwiftUI (iOS)
+### Drop-in replacements
 
-Import from `@expo/ui/swift-ui`.
+```js
+import { ... } from '@expo/ui/community/...';
+```
 
-- Layout: `HStack`, `VStack`, `ZStack`, `LazyHStack`, `LazyVStack`, `Grid`, `Group`, `Spacer`, `Divider`, `ScrollView`
-- Input: `TextField`, `SecureField`, `Toggle`, `Stepper`, `Slider`, `Picker`, `DatePicker`, `ColorPicker`, `Button`
-- Navigation: `NavigationStack`, `NavigationLink`, `NavigationDestination`, `TabView`, `Link`, `Toolbar`
-- Collections: `List`, `Section`, `Form`, `DisclosureGroup`, `SwipeActions`
-- Menus and modals: `Menu`, `ContextMenu`, `ShareLink`, `Popover`, `Alert`, `ConfirmationDialog`, `BottomSheet`
-- Feedback: `ProgressView`, `Gauge`, `Chart`, `ContentUnavailableView`
-- Content and effects: `Text`, `Image`, `Label`, `LabeledContent`, `Shapes`, `Mask`, `Overlay`, `Background`, `GlassEffectContainer`
+API-compatible replacements for popular React Native community libraries, backed by the same native components. Swapping the import is usually the whole migration.
 
-### Jetpack Compose (Android)
-
-Import from `@expo/ui/jetpack-compose`.
-
-- Layout: `Column`, `Row`, `Box`, `FlowRow`, `LazyColumn`, `LazyRow`, `Spacer`, `Divider`, `Surface`, `Shape`
-- Input: `TextField`, `OutlinedTextField`, `BasicTextField`, `Checkbox`, `Switch`, `Slider`, `RadioButton`, `DatePicker`
-- Buttons: `Button`, `IconButton`, `FloatingActionButton`, `SegmentedButton`, `ToggleButton`
-- Navigation: `NavigationBar`, `HorizontalPager`, `Carousel`, `HorizontalFloatingToolbar`
-- Menus and modals: `DropdownMenu`, `ExposedDropdownMenuBox`, `AlertDialog`, `BasicAlertDialog`, `ModalBottomSheet`, `Tooltip`
-- Feedback: `Progress`, `LoadingIndicator`, `Snackbar`, `Badge`, `BadgedBox`, `PullToRefreshBox`
-- Content: `Text`, `Icon`, `Image`, `Card`, `Chip`, `ListItem`, `SearchBar`, `DockedSearchBar`, `AnimatedVisibility`
+| Replaces                                            | Import from                            |
+| --------------------------------------------------- | -------------------------------------- |
+| `@gorhom/bottom-sheet`                              | `@expo/ui/community/bottom-sheet`      |
+| `@react-native-community/datetimepicker`            | `@expo/ui/community/datetime-picker`   |
+| `@react-native-community/slider`                    | `@expo/ui/community/slider`            |
+| `@react-native-masked-view/masked-view`             | `@expo/ui/community/masked-view`       |
+| `@react-native-menu/menu`                           | `@expo/ui/community/menu`              |
+| `@react-native-picker/picker`                       | `@expo/ui/community/picker`            |
+| `@react-native-segmented-control/segmented-control` | `@expo/ui/community/segmented-control` |
+| `react-native-pager-view`                           | `@expo/ui/community/pager-view`        |
 
 # API documentation
 
