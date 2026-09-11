@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       await db.closeAsync();
     });
 
-    nativeIt('should enable SQLITE_ENABLE_API_ARMOR', async () => {
+    it('should enable SQLITE_ENABLE_API_ARMOR', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const rows = await db.getAllAsync<{ compile_options: string }>('PRAGMA compile_options');
       expect(rows.map((row) => row.compile_options)).toContain('ENABLE_API_ARMOR');
