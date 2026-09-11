@@ -1,12 +1,21 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["ContactsModule", "ContactAccessButtonModule", "ContactsNextModule"]
+    "modules": [
+      "ContactsModule",
+      "ContactAccessButtonModule",
+      "ContactsNextModule"
+    ]
   },
   "android": {
     "modules": [
       "expo.modules.contacts.ContactsModule",
       "expo.modules.contacts.next.ContactsNextModule"
-    ]
+    ],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.contacts",
+      "repository": "local-maven-repo"
+    }
   }
 }
