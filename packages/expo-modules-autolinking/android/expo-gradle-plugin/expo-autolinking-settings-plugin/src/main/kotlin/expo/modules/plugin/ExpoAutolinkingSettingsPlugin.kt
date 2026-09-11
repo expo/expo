@@ -48,6 +48,10 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
   }
 
   private fun getExpoGradlePluginsFile(settings: Settings): File {
+    settings.providers.gradleProperty("expo.precompileAndroid.expoPlugin")
+      .orNull
+      ?.let { return File(it).absoluteFile }
+
     val expoModulesAutolinkingPath =
       settings.providers.exec { env ->
         env.workingDir(settings.rootDir)
