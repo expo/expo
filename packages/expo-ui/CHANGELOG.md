@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.18 — 2026-09-11
+
+### 🎉 New features
+
 - [Android] Add `shadowElevation` to `DropdownMenu` to customize the popup shadow in dp. ([#49896](https://github.com/expo/expo/pull/49896) by [@maxlapides](https://github.com/maxlapides))
 - [iOS] Added the `NavigationStack` and `Toolbar` components, the `navigationTitle` modifier, and the `close` button role. ([#49940](https://github.com/expo/expo/pull/49940) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `NavigationLink` component, and the `path` and `onPathChange` props and the `NavigationDestination` component, so a stack can push a destination that is built only when the link is followed. ([#49991](https://github.com/expo/expo/pull/49991) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -13,8 +21,6 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix `DatePickerDialog` preselecting today when `initialDate` is omitted, and keep its confirm button disabled while no date is selected so `onDateSelected` never receives an invalid date. ([#49898](https://github.com/expo/expo/pull/49898) by [@pataar](https://github.com/pataar))
-
-### 💡 Others
 
 ## 57.0.17 — 2026-09-08
 

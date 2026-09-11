@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.21 — 2026-09-11
+
+### 💡 Others
+
 - [Android] Replace pending telemetry queues with persisted row-id cursors. ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
 
 ## 57.0.20 — 2026-09-08

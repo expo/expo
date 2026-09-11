@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `disableFab=1` and `disableAutoLaunch=1` URL params that update the dev menu preferences to hide the floating action button and prevent the dev menu from opening at launch. ([#49651](https://github.com/expo/expo/pull/49651) by [@janicduplessis](https://github.com/janicduplessis))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.20 — 2026-09-11
+
+### 🎉 New features
+
+- Add `disableFab=1` and `disableAutoLaunch=1` URL params that update the dev menu preferences to hide the floating action button and prevent the dev menu from opening at launch. ([#49651](https://github.com/expo/expo/pull/49651) by [@janicduplessis](https://github.com/janicduplessis))
 
 ## 57.0.19 — 2026-09-01
 

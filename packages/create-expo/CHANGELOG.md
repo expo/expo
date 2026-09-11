@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Raise minimum Node.js version according to [docs](https://docs.expo.dev/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) ([#49967](https://github.com/expo/expo/pull/49967) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 5.0.2 — 2026-09-11
+
+### 🐛 Bug fixes
+
+- Raise minimum Node.js version according to [docs](https://docs.expo.dev/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) ([#49967](https://github.com/expo/expo/pull/49967) by [@vonovak](https://github.com/vonovak))
 
 ## 5.0.1 — 2026-08-14
 

@@ -4,16 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.18 — 2026-09-11
+
+### 🛠 Breaking changes
+
 - [Android] Remove `SessionManager` insert listeners and `JsMetric.metricId` ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
 - [iOS] [Android] Rename JavaScript exception log events from `exception` to `js.exception`. ([#49594](https://github.com/expo/expo/pull/49594) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 
 - [iOS] [Android] Dispatch attributed native crashes as fatal exception logs. ([#49489](https://github.com/expo/expo/pull/49489) by [@Ubax](https://github.com/Ubax))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 57.0.17 — 2026-09-04
 
