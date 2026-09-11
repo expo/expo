@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+    "@expo/ui": "workspace:*",
     "expo": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-dev-client": "workspace:*",
