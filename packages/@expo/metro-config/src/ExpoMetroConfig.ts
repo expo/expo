@@ -281,9 +281,17 @@ export function getDefaultConfig(
 
   const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
-  const cacheStore = new FileStore<any>({
-    root: path.join(os.tmpdir(), 'metro-cache'),
-  });
+  const outputCacheRoot = env.EAS_METRO_CACHE_OUTPUT_DIR;
+  const restoredCacheRoot = env.EAS_METRO_CACHE_RESTORE_DIR;
+  // Metro promotes restored hits into earlier stores. An empty output directory therefore
+  // collects only results used by this job, which EAS can archive without unused entries.
+  const cacheStores =
+    outputCacheRoot && restoredCacheRoot
+      ? [
+          new FileStore<any>({ root: outputCacheRoot }),
+          new FileStore<any>({ root: restoredCacheRoot }),
+        ]
+      : [new FileStore<any>({ root: path.join(os.tmpdir(), 'metro-cache') })];
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
@@ -331,7 +339,7 @@ export function getDefaultConfig(
         /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
       ],
     },
-    cacheStores: [cacheStore],
+    cacheStores,
     watcher: {
       // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
       additionalExts: ['env', 'local', 'development'],
@@ -457,7 +465,9 @@ export function getDefaultConfig(
   // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
   (metroConfig.resolver as { useWatchman?: boolean | null }).useWatchman = null;
 
-  return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
+  return withExpoSerializers(metroConfig, {
+    unstable_beforeAssetSerializationPlugins,
+  });
 }
 
 /** Use to access the Expo Metro transformer path */

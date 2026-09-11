@@ -1,6 +1,16 @@
-import { boolish, int } from 'getenv';
+import { boolish, int, string } from 'getenv';
 
 class Env {
+  /** Fresh directory for transform results used by this EAS job. Requires EAS_METRO_CACHE_RESTORE_DIR. */
+  get EAS_METRO_CACHE_OUTPUT_DIR(): string {
+    return string('EAS_METRO_CACHE_OUTPUT_DIR', '');
+  }
+
+  /** Directory restored from an earlier EAS job. Requires EAS_METRO_CACHE_OUTPUT_DIR. */
+  get EAS_METRO_CACHE_RESTORE_DIR(): string {
+    return string('EAS_METRO_CACHE_RESTORE_DIR', '');
+  }
+
   /** Enable debug logging */
   get EXPO_DEBUG() {
     return boolish('EXPO_DEBUG', false);

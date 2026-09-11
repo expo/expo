@@ -1,6 +1,8 @@
+import { Cache } from '@expo/metro/metro-cache';
 import { vol } from 'memfs';
 
 import { getDefaultConfig, createStableModuleIdFactory } from '../ExpoMetroConfig';
+import { FileStore } from '../binary-file-store';
 
 const projectRoot = '/';
 const consoleError = console.error;
@@ -22,13 +24,60 @@ function mockProject() {
 }
 describe(getDefaultConfig, () => {
   beforeEach(() => {
+    delete process.env.EAS_METRO_CACHE_OUTPUT_DIR;
+    delete process.env.EAS_METRO_CACHE_RESTORE_DIR;
     mockProject();
   });
   afterEach(() => {
+    delete process.env.EAS_METRO_CACHE_OUTPUT_DIR;
+    delete process.env.EAS_METRO_CACHE_RESTORE_DIR;
     vol.reset();
   });
   afterAll(() => {
     console.error = consoleError;
+  });
+
+  it.each([
+    [undefined, undefined],
+    ['/cache/output', undefined],
+    [undefined, '/cache/restored'],
+  ])('keeps one default store with output=%s and restored=%s', (output, restored) => {
+    if (output) process.env.EAS_METRO_CACHE_OUTPUT_DIR = output;
+    if (restored) process.env.EAS_METRO_CACHE_RESTORE_DIR = restored;
+    expect(getDefaultConfig(projectRoot).cacheStores).toHaveLength(1);
+  });
+
+  it('collects restored hits and new transforms without unused restored entries', async () => {
+    process.env.EAS_METRO_CACHE_OUTPUT_DIR = '/cache/output';
+    process.env.EAS_METRO_CACHE_RESTORE_DIR = '/cache/restored';
+    const restored = new FileStore<Buffer>({ root: '/cache/restored' });
+    const output = new FileStore<Buffer>({ root: '/cache/output' });
+    const reusedKey = Buffer.from('aabb', 'hex');
+    const unusedKey = Buffer.from('aacc', 'hex');
+    const newKey = Buffer.from('aadd', 'hex');
+    const reusedValue = Buffer.from('unchanged module');
+    const newValue = Buffer.from('changed module');
+    await restored.set(reusedKey, reusedValue);
+    await restored.set(unusedKey, Buffer.from('unused module'));
+
+    const stores = getDefaultConfig(projectRoot).cacheStores;
+    if (!Array.isArray(stores)) throw new Error('Expected an array of cache stores');
+    expect(stores).toHaveLength(2);
+    const cache = new Cache<Buffer>(stores);
+    expect(await cache.get(reusedKey)).toEqual(reusedValue);
+    // Transformer calls set after both cache hits and newly computed transforms.
+    await cache.set(reusedKey, reusedValue);
+    expect(await cache.get(newKey)).toBeNull();
+    await cache.set(newKey, newValue);
+
+    expect(await output.get(reusedKey)).toEqual(reusedValue);
+    expect(await output.get(newKey)).toEqual(newValue);
+    expect(await output.get(unusedKey)).toBeNull();
+    expect(await restored.get(unusedKey)).toEqual(Buffer.from('unused module'));
+
+    for (const store of stores) await store.clear();
+    expect(await output.get(reusedKey)).toBeNull();
+    expect(await restored.get(reusedKey)).toBeNull();
   });
 
   it('loads default configuration', () => {
