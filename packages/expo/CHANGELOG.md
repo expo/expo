@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle.
+- [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
