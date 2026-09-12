@@ -1,4 +1,5 @@
 {
-  "platforms": ["apple"],
-  "apple": { "modules": ["ExpoAIModule"] }
+  "platforms": ["apple", "android"],
+  "apple": { "modules": ["ExpoAIModule"] },
+  "android": { "modules": ["expo.modules.ai.ExpoAIModule"] }
 }
