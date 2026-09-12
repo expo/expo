@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for separate restored and output Metro transform cache directories. ([#50023](https://github.com/expo/expo/pull/50023) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

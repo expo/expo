@@ -17,6 +17,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { FileStore } from './binary-file-store';
+import { BuildCacheStore } from './build-cache-store';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
 import { event } from './events';
@@ -281,9 +282,16 @@ export function getDefaultConfig(
 
   const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
-  const cacheStore = new FileStore<any>({
-    root: path.join(os.tmpdir(), 'metro-cache'),
-  });
+  const restoredRoot = env.EXPO_METRO_CACHE_RESTORE_DIR;
+  const outputRoot = env.EXPO_METRO_CACHE_OUTPUT_DIR;
+  // The build runner supplies separate absolute directories and starts each job with
+  // an empty output directory. Keep output across Metro invocations in the same job.
+  // After bundling processes exit, archive only output to exclude unused restored entries.
+  // One store keeps these directories together when projects reorder cacheStores.
+  const cacheStores =
+    restoredRoot && outputRoot
+      ? [new BuildCacheStore<any>({ restoredRoot, outputRoot })]
+      : [new FileStore<any>({ root: outputRoot || path.join(os.tmpdir(), 'metro-cache') })];
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
@@ -331,7 +339,7 @@ export function getDefaultConfig(
         /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
       ],
     },
-    cacheStores: [cacheStore],
+    cacheStores,
     watcher: {
       // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
       additionalExts: ['env', 'local', 'development'],
