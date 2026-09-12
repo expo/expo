@@ -714,7 +714,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const { artifacts: resources } = await this.getStaticResourcesAsync({
         clientBoundaries: [],
       });
-      const { cssHrefs, externalCss, inlineCss } = getStreamingCssAssetsFromSerialAssets(resources);
+      const css = getStreamingCssAssetsFromSerialAssets(resources);
       const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
         location,
         route,
@@ -727,9 +727,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         metadata,
         request: request as unknown as Request,
         assets: {
-          css: cssHrefs,
-          externalCss,
-          inlineCss,
+          css,
           js: [devBundleUrlPathname],
         },
       });
@@ -2415,28 +2413,26 @@ function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
 
-function getStreamingCssAssetsFromSerialAssets(resources: SerialAsset[]): {
-  cssHrefs: string[];
-  externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'];
-  inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'];
-} {
-  const cssHrefs: string[] = [];
-  const externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'] = [];
-  const inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'] = [];
+function getStreamingCssAssetsFromSerialAssets(
+  resources: SerialAsset[]
+): NonNullable<GetStreamingContentOptions['assets']>['css'] {
+  const css: NonNullable<GetStreamingContentOptions['assets']>['css'] = [];
 
   for (const asset of resources) {
     if (asset.type === 'css') {
-      inlineCss.push({
+      css.push({
+        type: 'inline',
         source: asset.source,
         hmrId: asset.metadata.hmrId,
       });
     } else if (asset.type === 'css-external') {
-      externalCss.push({
+      css.push({
+        type: 'external',
         href: asset.filename,
         media: asset.metadata.media,
       });
     }
   }
 
-  return { cssHrefs, externalCss, inlineCss };
+  return css;
 }

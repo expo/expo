@@ -1,4 +1,7 @@
 import { expect, test } from '@playwright/test';
+import type { RawManifest } from 'expo-server/private';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -52,6 +55,16 @@ for (const mode of MODES) {
       await expoServe.stopAsync();
     });
 
+    test.beforeEach(async ({ page }) => {
+      // Exported CSS is shared across routes, so fulfill these imports on the index page too.
+      await page.route('https://expo-css.test/*.css', (route) =>
+        route.fulfill({
+          contentType: 'text/css',
+          body: `.cascade-between, .cascade-bundled { color: ${route.request().url().endsWith('/a.css') ? 'red' : 'purple'}; }`,
+        })
+      );
+    });
+
     // Ensures the bundled (local) CSS still loads and the page hydrates cleanly.
     test('loads the index route without hydration errors and applies bundled CSS', async ({
       page,
@@ -76,7 +89,7 @@ for (const mode of MODES) {
       expect(pageErrors.all).toEqual([]);
     });
 
-    test('includes external stylesheet `<link>`s for a route that imports them', async ({
+    test('preserves interleaved external and bundled stylesheet cascade order', async ({
       page,
     }) => {
       const response = await page.goto(new URL('/second', expoServe.url).href);
@@ -89,6 +102,47 @@ for (const mode of MODES) {
       expect(html).toMatch(
         /<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?family=Roboto:wght@300" media="screen and \(width (?:>|&gt;)= 900px\)"/
       );
+
+      const externalIndex = html.indexOf(
+        '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap"'
+      );
+      const bundledIndex = html.search(
+        /<link rel="stylesheet" href="\/_expo\/static\/css\/second-[0-9a-f]{32}\.css"/
+      );
+      expect(externalIndex).toBeGreaterThanOrEqual(0);
+      expect(bundledIndex).toBeGreaterThan(externalIndex);
+
+      const orderedCss = [
+        'https://expo-css.test/a.css',
+        expect.stringMatching(/^\/_expo\/static\/css\/cascade-a-[0-9a-f]{32}\.css$/),
+        'https://expo-css.test/b.css',
+        expect.stringMatching(/^\/_expo\/static\/css\/cascade-b-[0-9a-f]{32}\.css$/),
+      ];
+      const isCascadeAsset = (href: string) =>
+        href.startsWith('https://expo-css.test/') || href.includes('/cascade-');
+      const hrefs = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map(
+        (match) => match[1]!
+      );
+      expect(hrefs.filter(isCascadeAsset)).toEqual(orderedCss);
+
+      if (mode.name === 'server') {
+        const manifest: RawManifest = JSON.parse(
+          await fs.readFile(
+            path.join(projectRoot, mode.outputDir, 'server/_expo/routes.json'),
+            'utf8'
+          )
+        );
+        expect(manifest.assets?.externalCss).toBeUndefined();
+        expect(
+          manifest.assets?.css
+            .filter((asset) => typeof asset !== 'string' && asset.type !== 'inline')
+            .map((asset) => (typeof asset !== 'string' && 'href' in asset ? asset.href : ''))
+            .filter(isCascadeAsset)
+        ).toEqual(orderedCss);
+      }
+
+      await expect(page.getByTestId('cascade-between')).toHaveCSS('color', 'rgb(128, 0, 128)');
+      await expect(page.getByTestId('cascade-bundled')).toHaveCSS('color', 'rgb(0, 128, 0)');
     });
   });
 }

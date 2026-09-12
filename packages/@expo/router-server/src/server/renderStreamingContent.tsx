@@ -13,6 +13,7 @@ import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { ServerDocument } from 'expo-router/internal/server';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import { normalizeCssAssets, type AssetInfo } from 'expo-server/private';
 import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -21,9 +22,7 @@ import { createDebug } from '../utils/debug';
 import {
   createFaviconAsNode,
   createInjectedCssAsNodes,
-  createInjectedExternalCssAsNodes,
   createInjectedFontsAsNodes,
-  createInjectedInlineCssAsNodes,
   getBootstrapContents,
 } from '../utils/react';
 
@@ -51,25 +50,7 @@ export type GetStreamingContentOptions = {
   } | null;
   request?: Request;
   /** Assets for hydration bundles and development-only inline CSS. */
-  assets?: {
-    css: string[];
-    /**
-     * External stylesheets (`@import url(https://…)`) extracted from the bundled CSS, rendered
-     * verbatim as `<link rel="stylesheet">` so attributes like `media` survive.
-     */
-    externalCss?: {
-      href: string;
-      media?: string;
-    }[];
-    /** CSS source to inline into the document head, used by development SSR. */
-    inlineCss?: {
-      source: string;
-      hmrId?: string;
-    }[];
-    js: string[];
-    /** Public href of a favicon generated from `web.favicon` in the app config. */
-    favicon?: string;
-  };
+  assets?: AssetInfo;
 };
 
 /**
@@ -132,13 +113,7 @@ export async function getStreamingContent(
       options
     );
 
-    const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
-    const { headNodes: externalCssNodes } = createInjectedExternalCssAsNodes(
-      options?.assets?.externalCss
-    );
-    const { headNodes: inlineCssNodes } = createInjectedInlineCssAsNodes(
-      options?.assets?.inlineCss
-    );
+    const { headNodes: cssNodes } = createInjectedCssAsNodes(normalizeCssAssets(options?.assets));
     const faviconNode = options?.assets?.favicon
       ? createFaviconAsNode(options?.assets?.favicon)
       : undefined;
@@ -148,9 +123,7 @@ export async function getStreamingContent(
         ...(options?.metadata?.headNodes ?? []),
         faviconNode,
         getStyleElement({ key: 'rnw-style-element' }),
-        ...(headCssNodes ?? []),
-        ...(externalCssNodes ?? []),
-        ...(inlineCssNodes ?? []),
+        ...(cssNodes ?? []),
       ].filter(Boolean),
       bodyNodes: [<FontResources key="font-resources" />],
     };

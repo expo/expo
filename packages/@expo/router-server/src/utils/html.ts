@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { normalizeCssAssets, type AssetInfo } from 'expo-server/private';
+
 // See: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/packages/next-urql/src/htmlescape.ts#L10
 // License: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/LICENSE
 
@@ -115,20 +117,19 @@ export function createLoaderDataScriptAsString(data: Record<string, unknown>): s
   return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
 }
 
-export type StaticContentCssAsset =
-  | { type: 'css'; href: string }
-  | { type: 'inline'; source: string; hmrId?: string }
-  | { type: 'external'; source: string };
-
-export type StaticContentAssets = {
-  /**
-   * NOTE(@hassankhan): We still need to support SDK 55 deployments, where CSS assets are
-   * exported as plain hrefs
-   */
-  css: (StaticContentCssAsset | string)[];
-  js: string[];
-  favicon?: string;
-};
+export function createExternalCssLinkAsString({
+  href,
+  media,
+}: {
+  href: string;
+  media?: string;
+}): string {
+  let link = `<link rel="stylesheet" href="${escapeHtmlAttribute(href)}"`;
+  if (media) {
+    link += ` media="${escapeHtmlAttribute(media)}"`;
+  }
+  return link + '>';
+}
 
 /**
  * Injects favicon, hydration flag, and CSS (in that order) before `</head>`, and deferred scripts
@@ -136,7 +137,7 @@ export type StaticContentAssets = {
  */
 export function injectAssetsIntoHtml(
   html: string,
-  { assets, hydrate }: { assets?: StaticContentAssets; hydrate?: boolean }
+  { assets, hydrate }: { assets?: AssetInfo; hydrate?: boolean }
 ): string {
   if (assets?.favicon) {
     html = html.replace('</head>', `${createFaviconAsString(assets.favicon)}</head>`);
@@ -147,20 +148,20 @@ export function injectAssetsIntoHtml(
   }
 
   if (assets) {
-    const styleString = assets.css
+    const styleString = normalizeCssAssets(assets)
       .map((entry) => {
-        // NOTE(@hassankhan): We still need to support SDK 55 deployments, where CSS assets are
-        // exported as plain hrefs
-        if (typeof entry === 'string') {
-          return createInjectedCssAsString([entry]);
-        }
         switch (entry.type) {
           case 'css':
             return createInjectedCssAsString([entry.href]);
-          case 'inline':
-            return `<style data-expo-css-hmr="${entry.hmrId}">${entry.source}\n</style>`;
+          case 'inline': {
+            const hmrAttribute =
+              entry.hmrId === undefined
+                ? ''
+                : ` data-expo-css-hmr="${escapeHtmlAttribute(entry.hmrId)}"`;
+            return `<style${hmrAttribute}>${entry.source}\n</style>`;
+          }
           case 'external':
-            return entry.source;
+            return createExternalCssLinkAsString(entry);
         }
       })
       .join('');
