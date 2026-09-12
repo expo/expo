@@ -96,6 +96,7 @@
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))
+- Keep the outgoing tab attached until its transition settles, instead of deriving the screen detach state from a native-driven animated value. ([#49778](https://github.com/expo/expo/pull/49778) by [@LizunovSergey](https://github.com/LizunovSergey))
 - Re-export the vendored JavaScript stack API from `expo-router/js-stack`. ([#49657](https://github.com/expo/expo/pull/49657) by [@davidmokos](https://github.com/davidmokos))
 - Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
 - Make layouts with explicitly declared screens honor `unstable_settings.initialRouteName` instead of declaration order, which can change deep-link back stacks. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))
