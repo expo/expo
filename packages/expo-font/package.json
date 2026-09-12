@@ -53,6 +53,7 @@
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "precompile-ios": "et prebuild-package-for-publish",
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",

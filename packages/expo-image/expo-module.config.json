@@ -4,6 +4,11 @@
     "modules": ["ImageModule"]
   },
   "android": {
-    "modules": ["expo.modules.image.ExpoImageModule"]
+    "modules": ["expo.modules.image.ExpoImageModule"],
+    "publication": {
+      "groupId": "expo.modules.image",
+      "artifactId": "expo.modules.image",
+      "repository": "local-maven-repo"
+    }
   }
 }

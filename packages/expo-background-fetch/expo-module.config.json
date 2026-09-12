@@ -4,6 +4,11 @@
     "modules": ["BackgroundFetchModule"]
   },
   "android": {
-    "modules": ["expo.modules.backgroundfetch.BackgroundFetchModule"]
+    "modules": ["expo.modules.backgroundfetch.BackgroundFetchModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.backgroundfetch",
+      "repository": "local-maven-repo"
+    }
   }
 }

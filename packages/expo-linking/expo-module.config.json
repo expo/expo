@@ -5,6 +5,11 @@
     "appDelegateSubscribers": ["LinkingAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.linking.ExpoLinkingModule"]
+    "modules": ["expo.modules.linking.ExpoLinkingModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.linking",
+      "repository": "local-maven-repo"
+    }
   }
 }

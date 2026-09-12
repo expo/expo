@@ -22,6 +22,7 @@
   "main": "build/LinearGradient.js",
   "types": "build/LinearGradient.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -29,7 +30,8 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "expo-module prepack"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",

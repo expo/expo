@@ -1,6 +1,11 @@
 {
   "platforms": ["android"],
   "android": {
-    "modules": ["expo.modules.intentlauncher.IntentLauncherModule"]
+    "modules": ["expo.modules.intentlauncher.IntentLauncherModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.intentlauncher",
+      "repository": "local-maven-repo"
+    }
   }
 }

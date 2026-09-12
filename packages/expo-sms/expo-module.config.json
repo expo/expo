@@ -4,6 +4,11 @@
     "modules": ["ExpoSMSModule"]
   },
   "android": {
-    "modules": ["expo.modules.sms.SMSModule"]
+    "modules": ["expo.modules.sms.SMSModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.sms",
+      "repository": "local-maven-repo"
+    }
   }
 }

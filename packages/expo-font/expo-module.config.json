@@ -4,6 +4,11 @@
     "modules": ["FontLoaderModule", "FontUtilsModule"]
   },
   "android": {
-    "modules": ["expo.modules.font.FontLoaderModule", "expo.modules.font.FontUtilsModule"]
+    "modules": ["expo.modules.font.FontLoaderModule", "expo.modules.font.FontUtilsModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.font",
+      "repository": "local-maven-repo"
+    }
   }
 }
