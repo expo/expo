@@ -516,6 +516,76 @@ class FileDownloaderTest {
     Assert.assertTrue("Progress listener should not have been called", progressValues.isEmpty())
   }
 
+  @Test
+  fun test_downloadRemoteUpdate_unsuccessfulResponseIncludesStatusCode() = runTest {
+    val config = createRemoteUpdateConfiguration()
+    val fileDownloader = createFileDownloader(
+      config,
+      createClientReturningManifestResponse(code = 500, body = "server exploded")
+    )
+
+    try {
+      fileDownloader.downloadRemoteUpdate(null)
+      Assert.fail("Expected exception to be thrown")
+    } catch (e: Exception) {
+      val message = e.localizedMessageWithCauseLocalizedMessage()
+      Assert.assertTrue("Expected HTTP status in: $message", message.contains("HTTP 500"))
+      Assert.assertTrue("Expected response body in: $message", message.contains("server exploded"))
+    }
+  }
+
+  @Test
+  fun test_downloadRemoteUpdate_unsuccessfulResponseBodyIsTruncated() = runTest {
+    val config = createRemoteUpdateConfiguration()
+    val fileDownloader = createFileDownloader(
+      config,
+      createClientReturningManifestResponse(code = 500, body = "x".repeat(10000))
+    )
+
+    try {
+      fileDownloader.downloadRemoteUpdate(null)
+      Assert.fail("Expected exception to be thrown")
+    } catch (e: Exception) {
+      val message = e.localizedMessageWithCauseLocalizedMessage()
+      Assert.assertTrue("Expected a truncation marker in: $message", message.contains("truncated"))
+      Assert.assertTrue(
+        "Expected a bounded message, got ${message.length} characters",
+        message.length < 1000
+      )
+    }
+  }
+
+  private fun createRemoteUpdateConfiguration(): UpdatesConfiguration {
+    val configMap = mapOf<String, Any>(
+      UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
+    )
+    return UpdatesConfiguration(null, configMap)
+  }
+
+  private fun createClientReturningManifestResponse(code: Int, body: String) = mockk<OkHttpClient> {
+    every { newCall(any()) } returns mockk {
+      every { execute() } returns Response.Builder()
+        .request(Request.Builder().url("https://u.expo.dev/00000000-0000-0000-0000-000000000000").build())
+        .protocol(Protocol.HTTP_2)
+        .code(code)
+        .message("Server Error")
+        .body(body.toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+        .build()
+    }
+  }
+
+  private fun createFileDownloader(config: UpdatesConfiguration, client: OkHttpClient): FileDownloader {
+    return FileDownloader(
+      temporaryFolder.newFolder(),
+      easClientID = "test-eas-client-id",
+      configuration = config,
+      logger = logger,
+      database = database,
+      client = client
+    )
+  }
+
   private fun createFileDownloader(config: UpdatesConfiguration): FileDownloader {
     val filesDirectory = temporaryFolder.newFolder()
     return FileDownloader(
