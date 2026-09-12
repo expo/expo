@@ -24,6 +24,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50018](https://github.com/expo/expo/pull/50018) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50019](https://github.com/expo/expo/pull/50019) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix issues with error propagation when `checkForUpdateAsync`, `fetchUpdateAsync`, `readLogEntriesAsync` and `clearLogEntriesAsync` reject with an error, so that error causes/reasons are preserved. ([#50098](https://github.com/expo/expo/pull/50098) by [@douglowder](https://github.com/douglowder))
 
 ## 58.0.0 — 2026-09-10
 

@@ -438,6 +438,99 @@ class FileDownloaderTests {
     #expect(actual.value(forHTTPHeaderField: "expo-nsnull") == "null")
   }
 
+  // MARK: - error response bodies
+
+  private func makeDownloaderForErrorResponse(
+    statusCode: Int,
+    body: String,
+    updateUrl: String
+  ) throws -> (FileDownloader, UpdatesConfig) {
+    let config = try UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: updateUrl,
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0.0",
+      UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+    ])
+
+    let sessionConfiguration = URLSessionConfiguration.ephemeral
+    sessionConfiguration.protocolClasses = [TestURLProtocol.self]
+
+    TestURLProtocol.requestHandler = { request in
+      let response = HTTPURLResponse(
+        url: request.url!,
+        statusCode: statusCode,
+        httpVersion: nil,
+        headerFields: ["Content-Type": "text/html; charset=utf-8"]
+      )!
+      return (response, body.data(using: .utf8))
+    }
+
+    let downloader = FileDownloader(
+      config: config,
+      urlSessionConfiguration: sessionConfiguration,
+      logger: logger,
+      updatesDirectory: updatesDirectory,
+      database: db
+    )
+
+    return (downloader, config)
+  }
+
+  private func remoteUpdateError(downloader: FileDownloader, config: UpdatesConfig) async -> UpdatesError? {
+    await withCheckedContinuation { (continuation: CheckedContinuation<UpdatesError?, Never>) in
+      downloader.downloadRemoteUpdate(
+        fromURL: config.updateUrl,
+        withDatabase: db,
+        extraHeaders: nil
+      ) { _ in
+        continuation.resume(returning: nil)
+      } errorBlock: { error in
+        continuation.resume(returning: error)
+      }
+    }
+  }
+
+  @Test
+  func `truncates a large error response body`() async throws {
+    TestURLProtocol.reset()
+
+    let (downloader, config) = try makeDownloaderForErrorResponse(
+      statusCode: 502,
+      body: String(repeating: "x", count: 10000),
+      updateUrl: "https://u.expo.dev/33333333-3333-3333-3333-333333333333"
+    )
+
+    guard let error = await remoteUpdateError(downloader: downloader, config: config) else {
+      Issue.record("Expected the remote update download to fail")
+      return
+    }
+
+    let message = error.localizedDescription
+    #expect(message.contains("HTTP response error 502"))
+    #expect(message.contains("truncated"))
+    #expect(message.count < 1000, "Expected a bounded message, got \(message.count) characters")
+  }
+
+  @Test
+  func `keeps a small error response body intact`() async throws {
+    TestURLProtocol.reset()
+
+    let (downloader, config) = try makeDownloaderForErrorResponse(
+      statusCode: 500,
+      body: "upstream unavailable",
+      updateUrl: "https://u.expo.dev/44444444-4444-4444-4444-444444444444"
+    )
+
+    guard let error = await remoteUpdateError(downloader: downloader, config: config) else {
+      Issue.record("Expected the remote update download to fail")
+      return
+    }
+
+    let message = error.localizedDescription
+    #expect(message.contains("HTTP response error 500"))
+    #expect(message.contains("upstream unavailable"))
+    #expect(!message.contains("truncated"))
+  }
+
   // MARK: - patch negotiation headers
 
   @Test

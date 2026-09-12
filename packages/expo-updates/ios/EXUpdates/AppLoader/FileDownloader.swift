@@ -40,7 +40,21 @@ private extension String {
 
     return self
   }
+
+  /**
+   Truncates a response body for inclusion in an error message. The message reaches JavaScript and
+   crash reporters, so an unbounded body (typically an HTML error page) must not be embedded whole.
+   Mirrors `MAX_ERROR_BODY_LENGTH` in the Android `FileDownloader`.
+   */
+  func truncatedForErrorMessage() -> String {
+    if count <= maxErrorBodyLength {
+      return self
+    }
+    return "\(prefix(maxErrorBodyLength))… (truncated, \(count) characters total)"
+  }
 }
+
+private let maxErrorBodyLength = 512
 
 private extension Dictionary where Iterator.Element == (key: String, value: Any) {
   func stringValueForCaseInsensitiveKey(_ searchKey: Key) -> String? {
@@ -1217,7 +1231,7 @@ public final class FileDownloader {
         httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
         let encoding = FileDownloader.encoding(fromResponse: httpResponse)
         let body = data.let { it in
-          String(data: it, encoding: encoding)
+          String(data: it, encoding: encoding)?.truncatedForErrorMessage()
         } ?? "Unknown body response"
         let cause = UpdatesError.fileDownloaderHTTPResponseError(statusCode: httpResponse.statusCode, body: body)
         self.logger.error(cause: cause, code: .unknown)
