@@ -97,6 +97,7 @@ export async function installPackagesAsync(
     packageManagerArguments,
     fix,
     check,
+    expoOnly,
     dev,
   }: Options & {
     /**
@@ -183,6 +184,7 @@ export async function installPackagesAsync(
     // Pipe options to the next command
     if (fix) postInstallCommand.push('--fix');
     if (check) postInstallCommand.push('--check');
+    if (expoOnly) postInstallCommand.push('--expo-only');
 
     // Abort after installing `expo`, follow up command is spawn in a new process
     return await installExpoPackageAsync(projectRoot, {

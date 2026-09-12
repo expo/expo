@@ -8,6 +8,7 @@ import {
 import { confirmAsync } from '../../utils/prompts';
 import { checkPackagesAsync } from '../checkPackages';
 import { fixPackagesAsync } from '../fixPackages';
+import { isExpoManagedDependencyAsync } from '../utils/isExpoManagedDependency';
 
 jest.mock('../../log');
 
@@ -15,6 +16,10 @@ jest.mock('../../utils/prompts');
 
 jest.mock('../fixPackages', () => ({
   fixPackagesAsync: jest.fn(),
+}));
+
+jest.mock('../utils/isExpoManagedDependency', () => ({
+  isExpoManagedDependencyAsync: jest.fn(),
 }));
 
 jest.mock('../../start/doctor/dependencies/validateDependenciesVersions', () => ({
@@ -236,6 +241,54 @@ describe(checkPackagesAsync, () => {
       sdkVersion: '45.0.0',
     });
     expect(logIncorrectDependencies).toHaveBeenCalledWith(issues);
+  });
+
+  it(`delegates only Expo packages when fixing with --expo-only`, async () => {
+    const issues: Awaited<ReturnType<typeof getVersionedDependenciesAsync>> = [
+      {
+        packageName: 'expo-sms',
+        packageType: 'dependencies',
+        expectedVersionOrRange: '~14.0.0',
+        actualVersion: '9.0.0',
+      },
+      {
+        packageName: 'expo-speech-recognition',
+        packageType: 'dependencies',
+        expectedVersionOrRange: '~1.0.0',
+        actualVersion: '0.9.0',
+      },
+      {
+        packageName: 'jest-expo',
+        packageType: 'devDependencies',
+        expectedVersionOrRange: '~57.0.4',
+        actualVersion: '57.0.3',
+      },
+    ];
+    const packageManagerArguments = ['--ignore-scripts'];
+    const expoOnlyIssues = [issues[0]!, issues[2]!];
+
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
+    jest.mocked(isExpoManagedDependencyAsync).mockImplementation(async (_projectRoot, packageName) =>
+      ['expo-sms', 'jest-expo'].includes(packageName)
+    );
+
+    await checkPackagesAsync('/', {
+      packages: [],
+      options: { fix: true, expoOnly: true },
+      // @ts-expect-error
+      packageManager: {},
+      packageManagerArguments,
+    });
+
+    expect(logIncorrectDependencies).toHaveBeenCalledWith(expoOnlyIssues);
+    expect(fixPackagesAsync).toHaveBeenCalledWith('/', {
+      packageManager: {},
+      packageManagerArguments,
+      packages: expoOnlyIssues,
+      sdkVersion: '45.0.0',
+      expoOnly: true,
+    });
+    expect(isExpoManagedDependencyAsync).toHaveBeenCalledTimes(3);
   });
 
   it(`delegates only the selected invalid package when fixing`, async () => {
