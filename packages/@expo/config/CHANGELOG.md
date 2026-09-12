@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Source platform identity data (out-of-tree platform names, react-native host packages, Metro extension fallback chains) from `@expo/platforms` instead of local copies. No behavior change. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
