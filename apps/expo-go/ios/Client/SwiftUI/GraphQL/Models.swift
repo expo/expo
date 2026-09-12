@@ -18,12 +18,13 @@ struct GraphQLErrorLocation: Codable {
   let column: Int
 }
 
-struct MeUserActorResponse: Codable {
-  let data: MeUserActorData
+struct MeActorResponse: Codable {
+  let data: MeActorData
 }
 
-struct MeUserActorData: Codable {
-  let meUserActor: UserActor
+struct MeActorData: Codable {
+  /// Null for an unauthenticated request.
+  let meActor: UserActor?
 }
 
 struct HomeScreenDataResponse: Codable {
@@ -41,10 +42,32 @@ struct AccountQuery: Codable {
 struct AccountByName: Codable {
   let id: String
   let name: String
-  let ownerUserActor: UserActor
-  let apps: [App]
-  let snacks: [Snack]
+  let appsPaginated: AppsConnection
+  let snacksPaginated: SnacksConnection
   let appCount: Int
+}
+
+struct PageInfo: Codable {
+  let hasNextPage: Bool
+  let endCursor: String?
+}
+
+struct AppsConnection: Codable {
+  let pageInfo: PageInfo?
+  let edges: [AppEdge]
+}
+
+struct AppEdge: Codable {
+  let node: App
+}
+
+struct SnacksConnection: Codable {
+  let pageInfo: PageInfo?
+  let edges: [SnackEdge]
+}
+
+struct SnackEdge: Codable {
+  let node: Snack
 }
 
 struct UserActor: Codable {
@@ -53,7 +76,7 @@ struct UserActor: Codable {
   let username: String
   let firstName: String?
   let lastName: String?
-  let profilePhoto: String?
+  let primaryAccountProfileImageUrl: String?
   let bestContactEmail: String?
   let accounts: [Account]
   let fullName: String?
@@ -64,7 +87,7 @@ struct UserActor: Codable {
     case username
     case firstName
     case lastName
-    case profilePhoto
+    case primaryAccountProfileImageUrl
     case bestContactEmail
     case accounts
     case fullName
@@ -88,7 +111,7 @@ struct Account: Codable {
 struct UserActorSimple: Codable {
   let id: String
   let username: String
-  let profilePhoto: String?
+  let primaryAccountProfileImageUrl: String?
   let firstName: String?
   let fullName: String?
   let lastName: String?
@@ -125,7 +148,6 @@ struct AppUpdate: Identifiable, Codable, Equatable {
   let group: String?
   let message: String?
   let createdAt: String
-  let runtimeVersion: String?
   let expoGoSDKVersion: String?
   let platform: String
   let manifestPermalink: String
@@ -156,8 +178,7 @@ struct ProjectsListAccount: Codable {
 struct ProjectsListByName: Codable {
   let id: String
   let name: String
-  let apps: [App]
-  let appCount: Int
+  let appsPaginated: AppsConnection
 }
 
 struct ProjectDetailsResponse: Codable {
@@ -239,7 +260,7 @@ struct SnacksListAccount: Codable {
 struct SnacksListByName: Codable {
   let id: String
   let name: String
-  let snacks: [Snack]
+  let snacksPaginated: SnacksConnection
 }
 
 extension App {

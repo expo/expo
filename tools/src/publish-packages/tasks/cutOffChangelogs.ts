@@ -1,11 +1,35 @@
 import chalk from 'chalk';
+import semver from 'semver';
 
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { Parcel, TaskArgs } from '../types';
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { green, gray } = chalk;
+
+/**
+ * Returns the reason to skip cutting off the changelog, or `null` when it should be cut off.
+ * Prerelease versions are skipped so their entries stay under "Unpublished" and end up
+ * in the section of the stable version that follows.
+ */
+export function getCutOffSkipReason(
+  releaseVersion: string,
+  changelogExists: boolean,
+  changelogVersions: string[]
+): string | null {
+  if (semver.prerelease(releaseVersion)) {
+    return 'prerelease version';
+  }
+  if (!changelogExists) {
+    return 'no changelog file';
+  }
+  // Prevents another cut-off when that version has already been cut off.
+  if (changelogVersions.includes(releaseVersion)) {
+    return 'version already exists';
+  }
+  return null;
+}
 
 /**
  * Cuts off changelogs - renames unpublished section header
@@ -26,24 +50,21 @@ export const cutOffChangelogs = new Task<TaskArgs>(
           return;
         }
 
-        let skipReason = '';
+        const changelogExists = await changelog.fileExistsAsync();
+        const skipReason = getCutOffSkipReason(
+          state.releaseVersion,
+          changelogExists,
+          changelogExists ? await changelog.getVersionsAsync() : []
+        );
 
-        if (await changelog.fileExistsAsync()) {
-          const versions = await changelog.getVersionsAsync();
-
-          // This prevents unnecessary cut-offs when that version was already cutted off.
-          // Maybe we should move "unpublished" entries to this version? It's probably too rare to worry about it.
-          if (!versions.includes(state.releaseVersion)) {
-            logger.log('  ', green(pkg.packageName) + '...');
-            await changelog.cutOffAsync(state.releaseVersion);
-            await changelog.saveAsync();
-            return;
-          }
-          skipReason = 'version already exists';
-        } else {
-          skipReason = 'no changelog file';
+        if (skipReason) {
+          logger.log('  ', green(pkg.packageName), gray(`- skipped, ${skipReason}`));
+          return;
         }
-        logger.log('  ', green(pkg.packageName), gray(`- skipped, ${skipReason}`));
+
+        logger.log('  ', green(pkg.packageName) + '...');
+        await changelog.cutOffAsync(state.releaseVersion);
+        await changelog.saveAsync();
       })
     );
   }

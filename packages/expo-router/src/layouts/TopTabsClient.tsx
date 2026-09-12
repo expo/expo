@@ -12,6 +12,7 @@ import type {
   MaterialTopTabNavigationOptions,
 } from '../react-navigation/material-top-tabs/types';
 import {
+  CommonActions,
   type ParamListBase,
   type TabNavigationState,
   TabRouter,
@@ -34,11 +35,13 @@ const TopTabs = unstable_integrateWithRouter<
   TabRouterOptions,
   MaterialTopTabNavigatorCreateProps
 >(createStandardMaterialTopTabNavigator, TabRouter, {
+  activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch }) => ({
+  createProps: ({ state, dispatch, dispatchSync }) => ({
     routeNames: state.routeNames,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
+    navigateToTabSync: (name, params) => dispatchSync(CommonActions.navigate(name, params)),
   }),
 });
 

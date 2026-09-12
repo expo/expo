@@ -37,7 +37,7 @@ private fun isSupportedSdkVersion(sdkVersion: String): Boolean {
 }
 
 @Composable
-fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
+fun SnackRow(snack: Home_AccountSnacksQuery.Node) {
   val uriHandler = LocalUriHandler.current
   val isSupported = isSupportedSdkVersion(snack.commonSnackData.sdkVersion)
   var showUnsupportedDialog by remember { mutableStateOf(false) }

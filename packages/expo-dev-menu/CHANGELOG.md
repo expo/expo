@@ -6,8 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Add a JavaScript API to show or hide the floating Tools button at runtime. ([#47746](https://github.com/expo/expo/pull/47746) by [@KevinvdBurg](https://github.com/KevinvdBurg))
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Read the performance monitor state from hosts that replace the default FPS overlay with their own monitor.
 
 ### 🐛 Bug fixes
 
@@ -22,6 +33,7 @@
 - [iOS] Replace dev-menu swizzling and reflection into React Native internals with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove the manual packager socket reconnect now that the bundle configuration resolves the dev server host. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+- Show QuickJS as the JavaScript engine in the dev menu on Android and iOS. ([#49994](https://github.com/expo/expo/pull/49994) by [@ammarahm-ed](https://github.com/ammarahm-ed))
 
 ## 57.0.10 - 2026-07-29
 

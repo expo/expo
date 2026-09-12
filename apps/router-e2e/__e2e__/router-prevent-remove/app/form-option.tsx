@@ -1,5 +1,4 @@
-import { router } from 'expo-router';
-import { usePreventRemove } from 'expo-router/react-navigation';
+import { router, usePreventRemove } from 'expo-router';
 import { useState } from 'react';
 import { Button, Text, View } from 'react-native';
 

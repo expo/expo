@@ -49,6 +49,16 @@ open class AppLoader: NSObject {
   private let arrayLock: NSLock = NSLock()
   private let completionQueue: DispatchQueue
 
+  /// Overridable for testing, where the bundle has no `app.manifest`.
+  internal lazy var embeddedUpdate: Update? = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+
+  /// Overridable for testing, where fixtures live in the test bundle rather than in `updatesBundle`.
+  internal var embeddedAssetsBundle: Bundle = updatesBundle
+
+  /// Whether an asset with no database row may be copied out of the app binary rather than
+  /// downloaded. Only remote loads have anything to reuse.
+  internal var reusesEmbeddedAssets: Bool { true }
+
   public init(
     config: UpdatesConfig,
     logger: UpdatesLogger,
@@ -208,7 +218,13 @@ open class AppLoader: NSObject {
       if let assets = updateManifest.assets(),
         !assets.isEmpty {
         self.assetsToLoad = assets
-        let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+        let embeddedUpdate = self.embeddedUpdate
+        let embeddedAssetsByKey = Dictionary(
+          (embeddedUpdate?.assets() ?? []).compactMap { embeddedAsset in
+            embeddedAsset.key.map { ($0, embeddedAsset) }
+          },
+          uniquingKeysWith: { first, _ in first }
+        )
         let requestedUpdate: Update? = {
           if let launchedUpdate = self.launchedUpdate,
             launchedUpdate.updateId == updateManifest.updateId {
@@ -251,13 +267,72 @@ open class AppLoader: NSObject {
               }
             }
           } else {
-            self.downloadAsset(asset, extraHeaders: extraHeaders)
+            FileDownloader.assetFilesQueue.async {
+              if self.copyAssetFromEmbeddedBundleIfPresent(asset, embeddedAssetsByKey: embeddedAssetsByKey) {
+                return
+              }
+              self.downloadAsset(asset, extraHeaders: extraHeaders)
+            }
           }
         }
       } else {
         self.finish()
       }
     }
+  }
+
+  /**
+   * Satisfies an asset from the embedded update in the app binary rather than downloading it.
+   * Embedded assets have no database row when copying is off, so the lookup above misses them and
+   * a remote update would otherwise re-download bytes that already ship in the app.
+   *
+   * Returns true when it handled the asset. Every failure returns false so the caller downloads it.
+   *
+   * Must be called on `FileDownloader.assetFilesQueue`.
+   */
+  internal func copyAssetFromEmbeddedBundleIfPresent(
+    _ asset: UpdateAsset,
+    embeddedAssetsByKey: [String: UpdateAsset]
+  ) -> Bool {
+    guard reusesEmbeddedAssets else {
+      return false
+    }
+
+    guard let key = asset.key,
+      UpdatesUtils.isSafeFilename(asset.filename),
+      let embeddedAsset = embeddedAssetsByKey[key],
+      embeddedAsset.mainBundleFilename != nil,
+      let bundlePath = UpdatesUtils.path(forBundledAsset: embeddedAsset, in: embeddedAssetsBundle) else {
+      return false
+    }
+
+    guard let data = try? Data(contentsOf: URL(fileURLWithPath: bundlePath), options: .mappedIfSafe) else {
+      logger.warn(message: "AppLoader: could not read embedded asset \(key), downloading it instead")
+      return false
+    }
+
+    // Keys are content-addressed, so a mismatch means the manifest is wrong about what we shipped.
+    if let expectedHash = asset.expectedHash {
+      let actualHash = UpdatesUtils.base64UrlEncodedSHA256WithData(data)
+      if expectedHash != actualHash {
+        logger.warn(
+          message: "AppLoader: embedded asset \(key) hashed to \(actualHash) but the update expects \(expectedHash), downloading it instead"
+        )
+        return false
+      }
+    }
+
+    do {
+      try data.write(to: directory.appendingPathComponent(asset.filename), options: .atomic)
+    } catch {
+      logger.warn(message: "AppLoader: could not copy embedded asset \(key) into the updates directory, downloading it instead")
+      return false
+    }
+
+    DispatchQueue.global().async {
+      self.handleAssetDownload(withData: data, response: nil, asset: asset)
+    }
+    return true
   }
 
   public func handleAssetDownloadAlreadyExists(_ asset: UpdateAsset) {
@@ -358,18 +433,29 @@ open class AppLoader: NSObject {
     database.databaseQueue.async {
       self.arrayLock.lock()
 
+      guard let updateResponse = self.updateResponseContainingManifest,
+        let updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        self.arrayLock.unlock()
+        self.finish(withError: UpdatesError.appLoaderFinishedWithoutManifest)
+        return
+      }
+
+      var assetsToLink: [UpdateAsset] = []
       for existingAsset in self.existingAssets {
-        var existingAssetFound: Bool = false
+        let existingAssetFound: Bool
         do {
-          existingAssetFound = try self.database.addExistingAsset(
-            existingAsset,
-            toUpdateWithId: self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest.updateId
-          )
+          existingAssetFound = try self.database.asset(withKey: existingAsset.key) != nil
         } catch {
-          self.logger.warn(message: "Error searching for existing asset in DB: \(error.localizedDescription)")
+          // treating a failed check as "not found" would re-insert an existing asset, and the
+          // key-conflicting replace cascade-deletes every update that uses the old row
+          self.arrayLock.unlock()
+          self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
+          return
         }
 
-        if !existingAssetFound {
+        if existingAssetFound {
+          assetsToLink.append(existingAsset)
+        } else {
           // the database and filesystem have gotten out of sync
           // do our best to create a new entry for this file even though it already existed on disk
           // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
@@ -392,25 +478,16 @@ open class AppLoader: NSObject {
       }
 
       do {
-        try self.database.addNewAssets(
-          self.finishedAssets,
-          toUpdateWithId: self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest.updateId
+        try self.database.finishUpdateRegistration(
+          updateManifest,
+          newAssets: self.finishedAssets,
+          existingAssets: assetsToLink,
+          markFinished: self.erroredAssets.isEmpty
         )
       } catch {
         self.arrayLock.unlock()
         self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
         return
-      }
-
-      if self.erroredAssets.isEmpty {
-        do {
-          let updateManifest = self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest
-          try self.database.markUpdateFinished(updateManifest)
-        } catch {
-          self.arrayLock.unlock()
-          self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
-          return
-        }
       }
 
       var successBlock: AppLoaderSuccessBlock?
@@ -432,7 +509,7 @@ open class AppLoader: NSObject {
         if let errorBlock = errorBlock {
           errorBlock(UpdatesError.appLoaderFailedToLoadAllAssets)
         } else if let successBlock = successBlock {
-          successBlock(self.updateResponseContainingManifest!)
+          successBlock(updateResponse)
         }
       }
     }

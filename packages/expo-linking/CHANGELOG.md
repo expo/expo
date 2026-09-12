@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - Create development deep links from the bundle URL's authority instead of the manifest's `hostUri` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

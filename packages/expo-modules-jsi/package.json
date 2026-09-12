@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-jsi",
-  "version": "57.0.4",
+  "version": "58.0.0",
   "description": "The JavaScript Interface for Expo Modules",
   "main": "index.js",
   "sideEffects": [],
@@ -11,7 +11,9 @@
     }
   },
   "scripts": {
+    "benchmark": "TEST_RUNNER_EXPO_BENCHMARK=1 DESTINATION=\"${DESTINATION:-platform=macOS,variant=Mac Catalyst}\" apple/scripts/test.sh -configuration Release -only-testing Benchmarks -enableCodeCoverage NO",
     "build:xcframework": "apple/scripts/build-xcframework.sh",
+    "precompile-ios": "et prebuild-package-for-publish",
     "clean": "apple/scripts/clear-caches.sh",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",

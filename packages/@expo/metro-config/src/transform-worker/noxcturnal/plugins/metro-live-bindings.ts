@@ -21,8 +21,10 @@ export function createMetroLiveBindingsPlugin(
     return scope.generateUid(name);
   };
   const property = (object: string, name: string) => `${object}.${name}`;
-  const exportsName = (context: { pluginData: unknown }) =>
-    metroPluginData(context).normalizePseudoGlobals ? 'e' : 'exports';
+  const exportsName = (context: { pluginData: unknown }) => {
+    const { normalizePseudoGlobals, pseudoGlobals } = metroPluginData(context);
+    return normalizePseudoGlobals ? pseudoGlobals.exports : 'exports';
+  };
   const liveExport = (name: string, expression: string, target = 'exports') =>
     `Object.defineProperty(${target}, ${JSON.stringify(name)}, { enumerable: true, get: function () { return ${expression}; } });`;
   const exportValue = (name: string, expression: string, target = 'exports') =>
@@ -34,6 +36,7 @@ export function createMetroLiveBindingsPlugin(
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,

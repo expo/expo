@@ -205,18 +205,6 @@ async function registerForPushNotificationsAsync() {
 ```ts
 import * as Notifications from 'expo-notifications';
 
-// First, set the handler that will cause the notification
-// to show the alert
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
-
-// Second, call scheduleNotificationAsync()
 Notifications.scheduleNotificationAsync({
   content: {
     title: 'Look at that notification',
@@ -377,6 +365,12 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
         'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.',
     },
     {
+      name: 'largeIcon',
+      platform: 'android',
+      description:
+        'Local path to an image to use as the large icon for notifications. The image is resized to 64x64 dp and shown next to the notification text. A notification that carries its own image uses that image instead.',
+    },
+    {
       name: 'color',
       default: '#ffffff',
       platform: 'android',
@@ -413,6 +407,7 @@ Here is an example of using the config plugin in the app config file:
         "expo-notifications",
         {
           "icon": "./local/assets/notification_icon.png",
+          "largeIcon": "./local/assets/notification_large_icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
           "sounds": [
@@ -446,13 +441,18 @@ Learn how to configure the native projects in the [installation instructions in 
 - Starting from Android 12 (API level 31), to schedule a notification that triggers at an exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
   Read more about the [exact alarm permission](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
+  The `delivery: 'alarmClock'` trigger option also requires an exact alarm permission. On Android 13 (API level 33) and later, alarm clock, timer, and calendar apps
+  can declare `<uses-permission android:name="android.permission.USE_EXACT_ALARM"/>` instead. The system grants that permission without a user prompt.
+  [Google Play's exact alarm policy](https://support.google.com/googleplay/android-developer/answer/13161072) restricts `USE_EXACT_ALARM` to those app categories.
 
 - On Android 13, app users must opt-in to receive notifications via a permissions prompt automatically triggered by the operating system.
   This prompt will not appear until at least one notification channel is created. The `setNotificationChannelAsync` must be called before
   `getDevicePushTokenAsync` or `getExpoPushTokenAsync` to obtain a push token. You can read more about the new notification permission behavior for Android 13
   in the [official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
 
-<AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM']} />
+<AndroidPermissions
+  permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM', 'USE_EXACT_ALARM']}
+/>
 
 ### iOS
 

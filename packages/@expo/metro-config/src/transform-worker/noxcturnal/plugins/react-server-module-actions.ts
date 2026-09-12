@@ -19,7 +19,12 @@ interface ReactServerActionsState {
   registerBinding: string;
   wrapperBinding: string;
   usesCapturedArgs: boolean;
+  hoists: Code[];
   actions: { localName?: string; exportedName: string }[];
+}
+
+function emitHoist(state: ReactServerActionsState, code: Code): void {
+  state.hoists.push(code);
 }
 
 export function createReactServerModuleActionsPlugin(
@@ -41,6 +46,7 @@ export function createReactServerModuleActionsPlugin(
         registerBinding: '',
         wrapperBinding: '',
         usesCapturedArgs: false,
+        hoists: [],
         actions: [],
       };
     },
@@ -116,12 +122,10 @@ export function createReactServerModuleActionsPlugin(
           const closureInit = closureParameter
             ? `var [${capturedNames.join(', ')}] = ${closureParameter}.value;`
             : '';
-          arrow
-            .getProgramParent()!
-            .unshiftContainer(
-              'body',
-              `export var ${actionId} = ${state.registerBinding}(async (${extractedParameters}) => {${closureInit}${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
-            );
+          emitHoist(
+            state,
+            `export var ${actionId} = ${state.registerBinding}(async (${extractedParameters}) => {${closureInit}${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
+          );
           arrow.replaceWith(
             closureParameter
               ? `${actionId}.bind(null, ${state.wrapperBinding}(() => [${capturedNames.join(', ')}]))`
@@ -181,12 +185,10 @@ export function createReactServerModuleActionsPlugin(
           const closureInit = closureParameter
             ? `var [${capturedNames.join(', ')}] = ${closureParameter}.value;`
             : '';
-          fn.scope
-            .getProgramParent()
-            .path!.unshiftContainer(
-              'body',
-              `export var ${actionId} = ${state.registerBinding}(async function${name}(${extractedParameters}) {${closureInit}${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
-            );
+          emitHoist(
+            state,
+            `export var ${actionId} = ${state.registerBinding}(async function${name}(${extractedParameters}) {${closureInit}${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
+          );
           fn.replaceWith(
             closureParameter
               ? `${actionId}.bind(null, ${state.wrapperBinding}(() => [${capturedNames.join(', ')}]))`
@@ -202,7 +204,10 @@ export function createReactServerModuleActionsPlugin(
         {
           fields: ['async', 'generator', 'name', 'bodyEnd'],
           scope: true,
-          ancestry: { mode: 2 },
+          ancestry: {
+            mode: 2,
+            routes: { Function: { fields: ['bodyStart'] } },
+          },
           children: {
             body: {
               route: 'FunctionBody',
@@ -226,29 +231,53 @@ export function createReactServerModuleActionsPlugin(
           if (fn.node.async !== true || fn.node.generator === true) {
             fn.unsupported('server-action-non-async-inline');
           }
+          if (typeof fn.node.name !== 'string') {
+            fn.unsupported('server-action-nested-function-declaration');
+          }
+          const declarationName = String(fn.node.name);
           const topLevel =
             fn.parentPath?.node.type === 'Program' ||
             (fn.parentPath?.node.type === 'ExportNamedDeclaration' &&
               fn.parentPath.parentPath?.node.type === 'Program');
-          if (!topLevel || typeof fn.node.name !== 'string') {
-            fn.unsupported('server-action-nested-function-declaration');
-          }
+          const captures = topLevel
+            ? []
+            : (fn.context.query({
+                captures: [{ functionId: fn.node.id, programBindings: false }],
+              }).captures[fn.node.id] ?? []);
+          const capturedNames = sortedUniqueCaptureNames(captures);
           const actionId = fn.scope.getProgramParent().generateUid('$$INLINE_ACTION');
           const parameters = fn
             .getChildList('params')
             .map((parameter) => parameter.sourceText())
             .join(', ');
           const bodySource = fn.context.source.slice(directive.node.end, Number(fn.node.bodyEnd));
-          fn.scope
-            .getProgramParent()
-            .path!.unshiftContainer(
-              'body',
-              `export var ${actionId} = ${state.registerBinding}(async function ${fn.node.name}(${parameters}) {${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
-            );
-          fn.replaceWith(`var ${fn.node.name} = ${actionId};`);
+          const closureParameter =
+            capturedNames.length === 0 ? '' : fn.scope.generateUid('$$CLOSURE');
+          const extractedParameters = [...(closureParameter ? [closureParameter] : []), parameters]
+            .filter(Boolean)
+            .join(', ');
+          const closureInit = closureParameter
+            ? `var [${capturedNames.join(', ')}] = ${closureParameter}.value;`
+            : '';
+          emitHoist(
+            state,
+            `export var ${actionId} = ${state.registerBinding}(async function ${declarationName}(${extractedParameters}) {${closureInit}${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
+          );
+          const replacement = `var ${declarationName} = ${
+            closureParameter
+              ? `${actionId}.bind(null, ${state.wrapperBinding}(() => [${capturedNames.join(', ')}]))`
+              : actionId
+          };`;
+          if (topLevel) {
+            fn.replaceWith(replacement);
+          } else {
+            fn.remove();
+            fn.scope.parent!.push(replacement);
+          }
+          if (closureParameter) state.usesCapturedArgs = true;
           state.boundary.handledDirectives.add(directive.id);
           state.actions.push({
-            localName: fn.node.name,
+            localName: declarationName,
             exportedName: actionId,
           });
         }
@@ -419,7 +448,7 @@ export { ${name} as default };`);
           state.usesCapturedArgs
             ? `var ${state.wrapperBinding} = (thunk) => { let cache; return { get value() { return cache || (cache = thunk()); } }; };\n`
             : ''
-        }`
+        }${state.hoists.length > 0 ? `${state.hoists.join('\n')}\n` : ''}`
       );
       context.metadata.set('reactServerActions', payload);
       context.metadata.set('reactServerReference', pathToFileURL(state.input.filename).href);

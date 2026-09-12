@@ -245,7 +245,7 @@ function formatViolationFiles(byFile: Record<string, string[]>): string {
 function formatBlockedViolation(byFile: Record<string, string[]>): string {
   return [
     'Refused to load dangerous environment variables from .env files.',
-    'Opt in via EXPO_UNSAFE_DOTENV_KEYS in your shell environment if you truly need them.',
+    'Use EXPO_UNSAFE_DOTENV_KEYS in your shell environment to allow a non-internal key.',
     '',
     formatViolationFiles(byFile),
   ].join('\n');

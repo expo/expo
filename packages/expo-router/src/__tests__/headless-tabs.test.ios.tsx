@@ -4,13 +4,14 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { unstable_useIsNavigating } from '../exports';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { useGuardRedirect } from '../layouts/GuardContext';
 import { Stack } from '../layouts/Stack';
 import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
+import { unstable_navigationEvents } from '../navigationEvents';
 import { useIsFocused } from '../react-navigation/native';
 import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs, useTabTrigger } from '../ui';
@@ -18,6 +19,14 @@ import { useNavigation } from '../useNavigation';
 import { useNavigatorContext } from '../views/Navigator';
 import type { PressableProps } from '../views/Pressable';
 import { Pressable } from '../views/Pressable';
+
+function createDeferred() {
+  let resolve!: (value: string) => void;
+  const promise = new Promise<string>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
 
 const renderFruitApp = (options: RenderRouterOptions = {}) =>
   renderRouter(
@@ -91,6 +100,51 @@ const renderFruitApp = (options: RenderRouterOptions = {}) =>
     options
   );
 
+it('keeps the current tab visible while a queued tab switch suspends', async () => {
+  const deferred = createDeferred();
+
+  function Layout() {
+    const isNavigating = unstable_useIsNavigating();
+    return (
+      <>
+        <Text testID="is-navigating">{String(isNavigating)}</Text>
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" testID="goto-index" />
+            <TabTrigger name="slow" href="/slow" testID="goto-slow" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      </>
+    );
+  }
+
+  function SlowScreen() {
+    return <Text testID="slow">{React.use(deferred.promise)}</Text>;
+  }
+
+  renderRouter({
+    _layout: Layout,
+    index: () => <Text testID="index">Index</Text>,
+    slow: {
+      default: SlowScreen,
+      SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
+    },
+  });
+
+  const navigationAct = act(() => fireEvent.press(screen.getByTestId('goto-slow')));
+
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('fallback')).toBeNull();
+
+  deferred.resolve('Slow');
+  await navigationAct;
+
+  await waitFor(() => expect(screen.getByTestId('is-navigating')).toHaveTextContent('false'));
+  expect(screen.getByTestId('slow')).toBeVisible();
+});
+
 it('should render the correct screen with nested navigators', () => {
   renderFruitApp({ initialUrl: '/apple' });
   expect(screen).toHaveSegments(['(group)', 'apple']);
@@ -105,9 +159,63 @@ it('should render the correct screen with nested navigators', () => {
   fireEvent.press(screen.getByTestId('goto-apple'));
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
-  // Banana route should be preserved
+  // A deep trigger resolves its destination against the preserved stack.
   fireEvent.press(screen.getByTestId('goto-banana'));
-  expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
+});
+
+it('pressing a deep trigger resolves its href in the focused tab', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="banana" href="/banana/details" />
+          </TabList>
+          <TabTrigger name="banana" testID="deep-trigger" />
+          <TabSlot />
+        </Tabs>
+      ),
+      'banana/_layout': () => <Stack />,
+      'banana/index': () => <Text testID="banana-index">Index</Text>,
+      'banana/details': () => <Text testID="banana-details">Details</Text>,
+    },
+    { initialUrl: '/banana' }
+  );
+
+  fireEvent.press(screen.getByTestId('deep-trigger'));
+  expect(screen.getByTestId('banana-details')).toBeVisible();
+});
+
+it('pressing an inherited deep trigger resolves its href in the focused parent tab', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="a" href="/a/b" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      'a/_layout': () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/a" />
+            <TabTrigger name="b" href="/a/b" />
+          </TabList>
+          <TabTrigger name="a" testID="deep-parent-trigger" />
+          <TabSlot />
+        </Tabs>
+      ),
+      'a/index': () => <Text testID="a-index">A</Text>,
+      'a/b': () => <Text testID="a-b">B</Text>,
+    },
+    { initialUrl: '/a' }
+  );
+
+  fireEvent.press(screen.getByTestId('deep-parent-trigger'));
+  expect(screen.getByTestId('a-b')).toBeVisible();
 });
 
 it('should respect `unstable_settings on native', () => {
@@ -1093,15 +1201,12 @@ it('passes query params to a direct child navigator', () => {
     ),
     index: () => null,
     'movies/_layout': function MoviesLayout() {
-      const { filter } = useLocalSearchParams();
-      return (
-        <>
-          <Text testID="filter">{filter}</Text>
-          <Stack />
-        </>
-      );
+      return <Stack />;
     },
-    'movies/index': () => null,
+    'movies/index': function Movies() {
+      const { filter } = useLocalSearchParams();
+      return <Text testID="filter">{filter}</Text>;
+    },
   });
 
   fireEvent.press(screen.getByTestId('goto-movies'));
@@ -1139,6 +1244,14 @@ it('can reference a parent trigger from nested tabs', () => {
   expect(screen.getByTestId('current-parent')).toHaveProp('isFocused', true);
   expect(screen.getByTestId('goto-parent')).toHaveProp('isFocused', false);
   fireEvent.press(screen.getByTestId('goto-parent'));
+  expect(screen.getByTestId('current-parent', { includeHiddenElements: true })).toHaveProp(
+    'isFocused',
+    false
+  );
+  expect(screen.getByTestId('goto-parent', { includeHiddenElements: true })).toHaveProp(
+    'isFocused',
+    true
+  );
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
@@ -1270,6 +1383,34 @@ it('resets on focus when resetOnFocus is true', () => {
   expect(screen).toHaveSegments(['stack']);
 });
 
+it('resets before resolving a deep trigger destination', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" testID="goto-index" href="/" />
+          <TabTrigger name="stack" testID="goto-stack" href="/stack/details" resetOnFocus />
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    index: () => null,
+    'stack/_layout': () => <Stack />,
+    'stack/index': () => <Text testID="stack-index">Index</Text>,
+    'stack/page': () => <Text testID="stack-page">Page</Text>,
+    'stack/details': () => <Text testID="stack-details">Details</Text>,
+  });
+
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  act(() => router.push('/stack/page'));
+  fireEvent.press(screen.getByTestId('goto-index'));
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-details')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
+});
+
 it('resets when focused tab is pressed again', async () => {
   renderRouter({
     _layout: () => (
@@ -1310,8 +1451,7 @@ it('resets when focused tab is pressed again', async () => {
 });
 
 it('dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
+  const dispatchedActions: string[] = [];
 
   renderRouter({
     _layout: () => (
@@ -1351,9 +1491,9 @@ it('dispatches only one action when re-tapping active tab with nested stack', as
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
+  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+    dispatchedActions.push(event.actionType)
+  );
 
   // Re-tap the movies tab
   await userEvent.press(screen.getByTestId('goto-movies'));
@@ -1365,14 +1505,11 @@ it('dispatches only one action when re-tapping active tab with nested stack', as
 
   expect(dispatchedActions).toHaveLength(1);
 
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(dispatchedActions[0]).toBe('POP_TO_TOP');
 });
 
 it('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
+  const dispatchedActions: string[] = [];
 
   renderRouter({
     _layout: () => (
@@ -1405,9 +1542,9 @@ it('JSTabs dispatches only one action when re-tapping active tab with nested sta
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
+  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+    dispatchedActions.push(event.actionType)
+  );
 
   // Re-tap the movies tab
   await userEvent.press(screen.getByLabelText('movies, tab, 2 of 2'));
@@ -1419,9 +1556,7 @@ it('JSTabs dispatches only one action when re-tapping active tab with nested sta
 
   expect(dispatchedActions).toHaveLength(1);
 
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(dispatchedActions[0]).toBe('POP_TO_TOP');
 });
 
 it('does not reset when focused tab is pressed again, but the press is prevented', async () => {

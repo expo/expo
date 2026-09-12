@@ -42,7 +42,7 @@ expoModule {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.17'
+version = '58.0.0'
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -80,16 +80,25 @@ def exUpdatesCopyEmbeddedAssets = getBoolStringFromPropOrEnv("EX_UPDATES_COPY_EM
 
 def useDevClient = findProject(":expo-dev-client") != null
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
   buildFeatures {
     buildConfig true
     prefab true
   }
 
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
+
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '56.0.17'
+    versionName '58.0.0'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -101,6 +110,7 @@ android {
 
     externalNativeBuild {
       cmake {
+        abiFilters(*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
       }

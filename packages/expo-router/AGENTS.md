@@ -21,7 +21,8 @@ File-based routing library for React Native and web applications. It provides au
 │   ├── matchers.tsx           # Route segment pattern matching
 │   │
 │   ├── global-state/          # State management
-│   │   ├── router-store.tsx   # Zustand store for router state
+│   │   ├── routerConfigContext.ts  # Static router configuration context
+│   │   ├── navigationRef.ts   # Imperative navigation ref
 │   │   ├── routing.ts         # Navigation queue and routing functions
 │   │   ├── getRouteInfoFromState.ts, routeInfoCache.ts, useRouteInfo.ts  # Current route information
 │   │   └── serverLocationContext.ts  # Server-side location context
@@ -231,6 +232,13 @@ const screenProps = MockedComponent.mock.calls[1][0];
 
 ## Key Concepts
 
+### Expo Router Semantics
+
+- Evaluate all features exclusively from the Expo Router perspective. If a behavior is unavailable through Expo Router, React Navigation support for that behavior is irrelevant.
+- `expo-router/react-navigation` is only a compatibility layer. Do not treat its capabilities as Expo Router features unless Expo Router exposes them.
+- Protected routes are implemented as redirects and do not depend on `routeNames`.
+- `routeNames` are stable in Expo Router except during HMR.
+
 ### File-Based Routing Conventions
 
 - `page/index.tsx` → `/page`
@@ -252,7 +260,7 @@ const screenProps = MockedComponent.mock.calls[1][0];
 
 ### State Management
 
-- **RouterStore** (`global-state/router-store.tsx`): The global store managing navigation state, and making it accessible imperatively via the `store` object
+- **Router state**: Use `RouterConfigContext`, `NavigationContainerRefContext`, and `RootNavigationStateContext` for in-tree reads, and `navigationRef` for the imperative `router.*` API
 - **Routing Queue** (`global-state/routing.ts`): Batches navigation actions and processes them sequentially
 
 ### Platform-Specific Code

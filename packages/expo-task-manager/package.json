@@ -1,6 +1,6 @@
 {
   "name": "expo-task-manager",
-  "version": "57.0.7",
+  "version": "58.0.0",
   "description": "Expo module that provides support for tasks that can run in the background.",
   "keywords": [
     "background",
@@ -35,7 +35,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "unimodules-app-loader": "workspace:~56.0.0"
+    "unimodules-app-loader": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

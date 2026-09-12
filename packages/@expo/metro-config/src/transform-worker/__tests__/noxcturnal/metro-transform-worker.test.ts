@@ -22,9 +22,15 @@ it('falls back after one full native attempt without producing an intermediate t
     config: {} as JsTransformerConfig,
     projectRoot: '/app',
     options: {
+      dev: true,
+      minify: false,
+      inlinePlatform: false,
+      inlineRequires: false,
+      platform: null,
       type: 'module',
+      unstable_transformProfile: 'default',
       customTransformOptions: { engine: 'hermes' },
-    } as JsTransformOptions,
+    } satisfies JsTransformOptions,
   };
   const completeFullTransform = jest.fn();
 

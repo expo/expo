@@ -16,7 +16,7 @@ export function MethodSelectCard({ Icon, title, description, isSelected, onClick
     <ButtonBase onClick={onClick}>
       <div
         className={mergeClasses(
-          'flex h-full w-68 flex-col overflow-hidden rounded-lg border border-default shadow-xs transition-all',
+          'flex h-full w-68 flex-col overflow-hidden rounded-3xl border border-default shadow-xs transition-all',
           'hocus:scale-[102%] hocus:shadow-sm'
         )}>
         <div
@@ -25,6 +25,7 @@ export function MethodSelectCard({ Icon, title, description, isSelected, onClick
             isSelected ? 'bg-linear-to-b from-palette-blue3 to-palette-blue4' : 'bg-subtle'
           )}>
           <Icon
+            aria-hidden="true"
             style={{ width: 56, height: 56 }}
             className={isSelected ? 'text-link' : 'text-icon-default'}
           />

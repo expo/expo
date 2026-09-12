@@ -208,26 +208,28 @@ describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
   });
 
   describe('image icons', () => {
-    it('converts image icon to imageSource format by default', () => {
+    it('passes image icon as untinted by default', () => {
       const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
         icon: { uri: 'https://example.com/icon.png' },
       });
 
       expect(result.icon).toEqual({
-        type: 'imageSource',
-        imageSource: { uri: 'https://example.com/icon.png' },
+        type: 'image',
+        source: { uri: 'https://example.com/icon.png' },
+        tinted: false,
       });
     });
 
-    it('converts image icon to templateSource format when iconRenderingMode is template', () => {
+    it('passes image icon as tinted when iconRenderingMode is template', () => {
       const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
         icon: { uri: 'https://example.com/icon.png' },
         iconRenderingMode: 'template',
       });
 
       expect(result.icon).toEqual({
-        type: 'templateSource',
-        templateSource: { uri: 'https://example.com/icon.png' },
+        type: 'image',
+        source: { uri: 'https://example.com/icon.png' },
+        tinted: true,
       });
     });
   });
@@ -413,7 +415,7 @@ describe('submenu conversion', () => {
       });
     });
 
-    it('converts image icons to imageSource format in submenu', () => {
+    it('passes image icons in submenu', () => {
       const result = convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
           <StackToolbarMenu title="Submenu" icon={{ uri: 'https://example.com/icon.png' }}>
@@ -424,13 +426,14 @@ describe('submenu conversion', () => {
 
       expect(result?.menu.items[0]).toMatchObject({
         icon: {
-          type: 'imageSource',
-          imageSource: { uri: 'https://example.com/icon.png' },
+          type: 'image',
+          source: { uri: 'https://example.com/icon.png' },
+          tinted: false,
         },
       });
     });
 
-    it('converts xcasset icons in submenu to imageSource format', () => {
+    it('passes xcasset icons in submenu as image icons', () => {
       const result = convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
           <StackToolbarMenu title="Submenu">
@@ -441,7 +444,7 @@ describe('submenu conversion', () => {
       });
 
       expect(result?.menu.items[0]).toMatchObject({
-        icon: { type: 'imageSource', imageSource: { uri: 'custom-icon' } },
+        icon: { type: 'image', source: { uri: 'custom-icon' }, tinted: false },
       });
     });
   });

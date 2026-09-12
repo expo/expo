@@ -1,5 +1,6 @@
 #include "NativeStatePropsGetter.h"
 #include "AndroidExpoViewState.h"
+#include "ContentOriginRegistry.h"
 #include <react/fabric/StateWrapperImpl.h>
 
 #include <react/renderer/core/ConcreteState.h>
@@ -11,6 +12,9 @@ void NativeStatePropsGetter::registerNatives() {
                                       makeNativeMethod("getStateProps", NativeStatePropsGetter::getStateProps),
                                       makeNativeMethod("updateStyleSizeImmediateImpl", NativeStatePropsGetter::updateStyleSizeImmediate),
                                       makeNativeMethod("updateViewSizeImmediateImpl", NativeStatePropsGetter::updateViewSizeImmediate),
+                                      makeNativeMethod("setContentOriginImpl", NativeStatePropsGetter::setContentOrigin),
+                                      makeNativeMethod("clearContentOriginImpl", NativeStatePropsGetter::clearContentOrigin),
+                                      makeNativeMethod("clearAllContentOriginsImpl", NativeStatePropsGetter::clearAllContentOrigins),
                                     });
 }
 
@@ -55,6 +59,31 @@ void NativeStatePropsGetter::updateViewSizeImmediate(
   newState._width = static_cast<float>(width);
   newState._height = static_cast<float>(height);
   state->updateState(std::move(newState), react::EventQueue::UpdateMode::unstable_Immediate);
+}
+
+void NativeStatePropsGetter::setContentOrigin(
+  jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+  jint tag,
+  jdouble x,
+  jdouble y
+) {
+  ContentOriginRegistry::set(
+    static_cast<react::Tag>(tag),
+    react::Point{.x = static_cast<react::Float>(x), .y = static_cast<react::Float>(y)}
+  );
+}
+
+void NativeStatePropsGetter::clearContentOrigin(
+  jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+  jint tag
+) {
+  ContentOriginRegistry::clear(static_cast<react::Tag>(tag));
+}
+
+void NativeStatePropsGetter::clearAllContentOrigins(
+  jni::alias_ref<NativeStatePropsGetter::javaobject> self
+) {
+  ContentOriginRegistry::clearAll();
 }
 
 jni::local_ref<jni::JMap<jstring, jobject>> NativeStatePropsGetter::getStateProps(

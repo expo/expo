@@ -3,8 +3,9 @@ import type { Dispatch, SetStateAction } from 'react';
 import { createContext, use, useState } from 'react';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
+import JSStack from '../layouts/JSStack';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -49,7 +50,12 @@ it('redirects a guarded route to the anchor default during the initial load', ()
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'index', 'b', 'c']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'index',
+    'b',
+    'c',
+  ]);
 });
 
 it('redirects nested guarded routes to the anchor and unlocks them as guards flip', () => {
@@ -138,7 +144,12 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen.getByTestId('c')).toBeVisible();
   expect(screen).toHavePathname('/c');
 
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'b',
+    'c',
+    'index',
+  ]);
 });
 
 it('defaults a guarded route to the navigator anchor', () => {
@@ -187,7 +198,11 @@ it('defaults a guarded route to the navigator anchor', () => {
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'index']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'b',
+    'index',
+  ]);
 });
 
 it('redirects a guarded route to an explicit redirectTo target', () => {
@@ -388,6 +403,37 @@ it('should remove guarded routes from history when a guard flips false', () => {
     setGuard(false);
   });
 
+  act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('should remove guarded routes from JavaScript stack history when a guard flips false', () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <JSStack>
+          <JSStack.Protected guard={guard}>
+            <JSStack.Screen name="secret" />
+          </JSStack.Protected>
+          <JSStack.Screen name="other" />
+        </JSStack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    other: () => <Text testID="other">other</Text>,
+  });
+
+  act(() => router.push('/secret'));
+  act(() => router.push('/other'));
+  act(() => setGuard(false));
   act(() => router.back());
 
   expect(screen.getByTestId('index')).toBeVisible();
@@ -641,7 +687,7 @@ describe('all routes guarded', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen).toHavePathname('/second');
 
-    const stateBefore = store.state!.routes[0]!.state!;
+    const stateBefore = navigationRef.getRootState().routes[0]!.state!;
     const focusedKeyBefore = stateBefore.routes[stateBefore.index!]!.key;
 
     // Guard everything: content hides but the navigator must stay mounted.
@@ -659,7 +705,7 @@ describe('all routes guarded', () => {
 
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen).toHavePathname('/second');
-    const stateAfter = store.state!.routes[0]!.state!;
+    const stateAfter = navigationRef.getRootState().routes[0]!.state!;
     expect(stateAfter.routes[stateAfter.index!]!.key).toBe(focusedKeyBefore);
     // Non-focused guarded history entries are pruned while the guard is down,
     // so only the focused route survives the flip.

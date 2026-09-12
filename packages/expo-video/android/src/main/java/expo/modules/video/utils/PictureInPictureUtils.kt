@@ -87,7 +87,17 @@ internal fun applyPiPParams(activity: Activity, autoEnterPiP: Boolean, aspectRat
       paramsBuilder.setAspectRatio(it)
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      paramsBuilder.setAutoEnterEnabled(autoEnterPiP)
+      // Some stock OEM firmwares report SDK_INT >= 31 and FEATURE_PICTURE_IN_PICTURE while shipping a
+      // framework.jar that does not contain PictureInPictureParams.Builder.setAutoEnterEnabled, so the
+      // API level check above is not a sufficient capability signal. NoSuchMethodError is an Error, not
+      // an Exception, so it is not covered by runWithPiPMisconfigurationSoftHandling below. Auto-enter
+      // PiP is the only functionality lost by skipping the call, which beats an unrecoverable crash in
+      // View.onLayout.
+      try {
+        paramsBuilder.setAutoEnterEnabled(autoEnterPiP)
+      } catch (e: NoSuchMethodError) {
+        Log.w("ExpoVideo", "PictureInPictureParams.Builder.setAutoEnterEnabled is missing on this device, skipping auto-enter PiP setup", e)
+      }
     }
     runWithPiPMisconfigurationSoftHandling {
       activity.setPictureInPictureParams(paramsBuilder.build())

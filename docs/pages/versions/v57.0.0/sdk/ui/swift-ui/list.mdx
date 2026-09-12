@@ -306,11 +306,12 @@ export default function RefreshableListExample() {
 
 ### Row styling
 
-Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), [`listRowSeparatorTint`](modifiers/#listrowseparatortintcolor-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows.
+Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), [`listRowSeparatorTint`](modifiers/#listrowseparatortintcolor-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows. Use [`alignmentGuide`](modifiers/#alignmentguideguide-value) with the `listRowSeparatorLeading` guide to set where a row separator starts.
 
 ```tsx RowStylingExample.tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 import {
+  alignmentGuide,
   listRowBackground,
   listRowSeparator,
   listRowSeparatorTint,
@@ -339,6 +340,12 @@ export default function RowStylingExample() {
               listRowInsets({ leading: 0, trailing: 0 }),
             ]}>
             No horizontal insets
+          </Text>
+          <Text
+            modifiers={[
+              alignmentGuide('listRowSeparatorLeading', 32),
+            ]}>
+            Separator starts 32 points in
           </Text>
         </Section>
       </List>

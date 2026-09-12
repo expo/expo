@@ -46,13 +46,13 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.4'
+version = '58.0.0'
 
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "56.0.4"
+    versionName "58.0.0"
     buildConfigField "boolean", "WITH_SQLITE_VEC", project.ext.WITH_SQLITE_VEC.toString()
 
     externalNativeBuild {
@@ -95,4 +95,6 @@ dependencies {
     compileOnly 'io.github.ronickg:openssl:3.3.2-1'
   }
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
+
+  testImplementation 'junit:junit:4.13.2'
 }

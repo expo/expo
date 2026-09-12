@@ -8,6 +8,8 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `SegmentedControl` component with an API compatible with `@react-native-segmented-control/segmented-control`. It uses Jetpack Compose `SingleChoiceSegmentedButtonRow` on Android and SwiftUI `Picker` with segmented style on iOS.
 
@@ -17,6 +19,21 @@ Under the hood this component wraps the platform-specific `@expo/ui` primitives:
 - **iOS**: [SwiftUI Picker](../swift-ui/picker) with `pickerStyle('segmented')`
 
 If you need lower-level control (custom modifiers, styles, or layouts), use those primitives directly.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-segmentedcontrol/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-segmentedcontrol/android-dark.webp',
+    alt: 'A Material 3 segmented button row with One selected',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-segmentedcontrol/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-segmentedcontrol/ios-dark.webp',
+    alt: 'A segmented control with One selected',
+  }}
+/>
 
 ## Installation
 
@@ -31,7 +48,20 @@ If you need lower-level control (custom modifiers, styles, or layouts), use thos
 
 ## Basic usage
 
-```tsx SegmentedControlExample.tsx
+<ComponentExample
+  title="SegmentedControlExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-segmentedcontrol-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-segmentedcontrol-basic-android-dark.webp',
+    alt: 'A Material 3 segmented button row with One selected',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-segmentedcontrol-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-segmentedcontrol-basic-ios-dark.webp',
+    alt: 'A segmented control with One selected',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import SegmentedControl from '@expo/ui/community/segmented-control';
 
@@ -50,6 +80,8 @@ export default function SegmentedControlExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -57,3 +89,5 @@ import SegmentedControl from '@expo/ui/community/segmented-control';
 ```
 
 <APISection packageName="expo-ui/community/segmented-control" apiName="SegmentedControl" />
+
+</PlatformTabsGroup>

@@ -6,8 +6,6 @@
 /android/**/local.properties
 /android/captures
 /android/expoview/libs/ReactAndroid-temp
-/android/versioned-react-native/packages
-/android/versioned-react-native/ReactAndroid
 ReactAndroid-temp.aar
 /android/prebuiltHermes
 /android/versioned-abis/**/*.aar

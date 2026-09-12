@@ -297,9 +297,15 @@ export function createMetroDependencyPlugin(
           enter(program, state: MetroDependencyState) {
             const { input, normalizePseudoGlobals } = metroPluginData(program.context);
             if (normalizePseudoGlobals) {
-              state.requireName = 'r';
-              state.importDefaultName = 'i';
-              state.importAllName = 'a';
+              state.requireName = program.scope.hasBinding('r')
+                ? program.scope.generateUid('r')
+                : 'r';
+              state.importDefaultName = program.scope.hasBinding('i')
+                ? program.scope.generateUid('i')
+                : 'i';
+              state.importAllName = program.scope.hasBinding('a')
+                ? program.scope.generateUid('a')
+                : 'a';
             } else if (input.config.unstable_disableModuleWrapping !== true) {
               state.requireName =
                 input.config.unstable_renameRequire === false
@@ -819,13 +825,14 @@ export function createMetroDependencyPlugin(
       context.metadata.set('metroImportDefaultName', state.importDefaultName);
       context.metadata.set('metroImportAllName', state.importAllName);
       if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
+        const pseudoGlobals = metroPluginData(context).pseudoGlobals;
         const parameters = [
-          normalizePseudoGlobals ? 'g' : 'global',
+          normalizePseudoGlobals ? pseudoGlobals.global : 'global',
           state.requireName,
           state.importDefaultName,
           state.importAllName,
-          normalizePseudoGlobals ? 'm' : 'module',
-          normalizePseudoGlobals ? 'e' : 'exports',
+          normalizePseudoGlobals ? pseudoGlobals.module : 'module',
+          normalizePseudoGlobals ? pseudoGlobals.exports : 'exports',
           state.dependencyMapName,
         ];
         context.editor.prepend(

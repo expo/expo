@@ -35,6 +35,23 @@ public:
     jdouble width,
     jdouble height
   );
+
+  // Publishes where Compose actually placed a hosted view inside its `Host`, which Yoga cannot see.
+  static void setContentOrigin(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jint tag,
+    jdouble x,
+    jdouble y
+  );
+
+  static void clearContentOrigin(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jint tag
+  );
+
+  static void clearAllContentOrigins(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self
+  );
 };
 
 } // namespace expo

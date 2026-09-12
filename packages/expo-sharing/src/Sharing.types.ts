@@ -1,13 +1,36 @@
 // @needsAudit
 export type SharingOptions = {
   /**
-   * Sets `mimeType` for `Intent`.
+   * The MIME type of the target file, for example `image/jpeg`.
+   * On Android, it sets the `mimeType` of the sharing `Intent`. On iOS, it determines
+   * the shared file's type when [`UTI`](#uti) cannot provide a filename extension.
+   * > **Note:** On iOS the MIME type is not attached to the shared item as metadata.
+   * > It is only used to give the file the matching extension, which is how the share
+   * > sheet infers the type. MIME types that iOS cannot map to a canonical filename
+   * > extension, such as `application/octet-stream`, therefore have no effect.
+   *
+   * > **Note:** On iOS, when used, `mimeType` takes precedence over the file's
+   * > existing extension. The original extension is not removed; the preferred
+   * > extension is appended. For example, `image.pdf` shared with the `image/jpeg`
+   * > MIME type is shared as `image.pdf.jpeg`. The provided `mimeType` is treated
+   * > as a source truth and isn't verified against actual file contents.
    * @platform android
+   * @platform ios
    */
   mimeType?: string;
   /**
    * [Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)
-   *  - the type of the target file.
+   *  - the type of the target file. When iOS can map the identifier to a canonical
+   * filename extension, it takes precedence over [`mimeType`](#mimetype).
+   * > **Note:** iOS can only resolve types registered by the system or an installed app..
+   * > If it cannot map `UTI` to a canonical filename extension, `UTI` is ignored and
+   * > [`mimeType`](#mimetype) is used instead.
+   *
+   * > **Note:** When mapped, `UTI` takes precedence over the file's existing
+   * > extension. The original extension is not removed; the preferred extension is
+   * > appended. For example, `image.pdf` shared with the `public.jpeg` UTI is shared
+   * > as `image.pdf.jpeg`. The provided `UTI` is treated
+   * > as a source truth and isn't verified against actual file contents.
    * @platform ios
    */
   UTI?: string;

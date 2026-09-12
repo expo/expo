@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
@@ -40,7 +41,12 @@ function PopoverTrigger(props: { children: React.ReactNode }) {
 }
 
 function PopoverContent(props: { children: React.ReactNode }) {
-  return <Slot name="popover">{props.children}</Slot>;
+  // Presented in its own view controller; the trigger renders in place, so only this side is wrapped.
+  return (
+    <Slot name="popover">
+      <PresentedContent>{props.children}</PresentedContent>
+    </Slot>
+  );
 }
 
 Popover.Trigger = PopoverTrigger;
@@ -56,6 +62,7 @@ export function Popover(props: PopoverViewProps) {
   return (
     <PopoverNativeView
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      modifiers={modifiers}
       {...restProps}
       isPresented={isPresented}
       onIsPresentedChange={handleIsPresentedChange}>

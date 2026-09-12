@@ -1,10 +1,10 @@
 {
-  "version": "3.14.1",
+  "version": "3.18.0",
   "checksums": {
-    "macOS_arm64": "1a4a0923f59b293d691bd901300cc4da50a6bbfd962503239b5efe9563e0bd8e",
-    "macOS_64-bit": "98970ca11179b3166d7d7a10119d10121784cf6d4c40397ee065cbc1651d51d6",
-    "Linux_64-bit": "ff2b49ffaa9dcd246fd5008f03ff67746d2790b75bf4d3657e2fb9530fb96db3",
-    "Linux_arm64": "6a442a4ff1e67ff0beb08b608b039a38ab1f5bd6170afef903130a63831d1b2b",
-    "Windows_64-bit": "e75228aa7eec07dab8875830c039d7d1216514793d0c46d95740a96dc2f96ae1"
+    "macOS_arm64": "4d7de9bda8379da14cd45048500199c549413187526d0913383ad822866ad43d",
+    "macOS_64-bit": "7ec47dad588bf1421e12f72f15219dcc96e3adf7204918ee86ea81fe8cddab8d",
+    "Linux_64-bit": "a6f71a75a12fe689345b754f2412b90367fe33648abb7d200fa19eaadc2dbf6d",
+    "Linux_arm64": "228325a79f3e6d8b4798d82901f8ed36f6d12b7ff0bad2cc83512dde0c84fbcc",
+    "Windows_64-bit": "621cee4b7f8c8687fbcbdcbfc2e904aaa174b9d07bcb9018bd96b943b89c539d"
   }
 }

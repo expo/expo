@@ -1561,6 +1561,38 @@ export default function TabLayout() {
 
 ## Known limitations
 
+<Collapsible summary="The default and selected icons share one rendering mode on iOS">
+
+On iOS, a tab's default and selected image icons must use the same [rendering mode](#icon-rendering-mode). When they resolve to different modes, both icons use the default icon's mode and Expo Router logs a warning in development.
+
+The modes disagree when an icon color applies to only one of the states. This happens when you set `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop without also setting a color for the default state. A color implies `'template'` rendering, while an uncolored icon defaults to `'original'`. Setting `renderingMode` for only one state has the same effect.
+
+To render both icons the same way, set a color for both states, or set `renderingMode` on the `Icon`:
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    // `iconColor` applies to both states, so both icons render as templates
+    <NativeTabs iconColor={{ default: 'gray', selected: 'black' }}>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon
+          src={{
+            default: require('../assets/setting_icon.png'),
+            selected: require('../assets/selected_setting_icon.png'),
+          }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+This limitation doesn't apply to SF Symbols, which the system always tints.
+
+</Collapsible>
+
 <Collapsible summary="A limit of 5 tabs on Android">
 
 On Android, there is a limitation of having a maximum of 5 tabs in the tab bar. This restriction comes from the platform's Material Tabs component.

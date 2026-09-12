@@ -79,6 +79,18 @@ public struct Exceptions {
   }
 
   /**
+   An exception to throw when a value does not match any case of a `@Union` enum. The synthesized
+   `decode` throws it when no case decodes the JavaScript value (`received` is the JS kind, such as
+   `number`). The synthesized `as(_:)` throws it when the union holds a different case (`received` is
+   that case's payload type).
+   */
+  public final class UnionCaseMismatch: GenericException<(unionName: String, received: String, expected: [String])> {
+    override public var reason: String {
+      "'\(param.unionName)' expected \(param.expected.joined(separator: " or ")), but received \(param.received)"
+    }
+  }
+
+  /**
    An exception to throw when there is no module implementing the `EXFileSystemInterface` interface.
    */
   public final class FileSystemModuleNotFound: Exception {

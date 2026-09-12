@@ -41,6 +41,7 @@ const IndexScreen = () => {
 
       <SiteLinks>
         <SiteLink href="/second">Go to Second</SiteLink>
+        <SiteLink href="/slow">Go to Slow</SiteLink>
         <SiteLink href="/env">Go to Env</SiteLink>
         <SiteLink href="/request">Go to Request</SiteLink>
         <SiteLink href="/response">Go to Response</SiteLink>

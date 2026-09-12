@@ -4,7 +4,9 @@ import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import {
+  defineNativePlugin,
   defineNativePipeline,
+  defineVisitor,
   NativeTransformError,
   TransformSyntaxError,
   transform as transformWithNoxcturnal,
@@ -20,6 +22,7 @@ import {
   transformNodeModuleWithNoxcturnal,
   transformNodeModuleWithNoxcturnalSync,
 } from '../../noxcturnal/noxcturnal-transformer';
+import { createExpoRouterServerExportsPlugin } from '../../noxcturnal/plugins/expo-router-server-exports';
 
 function options(overrides: Partial<JsTransformOptions> = {}): JsTransformOptions {
   return {
@@ -434,6 +437,92 @@ it('removes loader and metadata exports from a native client route', async () =>
   });
 });
 
+it.each([
+  ['sibling source', '/app/src/route.js', 'app'],
+  ['dot-dot-prefixed sibling', '/app/app-other/route.js', 'app'],
+  ['relative parent escape', '/app/route.js', 'app/nested'],
+  ['absolute custom root', '/app/custom/route.js', '/app/other'],
+] as const)(
+  'keeps Router server exports outside the configured root for %s',
+  (_name, candidate, routerRoot) => {
+    const source = `export default function Route() {}
+    export async function loader() { return null; }
+    export const generateMetadata = () => ({}), keep = 1;`;
+    const input = {
+      filename: candidate,
+      projectRoot: '/app',
+      source,
+      options: options({
+        customTransformOptions: { engine: 'hermes', routerRoot, isLoaderBundle: 'true' },
+      }),
+      isDefaultExpoTransformer: true,
+    };
+    const result = transformWithNoxcturnal(
+      source,
+      candidate,
+      defineNativePipeline({
+        phases: [
+          {
+            name: 'router-server-exports',
+            plugins: [
+              createExpoRouterServerExportsPlugin({ defineNativePlugin, defineVisitor } as any),
+            ],
+          },
+        ],
+      }),
+      { pluginData: { input } }
+    );
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.code).toBe(source);
+    expect(result.metadata.loaderReference).toBeUndefined();
+    expect(result.metadata.performConstantFolding).toBeUndefined();
+  }
+);
+
+it.each([
+  ['relative custom root', '/app/routes/route.js', 'routes'],
+  ['decoded absolute custom root', '/app/custom root/route.js', '/app/custom%20root'],
+] as const)(
+  'applies Router server exports inside the configured root for %s',
+  (_name, candidate, routerRoot) => {
+    const source = `export default function Route() {}
+    export async function loader() { return null; }
+    export function helper() {}`;
+    const input = {
+      filename: candidate,
+      projectRoot: '/app',
+      source,
+      options: options({
+        customTransformOptions: { engine: 'hermes', routerRoot, isLoaderBundle: 'true' },
+      }),
+      isDefaultExpoTransformer: true,
+    };
+    const result = transformWithNoxcturnal(
+      source,
+      candidate,
+      defineNativePipeline({
+        phases: [
+          {
+            name: 'router-server-exports',
+            plugins: [
+              createExpoRouterServerExportsPlugin({ defineNativePlugin, defineVisitor } as any),
+            ],
+          },
+        ],
+      }),
+      { pluginData: { input } }
+    );
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.code).toContain('loader');
+    expect(result.code).not.toMatch(/\bRoute\b|\bhelper\b/);
+    expect(result.metadata.loaderReference).toBe(candidate);
+  }
+);
+
 it.each(['/app/app/..admin.tsx', '/app/app/..internal/route.ts'])(
   'treats the dot-dot-prefixed descendant %s as a native client route',
   async (route) => {
@@ -615,19 +704,104 @@ it('uses the Babel WebView preflight for DOM components', async () => {
   expect(result.result.code).toContain('decorate');
 });
 
-it('matches Babel by lowering object spread for a modern non-Hermes target', async () => {
-  const result = await transformFileFullyWithNoxcturnal({
-    filename: '/app/src/web.js',
-    projectRoot: '/app',
-    source: 'module.exports = { ...source, value: 1 };',
-    options: options({ platform: 'web', customTransformOptions: { engine: undefined } }),
-    isDefaultExpoTransformer: true,
-    config: fullConfig(),
+describe('object rest/spread transform profiles', () => {
+  it.each([
+    ['Hermes v0', options({ unstable_transformProfile: 'default' })],
+    [
+      'WebView',
+      options({
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: { engine: 'hermes', dom: 'true' },
+      }),
+    ],
+  ])('lowers object spread for %s', async (_profile, transformOptions) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/src/native.js',
+      projectRoot: '/app',
+      source: 'module.exports = { ...source, value: 1 };',
+      options: transformOptions,
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).not.toContain('...source');
   });
 
-  expect(result.status).toBe('complete');
-  if (result.status !== 'complete') return;
-  expect(result.result.code).not.toContain('...source');
+  it.each([
+    ['Hermes v1', options({ unstable_transformProfile: 'hermes-stable' })],
+    [
+      'web',
+      options({
+        platform: 'web',
+        customTransformOptions: { engine: undefined },
+      }),
+    ],
+    [
+      'server',
+      options({
+        customTransformOptions: { engine: 'hermes', environment: 'node' },
+      }),
+    ],
+  ])('preserves object spread for %s', async (_profile, transformOptions) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/src/modern.js',
+      projectRoot: '/app',
+      source: 'module.exports = { ...source, value: 1 };',
+      options: transformOptions,
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('...source');
+  });
+
+  it.each([
+    ['Hermes v0', options({ unstable_transformProfile: 'default' })],
+    [
+      'WebView',
+      options({
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: { engine: 'hermes', dom: 'true' },
+      }),
+    ],
+  ])('preserves computed-key exclusion semantics for %s', async (_profile, transformOptions) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/src/native.js',
+      projectRoot: '/app',
+      source: `function omit(obj, spec) {
+        const { [spec.key]: unused, ...rest } = obj;
+        return rest;
+      }
+      module.exports = omit({ a: 1, b: 2 }, { key: 'a' });`,
+      options: transformOptions,
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).not.toContain('...rest');
+
+    let factory: Function | undefined;
+    new Function('__d', result.result.code)((value: Function) => {
+      factory = value;
+    });
+    const module = { exports: {} as unknown };
+    factory?.(
+      globalThis,
+      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      module,
+      module.exports,
+      []
+    );
+    expect(module.exports).toEqual({ b: 2 });
+  });
 });
 
 it('matches Babel by preserving async generators on modern web targets', async () => {
@@ -1117,6 +1291,70 @@ it('captures a lexical binding that shadows a same-named Program binding', async
   if (result.status !== 'complete') return;
   expect(result.result.code).toMatch(/var \[value\] = .+\.value/);
   expect(result.result.code).toMatch(/\(\) => \[_?value\]/);
+});
+
+it('composes a nested server action hoist without overlapping its declaration replacement', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/app/index.tsx',
+    projectRoot: '/app',
+    source: `export default function Screen() {
+      const prefix = 'hello';
+      const action = renderNativeViews;
+      return <View action={action} />;
+      async function renderNativeViews(name: string) {
+        "use server";
+        return <Text>{prefix + name}</Text>;
+      }
+    }`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).not.toContain('"use server"');
+  expect(result.result.code).toMatch(/var \[prefix\] = .+\.value/);
+  expect(result.result.code).toMatch(
+    /var renderNativeViews = _?\$\$INLINE_ACTION\.bind\(null, _?wrapBoundArgs/
+  );
+  expect(result.result.code.indexOf('var renderNativeViews')).toBeLessThan(
+    result.result.code.indexOf('const action = renderNativeViews')
+  );
+});
+
+it('hoists a nested server action declaration without captures', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/app/index.tsx',
+    projectRoot: '/app',
+    source: `export default function Screen() {
+      "use strict";
+      const action = submit;
+      return action;
+      async function submit(value: string) {
+        "use server";
+        return value;
+      }
+    }`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toMatch(/var submit = _?\$\$INLINE_ACTION;/);
+  expect(result.result.code).not.toContain('.bind(null');
+  expect(result.result.code.indexOf('"use strict"')).toBeLessThan(
+    result.result.code.indexOf('var submit')
+  );
+  expect(result.result.code.indexOf('var submit')).toBeLessThan(
+    result.result.code.indexOf('const action = submit')
+  );
 });
 
 it("matches Babel's module-level React Server action registrations", async () => {

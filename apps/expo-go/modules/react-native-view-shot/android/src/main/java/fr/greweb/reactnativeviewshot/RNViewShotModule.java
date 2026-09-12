@@ -1,14 +1,16 @@
 
 package fr.greweb.reactnativeviewshot;
 
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
+
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import android.util.DisplayMetrics;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.Promise;
@@ -17,8 +19,10 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 
 import java.io.File;
@@ -64,6 +68,7 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
     }
 
     @ReactMethod
+    @OptIn(markerClass = UnstableReactNativeAPI.class)
     public void captureRef(Double tagFromJs, ReadableMap options, Promise promise) {
         int tag = tagFromJs == null ? -1 : tagFromJs.intValue();
         final ReactApplicationContext context = getReactApplicationContext();
@@ -72,7 +77,7 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
         final String extension = options.getString("format");
         final int imageFormat = "jpg".equals(extension)
                 ? Formats.JPEG
-                : "webm".equals(extension)
+                : ("webp".equals(extension) || "webm".equals(extension))
                 ? Formats.WEBP
                 : "raw".equals(extension)
                 ? Formats.RAW
@@ -99,8 +104,16 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
                     snapshotContentContainer, reactContext, activity, handleGLSurfaceView, promise, executor
             );
 
-            UIManager uiManager = UIManagerHelper.getUIManager(context, UIManagerType.FABRIC);
-            ((FabricUIManager) uiManager).addUIBlock(uiBlock);
+            if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+                UIManager uiManager = UIManagerHelper.getUIManager(context, FABRIC);
+                if (uiManager == null) {
+                    throw new Exception("Doesn't find valid ui manager");
+                }
+                ((FabricUIManager)uiManager).addUIBlock(uiBlock);
+            } else {
+                final UIManagerModule uiManager = this.reactContext.getNativeModule(UIManagerModule.class);
+                uiManager.addUIBlock(uiBlock);
+            }
         } catch (final Throwable ex) {
             Log.e(NAME, "Failed to snapshot view tag " + tag, ex);
             promise.reject(ViewShot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag " + tag);

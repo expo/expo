@@ -4,6 +4,7 @@ import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
+import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
@@ -70,6 +71,10 @@ const CurrentRouteContext = createContext<RouteNode | null>(null);
 export const SuspenseFallbackContext = createContext<
   ComponentType<SuspenseFallbackProps> | undefined
 >(undefined);
+/** This context carries the error boundary configured by the current layout or navigator. */
+export const ScreenErrorBoundaryContext = createContext<
+  ComponentType<ErrorBoundaryProps> | undefined
+>(undefined);
 export const LocalRouteParamsContext = createContext<object | undefined>({});
 
 if (process.env.NODE_ENV !== 'production') {
@@ -82,15 +87,31 @@ export function useRouteNode(): RouteNode | null {
 }
 
 export function findRouteNodeByName(
-  children: RouteNode[] | undefined,
-  routeName: string | undefined
+  node: RouteNode | null | undefined,
+  name: string | undefined
 ): RouteNode | undefined {
-  if (!routeName) {
-    return undefined;
+  return node?.children.find((child) => child.route === name);
+}
+
+export function findRouteNodeAndParamsForState(
+  node: RouteNode | null | undefined,
+  state: PartialRoute<NavigationRoute<string>>['state']
+): { routeNode: RouteNode | undefined; params: Record<string, unknown> } {
+  const params: Record<string, unknown> = {};
+  if (!state) {
+    return { routeNode: undefined, params };
   }
-  return children?.find(
-    (child) => child.route === routeName || child.route === `${routeName}/index`
-  );
+  let routeNode = node ?? undefined;
+
+  while (state) {
+    const route: PartialRoute<NavigationRoute<string>> | undefined =
+      state.routes[state.index ?? state.routes.length - 1];
+    Object.assign(params, route?.params);
+    routeNode = findRouteNodeByName(routeNode, route?.name);
+    state = route?.state;
+  }
+
+  return { routeNode, params };
 }
 
 export function getValidInitialRoute(
@@ -101,7 +122,9 @@ export function getValidInitialRoute(
   if (!node || !initialRouteName) {
     return undefined;
   }
-  const route = findRouteNodeByName(node.children, initialRouteName);
+  const route =
+    findRouteNodeByName(node, initialRouteName) ||
+    findRouteNodeByName(node, `${initialRouteName}/index`);
   if (!route) {
     throw new Error(
       `The initial route name "${initialRouteName}"${groupName ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +

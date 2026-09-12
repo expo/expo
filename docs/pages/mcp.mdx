@@ -74,8 +74,8 @@ The complete table of [MCP capabilities](#available-mcp-capabilities) documents 
     An Expo account is required to use Expo MCP Server.
   </Requirement>
   <Requirement title="An Expo project on the latest SDK">
-    Create a project with `npx create-expo-app@latest --template default@sdk-57`, or ensure your
-    existing project has the latest `expo` package installed.
+    Create a project with `npx create-expo-app@latest`, or ensure your existing project has the
+    latest `expo` package installed.
   </Requirement>
   <Requirement title="An AI-assisted tool with remote MCP support">
     Claude, Claude Code, Cursor, VS Code, or any other tool with remote MCP server support.
@@ -115,6 +115,8 @@ On a Claude Team or Enterprise plan, the Expo connector can be enabled for the e
 
 **Claude Code**
 
+If you installed the [`expo` plugin](/skills/#install-expo-skills), it already registers this server. Skip the command below and run `/mcp` in your session to authenticate.
+
 <Terminal cmd={['$ claude mcp add --transport http expo https://mcp.expo.dev/mcp']} />
 
 After installation, run `/mcp` in your Claude Code session to authenticate.
@@ -152,6 +154,8 @@ Click the following link to install the MCP server for Cursor:
 </Tab>
 
 <Tab label="Codex">
+
+If you installed the [`expo` plugin](/skills/#install-expo-skills), it already registers this server. Skip the command below and run `codex mcp login expo` to authenticate.
 
 <Terminal cmd={['$ codex mcp add expo --url https://mcp.expo.dev/mcp']} />
 

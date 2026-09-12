@@ -15,13 +15,14 @@ import {
 import {
   type DescriptorRouteProp,
   type ParamListBase,
-  StackActions,
   type StackNavigationState,
   type StackRouterOptions,
 } from '../react-navigation/native';
-import { makePopAction, type NativeStackNavigationOptions } from '../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../react-navigation/native-stack/types';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { makePopAction } from '../react-navigation/native-stack/utils/makePopAction';
+import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../standard-navigation';
+import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 import { StackRouter } from './stack-router';
@@ -37,76 +38,19 @@ import {
   validateStackPresentation,
 } from './stack-utils';
 
-/**
- * We extend NativeStackNavigationOptions with our custom props
- * to allow for several extra props to be used on web, like modalWidth
- */
-export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
-  webModalStyle?: {
-    /**
-     * Override the width of the modal (px or percentage). Only applies on web platform.
-     * @platform web
-     */
-    width?: number | string;
-    /**
-     * Override the height of the modal (px or percentage). Applies on web desktop.
-     * @platform web
-     */
-    height?: number | string;
-    /**
-     * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
-     * @platform web
-     */
-    minHeight?: number | string;
-    /**
-     * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
-     * @platform web
-     */
-    minWidth?: number | string;
-    /**
-     * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
-     * @platform web
-     */
-    border?: string;
-    /**
-     * Override the overlay background color (any valid CSS color or rgba/hsla value).
-     * @platform web
-     */
-    overlayBackground?: string;
-    /**
-     * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
-     * @platform web
-     */
-    shadow?: string;
-  };
-};
-
 const RNStack = unstable_integrateWithRouter<
-  ExtendedStackNavigationOptions,
+  NativeStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardNativeStackEventMap,
   NativeStackNavigationConfig,
   StackRouterOptions,
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
-  createProps: ({ state, dispatch, navigation }) => ({
-    pop: makePopAction(dispatch, state.key),
+  activityDefaultThreshold: 2,
+  createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
+    pop: makePopAction(dispatchSync, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-    subscribePopToTopOnParentTabPress: () =>
-      // @ts-expect-error: there may not be a tab navigator in parent
-      navigation.addListener?.('tabPress', (e) => {
-        const isFocused = navigation.isFocused();
-        requestAnimationFrame(() => {
-          if (
-            state.index > 0 &&
-            isFocused &&
-            !e.defaultPrevented &&
-            e.data?.__internalTabsType !== 'native'
-          ) {
-            dispatch({ ...StackActions.popToTop(), target: state.key });
-          }
-        });
-      }),
+    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
   }),
 });
 
@@ -158,7 +102,11 @@ const Stack = Object.assign(
       [props.children]
     );
 
-    return <RNStack {...props} children={rnChildren} screenOptions={screenOptions} />;
+    return (
+      <IsWithinNativeNavigator value>
+        <RNStack {...props} children={rnChildren} screenOptions={screenOptions} />
+      </IsWithinNativeNavigator>
+    );
   },
   {
     Screen: StackScreen,

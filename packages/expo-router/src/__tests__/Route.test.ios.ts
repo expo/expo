@@ -1,6 +1,6 @@
 import type { RouteNode } from '../Route';
 import {
-  findRouteNodeByName,
+  findRouteNodeAndParamsForState,
   getValidInitialRouteName,
   sortRoutes,
   sortRoutesWithInitial,
@@ -139,17 +139,11 @@ describe(getValidInitialRouteName, () => {
   });
 });
 
-describe(findRouteNodeByName, () => {
-  it.each([
-    ['settings', 'settings'],
-    ['settings/index', 'settings'],
-  ])('matches the registered route %s by the name %s', (route, name) => {
-    expect(findRouteNodeByName([asRouteNode('index'), asRouteNode(route)], name)?.route).toBe(
-      route
-    );
-  });
-
-  it('does not match a nested route with the same prefix', () => {
-    expect(findRouteNodeByName([asRouteNode('settings/profile')], 'settings')).toBeUndefined();
+describe(findRouteNodeAndParamsForState, () => {
+  it('returns no route node without nested state', () => {
+    expect(findRouteNodeAndParamsForState(asRouteNode('_layout'), undefined)).toEqual({
+      routeNode: undefined,
+      params: {},
+    });
   });
 });

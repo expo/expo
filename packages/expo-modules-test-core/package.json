@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-test-core",
-  "version": "57.0.6",
+  "version": "58.0.0",
   "description": "Module providing native testing utilities for testing Expo modules",
   "keywords": [
     "expo",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@types/node": "^22.14.0",
-    "expo-type-information": "workspace:^0.0.5",
+    "expo-type-information": "workspace:^",
     "glob": "^13.0.0",
     "xml-js": "^1.6.11",
     "yaml": "^2.8.3"

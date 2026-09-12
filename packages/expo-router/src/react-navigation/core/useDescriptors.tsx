@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { NavigationActivityProvider } from '../../views/NavigationActivityContext';
 import type {
   NavigationAction,
   NavigationState,
@@ -9,11 +10,7 @@ import type {
   PartialState,
   Router,
 } from '../routers';
-import {
-  type AddKeyedListener,
-  type AddListener,
-  NavigationBuilderContext,
-} from './NavigationBuilderContext';
+import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
@@ -21,6 +18,7 @@ import type {
   Descriptor,
   DescriptorRouteProp,
   EventMapBase,
+  EventMapCore,
   NavigationHelpers,
   NavigationProp,
   RouteConfig,
@@ -68,17 +66,15 @@ type Options<
   routes: State['routes'];
   routeNames: State['routeNames'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
+  activityEnabled: boolean | number | undefined;
+  activityDefaultThreshold: number;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
-  onAction: (action: NavigationAction) => boolean;
-  getState: () => State;
-  setState: (state: State) => void;
+  state: State;
   addListener: AddListener;
-  addKeyedListener: AddKeyedListener;
-  onRouteFocus: (key: string) => void;
   router: Router<State, NavigationAction>;
-  emitter: NavigationEventEmitter<EventMap>;
+  emitter: NavigationEventEmitter<EventMapCore<State>>;
 };
 
 /**
@@ -99,61 +95,46 @@ export function useDescriptors<
   routes,
   routeNames,
   screens,
+  activityEnabled,
+  activityDefaultThreshold,
   navigation,
   screenOptions,
   screenLayout,
-  onAction,
-  getState,
-  setState,
+  state,
   addListener,
-  addKeyedListener,
-  onRouteFocus,
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } =
-    use(NavigationBuilderContext);
+  const { handleAction, resetNavigator } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
-      onAction,
+      handleAction,
+      resetNavigator,
       addListener,
-      addKeyedListener,
-      onRouteFocus,
-      onDispatchAction,
-      onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
-      stackRef,
     }),
-    [
-      navigation,
-      onAction,
-      addListener,
-      addKeyedListener,
-      onRouteFocus,
-      onDispatchAction,
-      onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
-      stackRef,
-    ]
+    [navigation, handleAction, resetNavigator, addListener]
   );
 
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
     routes,
     routeNames,
-    getState,
     navigation,
     setOptions,
     router,
-    emitter,
+    // The same runtime emitter handles custom events; this generic only exposes core events here.
+    emitter: emitter as unknown as NavigationEventEmitter<EventMap>,
   });
 
   const cachedRoutes = useRouteCache(routes);
+  const emitRemovalEvent = React.useCallback(
+    (routeKey: string, type: 'removePrevented' | 'removed', action: NavigationAction) =>
+      emitter.emit({ type, target: routeKey, data: { action } }),
+    [emitter]
+  );
 
   const getOptions = (
     route: DescriptorRouteProp<ParamListBase, string>,
@@ -235,10 +216,9 @@ export function useDescriptors<
         route={route}
         screen={screen}
         routeState={routeState}
-        getState={getState}
-        setState={setState}
         options={customOptions}
         clearOptions={clearOptions}
+        emitRemovalEvent={emitRemovalEvent}
       />
     );
 
@@ -253,12 +233,19 @@ export function useDescriptors<
       });
     }
 
+    const activityThreshold = getActivityThreshold(
+      screen.activityEnabled ?? activityEnabled,
+      activityDefaultThreshold
+    );
+
     return (
-      <NavigationBuilderContext.Provider key={route.key} value={context}>
-        <NavigationProvider route={route} navigation={navigation}>
-          {element}
-        </NavigationProvider>
-      </NavigationBuilderContext.Provider>
+      <NavigationActivityProvider key={route.key} activityThreshold={activityThreshold}>
+        <NavigationBuilderContext.Provider value={context}>
+          <NavigationProvider route={route} navigation={navigation}>
+            {element}
+          </NavigationProvider>
+        </NavigationBuilderContext.Provider>
+      </NavigationActivityProvider>
     );
   };
 
@@ -274,7 +261,7 @@ export function useDescriptors<
   >;
 
   const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
-    const navigation = getNavigation(route);
+    const navigation = getNavigation(route, route.isPreloaded === true);
 
     if (screens[route.name] === undefined) {
       acc[route.key] = {
@@ -322,13 +309,13 @@ export function useDescriptors<
     if (!config) {
       return {
         route,
-        navigation: getNavigation({ key: route.name, name: route.name }),
+        navigation: getNavigation({ key: route.name, name: route.name }, false),
         options: {} as ScreenOptions,
         render: () => null,
       } as DescriptorMap[string];
     }
 
-    const navigation = getNavigation({ key: route.name, name: route.name });
+    const navigation = getNavigation({ key: route.name, name: route.name }, false);
     return {
       route,
       navigation,
@@ -339,4 +326,25 @@ export function useDescriptors<
   };
 
   return { describe, descriptors };
+}
+
+function getActivityThreshold(
+  activityEnabled: boolean | number | undefined,
+  defaultThreshold: number
+) {
+  if (typeof activityEnabled === 'number') {
+    if (Number.isNaN(activityEnabled) || activityEnabled <= 0) {
+      if (__DEV__) {
+        console.warn(
+          `activityEnabled must be a positive number. Received ${activityEnabled}; disabling React Activity.`
+        );
+      }
+      return undefined;
+    }
+    return activityEnabled;
+  }
+  if (activityEnabled) {
+    return Math.max(1, defaultThreshold);
+  }
+  return undefined;
 }

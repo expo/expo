@@ -1,0 +1,107 @@
+---
+title: Expo Image integration
+sidebar_title: Expo Image
+description: Detect oversized images in your production app by enabling the Expo Image integration for EAS Observe.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+[`expo-image`](/versions/latest/sdk/image/) ships an opt-in integration for EAS Observe that reports images decoded at a much larger size than the device's screen can display. Oversized images waste bandwidth and memory without improving visual quality. The integration logs an `expo-image.oversized` event for each one, so you can find them in production instead of auditing every screen by hand.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Expo SDK 57 or later">
+    The integration is available in `expo-image` version 57.0.2 and later.
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build. If `expo-observe` is not installed, the integration is a silent no-op.
+  </Requirement>
+  <Requirement title="Expo Image installed in the app">
+    The integration observes images loaded through [`expo-image`](/versions/latest/sdk/image/).
+    Images loaded with other libraries are not reported.
+  </Requirement>
+</Prerequisites>
+
+## Enable the integration
+
+Call `Observe.configure()` once with the `expo-image` integration flag at module scope, before your app mounts:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: { 'expo-image': true },
+});
+```
+
+No other setup is needed. Once enabled, the integration observes every image load automatically.
+
+## How it works
+
+On every image load, the integration compares the image's decoded pixel size with the number of physical pixels on the device's screen. When the decoded area exceeds the screen's pixel count by more than the configured threshold, the integration logs an `expo-image.oversized` event with `warn` severity.
+
+The decoded size that the integration sees differs between platforms for images rendered with the `<Image>` component:
+
+- On Android, the `<Image>` component downscales images to the component's size at decode time, so a large source displayed in a small component is usually not reported.
+- On iOS, the integration reports the source's decoded size before `expo-image` downscales it for rendering, so a large source displayed in a small component is still reported, even with `allowDownscaling` enabled.
+
+Images loaded with the `useImage` hook or `Image.loadAsync` decode at the source's full size on both platforms by default. You can limit the decoded size with the `maxWidth` and `maxHeight` load options. This makes the reported image dimensions consistent across platforms.
+
+Each image URL is reported at most once per app session. Deduplication uses the sanitized URL, so with the default configuration, variants of one image that differ only in their query parameters (such as rotating signed URLs) produce a single event.
+
+**Event attributes:**
+
+| Attribute      | Type      | Description                                                                            |
+| -------------- | --------- | -------------------------------------------------------------------------------------- |
+| `url`          | `string`  | Sanitized URL of the oversized image.                                                  |
+| `urlSanitized` | `boolean` | Whether sanitization removed part of the URL (query string, fragment, or credentials). |
+| `imageWidth`   | `number`  | Decoded image width in pixels.                                                         |
+| `imageHeight`  | `number`  | Decoded image height in pixels.                                                        |
+| `screenWidth`  | `number`  | Screen width in points.                                                                |
+| `screenHeight` | `number`  | Screen height in points.                                                               |
+| `pixelRatio`   | `number`  | Device pixel ratio used to compute the screen's physical pixel count.                  |
+
+Events are dispatched off-device, so the integration sanitizes the image URL before reporting it:
+
+- The query string and fragment are removed by default, because query parameters often carry sensitive values such as signing tokens or API keys. Set the [`includeUrlParams`](#configuration) option to report full URLs instead.
+- Basic-auth credentials are always removed, regardless of `includeUrlParams`.
+- Only `http(s)`, `file`, and `android.resource` URLs are reported. Other schemes, such as `data:` or `ph://`, carry the image payload or a stable personal-photo identifier, so they never leave the device.
+
+The `urlSanitized` attribute tells you whether sanitization changed the reported URL. URLs are reported in normalized (WHATWG) form, and normalization alone does not count as a change.
+
+## Configuration
+
+Pass a configuration object instead of `true` to tune when an image is reported:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'expo-image': {
+      oversizeThreshold: 2,
+    },
+  },
+});
+```
+
+- `oversizeThreshold`: An image is reported when its decoded pixel area exceeds the screen's physical pixel count by more than this factor. The default is `1.5`, which leaves room for a full-screen image plus 50% headroom.
+- `includeUrlParams`: Whether reported events include the image URL's query string and fragment. The default is `false`: the URL is truncated at them before it leaves the device, because query parameters often carry sensitive values such as signing tokens or API keys. Enable this only when your image URLs are safe to send off-device in full. Basic-auth credentials are always removed, regardless of this setting.
+
+## Fix oversized images
+
+- Serve images at a size close to their display size, for example by requesting resized variants from your image CDN.
+- When loading images with the [`useImage`](/versions/latest/sdk/image/#useimagesource-options-dependencies) hook, set the `maxWidth` and `maxHeight` load options to downscale the image at decode time while preserving its aspect ratio.
+
+## View events
+
+In the dashboard: open your project, navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe/events), and select the `expo-image.oversized` event to see individual reports with their attributes and sessions.
+
+From the CLI:
+
+<Terminal cmd={['# Show oversized image events', '$ eas observe:events expo-image.oversized']} />
+
+For naming, severity, and attribute details shared by all events, see [User-defined events](/eas/observe/events/).

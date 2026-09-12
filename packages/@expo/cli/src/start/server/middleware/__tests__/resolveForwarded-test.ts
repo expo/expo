@@ -11,13 +11,13 @@ describe(parseForwardedRequestInfo, () => {
   it(`parses the RFC 7239 "Forwarded" header`, () => {
     expect(
       parseForwardedRequestInfo(asReq({ forwarded: 'host="proxy.test:4443";proto=https' }))
-    ).toEqual({ authority: 'proxy.test:4443', protocol: 'https' });
+    ).toEqual({ authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: true });
   });
 
   it(`parses unquoted and reordered "Forwarded" parameters`, () => {
     expect(
       parseForwardedRequestInfo(asReq({ forwarded: 'for=192.0.2.1;proto=http;host=proxy.test' }))
-    ).toEqual({ authority: 'proxy.test', protocol: 'http' });
+    ).toEqual({ authority: 'proxy.test', protocol: 'http', viaForwardedHeader: true });
   });
 
   it(`uses the first element when a proxy chain appended to "Forwarded"`, () => {
@@ -25,7 +25,7 @@ describe(parseForwardedRequestInfo, () => {
       parseForwardedRequestInfo(
         asReq({ forwarded: 'host="proxy.test:4443";proto=https, host=inner.test;proto=http' })
       )
-    ).toEqual({ authority: 'proxy.test:4443', protocol: 'https' });
+    ).toEqual({ authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: true });
   });
 
   it(`falls back to the "X-Forwarded-*" headers`, () => {
@@ -33,7 +33,7 @@ describe(parseForwardedRequestInfo, () => {
       parseForwardedRequestInfo(
         asReq({ 'x-forwarded-host': 'proxy.test:4443', 'x-forwarded-proto': 'https' })
       )
-    ).toEqual({ authority: 'proxy.test:4443', protocol: 'https' });
+    ).toEqual({ authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: false });
   });
 
   it(`uses the first value of comma-separated "X-Forwarded-*" headers`, () => {
@@ -41,7 +41,7 @@ describe(parseForwardedRequestInfo, () => {
       parseForwardedRequestInfo(
         asReq({ 'x-forwarded-host': 'proxy.test, inner.test', 'x-forwarded-proto': 'https, http' })
       )
-    ).toEqual({ authority: 'proxy.test', protocol: 'https' });
+    ).toEqual({ authority: 'proxy.test', protocol: 'https', viaForwardedHeader: false });
   });
 
   it(`prefers "Forwarded" over the "X-Forwarded-*" headers`, () => {
@@ -53,25 +53,35 @@ describe(parseForwardedRequestInfo, () => {
           'x-forwarded-proto': 'http',
         })
       )
-    ).toEqual({ authority: 'proxy.test', protocol: 'https' });
+    ).toEqual({ authority: 'proxy.test', protocol: 'https', viaForwardedHeader: true });
   });
 
   it(`returns the protocol alone when no host was forwarded`, () => {
     expect(parseForwardedRequestInfo(asReq({ 'x-forwarded-proto': 'https' }))).toEqual({
       protocol: 'https',
+      viaForwardedHeader: false,
     });
   });
 
   it(`returns the authority alone when no protocol was forwarded`, () => {
     expect(parseForwardedRequestInfo(asReq({ 'x-forwarded-host': 'proxy.test:4443' }))).toEqual({
       authority: 'proxy.test:4443',
+      viaForwardedHeader: false,
     });
   });
 
   it(`normalizes the authority and drops anything but host and port`, () => {
     expect(
       parseForwardedRequestInfo(asReq({ 'x-forwarded-host': 'user@Proxy.TEST:4443/../evil' }))
-    ).toEqual({ authority: 'proxy.test:4443' });
+    ).toEqual({ authority: 'proxy.test:4443', viaForwardedHeader: false });
+  });
+
+  it(`treats the authority as proxy-added when only "X-Forwarded-Host" carries it`, () => {
+    expect(
+      parseForwardedRequestInfo(
+        asReq({ forwarded: 'proto=https', 'x-forwarded-host': 'proxy.test:4443' })
+      )
+    ).toEqual({ authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: false });
   });
 
   it(`ignores unusable values`, () => {

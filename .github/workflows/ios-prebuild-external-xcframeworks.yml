@@ -100,6 +100,24 @@ jobs:
           manifest="apps/bare-expo/package.json"
           changed=()
 
+          # A React Native bump changes the <rnVersion>/<hermesVersion> segments of
+          # every external artifact path, so the whole published set must be rebuilt.
+          # Read the version from `dependencies` only, mirroring the producer's source
+          # of truth in tools/src/prebuilds/Utils.ts (getVersionsInfoAsync).
+          # `|| true` keeps a base commit without the manifest falling through to
+          # build_all; without it `pipefail` aborts the step with git's status.
+          before_rn="$(git show "$base:$manifest" 2>/dev/null \
+            | jq -r '.dependencies["react-native"] // empty' || true)"
+          after_rn="$(jq -r '.dependencies["react-native"] // empty' "$manifest")"
+
+          if [ -z "$after_rn" ]; then
+            build_all "Could not read the react-native version from $manifest; building all external packages."
+          fi
+
+          if [ "$before_rn" != "$after_rn" ]; then
+            build_all "React Native changed (${before_rn:-unknown} -> $after_rn); every external artifact path is invalidated. Building all external packages."
+          fi
+
           # Derive the package -> patch-file map from pnpm's own source of truth
           # (the `patchedDependencies` block in pnpm-workspace.yaml) so adding a
           # patched package needs no edits here. Keys may carry an `@version`
@@ -175,9 +193,9 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
 
       - name: Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
 
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0

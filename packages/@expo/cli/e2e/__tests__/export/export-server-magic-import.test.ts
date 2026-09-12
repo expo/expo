@@ -19,7 +19,6 @@ describe('export server with magic import comments', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: inputDir,
-        E2E_ROUTER_JS_ENGINE: 'hermes',
       },
     });
   });

@@ -53,6 +53,12 @@
       "expo-video",
       "expo-background-fetch",
       [
+        "expo-app-intents",
+        {
+          "directory": "../native-component-list/app-intents"
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
@@ -80,6 +86,14 @@
           "icon": "./assets/ic_stat_notifications.png",
           "color": "#4630EB",
           "sounds": ["./assets/notification.wav"]
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos",
+          "isAccessMediaLocationEnabled": true
         }
       ],
       [
@@ -111,8 +125,10 @@
       "inlineModules": {
         "watchedDirectories": [
           "../native-component-list/src/screens/inlineModules/inlineModulesExamples",
-          "../native-component-list/src/screens/ModulesCore"
-        ]
+          "../native-component-list/src/screens/ModulesCore",
+          "../native-component-list/app-intents"
+        ],
+        "xcodeProjectTargets": ["BareExpo"]
       }
     }
   }

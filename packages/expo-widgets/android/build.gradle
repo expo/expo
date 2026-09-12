@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'expo.modules.widgets'
-version = '56.0.15'
+version = '58.0.0'
 
 def expoWidgetsPackageDirFile = project.projectDir.parentFile
 def expoWidgetsPackageDir = expoWidgetsPackageDirFile.absolutePath
@@ -39,7 +39,7 @@ android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
-    versionName '56.0.15'
+    versionName '58.0.0'
 
     externalNativeBuild {
       cmake {
@@ -108,7 +108,7 @@ def generateExpoWidgetsLayoutRegistry = tasks.register("generateExpoWidgetsLayou
   inputs.file file("$expoWidgetsPackageDir/metro.config.js")
   inputs.file file("$expoWidgetsPackageDir/scripts/build-layout-registry.mjs")
   inputs.file file("$expoWidgetsPackageDir/bundle/layout-registry-entry.js")
-  inputs.file(expoWidgetsLayoutRegistryConfigFile).optional()
+  inputs.files(expoWidgetsLayoutRegistryConfigFile)
   outputs.file(expoWidgetsLayoutRegistryOutput)
 
   def command = [

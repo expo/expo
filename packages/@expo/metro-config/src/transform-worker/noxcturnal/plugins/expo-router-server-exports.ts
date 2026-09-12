@@ -3,12 +3,14 @@ import path from 'path';
 
 import {
   expoPluginInput,
+  isPathInsideRoot,
   type Noxcturnal,
   type NoxcturnalTransformInput,
 } from '../noxcturnal-transformer';
 
 interface ExpoRouterExportState {
   input: NoxcturnalTransformInput;
+  enabled: boolean;
   isLoaderBundle: boolean;
   isServer: boolean;
   loaderReference?: string;
@@ -26,8 +28,14 @@ export function createExpoRouterServerExportsPlugin(
     },
     createState: (context) => {
       const input = expoPluginInput(context);
+      const routerRootOption = input.options.customTransformOptions?.routerRoot;
+      const routerRoot = typeof routerRootOption === 'string' ? decodeURI(routerRootOption) : 'app';
+      const absoluteRouterRoot = path.isAbsolute(routerRoot)
+        ? routerRoot
+        : path.join(input.projectRoot, routerRoot);
       return {
         input,
+        enabled: isPathInsideRoot(absoluteRouterRoot, input.filename),
         isLoaderBundle: String(input.options.customTransformOptions?.isLoaderBundle) === 'true',
         isServer: input.options.customTransformOptions?.environment === 'node',
         performConstantFolding: false,
@@ -35,6 +43,7 @@ export function createExpoRouterServerExportsPlugin(
     },
     visitors: [
       nox.defineVisitor('ExportDefaultDeclaration', {}, (exportPath, state) => {
+        if (!state.enabled) return;
         if (!state.isLoaderBundle) return;
         exportPath.remove();
         state.performConstantFolding = true;
@@ -63,6 +72,7 @@ export function createExpoRouterServerExportsPlugin(
           },
         },
         (exportPath, state) => {
+          if (!state.enabled) return;
           if (
             exportPath.node.source ||
             (exportPath.node.exportKind && exportPath.node.exportKind !== 'value') ||
@@ -130,6 +140,7 @@ export function createExpoRouterServerExportsPlugin(
       ),
     ],
     post(context, state) {
+      if (!state.enabled) return;
       if (state.loaderReference) {
         context.metadata.set('loaderReference', state.loaderReference);
       }

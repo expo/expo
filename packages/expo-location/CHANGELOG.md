@@ -4,19 +4,30 @@
 
 ### 🛠 Breaking changes
 
-- [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
+
+### 🐛 Bug fixes
+
+- [iOS] Add `scope` and `accuracy` under `ios` to the responses from `getBackgroundPermissionsAsync` and `requestBackgroundPermissionsAsync`, matching the `LocationPermissionResponse` type. ([#48926](https://github.com/expo/expo/pull/48926) by [@vonovak](https://github.com/vonovak))
 - [Android] Fix `timeInterval` and `distanceInterval` being ignored for background location updates. ([#46788](https://github.com/expo/expo/issues/46788) by [@doshisunny](https://github.com/doshisunny))
 - [iOS] Fix incorrect default value for `pausesUpdatesAutomatically` to match docs. ([#47008](https://github.com/expo/expo/pull/47008) by [@Ignigena](https://github.com/Ignigena))
 - [Android] Fix leaking watches ([#48294](https://github.com/expo/expo/pull/48294) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Fix `startLocationUpdatesAsync` requiring `FOREGROUND_SERVICE_LOCATION` (Android 14+) even when no `foregroundService` option is passed. ([#49641](https://github.com/expo/expo/issues/49641) by [@aamagda](https://github.com/aamagda))
 
 ### 💡 Others
 
 - Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
+- Add missing `react` and `react-native` peer dependencies ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
 
 ## 57.0.7 - 2026-07-29
 

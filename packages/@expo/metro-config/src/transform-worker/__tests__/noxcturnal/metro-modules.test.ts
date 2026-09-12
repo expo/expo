@@ -929,6 +929,38 @@ it('compacts the complete Metro output without falling back to Babel', async () 
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
+it('avoids compact Metro pseudo-global collisions with module bindings', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `import value from "one";
+      let g = 1, r = 2, i = 3, a = 4, m = 5, e = 6, d = 7;
+      export default [value, g, r, i, a, m, e, d];`,
+    options: options({ dev: false, minify: true }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), unstable_compactOutput: true },
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toMatch(/__d\(function\(_g,_r,_i,_a,_m,_e,_dependencyMap\)\{/);
+  let factory: Function | undefined;
+  new Function('__d', result.result.code)((value: Function) => {
+    factory = value;
+  });
+  const moduleExports: { default?: unknown } = {};
+  factory?.(
+    globalThis,
+    () => 'required',
+    () => 'imported',
+    () => ({ default: 'imported' }),
+    { exports: moduleExports },
+    moduleExports,
+    [0]
+  );
+  expect(moduleExports.default).toEqual(['required', 1, 2, 3, 4, 5, 6, 7]);
+});
+
 it('completes production constant folding and DCE in native code', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename,
@@ -2174,6 +2206,15 @@ it.each([
 
 it.each([
   ['class', `export default class DOMException {}; DOMException.code = 1;`],
+  [
+    'lowered class',
+    `export default class DOMException extends Error {
+    #name;
+    constructor(message) { super(message); this.#name = 'Error'; }
+    get name() { return this.#name; }
+  }
+  DOMException.code = 1;`,
+  ],
   ['function', `export default function createValue() {}; createValue.code = 1;`],
 ])('preserves a named default %s declaration binding', async (_name, source) => {
   const result = await transformFileFullyWithNoxcturnal({

@@ -15,6 +15,7 @@ export function RNHostView({
   disabled,
   hidden,
   testID,
+  onLayout,
   modifiers: extraModifiers,
 }: RNHostViewProps) {
   const modifiers = transformToModifiers(
@@ -24,7 +25,7 @@ export function RNHostView({
   );
 
   return (
-    <ComposeRNHostView matchContents={matchContents} modifiers={modifiers}>
+    <ComposeRNHostView matchContents={matchContents} modifiers={modifiers} onLayout={onLayout}>
       {children}
     </ComposeRNHostView>
   );

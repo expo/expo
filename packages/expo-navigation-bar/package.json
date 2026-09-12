@@ -1,6 +1,6 @@
 {
   "name": "expo-navigation-bar",
-  "version": "57.0.2",
+  "version": "58.0.0",
   "description": "Modify and observe the native navigation bar on Android devices.",
   "keywords": [
     "android",

@@ -42,10 +42,6 @@ export function createFixHermesV1AsyncArrowNonSimpleParamsPlugin(
           const body = arrow.getChild('body');
           if (!body) arrow.unsupported('missing-async-arrow-body');
           const bodySource = body!.getSource();
-          const blockBody = arrow.node.expression
-            ? arrow.context.code.template`{ return ${bodySource}; }`
-            : bodySource;
-
           // Hermes rejects every rest-parameter async arrow. Keep its original
           // parameter binding in a synchronous closure and invoke a zero-argument
           // async arrow inside it, matching Expo's maintained Babel transform.
@@ -56,8 +52,18 @@ export function createFixHermesV1AsyncArrowNonSimpleParamsPlugin(
                 parameter.node.type === 'BindingRestElement'
             )
           ) {
-            arrow.context.editor.remove(arrow.getSource().start, arrow.getSource().start + 5);
-            body!.replaceWith(arrow.context.code.template`(async () => ${blockBody})()`);
+            const arrowSource = arrow.getSource();
+            arrow.replaceWith({
+              kind: 'composite',
+              parts: [
+                arrow.context.sourceSlice(arrowSource.start + 5, bodySource.start),
+                '(async () => ',
+                ...(arrow.node.expression
+                  ? (['{ return ', bodySource, '; }'] as const)
+                  : ([bodySource] as const)),
+                ')()',
+              ],
+            });
             return;
           }
 

@@ -23,7 +23,6 @@ struct WidgetReload: AppIntent {
   }
 }
 
-@available(iOS 16.0, *)
 struct WidgetUserInteraction: AppIntent {
   // title is not used for non-discoverable intents, but it is required
   static var title: LocalizedStringResource = "User Interaction"
@@ -102,7 +101,6 @@ struct WidgetUserInteraction: AppIntent {
   }
 }
 
-@available(iOS 16.0, *)
 struct LiveActivityUserInteraction: LiveActivityIntent {
   // title is not used for non-discoverable intents, but it is required
   static var title: LocalizedStringResource = "User Interaction"

@@ -5,6 +5,7 @@ process.env.EXPO_NONINTERACTIVE = 1;
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { commandRunner, packageManagerRunAsync } from '../utils/commandUtils.js';
+import { validateRawIosPrebuilds } from '../utils/iosPrebuilds.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -13,6 +14,7 @@ async function runAsync() {
   await commandRunner(path.join(dirname, 'expo-module-clean'));
   // Run the package's own `build` script so `expo-build` modules still emit output before publishing.
   await packageManagerRunAsync(['build']);
+  validateRawIosPrebuilds();
 }
 
 (async () => {

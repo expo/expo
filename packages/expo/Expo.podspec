@@ -114,5 +114,12 @@ Pod::Spec.new do |s|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'ios/Tests'
+
+    # The test bundle links static libraries containing C++ (e.g. ReactCodegen's
+    # generated component descriptors), but has no C++ sources of its own, so the
+    # driver won't add the C++ runtime — link libc++ explicitly.
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
+    }
   end
 end

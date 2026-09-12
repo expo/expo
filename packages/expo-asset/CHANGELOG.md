@@ -13,6 +13,13 @@
 
 ### 💡 Others
 
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- Resolve development asset URLs from the bundle URL instead of the manifest's `debuggerHost` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
+- Add support for React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 57.0.8 - 2026-07-29
 
 _This version does not introduce any user-facing changes._

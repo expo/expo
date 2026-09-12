@@ -418,40 +418,52 @@ class SQLiteModule : Module() {
   private fun step(statement: NativeStatement, database: NativeDatabase): SQLiteColumnValues? {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    val ret = statement.ref.sqlite3_step()
-    if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.getTransformedColumnValues()
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      val ret = statement.ref.sqlite3_step()
+      if (ret == NativeDatabaseBinding.SQLITE_ROW) {
+        return statement.getTransformedColumnValues()
+      }
+      if (ret != NativeDatabaseBinding.SQLITE_DONE) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      return null
     }
-    if (ret != NativeDatabaseBinding.SQLITE_DONE) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-    }
-    return null
   }
 
   @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun getAll(statement: NativeStatement, database: NativeDatabase): List<SQLiteColumnValues> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    val columnValuesList = mutableListOf<SQLiteColumnValues>()
-    while (true) {
-      val ret = statement.ref.sqlite3_step()
-      if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        columnValuesList.add(statement.getTransformedColumnValues())
-        continue
-      } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
-        break
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      val columnValuesList = mutableListOf<SQLiteColumnValues>()
+      while (true) {
+        val ret = statement.ref.sqlite3_step()
+        if (ret == NativeDatabaseBinding.SQLITE_ROW) {
+          columnValuesList.add(statement.getTransformedColumnValues())
+          continue
+        } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
+          break
+        }
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
       }
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      return columnValuesList
     }
-    return columnValuesList
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun reset(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
     }
   }
 
@@ -459,10 +471,14 @@ class SQLiteModule : Module() {
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      statement.isFinalized = true
     }
-    statement.isFinalized = true
   }
 
   private fun addUpdateHook(database: NativeDatabase) {
@@ -512,13 +528,7 @@ class SQLiteModule : Module() {
     if (databasePath == MEMORY_DB_NAME) {
       return
     }
-    val dbFile = File(ensureDatabasePathExists(databasePath))
-    if (!dbFile.exists()) {
-      throw DatabaseNotFoundException(databasePath)
-    }
-    if (!dbFile.delete()) {
-      throw DeleteDatabaseFileException(databasePath)
-    }
+    deleteDatabaseFiles(File(ensureDatabasePathExists(databasePath)), databasePath)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)

@@ -48,6 +48,7 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     ],
     type: 'stack',
     stale: false,
+    routeKeySeq: 0,
   };
 
   // When we add a path and state value then our index value will be zero
@@ -82,6 +83,7 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     ],
     type: 'stack',
     stale: false,
+    routeKeySeq: 0,
   };
   history.push({ path: '/route-two', state: mockStateTwo });
   expect(history.index).toBe(1);
@@ -136,6 +138,7 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     ],
     type: 'stack',
     stale: false,
+    routeKeySeq: 0,
   };
   history.replace({ path: '/route-three', state: mockStateThree });
   expect(history.index).toBe(0);
@@ -167,6 +170,7 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     ],
     type: 'stack',
     stale: false,
+    routeKeySeq: 0,
   };
 
   // Pushing a new route will remove any items after the new index

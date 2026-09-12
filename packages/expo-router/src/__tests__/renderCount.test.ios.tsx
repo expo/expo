@@ -487,10 +487,10 @@ describe('Stack nested in Tabs render counts', () => {
     expect(screen.getByTestId('index')).toBeVisible();
 
     expect(layoutRender).toHaveBeenCalledTimes(1);
-    expect(homeTabRender).toHaveBeenCalledTimes(2);
+    expect(homeTabRender).toHaveBeenCalledTimes(1);
     expect(indexMount).toHaveBeenCalledTimes(1);
-    expect(indexRender).toHaveBeenCalledTimes(3);
-    expect(twoRender).toHaveBeenCalledTimes(2);
+    expect(indexRender).toHaveBeenCalledTimes(2);
+    expect(twoRender).toHaveBeenCalledTimes(1);
     expect(otherRender).toHaveBeenCalledTimes(1);
     expect(router.canGoBack()).toBe(true);
 

@@ -16,6 +16,7 @@ import type {
 } from '../react-navigation/native';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 /**
  * Event map for `NativeTabs` navigation events.
@@ -228,6 +229,13 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   >;
 }
 
+/**
+ * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
+ * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
+ * @platform ios
+ */
+export type IconRenderingMode = 'template' | 'original';
+
 export type SymbolOrImageSource =
   | {
       /**
@@ -256,7 +264,7 @@ export type SymbolOrImageSource =
        * @platform ios
        * @default 'template'
        */
-      renderingMode?: 'template' | 'original';
+      renderingMode?: IconRenderingMode;
     };
 
 export type NativeTabsLabelStyle = Pick<
@@ -295,6 +303,13 @@ export const SUPPORTED_BLUR_EFFECTS = [
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
 export interface NativeTabsProps extends PropsWithChildren {
+  /** A component to render when an individual tab screen throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  /**
+   * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
+   * @default false
+   */
+  activityEnabled?: boolean;
   // #region common props
   /**
    * The style of the every tab label in the tab bar.
@@ -488,6 +503,7 @@ export interface NativeTabsProps extends PropsWithChildren {
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
+  tabConfigurationKey: string;
 }
 export interface OnTabChangeEventPayload {
   /**
@@ -526,6 +542,7 @@ export interface NativeTabsViewProps extends Omit<
   | 'rippleColor'
   | 'disableIndicator'
   | 'labelVisibilityMode'
+  | 'tabConfigurationKey'
 > {
   focusedIndex: number;
   /**
@@ -581,6 +598,11 @@ export interface NativeTabTriggerProps {
    * When used in a route it has no effect.
    */
   name?: string;
+  /**
+   * Overrides React Activity behavior inherited from `NativeTabs` for this route when declared in
+   * a layout.
+   */
+  activityEnabled?: boolean;
   /**
    * If true, the tab will be hidden from the tab bar.
    *

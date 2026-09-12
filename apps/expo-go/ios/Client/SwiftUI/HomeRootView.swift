@@ -89,6 +89,16 @@ struct HomeRootView: View {
         AccountSheet()
           .environmentObject(viewModel)
       }
+      .sheet(item: $viewModel.deviceLoginRequest) { request in
+        DeviceLoginSheet(authService: viewModel.authService, verificationURI: request.verificationURI) { signedIn in
+          request.completion.resolve(signedIn)
+          viewModel.deviceLoginRequest = nil
+        }
+        // Catches swipe-to-dismiss, which never calls the content closure above.
+        .onDisappear {
+          request.completion.resolve(false)
+        }
+      }
       .alert(item: $viewModel.errorToShow) { error in
         Alert(
           title: Text("Error"),

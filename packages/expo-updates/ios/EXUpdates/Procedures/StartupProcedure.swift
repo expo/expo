@@ -1,5 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 internal protocol StartupProcedureDelegate: AnyObject {
   func startupProcedureDidLaunch(_ startupProcedure: StartupProcedure)
   func startupProcedure(_ startupProcedure: StartupProcedure, errorRecoveryDidRequestRelaunchWithCompletion completion: @escaping (Error?, Bool) -> Void)
@@ -43,7 +45,13 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   // swiftlint:enable implicitly_unwrapped_optional
 
   private var candidateLauncher: AppLauncher?
-  internal private(set) var launcher: AppLauncher?
+  // Written from the controller queue during launch and read by `EnabledAppController`'s
+  // `UpdatesInterface` accessors on other threads, so the reference is synchronized.
+  private let launcherStorage = Mutex<AppLauncher?>(nil)
+  internal private(set) var launcher: AppLauncher? {
+    get { launcherStorage.withLock { $0 } }
+    set { launcherStorage.withLock { $0 = newValue } }
+  }
   internal func setLauncher(_ launcher: AppLauncher) {
     self.launcher = launcher
   }

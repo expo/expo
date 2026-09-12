@@ -12,8 +12,10 @@ private struct MacroOptions {
   var count: Int = 0
 }
 
+// `@unchecked Sendable`: the `@JS(.concurrent)` members send `self` off the JavaScript thread,
+// which Swift 6 mode allows only for a `Sendable` module.
 @ExpoModule
-private final class MacroGreeter: Module {
+private final class MacroGreeter: Module, @unchecked Sendable {
   @JS
   func greet(name: String) -> String {
     return "Hi, \(name)"
@@ -39,6 +41,16 @@ private final class MacroGreeter: Module {
     return MacroOptions(label: options.label, count: options.count + 1)
   }
 
+  // An `Either` argument and return. The return is an `EitherOfThree`, which conforms through the
+  // conformance inherited from `Either`.
+  @JS
+  func describe(value: Either<String, Int>) -> EitherOfThree<String, Int, Bool> {
+    if let string: String = value.get() {
+      return EitherOfThree(string.uppercased())
+    }
+    return EitherOfThree(value.is(Int.self))
+  }
+
   // A throwing function, whose coded error surfaces to JS.
   @JS
   func fail() throws {
@@ -49,6 +61,18 @@ private final class MacroGreeter: Module {
   @JS
   @JavaScriptActor
   func delayed(value: String) async throws -> String {
+    return value
+  }
+
+  // An async function whose body runs off the JS thread, on the concurrent pool.
+  @JS(.concurrent)
+  func offThread(value: String) async throws -> String {
+    return value
+  }
+
+  // The `.concurrent` option combined with a JS name override.
+  @JS("renamedOffThread", .concurrent)
+  func offThreadWithName(value: String) async throws -> String {
     return value
   }
 }
@@ -148,6 +172,21 @@ private struct MacroModuleTests {
     #expect(try await result.asString() == "done")
   }
 
+  @Test
+  func `binds a @JS(.concurrent) async function that returns a promise`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.offThread('done')")
+    #expect(try await result.asString() == "done")
+  }
+
+  @Test
+  func `honors the @JS name override combined with .concurrent`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.renamedOffThread('done')")
+    #expect(try await result.asString() == "done")
+    #expect(try runtime.eval("'offThreadWithName' in expo.modules.MacroGreeter").asBool() == false)
+  }
+
   // MARK: - Non-primitive decode/encode
 
   @Test
@@ -156,6 +195,13 @@ private struct MacroModuleTests {
     let result = try runtime.eval("expo.modules.MacroGreeter.repeated({ label: 'a', count: 2 })").asObject()
     #expect(try result.getProperty("label").asString() == "a")
     #expect(try result.getProperty("count").asInt() == 3)
+  }
+
+  @Test
+  func `decodes and encodes an Either across a @JS function`() throws {
+    register(MacroGreeter(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroGreeter.describe('expo')").asString() == "EXPO")
+    #expect(try runtime.eval("expo.modules.MacroGreeter.describe(42)").asBool() == true)
   }
 
   // MARK: - Error propagation

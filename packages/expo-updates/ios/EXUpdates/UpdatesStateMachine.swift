@@ -399,10 +399,8 @@ internal class UpdatesStateMachine {
       }
       // Notify the controller state change listener
       if let controller = UpdatesControllerRegistry.sharedInstance.controller as? EnabledAppController {
-        controller.stateChangeListeners.keys.forEach {subscriptionId in
-          if let listener = controller.stateChangeListeners[subscriptionId] {
-            listener.updatesStateDidChange(event.toMap)
-          }
+        controller.stateChangeListenersSnapshot().forEach { listener in
+          listener.updatesStateDidChange(event.toMap)
         }
       }
       sendContextToJS()

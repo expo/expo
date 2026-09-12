@@ -4,8 +4,9 @@ import type { RenderResult } from '@testing-library/react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
-import type { ReactNavigationState } from '../global-state/router-store';
-import { store } from '../global-state/router-store';
+import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { navigationRef } from '../global-state/navigationRef';
+import type { ReactNavigationState } from '../global-state/types';
 import { router } from '../imperative-api';
 import { type MockContextConfig, getMockContext } from './mock-config';
 
@@ -104,19 +105,19 @@ export function renderRouter(
    */
   return Object.assign(result, {
     getPathname(this: RenderResult): string {
-      return store.getRouteInfo().pathname;
+      return getRouteInfoFromState(navigationRef.getRootState()).pathname;
     },
     getSegments(this: RenderResult): string[] {
-      return store.getRouteInfo().segments;
+      return getRouteInfoFromState(navigationRef.getRootState()).segments;
     },
     getSearchParams(this: RenderResult): Record<string, string | string[]> {
-      return store.getRouteInfo().params;
+      return getRouteInfoFromState(navigationRef.getRootState()).params;
     },
     getPathnameWithParams(this: RenderResult): string {
-      return store.getRouteInfo().pathnameWithParams;
+      return getRouteInfoFromState(navigationRef.getRootState()).pathnameWithParams;
     },
     getRouterState(this: RenderResult) {
-      return store.state;
+      return navigationRef.getRootState();
     },
   });
 }
@@ -172,7 +173,7 @@ export const testRouter = {
   },
   /** Update the current route query params and assert the new pathname */
   setParams(params: Record<string, string>, path?: string) {
-    router.setParams(params);
+    rnTestingLibrary.act(() => router.setParams(params));
     if (path) {
       expect(screen).toHavePathnameWithParams(path);
     }
