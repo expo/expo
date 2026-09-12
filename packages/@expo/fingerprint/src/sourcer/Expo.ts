@@ -10,6 +10,7 @@ import type { LoadedModuleSource } from '../ExpoConfigLoader';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { getNodeModulesPackageJsonPath, toPosixPath } from '../utils/Path';
+import { normalizeAutolinkingConfigForHash } from './AutolinkingConfig';
 import { SourceSkips } from './SourceSkips';
 import {
   createAutolinkingHashSourceAsync,
@@ -393,7 +394,12 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
     results.push({
       type: 'contents',
       id: 'expoAutolinkingConfig:android',
-      contents: JSON.stringify(config),
+      contents: JSON.stringify(
+        normalizeAutolinkingConfigForHash(config, {
+          stripPaths: !!(options.sourceSkips & SourceSkips.AutolinkingConfigPaths),
+          roots: [realProjectRoot],
+        })
+      ),
       reasons,
     });
     return results;
@@ -456,7 +462,12 @@ export async function getExpoAutolinkingIosSourcesAsync(
     results.push({
       type: 'contents',
       id: 'expoAutolinkingConfig:ios',
-      contents: JSON.stringify(config),
+      contents: JSON.stringify(
+        normalizeAutolinkingConfigForHash(config, {
+          stripPaths: !!(options.sourceSkips & SourceSkips.AutolinkingConfigPaths),
+          roots: [realProjectRoot],
+        })
+      ),
       reasons,
     });
     return results;

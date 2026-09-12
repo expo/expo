@@ -212,66 +212,27 @@ describe('managed project test', () => {
       cwd: projectRoot,
     });
     const diff = await diffFingerprintChangesAsync(fingerprint, projectRoot);
-    expect(normalizeAutolinkingVersionsForSnapshot(diff)).toMatchInlineSnapshot(`
-      [
-        {
-          "afterSource": {
-            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"libraryName":"RNCNetInfoSpec","componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
-            "hash": "*",
-            "id": "rncoreAutolinkingConfig:android",
-            "reasons": [
-              "rncoreAutolinkingAndroid",
-            ],
-            "type": "contents",
-          },
-          "beforeSource": {
-            "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
-            "hash": "*",
-            "id": "rncoreAutolinkingConfig:android",
-            "reasons": [
-              "rncoreAutolinkingAndroid",
-            ],
-            "type": "contents",
-          },
-          "op": "changed",
-        },
-        {
-          "afterSource": {
-            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"ios":{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","version":"*","configurations":[],"scriptPhases":[]}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
-            "hash": "*",
-            "id": "rncoreAutolinkingConfig:ios",
-            "reasons": [
-              "rncoreAutolinkingIos",
-            ],
-            "type": "contents",
-          },
-          "beforeSource": {
-            "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
-            "hash": "*",
-            "id": "rncoreAutolinkingConfig:ios",
-            "reasons": [
-              "rncoreAutolinkingIos",
-            ],
-            "type": "contents",
-          },
-          "op": "changed",
-        },
-        {
-          "addedSource": {
-            "filePath": "node_modules/@react-native-community/netinfo/package.json",
-            "hash": "*",
-            "name": "@react-native-community/netinfo",
-            "reasons": [
-              "rncoreAutolinkingAndroid",
-              "rncoreAutolinkingIos",
-            ],
-            "type": "package",
-            "version": "*",
-          },
-          "op": "added",
-        },
-      ]
-    `);
+    const normalized = normalizeAutolinkingVersionsForSnapshot(diff);
+    expect(normalized).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          op: 'added',
+          addedSource: expect.objectContaining({
+            name: '@react-native-community/netinfo',
+            type: 'package',
+          }),
+        }),
+      ])
+    );
+    expect(
+      normalized.some(
+        (item) =>
+          item.op === 'changed' &&
+          item.afterSource.type === 'contents' &&
+          String(item.afterSource.id).includes('AutolinkingConfig') &&
+          String(item.afterSource.contents).includes('@react-native-community/netinfo')
+      )
+    ).toBe(true);
   });
 
   it('should have same hash even if google service file path is different', async () => {

@@ -82,4 +82,12 @@ export enum SourceSkips {
   Easignore = 1 << 14,
 
   //#endregion - EAS Build source
+
+  /**
+   * Path fields in the resolved autolinking config from `expo-modules-autolinking` and
+   * `react-native-config`.
+   * The config itself is still hashed. Filesystem paths, and values that sit under the project
+   * root, are omitted. Linked module names, `scriptPhases`, and similar non-path overrides remain.
+   */
+  AutolinkingConfigPaths = 1 << 15,
 }
