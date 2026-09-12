@@ -97,14 +97,12 @@ public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any
   var env: [String: Any] = [
     "showsContainerBackground": environment.showsWidgetContainerBackground,
     "widgetFamily": environment.widgetFamily.description,
-    "colorScheme": "\(environment.colorScheme)"
+    "colorScheme": "\(environment.colorScheme)",
+    "isLuminanceReduced": environment.isLuminanceReduced,
+    "widgetRenderingMode": environment.widgetRenderingMode.description,
+    "showsWidgetLabel": environment.showsWidgetLabel
   ]
 
-  if #available(iOS 16.0, *) {
-    env["isLuminanceReduced"] = environment.isLuminanceReduced
-    env["widgetRenderingMode"] = environment.widgetRenderingMode.description
-    env["showsWidgetLabel"] = environment.showsWidgetLabel
-  }
   if #available(iOS 17.0, *) {
     env["widgetContentMargins"] = [
       "top": environment.widgetContentMargins.top,
@@ -119,20 +117,14 @@ public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any
   return env
 }
 
-// ActivityViewContext requires iOS 16.1. Without the availability attribute, precompiling
-// this package fails: the SwiftPM prebuild targets iOS 16.0 (spm.config.json), unlike the
-// podspec (16.4). Both callers live in @available(iOS 16.1, *) views.
-@available(iOS 16.1, *)
 func getLiveActivityEnvironment(for environment: EnvironmentValues, in context: ActivityViewContext<LiveActivityAttributes>) -> [String: Any] {
   var env: [String: Any] = [
-    "colorScheme": "\(environment.colorScheme)"
+    "colorScheme": "\(environment.colorScheme)",
+    "isLuminanceReduced": environment.isLuminanceReduced,
+    "isActivityFullscreen": environment.isActivityFullscreen,
+    "isStale": context.isStale
   ]
 
-  env["isLuminanceReduced"] = environment.isLuminanceReduced
-  env["isActivityFullscreen"] = environment.isActivityFullscreen
-  if #available(iOS 16.2, *) {
-    env["isStale"] = context.isStale
-  }
   if #available(iOS 18.0, *) {
     env["isActivityUpdateReduced"] = environment.isActivityUpdateReduced
     env["activityFamily"] = "\(environment.activityFamily)"

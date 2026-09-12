@@ -95,13 +95,35 @@ function serializedMetaChildren(meta: MetaNode[]): SerializedMeta[] {
   });
 }
 
+function buildUserActivity(sortedMeta: SerializedMeta[]): Partial<UserActivity> {
+  const userActivity: Partial<UserActivity> = {};
+
+  sortedMeta.forEach((child) => {
+    if (child.type === 'meta') {
+      const { property, content } = child.props;
+
+      switch (property) {
+        case 'og:description':
+          userActivity.description = content;
+          break;
+        case 'expo:handoff':
+          userActivity.isEligibleForHandoff = isTruthy(content);
+          break;
+        case 'expo:spotlight':
+          userActivity.isEligibleForSearch = isTruthy(content);
+          break;
+      }
+    }
+  });
+
+  return userActivity;
+}
+
 function useActivityFromMetaChildren(meta: MetaNode[]) {
   const { url: href, pathname } = useAddressableLink();
 
-  const previousMeta = React.useRef<SerializedMeta[]>([]);
-  const cachedActivity = React.useRef<Partial<UserActivity>>({});
-
   const sortedMeta = React.useMemo(() => serializedMetaChildren(meta), [meta]);
+  const activity = React.useMemo(() => buildUserActivity(sortedMeta), [sortedMeta]);
 
   const url = React.useMemo(() => {
     const urlMeta = sortedMeta.find(
@@ -132,51 +154,6 @@ function useActivityFromMetaChildren(meta: MetaNode[]) {
 
     return getLastSegment(pathname);
   }, [sortedMeta, pathname]);
-
-  const activity = React.useMemo(() => {
-    if (
-      !!previousMeta.current &&
-      !!cachedActivity.current &&
-      deepObjectCompare(previousMeta.current, sortedMeta)
-    ) {
-      return cachedActivity.current;
-    }
-    previousMeta.current = sortedMeta;
-
-    const userActivity: Partial<UserActivity> = {};
-
-    sortedMeta.forEach((child) => {
-      if (
-        // <meta />
-        child.type === 'meta'
-      ) {
-        const { property, content } = child.props;
-
-        switch (property) {
-          case 'og:description':
-            userActivity.description = content;
-            break;
-          // Custom properties
-          case 'expo:handoff':
-            userActivity.isEligibleForHandoff = isTruthy(content);
-            break;
-          case 'expo:spotlight':
-            userActivity.isEligibleForSearch = isTruthy(content);
-            break;
-        }
-
-        // // <meta name="keywords" content="foo,bar,baz" />
-        // if (["keywords"].includes(name)) {
-        //   userActivity.keywords = Array.isArray(content)
-        //     ? content
-        //     : content.split(",");
-        // }
-      }
-    });
-
-    cachedActivity.current = userActivity;
-    return userActivity;
-  }, [meta, pathname, href]);
 
   const parsedActivity: UserActivity = {
     keywords: [title],

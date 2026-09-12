@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Added `maxWidth`/`maxHeight` options to `ImageManipulator.manipulate` and `useImageManipulator` that downsample large images while decoding, significantly reducing the peak memory usage and avoiding out-of-memory crashes. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 
 ### 🐛 Bug fixes
@@ -13,6 +25,12 @@
 - Fixed `ImageManipulator.Image` being typed as an `ImageRef` instance rather than the class it holds at runtime, which rejected `instanceof` checks and made instance members appear to exist on it. ([#48613](https://github.com/expo/expo/pull/48613) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+- Add missing `react` and `react-native` peer dependencies ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
+
+### 📚 3rd party library updates
+
+- Bump `SDWebImage` to 5.21.6 and `SDWebImageWebPCoder` to 0.15.0 to align with `expo-image` ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
 
 ## 57.0.7 - 2026-07-29
 

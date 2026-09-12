@@ -365,6 +365,10 @@ public struct NotificationContentRecord: Record {
       content.categoryIdentifier = categoryIdentifier
     }
 
+    if let threadIdentifier = threadIdentifier {
+      content.threadIdentifier = threadIdentifier
+    }
+
     if let sound = sound {
       if let soundBool = try? sound.as(Bool.self) {
         content.sound = soundBool ? .default : .none

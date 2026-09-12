@@ -1,7 +1,7 @@
 import type { ExpoLinkingOptions } from '../../getLinkingConfig';
 import type { UrlObject } from '../../global-state/getRouteInfoFromState';
-import type { ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState } from '../../global-state/routing';
+import type { ReactNavigationState } from '../../global-state/types';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
 import type {
   ParamListBase,

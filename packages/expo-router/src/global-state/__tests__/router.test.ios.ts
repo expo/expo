@@ -1,9 +1,11 @@
 import * as Linking from 'expo-linking';
 
 import { emitDomDismiss, emitDomDismissAll, emitDomGoBack } from '../../domComponents/emitDomEvent';
+import { navigationRef } from '../navigationRef';
 import {
   canDismiss,
   canGoBack,
+  createImperativeRouter,
   dismiss,
   dismissAll,
   dismissTo,
@@ -14,34 +16,20 @@ import {
   push,
   reload,
   replace,
+  router,
   setParams,
 } from '../router';
-import { routingQueue } from '../routingQueue';
-import { store } from '../store';
 
-jest.mock('../store', () => ({
-  store: {
-    assertIsReady: jest.fn(),
-    navigationRef: {
-      isReady: jest.fn(() => true),
-      current: {
-        canGoBack: jest.fn(),
-        setParams: jest.fn(),
-        goBack: jest.fn(),
-        getRootState: jest.fn(),
-        dispatch: jest.fn(),
-      },
+jest.mock('../navigationRef', () => ({
+  navigationRef: {
+    getRootState: jest.fn(),
+    current: {
+      canGoBack: jest.fn(),
+      setParams: jest.fn(),
+      goBack: jest.fn(),
+      getRootState: jest.fn(),
+      dispatch: jest.fn(),
     },
-    state: undefined as any,
-    linking: { getStateFromPath: jest.fn(), config: {} },
-    getRouteInfo: jest.fn(() => ({ pathname: '/', segments: [], params: {} })),
-    redirects: [],
-  },
-}));
-
-jest.mock('../routingQueue', () => ({
-  routingQueue: {
-    add: jest.fn(),
   },
 }));
 
@@ -65,42 +53,53 @@ jest.mock('../../link/href', () => ({
   resolveHref: jest.fn((href: any) => (typeof href === 'string' ? href : href.pathname || '/')),
 }));
 
-const mockAdd = routingQueue.add as jest.Mock;
+const mockAdd = jest.fn();
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;
-
+const mountedNavigation = navigationRef.current;
 beforeEach(() => {
   jest.clearAllMocks();
-  (store as any).state = undefined;
+  navigationRef.current = mountedNavigation;
+  (navigationRef.getRootState as jest.Mock).mockReturnValue(undefined);
+});
+
+it('throws before the module-level router is installed', () => {
+  expect(() => navigate('/first')).toThrow('first render');
+
+  Object.assign(router, createImperativeRouter(mockAdd));
 });
 
 describe('canDismiss', () => {
+  it('returns false when the container is not mounted', () => {
+    navigationRef.current = null;
+    expect(canDismiss()).toBe(false);
+  });
+
   it('returns false when state is undefined', () => {
-    (store as any).state = undefined;
     expect(canDismiss()).toBe(false);
   });
 
   it('returns false for single-route stack', () => {
-    (store as any).state = {
+    (navigationRef.getRootState as jest.Mock).mockReturnValue({
       type: 'stack',
       routes: [{ name: 'home' }],
       index: 0,
-    };
+    });
     expect(canDismiss()).toBe(false);
   });
 
   it('returns true for stack with >1 routes', () => {
-    (store as any).state = {
+    (navigationRef.getRootState as jest.Mock).mockReturnValue({
       type: 'stack',
       routes: [{ name: 'home' }, { name: 'detail' }],
       index: 1,
-    };
+    });
     expect(canDismiss()).toBe(true);
   });
 
   it('traverses nested navigators (tab → stack with 2 routes → true)', () => {
-    (store as any).state = {
+    (navigationRef.getRootState as jest.Mock).mockReturnValue({
       type: 'tab',
       routes: [
         {
@@ -113,20 +112,20 @@ describe('canDismiss', () => {
         },
       ],
       index: 0,
-    };
+    });
     expect(canDismiss()).toBe(true);
   });
 
   it('returns false when index is undefined in state', () => {
-    (store as any).state = {
+    (navigationRef.getRootState as jest.Mock).mockReturnValue({
       type: 'tab',
       routes: [{ name: 'tab1' }],
-    };
+    });
     expect(canDismiss()).toBe(false);
   });
 
   it('returns false for non-stack navigator with single route', () => {
-    (store as any).state = {
+    (navigationRef.getRootState as jest.Mock).mockReturnValue({
       type: 'tab',
       routes: [
         {
@@ -139,12 +138,12 @@ describe('canDismiss', () => {
         },
       ],
       index: 0,
-    };
+    });
     expect(canDismiss()).toBe(false);
   });
 
   it('traverses deeply nested navigators (tab → stack → tab → stack with 2 routes)', () => {
-    (store as any).state = {
+    (navigationRef.getRootState as jest.Mock).mockReturnValue({
       type: 'tab',
       routes: [
         {
@@ -175,7 +174,7 @@ describe('canDismiss', () => {
         },
       ],
       index: 0,
-    };
+    });
     expect(canDismiss()).toBe(true);
   });
 });
@@ -214,7 +213,7 @@ describe('linkTo', () => {
       type: 'ACTION',
       payload: { action: { type: 'GO_BACK' } },
     });
-    expect(store.navigationRef.current!.goBack).not.toHaveBeenCalled();
+    expect(navigationRef.current!.goBack).not.toHaveBeenCalled();
   });
 
   it('queues GO_BACK for ../ href', () => {
@@ -224,7 +223,7 @@ describe('linkTo', () => {
       type: 'ACTION',
       payload: { action: { type: 'GO_BACK' } },
     });
-    expect(store.navigationRef.current!.goBack).not.toHaveBeenCalled();
+    expect(navigationRef.current!.goBack).not.toHaveBeenCalled();
   });
 
   it('resolves object hrefs via resolveHref', () => {
@@ -282,13 +281,13 @@ describe('router action functions', () => {
   });
 
   it('prefetch enqueues NAVIGATE_TO_HREF intent with PRELOAD event', () => {
-    prefetch('/path');
+    prefetch('/path', { withAnchor: true });
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
-          options: expect.objectContaining({ event: 'PRELOAD' }),
+          options: expect.objectContaining({ event: 'PRELOAD', withAnchor: true }),
         }),
       })
     );
@@ -334,10 +333,10 @@ describe('router action functions', () => {
     });
   });
 
-  it('goBack enqueues GO_BACK without requiring the container to be ready', () => {
+  it('goBack enqueues GO_BACK without requiring a mounted container', () => {
+    navigationRef.current = null;
     goBack();
 
-    expect(store.navigationRef.isReady).not.toHaveBeenCalled();
     expect(mockAdd).toHaveBeenCalledWith({
       type: 'ACTION',
       payload: { action: { type: 'GO_BACK' } },
@@ -348,24 +347,28 @@ describe('router action functions', () => {
     expect(() => reload()).toThrow('not implemented');
   });
 
-  it('canGoBack returns false when navigation not ready', () => {
-    (store.navigationRef.isReady as jest.Mock).mockReturnValueOnce(false);
-
+  it('canGoBack returns false when the container is not mounted', () => {
+    navigationRef.current = null;
     expect(canGoBack()).toBe(false);
   });
 
   it('canGoBack delegates to navigationRef.current.canGoBack()', () => {
-    (store.navigationRef.current!.canGoBack as jest.Mock).mockReturnValueOnce(true);
+    (navigationRef.current!.canGoBack as jest.Mock).mockReturnValueOnce(true);
 
     expect(canGoBack()).toBe(true);
-    expect(store.navigationRef.current!.canGoBack).toHaveBeenCalled();
+    expect(navigationRef.current!.canGoBack).toHaveBeenCalled();
   });
 
-  it('setParams checks navigation readiness', () => {
+  it('setParams forwards when the container is mounted', () => {
     setParams({ name: 'test' });
 
-    expect(store.navigationRef.isReady).toHaveBeenCalled();
-    expect(store.navigationRef.current!.setParams).toHaveBeenCalledWith({ name: 'test' });
+    expect(navigationRef.current!.setParams).toHaveBeenCalledWith({ name: 'test' });
+  });
+
+  it('setParams throws when the container is not mounted', () => {
+    navigationRef.current = null;
+
+    expect(() => setParams({ name: 'test' })).toThrow('before mounting the Root Layout');
   });
 });
 
@@ -395,6 +398,5 @@ describe('DOM short-circuit paths', () => {
 
     expect(mockEmitDomGoBack).toHaveBeenCalled();
     expect(mockAdd).not.toHaveBeenCalled();
-    expect(store.navigationRef.isReady).not.toHaveBeenCalled();
   });
 });

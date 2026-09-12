@@ -6,7 +6,6 @@ import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { warnIfScreenParam } from '../navigationParams';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
-import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { InitialState, NavigationAction, NavigationState } from '../react-navigation/routers';
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
@@ -18,11 +17,12 @@ import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import type { RoutingIntent } from './routingQueue';
-import { resetNavigatorState } from './stateUtils';
+import { findStateByKey, resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
 
 type ReducerConfig = {
   registry: RouterRegistry;
+  routesWithRemovalPrevented: ReadonlySet<string>;
   routeNode?: RouteNode;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
@@ -39,63 +39,80 @@ type TreeOperation =
       type: 'NAVIGATOR_CHANGED';
       stateKey: string;
       routerType: string | undefined;
+    }
+  | {
+      type: 'REPORT_CONSUMED';
+      eventIds: readonly number[];
     };
 
 type Options = {
   initialState: InitialState | undefined;
   routeNode?: RouteNode;
   registry: RouterRegistry;
+  routesWithRemovalPrevented?: ReadonlySet<string>;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
-  onStateChangeInsertion?: (state: NavigationState) => void;
 };
 
-const warnedActions = new WeakSet<NavigationAction>();
+export type NavigationTreeReport = {
+  events: NavigationTreeReportEvent[];
+};
 
-function warnUnhandledAction(action: NavigationAction) {
-  if (process.env.NODE_ENV === 'production' || warnedActions.has(action)) {
+type NavigationTreeReportEventData =
+  | {
+      type: 'unhandled-action';
+      action: NavigationAction;
+    }
+  | {
+      type: 'removed-routes';
+      routeKeys: readonly string[];
+      action: NavigationAction;
+    }
+  | {
+      type: 'prevented-routes';
+      routeKeys: readonly string[];
+      action: NavigationAction;
+    }
+  | {
+      type: 'action-dispatched';
+      action: NavigationAction;
+      state: NavigationState;
+    };
+
+export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
+  id: number;
+};
+
+type NavigationTreeResult = {
+  state: NavigationState;
+  report: NavigationTreeReport | undefined;
+  eventSeq: number;
+};
+
+const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
+
+function warnIfStaleState(state: NavigationState) {
+  if (process.env.NODE_ENV !== 'development') {
     return;
   }
-  warnedActions.add(action);
 
-  const payload =
-    typeof action.payload === 'object' && action.payload !== null ? action.payload : undefined;
-  let message = `The action '${action.type}'${
-    payload ? ` with payload ${JSON.stringify(payload)}` : ''
-  } was not handled by any navigator.`;
-
-  switch (action.type) {
-    case 'NAVIGATE':
-    case 'PUSH':
-    case 'REPLACE':
-    case 'JUMP_TO':
-      if (payload && 'name' in payload && typeof payload.name === 'string') {
-        message += `\n\nDo you have a route named '${payload.name}'?`;
-      } else {
-        message += '\n\nYou need to pass the name of the screen to navigate to. This may be a bug.';
-      }
-      break;
-    case 'GO_BACK':
-    case 'POP':
-    case 'POP_TO_TOP':
-      message += '\n\nIs there any screen to go back to?';
-      break;
-    case 'OPEN_DRAWER':
-    case 'CLOSE_DRAWER':
-    case 'TOGGLE_DRAWER':
-      message += '\n\nIs your screen inside a Drawer navigator?';
-      break;
+  let focusedState: NavigationState | undefined = state;
+  while (focusedState) {
+    if (focusedState.stale || focusedState.index === undefined) {
+      console.error('Detected stale state. This is likely a bug in Expo Router.');
+      return;
+    }
+    focusedState = focusedState.routes[focusedState.index]?.state as NavigationState | undefined;
   }
-
-  console.error(
-    `${message}\n\nThis is a development-only warning and won't be shown in production.`
-  );
 }
 
 function navigationTreeReducer(
-  state: NavigationState,
-  { operation, config }: { operation: TreeOperation; config: ReducerConfig }
-): NavigationState {
+  result: NavigationTreeResult,
+  operation: TreeOperation,
+  config: ReducerConfig
+): NavigationTreeResult {
+  const state = result.state;
+
   switch (operation.type) {
     case 'NAVIGATE_TO_HREF': {
       const { href, options } = operation.payload;
@@ -118,7 +135,7 @@ function navigationTreeReducer(
         console.warn(
           `An error occurred when trying to handle navigation action ${JSON.stringify(operation)}: ${message}`
         );
-        return state;
+        return result;
       }
       if (resolution.status === 'invalid') {
         const invalidHref = operation.payload.originalHref ?? resolution.href;
@@ -126,12 +143,35 @@ function navigationTreeReducer(
         console.warn(
           `Could not generate a valid navigation state for the given path: ${invalidHref}`
         );
-        return state;
+        return result;
       }
-      return navigationTreeReducer(state, {
-        operation: { type: 'ACTION', payload: { action: resolution.action } },
-        config,
-      });
+      return navigationTreeReducer(
+        result,
+        { type: 'ACTION', payload: { action: resolution.action } },
+        config
+      );
+    }
+    case 'COMPUTED_ACTION': {
+      let action: NavigationAction | undefined;
+      try {
+        action = operation.payload.compute(state, config.registry);
+      } catch (error) {
+        const message =
+          typeof error === 'object' && error != null && 'message' in error ? error.message : error;
+        // TODO(@ubax): move console side effects out of the reducer.
+        console.warn(
+          `An error occurred when trying to handle navigation action ${JSON.stringify(operation)}: ${message}`
+        );
+        return result;
+      }
+      if (!action) {
+        return result;
+      }
+      return navigationTreeReducer(
+        result,
+        { type: 'ACTION', payload: { action, originKey: operation.payload.originKey } },
+        config
+      );
     }
     case 'ACTION': {
       const tree = indexNavigationTree(state);
@@ -142,32 +182,60 @@ function navigationTreeReducer(
         operation.payload.originKey
       );
       if (!origin) {
-        // TODO(@ubax): move console side effects out of the reducer and restore `onUnhandledAction`.
-        // https://linear.app/expo/issue/ENG-26123
-        warnUnhandledAction(operation.payload.action);
-        return state;
+        return reportUnhandledAction(result, operation.payload.action);
       }
 
-      const result = reduceNavigationTree(operation.payload.action, config.registry, {
+      const reduction = reduceNavigationTree(operation.payload.action, config.registry, {
         origin,
         tree,
       });
-      if (!result.handled) {
-        // TODO(@ubax): move console side effects out of the reducer and restore `onUnhandledAction`.
-        // https://linear.app/expo/issue/ENG-26123
-        warnUnhandledAction(operation.payload.action);
-        return state;
+      if (!reduction.handled) {
+        return reportUnhandledAction(result, operation.payload.action);
       }
       const nextState = config.routeNode
-        ? completeNavigationState(result.nextState, config.routeNode)
-        : result.nextState;
-      return nextState === state ? state : deepFreeze(nextState);
+        ? completeNavigationState(reduction.nextState, config.routeNode)
+        : reduction.nextState;
+      if (nextState === state) {
+        return result;
+      }
+
+      const removedRoutes = getRemovedRouteKeys(state, nextState);
+      const preventedRoutes = ACTIONS_WITHOUT_REMOVAL_PREVENTION.has(operation.payload.action.type)
+        ? []
+        : removedRoutes.filter((routeKey) => config.routesWithRemovalPrevented.has(routeKey));
+      const committedState = preventedRoutes.length > 0 ? state : deepFreeze(nextState);
+      // TODO(@ubax): add dev-only diagnostics to events for dev-tools.
+      const eventsWithoutIds: NavigationTreeReportEventData[] =
+        preventedRoutes.length > 0
+          ? [
+              {
+                type: 'prevented-routes',
+                routeKeys: preventedRoutes,
+                action: operation.payload.action,
+              },
+            ]
+          : [
+              ...(removedRoutes.length > 0
+                ? ([
+                    {
+                      type: 'removed-routes',
+                      routeKeys: removedRoutes,
+                      action: operation.payload.action,
+                    },
+                  ] satisfies NavigationTreeReportEventData[])
+                : []),
+              {
+                type: 'action-dispatched',
+                action: operation.payload.action,
+                state: committedState,
+              },
+            ];
+      return appendReportEvents({ ...result, state: committedState }, eventsWithoutIds);
     }
-    case 'NAVIGATOR_ACTION':
-      throw new Error('NAVIGATOR_ACTION must be dispatched through its navigator.');
     case 'NAVIGATOR_UNMOUNTED': {
-      if (!findStateByKey(state, operation.stateKey)) {
-        return state;
+      // A still-registered key re-registered before this operation reduced, so it did not unmount.
+      if (config.registry.has(operation.stateKey) || !findStateByKey(state, operation.stateKey)) {
+        return result;
       }
       const replacement = createSeededNavigationState(
         undefined,
@@ -178,61 +246,104 @@ function navigationTreeReducer(
       const completeState = config.routeNode
         ? completeNavigationState(nextState, config.routeNode)
         : nextState;
-      return deepFreeze(completeState);
+      return { ...result, state: deepFreeze(completeState) };
     }
     case 'NAVIGATOR_CHANGED': {
       const navigatorState = findStateByKey(state, operation.stateKey);
       if (!navigatorState) {
-        return state;
+        return result;
       }
       const replacement = resetNavigatorState(navigatorState, operation.routerType);
       const nextState = replaceNavigationState(state, operation.stateKey, replacement);
       const completeState = config.routeNode
         ? completeNavigationState(nextState, config.routeNode)
         : nextState;
-      return deepFreeze(completeState);
+      return { ...result, state: deepFreeze(completeState) };
+    }
+    case 'REPORT_CONSUMED': {
+      if (!result.report) {
+        return result;
+      }
+      const consumedIds = new Set(operation.eventIds);
+      const events = result.report.events.filter((event) => !consumedIds.has(event.id));
+      if (events.length === result.report.events.length) {
+        return result;
+      }
+      return { ...result, report: events.length > 0 ? { events } : undefined };
     }
   }
+}
+
+function reportUnhandledAction(
+  result: NavigationTreeResult,
+  action: NavigationAction
+): NavigationTreeResult {
+  return process.env.NODE_ENV === 'production'
+    ? result
+    : appendReportEvents(result, [{ type: 'unhandled-action', action }]);
+}
+
+function appendReportEvents(
+  result: NavigationTreeResult,
+  events: NavigationTreeReportEventData[]
+): NavigationTreeResult {
+  const eventsWithIds: NavigationTreeReportEvent[] = events.map((event, index) => ({
+    ...event,
+    id: result.eventSeq + index,
+  }));
+  return {
+    ...result,
+    report: {
+      events: result.report ? [...result.report.events, ...eventsWithIds] : eventsWithIds,
+    },
+    eventSeq: result.eventSeq + eventsWithIds.length,
+  };
 }
 
 export function useNavigationTreeReducer({
   initialState,
   routeNode,
   registry,
+  routesWithRemovalPrevented = EMPTY_SET,
   linking,
   redirects,
-  onStateChangeInsertion,
 }: Options) {
-  const [state, reactDispatch] = React.useReducer(
-    navigationTreeReducer,
+  const config: ReducerConfig = {
+    registry,
+    routesWithRemovalPrevented,
+    routeNode,
+    linking,
+    redirects,
+  };
+  const [result, reactDispatch] = React.useReducer(
+    (result: NavigationTreeResult, operation: TreeOperation) =>
+      navigationTreeReducer(result, operation, config),
     initialState,
-    (value): NavigationState => {
-      validateInitialState(value == null ? undefined : value);
+    (value): NavigationTreeResult => {
+      validateInitialState(value);
       if (value == null) {
         throw new Error(
           'The navigation container is missing its initial state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
         );
       }
-      // Validation above proves the recursively partial public type is complete.
-      return deepFreeze(value as NavigationState);
+      // TODO(@ubax): check if deepFreeze is needed here.
+      return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
     }
   );
-  const config = React.useMemo(
-    () => ({ registry, routeNode, linking, redirects }),
-    [registry, routeNode, linking, redirects]
-  );
-  const stateRef = React.useRef(state);
-  const previousRegistryRef = React.useRef(registry);
-
-  const processAction = React.useCallback(
-    (operation: TreeOperation) => reactDispatch({ operation, config }),
-    [config]
-  );
-  const process = React.useEffectEvent(processAction);
-  const processIntent = React.useCallback(
-    (intent: RoutingIntent) => processAction(intent),
-    [processAction]
-  );
+  const [previousRegistry, setPreviousRegistry] = React.useState(registry);
+  if (previousRegistry !== registry) {
+    setPreviousRegistry(registry);
+    // Reconcile before commit so registry membership and navigation state stay in sync.
+    for (const [stateKey, entry] of previousRegistry) {
+      if (!registry.has(stateKey) && entry.routeNode) {
+        reactDispatch({
+          type: 'NAVIGATOR_UNMOUNTED',
+          stateKey,
+          routeNode: entry.routeNode,
+        });
+      }
+    }
+  }
   const handleAction = useLatestCallback((action: NavigationAction, originKey?: string) => {
     const payload =
       typeof action.payload === 'object' && action.payload !== null ? action.payload : undefined;
@@ -244,43 +355,64 @@ export function useNavigationTreeReducer({
         ? payload.params
         : undefined;
     warnIfScreenParam(params);
-    process({ type: 'ACTION', payload: { action, originKey } });
+    reactDispatch({ type: 'ACTION', payload: { action, originKey } });
   });
-  const getState = React.useCallback(() => stateRef.current, []);
-  const getStateForKey = React.useCallback(
-    (key: string) => findStateByKey(stateRef.current, key),
-    []
-  );
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
-    process({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
+    reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
+  });
+  const consumeReportEvents = useLatestCallback((eventIds: readonly number[]) => {
+    reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
   });
 
   React.useInsertionEffect(() => {
-    stateRef.current = state;
-    onStateChangeInsertion?.(state);
-  }, [onStateChangeInsertion, state]);
-
-  useClientLayoutEffect(() => {
-    const previousRegistry = previousRegistryRef.current;
-    previousRegistryRef.current = registry;
-    for (const [stateKey, entry] of previousRegistry) {
-      if (!registry.has(stateKey) && entry.routeNode) {
-        process({ type: 'NAVIGATOR_UNMOUNTED', stateKey, routeNode: entry.routeNode });
-      }
-    }
-  }, [registry]);
+    warnIfStaleState(result.state);
+  }, [result.state]);
 
   return {
-    state,
-    getState,
-    getStateForKey,
+    state: result.state,
+    report: result.report,
+    consumeReportEvents,
     resetNavigator,
     handleAction,
-    processIntent,
+    processIntent: reactDispatch,
   };
 }
 
-function validateInitialState(state: InitialState | undefined): void {
+const EMPTY_SET: ReadonlySet<string> = new Set();
+
+function getRemovedRouteKeys(current: NavigationState, next: NavigationState): string[] {
+  const nextRouteKeys = new Set<string>();
+  visitRoutes(next, true, (routeKey) => nextRouteKeys.add(routeKey));
+
+  const removedRoutes: string[] = [];
+  visitRoutes(current, true, (routeKey) => {
+    if (!nextRouteKeys.has(routeKey)) {
+      removedRoutes.push(routeKey);
+    }
+  });
+  return removedRoutes;
+}
+
+function visitRoutes(
+  state: NavigationState,
+  excludePreloaded: boolean,
+  visit: (routeKey: string) => void
+) {
+  const routes = excludePreloaded
+    ? state.routes.filter((route) => !route.isPreloaded)
+    : state.routes;
+  for (let index = routes.length - 1; index >= 0; index--) {
+    const route = routes[index]!;
+    if (route.state?.stale === false) {
+      visitRoutes(route.state, excludePreloaded, visit);
+    }
+    visit(route.key);
+  }
+}
+
+function validateInitialState(
+  state: InitialState | undefined
+): asserts state is NavigationState | undefined {
   if (state === undefined) {
     return;
   }
@@ -311,21 +443,6 @@ function validateInitialState(state: InitialState | undefined): void {
   for (const route of state.routes) {
     validateInitialState(route.state);
   }
-}
-
-export function findStateByKey(root: NavigationState, key: string): NavigationState | undefined {
-  if (root.key === key) {
-    return root;
-  }
-  for (const route of root.routes) {
-    if (route.state?.stale === false) {
-      const state = findStateByKey(route.state, key);
-      if (state) {
-        return state;
-      }
-    }
-  }
-  return undefined;
 }
 
 export function replaceNavigationState(

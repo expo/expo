@@ -29,9 +29,11 @@ export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
   StandardNavigatorDescriptor,
+  StandardNavigatorEmit,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
+export { IsWithinNativeNavigator } from './IsWithinNativeNavigator';
 
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
@@ -190,7 +192,9 @@ export function unstable_integrateWithRouter<
       Record<string, (...args: unknown[]) => void>,
       NavigatorOptions,
       EventMap
-    >(router, useNavigationBuilderProps);
+    >(router, useNavigationBuilderProps, {
+      activityDefaultThreshold: options?.activityDefaultThreshold,
+    });
 
     const { dispatch, dispatchSync } = navigation;
 
@@ -278,6 +282,7 @@ function partitionNavigatorProps<
   const {
     id,
     children,
+    activityEnabled,
     initialRouteName: _initialRouteName,
     layout,
     // `ref` is supplied by `withLayoutContext` and consumed by React; it must not be forwarded
@@ -301,6 +306,7 @@ function partitionNavigatorProps<
   > = {
     id,
     children,
+    activityEnabled,
     initialRouteName: routeNodeInitialRouteName,
     layout,
     screenLayout,

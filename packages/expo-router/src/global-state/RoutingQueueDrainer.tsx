@@ -2,72 +2,51 @@
 
 import * as React from 'react';
 
-import { routingQueue, type RoutingIntent } from './routingQueue';
-
-const drainers: symbol[] = [];
+import type { RoutingIntent } from './routingQueue';
+import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
 
 type Props = {
-  ready: boolean;
   processIntent: (intent: RoutingIntent) => void;
 };
 
-export function RoutingQueueDrainer({ ready, processIntent }: Props) {
-  const intents = React.useSyncExternalStore(
-    routingQueue.subscribe,
-    routingQueue.snapshot,
-    routingQueue.snapshot
-  );
+export function RoutingQueueDrainer({ processIntent }: Props) {
+  const intents = React.use(PendingIntentsContext);
+  const { dequeue, startTransition } = React.use(RoutingQueueApiContext)!;
+  const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      return undefined;
-    }
-
-    if (drainers.length) {
-      console.error(
-        [
-          'Looks like you have multiple navigation containers draining the shared routing queue. Only one container will receive queued actions, while the others will drop them. Make sure that:',
-          "- You don't have multiple NavigationContainers in the app",
-          '- Only a single instance of the root component is rendered',
-        ].join('\n')
-      );
-    }
-
-    // TODO(@ubax): move routingQueue into a per-container context so sibling containers each drain their own queue and pending intents are cleared on unmount.
-    const drainer = Symbol();
-    drainers.push(drainer);
-
-    return () => {
-      const index = drainers.indexOf(drainer);
-      if (index > -1) {
-        drainers.splice(index, 1);
-      }
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (!ready || intents.length === 0) {
+    if (intents.length === 0 || lastProcessed.current === intents) {
       return;
     }
-    for (const intent of routingQueue.drain(intents)) {
-      // Only catches errors thrown while dispatching. The navigation reducer runs
-      // during the next render, so errors from it surface there, not here.
-      try {
-        intent.onDispatch?.(intent.metadata);
-        if (intent.type === 'NAVIGATOR_ACTION') {
-          intent.payload.dispatchSync(intent.payload.action);
-        } else {
+    // Strict Mode re-runs the mount effect with the same array before `dequeue` updates state.
+    lastProcessed.current = intents;
+    // TODO(@ubax): Navigation runs in a transition, so a destination that suspends keeps the
+    // current screen visible and never renders `SuspenseFallback` (including the web dev
+    // "Bundling..." toast for async routes). Design a fallback UX for pending navigation.
+    // Dequeue urgently so a later enqueue is not rebased on a stale queue.
+    dequeue(intents);
+    startTransition(() => {
+      for (const intent of intents) {
+        // Only catches errors thrown while dispatching. The navigation reducer runs
+        // during the next render, so errors from it surface there, not here.
+        try {
+          // TODO(@ubax): `onDispatch` records the web history operation now, but the commit that
+          // consumes it is deferred by the transition and an urgent `dispatchSync` can land in between.
+          // https://linear.app/expo/issue/ENG-22046
+          intent.onDispatch?.(intent.metadata);
           processIntent(intent);
+        } catch (error) {
+          const message =
+            typeof error === 'object' && error != null && 'message' in error
+              ? error.message
+              : error;
+          console.warn(
+            `An error occurred when trying to handle navigation action ${JSON.stringify(intent)}: ${message}`
+          );
         }
-      } catch (error) {
-        const message =
-          typeof error === 'object' && error != null && 'message' in error ? error.message : error;
-        console.warn(
-          `An error occurred when trying to handle navigation action ${JSON.stringify(intent)}: ${message}`
-        );
       }
-    }
-  }, [intents, processIntent, ready]);
+    });
+  }, [dequeue, intents, processIntent, startTransition]);
 
   return null;
 }

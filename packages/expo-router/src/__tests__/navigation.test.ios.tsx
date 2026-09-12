@@ -11,11 +11,26 @@ import {
   Slot,
   usePathname,
 } from '../exports';
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link';
 import { renderRouter, screen } from '../testing-library';
+
+it('throws when navigating before the first render finishes', () => {
+  expect(() =>
+    renderRouter({
+      index: function MyIndexRoute() {
+        router.push('/profile/test-name');
+        return <Text testID="index">Press me</Text>;
+      },
+      '/profile/[name]': function MyRoute() {
+        const { name } = useGlobalSearchParams();
+        return <Text testID="profile-name">{name}</Text>;
+      },
+    })
+  ).toThrow('The imperative router is unavailable before the first render has finished.');
+});
 
 it('should respect `unstable_settings', () => {
   const render = (options: any = {}) =>
@@ -121,23 +136,6 @@ describe('hooks only', () => {
 });
 
 describe('imperative only', () => {
-  // The navigation action is offloaded until the navigation tree is ready.
-  it('can navigate before navigation is ready', async () => {
-    renderRouter({
-      index: function MyIndexRoute() {
-        router.push('/profile/test-name');
-        return <Text testID="index">Press me</Text>;
-      },
-      '/profile/[name]': function MyRoute() {
-        const { name } = useGlobalSearchParams();
-        return <Text testID="profile-name">{name}</Text>;
-      },
-    });
-
-    expect(screen.queryByTestId('index')).toBeNull();
-    expect(screen.getByTestId('profile-name')).toBeOnTheScreen();
-  });
-
   it('can handle navigation between routes', async () => {
     renderRouter({
       index: function MyIndexRoute() {
@@ -1844,20 +1842,21 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(screen.queryByTestId('d')).toBeNull();
   expect(screen).toHavePathname('/b/e');
 
-  expect(store.state!.index).toBe(0);
-  expect(store.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.name).toBe('__root');
+  const rootState = navigationRef.getRootState();
+  expect(rootState.index).toBe(0);
+  expect(rootState.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.name).toBe('__root');
   // Both pushes from 'c' will create new routes in root layout. This is because both pushes are happening on the same state, where there is no 'b' stack yet.
-  expect(store.state!.routes[0]!.state!.routes).toHaveLength(3);
-  expect(store.state!.routes[0]!.state!.routes[0]!.name).toBe('a');
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
-  expect(store.state!.routes[0]!.state!.routes[1]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
-  expect(store.state!.routes[0]!.state!.routes[2]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
+  expect(rootState.routes[0]!.state!.routes).toHaveLength(3);
+  expect(rootState.routes[0]!.state!.routes[0]!.name).toBe('a');
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
+  expect(rootState.routes[0]!.state!.routes[1]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
+  expect(rootState.routes[0]!.state!.routes[2]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
 
   act(() => router.back());
   expect(screen.getByTestId('d')).toBeVisible();
@@ -1870,4 +1869,79 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(screen.queryByTestId('d')).toBeNull();
   expect(screen.queryByTestId('e')).toBeNull();
   expect(screen).toHavePathname('/a/c');
+});
+
+it('preserves nested stack history when multiple pushes are batched', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      a: () => <Text testID="a" />,
+      'b/_layout': () => <Stack />,
+      'b/a': () => <Text testID="b-a" />,
+      'b/b': () => <Text testID="b-b" />,
+      'b/c': () => <Text testID="b-c" />,
+    },
+    { initialUrl: '/a' }
+  );
+
+  act(() => {
+    router.push('/b/a');
+    router.push('/b/b');
+    router.push('/b/c');
+  });
+
+  expect(screen.getByTestId('b-c')).toBeVisible();
+  expect(screen).toHavePathname('/b/c');
+
+  act(() => router.back());
+  expect(screen.getByTestId('b-b')).toBeVisible();
+  expect(screen).toHavePathname('/b/b');
+
+  act(() => router.back());
+  expect(screen.getByTestId('b-a')).toBeVisible();
+  expect(screen).toHavePathname('/b/a');
+
+  act(() => router.back());
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it.each([
+  ['dismiss(2)', () => router.dismiss(2)],
+  ['dismissTo', () => router.dismissTo('/a')],
+  [
+    'back twice',
+    () => {
+      router.back();
+      router.back();
+    },
+  ],
+])('pushes from the state produced by a queued %s', (_, returnToA) => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      a: () => <Text testID="a" />,
+      b: () => <Text testID="b" />,
+      c: () => <Text testID="c" />,
+      d: () => <Text testID="d" />,
+    },
+    { initialUrl: '/a' }
+  );
+
+  act(() => router.push('/b'));
+  act(() => router.push('/c'));
+
+  act(() => {
+    returnToA();
+    router.push('/d');
+  });
+
+  expect(screen.getByTestId('d')).toBeVisible();
+  expect(screen).toHavePathname('/d');
+
+  act(() => router.back());
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+  expect(router.canGoBack()).toBe(false);
 });

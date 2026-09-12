@@ -16,7 +16,7 @@
  * the default distributed set (e.g. `@expo/ui`). With explicit names it prunes just those.
  *
  * `--bundled` additionally removes each package's `prebuilds/` directory. Those are publish
- * staging output, written by `bundleIOSPrebuilds` so `npm pack` ships them to consumers who
+ * staging output, written by the package prepack lifecycle so `npm pack` ships them to consumers who
  * have no `.build/`. In a monorepo checkout they are leftovers, and because the CocoaPods
  * integration falls back to them whenever `.build/` is missing — without any staleness check
  * — a stale one silently links month-old binaries against current source.

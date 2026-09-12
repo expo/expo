@@ -1,9 +1,12 @@
-import { store } from '../../../global-state/router-store';
+import { getLinkingConfig } from '../../../getLinkingConfig';
+import { getRoutes } from '../../../getRoutes';
+import { getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
+import { navigationRef } from '../../../global-state/navigationRef';
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
 import { INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME } from '../../../navigationParams';
 import type { NavigationState } from '../../../react-navigation/native';
-import { renderRouter } from '../../../testing-library';
+import { getMockContext, renderRouter } from '../../../testing-library';
 import {
   deepEqual,
   getPreloadedRouteFromRootStateByHref,
@@ -28,6 +31,40 @@ beforeAll(() => {
 afterAll(() => {
   console.info = originalConsoleInfo;
 });
+
+const routes = {
+  _layout: () => (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" />
+      <NativeTabs.Trigger name="faces" />
+      <NativeTabs.Trigger name="explore" />
+    </NativeTabs>
+  ),
+  index: () => null,
+  'faces/_layout': () => <Stack />,
+  'faces/index': () => null,
+  'faces/[face]': () => null,
+  'explore/_layout': () => <Stack />,
+  'explore/index': () => null,
+  'explore/news/_layout': () => <Stack />,
+  'explore/news/index': () => null,
+  'explore/news/[title]': () => null,
+};
+const context = getMockContext(routes);
+const routeNode = getRoutes(context, {
+  ignoreEntryPoints: true,
+  platform: 'ios',
+  preserveRedirectAndRewrites: true,
+  skipGenerated: true,
+})!;
+const linking = getLinkingConfig(routeNode, context, {
+  metaOnly: false,
+  redirects: [],
+  skipGenerated: false,
+  sitemap: true,
+  notFound: true,
+});
+const getRouteInfo = () => getRouteInfoFromState(navigationRef.getRootState());
 
 describe('deepEqual', () => {
   it('returns true for same object reference', () => {
@@ -94,24 +131,7 @@ describe('deepEqual', () => {
 
 describe(getTabPathFromRootStateByHref, () => {
   beforeEach(() => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="faces" />
-          <NativeTabs.Trigger name="explore" />
-        </NativeTabs>
-      ),
-      index: () => null,
-      'faces/_layout': () => <Stack />,
-      'faces/index': () => null,
-      'faces/[face]': () => null,
-      'explore/_layout': () => <Stack />,
-      'explore/index': () => null,
-      'explore/news/_layout': () => <Stack />,
-      'explore/news/index': () => null,
-      'explore/news/[title]': () => null,
-    });
+    renderRouter(routes);
   });
 
   it('returns single tab path with one tab navigator in href, but without change', () => {
@@ -183,8 +203,8 @@ describe(getTabPathFromRootStateByHref, () => {
     const tabPath = getTabPathFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(tabPath).toEqual([
       {
@@ -263,8 +283,8 @@ describe(getTabPathFromRootStateByHref, () => {
     const tabPath = getTabPathFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(tabPath).toEqual([
       {
@@ -279,24 +299,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
   let getStateForHref: jest.SpyInstance | undefined;
 
   beforeEach(() => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="faces" />
-          <NativeTabs.Trigger name="explore" />
-        </NativeTabs>
-      ),
-      index: () => null,
-      'faces/_layout': () => <Stack />,
-      'faces/index': () => null,
-      'faces/[face]': () => null,
-      'explore/_layout': () => <Stack />,
-      'explore/index': () => null,
-      'explore/news/_layout': () => <Stack />,
-      'explore/news/index': () => null,
-      'explore/news/[title]': () => null,
-    });
+    renderRouter(routes);
   });
 
   afterEach(() => {
@@ -374,8 +377,8 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       href,
       // The inline fixture is a complete navigation state despite widened string literals.
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(preloadedRoute).toEqual({
       key: '[face]-9rms2gdsibY9dVYUGCpZG',
@@ -456,8 +459,8 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       href,
       // The inline fixture is a complete navigation state despite widened string literals.
       state as NavigationState,
-      store.getRouteInfo(),
-      store.linking
+      getRouteInfo(),
+      linking
     );
     expect(preloadedRoute).toEqual({
       key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
@@ -469,7 +472,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
   });
 
   it('matches the preloaded route by nested state shape', () => {
-    getStateForHref = jest.spyOn(store.linking!, 'getStateFromPath').mockReturnValue({
+    getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
       routes: [
         {
           name: 'details',
@@ -558,13 +561,13 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       type: 'stack' as const,
     };
 
-    expect(
-      getPreloadedRouteFromRootStateByHref('/details', state, store.getRouteInfo(), store.linking)
-    ).toBe(matchingRoute);
+    expect(getPreloadedRouteFromRootStateByHref('/details', state, getRouteInfo(), linking)).toBe(
+      matchingRoute
+    );
   });
 
   it('does not match a preloaded route from a different branch', () => {
-    getStateForHref = jest.spyOn(store.linking!, 'getStateFromPath').mockReturnValue({
+    getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
       routes: [
         {
           name: 'target',
@@ -602,12 +605,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
     };
 
     expect(
-      getPreloadedRouteFromRootStateByHref(
-        '/target/child',
-        state,
-        store.getRouteInfo(),
-        store.linking
-      )
+      getPreloadedRouteFromRootStateByHref('/target/child', state, getRouteInfo(), linking)
     ).toBeUndefined();
   });
 });

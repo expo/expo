@@ -8,11 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- [iOS] Migrate the main module to the Expo Modules API 2.0 macros. ([#49894](https://github.com/expo/expo/pull/49894) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - [Web] Respect the bounds of typed-array views in `Crypto.AES`, so sealed data passed as a `Uint8Array` that views part of a larger buffer no longer reads the wrong bytes and fails to decrypt. ([#49196](https://github.com/expo/expo/pull/49196) by [@dennytosp](https://github.com/dennytosp))
 - [Web] Reject sealed data that is too short to hold its IV and authentication tag in `AESSealedData.fromCombined()`, matching iOS and Android. ([#49196](https://github.com/expo/expo/pull/49196) by [@dennytosp](https://github.com/dennytosp))
 - Fix `AESSealedData.fromCombined()` throwing on Android when given a base64-encoded string. ([#47317](https://github.com/expo/expo/pull/47317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

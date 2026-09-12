@@ -1,0 +1,18 @@
+{
+  "name": "expo-v2-demo",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Demo module written against the Expo Modules API v2, to exercise v2 autolinking",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "homepage": "https://expo.dev",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {
+    "expo": "workspace:*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

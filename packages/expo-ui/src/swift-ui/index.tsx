@@ -25,6 +25,9 @@ export * from './ZStack';
 export * from './Group';
 export * from './List';
 export * from './Menu';
+export * from './NavigationDestination';
+export * from './NavigationLink';
+export * from './NavigationStack';
 export * from './Picker';
 export * from './ProgressView';
 export * from './Section';
@@ -38,6 +41,7 @@ export { useNativeState } from '../State';
 export { withAnimation, type WithAnimationCompletionCriteria } from './withAnimation';
 export * from './SyncToggle';
 export * from './TabView';
+export * from './Toolbar';
 export * from './Toggle';
 export {
   TextField,

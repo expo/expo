@@ -1,7 +1,6 @@
 // Re-export shim — preserves all existing import paths.
 // TODO: Refactor consumers to import directly from the new modules, then delete this file.
 
-export { routingQueue } from './routingQueue';
 export {
   navigate,
   push,

@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Paused time is now excluded from the `AudioRecorder` duration limit. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
 - [Android] Aligned the default audio focus request on Android 7.0–7.1 with newer versions by using transient exclusive focus when no interruption mode has been configured. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
 
@@ -29,6 +39,7 @@
 - [iOS] Activate the audio session once and keep it active instead of toggling. ([#48588](https://github.com/expo/expo/pull/48588) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
 - [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
+- [iOS] Resolve permission requests with `denied` and reject recording calls instead of letting the OS terminate the app when `NSMicrophoneUsageDescription` is missing. ([#49162](https://github.com/expo/expo/pull/49162) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

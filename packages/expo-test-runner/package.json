@@ -1,6 +1,6 @@
 {
   "name": "expo-test-runner",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Script that enchants test experience.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-test-runner#readme",
   "bugs": {

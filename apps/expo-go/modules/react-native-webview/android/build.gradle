@@ -18,6 +18,10 @@ def getExtOrIntegerDefault(prop) {
   return rootProject.ext.has(prop) ? rootProject.ext.get(prop) : (project.properties['ReactNativeWebView_' + prop]).toInteger()
 }
 
+def getReactNativeWebViewMinSdkVersion() {
+  return Math.max(getExtOrIntegerDefault('minSdkVersion').toInteger(), 24)
+}
+
 static def findNodeModulePath(baseDir, packageName) {
     def basePath = baseDir.toPath().normalize()
     // Node's module resolution algorithm searches up to the root directory,
@@ -53,7 +57,17 @@ apply plugin: 'com.android.library'
 if (isNewArchitectureEnabled()) {
     apply plugin: 'com.facebook.react'
 }
-apply plugin: 'kotlin-android'
+// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
+// Only apply it when built-in Kotlin is unavailable or explicitly disabled with
+// android.builtInKotlin=false.
+// Note: Groovy's ?: operates on truthiness, so a plain `?.toBoolean() ?: true` would
+// coerce an explicit `false` back to true. Check for null explicitly instead.
+def expoBuiltInKotlinProp = findProperty('android.builtInKotlin')
+def expoAgpBuiltInKotlin = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9 &&
+    (expoBuiltInKotlinProp == null || expoBuiltInKotlinProp.toString().toBoolean())
+if (!expoAgpBuiltInKotlin) {
+  apply plugin: 'kotlin-android'
+}
 
 android {
     if (supportsNamespace()) {
@@ -72,7 +86,7 @@ android {
     compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
 
     defaultConfig {
-        minSdkVersion getExtOrIntegerDefault('minSdkVersion')
+        minSdkVersion getReactNativeWebViewMinSdkVersion()
         targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     }

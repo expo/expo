@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
 - `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
 
@@ -14,6 +24,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `File.downloadFileAsync()` returning a runtime-specific error message when canceled with an `AbortSignal`. ([#49856](https://github.com/expo/expo/pull/49856) by [@Ubax](https://github.com/Ubax))
+- Fix `File.readableStream()` returning zeroed bytes and writing past the requested region when a BYOB read targets a view that starts at a non-zero offset. ([#49234](https://github.com/expo/expo/pull/49234) by [@dennytosp](https://github.com/dennytosp))
 - [Android][iOS] Fix `File.size` returning `null` for a missing or unreadable file. ([#49086](https://github.com/expo/expo/pull/49086)) by [@ACHP](https://github.com/ACHP))
 - [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
 - Fixed `copyAsync` on iOS copying the unedited original when a `ph://` asset has edits applied in Photos. ([#48248](https://github.com/expo/expo/pull/48248) by [@CoffeeFlux](https://github.com/CoffeeFlux))

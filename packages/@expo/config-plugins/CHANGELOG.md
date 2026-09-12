@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - [iOS] Add `IOSConfig.DevServer.withMetroPort` to write the `RCTMetroPort` Info.plist key from the `RCT_METRO_PORT` build setting. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
+- [iOS] Quote and escape keys and values written to `.strings` files. ([#49605](https://github.com/expo/expo/pull/49605) by [@jakex7](https://github.com/jakex7))
+- [iOS] Keep writing `locales` after one that has no `Info.plist` keys. ([#49777](https://github.com/expo/expo/pull/49777) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ### 💡 Others
 

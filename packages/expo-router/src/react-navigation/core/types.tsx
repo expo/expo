@@ -41,6 +41,13 @@ export type DefaultNavigatorOptions<
   children: React.ReactNode;
 
   /**
+   * Enables React Activity for nested Expo Router screens. For stack navigators, a number specifies
+   * how many screens must be above a route before its content is hidden.
+   * @default false
+   */
+  activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
+
+  /**
    * Layout for the navigator.
    * Useful for wrapping with a component with access to navigator's state and options.
    */
@@ -120,8 +127,24 @@ export type EventMapCore<State extends NavigationState> = {
   focus: { data: undefined };
   blur: { data: undefined };
   state: { data: { state: State } };
-  beforeRemove: { data: { action: NavigationAction } };
   removePrevented: { data: { action: NavigationAction } };
+  /**
+   * Emitted after the route is removed and its component unmounts. The listener cannot rely on
+   * component state or update the unmounted component. Since effect cleanup runs before this event,
+   * it must defer unsubscription until the next microtask.
+   *
+   * @example
+   * ```tsx
+   * React.useEffect(() => {
+   *   const unsubscribe = navigation.addListener('removed', (event) => {
+   *     logRemovedRoute(event.data.action);
+   *   });
+   *
+   *   return () => queueMicrotask(unsubscribe);
+   * }, [navigation]);
+   * ```
+   */
+  removed: { data: { action: NavigationAction } };
 };
 
 export type EventArg<
@@ -383,19 +406,6 @@ export type NavigationContainerProps = {
    * Initial state object for the navigation tree.
    */
   initialState?: InitialState;
-  /**
-   * Callback which is called with the latest navigation state when it changes.
-   */
-  onStateChange?: (state: Readonly<NavigationState> | undefined) => void;
-  /**
-   * Callback which is called after the navigation tree mounts.
-   */
-  onReady?: () => void;
-  /**
-   * Callback which is called when an action is not handled.
-   * TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
-   */
-  onUnhandledAction?: (action: Readonly<NavigationAction>) => void;
   /**
    * Theme object for the UI elements.
    */
@@ -667,6 +677,12 @@ export type RouteConfigProps<
    * or inferred from the filesystem.
    */
   routeSource?: RouteSource;
+
+  /**
+   * Overrides React Activity behavior inherited from the navigator for this Expo Router screen.
+   * Stack screens also accept the number of screens that must be above the route before it hides.
+   */
+  activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
 };
 
 export type RouteConfig<
@@ -719,12 +735,6 @@ export type RouteGroupConfig<
 
 export type NavigationContainerEventMap = {
   /**
-   * Event that fires when the navigation container is ready to be used.
-   */
-  ready: {
-    data: undefined;
-  };
-  /**
    * Event that fires when the navigation state changes.
    */
   state: {
@@ -733,31 +743,6 @@ export type NavigationContainerEventMap = {
        * The updated state object after the state change.
        */
       state: NavigationState | PartialState<NavigationState> | undefined;
-    };
-  };
-  /**
-   * Event that fires when current options changes.
-   */
-  options: { data: { options: object } };
-  /**
-   * Event that fires when an action is dispatched.
-   * Only intended for debugging purposes, don't use it for app logic.
-   * This event will be emitted before state changes have been applied.
-   */
-  __unsafe_action__: {
-    data: {
-      /**
-       * The action object that was dispatched.
-       */
-      action: NavigationAction;
-      /**
-       * Whether the action was a no-op, i.e. resulted in any state changes.
-       */
-      noop: boolean;
-      /**
-       * Stack trace of the action, this will only be available during development.
-       */
-      stack: string | undefined;
     };
   };
 };

@@ -99,6 +99,10 @@ export const TabTriggerMapContext = createContext<TriggerMap>({});
 /**
  * @hidden
  */
+export const TabNavigatorStatesContext = createContext<Record<string, TabNavigationState<any>>>({});
+/**
+ * @hidden
+ */
 export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
 /**
  * @hidden

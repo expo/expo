@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react-native';
-import React, { isValidElement } from 'react';
+import React, { isValidElement, use } from 'react';
 import { Button, View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
@@ -8,6 +8,7 @@ import { router } from '../../imperative-api';
 import { Stack } from '../../layouts/Stack';
 import { Redirect } from '../../link/Redirect';
 import { usePreventRemove } from '../../react-navigation/core';
+import { IsWithinNativeNavigator } from '../../standard-navigation';
 import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
@@ -58,6 +59,10 @@ const error = jest.fn();
 const originalWarn = console.warn;
 const originalError = console.error;
 
+function NativeNavigatorContextProbe() {
+  return <View testID={String(use(IsWithinNativeNavigator))} />;
+}
+
 beforeEach(() => {
   console.warn = warn;
   console.error = error;
@@ -84,6 +89,19 @@ it('renders tabs correctly', () => {
   expect(TabsScreen).toHaveBeenCalledTimes(4);
 });
 
+it('marks its routes as nested inside a native navigator', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: NativeNavigatorContextProbe,
+  });
+
+  expect(screen.getByTestId('true')).toBeVisible();
+});
+
 it('does not rerender the focused screen while preloading other tabs', () => {
   const Index = jest.fn(() => <View testID="index" />);
   const Second = jest.fn(() => <View testID="second" />);
@@ -102,6 +120,44 @@ it('does not rerender the focused screen while preloading other tabs', () => {
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Second).toHaveBeenCalledTimes(1);
   expect(screen.getByTestId('second')).toBeVisible();
+});
+
+it('does not remount the focused screen while preloading other tabs after a deep link', () => {
+  const mount = jest.fn();
+  const unmount = jest.fn();
+
+  function Run() {
+    React.useEffect(() => {
+      mount();
+      return unmount;
+    }, []);
+
+    return <View testID="run" />;
+  }
+
+  renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="test-suite" />
+          <NativeTabs.Trigger name="apis" />
+          <NativeTabs.Trigger name="playground" />
+          <NativeTabs.Trigger name="components" />
+        </NativeTabs>
+      ),
+      'test-suite/_layout': () => <Stack />,
+      'test-suite/index': () => <View testID="test-suite" />,
+      'test-suite/run': Run,
+      apis: () => <View testID="apis" />,
+      playground: () => <View testID="playground" />,
+      components: () => <View testID="components" />,
+    },
+    { initialUrl: '/test-suite/run?tests=AppMetrics' }
+  );
+
+  expect(screen.getByTestId('run')).toBeVisible();
+  expect(mount).toHaveBeenCalledTimes(1);
+  expect(unmount).not.toHaveBeenCalled();
 });
 
 describe('Tabs visibility', () => {
@@ -207,8 +263,8 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('index');
     expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
   });
@@ -393,12 +449,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[3][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
-    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toBe('second');
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
 
     TabsScreen.mockClear();
     TabsHost.mockClear();
@@ -579,8 +634,8 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across three screens.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      // Initial render mounts each screen once.
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
       expect(onMount).toHaveBeenCalledWith('third');
@@ -630,8 +685,8 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across index, stack-index, and third.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      // Initial render mounts each screen once.
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('stack-index');
       expect(onMount).toHaveBeenCalledWith('third');

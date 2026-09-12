@@ -10,6 +10,7 @@ import {
   NavigationRouteContext,
   useStateForPath,
 } from '../core';
+import { NavigatorStateContext } from '../core/useNavigationState';
 import type { NavigationState, PartialState } from '../routers';
 import { LinkingContext } from './LinkingContext';
 
@@ -29,6 +30,7 @@ type ConfigItem = {
 export function useBuildHref() {
   const navigation = use(NavigationHelpersContext);
   const route = use(NavigationRouteContext);
+  const navigatorState = use(NavigatorStateContext);
 
   const { options } = use(LinkingContext);
 
@@ -46,7 +48,7 @@ export function useBuildHref() {
       const isScreen =
         navigation && route?.key && focusedRouteState
           ? route.key === findFocusedRoute(focusedRouteState)?.key &&
-            navigation.getState().routes.some((r) => r.key === route.key)
+            navigatorState?.routes.some((r) => r.key === route.key)
           : false;
 
       const stateForRoute: MinimalState = {
@@ -87,7 +89,14 @@ export function useBuildHref() {
 
       return path;
     },
-    [options?.config, route?.key, navigation, focusedRouteState, getPathFromStateHelper]
+    [
+      options?.config,
+      route?.key,
+      navigation,
+      navigatorState,
+      focusedRouteState,
+      getPathFromStateHelper,
+    ]
   );
 
   return buildHref;

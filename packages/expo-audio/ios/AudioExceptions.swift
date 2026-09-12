@@ -18,6 +18,12 @@ internal final class AudioPermissionsException: Exception {
   }
 }
 
+internal final class MicrophoneUsageDescriptionException: Exception {
+  override var reason: String {
+    "Cannot record audio because NSMicrophoneUsageDescription is missing from the app's Info.plist"
+  }
+}
+
 internal final class InvalidAudioModeException: GenericException<String> {
   override var reason: String {
     "Impossible audio mode: \(param)"

@@ -1,4 +1,4 @@
-import isEqual from 'fast-deep-equal';
+import isEqual from 'react-fast-compare';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';

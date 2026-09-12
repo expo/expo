@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -189,7 +189,7 @@ test('dismissAll nested', () => {
   // The last route should include a sub-state for /one/_layout
   // It will have three routes  (/one/index, /one/page, /one/two)
   // The last route should include a sub-state for /one/two/_layout
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -304,7 +304,7 @@ test('dismissAll nested', () => {
   // This should only dismissing the sub-state for /one/two/_layout
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one/two');
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -407,7 +407,7 @@ test('dismissAll nested', () => {
   // This should only dismissing the sub-state for /one/_layout
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one');
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -530,6 +530,80 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
+test('push should cascade anchor routes through multiple nested stacks', () => {
+  renderRouter({
+    index: () => <Text testID="a">A</Text>,
+    'funnel/_layout': {
+      unstable_settings: { anchor: 'ba' },
+      default: () => <Stack />,
+    },
+    'funnel/ba': () => <Text testID="ba">BA</Text>,
+    'funnel/bb/_layout': {
+      unstable_settings: { anchor: 'index' },
+      default: () => <Stack />,
+    },
+    'funnel/bb/index': () => <Text testID="bb">BB</Text>,
+    'funnel/bb/bc': () => <Text testID="bc">BC</Text>,
+  });
+
+  act(() => router.push('/funnel/bb/bc', { withAnchor: true }));
+
+  expect(screen).toHavePathname('/funnel/bb/bc');
+  expect(screen.getByTestId('bc')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/funnel/bb');
+  expect(screen.getByTestId('bb')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/funnel/ba');
+  expect(screen.getByTestId('ba')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('a')).toBeVisible();
+});
+
+// TODO: SDK 57 already had this issue. It has little user-facing impact because the visible
+// navigation and back behavior are unchanged. Revisit whether matching sequential state is
+// feasible and worth the added complexity.
+test.skip('three pushes queued in one tick build the same stack as three separate pushes', () => {
+  const routes = {
+    index: () => <Text testID="a">A</Text>,
+    'funnel/_layout': {
+      unstable_settings: { anchor: 'ba' },
+      default: () => <Stack />,
+    },
+    'funnel/ba': () => <Text testID="ba">BA</Text>,
+    'funnel/bb/_layout': {
+      unstable_settings: { anchor: 'index' },
+      default: () => <Stack />,
+    },
+    'funnel/bb/index': () => <Text testID="bb">BB</Text>,
+    'funnel/bb/bc': () => <Text testID="bc">BC</Text>,
+  };
+
+  renderRouter(routes);
+
+  // Keep these pushes in one callback so the routing queue drains them as one batch.
+  act(() => {
+    router.push('/funnel/ba');
+    router.push('/funnel/bb');
+    router.push('/funnel/bb/bc');
+  });
+
+  const batchedState = structuredClone(navigationRef.getRootState());
+
+  screen.unmount();
+  renderRouter(routes);
+
+  act(() => router.push('/funnel/ba'));
+  act(() => router.push('/funnel/bb'));
+  act(() => router.push('/funnel/bb/bc'));
+
+  expect(batchedState).toStrictEqual(navigationRef.getRootState());
+});
+
 describe('presentation validation', () => {
   let consoleSpy: jest.SpyInstance;
 
@@ -593,7 +667,7 @@ describe('singular', () => {
       }
     );
 
-    expectCompleteStateToMatch(store.state, {
+    expectCompleteStateToMatch(navigationRef.getRootState(), {
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],

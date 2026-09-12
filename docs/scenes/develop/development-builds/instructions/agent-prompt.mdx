@@ -1,0 +1,52 @@
+import { AgentPrompt, AgentPromptOption } from '~/ui/components/AgentPrompt';
+
+<AgentPrompt
+  title="Create a development build with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent."
+  selectorLabel="Build method"
+  queryParam="buildenv"
+  defaultOption="build-locally">
+
+<AgentPromptOption id="build-locally" label="Build locally">
+
+```text wrap
+Set up a development build for my Expo project and compile it on my machine.
+
+Run `npx expo install expo-dev-client`, then run `npx expo run:android` or `npx expo run:ios` for the platform I name. Add `--device` to install on a physical device. Start the development server with `npx expo start` once the build is installed.
+
+Run `npx expo prebuild --clean` for the first time to complete development builds setup. Later, use the same command to before rebuilding whenever a native dependency or the app config changes. Match the package manager this project already uses, and report what you ran.
+
+For the introduction to development builds, see https://docs.expo.dev/develop/development-builds/introduction/?buildenv=build-locally.
+```
+
+</AgentPromptOption>
+
+<AgentPromptOption id="build-with-eas" label="Build with EAS">
+
+```text wrap
+Set up a development build for my Expo project and build it on EAS.
+
+Run `npx expo install expo-dev-client`. Check that eas-cli is installed and that I am logged in. Create an eas.json with a development profile if the project has none. For an iOS Simulator build, set `ios.simulator` to true on that profile first. Then stop and ask me: "Everything is installed. Do you want to build now?" Wait for my answer. When I say yes, run `eas build --platform <platform> --profile development` for the platform I name.
+
+Install the finished build on an Android Emulator or iOS Simulator (platform I have specified) when the CLI offers to, then start the development server with `npx expo start`. Match the package manager this project already uses, and report what you ran.
+
+For the introduction to development builds, see https://docs.expo.dev/develop/development-builds/introduction/?buildenv=build-with-eas.
+```
+
+</AgentPromptOption>
+
+<AgentPromptOption id="eas-cli-local" label="Build locally with EAS CLI">
+
+```text wrap
+Set up a development build for my Expo project and run the EAS build on my own machine.
+
+Run `npx expo install expo-dev-client`. Check that eas-cli is installed and that I am logged in. Create an eas.json with a development profile if the project has none. For an iOS Simulator build, set `ios.simulator` to true on that profile first. Then stop and ask me: "Everything is installed. Do you want to build now?" Wait for my answer. When I say yes, run `eas build --platform <platform> --profile development --local` for the platform I name.
+
+Install the resulting .apk or .app archive on my emulator or simulator, then start the development server with `npx expo start`. Match the package manager this project already uses, and report what you ran.
+
+For the introduction to development builds, see https://docs.expo.dev/develop/development-builds/introduction/?buildenv=eas-cli-local.
+```
+
+</AgentPromptOption>
+
+</AgentPrompt>

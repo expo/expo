@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Router Tester",
+    "slug": "router-tester",
+    "scheme": "router-tester",
+    "newArchEnabled": true,
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "bundleIdentifier": "dev.expo.routertester",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "dev.expo.routertester",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0a92f596-9ce2-4793-8e36-d51059238417"
+      }
+    },
+    "owner": "expo"
+  }
+}

@@ -30,6 +30,7 @@ export class ExpoAndroidProjectConfig {
     public name: string,
     public path: string,
     public modules?: ExpoAndroidModuleConfig[],
+    public modulesV2?: string[],
     public services?: string[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
@@ -139,6 +140,7 @@ export class ExpoModuleConfig {
             ? new ExpoAndroidModuleConfig(module, null)
             : new ExpoAndroidModuleConfig(module.class, module.name)
         ),
+        this.rawConfig.android?.modulesV2,
         this.rawConfig.android?.services,
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
@@ -157,6 +159,7 @@ export class ExpoModuleConfig {
               ? new ExpoAndroidModuleConfig(module, null)
               : new ExpoAndroidModuleConfig(module.class, module.name)
           ),
+          project.modulesV2,
           project.services,
           project.publication,
           project.gradleAarProjects,

@@ -4,13 +4,14 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { unstable_useIsNavigating } from '../exports';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { useGuardRedirect } from '../layouts/GuardContext';
 import { Stack } from '../layouts/Stack';
 import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
+import { unstable_navigationEvents } from '../navigationEvents';
 import { useIsFocused } from '../react-navigation/native';
 import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs, useTabTrigger } from '../ui';
@@ -18,6 +19,14 @@ import { useNavigation } from '../useNavigation';
 import { useNavigatorContext } from '../views/Navigator';
 import type { PressableProps } from '../views/Pressable';
 import { Pressable } from '../views/Pressable';
+
+function createDeferred() {
+  let resolve!: (value: string) => void;
+  const promise = new Promise<string>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
 
 const renderFruitApp = (options: RenderRouterOptions = {}) =>
   renderRouter(
@@ -90,6 +99,51 @@ const renderFruitApp = (options: RenderRouterOptions = {}) =>
     },
     options
   );
+
+it('keeps the current tab visible while a queued tab switch suspends', async () => {
+  const deferred = createDeferred();
+
+  function Layout() {
+    const isNavigating = unstable_useIsNavigating();
+    return (
+      <>
+        <Text testID="is-navigating">{String(isNavigating)}</Text>
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" testID="goto-index" />
+            <TabTrigger name="slow" href="/slow" testID="goto-slow" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      </>
+    );
+  }
+
+  function SlowScreen() {
+    return <Text testID="slow">{React.use(deferred.promise)}</Text>;
+  }
+
+  renderRouter({
+    _layout: Layout,
+    index: () => <Text testID="index">Index</Text>,
+    slow: {
+      default: SlowScreen,
+      SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
+    },
+  });
+
+  const navigationAct = act(() => fireEvent.press(screen.getByTestId('goto-slow')));
+
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('fallback')).toBeNull();
+
+  deferred.resolve('Slow');
+  await navigationAct;
+
+  await waitFor(() => expect(screen.getByTestId('is-navigating')).toHaveTextContent('false'));
+  expect(screen.getByTestId('slow')).toBeVisible();
+});
 
 it('should render the correct screen with nested navigators', () => {
   renderFruitApp({ initialUrl: '/apple' });
@@ -1190,6 +1244,14 @@ it('can reference a parent trigger from nested tabs', () => {
   expect(screen.getByTestId('current-parent')).toHaveProp('isFocused', true);
   expect(screen.getByTestId('goto-parent')).toHaveProp('isFocused', false);
   fireEvent.press(screen.getByTestId('goto-parent'));
+  expect(screen.getByTestId('current-parent', { includeHiddenElements: true })).toHaveProp(
+    'isFocused',
+    false
+  );
+  expect(screen.getByTestId('goto-parent', { includeHiddenElements: true })).toHaveProp(
+    'isFocused',
+    true
+  );
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
@@ -1388,10 +1450,8 @@ it('resets when focused tab is pressed again', async () => {
   expect(screen).toHaveSegments(['stack']);
 });
 
-// TODO(@ubax): Restore __unsafe_action__ events. https://linear.app/expo/issue/ENG-26123
-it.skip('dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
+it('dispatches only one action when re-tapping active tab with nested stack', async () => {
+  const dispatchedActions: string[] = [];
 
   renderRouter({
     _layout: () => (
@@ -1431,9 +1491,9 @@ it.skip('dispatches only one action when re-tapping active tab with nested stack
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
+  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+    dispatchedActions.push(event.actionType)
+  );
 
   // Re-tap the movies tab
   await userEvent.press(screen.getByTestId('goto-movies'));
@@ -1445,15 +1505,11 @@ it.skip('dispatches only one action when re-tapping active tab with nested stack
 
   expect(dispatchedActions).toHaveLength(1);
 
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(dispatchedActions[0]).toBe('POP_TO_TOP');
 });
 
-// TODO(@ubax): Restore __unsafe_action__ events. https://linear.app/expo/issue/ENG-26123
-it.skip('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
+it('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
+  const dispatchedActions: string[] = [];
 
   renderRouter({
     _layout: () => (
@@ -1486,9 +1542,9 @@ it.skip('JSTabs dispatches only one action when re-tapping active tab with neste
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
+  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+    dispatchedActions.push(event.actionType)
+  );
 
   // Re-tap the movies tab
   await userEvent.press(screen.getByLabelText('movies, tab, 2 of 2'));
@@ -1500,9 +1556,7 @@ it.skip('JSTabs dispatches only one action when re-tapping active tab with neste
 
   expect(dispatchedActions).toHaveLength(1);
 
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(dispatchedActions[0]).toBe('POP_TO_TOP');
 });
 
 it('does not reset when focused tab is pressed again, but the press is prevented', async () => {

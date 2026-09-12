@@ -6,6 +6,17 @@ export const FocusedRouteKeyContext = React.createContext<string | undefined>(un
 
 export const IsFocusedContext = React.createContext<boolean | undefined>(undefined);
 
+export function useIsRouteFocused(routeKey: string | undefined): boolean {
+  const parentIsFocused = use(IsFocusedContext);
+  const focusedRouteKey = use(FocusedRouteKeyContext);
+
+  if (routeKey === undefined) {
+    return parentIsFocused ?? true;
+  }
+
+  return parentIsFocused == null || parentIsFocused ? focusedRouteKey === routeKey : false;
+}
+
 /**
  * Hook to get the current focus state of the screen. Returns a `true` if screen is focused, otherwise `false`.
  * This can be used if a component needs to render something based on the focus state.

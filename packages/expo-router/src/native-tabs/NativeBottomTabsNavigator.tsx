@@ -8,7 +8,10 @@ import {
   type TabNavigationState,
   type TabRouterOptions,
 } from '../react-navigation/native';
-import { unstable_createStandardRouterNavigator } from '../standard-navigation';
+import {
+  IsWithinNativeNavigator,
+  unstable_createStandardRouterNavigator,
+} from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
@@ -49,6 +52,7 @@ function NativeTabsContent({
   emitter,
   preload,
   navigateSync,
+  tabConfigurationKey,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -94,11 +98,6 @@ function NativeTabsContent({
       ),
     [descriptors, visibleRoutes]
   );
-  const visibleTabNames = useMemo(
-    () => visibleTabs.map((tab) => tab.name).join(';'),
-    [visibleTabs]
-  );
-
   usePreloadPlaceholderRoutes({
     routes: visibleRoutes,
     descriptors,
@@ -170,7 +169,7 @@ function NativeTabsContent({
     <NativeTabsContext value>
       <NativeTabsView
         {...nativeTabsViewProps}
-        key={visibleTabNames}
+        key={tabConfigurationKey}
         focusedIndex={focusedIndex}
         // Provenance should only be sent with updates, and updates
         // on JS side are only triggered by rerender, so passing ref
@@ -191,6 +190,7 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
   TabRouterOptions,
   NativeTabsNavigatorCreateProps
 >(NativeTabsContent, NativeBottomTabsRouter, {
+  activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, dispatch, dispatchSync }) => ({
@@ -210,6 +210,7 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
     [props.children]
   );
+  const tabConfigurationKey = triggerChildren.map((child) => child.props.name).join(';');
 
   const {
     backBehavior = defaultBackBehavior,
@@ -275,13 +276,16 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   ]);
 
   return (
-    <NativeTabsNavigatorWithContext
-      {...props}
-      children={triggerChildren}
-      nonTriggerChildren={nonTriggerChildren}
-      screenOptions={screenOptions}
-      // Passed to TabRouter
-      backBehavior={backBehavior}
-    />
+    <IsWithinNativeNavigator value>
+      <NativeTabsNavigatorWithContext
+        {...props}
+        children={triggerChildren}
+        nonTriggerChildren={nonTriggerChildren}
+        tabConfigurationKey={tabConfigurationKey}
+        screenOptions={screenOptions}
+        // Passed to TabRouter
+        backBehavior={backBehavior}
+      />
+    </IsWithinNativeNavigator>
   );
 }

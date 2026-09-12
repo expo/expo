@@ -1,7 +1,7 @@
 import { screen, act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
@@ -101,7 +101,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
   });
 
   // Initial complete state
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -131,7 +131,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
 
   act(() => router.push('/orange', { withAnchor: true }));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -198,7 +198,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
   });
 
   // Initial complete state
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -228,7 +228,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
 
   act(() => router.push('/orange'));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],

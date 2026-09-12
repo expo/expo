@@ -14,6 +14,7 @@ import type {
 } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { StandardNavigatorEmit } from '../../standard-navigation';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -1216,20 +1217,7 @@ export type NativeStackHeaderItem =
 
 export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
 
-export type NativeStackViewEmit = (
-  event:
-    | {
-        type: 'transitionStart' | 'transitionEnd';
-        target?: string;
-        data: { closing: boolean };
-      }
-    | { type: 'gestureCancel'; target?: string; data?: undefined }
-    | {
-        type: 'sheetDetentChange';
-        target?: string;
-        data: { index: number; stable: boolean };
-      }
-) => void;
+export type NativeStackViewEmit = StandardNavigatorEmit<NativeStackNavigationEventMap>;
 
 /**
  * The navigator-level state consumed by `NativeStackView`.

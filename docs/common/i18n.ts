@@ -120,7 +120,7 @@ export const OG_LOCALES: Record<SupportedLocale, string> = {
 };
 
 export const SITE_NAMES: Record<SupportedLocale, string> = {
-  en: 'Expo Documentation',
+  en: 'Expo documentation',
   ja: 'Expo ドキュメント',
 };
 

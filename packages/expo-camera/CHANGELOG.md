@@ -4,6 +4,20 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [iOS] Changed `selectedLens` prop to use stable `deviceType` identifiers instead of locale-dependent `localizedName` strings, enabling reliable programmatic lens selection across all device languages. ([#42916](https://github.com/expo/expo/pull/42916) by [@mplumador](https://github.com/mplumador))
 
 ### 🎉 New features
@@ -14,6 +28,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `CameraView` leaking its barcode scanner, metadata delegate and capture session on every mount, by no longer having the delegate retain the scanner it reports to. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix all barcode scanning stopping when the optional `ExpoCameraBarcodeScanning` companion pod is not linked. The AVFoundation scanner now runs on its own, so QR codes and every other natively supported symbology keep scanning; the ZXing provider is once again only the fallback for `pdf417`, `code39`, and `codabar`. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix repeatedly mounting and unmounting `CameraView` freezing the UI when the capture session cannot start, such as on a simulator. The session is now stopped before it is torn down and before the preview layer detaches from it, and it is no longer started at all when no capture device is available. ([#49028](https://github.com/expo/expo/pull/49028) by [@barthap](https://github.com/barthap))
 - [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
 - Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
@@ -22,8 +38,7 @@
 - [iOS] Return zeroed `bounds` and `cornerPoints` from the ZXing fallback scanner so scanning a `pdf417`, `code39`, or `codabar` code no longer crashes with `Cannot read property 'origin' of undefined`. ([#47854](https://github.com/expo/expo/pull/47854) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix `responsiveOrientationWhenOrientationLocked: false` being ignored — photos and videos captured while the app orientation is locked now follow the locked interface orientation instead of the physical device rotation. ([#47881](https://github.com/expo/expo/pull/47881) by [@jiunshinn](https://github.com/jiunshinn))
 - [iOS] Read the capture interface orientation from the scene the camera view is in rather than an arbitrary connected scene. ([#48315](https://github.com/expo/expo/pull/48315) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
+- [iOS] Restore the shutter animation on capture, which stopped running when the photo capture delegate moved off `CameraView`, leaving `animateShutter` with no effect. ([#49591](https://github.com/expo/expo/pull/49591) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.3 - 2026-07-16
 

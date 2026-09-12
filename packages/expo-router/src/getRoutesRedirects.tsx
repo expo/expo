@@ -3,7 +3,7 @@ import { createElement, useEffect } from 'react';
 
 import { cleanPath } from './fork/getStateFromPath-forks';
 import type { RedirectConfig } from './getRoutesCore';
-import type { StoreRedirects } from './global-state/router-store';
+import type { StoreRedirects } from './global-state/types';
 import { matchDynamicName } from './matchers';
 import { shouldLinkExternally } from './utils/url';
 

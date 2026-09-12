@@ -1,13 +1,14 @@
-import isEqual from 'fast-deep-equal';
-import { type RefObject, use, useEffect, useRef, useState } from 'react';
+import { type RefObject, use, useEffect, useEffectEvent, useRef, useState } from 'react';
+import isEqual from 'react-fast-compare';
 
 import {
   completeParsedState,
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
-import { routingQueue, type RoutingIntent } from '../global-state/routingQueue';
-import { StoreContext } from '../global-state/storeContext';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
+import type { RoutingIntent } from '../global-state/routingQueue';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
   type LinkingOptions,
@@ -40,10 +41,9 @@ export function useLinking(
     getInitialURL = getInitialURLWithTimeout,
     getStateFromPath = getStateFromPathDefault,
     getPathFromState = getPathFromStateDefault,
-  }: Options,
-  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
+  }: Options
 ) {
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -84,13 +84,11 @@ export function useLinking(
       }
 
       const parsedState = path ? getStateFromPath(path, config) : undefined;
-      const routeNode = store?.routeNode;
+      const routeNode = routerConfig?.routeNode;
       const state = routeNode
         ? createSeededRootState(parsedState, routeNode)
         : completeParsedState(parsedState, ROOT_CHAIN);
 
-      // If the link were handled, it gets cleared in NavigationContainer
-      onUnhandledLinking(path);
       return state;
     };
     const url = getInitialURL();
@@ -118,7 +116,6 @@ export function useLinking(
     config,
     getStateFromPath,
     getPathFromState,
-    onUnhandledLinking,
   });
 
   return {
@@ -171,19 +168,15 @@ function useBrowserHistorySync({
   config,
   getStateFromPath,
   getPathFromState,
-  onUnhandledLinking,
 }: {
   ref: RefObject<NavigationContainerRef<ParamListBase> | null>;
   config: LinkingOptions<ParamListBase>['config'];
   getStateFromPath: GetStateFromPath;
   getPathFromState: GetPathFromState;
-  onUnhandledLinking: (path: string | undefined) => void;
 }) {
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
+  const enqueue = useEnqueueRoutingIntent();
   const [history] = useState(createMemoryHistory);
-  const configRef = useRef(config);
-  const getStateFromPathRef = useRef(getStateFromPath);
-  const getPathFromStateRef = useRef(getPathFromState);
   const previousIndexRef = useRef<number | undefined>(undefined);
   const previousStateRef = useRef<NavigationState | undefined>(undefined);
   // TODO(@ubax): buffer history intent metadata in the reducer and flush it immediately before
@@ -191,11 +184,39 @@ function useBrowserHistorySync({
   // https://linear.app/expo/issue/ENG-22046
   const pendingHistoryOperationsRef = useRef<{ path: string }[]>([]);
 
-  useEffect(() => {
-    configRef.current = config;
-    getStateFromPathRef.current = getStateFromPath;
-    getPathFromStateRef.current = getPathFromState;
-  });
+  const parseStateFromPath = useEffectEvent(
+    (path: string, segments?: Parameters<GetStateFromPath>[2]) =>
+      getStateFromPath(path, config, segments)
+  );
+
+  const getPathForRoute = useEffectEvent(
+    (route: ReturnType<typeof findFocusedRoute>, state: NavigationState): string => {
+      let path;
+
+      // Preserve the original URL for wildcard routes while the route and params still match.
+      if (route?.path) {
+        const stateForPath = parseStateFromPath(
+          route.path,
+          // TODO(@Ubax): Check if there is a way to do it in a more performant way
+          getRouteInfoFromState(state).segments
+        );
+
+        if (stateForPath) {
+          const focusedRoute = findFocusedRoute(stateForPath);
+
+          if (
+            focusedRoute &&
+            focusedRoute.name === route.name &&
+            isEqual({ ...focusedRoute.params }, { ...route.params })
+          ) {
+            path = appendBaseUrl(route.path);
+          }
+        }
+      }
+
+      return path ?? getPathFromState(state, config);
+    }
+  );
 
   useEffect(() => {
     previousIndexRef.current = history.index;
@@ -221,7 +242,7 @@ function useBrowserHistorySync({
             pendingHistoryOperationsRef.current.push(metadata.history);
           }
         };
-        routingQueue.add(intent);
+        enqueue(intent);
       };
       const reset = (state: ResetState) => ({
         type: 'RESET',
@@ -239,19 +260,16 @@ function useBrowserHistorySync({
         return;
       }
 
-      const parsedState = getStateFromPathRef.current(
-        path,
-        configRef.current,
-        getRouteInfoFromState(store?.state).segments
-      );
+      // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
+      const segments = getRouteInfoFromState(navigation.getRootState()).segments;
+      const parsedState = parseStateFromPath(path, segments);
       if (parsedState) {
-        onUnhandledLinking(path);
         const routeNames = getRootStackRouteNames();
         if (parsedState.routes.some((route) => !routeNames.includes(route.name))) {
           return;
         }
-        const state = store?.routeNode
-          ? createSeededRootState(parsedState, store.routeNode)
+        const state = routerConfig?.routeNode
+          ? createSeededRootState(parsedState, routerConfig.routeNode)
           : completeParsedState(parsedState, ROOT_CHAIN);
         if (!state) {
           return;
@@ -289,48 +307,16 @@ function useBrowserHistorySync({
       unsubscribe();
       pendingHistoryOperationsRef.current = [];
     };
-  }, [history, onUnhandledLinking, ref]);
+  }, [enqueue, history, ref]);
 
   useEffect(() => {
-    const getPathForRoute = (
-      route: ReturnType<typeof findFocusedRoute>,
-      state: NavigationState
-    ): string => {
-      let path;
-
-      // Preserve the original URL for wildcard routes while the route and params still match.
-      if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(
-          route.path,
-          configRef.current,
-          // TODO(@Ubax): Check if there is a way to do it in a more performant way
-          getRouteInfoFromState(state).segments
-        );
-
-        if (stateForPath) {
-          const focusedRoute = findFocusedRoute(stateForPath);
-
-          if (
-            focusedRoute &&
-            focusedRoute.name === route.name &&
-            isEqual({ ...focusedRoute.params }, { ...route.params })
-          ) {
-            path = appendBaseUrl(route.path);
-          }
-        }
-      }
-
-      return path ?? getPathFromStateRef.current(state, configRef.current);
-    };
-
     if (ref.current) {
+      // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
       const rootState = ref.current.getRootState();
-      const state = store?.state as NavigationState | undefined;
-
-      if (state) {
-        const path = getPathForRoute(findFocusedRoute(state), state);
+      if (rootState) {
+        const path = getPathForRoute(findFocusedRoute(rootState), rootState);
         previousStateRef.current ??= rootState;
-        history.replace({ path, state });
+        history.replace({ path, state: rootState });
       }
     }
 
@@ -342,14 +328,13 @@ function useBrowserHistorySync({
       }
 
       const previousState = previousStateRef.current;
+      // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
       const rootState = navigation.getRootState();
-      const state = store?.state as NavigationState | undefined;
-
-      if (!state) {
+      if (!rootState) {
         return;
       }
 
-      const path = getPathForRoute(findFocusedRoute(state), state);
+      const path = getPathForRoute(findFocusedRoute(rootState), rootState);
       let pendingOperation: { path: string } | undefined;
 
       // React may batch multiple queued actions into one state event, so use the latest match.
@@ -366,14 +351,14 @@ function useBrowserHistorySync({
       }
 
       previousStateRef.current = rootState;
-      const [previousFocusedState, focusedState] = findMatchingState(previousState, state);
+      const [previousFocusedState, focusedState] = findMatchingState(previousState, rootState);
 
       if (previousFocusedState && focusedState && !pendingOperation) {
         const historyDelta =
           getHistoryLength(focusedState) - getHistoryLength(previousFocusedState);
 
         if (historyDelta > 0) {
-          history.push({ path, state });
+          history.push({ path, state: rootState });
         } else if (historyDelta < 0) {
           const nextIndex = history.backIndex({ path });
           const currentIndex = history.index;
@@ -389,15 +374,15 @@ function useBrowserHistorySync({
               await history.go(historyDelta);
             }
 
-            history.replace({ path, state });
+            history.replace({ path, state: rootState });
           } catch {
             // The navigation was interrupted.
           }
         } else {
-          history.replace({ path, state });
+          history.replace({ path, state: rootState });
         }
       } else {
-        history.replace({ path, state });
+        history.replace({ path, state: rootState });
       }
     };
 

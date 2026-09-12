@@ -26,6 +26,7 @@ export function ListItem(props: ListItemProps) {
     trailing: trailingProp,
     supportingText,
     modifiers,
+    colors,
   } = props;
   const slots = extractListItemSlots(children);
   const leading = slots.leading ?? leadingProp;
@@ -34,7 +35,7 @@ export function ListItem(props: ListItemProps) {
   const itemModifiers = [...(onPress ? [clickable(onPress)] : []), ...(modifiers ?? [])];
 
   return (
-    <ComposeListItem modifiers={itemModifiers.length ? itemModifiers : undefined}>
+    <ComposeListItem colors={colors} modifiers={itemModifiers.length ? itemModifiers : undefined}>
       <ComposeListItem.HeadlineContent>
         <>{wrapStrings(slots.headline)}</>
       </ComposeListItem.HeadlineContent>

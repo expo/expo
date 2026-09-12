@@ -105,7 +105,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    return pointee.hasProperty(runtime.pointee, name)
+    return pointee.hasProperty(runtime.pointee, name.toJSIPropNameID(in: runtime.pointee))
   }
 
   /// Returns the property of the object with the given name,
@@ -114,7 +114,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, name))
+    return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, name.toJSIPropNameID(in: runtime.pointee)))
   }
 
   /// Returns the property of the object with the given prop name id,
@@ -163,7 +163,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     let count = propertyNames.size(jsiRuntime)
 
     return (0..<count).map { i in
-      return String(propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime).utf8(jsiRuntime))
+      return String(jsiString: propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime), in: jsiRuntime)
     }
   }
 
@@ -230,7 +230,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     // This specialization is to avoid copying the value; `asValue()` on `JavaScriptValue` needs to do a copy.
-    expo.setProperty(runtime.pointee, pointee, name, value.toJSIValue(in: runtime.pointee))
+    expo.setProperty(
+      runtime.pointee,
+      pointee,
+      name.toJSIPropNameID(in: runtime.pointee),
+      value.toJSIValue(in: runtime.pointee)
+    )
   }
 
   public func setProperty<T: JavaScriptRepresentable & ~Copyable>(_ name: String, value: consuming T) {
@@ -238,7 +243,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     let jsiValue = value.toJavaScriptValue(in: runtime).toJSIValue(in: runtime.pointee)
-    expo.setProperty(runtime.pointee, pointee, name, jsiValue)
+    expo.setProperty(runtime.pointee, pointee, name.toJSIPropNameID(in: runtime.pointee), jsiValue)
   }
 
   internal func setProperty<T: JavaScriptRepresentable>(_ name: String, value: consuming T) where T: JSIRepresentable {
@@ -246,14 +251,19 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     let jsiValue = value.toJSIValue(in: runtime.pointee)
-    expo.setProperty(runtime.pointee, pointee, name, jsiValue)
+    expo.setProperty(runtime.pointee, pointee, name.toJSIPropNameID(in: runtime.pointee), jsiValue)
   }
 
   public func setProperty(_ name: String, _ object: consuming JavaScriptObject) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    expo.setProperty(runtime.pointee, pointee, name, facebook.jsi.Value(runtime.pointee, object.pointee))
+    expo.setProperty(
+      runtime.pointee,
+      pointee,
+      name.toJSIPropNameID(in: runtime.pointee),
+      facebook.jsi.Value(runtime.pointee, object.pointee)
+    )
   }
 
   /// Sets a property to a synchronous host function created from the given closure. The function
@@ -307,7 +317,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    pointee.deleteProperty(runtime.pointee, name)
+    pointee.deleteProperty(runtime.pointee, name.toJSIPropNameID(in: runtime.pointee))
   }
   #endif
 

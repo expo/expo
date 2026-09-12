@@ -10,6 +10,7 @@ import {
   ScreenStackItem,
 } from 'react-native-screens';
 
+import { useRoutesWithRemovalPrevented } from '../../../global-state/removalPrevention';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -19,7 +20,7 @@ import {
   SafeAreaProviderCompat,
   useFrameSize,
 } from '../../elements';
-import { NavigationProvider, type Route, usePreventRemoveContext, useTheme } from '../../native';
+import { NavigationProvider, type Route, useTheme } from '../../native';
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
@@ -188,7 +189,7 @@ const SceneView = ({
     })
   );
 
-  const { preventedRoutes } = usePreventRemoveContext();
+  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
   const [headerHeight, setHeaderHeight] = React.useState(defaultHeaderHeight);
 
@@ -248,13 +249,12 @@ const SceneView = ({
     return undefined;
   }, [canGoBack, backTitle]);
 
-  const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
+  const isRemovePrevented = routesWithRemovalPrevented.has(route.key);
 
   const headerConfig = useHeaderConfigProps({
     ...options,
     route,
-    headerBackButtonMenuEnabled:
-      isRemovePrevented !== undefined ? !isRemovePrevented : headerBackButtonMenuEnabled,
+    headerBackButtonMenuEnabled: isRemovePrevented ? false : headerBackButtonMenuEnabled,
     headerBackTitle: options.headerBackTitle !== undefined ? options.headerBackTitle : undefined,
     headerHeight,
     headerShown: header !== undefined ? false : headerShown,

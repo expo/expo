@@ -12,7 +12,6 @@ import {
   resolveHermesVersion,
   selectDistributedPackages,
   setForceNonInteractive,
-  IOS_PREBUILD_PACKAGES,
 } from './Utils';
 import { resolvePackagePath } from './resolvePackage';
 
@@ -75,10 +74,13 @@ describe('isNonInteractive', () => {
 
 describe('selectDistributedPackages', () => {
   const fakePackages = [
-    { packageName: 'expo-modules-core' },
-    { packageName: 'expo-video' },
-    { packageName: 'expo-age-range' },
-    { packageName: 'expo-blur' },
+    {
+      packageName: 'expo-modules-core',
+      getSwiftPMConfiguration: () => ({ publishPrebuilds: true }),
+    },
+    { packageName: 'expo-video', getSwiftPMConfiguration: () => ({ publishPrebuilds: true }) },
+    { packageName: 'expo-age-range', getSwiftPMConfiguration: () => ({}) },
+    { packageName: 'expo-blur', getSwiftPMConfiguration: () => ({ publishPrebuilds: false }) },
   ] as any[];
 
   it('keeps only the distributed set when allPackages is false', () => {
@@ -92,12 +94,6 @@ describe('selectDistributedPackages', () => {
   it('returns every package unchanged when allPackages is true', () => {
     const result = selectDistributedPackages(fakePackages, true);
     assert.equal(result, fakePackages);
-  });
-
-  it('IOS_PREBUILD_PACKAGES lists the 15 distributed packages', () => {
-    assert.equal(IOS_PREBUILD_PACKAGES.length, 15);
-    assert.ok(IOS_PREBUILD_PACKAGES.includes('expo-modules-core'));
-    assert.ok(!IOS_PREBUILD_PACKAGES.includes('expo-age-range'));
   });
 });
 

@@ -3,10 +3,9 @@
 # gate, parse, ack/announce, the run, and the failure report all live in
 # `verify run` (engine LLP 0001; expo-sandbox-mcp LLP 0020).
 #
-# STAGED: lives beside agent-commands.yml, which still owns the comment
-# path until this one is proven live; both are gated on the same comment
-# shapes, so to avoid double runs the legacy workflow's issue_comment
-# trigger is removed in the same commit that promotes this one.
+# Owns the comment path since 2026-09-09. It replaced agent-commands.yml,
+# the 2,300-line monolith the engine was extracted from, deleted in
+# expo/expo#49927 — revert that PR to roll back.
 name: verify (comment)
 run-name: "verify #${{ github.event.issue.number }} — ${{ github.event.comment.user.login }}"
 
@@ -19,17 +18,23 @@ permissions:
   issues: write
   pull-requests: read
 
-concurrency:
-  group: verify-target-${{ github.event.issue.number }}
-  cancel-in-progress: false
-
 jobs:
   verify:
+    # Job-level, not workflow-level: a workflow-level group is claimed at run
+    # creation, before the gate below runs, so every comment on the thread —
+    # including the bot's own triage and findings replies — counted as an
+    # arrival. With cancel-in-progress:false a group holds one waiting run and
+    # a third arrival evicts it, which cancelled waiting verifications (the
+    # 2026-08-20 incident, repeated on 2026-09-09 against the legacy job). A
+    # job-level group is only entered when the gate passes.
+    concurrency:
+      group: verify-target-${{ github.event.issue.number }}
+      cancel-in-progress: false
     # The LOOSE shape gate: command-shaped, from a maintainer-association
     # author, not the bot itself. Exact shapes, the authoritative
     # write-access check, and thread replies are the engine's comment
-    # path. Mirrors agent-commands.yml's gate; reserved verbs stay
-    # excluded because other workflows own them.
+    # path. Same shape the code-review command workflows use; reserved
+    # verbs stay excluded because other workflows own them.
     if: >-
       github.event.comment.user.login != 'expo-bot' &&
       (startsWith(github.event.comment.body, '/verify') ||
@@ -50,7 +55,7 @@ jobs:
     # engine exit 1 behind a green run (run 32919110451).
     continue-on-error: true
     env:
-      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.3.0' }}
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.13' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -76,6 +81,8 @@ jobs:
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify mint
         env:
           VERIFY_TARGET: ${{ github.event.issue.number }}
+          VERIFY_COMMENT_BODY: ${{ github.event.comment.body }}
+          VERIFY_TARGET_IS_PR: ${{ github.event.issue.pull_request != null }}
           VERIFY_RETRY: ${{ contains(github.event.comment.body, '--retry') }}
           VERIFY_RUN_ID: ${{ github.run_id }}
           VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
@@ -87,7 +94,7 @@ jobs:
         env:
           VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
           # Comment text and identity cross as env only — never ${{ }} inside
-          # run: lines (the same rule agent-commands.yml follows).
+          # run: lines.
           VERIFY_COMMENT_BODY: ${{ github.event.comment.body }}
           VERIFY_COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
           VERIFY_COMMENT_ID: ${{ github.event.comment.id }}
@@ -127,5 +134,6 @@ jobs:
             .verify-out/publish-plan.json
             .verify-out/publish-outcome.json
             .verify-out/run-status.json
+            .verify-out/triage/
           if-no-files-found: ignore
           retention-days: 14

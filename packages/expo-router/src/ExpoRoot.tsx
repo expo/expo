@@ -1,6 +1,6 @@
 'use client';
 
-import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import { type PropsWithChildren, Fragment, type ComponentType, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -8,18 +8,19 @@ import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import type { ExpoLinkingOptions } from './getLinkingConfig';
-import { useStore } from './global-state/router-store';
-import { RouterRegistryProvider } from './global-state/routerRegistry';
-import { maybeHideSplashScreen } from './global-state/store';
-import { StoreContext } from './global-state/storeContext';
+import { navigationRef } from './global-state/navigationRef';
+import { RemovalPreventionProvider } from './global-state/removalPrevention';
+import { RouterConfigContext } from './global-state/routerConfigContext';
+import { RoutingQueueProvider } from './global-state/routingQueueContext';
+import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
-import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
 import type { LinkingOptions } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import type { RequireContext } from './types';
+import { maybeHideSplashScreen } from './utils/splash';
 import { parseUrlUsingCustomBase } from './utils/url';
 import { RootUnmatched } from './views/RootUnmatched';
 import { Sitemap } from './views/Sitemap';
@@ -49,10 +50,6 @@ const INITIAL_METRICS =
       }
     : undefined;
 
-const documentTitle = {
-  enabled: false,
-};
-
 /**
  * @hidden
  */
@@ -81,7 +78,11 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
     [ParentWrapper]
   );
 
-  return <ContextNavigator {...props} wrapper={wrapper} />;
+  return (
+    <RoutingQueueProvider>
+      <ContextNavigator {...props} wrapper={wrapper} />
+    </RoutingQueueProvider>
+  );
 }
 
 const initialUrl =
@@ -89,12 +90,6 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
-function onNavigationReady() {
-  handleNavigationOnReady();
-  maybeHideSplashScreen();
-}
-
-// TODO(@ubax): Refactor onReady logic and use listeners pattern
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -117,8 +112,8 @@ function ContextNavigator({
     return undefined;
   }, []);
 
-  const storeValue = useStore(context, linking, serverUrl);
-  const { navigationRef, rootComponent, linking: linkingConfig, routeNode } = storeValue;
+  const { routerConfig, rootComponent } = useRouterConfig(context, linking, serverUrl);
+  const { linking: linkingConfig, routeNode } = routerConfig;
 
   useDomComponentNavigation();
 
@@ -139,19 +134,17 @@ function ContextNavigator({
   }
 
   return (
-    <StoreContext.Provider value={storeValue}>
-      <RouterRegistryProvider>
+    <RouterConfigContext.Provider value={routerConfig}>
+      <RemovalPreventionProvider>
         <UpstreamNavigationContainer
           ref={navigationRef}
-          linking={linkingConfig as LinkingOptions<any>}
-          documentTitle={documentTitle}
-          onReady={onNavigationReady}>
+          linking={linkingConfig as LinkingOptions<any>}>
           <WrapperComponent>
             <Content rootComponent={rootComponent} />
           </WrapperComponent>
         </UpstreamNavigationContainer>
-      </RouterRegistryProvider>
-    </StoreContext.Provider>
+      </RemovalPreventionProvider>
+    </RouterConfigContext.Provider>
   );
 }
 
@@ -167,6 +160,10 @@ function Content({ rootComponent }: { rootComponent: ComponentType<any> }) {
     children,
     id: INTERNAL_SLOT_NAME,
   });
+
+  useEffect(() => {
+    maybeHideSplashScreen();
+  }, []);
 
   return (
     <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>

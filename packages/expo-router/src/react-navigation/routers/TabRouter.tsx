@@ -104,6 +104,22 @@ type TabNavigationStateWithHistory = TabNavigationState<ParamListBase> &
 
 const TYPE_ROUTE = 'route' as const;
 
+function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
+  state: TabNavigationState<ParamList>
+) {
+  const route = state.routes[state.index];
+  if (!route?.isPreloaded) {
+    return state;
+  }
+
+  const { isPreloaded, ...focusedRoute } = route;
+  const routes = [...state.routes];
+  // Removing an optional field preserves the route's conditional params type, which TypeScript
+  // cannot infer through the `Route` intersection.
+  routes[state.index] = focusedRoute as typeof route;
+  return { ...state, routes };
+}
+
 const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
   routeNames: string[],
@@ -623,7 +639,10 @@ export function TabRouter({
 
           if (routeIndex === -1) {
             const route = attachRouteState(
-              createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+              {
+                ...createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+                isPreloaded: true,
+              },
               action
             );
             routes = [...state.routes, route];
@@ -636,7 +655,14 @@ export function TabRouter({
             const key = currentId === nextId ? route.key : minter.mint(route.name);
             const params = action.payload.params;
             const newRoute = attachRouteState(
-              params !== route.params ? { ...route, key, params } : route,
+              params !== route.params
+                ? {
+                    ...route,
+                    key,
+                    params,
+                    ...(key !== route.key && { isPreloaded: true }),
+                  }
+                : route,
               action
             );
 
@@ -720,7 +746,26 @@ export function TabRouter({
     actionCreators: TabActions,
   };
 
-  return router;
+  const routerWithClearedFocusedPreloadedRoute: typeof router = {
+    ...router,
+    getStateForDeclaredRoutes(state, routeNames) {
+      return clearFocusedPreloadedRoute(router.getStateForDeclaredRoutes(state, routeNames));
+    },
+    getStateForRouteFocus(state, key) {
+      return clearFocusedPreloadedRoute(router.getStateForRouteFocus(state, key));
+    },
+    getStateForAction(state, action, options) {
+      const result = router.getStateForAction(state, action, options);
+      if (result === null) {
+        return null;
+      }
+
+      const normalizedState = clearFocusedPreloadedRoute(result.state);
+      return normalizedState === result.state ? result : { ...result, state: normalizedState };
+    },
+  };
+
+  return routerWithClearedFocusedPreloadedRoute;
 }
 
 function removeReplacedRouteFromHistory(

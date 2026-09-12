@@ -3,7 +3,6 @@
 #import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
-#import <React/RCTRootContentView.h>
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
@@ -421,8 +420,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     projectUrl = expoUrl;
   }
 
-  // Disable onboarding popup if "&disableOnboarding=1" is a param
+  [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:url];
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
+
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {

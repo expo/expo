@@ -1,7 +1,7 @@
 import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
 import { useState } from 'react';
 
-import NativeVideoModule from './NativeVideoModule';
+import NativeVideoModule from './ExpoVideo';
 import type { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';
 import resolveAssetSource from './resolveAssetSource';
 

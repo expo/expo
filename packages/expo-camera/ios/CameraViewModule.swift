@@ -162,9 +162,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
       Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings?) in
         if let settings {
-          if view.barcodeScanner?.isAvailable == false {
-            self.appContext?.jsLogger.warn("Barcode scanning has been disabled")
-          }
           view.setBarcodeScannerSettings(settings: settings)
         }
       }

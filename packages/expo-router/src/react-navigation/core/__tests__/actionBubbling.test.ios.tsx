@@ -125,7 +125,6 @@ test("lets parent handle the action if child didn't", () => {
 
 test('handles an unsupported targeted action as a no-op without bubbling', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
-  const onUnhandledAction = jest.fn();
 
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
@@ -136,7 +135,7 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
   };
 
   render(
-    <BaseNavigationContainer ref={ref} onUnhandledAction={onUnhandledAction}>
+    <BaseNavigationContainer ref={ref}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
@@ -148,69 +147,72 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
   act(() => ref.dispatchSync({ type: 'POP_TO_TOP', target: state.key }));
 
   expect(ref.current!.getRootState()).toBe(state);
-  expect(onUnhandledAction).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("doesn't let a child handle an untargeted navigate action", () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+describe('unhandled action warnings', () => {
+  let error: jest.SpyInstance;
 
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
+  beforeEach(() => {
+    error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    error.mockRestore();
+  });
+
+  test("doesn't let a child handle an untargeted navigate action", () => {
+    const TestNavigator = (props: any) => {
+      const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+      return (
+        <NavigationContent>
+          {state.routes.map((route) => descriptors[route.key]!.render())}
+        </NavigationContent>
+      );
+    };
+
+    const TestScreen = () => null;
+
+    const onStateChange = jest.fn();
+    const navigation = createNavigationContainerRef<ParamListBase>();
+
+    const element = (
+      <BaseNavigationContainer
+        ref={navigation}
+        initialState={{
+          routes: [
+            { name: 'foo' },
+            { name: 'bar' },
+            { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
+          ],
+        }}
+        onStateChange={onStateChange}>
+        <TestNavigator>
+          <Screen name="foo" component={TestScreen} />
+          <Screen name="bar" component={TestScreen} />
+          <Screen name="baz">
+            {() => (
+              <TestNavigator>
+                <Screen name="qux" component={TestScreen} />
+                <Screen name="lex" component={TestScreen} />
+              </TestNavigator>
+            )}
+          </Screen>
+        </TestNavigator>
+      </BaseNavigationContainer>
     );
-  };
 
-  const TestScreen = () => null;
+    render(element);
 
-  const onStateChange = jest.fn();
-  const onUnhandledAction = jest.fn();
+    act(() => navigation.navigate('lex'));
 
-  const navigation = createNavigationContainerRef<ParamListBase>();
-
-  const element = (
-    <BaseNavigationContainer
-      ref={navigation}
-      initialState={{
-        routes: [
-          { name: 'foo' },
-          { name: 'bar' },
-          { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
-        ],
-      }}
-      onStateChange={onStateChange}
-      onUnhandledAction={onUnhandledAction}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-        <Screen name="bar" component={TestScreen} />
-        <Screen name="baz">
-          {() => (
-            <TestNavigator>
-              <Screen name="qux" component={TestScreen} />
-              <Screen name="lex" component={TestScreen} />
-            </TestNavigator>
-          )}
-        </Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element);
-
-  act(() => navigation.navigate('lex'));
-
-  expect(onStateChange).not.toHaveBeenCalled();
-  expect(onUnhandledAction).toHaveBeenCalledTimes(1);
-  expect(onUnhandledAction).toHaveBeenCalledWith(
-    expect.objectContaining({
-      type: 'NAVIGATE',
-      payload: { name: 'lex' },
-    })
-  );
-
-  expect(navigation.getCurrentRoute()?.name).toBe('foo');
+    expect(onStateChange).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining('was not handled by any navigator.')
+    );
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(navigation.getCurrentRoute()?.name).toBe('foo');
+  });
 });
 
 test('action goes to correct parent navigator if target is specified', () => {
@@ -535,8 +537,7 @@ test("action doesn't bubble if target is specified", () => {
   expect(onStateChange).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip('logs error if no navigator handled the action', () => {
+test('logs error if no navigator handled the action', () => {
   const TestRouter = MockRouter;
 
   const TestNavigator = (props: any) => {
@@ -603,8 +604,7 @@ test.skip('logs error if no navigator handled the action', () => {
   spy.mockRestore();
 });
 
-// TODO(@ubax): Restore removePrevented handling after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a screen with 'removePrevented' event", () => {
+test("prevents removing a screen with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -713,6 +713,7 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
     setPreventRemove(false);
   });
 
+  // The screen re-dispatches the blocked action with this render's removal-prevention state.
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     type: 'stack',
@@ -725,8 +726,7 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
   });
 });
 
-// TODO(@ubax): Restore child removePrevented propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'removePrevented' event", () => {
+test("prevents removing a child screen with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -816,8 +816,7 @@ test.skip("prevents removing a child screen with 'removePrevented' event", () =>
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore grandchild removePrevented propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a grand child screen with 'removePrevented' event", () => {
+test("prevents removing a grand child screen with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -911,8 +910,7 @@ test.skip("prevents removing a grand child screen with 'removePrevented' event",
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore multiple removePrevented handlers after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing by multiple screens with 'removePrevented' event", () => {
+test("prevents removing by multiple screens with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -1011,6 +1009,8 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onBeforeRemove.lex).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(1);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
@@ -1019,7 +1019,8 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
   });
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(2);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(2);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
@@ -1028,13 +1029,12 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
   });
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(3);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore targeted reset prevention after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'removePrevented' event with targeted reset", () => {
+test("prevents removing a child screen with 'removePrevented' event with targeted reset", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 

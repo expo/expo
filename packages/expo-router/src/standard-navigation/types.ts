@@ -24,6 +24,17 @@ export type StandardNavigatorEventMapBase = Record<
   { data: object | undefined; canPreventDefault: boolean }
 >;
 
+export type StandardNavigatorEmit<EventMap extends Record<string, { data: object | undefined }>> = (
+  event: {
+    [Event in keyof EventMap]: {
+      type: Event;
+      target?: string;
+    } & (undefined extends EventMap[Event]['data']
+      ? { data?: EventMap[Event]['data'] }
+      : { data: EventMap[Event]['data'] });
+  }[keyof EventMap]
+) => void;
+
 export type StandardNavigationAction = NavigateAction | GoBackAction;
 
 export type PlaceholderDescriptorMap = Record<
@@ -105,6 +116,11 @@ export type IntegrateWithRouterOptions<
   NavigatorOptions extends object = Record<string, any>,
   EventMap extends EventMapBase = EventMapBase,
 > = CreatePropsOption<State, CreateProps> & {
+  /**
+   * Number of screens above a route that hides its content when `activityEnabled` is `true`.
+   * @default 1
+   */
+  activityDefaultThreshold?: number;
   /**
    * Pre-processes the builder state before it is converted to standard-navigation state.
    *

@@ -13,20 +13,24 @@ import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
-import { routingQueue } from './routingQueue';
-import { store } from './store';
+import { navigationRef } from './navigationRef';
+import type { RoutingIntent } from './routingQueue';
 import type { LinkToOptions, NavigationOptions } from './types';
 
-function assertIsReady() {
-  if (!store.navigationRef.isReady()) {
+function assertIsMounted() {
+  if (navigationRef.current == null) {
     throw new Error(
       'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
     );
   }
 }
 
-export function navigate(url: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
+function navigateImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  url: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
 
 export function reload() {
@@ -34,47 +38,63 @@ export function reload() {
   throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 
-export function prefetch(href: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(href), { ...options, event: 'PRELOAD' });
+function prefetchImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  href: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 
-export function push(url: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(url), { ...options, event: 'PUSH' });
+function pushImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  url: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(url), { ...options, event: 'PUSH' });
 }
 
 // `GO_BACK` follows focused back handling; `POP` explicitly removes stack routes.
-export function dismiss(count: number = 1) {
+function dismissImpl(enqueue: (intent: RoutingIntent) => void, count: number = 1) {
   if (emitDomDismiss(count)) {
     return;
   }
 
-  routingQueue.add({
+  enqueue({
     type: 'ACTION',
     payload: { action: { type: 'POP', payload: { count } } },
   });
 }
 
-export function dismissTo(href: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(href), { ...options, event: 'POP_TO' });
+function dismissToImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  href: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(href), { ...options, event: 'POP_TO' });
 }
 
-export function replace(url: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
+function replaceImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  url: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(url), { ...options, event: 'REPLACE' });
 }
 
-export function dismissAll() {
+function dismissAllImpl(enqueue: (intent: RoutingIntent) => void) {
   if (emitDomDismissAll()) {
     return;
   }
-  routingQueue.add({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
+  enqueue({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
 }
 
 // `GO_BACK` follows focused back handling; `POP` (used by `dismiss`) explicitly removes stack routes.
-export function goBack() {
+function goBackImpl(enqueue: (intent: RoutingIntent) => void) {
   if (emitDomGoBack()) {
     return;
   }
-  routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+  enqueue({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 }
 
 export function canGoBack(): boolean {
@@ -88,10 +108,10 @@ export function canGoBack(): boolean {
   // before mounting a navigator. This behavior exists due to React Navigation being dynamically
   // constructed at runtime. We can get rid of this in the future if we use
   // the static configuration internally.
-  if (!store.navigationRef.isReady()) {
+  if (navigationRef.current == null) {
     return false;
   }
-  return store.navigationRef?.current?.canGoBack() ?? false;
+  return navigationRef.current.canGoBack();
 }
 
 export function canDismiss(): boolean {
@@ -100,7 +120,11 @@ export function canDismiss(): boolean {
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  let state = store.state;
+  if (navigationRef.current == null) {
+    return false;
+  }
+  // TODO(@ubax): check whether this is still needed
+  let state = navigationRef.getRootState();
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
@@ -123,11 +147,15 @@ export function setParams(
   if (emitDomSetParams(params)) {
     return;
   }
-  assertIsReady();
-  return (store.navigationRef?.current?.setParams as any)(params);
+  assertIsMounted();
+  return (navigationRef.current!.setParams as any)(params);
 }
 
-export function linkTo(originalHref: Href | string, options: LinkToOptions = {}) {
+function linkToImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  originalHref: Href | string,
+  options: LinkToOptions = {}
+) {
   let href: string | undefined | null =
     typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
 
@@ -145,7 +173,7 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
   }
 
   if (href === '..' || href === '../') {
-    return goBack();
+    return goBackImpl(enqueue);
   }
 
   // TODO(@ubax): Extract this change to standalone PR
@@ -157,7 +185,7 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
     },
   };
 
-  routingQueue.add(linkAction);
+  enqueue(linkAction);
 }
 
 /**
@@ -235,25 +263,70 @@ export type ImperativeRouter = {
    */
   reload: () => void;
   /**
-   * Prefetch a screen in the background before navigating to it
+   * Prefetches a route in the background before navigating to it.
    */
-  prefetch: (name: Href) => void;
+  prefetch: (href: Href, options?: NavigationOptions) => void;
 };
 
 /**
  * @hidden
  */
-export const router: ImperativeRouter = {
-  navigate,
-  push,
-  dismiss,
-  dismissAll,
-  dismissTo,
-  canDismiss,
-  replace,
-  back: () => goBack(),
-  canGoBack,
-  reload,
-  prefetch,
-  setParams: setParams as ImperativeRouter['setParams'],
+type InternalRouter = ImperativeRouter & {
+  goBack: () => void;
+  linkTo: (href: Href | string, options?: LinkToOptions) => void;
 };
+
+export function createImperativeRouter(enqueue: (intent: RoutingIntent) => void): InternalRouter {
+  return {
+    navigate: (href, options) => navigateImpl(enqueue, href, options),
+    push: (href, options) => pushImpl(enqueue, href, options),
+    dismiss: (count) => dismissImpl(enqueue, count),
+    dismissAll: () => dismissAllImpl(enqueue),
+    dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
+    canDismiss,
+    replace: (href, options) => replaceImpl(enqueue, href, options),
+    back: () => goBackImpl(enqueue),
+    goBack: () => goBackImpl(enqueue),
+    canGoBack,
+    reload,
+    prefetch: (href, options) => prefetchImpl(enqueue, href, options),
+    setParams: setParams as ImperativeRouter['setParams'],
+    linkTo: (href, options) => linkToImpl(enqueue, href, options),
+  };
+}
+
+const throwBeforeFirstRender = () => {
+  throw new Error('The imperative router is unavailable before the first render has finished.');
+};
+
+export const unboundRouter: InternalRouter = {
+  navigate: throwBeforeFirstRender,
+  push: throwBeforeFirstRender,
+  dismiss: throwBeforeFirstRender,
+  dismissAll: throwBeforeFirstRender,
+  dismissTo: throwBeforeFirstRender,
+  canDismiss: throwBeforeFirstRender,
+  replace: throwBeforeFirstRender,
+  back: throwBeforeFirstRender,
+  goBack: throwBeforeFirstRender,
+  canGoBack: throwBeforeFirstRender,
+  reload: throwBeforeFirstRender,
+  prefetch: throwBeforeFirstRender,
+  setParams: throwBeforeFirstRender,
+  linkTo: throwBeforeFirstRender,
+};
+
+export const router: InternalRouter = { ...unboundRouter };
+
+export const navigate = (...args: Parameters<InternalRouter['navigate']>) =>
+  router.navigate(...args);
+export const push = (...args: Parameters<InternalRouter['push']>) => router.push(...args);
+export const dismiss = (...args: Parameters<InternalRouter['dismiss']>) => router.dismiss(...args);
+export const dismissAll = () => router.dismissAll();
+export const dismissTo = (...args: Parameters<InternalRouter['dismissTo']>) =>
+  router.dismissTo(...args);
+export const replace = (...args: Parameters<InternalRouter['replace']>) => router.replace(...args);
+export const goBack = () => router.goBack();
+export const prefetch = (...args: Parameters<InternalRouter['prefetch']>) =>
+  router.prefetch(...args);
+export const linkTo = (...args: Parameters<InternalRouter['linkTo']>) => router.linkTo(...args);

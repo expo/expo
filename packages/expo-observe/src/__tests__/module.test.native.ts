@@ -2,6 +2,7 @@
 export {};
 
 const mockNativeTarget = {
+  clientId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
@@ -485,6 +486,12 @@ describe('module Proxy', () => {
     };
     expect(() => Observe.reportError(hostile)).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('exposes the native EAS client id as clientId', () => {
+    const Observe = loadModule();
+    expect(Observe.clientId).toBe('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee');
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('never throws when the native reportError call throws', () => {

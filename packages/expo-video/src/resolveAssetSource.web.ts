@@ -1,4 +1,4 @@
-import { getAssetByID } from '@react-native/assets-registry/registry';
+import { getAssetByID } from 'react-native/asset-registry';
 
 // Minimal `resolveAssetSource` implementation for video on web, based on the version from `expo-asset`
 export default function resolveAssetSource(assetId: number): { uri: string } | null {

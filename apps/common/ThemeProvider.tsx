@@ -63,8 +63,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   const systemColorScheme = useColorScheme();
   // react-native-web's Appearance has no setColorScheme, so keep an override in state.
   const [themeOverride, setThemeOverride] = useState<ThemeName | null>(null);
-  const currentThemeName =
-    themeOverride ?? (systemColorScheme !== 'unspecified' ? systemColorScheme : 'light');
+  const currentThemeName = themeOverride ?? systemColorScheme ?? 'light';
   const currentTheme = currentThemeName === 'dark' ? darkTheme : lightTheme;
   const navigationTheme = useMemo(
     () => createNavigationTheme(currentThemeName, currentTheme),

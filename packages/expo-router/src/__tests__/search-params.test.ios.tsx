@@ -1,6 +1,6 @@
 import { screen, act } from '@testing-library/react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import { renderRouter, testRouter } from '../testing-library';
 
@@ -25,7 +25,7 @@ describe('push', () => {
     testRouter.push('/page'); // Duplicate pushes are allowed pushes the new '/page'
     testRouter.push('/page?c=true');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -97,7 +97,7 @@ describe('push', () => {
     testRouter.back();
     testRouter.back();
 
-    expect(store.state).toEqual({
+    expect(navigationRef.getRootState()).toEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -153,7 +153,7 @@ describe('navigate', () => {
     testRouter.navigate('/page'); // Will not create new screen are we are already on page
     testRouter.navigate('/page?c=true');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -201,7 +201,7 @@ describe('navigate', () => {
     testRouter.navigate('/b');
     testRouter.navigate('/c');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -257,7 +257,7 @@ describe('navigate', () => {
 
     testRouter.dismissAll();
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -307,7 +307,7 @@ describe('replace', () => {
     testRouter.replace('/page?a=true'); // This will clear the previous route
     testRouter.push('/page?c=true');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],

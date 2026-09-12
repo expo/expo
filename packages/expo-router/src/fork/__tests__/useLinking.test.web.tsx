@@ -5,9 +5,6 @@ import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState'
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import { completeParsedState } from '../../global-state/createSeededNavigationState';
 import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
-import { RouterRegistryProvider } from '../../global-state/routerRegistry';
-import { routingQueue } from '../../global-state/routingQueue';
-import { storeRef as mockStoreRef } from '../../global-state/store';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { getStateFromPath } from '../../link/linking';
 import { Screen } from '../../react-navigation/core/Screen';
@@ -19,7 +16,7 @@ import { getMockConfig } from '../../testing-library/mock-config';
 import { NavigationContainer } from '../NavigationContainer';
 import { createMemoryHistory } from '../createMemoryHistory';
 import { useLinking } from '../useLinking';
-import { render } from './__fixtures__/store';
+import { getPendingIntents, render, setNavigationState, setRouteNode } from './__fixtures__/store';
 
 jest.mock('../createMemoryHistory');
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;
@@ -45,9 +42,8 @@ function EmptyScreen() {
 }
 
 beforeEach(() => {
-  mockStoreRef.current.state = undefined;
-  mockStoreRef.current.routeNode = null;
-  routingQueue.queue = [];
+  setNavigationState(undefined);
+  setRouteNode(null);
   jest.mocked(getRootStackRouteNames).mockReturnValue(['home']);
   jest.mocked(createMemoryHistory).mockReturnValue(history);
   Object.defineProperty(globalThis, 'location', {
@@ -77,13 +73,20 @@ function renderHistoryListener({
   });
   const navigation = {
     addListener: jest.fn(() => () => {}),
-    getRootState: jest.fn(() => ({ key: 'root' })),
+    getRootState: jest.fn(() => ({
+      stale: false as const,
+      routeKeySeq: 0,
+      key: 'root',
+      index: 0,
+      routeNames: ['home'],
+      routes: [{ key: '__root', name: '__root' }],
+    })),
   };
   // The hook only reads these two methods from the navigation ref in these tests.
   const ref = { current: navigation } as unknown as Parameters<typeof useLinking>[0];
 
   function Sample() {
-    useLinking(ref, { prefixes: [], getStateFromPath }, jest.fn());
+    useLinking(ref, { prefixes: [], getStateFromPath });
     return null;
   }
 
@@ -99,7 +102,7 @@ function renderHistoryListener({
 }
 
 test('queues forward history navigation', () => {
-  mockStoreRef.current.routeNode = mockRouteNode;
+  setRouteNode(mockRouteNode);
   const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
   const { emitPopState } = renderHistoryListener({ initialIndex: 3, getStateFromPath });
 
@@ -107,7 +110,7 @@ test('queues forward history navigation', () => {
   emitPopState('/forward', 4);
 
   expect(getStateFromPath).toHaveBeenCalledWith('/forward', undefined, []);
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'NAVIGATE_TO_HREF',
       payload: { href: '/forward', options: { event: 'NAVIGATE' } },
@@ -134,7 +137,7 @@ test('restores saved history state without parsing its path', () => {
   emitPopState('/saved', 3);
 
   expect(getStateFromPath).not.toHaveBeenCalled();
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'ACTION',
       payload: {
@@ -147,7 +150,7 @@ test('restores saved history state without parsing its path', () => {
 });
 
 test('restores state parsed from a history path', () => {
-  mockStoreRef.current.routeNode = mockRouteNode;
+  setRouteNode(mockRouteNode);
   const parsedState = { routes: [{ name: 'home' }] };
   const getStateFromPath = jest.fn(() => parsedState);
   const { emitPopState } = renderHistoryListener({ initialIndex: 3, getStateFromPath });
@@ -156,7 +159,7 @@ test('restores state parsed from a history path', () => {
   emitPopState('/parsed', 2);
 
   expect(getStateFromPath).toHaveBeenCalledWith('/parsed', undefined, []);
-  const parsedIntent = routingQueue.queue[0];
+  const parsedIntent = getPendingIntents()[0];
   expect(parsedIntent).toMatchObject({
     type: 'ACTION',
     payload: { action: { type: 'RESET', target: expect.any(String) } },
@@ -184,7 +187,7 @@ test('restores initial state when a history path cannot be parsed', () => {
   emitPopState('/invalid', 1);
 
   expect(getStateFromPath).toHaveBeenCalledWith('/invalid', undefined, []);
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'ACTION',
       payload: { action: { type: 'RESET', payload: initialState, target: 'root' } },
@@ -212,21 +215,21 @@ test('keeps the current route group when parsing a popstate path', () => {
   jest
     .mocked(getRootStackRouteNames)
     .mockReturnValue(parsedSharedState?.routes.map((route) => route.name) ?? []);
-  mockStoreRef.current.state = completeParsedState(
+  const currentState = completeParsedState(
     getStateFromPath('/other', config, ['(b)', 'other']),
     ROOT_CHAIN
   );
-  expect(getRouteInfoFromState(mockStoreRef.current.state).segments).toEqual(['(b)', 'other']);
+  expect(getRouteInfoFromState(currentState).segments).toEqual(['(b)', 'other']);
   const navigation = {
     addListener: jest.fn(() => () => {}),
-    getRootState: jest.fn(() => ({ key: 'root' })),
+    getRootState: jest.fn(() => currentState),
   };
   // The hook only reads these two methods from the navigation ref in this test.
   const ref = { current: navigation } as unknown as Parameters<typeof useLinking>[0];
   const parsePath = jest.fn(getStateFromPath);
 
   function Sample() {
-    useLinking(ref, { prefixes: [], config, getStateFromPath: parsePath }, jest.fn());
+    useLinking(ref, { prefixes: [], config, getStateFromPath: parsePath });
     return null;
   }
 
@@ -239,20 +242,21 @@ test('keeps the current route group when parsing a popstate path', () => {
   act(() => historyListener?.());
 
   expect(parsePath).toHaveBeenCalledWith('/shared', config, ['(b)', 'other']);
-  expect(routingQueue.queue).toEqual([
-    {
-      type: 'NAVIGATE_TO_HREF',
-      payload: { href: '/shared', options: { event: 'NAVIGATE' } },
-      metadata: { history: { path: '/shared' } },
-      onDispatch: expect.any(Function),
-    },
-  ]);
-  const parsedState = completeParsedState(parsePath.mock.results[0]?.value, ROOT_CHAIN);
-  expect(getRouteInfoFromState(parsedState).segments).toEqual(['(b)', 'shared']);
+  const parsedIntent = getPendingIntents()[0];
+  expect(parsedIntent).toMatchObject({
+    type: 'ACTION',
+    payload: { action: { type: 'RESET', target: 'navigator:root' } },
+    metadata: { history: { path: '/shared' } },
+    onDispatch: expect.any(Function),
+  });
+  const parsedState =
+    parsedIntent?.type === 'ACTION' ? parsedIntent.payload.action.payload : undefined;
+  // `NavigationAction` exposes its payload only as `object`.
+  expect(getRouteInfoFromState(parsedState as NavigationState).segments).toEqual(['(b)', 'shared']);
 });
 
-test('parses the initial URL instead of returning the existing store state', async () => {
-  mockStoreRef.current.routeNode = mockRouteNode;
+test('parses the initial URL instead of returning existing navigation state', async () => {
+  setRouteNode(mockRouteNode);
   const existingState = {
     stale: false as const,
     routeKeySeq: 0,
@@ -262,17 +266,17 @@ test('parses the initial URL instead of returning the existing store state', asy
     routes: [{ key: 'home', name: 'home' }],
   };
   mockNavigationRef = createNavigationContainerRef();
-  mockStoreRef.current.state = existingState;
+  setNavigationState(existingState);
   Object.assign(globalThis.location, { pathname: '/home', search: '', hash: '' });
   let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
   const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
 
   function Sample() {
-    getInitialState = useLinking(
-      mockNavigationRef,
-      { prefixes: [], getInitialURL: () => 'http://localhost/home', getStateFromPath },
-      jest.fn()
-    ).getInitialState;
+    getInitialState = useLinking(mockNavigationRef, {
+      prefixes: [],
+      getInitialURL: () => 'http://localhost/home',
+      getStateFromPath,
+    }).getInitialState;
     return null;
   }
 
@@ -290,7 +294,7 @@ test('parses the initial URL instead of returning the existing store state', asy
 });
 
 test('getInitialState is computed once with first-render options', async () => {
-  mockStoreRef.current.routeNode = mockRouteNode;
+  setRouteNode(mockRouteNode);
   mockNavigationRef = createNavigationContainerRef();
   Object.assign(globalThis.location, { pathname: '/home', search: '', hash: '' });
   const firstGetStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
@@ -298,11 +302,11 @@ test('getInitialState is computed once with first-render options', async () => {
   let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
 
   function Sample({ getStateFromPath }: { getStateFromPath: typeof firstGetStateFromPath }) {
-    getInitialState = useLinking(
-      mockNavigationRef,
-      { prefixes: [], getInitialURL: () => 'http://localhost/home', getStateFromPath },
-      jest.fn()
-    ).getInitialState;
+    getInitialState = useLinking(mockNavigationRef, {
+      prefixes: [],
+      getInitialURL: () => 'http://localhost/home',
+      getStateFromPath,
+    }).getInitialState;
     return null;
   }
 
@@ -336,37 +340,26 @@ test('does not add browser history when preloading a stack route', async () => {
   };
   const ref = createNavigationContainerRef<any>();
   mockNavigationRef = ref;
-  mockStoreRef.current.state = {
-    stale: false,
-    routeKeySeq: 0,
-    key: 'root',
-    index: 0,
-    routeNames: ['home', 'details'],
-    routes: [{ key: 'home', name: 'home' }],
-  };
   const onStateChange = jest.fn();
 
   render(
-    <RouterRegistryProvider>
-      <NavigationContainer
-        ref={ref}
-        documentTitle={{ enabled: false }}
-        onStateChange={onStateChange}
-        linking={{
-          prefixes: [],
-          config: { screens: { home: 'home', details: 'details' } },
-          getInitialURL: () => 'http://localhost/home',
-          getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
-        }}>
-        <Stack>
-          <Screen name="home" component={EmptyScreen} />
-          <Screen name="details" component={EmptyScreen} />
-        </Stack>
-      </NavigationContainer>
-    </RouterRegistryProvider>
+    <NavigationContainer
+      ref={ref}
+      linking={{
+        prefixes: [],
+        config: { screens: { home: 'home', details: 'details' } },
+        getInitialURL: () => 'http://localhost/home',
+        getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
+      }}>
+      <Stack>
+        <Screen name="home" component={EmptyScreen} />
+        <Screen name="details" component={EmptyScreen} />
+      </Stack>
+    </NavigationContainer>
   );
 
   await waitFor(() => expect(ref.current).not.toBeNull());
+  ref.current?.addListener('state', onStateChange);
   history.push.mockClear();
   history.replace.mockClear();
 

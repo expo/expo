@@ -29,7 +29,7 @@ export function CommandLineTools() {
               Deploy to TestFlight
             </h2>
             <div>
-              <Terminal cmd={['$ npx testflight']} className="rounded-md asset-shadow" />
+              <Terminal cmd={['$ npx testflight']} className="rounded-3xl asset-shadow" />
               <CALLOUT theme="secondary">
                 This is an iOS-only command that will upload your app to TestFlight.
               </CALLOUT>
@@ -54,7 +54,7 @@ export function CommandLineTools() {
               Deploy your web app
             </h2>
             <div>
-              <Terminal cmd={['$ npx eas-cli deploy']} className="rounded-md asset-shadow" />
+              <Terminal cmd={['$ npx eas-cli deploy']} className="rounded-3xl asset-shadow" />
               <CALLOUT theme="secondary">
                 For prerequisites and complete instructions, see{' '}
                 <A href="/deploy/web/#export-your-web-project">our guide</A>.

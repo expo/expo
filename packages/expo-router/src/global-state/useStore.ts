@@ -2,31 +2,27 @@
 
 import Constants from 'expo-constants';
 import type { ComponentType } from 'react';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import type { RouteNode } from '../Route';
-import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
 import { getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
-import { type NavigationState, useNavigationContainerRef } from '../react-navigation/native';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import { cancelSplashScreenAnimationFrame } from '../utils/splash';
 import { shouldLinkExternally } from '../utils/url';
-import { createSeededRootState } from './createSeededNavigationState';
-import { storeRef, getSplashScreenAnimationFrame, setSplashScreenAnimationFrame } from './store';
-import type { StoreContextValue } from './storeContext';
+import type { RouterConfig } from './routerConfigContext';
 import type { StoreRedirects } from './types';
 
-export function useStore(
+// TODO(@ubax): rename this file to useRouterConfig.ts
+export function useRouterConfig(
   context: RequireContext,
   linkingConfigOptions: LinkingConfigOptions,
   serverUrl?: string
-): StoreContextValue {
-  const navigationRef = useNavigationContainerRef();
+): { routerConfig: RouterConfig; rootComponent: ComponentType<any> } {
   const config = Constants.expoConfig?.extra?.router;
   const configValue = useMemo(() => {
     let linking: ExpoLinkingOptions | undefined;
@@ -71,72 +67,12 @@ export function useStore(
       rootComponent = Fragment;
     }
 
-    return { linking, rootComponent, redirects, routeNode };
+    return { routerConfig: { linking, redirects, routeNode }, rootComponent };
   }, [config, context, linkingConfigOptions, serverUrl]);
 
-  const { linking, rootComponent, redirects, routeNode } = configValue;
-
-  // One object per mount: identity marks store ownership, and state is seeded once from the URL
-  // (or left undefined when the URL is asynchronous).
-  const [owner] = useState(() => ({ state: seedInitialState(linking, routeNode) }));
-  const isFirstRender = storeRef.current.owner !== owner;
-  const state = isFirstRender ? owner.state : storeRef.current.state;
-
-  // TODO(@ubax): move ownership to commit/teardown so concurrent roots cannot clobber this ref.
-  // https://linear.app/expo/issue/ENG-26124
-  storeRef.current = {
-    owner,
-    navigationRef,
-    routeNode,
-    linking,
-    redirects,
-    state,
-  };
-
-  const storeValue = useMemo(
-    () => ({
-      navigationRef,
-      linking,
-      get state() {
-        return storeRef.current.state;
-      },
-      rootComponent,
-      redirects,
-      routeNode,
-    }),
-    [navigationRef, linking, rootComponent, redirects, routeNode]
-  );
-
   useEffect(() => {
-    return () => {
-      const animationFrame = getSplashScreenAnimationFrame();
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        setSplashScreenAnimationFrame(undefined);
-      }
-    };
-  });
+    return cancelSplashScreenAnimationFrame;
+  }, []);
 
-  return storeValue;
-}
-
-function seedInitialState(
-  linking: ExpoLinkingOptions | undefined,
-  routeNode: RouteNode | null
-): NavigationState | undefined {
-  // Static rendering only gets one pass, so synchronously available URLs are seeded immediately.
-  if (!linking || !routeNode) {
-    return undefined;
-  }
-
-  const initialURL = linking.getInitialURL?.();
-  if (typeof initialURL !== 'string') {
-    return undefined;
-  }
-
-  let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
-  // It does not matter if the path starts with a `/`, but this keeps parsing consistent.
-  if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
-
-  return createSeededRootState(linking.getStateFromPath!(initialPath, linking.config), routeNode);
+  return configValue;
 }

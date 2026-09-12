@@ -454,7 +454,7 @@ class FileDownloaderTest {
       JSONObject("{}"),
       null,
       null,
-      assetLoadProgressListener
+      assetLoadProgressListener = assetLoadProgressListener
     )
 
     Assert.assertTrue("Progress listener should have been called", progressValues.isNotEmpty())
@@ -510,7 +510,7 @@ class FileDownloaderTest {
       JSONObject("{}"),
       null,
       null,
-      assetLoadProgressListener
+      assetLoadProgressListener = assetLoadProgressListener
     )
 
     Assert.assertTrue("Progress listener should not have been called", progressValues.isEmpty())

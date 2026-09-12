@@ -1,6 +1,6 @@
 {
   "name": "expo-application",
-  "version": "57.0.2",
+  "version": "58.0.0",
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "keywords": [
     "expo",

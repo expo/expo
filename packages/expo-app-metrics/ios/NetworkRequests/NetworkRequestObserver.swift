@@ -94,11 +94,14 @@ public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverD
       "startedAt": request.timings.fetchStart?.ISO8601Format(),
       "completedAt": request.timings.responseEnd?.ISO8601Format(),
       "totalDuration": request.timings.totalDuration,
-      "redirects": request.redirects.map {
+      "redirects": request.redirects.map { redirect -> [String: Any?] in
         return [
-          "fromUrl": $0.fromUrl.absoluteString,
-          "toUrl": $0.toUrl.absoluteString,
-          "statusCode": $0.statusCode,
+          "fromUrl": redirect.fromUrl.absoluteString,
+          "toUrl": redirect.toUrl.absoluteString,
+          "statusCode": redirect.statusCode,
+          // Same ISO 8601 UTC shape as `startedAt`, with fractional seconds: hops within one
+          // request are usually fractions of a second apart.
+          "respondedAt": redirect.respondedAt?.ISO8601Format(.init(includingFractionalSeconds: true)),
         ]
       },
     ]

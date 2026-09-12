@@ -9,7 +9,7 @@ import { getInitialURLWithTimeout } from '../fork/getInitialURLWithTimeout';
 import { getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
-import type { StoreRedirects } from '../global-state/router-store';
+import type { StoreRedirects } from '../global-state/types';
 import type { LinkingOptions } from '../react-navigation/native';
 import type { NativeIntent } from '../types';
 
