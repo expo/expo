@@ -102,6 +102,10 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPhone 17 Pro", deviceYearClass: 2025)
       case "iPhone18,2":
         return ExpoDeviceType(modelName: "iPhone 17 Pro Max", deviceYearClass: 2025)
+      case "iPhone19,2":
+        return ExpoDeviceType(modelName: "iPhone 18 Pro", deviceYearClass: 2026)
+      case "iPhone19,3", "iPhone19,7":
+        return ExpoDeviceType(modelName: "iPhone 18 Pro Max", deviceYearClass: 2026)
       case "iPhone18,3":
         return ExpoDeviceType(modelName: "iPhone 17", deviceYearClass: 2025)
       case "iPhone18,4":
