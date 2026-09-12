@@ -57,10 +57,6 @@ public final class ExpoAIModule: Module, @unchecked Sendable {
         try await session.generate(requestId: requestId, prompt: prompt, optionsJSON: optionsJSON)
       }
 
-      AsyncFunction("generateWithMetadataAsync") { (session: LanguageModelSession, requestId: String, prompt: String, optionsJSON: String) -> String in
-        try await session.generate(requestId: requestId, prompt: prompt, optionsJSON: optionsJSON, withMetadata: true)
-      }
-
       AsyncFunction("executeBuiltinToolAsync") { (session: LanguageModelSession, callId: String, kind: String, imageLabel: String) -> String in
         try await session.executeBuiltinTool(callId: callId, kind: kind, imageLabel: imageLabel)
       }
@@ -113,9 +109,34 @@ public final class ExpoAIModule: Module, @unchecked Sendable {
   private struct Availability: Encodable {
     let status: String
     let reason: String?
+    let capabilities: Capabilities
+  }
+
+  internal struct Capabilities: Encodable {
+    let provider = "apple-foundation-models"
+    let model: String? = nil
+    let execution = "on-device"
+    let constrainedOutput = "supported"
+    let runtimeToolDeclarations = "supported"
+    let images = LanguageModelAppleFeatures.images ? "supported" : "unsupported"
+    let imageTools = LanguageModelAppleFeatures.imageTools ? "supported" : "unsupported"
     let contextTokens: Int?
-    let images = LanguageModelAppleFeatures.images
-    let imageTools = LanguageModelAppleFeatures.imageTools
+
+    func encode(to encoder: Encoder) throws {
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      try container.encode(provider, forKey: .provider)
+      try container.encode(model, forKey: .model)
+      try container.encode(execution, forKey: .execution)
+      try container.encode(constrainedOutput, forKey: .constrainedOutput)
+      try container.encode(runtimeToolDeclarations, forKey: .runtimeToolDeclarations)
+      try container.encode(images, forKey: .images)
+      try container.encode(imageTools, forKey: .imageTools)
+      try container.encode(contextTokens, forKey: .contextTokens)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+      case provider, model, execution, constrainedOutput, runtimeToolDeclarations, images, imageTools, contextTokens
+    }
   }
 
   private static func availability(inputLanguages: [String], outputLanguage: String?) throws -> String {
@@ -127,24 +148,24 @@ public final class ExpoAIModule: Module, @unchecked Sendable {
       case .available:
         let languages = inputLanguages + (outputLanguage.map { [$0] } ?? [])
         if languages.contains(where: { !model.supportsLocale(Locale(identifier: $0)) }) {
-          result = Availability(status: "unavailable", reason: "unsupported-language", contextTokens: nil)
+          result = Availability(status: "unavailable", reason: "unsupported-language", capabilities: Capabilities(contextTokens: nil))
         } else {
-          result = Availability(status: "available", reason: nil, contextTokens: model.contextSize > 0 ? model.contextSize : nil)
+          result = Availability(status: "available", reason: nil, capabilities: Capabilities(contextTokens: model.contextSize > 0 ? model.contextSize : nil))
         }
       case .unavailable(.deviceNotEligible):
-        result = Availability(status: "unavailable", reason: "unsupported-device", contextTokens: nil)
+        result = Availability(status: "unavailable", reason: "unsupported-device", capabilities: Capabilities(contextTokens: nil))
       case .unavailable(.appleIntelligenceNotEnabled):
-        result = Availability(status: "unavailable", reason: "intelligence-disabled", contextTokens: nil)
+        result = Availability(status: "unavailable", reason: "intelligence-disabled", capabilities: Capabilities(contextTokens: nil))
       case .unavailable(.modelNotReady):
-        result = Availability(status: "not-ready", reason: nil, contextTokens: nil)
+        result = Availability(status: "not-ready", reason: nil, capabilities: Capabilities(contextTokens: nil))
       case .unavailable:
-        result = Availability(status: "unavailable", reason: "unknown", contextTokens: nil)
+        result = Availability(status: "unavailable", reason: "unknown", capabilities: Capabilities(contextTokens: nil))
       }
     } else {
-      result = Availability(status: "unavailable", reason: "unsupported-os", contextTokens: nil)
+      result = Availability(status: "unavailable", reason: "unsupported-os", capabilities: Capabilities(contextTokens: nil))
     }
     #else
-    result = Availability(status: "unavailable", reason: "unsupported-os", contextTokens: nil)
+    result = Availability(status: "unavailable", reason: "unsupported-os", capabilities: Capabilities(contextTokens: nil))
     #endif
     return String(decoding: try JSONEncoder().encode(result), as: UTF8.self)
   }

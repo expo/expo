@@ -2,7 +2,7 @@ import NativeModule from '../ExpoAI';
 import { createSessionAsync, getAvailabilityAsync, prepareAsync } from '../LanguageModels';
 import type { SessionOptions, ModelRequirements } from '../LanguageModels.types';
 import type { NativeSession } from '../NativeLanguageModels.types';
-import { availableModel, FakeSession } from './fixtures/FakeSession';
+import { availableModel, FakeSession, nativeResult } from './fixtures/FakeSession';
 
 jest.mock('../ExpoAI', () => ({
   __esModule: true,
@@ -25,7 +25,7 @@ beforeEach(() => {
   native = new FakeSession();
   nativeModule.getAvailabilityAsync
     .mockReset()
-    .mockResolvedValue(JSON.stringify({ status: 'available', contextTokens: 4096 }));
+    .mockResolvedValue(availableModel({ contextTokens: 4096 }));
   nativeModule.createSessionAsync.mockReset().mockResolvedValue(native);
 });
 
@@ -77,7 +77,7 @@ it('snapshots requirements before checking asynchronous provider readiness', asy
   const check = getAvailabilityAsync(requirements);
   (requirements.requires as string[])[0] = 'images';
   (requirements.inputLanguages as string[])[0] = 'invalid-change';
-  ready('{"status":"available"}');
+  ready(availableModel());
   await expect(check).resolves.toMatchObject({ status: 'available' });
   expect(nativeModule.getAvailabilityAsync).toHaveBeenCalledWith(['en'], null);
 });
@@ -91,7 +91,7 @@ it('snapshots tools across asynchronous native creation', async () => {
   );
   let finishOpening!: (session: NativeSession) => void;
   const completion = new FakeSession();
-  completion.generateAsync.mockResolvedValue('{"type":"result","value":"answer"}');
+  completion.generateAsync.mockResolvedValue(nativeResult('{"type":"result","value":"answer"}'));
   nativeModule.createSessionAsync
     .mockImplementationOnce(
       () =>
@@ -123,12 +123,12 @@ it('rejects unknown schema constraints before native generation and validates fi
     })
   ).rejects.toMatchObject({ code: 'ERR_SCHEMA_UNSUPPORTED' });
   expect(native.generateAsync).not.toHaveBeenCalled();
-  native.generateAsync.mockResolvedValue('{"category":"invented"}');
+  native.generateAsync.mockResolvedValue(nativeResult('{"category":"invented"}'));
   await expect(session.generateAsync('test', { schema })).rejects.toMatchObject({
     code: 'ERR_RESPONSE_INVALID',
   });
   expect(native.listenerCount).toBe(0);
-  native.generateAsync.mockResolvedValue('{"category":"work"}');
+  native.generateAsync.mockResolvedValue(nativeResult('{"category":"work"}'));
   await expect(session.generateAsync('test', { schema })).resolves.toMatchObject({
     value: { category: 'work' },
     format: 'constrained',
@@ -178,7 +178,7 @@ it('streams snapshots and one validated result; early return aborts the request'
   const session = await createSessionAsync();
   native.generateAsync.mockImplementation(async (requestId) => {
     native.emit('onText', { requestId, text: 'hello' });
-    return 'hello world';
+    return nativeResult('hello world');
   });
   const events = [];
   for await (const event of session.generateStream('test')) events.push(event);
@@ -257,7 +257,7 @@ it('validates and intercepts a native tool call before replying asynchronously',
     (requestId) =>
       new Promise((resolve) => {
         native.resolveTool.mockImplementation(() => {
-          resolve('answer');
+          resolve(nativeResult('answer'));
           return true;
         });
         native.emit('onToolCall', {
@@ -329,8 +329,8 @@ it('preserves completed turns when alternating native text and compatibility out
   );
   const first = new FakeSession();
   const second = new FakeSession();
-  first.generateAsync.mockResolvedValue('broken');
-  second.generateAsync.mockResolvedValue('{"category":"work"}');
+  first.generateAsync.mockResolvedValue(nativeResult('broken'));
+  second.generateAsync.mockResolvedValue(nativeResult('{"category":"work"}'));
   nativeModule.createSessionAsync
     .mockResolvedValueOnce(native)
     .mockResolvedValueOnce(first)
@@ -445,8 +445,8 @@ it('keeps stored compatibility history independent of the returned result', asyn
   );
   const first = new FakeSession();
   const second = new FakeSession();
-  first.generateAsync.mockResolvedValue('{"category":"work"}');
-  second.generateAsync.mockResolvedValue('{"category":"other"}');
+  first.generateAsync.mockResolvedValue(nativeResult('{"category":"work"}'));
+  second.generateAsync.mockResolvedValue(nativeResult('{"category":"other"}'));
   nativeModule.createSessionAsync
     .mockResolvedValueOnce(native)
     .mockResolvedValueOnce(first)
@@ -473,10 +473,10 @@ it('wires compatibility tools through the public API without replaying effects d
   const invalid = new FakeSession();
   const result = new FakeSession();
   call.generateAsync.mockResolvedValue(
-    '{"type":"tool","id":"call-1","name":"lookup","arguments":{"query":"release"}}'
+    nativeResult('{"type":"tool","id":"call-1","calls":{"lookup":{"query":"release"}}}')
   );
-  invalid.generateAsync.mockResolvedValue('broken');
-  result.generateAsync.mockResolvedValue('{"type":"result","value":"answer"}');
+  invalid.generateAsync.mockResolvedValue(nativeResult('broken'));
+  result.generateAsync.mockResolvedValue(nativeResult('{"type":"result","value":"answer"}'));
   nativeModule.createSessionAsync
     .mockResolvedValueOnce(native)
     .mockResolvedValueOnce(call)

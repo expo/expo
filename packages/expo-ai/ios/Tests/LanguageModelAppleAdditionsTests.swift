@@ -147,6 +147,16 @@ struct LanguageModelAppleAdditionsTests {
     #expect(values["cachedInputTokens"] as? Int == 3)
   }
 
+  @Test
+  func availabilityCapabilitiesRetainRequiredNullFields() throws {
+    let data = try JSONEncoder().encode(ExpoAIModule.Capabilities(contextTokens: nil))
+    let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+    #expect(object.keys.contains("model"))
+    #expect(object["model"] is NSNull)
+    #expect(object.keys.contains("contextTokens"))
+    #expect(object["contextTokens"] is NSNull)
+  }
+
   private static func options(_ images: [[String: String]]) throws -> String {
     // JSONSerialization produces UTF-8.
     // swiftlint:disable:next optional_data_string_conversion

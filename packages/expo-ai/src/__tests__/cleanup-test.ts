@@ -16,7 +16,7 @@ const flush = async () => {
 
 beforeEach(() => {
   native = new FakeSession();
-  nativeModule.getAvailabilityAsync.mockReset().mockResolvedValue('{"status":"available"}');
+  nativeModule.getAvailabilityAsync.mockReset().mockResolvedValue(availableModel());
   nativeModule.createSessionAsync.mockReset().mockResolvedValue(native);
 });
 afterEach(() => jest.restoreAllMocks());

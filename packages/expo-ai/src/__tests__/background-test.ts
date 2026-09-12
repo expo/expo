@@ -8,7 +8,7 @@ import {
   schema,
   type ToolCall,
 } from '../index';
-import { availableModel, FakeSession } from './fixtures/FakeSession';
+import { availableModel, FakeSession, nativeResult } from './fixtures/FakeSession';
 
 jest.mock('../ExpoAI', () => ({
   __esModule: true,
@@ -45,7 +45,7 @@ const available = () =>
   });
 const completion = (response: string) => {
   const native = new FakeSession();
-  native.generateAsync.mockResolvedValue(response);
+  native.generateAsync.mockResolvedValue(nativeResult(response));
   return native;
 };
 
@@ -112,7 +112,7 @@ it('interrupts native text work and leaves session disposal to its owner', async
   await rejected;
   expect(owner.cancel).toHaveBeenCalledTimes(1);
   expect(owner.dispose).not.toHaveBeenCalled();
-  owner.generateAsync.mockResolvedValue('next');
+  owner.generateAsync.mockResolvedValue(nativeResult('next'));
   await expect(session.generateAsync('retry chosen by app')).resolves.toMatchObject({
     value: 'next',
   });
@@ -134,9 +134,7 @@ it.each(['approval', 'handler'] as const)(
       execute,
     };
     const first = completion('{"type":"result","value":"first"}');
-    const action = completion(
-      '{"type":"tool","id":"one","name":"save","arguments":{"text":"note"}}'
-    );
+    const action = completion('{"type":"tool","id":"one","calls":{"save":{"text":"note"}}}');
     const next = completion('{"type":"result","value":"next"}');
     nativeModule.createSessionAsync
       .mockReset()

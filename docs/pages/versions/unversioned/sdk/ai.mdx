@@ -1,0 +1,583 @@
+---
+title: Expo AI
+description: A library for generating text, structured values, and tool calls with a system-provided on-device language model.
+sourceCodeUrl: "https://github.com/expo/expo/tree/main/packages/expo-ai"
+packageName: "expo-ai"
+platforms: ["android", "ios", "macos", "web"]
+isAlpha: true
+---
+
+import APISection from "~/components/plugins/APISection";
+import { APIInstallSection } from "~/components/plugins/InstallSection";
+import { ConfigPluginExample } from "~/ui/components/ConfigSection";
+
+> **important** **This API is experimental and may change before release.**
+
+`expo-ai` provides access to Apple's [Foundation Models framework](https://developer.apple.com/documentation/foundationmodels/), Gemini Nano through Google's [ML Kit Prompt API](https://developers.google.com/ml-kit/genai/prompt/android), and the browser's [Prompt API](https://developer.chrome.com/docs/ai/prompt-api). It runs inference locally on the device; the package does not send prompts, images, or results to an external service. Use it to summarize text, categorize content, generate structured values, and let a model call application tools. Each top-level generation call owns an independent session and releases it when the task finishes.
+
+## Platform support
+
+On iOS 26 and later and macOS 26 and later, the device must support Apple Intelligence, Apple Intelligence must be enabled, and the system model must be ready.
+
+On Android, this preview uses ML Kit Prompt `1.0.0-beta4` for text generation and streaming. The device must support the Prompt API and have a ready Gemini Nano model through Android AICore. Availability depends on the device and its AICore configuration, so an Android version alone does not establish support. See Google's [Prompt API device support](https://developers.google.com/ml-kit/genai) and check availability on the actual device.
+
+Android inference [requires your app to stay in the foreground](https://developers.google.com/ml-kit/genai). Moving to the background rejects the active task with `ERR_APP_BACKGROUND`, including while JavaScript is waiting for tool approval or running a tool. Observe the supplied signal to close pending approval UI and stop cooperative tool work. Earlier successful session turns remain available. Your app decides whether to submit a new request after returning to the foreground; the package does not retry automatically.
+
+On Web, the browser must expose the modern `LanguageModel` API. The [Chrome Prompt API](https://developer.chrome.com/docs/ai/prompt-api) is available on supported desktop devices in Chrome 148 and later. [Microsoft Edge provides a developer preview](https://learn.microsoft.com/en-us/microsoft-edge/web-platform/prompt-api) with additional setup requirements. Mobile browsers and browsers without this API return `unavailable`. Hardware, browser settings, and model readiness also affect availability.
+
+The table compares capabilities after a platform is eligible; it is not a device-support guarantee. Apple entries require Apple Intelligence-capable hardware with a ready model. Android entries require an app with `minSdk` 26 or later, a device that supports the Prompt API, and a ready Gemini Nano model.
+
+| Feature                       | Apple                                                              | Android (minSdk 26+)                     | Web                                         |
+| ----------------------------- | ------------------------------------------------------------------ | ---------------------------------------- | ------------------------------------------- |
+| Text generation and streaming | Supported on Apple Intelligence-capable devices                    | Supported on compatible devices          | Supported in compatible desktop browsers    |
+| Runtime schemas               | Native constrained output on supported devices                     | Library validation and bounded repairs   | Native constrained output                   |
+| Application tools             | Native orchestration on supported devices                          | Library orchestration and validation     | Library orchestration and validation        |
+| Model preparation             | Managed by system settings on supported devices                    | Explicit download with optional progress | Explicit preparation with optional progress |
+| OCR and barcode tools         | iOS 26 and macOS 26 or later on supported devices                  | Not included                             | Not included                                |
+| Model image understanding     | iOS 27 and macOS 27 on vision-capable models and supported devices | Not included                             | Not included                                |
+
+Importing the package and checking availability is safe on unsupported platforms. A successful availability check does not guarantee that a later generation will succeed. Downloadable third-party model backends are not included in this preview. A newer operating system does not automatically enable model image understanding: it also requires a compatible SDK and the selected model's vision capability.
+
+The browser selects and manages its model. Web results identify the provider as `browser-prompt-api`; the model identifier remains `null`. `maximumOutputTokens` is unsupported on Web and rejects if supplied. The package does not use experimental browser-native tool declarations.
+
+Generation uses the on-device system model. Tools execute application code, so any network access or data storage in a tool belongs to your app.
+
+## Installation
+
+<APIInstallSection cmd={["$ npx expo install expo-ai"]} />
+
+Create a new [development build](/develop/development-builds/introduction/) after adding the native package. Building the Apple implementation requires Xcode 26.4 or later. Your app can keep an iOS deployment target of 16.4 or later; model generation requires iOS 26 or later at runtime. Test model generation on supported hardware with Apple Intelligence enabled. This preview is not included in Expo Go and cannot run in Snack.
+
+Model image understanding requires a build with Xcode 27 or later. Builds made with Xcode 26.4 or later retain text generation and image tools when running on newer operating systems.
+
+### Android build configuration
+
+The Android backend requires a minimum SDK version of 26 and Kotlin 2.2.21 or later to compile its ML Kit dependency. Install `expo-build-properties` before creating an Android development build:
+
+<APIInstallSection cmd={["$ npx expo install expo-build-properties"]} />
+
+Then add the [config plugin](/versions/latest/sdk/build-properties/) to your app configuration. Keep higher compatible versions if your app already configures them:
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26,
+            "kotlinVersion": "2.2.21"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+The plugin writes these Android settings during [Prebuild](/workflow/continuous-native-generation/). Installing or importing `expo-ai` does not change native build settings by itself. These build requirements do not establish device support for Gemini Nano; check model availability at runtime.
+
+For native projects that do not use Prebuild, set the app's minimum SDK to 26 or later and use Kotlin 2.2.21 or later in the root project's Kotlin Gradle plugin dependency.
+
+## Generate text
+
+Call `generateAsync()` with a prompt. Read the completed text from `result.value`:
+
+```ts
+import { generateAsync } from "expo-ai";
+
+export async function suggestTitle(notes: string) {
+  const result = await generateAsync(notes, {
+    instructions: "Suggest a short title for these notes.",
+  });
+
+  return result.value;
+}
+```
+
+Every successful one-shot helper returns the same result envelope. In addition to `value`, it identifies the selected provider and model, reports the output format, and includes token usage when the provider makes it available:
+
+```ts
+const result = await generateAsync("Suggest a short title for my notes.");
+
+console.log({
+  title: result.value,
+  provider: result.provider,
+  model: result.model,
+  format: result.format, // 'text', 'constrained', or 'validated'
+  usage: result.usage,
+});
+```
+
+Calling `getAvailabilityAsync()` first is optional. Generation proceeds when the model is ready and rejects with the actual readiness or availability error otherwise. Generation does not request model preparation. On Web, browser-managed assets have an additional [preparation caveat](#show-preparation-progress). Separate calls have separate histories, and the package releases their temporary sessions on success, failure, or cancellation.
+
+On Android, the package passes `instructions` as a native system instruction when the device's model supports it. Otherwise, it includes them in the prompt, where they have weaker priority than a native system instruction.
+
+## Summarize and categorize
+
+`summarizeAsync()` and `categorizeAsync()` add task instructions to the same generation pipeline. They return the same result envelope and accept the applicable generation options, including cancellation, updates, and deadlines:
+
+```ts
+import { categorizeAsync, summarizeAsync } from "expo-ai";
+
+export async function organizeNote(text: string) {
+  const summary = await summarizeAsync(text, { length: "short" });
+  const category = await categorizeAsync(text, {
+    categories: ["work", "personal", "other"],
+  });
+
+  return {
+    summary: summary.value,
+    category: category.value, // 'work' | 'personal' | 'other'
+  };
+}
+```
+
+Summary length can be `short`, `medium`, or `long` and defaults to `medium`. It is a generation preference, not an exact word count. Categorization requires a nonempty list of categories and validates the result against that list. The package uses native constrained output when supported and library validation with bounded repairs otherwise. Both helpers use the same provider and execution controls as `generateAsync()`.
+
+## Generate structured values
+
+Pass `schema` to request a structured result. The package automatically uses native schema constraints when the provider supports them and validates the completed value in JavaScript. Otherwise, it requests JSON and validates the response, with bounded repair attempts. A successful request returns a validated value; failure rejects with an error. The optional schema helpers infer the result's TypeScript type without requiring `as const`:
+
+```ts
+import { generateAsync, schema } from "expo-ai";
+
+const noteSchema = schema.object({
+  category: schema.enum(["work", "personal", "other"]),
+  summary: schema.string({ description: "A one-sentence summary." }),
+  confidence: schema.number({ minimum: 0, maximum: 1 }),
+  suggestedTitle: schema.optional(schema.string()),
+});
+
+export async function describeNote(text: string) {
+  const result = await generateAsync(text, { schema: noteSchema });
+  return result.value;
+  // { category: 'work' | 'personal' | 'other'; summary: string; suggestedTitle?: string }
+}
+```
+
+Objects created with `schema.object()` are closed, with every field required unless wrapped in `schema.optional()`. The helpers produce the same supported JSON Schema dialect as plain schema objects. You can still pass a plain schema; use `as const satisfies ModelSchema` to preserve literal types when declaring one separately.
+
+### Schema helpers
+
+| Helper                                | Result                                                   |
+| ------------------------------------- | -------------------------------------------------------- |
+| `schema.string(options?)`             | A string schema.                                         |
+| `schema.enum(values, options?)`       | A string schema restricted to a nonempty list of values. |
+| `schema.number(options?)`             | A finite number with optional inclusive bounds.          |
+| `schema.integer(options?)`            | A safe integer with optional inclusive bounds.           |
+| `schema.boolean(options?)`            | A boolean schema.                                        |
+| `schema.array(items, options?)`       | An array with the supplied item schema.                  |
+| `schema.object(properties, options?)` | A closed object with the supplied property schemas.      |
+| `schema.optional(propertySchema)`     | An optional property marker for `schema.object()`.       |
+
+All `options` accept `description`. Number and integer options also accept inclusive `minimum` and `maximum` bounds. Integer bounds must be safe JavaScript integers. Array options accept `minItems` and `maxItems`. An optional property marker can only be used inside `schema.object()`; it is not a standalone schema.
+
+<a id="inferschema" />
+<a id="s" />
+
+The exported `InferSchema<S>` type maps a schema to its result type, including string enums and optional object fields. `S` represents the schema's TypeScript type. For example, `InferSchema<typeof noteSchema>` gives the same type as `result.value` above.
+
+### Supported schema subset
+
+The package accepts a limited JSON Schema dialect:
+
+- Strings, including nonempty string enums.
+- Finite numbers and safe integers, with optional inclusive `minimum` and `maximum` bounds, and booleans.
+- Arrays with an item schema and optional `minItems` and `maxItems` bounds.
+- Objects with declared `properties`, an optional `required` list, and `additionalProperties: false`.
+- Optional descriptions on each schema.
+
+Fields omitted from a plain object's `required` list are optional. Unsupported keywords and invalid schemas reject before generation. String patterns, `null`, unions, references, and recursive schemas are not supported. Validation checks the shape of a value; it does not establish factual accuracy or whether the content meets your app's needs.
+
+### Validation and repair limits
+
+Every structured result is validated in JavaScript. The generation path depends on the platform and whether its model can apply the requested schema constraints:
+
+| Platform | Generation and validation path                                                                                                                                                                           |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Apple    | Uses native constrained output when the selected model supports the schema, then validates the completed value in JavaScript. Otherwise, requests JSON and uses library validation with bounded repairs. |
+| Android  | Requests JSON and uses library validation with bounded repairs.                                                                                                                                          |
+| Web      | Uses browser-native constrained output for schemas it supports, then validates in JavaScript. Schemas with numeric bounds use library validation and bounded repairs instead.                            |
+
+Apple Foundation Models expresses numeric bounds as native generation guides. Android and Web use the JSON-and-repair path for schemas containing numeric bounds. This path gives the model weaker guidance than native constrained output and can fail after exhausting the repair budget. The final value must still pass the same inclusive bounds during JavaScript validation on every platform.
+
+Use `maximumRetries` to bound additional library repair attempts per response. This option does not change which provider capabilities are used. Provider failures and refusals end the task; they do not trigger a retry through a weaker generation path:
+
+```ts
+import { generateAsync, schema } from "expo-ai";
+
+export async function detectQuestion(text: string) {
+  const result = await generateAsync(`Is this text a question? ${text}`, {
+    schema: schema.boolean(),
+    maximumRetries: 1,
+    maximumSteps: 4,
+  });
+
+  return result.value;
+}
+```
+
+`maximumRetries` defaults to `1` and accepts integers from `0` to `3`. Set it to `0` to reject the first invalid response without a repair attempt. Native constrained output does not use these library repairs.
+
+`maximumSteps` limits model completions initiated by the library, including repairs. The default budget is `8`, and explicit values accept integers from `1` to `32`. An explicit limit rejects when native tools are used because the provider does not expose its internal model calls. Use `maximumToolCalls` to limit handler starts across providers.
+
+## Show generation updates
+
+Pass an optional `onUpdate` callback to display a response as it is generated. Each update contains the complete current text snapshot. Replace the displayed text with the snapshot instead of appending it. The returned promise supplies the final result:
+
+```ts
+import { generateAsync } from "expo-ai";
+
+export async function previewSummary(
+  text: string,
+  setPreview: (text: string) => void,
+) {
+  const result = await generateAsync(`Summarize: ${text}`, {
+    onUpdate: ({ text }) => setPreview(text),
+  });
+
+  setPreview(result.value);
+  return result.value;
+}
+```
+
+Updates are provisional. For structured generation, wait for the final validated `result.value` before using the value. Tasks using library validation or tool orchestration may produce no intermediate text updates. If `onUpdate` throws or returns a promise that rejects, the task rejects with `ERR_UPDATE_FAILED`.
+
+## Supply application tools
+
+Pass ordinary tool definition objects through `tools`. Each definition has a name, description, object input schema, and handler. Use `ToolDefinition<S>` for a reusable typed definition, where `S` is the input schema's type:
+
+```ts
+import { generateAsync, schema, type ToolDefinition } from "expo-ai";
+
+const categoryInput = schema.object({
+  category: schema.enum(["work", "personal"]),
+});
+
+const lookupCategory: ToolDefinition<typeof categoryInput> = {
+  name: "lookupCategory",
+  description: "Read the description of a category.",
+  inputSchema: categoryInput,
+  execute: ({ category }, { signal }) => {
+    if (signal.aborted) {
+      throw new Error("Tool canceled.");
+    }
+    return {
+      category,
+      description:
+        category === "work"
+          ? "Projects and professional tasks."
+          : "Home and leisure.",
+    };
+  },
+};
+
+export async function explainCategory() {
+  const result = await generateAsync("Look up and explain the work category.", {
+    tools: [lookupCategory],
+    maximumToolCalls: 2,
+  });
+
+  return result.value;
+}
+```
+
+The package uses native tool orchestration when supported. Otherwise, it asks the model to propose calls and manages the loop in JavaScript. Arguments are validated before approval or execution on every provider. In compatible browsers, the library retains native schema constraints for generated tool decisions and final values while managing tool execution itself.
+
+<a id="tooldefinition" />
+<a id="tooldefinitions" />
+
+The exported `ToolDefinition<S>` type describes these fields:
+
+| Field         | Type                                                       | Description                                                                                  |
+| ------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `name`        | `string`                                                   | A unique name of 1–64 letters, digits, or underscores, starting with a letter or underscore. |
+| `description` | `string`                                                   | A nonempty explanation of when the model should use the tool.                                |
+| `inputSchema` | `S`                                                        | A supported object schema for the tool's arguments.                                          |
+| `execute`     | `(input: InferSchema<S>, context: ToolContext) => unknown` | A synchronous or asynchronous handler returning JSON-compatible data.                        |
+
+Tool definitions are validated and copied when a task starts. Handlers can return data directly or through a promise. Strings are passed through as text. Plain objects, arrays, finite numbers, booleans, and `null` are serialized for the provider. Unsupported values, such as `undefined`, functions, big integers, class instances, or circular structures, reject instead of silently losing data.
+
+### Approve a tool call
+
+Supplied tools run automatically unless you provide `beforeTool`. This optional callback receives the tool name, validated arguments, call ID, and cancellation signal. Return `true` to allow the call or `false` to reject the task with `ERR_TOOL_DENIED` without running the handler. The callback can return a promise while your app displays an approval interface:
+
+```ts
+import { generateAsync, type ToolCall, type ToolDefinition } from "expo-ai";
+
+export async function runWithApproval(
+  prompt: string,
+  tools: ToolDefinition[],
+  requestApproval: (call: ToolCall) => Promise<boolean>,
+) {
+  return await generateAsync(prompt, {
+    tools,
+    beforeTool: requestApproval,
+  });
+}
+```
+
+Tool arguments are completely validated before approval or execution. Observe the callback's signal to close pending approval UI when the task is canceled. When a deadline is supplied, waiting for approval counts toward it.
+
+### Tool execution limits
+
+`maximumToolCalls` applies to native and library tool orchestration, defaults to `4`, and accepts integers from `0` to `16`. It limits how many handlers can start during one request. A value of `0` prevents handler execution.
+
+A handler failure ends the task. The package does not retry the handler or execute the same call ID twice. Completed tool observations remain available during library repair attempts. A model can still request a similar action with a new call ID, so use application-level idempotency when repeating an action would be harmful.
+
+## Use images and Apple tools
+
+Pass local image files in `images`. Import predefined tool objects from `expo-ai/apple` to read text, barcodes, or QR codes:
+
+```ts
+import { generateAsync, schema } from "expo-ai";
+import { Tools } from "expo-ai/apple";
+
+export async function readReceipt(uri: string) {
+  return await generateAsync("Read the receipt image and return its total.", {
+    images: [{ uri, label: "receipt" }],
+    tools: [Tools.ocr],
+    schema: schema.object({
+      total: schema.string({
+        description: "The total, including the currency shown.",
+      }),
+    }),
+  });
+}
+```
+
+`Tools.ocr` and `Tools.barcode` are ordinary tool definitions. Pass either or both alongside your own tools. They use [Apple Vision](https://developer.apple.com/documentation/vision) on iOS 26 and later and macOS 26 and later. Their tool arguments contain an `image` label identifying a file attached to the current request. OCR returns `{ text: string }` to the model. Barcode recognition returns text payloads as `{ barcodes: [{ payload: string, symbology: string }] }`. An image with no recognized content produces empty text or an empty array.
+
+The existing `beforeTool`, `maximumToolCalls`, cancellation, and deadline options apply. Approval completes before the image tool starts recognition. Tools cannot read an image by inventing a file path or by referring to a previous request's label. Android and Web reject these Apple tools with `ERR_UNSUPPORTED_FEATURE`.
+
+On iOS 26, the language model receives the labels and the image tool's recognized data; it cannot see the image pixels. On iOS 27, the package uses [native image attachments](https://developer.apple.com/documentation/foundationmodels/analyzing-images-with-multimodal-prompting) when the system model reports vision support. For general visual descriptions, require `images` support:
+
+```ts
+import { generateAsync } from "expo-ai";
+
+export async function describeImage(uri: string) {
+  return await generateAsync("Describe the image in one sentence.", {
+    images: [{ uri }],
+    requires: ["images"],
+  });
+}
+```
+
+`requires: ['images']` checks model vision. `requires: ['imageTools']` checks Apple image tool support. A text-only Apple model can use attached images when an image tool is supplied. Without model vision or an image tool, an image request rejects with `ERR_UNSUPPORTED_FEATURE`.
+
+Supply up to eight `file://` URLs. Network URLs, data URLs, and file URLs pointing to another host are rejected. Each label must be unique within the request and contain 1–128 characters without control characters. Omitted labels become `image-1`, `image-2`, and so on. Keep the files available until the request finishes. Native image attachments retain decoded images in successful session history; changing the original file does not change a retained attachment. The same public label can be reused in another request.
+
+## Read token usage
+
+Successful results include `usage`. Counts remain `null` when the provider cannot report them. When built with Xcode 27 or later, the package returns measured input and output counts on iOS 27 and macOS 27, plus cached input and reasoning counts when reported by Foundation Models. Cached and reasoning counts are included in their corresponding totals.
+
+On iOS 26.4 and macOS 26.4 or later, `usage.contextTokens` reports the token count of the completed context when counting succeeds. It describes context occupancy, not the number of input tokens consumed by that request. Earlier Apple versions, Android, and Web leave unavailable measurements unknown.
+
+```ts
+import { generateAsync } from "expo-ai";
+
+export async function suggestTitleWithUsage(notes: string) {
+  const result = await generateAsync(notes, {
+    instructions: "Suggest a short title.",
+  });
+  return {
+    title: result.value,
+    inputTokens: result.usage.inputTokens,
+    outputTokens: result.usage.outputTokens,
+    contextTokens: result.usage.contextTokens ?? null,
+  };
+}
+```
+
+For library repair loops, input and output counts are added across model calls only when every call reports them. Context tokens describe the final call's context and are not added across independent calls. Token counting does not trigger another generation, and an unavailable counter does not fail an otherwise successful result.
+
+## Cancel a task or set a deadline
+
+Both cancellation and deadlines are optional. Pass an `AbortSignal` to cancel a task. Set `timeoutMs` to impose an overall deadline, including session creation, generation, tool handlers, waiting for approval, and library repairs. When omitted, the library imposes no deadline. Provider limits and tool or repair budgets still apply.
+
+```ts
+import { generateAsync } from "expo-ai";
+
+export async function summarizeWithCancellation(
+  text: string,
+  signal: AbortSignal,
+) {
+  const result = await generateAsync(`Summarize: ${text}`, {
+    signal,
+    timeoutMs: 60_000,
+  });
+
+  return result.value;
+}
+```
+
+Pass a controller's `signal` to this function and call `AbortController.abort()` from your app's cancel action. Handle the returned promise even when canceling. Cancellation rejects with `ERR_ABORTED`; an expired deadline rejects with `ERR_TIMEOUT`. Explicit deadlines accept integer values from `1` to `2147483647` milliseconds.
+
+Cancellation stops updates, reaches pending approval and tool handlers, and releases the temporary session. Handlers should pass the signal to cancellable work and check it before starting an action. Cancellation cannot forcibly stop arbitrary application code or undo an action that a tool has already performed.
+
+## Check availability and handle errors
+
+Use `getAvailabilityAsync()` when readiness or capability information helps your interface:
+
+```ts
+import { getAvailabilityAsync } from "expo-ai";
+
+export async function canCategorize() {
+  const availability = await getAvailabilityAsync();
+
+  return availability.status === "available";
+}
+```
+
+When the result is `unavailable`, inspect its `reason`. A `downloadable` result means the model can be downloaded, `downloading` means preparation is in progress, and `not-ready` means it is not ready to use. An `available` result includes the provider's capabilities. A capability can be `supported`, `unsupported`, or `unknown`. Model identifiers, context limits, and token usage remain `null` when the provider does not report them.
+
+Capability requirements describe native provider support. For example, `requires: ['constrainedOutput']` requires native schema constraints. On Android, requiring `constrainedOutput` or `runtimeToolDeclarations` returns `unavailable` even though the library can perform structured tasks and orchestrate tools. On Web, requiring `runtimeToolDeclarations` also returns `unavailable`, while library tool orchestration is supported. Include these requirements only when your app needs that native guarantee.
+
+The Android SDK does not expose a supported-language query. Explicit `inputLanguages` or `outputLanguage` requirements return `unavailable` with reason `language-support-unknown`; this does not mean the language itself is unsupported. Requests without language requirements can proceed.
+
+Public operations reject with `LanguageModelError`, which has a stable `code`, a readable message, and an underlying `cause` when available. Handle codes instead of parsing error messages. A readiness failure can show a preparation button:
+
+```ts
+import { generateAsync, LanguageModelError } from "expo-ai";
+
+export async function generateWhenReady(
+  prompt: string,
+  offerPreparation: () => void,
+) {
+  try {
+    return await generateAsync(prompt);
+  } catch (error) {
+    if (
+      error instanceof LanguageModelError &&
+      error.code === "ERR_MODEL_NOT_READY"
+    ) {
+      offerPreparation();
+    }
+    throw error;
+  }
+}
+```
+
+Preparation is explicit and provider-dependent. Android can request the system model download when `allowDownload: true`. On Web, call preparation from a user action such as a button press so the browser has the required user activation. A catch handler that runs after generation fails may no longer have that activation. After preparation reports `available`, your app can retry the task.
+
+Apple's adapter checks readiness again, but Apple manages model preparation through system settings. It cannot start a download or report download progress, even with `allowDownload: true`. Do not treat an unsupported device or cancellation as a preparation request.
+
+Omitting `allowDownload` or setting it to `false` only checks current availability. It does not start a download or wait for one to finish.
+
+### Show preparation progress
+
+Call `prepareAsync()` from an explicit preparation action in your app. Pass `onProgress` to update the interface and `signal` to cancel the app's preparation request:
+
+```ts
+import { prepareAsync } from "expo-ai";
+
+export async function prepareModel(
+  signal: AbortSignal,
+  setProgress: (progress: number | null) => void,
+) {
+  const availability = await prepareAsync({
+    allowDownload: true,
+    signal,
+    onProgress: setProgress,
+  });
+
+  return availability.status === "available";
+}
+```
+
+The progress callback is optional on Android and Web. Progress is a number from `0` to `1`, or `null` when a fraction is unavailable. Display an indeterminate indicator for `null`. If the progress callback throws or returns a promise that rejects, preparation rejects with `ERR_PREPARATION_FAILED`.
+
+Cancellation stops the app's preparation request and progress updates. The system may continue a download it already owns. Check availability again before deciding whether another preparation action is needed.
+
+On Web, generation checks that the browser reports `available` before creating a session. However, the browser's `LanguageModel.create()` API has no option that forbids asset downloads. If readiness changes between those calls, the adapter can only abort when it observes unexpected download progress. It cannot guarantee that the browser transfers no assets or stops a download it already manages.
+
+| Error code                         | Meaning                                                      |
+| ---------------------------------- | ------------------------------------------------------------ |
+| `ERR_MODEL_NOT_READY`              | The model is supported but not ready to generate.            |
+| `ERR_MODEL_UNAVAILABLE`            | The requested model or capabilities are unavailable.         |
+| `ERR_PREPARATION_FAILED`           | Model preparation or its progress callback failed.           |
+| `ERR_ABORTED`                      | The caller canceled the task.                                |
+| `ERR_APP_BACKGROUND`               | Android work stopped because the app entered the background. |
+| `ERR_TIMEOUT`                      | The task deadline or provider time limit expired.            |
+| `ERR_TOOL_DENIED`                  | The approval callback rejected a tool call.                  |
+| `ERR_RESPONSE_INVALID`             | The completed response failed validation.                    |
+| `ERR_VALIDATION_RETRIES_EXHAUSTED` | Library validation repairs exhausted their budget.           |
+| `ERR_CONTEXT_WINDOW_EXCEEDED`      | The request exceeds the model's available context.           |
+| `ERR_UPDATE_FAILED`                | The update callback threw an error.                          |
+
+Other typed codes cover invalid options and schemas, tool failures, and execution limits. Inspect `cause` when diagnosing a provider failure.
+
+## Use an explicit session
+
+Use `createSessionAsync()` when a task needs conversation history across requests. Top-level functions remain independent; an explicit session retains its own successful history. Call `dispose()` when you finish:
+
+```ts
+import { createSessionAsync } from "expo-ai";
+
+export async function refineTitle(notes: string) {
+  const session = await createSessionAsync({
+    instructions: "Suggest concise note titles.",
+  });
+
+  try {
+    await session.generateAsync(notes);
+    const result = await session.generateAsync("Make that title shorter.");
+    return result.value;
+  } finally {
+    session.dispose();
+  }
+}
+```
+
+Apple uses Foundation Models sessions. On Android, the package serializes successful turns as JSON and includes them in each Prompt API request. Library orchestration keeps its own successful history in JavaScript. Longer histories consume more of the model's input budget.
+
+On Web, the adapter generates on a clone of the committed browser session and commits successful model completions. If the browser reports context overflow, the task rejects with `ERR_CONTEXT_WINDOW_EXCEEDED` rather than silently discarding history.
+
+Only one generation can run in a session at a time. The package does not silently truncate conversation history. A provider can commit a model response before a later JavaScript validation or update callback fails. Completed tool effects outside the session cannot be undone.
+
+`dispose()` is synchronous and safe to call more than once. It releases the session and rejects active work with `ERR_SESSION_DISPOSED`.
+
+### Iterate over a stream
+
+<a id="asynciterable" />
+
+An explicit session also provides `generateStream()`, which returns an async iterable. Text events contain cumulative snapshots, and a successful stream ends with one validated `result` event:
+
+```ts
+import { createSessionAsync } from "expo-ai";
+
+export async function streamSummary(
+  text: string,
+  onText: (text: string) => void,
+) {
+  const session = await createSessionAsync();
+
+  try {
+    for await (const event of session.generateStream(`Summarize: ${text}`)) {
+      if (event.type === "text") {
+        onText(event.text);
+      } else if (event.type === "result") {
+        onText(event.result.value);
+      }
+    }
+  } finally {
+    session.dispose();
+  }
+}
+```
+
+Breaking out of the loop cancels that generation. Stream failures throw from the iterator. A slow consumer can skip intermediate text snapshots while still receiving tool events and the final result.
+
+## API
+
+```ts
+import * as ExpoAI from "expo-ai";
+```
+
+<APISection packageName="expo-ai" apiName="ExpoAI" />

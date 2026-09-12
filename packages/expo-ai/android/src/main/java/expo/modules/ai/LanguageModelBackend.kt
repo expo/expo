@@ -29,6 +29,15 @@ internal data class ModelAvailability(
 
 internal data class LanguageModelTurn(val prompt: String, val response: String)
 
+/** ML Kit does not expose token counts, so keep both required usage fields explicitly unknown. */
+internal fun generationResult(text: String): String = JSONObject().apply {
+  put("text", text)
+  put("usage", JSONObject().apply {
+    put("inputTokens", JSONObject.NULL)
+    put("outputTokens", JSONObject.NULL)
+  })
+}.toString()
+
 /** The SDK has no public chat role field. Keep successful turns as explicit prompt context. */
 internal fun conversationPrompt(history: List<LanguageModelTurn>, prompt: String): String {
   if (history.isEmpty()) return prompt

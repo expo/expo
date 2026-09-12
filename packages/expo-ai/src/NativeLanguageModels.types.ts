@@ -19,12 +19,8 @@ export type NativeToolEvent = {
 
 /** @hidden */
 export interface NativeSession {
+  /** JSON-encoded `{ text, usage }` generation result. */
   generateAsync(requestId: string, prompt: string, optionsJSON: string): Promise<string>;
-  generateWithMetadataAsync?(
-    requestId: string,
-    prompt: string,
-    optionsJSON: string
-  ): Promise<string>;
   executeBuiltinToolAsync?(
     callId: string,
     kind: 'ocr' | 'barcode',
