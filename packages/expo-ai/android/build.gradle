@@ -1,0 +1,28 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '0.1.0'
+
+android {
+  namespace 'expo.modules.ai'
+  defaultConfig {
+    minSdkVersion 26
+    versionCode 1
+    versionName '0.1.0'
+    consumerProguardFiles 'consumer-rules.pro'
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.google.mlkit:genai-prompt:1.0.0-beta4'
+  // ML Kit beta4 uses Job.cancel$default, which requires the coroutines 1.11 ABI.
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'io.mockk:mockk:1.14.9'
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0'
+  testImplementation 'org.json:json:20250517'
+}
