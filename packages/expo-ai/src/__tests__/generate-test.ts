@@ -7,7 +7,7 @@ import {
   LanguageModelError,
   schema,
 } from '../index';
-import { availableModel, FakeSession } from './fixtures/FakeSession';
+import { availableModel, FakeSession, nativeResult } from './fixtures/FakeSession';
 import { LegacyAbortController } from './fixtures/LegacyAbortController';
 
 jest.mock('../ExpoAI', () => ({
@@ -30,7 +30,7 @@ const makeTool = (execute = jest.fn().mockResolvedValue({ matches: ['local note'
 
 beforeEach(() => {
   native = new FakeSession();
-  nativeModule.getAvailabilityAsync.mockReset().mockResolvedValue('{"status":"available"}');
+  nativeModule.getAvailabilityAsync.mockReset().mockResolvedValue(availableModel());
   nativeModule.createSessionAsync.mockReset().mockResolvedValue(native);
 });
 afterEach(() => {
@@ -115,7 +115,7 @@ it('cancels during readiness without creating a session when readiness later com
   });
   controller.abort();
   await rejected;
-  ready('{"status":"available"}');
+  ready(availableModel());
   await flush();
   expect(nativeModule.createSessionAsync).not.toHaveBeenCalled();
 });
@@ -160,7 +160,7 @@ it('has no default deadline or timer even during prolonged readiness and generat
   await flush();
   expect(jest.getTimerCount()).toBe(0);
   jest.advanceTimersByTime(3_600_000);
-  ready('{"status":"available"}');
+  ready(availableModel());
   native.generateAsync.mockImplementation(() => new Promise(() => {}));
   await flush();
   expect(native.generateAsync).toHaveBeenCalledTimes(1);
@@ -191,7 +191,7 @@ it('includes readiness and session creation in the explicit whole-task deadline'
     code: 'ERR_TIMEOUT',
   });
   jest.advanceTimersByTime(60);
-  ready('{"status":"available"}');
+  ready(availableModel());
   await flush();
   jest.advanceTimersByTime(40);
   await rejected;
@@ -224,7 +224,7 @@ it('emits cumulative previews and validates the final structured result', async 
     native.emit('onText', { requestId, text: '{"title":' });
     await flush();
     native.emit('onText', { requestId, text: '{"title":"Note"}' });
-    return '{"title":"Note"}';
+    return nativeResult('{"title":"Note"}');
   });
   const onUpdate = jest.fn();
   await expect(
@@ -242,7 +242,7 @@ it('rejects an invalid final result after a provisional update and cleans up', a
   native.generateAsync.mockImplementation(async (requestId) => {
     native.emit('onText', { requestId, text: 'maybe' });
     await flush();
-    return 'invalid';
+    return nativeResult('invalid');
   });
   const onUpdate = jest.fn();
   await expect(generateAsync('task', { schema: schema.string(), onUpdate })).rejects.toMatchObject({
@@ -369,8 +369,8 @@ it('snapshots tools, schema, instructions and request limits before asynchronous
   options.instructions = 'changed';
   options.maximumToolCalls = 16;
   outputSchema.enum[0] = 'changed';
-  native.generateAsync.mockResolvedValue('"work"');
-  ready('{"status":"available"}');
+  native.generateAsync.mockResolvedValue(nativeResult('"work"'));
+  ready(availableModel());
   await expect(request).resolves.toMatchObject({ value: 'work' });
   expect(JSON.parse(nativeModule.createSessionAsync.mock.calls[0]![0])).toMatchObject({
     instructions: 'original',
@@ -385,7 +385,7 @@ it('serializes ordinary tool data for the native provider and denies before exec
     (requestId) =>
       new Promise((resolve) => {
         native.resolveTool.mockImplementation(() => {
-          resolve('answer');
+          resolve(nativeResult('answer'));
           return true;
         });
         native.emit('onToolCall', {
@@ -413,11 +413,11 @@ it('runs both task helpers through the shared API with validated category result
     format: 'text',
   });
   expect(native.generateAsync.mock.calls[0]![1]).toContain('brief summary');
-  native.generateAsync.mockResolvedValue('"work"');
+  native.generateAsync.mockResolvedValue(nativeResult('"work"'));
   await expect(
     categorizeAsync('message', { categories: ['work', 'personal'] })
   ).resolves.toMatchObject({ value: 'work', format: 'constrained' });
-  native.generateAsync.mockResolvedValue('"invented"');
+  native.generateAsync.mockResolvedValue(nativeResult('"invented"'));
   await expect(
     categorizeAsync('message', { categories: ['work', 'personal'] })
   ).rejects.toMatchObject({ code: 'ERR_RESPONSE_INVALID' });
@@ -432,7 +432,7 @@ it('automatically categorizes without native constraints and emits no fabricated
     })
   );
   const completion = new FakeSession();
-  completion.generateAsync.mockResolvedValue('"personal"');
+  completion.generateAsync.mockResolvedValue(nativeResult('"personal"'));
   nativeModule.createSessionAsync.mockResolvedValueOnce(native).mockResolvedValueOnce(completion);
   const onUpdate = jest.fn();
   await expect(
@@ -471,7 +471,7 @@ it('does not impose a deadline while tool approval is pending', async () => {
     (requestId) =>
       new Promise((resolve) => {
         native.resolveTool.mockImplementation(() => {
-          resolve('approved');
+          resolve(nativeResult('approved'));
           return true;
         });
         native.emit('onToolCall', {

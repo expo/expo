@@ -8,6 +8,15 @@ import org.junit.Test
 
 class LanguageModelBackendTest {
   @Test
+  fun `generation result preserves unknown token usage`() {
+    val value = JSONObject(generationResult("answer"))
+    assertEquals("answer", value.getString("text"))
+    val usage = value.getJSONObject("usage")
+    assertTrue(usage.isNull("inputTokens"))
+    assertTrue(usage.isNull("outputTokens"))
+  }
+
+  @Test
   fun `availability distinguishes readiness without downloads`() = runTest {
     val backend = TestBackend()
     val expected = mapOf(

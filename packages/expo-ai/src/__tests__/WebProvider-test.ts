@@ -83,6 +83,8 @@ const open = (options = {}) =>
   provider.createSessionAsync(JSON.stringify({ tools: [], ...options }));
 const generate = (session: Awaited<ReturnType<typeof open>>, id = 'one', options = {}) =>
   session.generateAsync(id, id, JSON.stringify(options));
+const nativeResult = (text: string) =>
+  JSON.stringify({ text, usage: { inputTokens: null, outputTokens: null } });
 
 beforeEach(() => {
   provider = new BrowserLanguageModels();
@@ -185,7 +187,7 @@ it('ignores creation progress delivered after a session has opened', async () =>
   emitProgress(0.5);
   await flush();
   expect(api.availability).toHaveBeenCalledTimes(count);
-  await expect(generate(session)).resolves.toBe('local result');
+  await expect(generate(session)).resolves.toBe(nativeResult('local result'));
   session.dispose();
 });
 
@@ -260,7 +262,7 @@ it('explains browser permission or activation failures', async () => {
 it('uses native constraints and validates output before committing browser history', async () => {
   const session = await open();
   configureClone = (clone) => clone.prompt.mockResolvedValueOnce('"work"');
-  await expect(generate(session, 'classify', { schema })).resolves.toBe('"work"');
+  await expect(generate(session, 'classify', { schema })).resolves.toBe(nativeResult('"work"'));
   expect(models[1]!.prompt).toHaveBeenCalledWith(
     'classify',
     expect.objectContaining({ responseConstraint: schema })
@@ -281,7 +283,9 @@ it('streams cumulative text and commits completed history for the next generatio
   const session = await open();
   const listener = jest.fn();
   session.addListener('onText', listener);
-  await expect(generate(session, 'first', { stream: true })).resolves.toBe('local result');
+  await expect(generate(session, 'first', { stream: true })).resolves.toBe(
+    nativeResult('local result')
+  );
   expect(listener.mock.calls.map(([value]) => value)).toEqual([
     { requestId: 'first', text: 'local' },
     { requestId: 'first', text: 'local result' },
