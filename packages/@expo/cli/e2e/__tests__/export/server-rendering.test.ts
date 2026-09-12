@@ -232,27 +232,26 @@ describe('exports server', () => {
     });
 
     it('injects hydration assets into SSR response', async () => {
-      const html = await server.fetchAsync('/').then((res) => res.text());
+      const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      const scripts = html.querySelectorAll('script[src^="/_expo/static/js/web/"]');
 
-      // Streaming SSR uses bootstrapScripts which emits async scripts (with an id attribute)
-      expect(html).toMatch(
-        /<script src="\/_expo\/static\/js\/web\/entry-.*\.js"[^>]*async=""><\/script>/
+      expect(scripts.map((script) => script.getAttribute('src'))).toEqual(
+        expect.arrayContaining([expect.stringMatching(/^\/_expo\/static\/js\/web\/entry-.*\.js$/)])
       );
+      for (const script of scripts) {
+        expect(script.hasAttribute('defer')).toBe(true);
+        expect(script.hasAttribute('async')).toBe(false);
+      }
     });
 
-    it('emits the hydration flag before the bootstrap script', async () => {
-      const html = await server.fetchAsync('/').then((res) => res.text());
+    it('emits an inline hydration flag', async () => {
+      const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      const hydrationScript = html.querySelector('script#_R_');
 
-      const hydrationFlagIndex = html.indexOf(
-        '<script id="_R_">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
-      );
-      const bootstrapScriptIndex = html.search(
-        /<script src="\/_expo\/static\/js\/web\/entry-.*\.js"[^>]*async=""><\/script>/
-      );
-
-      expect(hydrationFlagIndex).toBeGreaterThanOrEqual(0);
-      expect(bootstrapScriptIndex).toBeGreaterThanOrEqual(0);
-      expect(hydrationFlagIndex).toBeLessThan(bootstrapScriptIndex);
+      // Inline scripts execute while parsing, before the deferred hydration bundles.
+      expect(hydrationScript).not.toBeNull();
+      expect(hydrationScript!.hasAttribute('src')).toBe(false);
+      expect(hydrationScript!.textContent).toBe('globalThis.__EXPO_ROUTER_HYDRATE__=true;');
     });
 
     it('SSR styles are injected', async () => {
@@ -281,7 +280,7 @@ describe('exports server', () => {
       const links = indexHtml.querySelectorAll('link').filter((link) => {
         // Fonts are tested elsewhere
         if (link.attributes.as === 'font') return false;
-        // Streaming SSR adds <link rel="preload" as="script"> for bootstrapScripts
+        // Streaming SSR preloads the hydration bundles
         if (link.attributes.as === 'script') return false;
         // Favicon is tested elsewhere
         if (link.attributes.rel === 'icon') return false;
@@ -393,16 +392,8 @@ describe('exports server', () => {
       expect(page).toContain('<div id="root">');
 
       const sanitized = page
-        // Streaming SSR: <script src="..." id="_R_" async="">
-        .replace(
-          /<script src="\/_expo\/static\/js\/web\/[^"]*"[^>]*async="">/,
-          '<script src="/_expo/static/js/web/[mock].js" async="">'
-        )
-        // Streaming SSR: <link rel="preload" as="script" fetchPriority="low" href="..."/>
-        .replace(
-          /<link rel="preload" as="script"[^>]*href="\/_expo\/static\/js\/web\/[^"]*"[^>]*\/>/,
-          '<link rel="preload" as="script" href="/_expo/static/js/web/[mock].js"/>'
-        )
+        // Normalize bundle URLs in both scripts and preloads, preserving their attributes.
+        .replace(/\/_expo\/static\/js\/web\/[^"\s]+\.js/g, '/_expo/static/js/web/[mock].js')
         .replace(
           /<link rel="preload" href="\/_expo\/static\/css\/global-[^"]*\.css" as="style">/,
           '<link rel="preload" href="/_expo/static/css/global-[mock].css" as="style">'
