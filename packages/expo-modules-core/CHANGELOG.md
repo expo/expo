@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.10.0`. ([#50037](https://github.com/expo/expo/pull/50037) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Made `Either`, `EitherOfThree` and `EitherOfFour` conform to `JavaScriptDecodable` and `JavaScriptEncodable`, so they can be used with the new module API. ([#50053](https://github.com/expo/expo/pull/50053) by [@tsapeta](https://github.com/tsapeta))
 
 ## 58.0.0 — 2026-09-10
 
