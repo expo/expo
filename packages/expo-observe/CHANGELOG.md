@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Keep a rejected navigation metric write from surfacing as an unhandled promise rejection in the host app. ([#50054](https://github.com/expo/expo/pull/50054) by [@bjjeong](https://github.com/bjjeong))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

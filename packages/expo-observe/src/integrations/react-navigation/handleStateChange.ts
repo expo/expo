@@ -1,6 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { getNavigationRouteParams } from '../navigationConfig';
+import { recordMetric } from '../recordMetric';
 import { emitTTI } from './emitTTI';
 import { getPathname } from './getPathname';
 import { getReactNavigationIntegrationConfig } from './init';
@@ -70,7 +71,7 @@ export function createStateChangeHandler(
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
 
     // The main session is a static shared object, available synchronously and
-    // never null. Metrics are recorded against it directly via `addMetric`.
+    // never null. Metrics are recorded against it via `recordMetric`.
     const mainSession = AppMetrics.getMainSession();
 
     if (isColdAppLaunch) {
@@ -82,7 +83,7 @@ export function createStateChangeHandler(
           lastInteractiveCall: now,
         };
       }
-      mainSession.addMetric({
+      recordMetric(mainSession, {
         timestamp,
         category: 'navigation',
         name,
@@ -112,7 +113,7 @@ export function createStateChangeHandler(
       };
     }
 
-    mainSession.addMetric({
+    recordMetric(mainSession, {
       timestamp,
       category: 'navigation',
       name,
