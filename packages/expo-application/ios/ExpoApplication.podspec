@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'EXApplication'
+  s.name           = 'ExpoApplication'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -28,4 +28,12 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
+
+  s.exclude_files = 'Tests/'
+  s.test_spec 'Tests' do |test_spec|
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
+
+    test_spec.source_files = 'Tests/**/*.{m,swift}'
+  end
 end
