@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Use the native build mode when loading Expo config and `.env` files. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
