@@ -45,6 +45,58 @@ export function AppIntentHandler() {
 }
 ```
 
+## Config-driven shortcuts
+
+For simple intents that dispatch a name to JavaScript, declare `intents` in the config
+plugin. No Swift files or `init` command are needed:
+
+```json
+{
+  "expo": {
+    "plugins": [["expo-app-intents", {
+      "intents": [{
+        "name": "orderFood",
+        "title": "Order Food",
+        "phrases": ["Order food in {appName}"],
+        "dialog": "Order requested.",
+        "systemImageName": "fork.knife"
+      }]
+    }]]
+  }
+}
+```
+
+Run `npx expo prebuild -p ios` and rebuild the app. The plugin adds its `directory`
+(default `app-intents`) to the watched Inline Modules directories and writes
+`GeneratedIntents.swift`, including the shortcut-refresh setup. Handle invocations
+with `useAppIntents` as above. This requires an Expo version supporting Inline Modules;
+this feature targets the development package, not an SDK 57 documented App Intents API.
+
+Each entry needs `name` and non-empty `phrases`, with `{appName}` in every phrase.
+`title` defaults to a humanized name, `shortTitle` to the title, `systemImageName` to
+`sparkles`, and `openAppWhenRun` to `true`. Optional `dialog` is a static acknowledgement
+of dispatch: it does **not** confirm the JavaScript operation succeeded. Dispatch
+persists an invocation and notifies JS when running; `openAppWhenRun: false` does not
+guarantee that JS starts or handles the invocation immediately.
+
+For advanced handwritten intents, use `{ "swiftType": "TrackOrderIntent",
+"shortTitle": "Track Order", "phrases": ["Track in {appName}"] }`. The Swift type
+must conform to `AppIntent` and support initialization without arguments. Parameters,
+entities, custom results and schemas remain configured in Swift. At most 10 entries
+are supported; an empty array produces no provider.
+
+Config mode owns the shortcuts provider. When migrating an existing scaffold, remove
+its `AppShortcutsProvider` and the old `setShortcutsRefreshHandler` wiring, then move
+the shortcut entries into config. Preserve other setup code such as entity registration.
+The plugin conservatively checks Swift files in its configured directory for conflicts;
+comments can also trigger these checks. Providers and conflicting types elsewhere in
+the app target must be resolved by the developer.
+
+Generated files are updated only during iOS prebuild. Removing `intents` while keeping
+the plugin and watched-directory configuration removes the managed file. Removing the
+plugin entirely or changing `directory` requires removing the old generated file
+manually. User-owned files at the generated path are never overwritten or deleted.
+
 ## Limitations
 
 - Shortcut phrases are compiled at build time and cannot be created from JavaScript at runtime. Only parameter values are dynamic.

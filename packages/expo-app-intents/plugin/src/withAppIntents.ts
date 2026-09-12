@@ -1,6 +1,13 @@
 import type { ExpoConfig } from 'expo/config';
-import { ConfigPlugin, WarningAggregator, createRunOncePlugin } from 'expo/config-plugins';
+import {
+  ConfigPlugin,
+  WarningAggregator,
+  createRunOncePlugin,
+  withDangerousMod,
+} from 'expo/config-plugins';
 import path from 'path';
+
+import { IntentConfig, renderIntents, syncIntents } from './generatedIntents';
 
 const pkg = require('../../package.json');
 
@@ -10,6 +17,8 @@ export type Props = {
    * @default 'app-intents'
    */
   directory?: string;
+  /** Generate simple JavaScript-dispatching intents and the app's shortcuts provider at prebuild. */
+  intents?: IntentConfig[];
 };
 
 const DEFAULT_DIRECTORY = 'app-intents';
@@ -108,6 +117,25 @@ const withAppIntents: ConfigPlugin<Props | void> = (config, props) => {
   }
 
   const directory = props?.directory ?? DEFAULT_DIRECTORY;
+  const intents = props?.intents;
+  if (intents !== undefined) {
+    const root = projectRootOf(config);
+    const relative = path.relative(root, path.resolve(root, directory));
+    if (!relative || relative.split(path.sep).includes('..') || path.isAbsolute(relative)) {
+      throw new Error('expo-app-intents: directory must be a subdirectory of the project.');
+    }
+    renderIntents(intents);
+    config.experiments ??= {};
+    config.experiments.inlineModules ??= { watchedDirectories: [] };
+    const watched = config.experiments.inlineModules.watchedDirectories ?? [];
+    config.experiments.inlineModules.watchedDirectories = isWatchedDirectory(
+      watched,
+      directory,
+      root
+    )
+      ? watched
+      : [...watched, directory];
+  }
 
   // Normalised the same way as the watched-directory check, so `'./app/intents'` is recognised.
   const projectRoot = projectRootOf(config);
@@ -123,7 +151,14 @@ const withAppIntents: ConfigPlugin<Props | void> = (config, props) => {
     );
   }
 
-  return withAppIntentsValidation(config, { directory });
+  withAppIntentsValidation(config, { directory });
+  return withDangerousMod(config, [
+    'ios',
+    async (modConfig) => {
+      await syncIntents(modConfig.modRequest.projectRoot, directory, intents);
+      return modConfig;
+    },
+  ]);
 };
 
 export default createRunOncePlugin(withAppIntents, pkg.name, pkg.version);

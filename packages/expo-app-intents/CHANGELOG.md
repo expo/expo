@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add config-driven generation for simple App Intents and App Shortcuts, including Inline Modules configuration and shortcut refresh setup.
+
 - [iOS] Add `AppEntityView`, a UIKit wrapper for associating React Native content with an App Entity. ([#49663](https://github.com/expo/expo/pull/49663) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
