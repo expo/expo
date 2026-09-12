@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- [iOS] Added the SwiftUI `NavigationSplitView` component, together with the `navigationSplitViewStyle` and `navigationSplitViewColumnWidth` modifiers. ([#50075](https://github.com/expo/expo/pull/50075) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
+
+- [iOS] Fix `Button` dropping `systemImage` when no `label` is given, which rendered an empty button. ([#50075](https://github.com/expo/expo/pull/50075) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
