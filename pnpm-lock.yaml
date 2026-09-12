@@ -224,6 +224,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-ai:
+        specifier: workspace:*
+        version: link:../../packages/expo-ai
       expo-app-intents:
         specifier: workspace:*
         version: link:../../packages/expo-app-intents
@@ -3850,6 +3853,19 @@ importers:
         version: 3.3.3
 
   packages/expo-age-range:
+    dependencies:
+      react-native:
+        specifier: 0.88.0-rc.0
+        version: 0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3)
+    devDependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+
+  packages/expo-ai:
     dependencies:
       react-native:
         specifier: 0.88.0-rc.0
