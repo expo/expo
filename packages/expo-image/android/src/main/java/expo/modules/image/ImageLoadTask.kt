@@ -3,6 +3,7 @@ package expo.modules.image
 import android.graphics.drawable.BitmapDrawable
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.AppContext
@@ -29,6 +30,10 @@ open class ImageLoadTask(
           .asDrawable()
           .load(model)
           .centerInside()
+          // loadAsync has no configurable decode format; ARGB_8888 is the widest, so its size cap is a safe upper bound.
+          .customize(`when` = options.maxWidth <= 0 && options.maxHeight <= 0) {
+            downsample(SafeDownsampleStrategy(DecodeFormat.ARGB_8888))
+          }
           .customize(options.tintColor) {
             apply(RequestOptions().set(CustomOptions.tintColor, it))
           }
