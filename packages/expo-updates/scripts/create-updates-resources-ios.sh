@@ -4,10 +4,28 @@ set -eo pipefail
 
 CREATE_UPDATES_RESOURCES_MODE="all"
 
+is_debug_configuration() {
+  [[ "$1" == *Debug* ]]
+}
+
+if [[ -n "$__EXPO_CONFIG_MODE" ]]; then
+  CONFIG_MODE="$__EXPO_CONFIG_MODE"
+elif is_debug_configuration "$CONFIGURATION"; then
+  CONFIG_MODE="development"
+else
+  CONFIG_MODE="production"
+fi
+
+if is_debug_configuration "$CONFIGURATION"; then
+  METRO_DEV="true"
+else
+  METRO_DEV="false"
+fi
+
 if [[ "$SKIP_BUNDLING" ]]; then
   echo "SKIP_BUNDLING enabled; skipping create-manifest-ios.sh."
   CREATE_UPDATES_RESOURCES_MODE="only-fingerprint"
-elif [[ "$CONFIGURATION" == *Debug* ]]; then
+elif [[ "$METRO_DEV" == "true" ]]; then
   if [[ "$FORCE_BUNDLING" ]]; then
     echo "FORCE_BUNDLING enabled; continuing create-manifest-ios.sh."
   else
@@ -50,5 +68,4 @@ else
   exit 1
 fi
 
-"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createUpdatesResources.js" ios "$PROJECT_ROOT" "$RESOURCE_DEST" "$CREATE_UPDATES_RESOURCES_MODE" "$ENTRY_FILE"
-
+__EXPO_CONFIG_MODE="$CONFIG_MODE" "${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createUpdatesResources.js" ios "$PROJECT_ROOT" "$RESOURCE_DEST" "$CREATE_UPDATES_RESOURCES_MODE" "$ENTRY_FILE" "$METRO_DEV"

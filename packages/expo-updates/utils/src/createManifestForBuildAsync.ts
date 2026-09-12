@@ -16,6 +16,7 @@ export async function createManifestForBuildAsync(
   platform: 'ios' | 'android',
   projectRoot: string,
   destinationDir: string,
+  dev: boolean,
   entryFileArg?: string
 ): Promise<void> {
   const entryFile =
@@ -30,7 +31,7 @@ export async function createManifestForBuildAsync(
     platform,
     entryFile,
     minify: false,
-    dev: process.env.CONFIGURATION === 'Debug', // ensures debug assets packaged correctly for iOS and native debug
+    dev, // ensures debug assets packaged correctly for iOS and native debug
     sourcemapUseAbsolutePath: false,
     resetCache: false,
   };

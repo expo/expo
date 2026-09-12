@@ -44,10 +44,11 @@ beforeEach(() => {
 afterEach(() => {
   process.chdir(cwd);
   fs.rmSync(projectRoot, { recursive: true, force: true });
+  jest.clearAllMocks();
 });
 
 async function createManifestAsync(platform: 'ios' | 'android') {
-  await createManifestForBuildAsync(platform, projectRoot, projectRoot);
+  await createManifestForBuildAsync(platform, projectRoot, projectRoot, false);
   return JSON.parse(fs.readFileSync(path.join(projectRoot, 'app.manifest'), 'utf8'));
 }
 
@@ -70,5 +71,17 @@ describe(createManifestForBuildAsync, () => {
       [3, 'hash-3x'],
       [4, 'hash-4x'],
     ]);
+  });
+
+  it.each([
+    ['Debug', true],
+    ['Release', false],
+  ] as const)('uses Metro dev mode for a %s build', async (_, dev) => {
+    await createManifestForBuildAsync('ios', projectRoot, projectRoot, dev);
+
+    expect(createMetroServerAndBundleRequestAsync).toHaveBeenCalledWith(
+      projectRoot,
+      expect.objectContaining({ dev })
+    );
   });
 });
