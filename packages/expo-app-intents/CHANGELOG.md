@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Drop macOS from the podspec platforms to fix `pod install` failing with "Unable to find a specification for `ExpoUI`". ([#50065](https://github.com/expo/expo/pull/50065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 0.2.0 — 2026-09-10
