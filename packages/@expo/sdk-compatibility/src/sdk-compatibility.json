@@ -2,6 +2,28 @@
   "schemaVersion": 1,
   "sdkVersions": [
     {
+      "sdk": "58.0.0",
+      "android": {
+        "minimumVersion": 7,
+        "compileSdkVersion": 37,
+        "targetSdkVersion": 36,
+        "buildToolsVersion": "37.0.0"
+      },
+      "ios": {
+        "minimumVersion": "16.4",
+        "xcodeVersionRange": ">=26.4.0"
+      },
+      "runtime": {
+        "reactNative": "0.87",
+        "reactNativeWeb": "0.21.0",
+        "reactNativeTvos": "0.87-stable",
+        "react": "19.2.3"
+      },
+      "node": {
+        "minimumVersion": "22.13.0"
+      }
+    },
+    {
       "sdk": "57.0.0",
       "android": {
         "minimumVersion": 7,
