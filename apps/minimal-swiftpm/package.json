@@ -1,0 +1,17 @@
+{
+  "name": "minimal-swiftpm",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo run:ios"
+  },
+  "dependencies": {
+    "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-status-bar": "workspace:*",
+    "react": "19.2.3",
+    "react-native": "0.86.0"
+  }
+}
