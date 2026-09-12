@@ -24,6 +24,7 @@
 
 ### 🎉 New features
 
+- Ask Claude Code to offer the Expo plugin (Expo Skills and the Expo MCP Server) when it runs an Expo CLI command, using the Claude Code plugin hint protocol. ([#49696](https://github.com/expo/expo/pull/49696) by [@zvadaadam](https://github.com/zvadaadam))
 - Add `pageHeaders` to exported routes manifests ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Apply `pageHeaders` when serving static exports with `expo serve` ([#47781](https://github.com/expo/expo/pull/47781) by [@hassankhan](https://github.com/hassankhan))
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))
