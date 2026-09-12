@@ -87,9 +87,26 @@ surfaces as a build error, naming the fix:
   libraries.
 - **No `ios` or `apple` source directory** — an incomplete install, or a
   non-standard layout that needs a `Package.swift` naming the real path.
+- **Manifest targets whose sources are not on disk** — a checked-in
+  `Package.swift` whose targets declare no `path:` and have no sources under a
+  predefined source directory, so the generated targets would point at nothing.
+- **Native linkage declared only in the podspec** — `s.frameworks`,
+  `s.weak_frameworks` or `s.libraries`. The plugin never reads linkage out of
+  Ruby: a misread link line fails in a shipped app, not here. Declare it as
+  `linkerSettings` in a `Package.swift`, which the plugin mirrors verbatim, or
+  ship an `spm.config.json` and prebuild the module.
+- **An iOS deployment floor that is not a literal** — the plugin reads
+  `s.platforms = { :ios => '16.4' }` and `s.ios.deployment_target = '16.4'` as
+  text; anything computed would need the podspec to be run.
 - **No precompiled ExpoModulesCore** — a single project-level fault reported
   once, not per module, since every source module compiles against its interface
   tree.
+
+One podspec finding is a warning rather than an error: linker flags set through
+`OTHER_LDFLAGS` in a `pod_target_xcconfig`. The module is still emitted, because
+Swift links the system frameworks and C++ runtime its sources import; if it does
+fail to link, declare the missing library as `linkerSettings` in a
+`Package.swift`.
 
 To build without a module, exclude it from autolinking in the app's
 `package.json` (`expo.autolinking.exclude`); its native module is then

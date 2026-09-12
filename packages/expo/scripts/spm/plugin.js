@@ -41,11 +41,13 @@ const {
   classifyUnsupported,
   collectUnmappedDependencies,
   renderUnmappedDependencyWarning,
+  renderXcconfigLinkerWarning,
   reportUnsupported,
   spmConfigProduct,
 } = require('./diagnostics');
 const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
 const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
+const { PodspecSyntaxError, readPodspecs } = require('./podspec');
 
 module.exports = function expoSpmPlugin(context) {
   const { react, outputDir } = context;
@@ -77,7 +79,10 @@ module.exports = function expoSpmPlugin(context) {
   const sourceManifest = []; // packages emitted from a checked-in manifest
   const pureSwiftSource = []; // packages emitted from a pure-Swift descriptor
   const unmappedDeps = []; // emitted pods depending on pods with no SwiftPM counterpart
+  const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
   const unresolvedTargets = new Map(); // module root → manifest targets with no sources on disk
+  const podspecErrors = new Map(); // module root → podspec line the reader refused
+  const podspecLinkage = new Map(); // module root → podspec line declaring native linkage
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
   // once one flavor exists, the resolver requires and prepares both before RN
@@ -138,22 +143,50 @@ module.exports = function expoSpmPlugin(context) {
           if (react != null) reactWired.push(pod.podName);
         }
       } else if (isPureSwift(moduleRoot)) {
-        // Pure-Swift module → single Swift target over its ios sources.
-        const e = emitPureSwiftSourcePackage(
-          moduleRoot,
-          pod.podName,
-          react,
-          frameworkSearchPath,
-          outDir,
-          codegenPkgPath,
-          pod.podspecDir
-        );
+        // Pure-Swift module → single Swift target over its ios sources. Its podspec
+        // supplies nothing but the deployment floor: a module whose linkage only the
+        // podspec declares is skipped and diagnosed, never emitted half-linked.
+        let podspecs = null;
+        try {
+          podspecs = readPodspecs(
+            pod.podName,
+            [
+              pod.podspecDir,
+              path.join(moduleRoot, 'ios'),
+              path.join(moduleRoot, 'apple'),
+              moduleRoot,
+            ].filter(Boolean)
+          );
+        } catch (error) {
+          if (!(error instanceof PodspecSyntaxError)) throw error;
+          podspecErrors.set(moduleRoot, error);
+        }
+        if (podspecs?.linkage != null) podspecLinkage.set(moduleRoot, podspecs.linkage);
+        const e =
+          podspecs == null || podspecs.linkage != null
+            ? null
+            : emitPureSwiftSourcePackage(
+                moduleRoot,
+                pod.podName,
+                react,
+                frameworkSearchPath,
+                outDir,
+                codegenPkgPath,
+                podspecs.iosDeploymentTarget
+              );
         if (e != null) {
           packageDependencies.push(e.packageDep);
           productDependencies.push(e.productDep);
           pods.forEach((p) => emitted.add(p.podName));
           pureSwiftSource.push(pod.podName);
           if (react != null) reactWired.push(pod.podName);
+          if (podspecs.linkerFlags != null) {
+            xcconfigLinkage.push({
+              packageName: mod.packageName,
+              podName: pod.podName,
+              ...podspecs.linkerFlags,
+            });
+          }
         }
       }
 
@@ -186,6 +219,8 @@ module.exports = function expoSpmPlugin(context) {
         pureSwift: isPureSwift(moduleRoot),
         hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
+        podspecError: podspecErrors.get(moduleRoot) ?? null,
+        podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
         prebuildProduct: spmConfigProduct(moduleRoot, pod.podName),
       });
     }
@@ -208,6 +243,9 @@ module.exports = function expoSpmPlugin(context) {
   );
   if (unmappedDeps.length > 0) {
     console.warn(renderUnmappedDependencyWarning(unmappedDeps));
+  }
+  if (xcconfigLinkage.length > 0) {
+    console.warn(renderXcconfigLinkerWarning(xcconfigLinkage));
   }
   if (react == null) {
     console.warn(

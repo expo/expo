@@ -12,7 +12,6 @@ const path = require('path');
 const { collectIgnoredDirs } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
 const { runDumpPackage } = require('./cli');
-const { podspecDeclarations } = require('./podspec');
 
 // ---------------------------------------------------------------------------
 // Pure: parse `swift package dump-package` JSON → { name, products, targets }
@@ -69,28 +68,42 @@ function parseDumpedManifest(json) {
 // Pure: render manifest strings
 // ---------------------------------------------------------------------------
 
-const SWIFT_PLATFORM_CASES = {
-  ios: '.iOS',
-  macos: '.macOS',
-  maccatalyst: '.macCatalyst',
-  tvos: '.tvOS',
-  watchos: '.watchOS',
-  visionos: '.visionOS',
-  driverkit: '.driverKit',
-  linux: '.linux',
-  windows: '.windows',
-  android: '.android',
-  wasi: '.wasi',
-  openbsd: '.openbsd',
-};
+// Maps, not objects: a dumped manifest is untrusted input, and an inherited key like
+// "constructor" would otherwise resolve to a function and render as garbage Swift.
+const SWIFT_PLATFORM_CASES = new Map([
+  ['ios', '.iOS'],
+  ['macos', '.macOS'],
+  ['maccatalyst', '.macCatalyst'],
+  ['tvos', '.tvOS'],
+  ['watchos', '.watchOS'],
+  ['visionos', '.visionOS'],
+  ['driverkit', '.driverKit'],
+  ['linux', '.linux'],
+  ['windows', '.windows'],
+  ['android', '.android'],
+  ['wasi', '.wasi'],
+  ['openbsd', '.openbsd'],
+]);
 
 /**
  * The Swift cases for the platform names a condition lists. A name PackageDescription
- * does not declare is dropped rather than rendered: the condition then covers more
- * platforms than declared, which still builds, while invalid Swift does not.
+ * does not declare is dropped while a supported one remains — the condition still
+ * covers no more than the module declared. When none remains there is no safe
+ * rendering: dropping the condition would apply the declaration everywhere, so this
+ * throws instead of widening it.
  */
-function swiftPlatformCases(names) {
-  return (names ?? []).map((p) => SWIFT_PLATFORM_CASES[p]).filter((p) => p != null);
+function swiftPlatformCases(names, context) {
+  const declared = (names ?? []).map((p) => SWIFT_PLATFORM_CASES.get(p)).filter((p) => p != null);
+  if (declared.length === 0 && (names ?? []).length > 0) {
+    throw new Error(
+      `Cannot generate a consumption Package.swift for ${context}: its platform condition names only ` +
+        `${names.map((n) => `"${n}"`).join(', ')}, which PackageDescription 6.0 does not declare. Dropping ` +
+        'the condition would apply the declaration on every platform, wider than the module declared. Add the ' +
+        'platform to SWIFT_PLATFORM_CASES in expo/scripts/spm/manifests.js, or condition the declaration on a ' +
+        'platform Swift Package Manager supports.'
+    );
+  }
+  return declared;
 }
 
 /**
@@ -99,13 +112,20 @@ function swiftPlatformCases(names) {
  */
 function renderSiblingDependency(dep) {
   if (typeof dep === 'string') return `"${dep}"`;
-  const platforms = swiftPlatformCases(dep.platforms);
+  const platforms = swiftPlatformCases(dep.platforms, `the dependency on "${dep.name}"`);
   if (!platforms.length) return `"${dep.name}"`;
   return `.target(name: "${dep.name}", condition: .when(platforms: [${platforms.join(', ')}]))`;
 }
 
-const RESOURCE_RULES = { process: '.process', copy: '.copy', embedInCode: '.embedInCode' };
-const RESOURCE_LOCALIZATIONS = { default: '.default', base: '.base' };
+const RESOURCE_RULES = new Map([
+  ['process', '.process'],
+  ['copy', '.copy'],
+  ['embedInCode', '.embedInCode'],
+]);
+const RESOURCE_LOCALIZATIONS = new Map([
+  ['default', '.default'],
+  ['base', '.base'],
+]);
 
 /**
  * A resource the module declared, as its `.process`/`.copy`/`.embedInCode` rule.
@@ -114,9 +134,9 @@ const RESOURCE_LOCALIZATIONS = { default: '.default', base: '.base' };
  */
 function renderResource(resource, targetName) {
   const [rule, options] = Object.entries(resource.rule ?? {})[0] ?? [];
-  const call = RESOURCE_RULES[rule];
+  const call = RESOURCE_RULES.get(rule);
   const localization =
-    options?.localization != null ? RESOURCE_LOCALIZATIONS[options.localization] : null;
+    options?.localization != null ? RESOURCE_LOCALIZATIONS.get(options.localization) : null;
   if (call == null || (options?.localization != null && localization == null)) {
     throw new Error(
       `Cannot generate a consumption Package.swift for target "${targetName}": resource "${resource.path}" ` +
@@ -138,16 +158,24 @@ const SETTING_FAMILIES = [
 ];
 const SETTING_TOOLS = new Set(SETTING_FAMILIES.map(([tool]) => tool));
 
-function renderSettingCondition(condition) {
-  const platforms = swiftPlatformCases(condition?.platformNames);
+function renderSettingCondition(condition, targetName) {
+  const platforms = swiftPlatformCases(condition?.platformNames, `target "${targetName}"`);
   const clauses = [];
   if (platforms.length) clauses.push(`platforms: [${platforms.join(', ')}]`);
   if (condition?.config != null) clauses.push(`configuration: .${condition.config}`);
   return clauses.length ? `, .when(${clauses.join(', ')})` : '';
 }
 
-const SWIFT_LANGUAGE_MODES = { 4: '.v4', 4.2: '.v4_2', 5: '.v5', 6: '.v6' };
-const INTEROPERABILITY_MODES = { C: '.C', Cxx: '.Cxx' };
+const SWIFT_LANGUAGE_MODES = new Map([
+  ['4', '.v4'],
+  ['4.2', '.v4_2'],
+  ['5', '.v5'],
+  ['6', '.v6'],
+]);
+const INTEROPERABILITY_MODES = new Map([
+  ['C', '.C'],
+  ['Cxx', '.Cxx'],
+]);
 
 function settingError(targetName, setting, explanation) {
   return new Error(
@@ -164,29 +192,37 @@ function settingError(targetName, setting, explanation) {
 function renderSetting(setting, targetName) {
   const [kind, args] = Object.entries(setting.kind ?? {})[0] ?? [];
   const value = args?._0;
-  const when = renderSettingCondition(setting.condition);
-  const quoted = (v) => `"${escapeSwiftString(v)}"`;
-  if (value == null) {
-    throw settingError(
+  const when = renderSettingCondition(setting.condition, targetName);
+  const malformed = (expected) =>
+    settingError(
       targetName,
       setting,
-      'carries no value, so there is nothing to render. The dumped manifest is malformed — every ' +
-        'setting Swift Package Manager emits names one. Re-run `swift package dump-package` on the module.'
+      `carries ${JSON.stringify(value) ?? 'no value'} where ${expected} belongs. The dumped ` +
+        'manifest is malformed; re-run `swift package dump-package` on the module to see what it emits.'
     );
-  }
+  const quoted = (v) => {
+    if (typeof v !== 'string' || v === '') throw malformed('a non-empty string');
+    return `"${escapeSwiftString(v)}"`;
+  };
+  const text = () => {
+    if (typeof value !== 'string' || value === '') throw malformed('a non-empty string');
+    return value;
+  };
   switch (kind) {
     case 'define': {
-      const separator = value.indexOf('=');
-      if (separator < 0) return `.define(${quoted(value)}${when})`;
-      const name = quoted(value.slice(0, separator));
+      const define = text();
+      const separator = define.indexOf('=');
+      if (separator < 0) return `.define(${quoted(define)}${when})`;
+      const name = quoted(define.slice(0, separator));
       // A Swift define is a conditional-compilation flag: swiftc warns that flags have
       // no values and then `#if NAME` is false, so only the name survives.
       if (setting.tool === 'swift') return `.define(${name}${when})`;
-      return `.define(${name}, to: ${quoted(value.slice(separator + 1))}${when})`;
+      return `.define(${name}, to: ${quoted(define.slice(separator + 1))}${when})`;
     }
     case 'headerSearchPath':
       return `.headerSearchPath(${quoted(value)}${when})`;
     case 'unsafeFlags':
+      if (!Array.isArray(value)) throw malformed('an array of flags');
       return `.unsafeFlags([${value.map(quoted).join(', ')}]${when})`;
     case 'linkedFramework':
       return `.linkedFramework(${quoted(value)}${when})`;
@@ -197,7 +233,7 @@ function renderSetting(setting, targetName) {
     case 'enableExperimentalFeature':
       return `.enableExperimentalFeature(${quoted(value)}${when})`;
     case 'swiftLanguageMode': {
-      const mode = SWIFT_LANGUAGE_MODES[value];
+      const mode = SWIFT_LANGUAGE_MODES.get(text());
       if (mode == null) {
         throw settingError(
           targetName,
@@ -209,7 +245,7 @@ function renderSetting(setting, targetName) {
       return `.swiftLanguageMode(${mode}${when})`;
     }
     case 'interoperabilityMode': {
-      const mode = INTEROPERABILITY_MODES[value];
+      const mode = INTEROPERABILITY_MODES.get(text());
       if (mode == null) {
         throw settingError(
           targetName,
@@ -221,6 +257,14 @@ function renderSetting(setting, targetName) {
       return `.interoperabilityMode(${mode}${when})`;
     }
     default:
+      if (kind == null) {
+        throw settingError(
+          targetName,
+          setting,
+          'carries no kind, so the renderer cannot tell what it declares. The dumped manifest is ' +
+            'malformed; re-run `swift package dump-package` on the module to see what it emits.'
+        );
+      }
       throw settingError(
         targetName,
         setting,
@@ -305,8 +349,8 @@ ${targetsSwift}
 }
 
 /**
- * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources,
- * carrying the deployment floor and linkage its podspec declares.
+ * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources, on
+ * the deployment floor the plugin read from the module's podspec.
  */
 function renderPureSwiftManifest(
   product,
@@ -315,7 +359,7 @@ function renderPureSwiftManifest(
   targetDeps,
   frameworkSearchPath,
   excludes = [],
-  podspec = {}
+  iosDeploymentTarget = null
 ) {
   const packageDepsSwift = pkgDeps.length
     ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
@@ -334,7 +378,7 @@ import PackageDescription
 
 let package = Package(
     name: "${product}",
-    platforms: ${renderPlatforms(podspec.iosDeploymentTarget ?? null)},
+    platforms: ${renderPlatforms(iosDeploymentTarget)},
     products: [
         .library(name: "${product}", targets: ["${product}"]),
     ],
@@ -343,7 +387,7 @@ let package = Package(
         .target(
             name: "${product}",
             dependencies: [${targetDepsSwift}],
-            path: "root/${srcRel}",${excludeSwift}${renderTargetSettings(frameworkSearchPath, podspecLinkerSettings(podspec), product)}
+            path: "root/${srcRel}",${excludeSwift}${renderTargetSettings(frameworkSearchPath, [], product)}
         ),
     ],
     swiftLanguageModes: [.v5],
@@ -381,18 +425,7 @@ function renderTargetSettings(frameworkSearchPath, settings, targetName) {
   }).join('');
 }
 
-/** Podspec linkage as dumped build settings, so both paths render through one code path. */
-function podspecLinkerSettings({ frameworks = [], libraries = [] }) {
-  return [
-    ...frameworks.map((name) => ({ tool: 'linker', kind: { linkedFramework: { _0: name } } })),
-    ...libraries.map((name) => ({ tool: 'linker', kind: { linkedLibrary: { _0: name } } })),
-  ];
-}
-
-/**
- * The module's own iOS floor, or the plugin's when it declares none. Only iOS is
- * mirrored: React Native's Swift Package Manager support is iOS-only.
- */
+/** Only iOS is mirrored: React Native's Swift Package Manager support is iOS-only. */
 function renderPlatforms(iosDeploymentTarget) {
   return iosDeploymentTarget != null ? `[.iOS("${iosDeploymentTarget}")]` : '[.iOS(.v15)]';
 }
@@ -519,7 +552,7 @@ function emitPureSwiftSourcePackage(
   frameworkSearchPath,
   outDir,
   codegenPkgPath,
-  podspecDir = null
+  iosDeploymentTarget = null
 ) {
   const srcDir = ['ios', 'apple']
     .map((s) => path.join(moduleRoot, s))
@@ -540,7 +573,7 @@ function emitPureSwiftSourcePackage(
       targetDeps,
       frameworkSearchPath,
       collectIgnoredDirs(srcDir),
-      podspecDeclarations(product, [podspecDir, srcDir, moduleRoot].filter(Boolean))
+      iosDeploymentTarget
     )
   );
 

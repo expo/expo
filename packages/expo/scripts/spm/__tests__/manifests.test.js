@@ -324,44 +324,6 @@ describe('emitPureSwiftSourcePackage', () => {
   });
 });
 
-describe('podspec selection for the pure-Swift target', () => {
-  const spec = (...body) => ['Pod::Spec.new do |s|', ...body, 'end', ''].join('\n');
-
-  it("links only what the pod's own podspec declares, not a companion pod's", () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-companion-'));
-    const moduleRoot = path.join(tmp, 'module');
-    const outDir = path.join(tmp, 'out');
-    const podspecDir = path.join(moduleRoot, 'ios');
-    fs.mkdirSync(podspecDir, { recursive: true });
-    fs.writeFileSync(path.join(podspecDir, 'A.swift'), '// swift\n');
-    fs.writeFileSync(
-      path.join(podspecDir, 'ExpoCamera.podspec'),
-      spec("  s.platforms = { :ios => '16.4' }", "  s.frameworks = 'AVFoundation'")
-    );
-    fs.writeFileSync(
-      path.join(podspecDir, 'ExpoCameraBarcodeScanning.podspec'),
-      spec("  s.platforms = { :ios => '18.0' }", "  s.frameworks = 'Vision'")
-    );
-
-    emitPureSwiftSourcePackage(
-      moduleRoot,
-      'ExpoCamera',
-      null,
-      '/abs/interfaces',
-      outDir,
-      null,
-      podspecDir
-    );
-    const manifest = fs.readFileSync(
-      path.join(outDir, 'expo-source', 'ExpoCamera', 'Package.swift'),
-      'utf8'
-    );
-    expect(manifest).toContain('linkerSettings: [.linkedFramework("AVFoundation")],');
-    expect(manifest).toContain('platforms: [.iOS("16.4")],');
-    expect(manifest).not.toContain('Vision');
-  });
-});
-
 describe('single-target packages with sources directly in a predefined directory', () => {
   const dumpTargets = (names) =>
     JSON.stringify({
@@ -462,26 +424,26 @@ describe('sibling dependencies on non-regular targets', () => {
 });
 
 describe('unsupported platform conditions', () => {
-  it('drops a freebsd condition, which PackageDescription 6.0 does not declare', () => {
-    const out = renderSourceManifest(
-      {
-        name: 'TestModule',
-        products: [{ name: 'TestModule', targets: ['Main'] }],
-        targets: [
-          {
-            name: 'Main',
-            path: 'Main',
-            publicHeadersPath: null,
-            siblingDeps: [{ name: 'Helper', platforms: ['freebsd'] }],
-          },
-        ],
-      },
-      [],
-      [],
-      '/abs/interfaces'
-    );
-    expect(out).toContain('"Helper",');
-    expect(out).not.toContain('condition:');
+  it('refuses a freebsd-only condition instead of widening the dependency', () => {
+    expect(() =>
+      renderSourceManifest(
+        {
+          name: 'TestModule',
+          products: [{ name: 'TestModule', targets: ['Main'] }],
+          targets: [
+            {
+              name: 'Main',
+              path: 'Main',
+              publicHeadersPath: null,
+              siblingDeps: [{ name: 'Helper', platforms: ['freebsd'] }],
+            },
+          ],
+        },
+        [],
+        [],
+        '/abs/interfaces'
+      )
+    ).toThrow(/"Helper".*freebsd/s);
   });
 });
 
@@ -647,12 +609,12 @@ describe('mirrored target build settings', () => {
     ).toContain('.define("X", .when(platforms: [.iOS]))');
   });
 
-  it('drops a condition whose platforms are all unknown, keeping the setting', () => {
-    const out = render([
-      { condition: { platformNames: ['plan9'] }, kind: { define: { _0: 'X' } }, tool: 'c' },
-    ]);
-    expect(out).toContain('.define("X")');
-    expect(out).not.toContain('.when(');
+  it('refuses to render a condition whose platforms are all unknown', () => {
+    expect(() =>
+      render([
+        { condition: { platformNames: ['plan9'] }, kind: { define: { _0: 'X' } }, tool: 'c' },
+      ])
+    ).toThrow(/plan9.*SWIFT_PLATFORM_CASES/s);
   });
 
   it('drops the value from a Swift define, which swiftc cannot express', () => {
@@ -703,13 +665,51 @@ describe('mirrored target build settings', () => {
     );
   });
 
+  it('refuses a mode the dump did not write as a string', () => {
+    expect(() => render([{ kind: { swiftLanguageMode: { _0: 5 } }, tool: 'swift' }])).toThrow(
+      /"Main".*a non-empty string belongs/s
+    );
+  });
+
+  it('says so when the dump left a setting without a kind', () => {
+    expect(() => render([{ kind: {}, tool: 'swift' }])).toThrow(/"Main".*no kind/s);
+  });
+
   it('refuses to render a language or interoperability mode it cannot map', () => {
     expect(() => render([{ kind: { swiftLanguageMode: { _0: '7' } }, tool: 'swift' }])).toThrow(
-      /"7"/
+      /Swift language mode "7"/
     );
     expect(() =>
       render([{ kind: { interoperabilityMode: { _0: 'ObjC' } }, tool: 'swift' }])
-    ).toThrow(/"ObjC"/);
+    ).toThrow(/interoperability mode "ObjC"/);
+  });
+
+  it('never resolves a mode or platform name off Object.prototype', () => {
+    expect(() =>
+      render([{ kind: { swiftLanguageMode: { _0: 'constructor' } }, tool: 'swift' }])
+    ).toThrow(/Swift language mode "constructor"/);
+    expect(() =>
+      render([{ kind: { interoperabilityMode: { _0: 'toString' } }, tool: 'swift' }])
+    ).toThrow(/interoperability mode "toString"/);
+    expect(() =>
+      render([
+        { condition: { platformNames: ['constructor'] }, kind: { define: { _0: 'X' } }, tool: 'c' },
+      ])
+    ).toThrow(/constructor/);
+  });
+
+  it.each([
+    ['a number', 42],
+    ['an empty string', ''],
+    ['a define with no name', '=1'],
+    ['a flag list that is not a list', 'not-an-array'],
+  ])('refuses to render %s as a setting value', (_name, value) => {
+    const kind =
+      value === 'not-an-array' ? { unsafeFlags: { _0: value } } : { define: { _0: value } };
+    const expected =
+      value === 'not-an-array' ? /an array of flags belongs/ : /a non-empty string belongs/;
+    expect(() => render([{ kind, tool: 'c' }])).toThrow(expected);
+    expect(() => render([{ kind, tool: 'c' }])).toThrow(/"Main"/);
   });
 
   it('splits a valued define on its first `=` only', () => {
@@ -779,76 +779,36 @@ describe('deployment target', () => {
     ).toContain('platforms: [.iOS(.v15)],');
   });
 
-  it('takes the pure-Swift floor from the podspec declarations', () => {
+  it('takes the pure-Swift floor the plugin read from the podspec', () => {
     expect(
-      renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces', [], {
-        iosDeploymentTarget: '16.4',
-      })
+      renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces', [], '16.4')
     ).toContain('platforms: [.iOS("16.4")],');
     expect(renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces')).toContain(
       'platforms: [.iOS(.v15)],'
     );
   });
-});
 
-describe('pure-Swift linked frameworks and libraries', () => {
-  it('renders the podspec declarations as linker settings, frameworks first', () => {
-    expect(
-      renderPureSwiftManifest('ExpoMediaLibrary', 'ios', [], [], '/abs/interfaces', [], {
-        frameworks: ['Photos', 'PhotosUI'],
-        libraries: ['sqlite3'],
-      })
-    ).toContain(
-      'linkerSettings: [.linkedFramework("Photos"), .linkedFramework("PhotosUI"), .linkedLibrary("sqlite3")],'
-    );
-  });
-
-  it('emits no linkerSettings key when the podspec declares nothing to link', () => {
-    expect(renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces')).not.toContain(
-      'linkerSettings:'
-    );
-  });
-
-  it('links what the module podspec declares, ignoring its test_spec', () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-podspec-emit-'));
+  it('emits the floor the emit layer was given, and never linker settings', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-floor-emit-'));
     const moduleRoot = path.join(tmp, 'module');
     const outDir = path.join(tmp, 'out');
     fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
     fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
-    fs.writeFileSync(
-      path.join(moduleRoot, 'ios', 'ExpoMediaLibrary.podspec'),
-      [
-        'Pod::Spec.new do |s|',
-        '  s.platforms      = {',
-        "    :ios => '16.4',",
-        "    :osx => '13.4'",
-        '  }',
-        "  s.frameworks     = 'Photos','PhotosUI'",
-        "  s.libraries = 'sqlite3'",
-        "  s.test_spec 'Tests' do |test_spec|",
-        "    test_spec.frameworks = 'XCTest'",
-        '  end',
-        'end',
-        '',
-      ].join('\n')
-    );
 
     emitPureSwiftSourcePackage(
       moduleRoot,
-      'ExpoMediaLibrary',
+      'ExpoAsset',
       null,
       '/abs/interfaces',
       outDir,
-      null
+      null,
+      '16.4'
     );
     const manifest = fs.readFileSync(
-      path.join(outDir, 'expo-source', 'ExpoMediaLibrary', 'Package.swift'),
+      path.join(outDir, 'expo-source', 'ExpoAsset', 'Package.swift'),
       'utf8'
     );
-    expect(manifest).toContain(
-      'linkerSettings: [.linkedFramework("Photos"), .linkedFramework("PhotosUI"), .linkedLibrary("sqlite3")],'
-    );
     expect(manifest).toContain('platforms: [.iOS("16.4")],');
-    expect(manifest).not.toContain('XCTest');
+    expect(manifest).not.toContain('linkerSettings:');
   });
 });

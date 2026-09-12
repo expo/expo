@@ -95,6 +95,41 @@ function classifyUnsupported({ pending, coreAvailable }) {
     return [{ reason: 'core-unavailable', pods: pending.map((p) => p.podName) }];
   }
   return pending.map((p) => {
+    const prebuildable = p.prebuildProduct != null && !p.prebuildProduct.sourceOnly;
+    if (prebuildable) {
+      return {
+        reason: 'prebuild-available',
+        podName: p.podName,
+        packageName: p.packageName,
+        moduleRoot: p.moduleRoot,
+        productName: p.prebuildProduct.name,
+      };
+    }
+    if (p.podspecError != null) {
+      const { file, line, snippet, reason } = p.podspecError;
+      return {
+        reason: 'unsupported-podspec-syntax',
+        podName: p.podName,
+        packageName: p.packageName,
+        moduleRoot: p.moduleRoot,
+        file,
+        line,
+        snippet,
+        problem: reason,
+      };
+    }
+    if (p.podspecLinkage != null) {
+      const { file, line, snippet } = p.podspecLinkage;
+      return {
+        reason: 'needs-manifest-for-linkage',
+        podName: p.podName,
+        packageName: p.packageName,
+        moduleRoot: p.moduleRoot,
+        file,
+        line,
+        snippet,
+      };
+    }
     if (p.unresolvedTargets?.length) {
       return {
         reason: 'unresolvable-target-path',
@@ -104,14 +139,8 @@ function classifyUnsupported({ pending, coreAvailable }) {
         targetNames: p.unresolvedTargets,
       };
     }
-    const prebuildable = p.prebuildProduct != null && !p.prebuildProduct.sourceOnly;
     return {
-      reason:
-        p.hasSources === false
-          ? 'no-apple-sources'
-          : prebuildable
-            ? 'prebuild-available'
-            : 'mixed-no-manifest',
+      reason: p.hasSources === false ? 'no-apple-sources' : 'mixed-no-manifest',
       podName: p.podName,
       packageName: p.packageName,
       moduleRoot: p.moduleRoot,
@@ -123,7 +152,7 @@ function classifyUnsupported({ pending, coreAvailable }) {
 /** Pod names a podspec depends on, ignoring `test_spec` blocks. Text-only. */
 function podspecDependencies(text) {
   const deps = [];
-  for (const line of podspecBodyLines(text)) {
+  for (const { text: line } of podspecBodyLines(text)) {
     const match = line.match(/\.dependency\s+['"]([^'"]+)['"]/);
     if (match) deps.push(match[1]);
   }
@@ -209,6 +238,43 @@ function renderUnresolvableTargetPath({ podName, packageName, moduleRoot, target
   ].join('\n');
 }
 
+/**
+ * The floor the podspec states is not an exact literal. Reading a computed one means
+ * running Ruby, and a guessed floor builds the module against APIs the deployment
+ * target may not have — so the module is skipped and the line is quoted back.
+ */
+function renderUnsupportedPodspecSyntax({
+  podName,
+  packageName,
+  moduleRoot,
+  file,
+  line,
+  snippet,
+  problem,
+}) {
+  return [
+    `error: Expo module "${packageName}" (pod ${podName}) states its iOS deployment floor in a form the Swift Package Manager plugin cannot read, so it was skipped.`,
+    `  ${file}:${line} states it as ${problem}:`,
+    `      ${snippet}`,
+    `  The plugin reads the floor as text, and only as an exact literal: \`s.platforms = { :ios => '16.4' }\` or \`s.ios.deployment_target = '16.4'\`. Anything computed would need the podspec to be run, and a guessed floor compiles the module against APIs the deployment target may not have.`,
+    `  Write the floor as a literal, or declare it in a Package.swift for the module — \`platforms: [.iOS("16.4")]\` — which the plugin mirrors.`,
+    `  If you do not own ${packageName}, persist the edit with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
+    `  Module path: ${moduleRoot}`,
+  ].join('\n');
+}
+
+function renderNeedsManifestForLinkage({ podName, packageName, moduleRoot, file, line, snippet }) {
+  return [
+    `error: Expo module "${packageName}" (pod ${podName}) declares native linkage in its podspec, which the Swift Package Manager plugin does not read, so it was skipped.`,
+    `  ${file}:${line} declares it:`,
+    `      ${snippet}`,
+    `  A podspec is Ruby: reading it without running it means guessing, and a guessed link line does not fail here — it fails in a shipped app with a missing symbol. Swift Package Manager needs the linkage stated exactly.`,
+    `  Add a Package.swift to ${packageName} declaring the module's target with \`linkerSettings: [.linkedFramework("Photos"), .linkedLibrary("sqlite3")]\` — the plugin mirrors those verbatim. Or add an spm.config.json, so the Expo prebuild pipeline builds the module into an XCFramework instead. packages/expo-file-system is a worked Package.swift, packages/expo-sensors a worked spm.config.json.`,
+    `  If you do not own ${packageName}, persist that file with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
+    `  Module path: ${moduleRoot}`,
+  ].join('\n');
+}
+
 function renderCoreUnavailable({ pods }) {
   return [
     `error: ExpoModulesCore has no prebuilt Debug and Release xcframework, so all ${pods.length} source-built Expo ${pods.length === 1 ? 'module' : 'modules'} were skipped.`,
@@ -225,6 +291,8 @@ const RENDERERS = {
   'prebuild-available': renderPrebuildAvailable,
   'no-apple-sources': renderNoAppleSources,
   'unresolvable-target-path': renderUnresolvableTargetPath,
+  'unsupported-podspec-syntax': renderUnsupportedPodspecSyntax,
+  'needs-manifest-for-linkage': renderNeedsManifestForLinkage,
   'core-unavailable': renderCoreUnavailable,
 };
 
@@ -251,6 +319,25 @@ function renderUnmappedDependencyWarning(entries) {
     .join('\n\n');
 }
 
+/**
+ * Modules that ARE emitted but set linker flags in their podspec xcconfig. Swift
+ * autolinks what its sources import, so these are usually redundant; when one is not,
+ * the link error is what points here.
+ */
+function renderXcconfigLinkerWarning(entries) {
+  if (!entries.length) return '';
+  return entries
+    .map(({ packageName, podName, file, line, snippet }) =>
+      [
+        `warning: Expo module "${packageName}" (pod ${podName}) sets linker flags in its podspec xcconfig, which the Swift Package Manager plugin does not read:`,
+        `      ${file}:${line}: ${snippet}`,
+        `  The module is built anyway — Swift links the system frameworks and the C++ runtime its sources import, so these flags are usually redundant outside CocoaPods.`,
+        `  If it fails to link, declare what is missing in a Package.swift for the module — \`linkerSettings: [.linkedLibrary("c++"), .linkedFramework("Photos")]\` — which the plugin mirrors verbatim.`,
+      ].join('\n')
+    )
+    .join('\n\n');
+}
+
 /** Print the report and return the error to throw, or null when nothing is uncovered. */
 function reportUnsupported(entries) {
   if (!entries.length) return null;
@@ -269,5 +356,6 @@ module.exports = {
   collectUnmappedDependencies,
   renderUnsupportedReport,
   renderUnmappedDependencyWarning,
+  renderXcconfigLinkerWarning,
   reportUnsupported,
 };
