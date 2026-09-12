@@ -1,3 +1,4 @@
+import { loadProjectEnv } from '@expo/env';
 import { getConfig } from 'expo/config';
 import { Updates } from 'expo/config-plugins';
 
@@ -11,17 +12,39 @@ jest.mock('expo/config-plugins', () => ({
   },
 }));
 jest.mock('expo/config');
+jest.mock('@expo/env');
 
 jest.mock('../workflow');
 jest.mock('../createFingerprintAsync');
 
 describe(resolveRuntimeVersionAsync, () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('loads env files before reading app config', async () => {
+    jest.mocked(getConfig).mockImplementation(() => {
+      expect(loadProjectEnv).toHaveBeenCalledWith('.', {
+        mode: 'production',
+        silent: true,
+      });
+      return {
+        exp: { name: 'test', slug: 'test', runtimeVersion: '3' },
+      } as any;
+    });
+    jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
+
+    await resolveRuntimeVersionAsync('.', 'ios', { silent: true }, { mode: 'production' });
+  });
+
   it('succeeds for constant string', async () => {
     jest.mocked(getConfig).mockReturnValue({
       exp: { name: 'test', slug: 'test', runtimeVersion: '3' },
     } as any);
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
-    await expect(resolveRuntimeVersionAsync('.', 'ios', {}, {})).resolves.toEqual({
+    await expect(
+      resolveRuntimeVersionAsync('.', 'ios', {}, { mode: 'development' })
+    ).resolves.toEqual({
       runtimeVersion: '3',
       fingerprintSources: null,
       workflow: 'managed',
@@ -33,7 +56,9 @@ describe(resolveRuntimeVersionAsync, () => {
       exp: { name: 'test', slug: 'test', runtimeVersion: '3', ios: { runtimeVersion: '4' } },
     } as any);
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
-    await expect(resolveRuntimeVersionAsync('.', 'ios', {}, {})).resolves.toEqual({
+    await expect(
+      resolveRuntimeVersionAsync('.', 'ios', {}, { mode: 'development' })
+    ).resolves.toEqual({
       runtimeVersion: '4',
       fingerprintSources: null,
       workflow: 'managed',
@@ -46,7 +71,9 @@ describe(resolveRuntimeVersionAsync, () => {
     } as any);
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('generic');
 
-    await expect(resolveRuntimeVersionAsync('.', 'ios', {}, {})).rejects.toThrow(
+    await expect(
+      resolveRuntimeVersionAsync('.', 'ios', {}, { mode: 'development' })
+    ).rejects.toThrow(
       `You're currently using the bare workflow, where runtime version policies are not supported. You must set your runtime version manually. For example, define your runtime version as "1.0.0", not {"policy": "appVersion"} in your app config. https://docs.expo.dev/eas-update/runtime-versions`
     );
   });
@@ -58,7 +85,15 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('generic');
 
     await expect(
-      resolveRuntimeVersionAsync('.', 'ios', {}, { workflowOverride: 'managed' })
+      resolveRuntimeVersionAsync(
+        '.',
+        'ios',
+        {},
+        {
+          workflowOverride: 'managed',
+          mode: 'development',
+        }
+      )
     ).resolves.not.toThrow();
   });
 
@@ -69,7 +104,9 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
     jest.mocked(createFingerprintAsync).mockResolvedValue({ hash: 'hello', sources: [] });
 
-    await expect(resolveRuntimeVersionAsync('.', 'ios', {}, {})).resolves.toEqual({
+    await expect(
+      resolveRuntimeVersionAsync('.', 'ios', {}, { mode: 'development' })
+    ).resolves.toEqual({
       runtimeVersion: 'hello',
       fingerprintSources: [],
       workflow: 'managed',
@@ -84,7 +121,9 @@ describe(resolveRuntimeVersionAsync, () => {
     jest.mocked(resolveWorkflowAsync).mockResolvedValue('managed');
     jest.mocked(Updates.resolveRuntimeVersionPolicyAsync).mockResolvedValue('what');
 
-    await expect(resolveRuntimeVersionAsync('.', 'ios', {}, {})).resolves.toEqual({
+    await expect(
+      resolveRuntimeVersionAsync('.', 'ios', {}, { mode: 'development' })
+    ).resolves.toEqual({
       runtimeVersion: 'what',
       fingerprintSources: null,
       workflow: 'managed',

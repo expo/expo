@@ -1,3 +1,4 @@
+import { type EnvMode, loadProjectEnv } from '@expo/env';
 import { getConfig } from 'expo/config';
 import { Updates } from 'expo/config-plugins';
 import * as Fingerprint from 'expo/fingerprint';
@@ -9,12 +10,14 @@ export async function resolveRuntimeVersionAsync(
   projectRoot: string,
   platform: 'ios' | 'android',
   fingerprintOptions: Fingerprint.Options,
-  otherOptions: { workflowOverride?: Workflow }
+  otherOptions: { workflowOverride?: Workflow; mode: EnvMode }
 ): Promise<{
   runtimeVersion: string | null;
   fingerprintSources: Fingerprint.FingerprintSource[] | null;
   workflow: 'managed' | 'generic';
 }> {
+  loadProjectEnv(projectRoot, { mode: otherOptions.mode, silent: fingerprintOptions.silent });
+
   const { exp: config } = getConfig(projectRoot, {
     isPublicConfig: true,
     skipSDKVersionRequirement: true,

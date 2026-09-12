@@ -3,6 +3,7 @@ import {
   convertCertificatePEMToCertificate,
   validateSelfSignedCertificate,
 } from '@expo/code-signing-certificates';
+import { type EnvMode, loadProjectEnv } from '@expo/env';
 import { ExpoConfig, getConfig } from 'expo/config';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -10,11 +11,16 @@ import path from 'path';
 import { log } from './utils/log';
 import { attemptModification } from './utils/modifyConfigAsync';
 
-type Options = { certificateInput: string; keyInput: string; keyid: string | undefined };
+type Options = {
+  certificateInput: string;
+  keyInput: string;
+  keyid: string | undefined;
+  mode: EnvMode;
+};
 
 export async function configureCodeSigningAsync(
   projectRoot: string,
-  { certificateInput, keyInput, keyid }: Options
+  { certificateInput, keyInput, keyid, mode }: Options
 ) {
   const certificateInputDir = path.resolve(projectRoot, certificateInput);
   const keyInputDir = path.resolve(projectRoot, keyInput);
@@ -28,6 +34,8 @@ export async function configureCodeSigningAsync(
   const certificate = convertCertificatePEMToCertificate(certificatePEM);
   const keyPair = convertKeyPairPEMToKeyPair({ privateKeyPEM, publicKeyPEM });
   validateSelfSignedCertificate(certificate, keyPair);
+
+  loadProjectEnv(projectRoot, { mode });
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
 

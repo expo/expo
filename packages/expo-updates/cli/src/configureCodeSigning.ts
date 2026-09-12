@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import * as Log from './utils/log';
+import { getConfigEnvMode } from './utils/nodeEnv';
 
 export const configureCodeSigning: Command = async (argv) => {
   const args = assertArgs(
@@ -47,5 +48,6 @@ Configure expo-updates code signing for this project and verify setup
     certificateInput,
     keyInput,
     keyid,
+    mode: getConfigEnvMode('development'),
   });
 };
