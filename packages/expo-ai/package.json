@@ -32,6 +32,14 @@
       "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
+    "./apple": {
+      "types": {
+        "expo-source": "./src/apple.ts",
+        "default": "./build/apple.d.ts"
+      },
+      "expo-source": "./src/apple.ts",
+      "default": "./build/apple.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
