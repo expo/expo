@@ -77,6 +77,30 @@ All metrics are grouped by environment. The environment value is derived from `p
 
 The environment is a metadata tag attached to each metric and is independent of how the bundle was built. To control whether debug-build metrics are dispatched, see [Enable metrics in development](#enable-metrics-in-development). To disable all dispatching globally, use `configure({ dispatchingEnabled: false })`.
 
+## Network traces
+
+> **info** Network traces require SDK 58 and later.
+
+Completed network requests are recorded as trace spans by default. Each span carries the request URL, so you may want to narrow what gets recorded, or turn it off:
+
+```ts
+import { Observe } from 'expo-observe';
+
+Observe.configure({ networkTraces: false });
+```
+
+Pass an object to record only the requests you care about. Hosts match exactly and case-insensitively, so subdomains are not implied, and an omitted field matches every request:
+
+```ts
+Observe.configure({
+  networkTraces: { filter: { hosts: ['api.myapp.com'], methods: ['GET', 'POST'] } },
+});
+```
+
+This controls recording rather than only export: a request that is turned off or filtered out never reaches the local database. The setting applies to future requests, so spans recorded earlier in the launch are still sent. It also persists across launches, which means requests observed before `configure` runs on the next launch follow the last value you set.
+
+URLs are redacted before they are stored. Userinfo credentials and the query parameters that commonly carry signed-URL secrets are replaced with `REDACTED`.
+
 ## Turn off data ingestion
 
 The options above control what your app sends. You can also stop EAS Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the EAS dashboard:

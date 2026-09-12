@@ -481,6 +481,104 @@ class NetworkRequestPersistenceTest {
   private suspend fun allSpans() = database.spanDao().getSpans(afterId = -1, limit = Int.MAX_VALUE)
 
   @Test
+  fun `drops every request while recording is disabled`() = runTest(testDispatcher) {
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      initialConfiguration = NetworkTracesConfiguration(enabled = false),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    assertTrue(allSpans().isEmpty())
+  }
+
+  @Test
+  fun `records only requests matching the configured filter`() = runTest(testDispatcher) {
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      initialConfiguration = NetworkTracesConfiguration(enabled = true, hosts = listOf("API.myapp.com")),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest(url = "https://api.example.com/skip"))
+    persistence.persist(makeRequest(url = "https://api.myapp.com/keep"))
+    testScheduler.advanceUntilIdle()
+    val rows = allSpans()
+    assertEquals(1, rows.size)
+    val recordedUrl = JSONObject(checkNotNull(rows.single().attributes)).getString("url.full")
+    assertEquals("https://api.myapp.com/keep", recordedUrl)
+  }
+
+  @Test
+  fun `applies a configuration change to subsequent requests only`() = runTest(testDispatcher) {
+    // "Applies forward": rows persisted before the change stay in the table and still dispatch.
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    persistence.setConfiguration(NetworkTracesConfiguration(enabled = false))
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    assertEquals(1, allSpans().size)
+  }
+
+  @Test
+  fun `a backfill applies one policy to the whole batch`() = runTest(testDispatcher) {
+    // The drain reads the policy once. Without that, a reconfigure landing while the batch is
+    // inserting would write the requests it already reached and drop the rest, so one buffer
+    // would be split across two policies.
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      sessionId = "s"
+    )
+    // The reconfigure is triggered from inside the loop, as the second request is read. Calling
+    // it from the test body instead would run before or after the whole drain, never between two
+    // inserts, so it would pass even with the policy re-read per request.
+    var reconfigured = false
+    val buffered = object : AbstractList<NetworkRequest>() {
+      private val backing = (0 until 4).map { makeRequest(url = "https://api.example.com/$it") }
+      override val size = backing.size
+      override fun get(index: Int): NetworkRequest {
+        if (index == 1 && !reconfigured) {
+          reconfigured = true
+          persistence.setConfiguration(NetworkTracesConfiguration(enabled = false))
+        }
+        return backing[index]
+      }
+    }
+    persistence.persistBuffered(buffered)
+    testScheduler.advanceUntilIdle()
+    assertTrue("the reconfigure must land mid-drain for this test to mean anything", reconfigured)
+    assertEquals("the batch must not be split by a mid-drain reconfigure", 4, allSpans().size)
+  }
+
+  @Test
+  fun `honors a persisted policy from the moment it is constructed`() = runTest(testDispatcher) {
+    // The install path reads the stored policy into the constructor rather than applying it in a
+    // second step, so a `setNetworkTracesConfig` that landed before startup finished cannot be
+    // missed by the first requests this producer sees.
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      initialConfiguration = NetworkTracesConfiguration(enabled = false),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    assertTrue("a disabled policy must apply to the very first request", allSpans().isEmpty())
+  }
+
+  @Test
   fun `persists a completed request as a span attributed to the provided session`() = runTest(testDispatcher) {
     insertSession("main-session")
     val persistence = NetworkRequestPersistence(

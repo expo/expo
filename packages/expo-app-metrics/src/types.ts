@@ -501,6 +501,21 @@ export type DebugSession = {
   crashReport?: CrashReport | null;
 };
 
+/**
+ * Normalized form of `Observe.configure({ networkTraces })`, persisted natively.
+ * @hidden
+ */
+export type NetworkTracesConfig = {
+  /**
+   * Whether completed network requests are written to the local `spans` table.
+   */
+  enabled: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted filter records every request.
+   */
+  filter?: NetworkRequestFilter | null;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
@@ -515,6 +530,12 @@ export interface ExpoAppMetricsModuleType {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Applies and persists the network traces recording setting. Affects future captures only;
+   * spans already written keep dispatching.
+   * @hidden
+   */
+  setNetworkTracesConfig(config: NetworkTracesConfig): void;
   /**
    * Sets attributes merged into every subsequent metric and log event.
    * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
