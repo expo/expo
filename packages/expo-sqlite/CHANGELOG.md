@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `SQLiteProvider` skipping re-renders when only `children` change. ([#45099](https://github.com/expo/expo/pull/45099) by [@vladlenskiy](https://github.com/vladlenskiy))
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
