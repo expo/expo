@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Detect native module classes annotated with the `@ExpoModule` macro and add them to the generated modules provider automatically, without listing them in `expo-module.config.json`. Resolution runs the scanner from `@expo/expo-modules-macros-plugin` once over all package sources and falls back to config-declared modules when the scanner is unavailable. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

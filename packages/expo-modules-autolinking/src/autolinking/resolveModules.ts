@@ -14,8 +14,22 @@ export async function resolveModulesAsync(
   autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform }
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
+  // A platform implementation can scan all packages' native sources upfront (one pass for the
+  // whole dependency tree); the per-package results are handed down through `extraOutput`.
+  // Scanning is an enhancement over the config-declared modules, so a failure inside the scan must
+  // never fail resolution itself.
+  let scannedModules = null;
+  if ('scanNativeModulesAsync' in platformLinking) {
+    try {
+      scannedModules = await platformLinking.scanNativeModulesAsync(searchResults);
+    } catch (error: any) {
+      console.warn(
+        `⚠️  Scanning for native modules failed, only modules declared in the module config will be linked: ${error.message ?? error}`
+      );
+    }
+  }
   // Additional output property for Cocoapods flags
-  const extraOutput = { flags: autolinkingOptions.flags };
+  const extraOutput = { flags: autolinkingOptions.flags, scannedModules };
 
   const moduleDescriptorList = await taskAll(
     Object.entries(searchResults),
