@@ -36,6 +36,9 @@ abstract class AsyncFunctionComponent(
         )
       }
 
+      // This runs on the JS thread, so the shared object arguments are still alive here.
+      val retainedSharedObjects = retainSharedObjects(args, appContext)
+
       val functionBody = {
         try {
           exceptionDecorator({
@@ -49,6 +52,9 @@ abstract class AsyncFunctionComponent(
             throw e
           }
           promiseImpl.reject(e.toCodedException())
+        } finally {
+          // The arguments are converted, so the JS objects don't have to be kept alive anymore.
+          retainedSharedObjects.clear()
         }
       }
 
