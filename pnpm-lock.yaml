@@ -914,10 +914,10 @@ importers:
         version: 2.5.7(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       '@react-native-vector-icons/ionicons':
         specifier: ^13.1.2
-        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       '@react-native-vector-icons/material-design-icons':
         specifier: ^13.1.2
-        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       '@shopify/flash-list':
         specifier: 2.0.2
         version: 2.0.2(@babel/runtime@7.29.7)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -1755,7 +1755,7 @@ importers:
         version: 2.2.0(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3))
       '@react-native-vector-icons/material-design-icons':
         specifier: ^13.1.2
-        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       async-retry:
         specifier: ^1.1.4
         version: 1.3.3
@@ -4875,7 +4875,7 @@ importers:
     devDependencies:
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
@@ -5690,7 +5690,7 @@ importers:
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-native-worklets:
         specifier: 0.12.2
-        version: 0.12.2(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+        version: 0.12.2(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-server-dom-webpack:
         specifier: ~19.0.8
         version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18)(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.23))
@@ -11898,10 +11898,6 @@ packages:
     resolution: {integrity: sha512-f9vK751YUzD0qaHSpKc5/qQM6gqOlgGS+4ZRqTNcZOpVqn3mC55yEQ6dUG2K1eaVm5FbKkz9CFWe6XNvrkQFQg==}
     engines: {node: '>=18'}
 
-  flow-parser@0.312.0:
-    resolution: {integrity: sha512-y1iG1bU7i22Mc3sSlchhmV992o8vxzwFLy6K1ZZqbmfXf0qpljN1/AZRuhOA+8uMz8a5iQUdoUyT7pvmdN1flA==}
-    engines: {node: '>=0.4.0'}
-
   flow-parser@0.327.0:
     resolution: {integrity: sha512-/MYZ5hXWf5ozpbdfUDmazMgQXviLxWEiRLH3MppEGDdW0itRVqmB5UaU7QX+SBCDNiq+gEesSVn8nlxmPDyDkw==}
     engines: {node: '>=0.4.0'}
@@ -13439,11 +13435,6 @@ packages:
 
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
-
-  nanoid@3.3.16:
-    resolution: {integrity: sha512-bzlKTyNJ7+LdGIIwy8ijFpIqEQIvafahV7eYykJ8Cvh42EdJeODoJ6gUJXpQJvej1BddH8OqTXZNE/KfbWAu8Q==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
 
   nanoid@3.3.18:
     resolution: {integrity: sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==}
@@ -18020,37 +18011,31 @@ snapshots:
       '@react-native/assets-registry': 0.86.0
       expo-font: link:packages/expo-font
 
-  '@react-native-vector-icons/ionicons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
+  '@react-native-vector-icons/ionicons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
       react-native: 0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
-    optionalDependencies:
-      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
       - expo-font
 
-  '@react-native-vector-icons/material-design-icons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
+  '@react-native-vector-icons/material-design-icons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
       react-native: 0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
-    optionalDependencies:
-      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
       - expo-font
 
-  '@react-native-vector-icons/material-design-icons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
+  '@react-native-vector-icons/material-design-icons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
       react-native: 0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3)
-    optionalDependencies:
-      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
@@ -18308,7 +18293,7 @@ snapshots:
       '@react-navigation/core': 7.16.1(react@19.2.3)
       escape-string-regexp: 4.0.0
       fast-deep-equal: 3.1.3
-      nanoid: 3.3.16
+      nanoid: 3.3.18
       react: 19.2.3
       react-native: 0.88.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
       use-latest-callback: 0.2.6(react@19.2.3)
@@ -18318,7 +18303,7 @@ snapshots:
       '@react-navigation/core': 7.16.1(react@19.2.3)
       escape-string-regexp: 4.0.0
       fast-deep-equal: 3.1.3
-      nanoid: 3.3.16
+      nanoid: 3.3.18
       react: 19.2.3
       react-native: 0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3)
       use-latest-callback: 0.2.6(react@19.2.3)
@@ -21112,8 +21097,6 @@ snapshots:
 
   flow-estree@0.327.0: {}
 
-  flow-parser@0.312.0: {}
-
   flow-parser@0.327.0:
     dependencies:
       flow-estree: 0.327.0
@@ -22175,7 +22158,7 @@ snapshots:
       '@babel/preset-flow': 7.27.1(@babel/core@7.29.7)
       '@babel/preset-typescript': 7.29.7(@babel/core@7.29.7)
       '@babel/register': 7.29.3(@babel/core@7.29.7)
-      flow-parser: 0.312.0
+      flow-parser: 0.327.0
       graceful-fs: 4.2.11
       micromatch: 4.0.8
       neo-async: 2.6.2
@@ -22976,8 +22959,6 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  nanoid@3.3.16: {}
-
   nanoid@3.3.18: {}
 
   napi-postinstall@0.3.4: {}
@@ -23473,7 +23454,7 @@ snapshots:
 
   postcss@8.5.23:
     dependencies:
-      nanoid: 3.3.16
+      nanoid: 3.3.18
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
