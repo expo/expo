@@ -472,23 +472,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v54.0.0': {
-    AlbumRef: '/versions/v54.0.0/sdk/media-library/#albumref',
-    AssetRef: '/versions/v54.0.0/sdk/media-library/#assetref',
-    AVMetadata: '/versions/v54.0.0/sdk/av/#avmetadata',
-    AVPlaybackSource: '/versions/v54.0.0/sdk/av/#avplaybacksource',
-    AVPlaybackStatus: '/versions/v54.0.0/sdk/av/#avplaybackstatus',
-    AVPlaybackStatusToSet: '/versions/v54.0.0/sdk/av/#avplaybackstatustoset',
-    BufferOptions: '/versions/v54.0.0/sdk/video/#bufferoptions-1',
-    CameraPosition: '/versions/v54.0.0/sdk/maps/#cameraposition-2',
-    EventEmitter: '/versions/v54.0.0/sdk/expo/#eventemittertype',
-    Href: '/versions/v54.0.0/sdk/router/#hreft',
-    NativeModule: '/versions/v54.0.0/sdk/expo/#nativemoduletype',
-    Playback: '/versions/v54.0.0/sdk/av/#playback',
-    SharedObject: '/versions/v54.0.0/sdk/expo/#sharedobjecttype',
-    SharedRef: '/versions/v54.0.0/sdk/expo/#sharedreftype',
-    SQLiteProviderProps: '/versions/v54.0.0/sdk/sqlite/#sqliteproviderprops',
-  },
   'v55.0.0': {
     AlbumRef: '/versions/v55.0.0/sdk/media-library/#albumref',
     AssetRef: '/versions/v55.0.0/sdk/media-library/#assetref',
