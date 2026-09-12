@@ -18,6 +18,7 @@
 
 ### 💡 Others
 
+- [iOS] Ship `PrivacyInfo.xcprivacy` from the `EXConstants` target so apps built with Swift Package Manager carry the privacy manifest, as CocoaPods builds already do.
 - [iOS] Split the mixed Swift/Objective-C sources into `EXConstants` and `EXConstantsObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#47649](https://github.com/expo/expo/pull/47649) by [@chrfalch](https://github.com/chrfalch))
 
 ## 57.0.8 - 2026-07-29
