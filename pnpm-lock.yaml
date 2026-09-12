@@ -4990,6 +4990,19 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
 
+  packages/expo-ai:
+    dependencies:
+      react-native:
+        specifier: 0.87.1
+        version: 0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+    devDependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+
   packages/expo-localization:
     dependencies:
       react:
