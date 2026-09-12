@@ -6,7 +6,17 @@ import type {
 
 export let latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
 
-ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _handleNativeStateChangeEvent);
+// Register the native state change listener only in browser/native environments.
+// In server/SSR rendering contexts, the module is re-evaluated per-request and
+// has no real native module backing it. Repeated addListener calls cause
+// listeners to accumulate, leading to a memory leak (OOM crash).
+// See https://github.com/expo/expo/issues/47938
+if (typeof window !== 'undefined') {
+  ExpoUpdatesModule.addListener(
+    'Expo.nativeUpdatesStateChangeEvent',
+    _handleNativeStateChangeEvent
+  );
+}
 
 interface UpdatesStateChangeSubscription {
   remove(): void;
