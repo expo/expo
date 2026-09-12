@@ -27,6 +27,7 @@ export * from './List';
 export * from './Menu';
 export * from './NavigationDestination';
 export * from './NavigationLink';
+export * from './NavigationSplitView';
 export * from './NavigationStack';
 export * from './Picker';
 export * from './ProgressView';

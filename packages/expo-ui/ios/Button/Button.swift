@@ -30,9 +30,18 @@ public struct Button: ExpoSwiftUI.View {
   private var labelLessButton: some View {
     if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *),
       props.children?.isEmpty ?? true,
+      props.systemImage == nil,
       let role = props.role?.toNativeRole() {
       SwiftUI.Button(role: role) {
         props.onButtonPress()
+      }
+    } else if let systemImage = props.systemImage, props.children?.isEmpty ?? true {
+      // An icon-only button. Without this the system image is dropped and the button
+      // renders with no content at all.
+      SwiftUI.Button(role: props.role?.toNativeRole()) {
+        props.onButtonPress()
+      } label: {
+        SwiftUI.Image(systemName: systemImage)
       }
     } else {
       SwiftUI.Button(role: props.role?.toNativeRole(), action: {
