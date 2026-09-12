@@ -49,6 +49,7 @@
 
 ### 💡 Others
 
+- [iOS] Ship a module's `PrivacyInfo.xcprivacy` from the `Package.swift` the SwiftPM autolinking plugin generates, so apps built with Swift Package Manager carry the privacy manifests CocoaPods builds already ship.
 - [iOS] Explain why the SwiftPM autolinking plugin skipped a module: native linkage declared only in the podspec, an iOS deployment floor that is not a literal, or manifest targets whose sources are missing. Warn when a module links through its xcconfig.
 - [iOS] Mirror a module's build settings and declared iOS deployment floor into the `Package.swift` the SwiftPM autolinking plugin generates, and define `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target so `EXAppDefines` reports the new architecture under Swift Package Manager.
 - [iOS] Split the mixed Swift/Objective-C sources into `Expo` and `ExpoObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#45906](https://github.com/expo/expo/pull/45906) by [@tsapeta](https://github.com/tsapeta))

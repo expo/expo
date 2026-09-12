@@ -306,6 +306,33 @@ describe('renderPureSwiftManifest excludes', () => {
   });
 });
 
+describe('renderPureSwiftManifest privacy manifest', () => {
+  it('copies the privacy manifest into the target resources, after the excludes', () => {
+    const out = renderPureSwiftManifest(
+      'ExpoDevice',
+      'ios',
+      [],
+      [],
+      '/abs/interfaces',
+      ['Tests'],
+      null,
+      true
+    );
+    expect(out).toContain(
+      'exclude: ["Tests"],\n            resources: [.copy("PrivacyInfo.xcprivacy")],'
+    );
+  });
+
+  it('emits no resources key when the module ships no privacy manifest', () => {
+    expect(
+      renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces', [], null, false)
+    ).not.toContain('resources:');
+    expect(renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces')).not.toContain(
+      'resources:'
+    );
+  });
+});
+
 describe('emitPureSwiftSourcePackage', () => {
   it('excludes ignored directories found under the module sources', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-pure-emit-'));
@@ -321,6 +348,32 @@ describe('emitPureSwiftSourcePackage', () => {
       'utf8'
     );
     expect(manifest).toContain('exclude: ["Feature/Tests", "__tests__"],');
+  });
+
+  describe('privacy manifest detection', () => {
+    const emit = (withPrivacyManifest) => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-privacy-emit-'));
+      const moduleRoot = path.join(tmp, 'module');
+      const outDir = path.join(tmp, 'out');
+      fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
+      fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
+      if (withPrivacyManifest) {
+        fs.writeFileSync(path.join(moduleRoot, 'ios', 'PrivacyInfo.xcprivacy'), '<plist/>\n');
+      }
+      emitPureSwiftSourcePackage(moduleRoot, 'ExpoDevice', null, '/abs/interfaces', outDir, null);
+      return fs.readFileSync(
+        path.join(outDir, 'expo-source', 'ExpoDevice', 'Package.swift'),
+        'utf8'
+      );
+    };
+
+    it('copies a privacy manifest sitting beside the module sources', () => {
+      expect(emit(true)).toContain('resources: [.copy("PrivacyInfo.xcprivacy")],');
+    });
+
+    it('emits no resources key for a module that ships none', () => {
+      expect(emit(false)).not.toContain('resources:');
+    });
   });
 });
 
