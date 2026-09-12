@@ -10,6 +10,7 @@ public final class GlassView: ExpoView {
   // Glass effect does not work sometimes if view has not been laid out yet
   // https://github.com/expo/expo/issues/41024#issuecomment-3867466289
   private var isMounted = false
+  private var visibilityLink: CADisplayLink?
 
   private var glassStyle: GlassStyle?
   private var glassTintColor: UIColor?
@@ -53,13 +54,68 @@ public final class GlassView: ExpoView {
   override public func layoutSubviews() {
     super.layoutSubviews()
     if !isMounted {
-      isMounted = true
-      // Clear the stale effect before re-applying so UIKit fully tears down
-      // the old UIGlassEffect, otherwise re-assigning does not render GlassView correctly. 
-      // https://github.com/expo/expo/issues/43732
-      glassEffectView.effect = UIVisualEffect()
-      updateEffect()
+      if isEffectRenderable {
+        installEffect()
+      } else {
+        waitForVisibility()
+      }
     }
+  }
+
+  // UIKit silently skips the glass effect when the view's opacity is low,
+  // and never installs it again.
+  private var isEffectRenderable: Bool {
+    guard window != nil else {
+      return false
+    }
+    var opacity: CGFloat = 1
+    var view: UIView? = self
+    while let current = view {
+      if current.isHidden {
+        return false
+      }
+      opacity *= current.alpha
+      view = current.superview
+    }
+
+    // This number was chosen through trial and error.
+    // If adjusting it, be sure to test on various real devices.
+    return opacity > 0.02
+  }
+
+  private func installEffect() {
+    isMounted = true
+    stopWaitingForVisibility()
+    // Clear the stale effect before re-applying so UIKit fully tears down
+    // the old UIGlassEffect, otherwise re-assigning does not render GlassView correctly.
+    // https://github.com/expo/expo/issues/43732
+    glassEffectView.effect = UIVisualEffect()
+    updateEffect()
+  }
+
+  private func waitForVisibility() {
+    guard visibilityLink == nil else {
+      return
+    }
+    let link = CADisplayLink(target: WeakDisplayLinkProxy(self), selector: #selector(WeakDisplayLinkProxy.tick))
+    link.add(to: .main, forMode: .common)
+    visibilityLink = link
+  }
+
+  fileprivate func onVisibilityTick() {
+    if isEffectRenderable {
+      // UIGlassEffect must be created in layoutSubviews
+      setNeedsLayout()
+    }
+  }
+
+  private func stopWaitingForVisibility() {
+    visibilityLink?.invalidate()
+    visibilityLink = nil
+  }
+
+  deinit {
+    visibilityLink?.invalidate()
   }
 
   func updateBorderRadius() {
@@ -238,6 +294,7 @@ public final class GlassView: ExpoView {
     super.didMoveToWindow()
     if (self.window == nil) {
       isMounted = false
+      stopWaitingForVisibility()
     } else {
       // https://github.com/expo/expo/issues/43732
       // UIGlassEffect must be created during layoutSubviews
@@ -277,5 +334,18 @@ public final class GlassView: ExpoView {
 
   public override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
     childComponentView.removeFromSuperview()
+  }
+}
+
+// Use a weak proxy so CADisplayLink does not retain the view
+private final class WeakDisplayLinkProxy: NSObject {
+  private weak var view: GlassView?
+
+  init(_ view: GlassView) {
+    self.view = view
+  }
+
+  @objc func tick() {
+    view?.onVisibilityTick()
   }
 }
