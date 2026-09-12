@@ -35,6 +35,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const { resolveAppTarget } = require('./app-target');
 const { resolveExpoModules, generateModulesProvider } = require('./cli');
 const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
 const {
@@ -267,27 +268,46 @@ module.exports = function expoSpmPlugin(context) {
   // empty. In the app's main module the class always registers, matching CocoaPods
   // `use_expo_modules!` (which adds ExpoModulesProvider.swift to the app target).
   const generatedSources = [];
+  const appTarget = resolveAppTarget(context.appRoot);
+  let providerPath;
   try {
-    const providerPath = generateModulesProvider(
+    providerPath = generateModulesProvider({
       appRoot,
       outDir,
-      modules.map((m) => m.packageName)
+      moduleNames: modules.map((m) => m.packageName),
+      ...appTarget,
+    });
+  } catch (error) {
+    throw new Error(
+      [
+        `Generating ExpoModulesProvider.swift for ${appRoot} failed: ${error.message}`,
+        '  That file is the registry every Expo native module is looked up through, so without it the app builds and then fails at launch with "Cannot find native module".',
+        '  The message above comes from `expo-modules-autolinking generate-modules-provider`. Fix what it names — a module with an unreadable expo-module.config.json is the common cause — then re-run `npx react-native spm update`.',
+      ].join('\n'),
+      { cause: error }
     );
-    if (providerPath != null) {
-      // An empty registry while modules resolved means the allowlist/app-root
-      // filtering broke — the app would launch with NO Expo modules. Loud, not silent.
-      const registered = (fs.readFileSync(providerPath, 'utf8').match(/\.self/g) ?? []).length;
-      if (registered === 0 && modules.length > 0) {
-        console.warn(
-          `[expo-spm-plugin] WARNING: ExpoModulesProvider.swift is EMPTY although ` +
-            `${modules.length} modules resolved (appRoot: ${appRoot}) — no Expo modules will register at runtime.`
-        );
-      }
-      generatedSources.push({ path: providerPath });
-      console.log(`[expo-spm-plugin] generated ExpoModulesProvider.swift → ${providerPath}`);
+  }
+  if (providerPath == null && modules.length > 0) {
+    throw new Error(
+      [
+        `The Expo module registry generator wrote no ExpoModulesProvider.swift to ${outDir}, although ${modules.length} Expo ${modules.length === 1 ? 'module' : 'modules'} resolved.`,
+        '  Without that file no Expo native module is registered, and the app fails at launch with "Cannot find native module".',
+        '  Re-run `npx react-native spm update`. If the file is still missing, report it at https://github.com/expo/expo/issues with the output of `npx expo-modules-autolinking resolve --platform apple --json` run in your app.',
+      ].join('\n')
+    );
+  }
+  if (providerPath != null) {
+    // An empty registry while modules resolved means the allowlist/app-root
+    // filtering broke — the app would launch with NO Expo modules. Loud, not silent.
+    const registered = (fs.readFileSync(providerPath, 'utf8').match(/\.self/g) ?? []).length;
+    if (registered === 0 && modules.length > 0) {
+      console.warn(
+        `[expo-spm-plugin] WARNING: ExpoModulesProvider.swift is EMPTY although ` +
+          `${modules.length} modules resolved (appRoot: ${appRoot}) — no Expo modules will register at runtime.`
+      );
     }
-  } catch (e) {
-    console.warn(`[expo-spm-plugin] WARNING: ExpoModulesProvider generation failed: ${e.message}`);
+    generatedSources.push({ path: providerPath });
+    console.log(`[expo-spm-plugin] generated ExpoModulesProvider.swift → ${providerPath}`);
   }
 
   // Staleness inputs (`watchPaths` plugin contract): each module's checked-in
@@ -300,7 +320,15 @@ module.exports = function expoSpmPlugin(context) {
       moduleRoots.add(findModuleRoot(pod.podspecDir));
     }
   }
-  const watchPaths = collectWatchPaths([...moduleRoots]);
+  // The registry's other inputs: app groups come from the entitlements file and
+  // inline-module registration from Podfile.properties.json, so editing either
+  // must trip the re-sync as well. Known gap: repointing CODE_SIGN_ENTITLEMENTS
+  // at a different file is not noticed, because that would mean watching
+  // project.pbxproj — which RN rewrites during the sync itself.
+  const watchPaths = [
+    ...collectWatchPaths([...moduleRoots]),
+    ...[appTarget.entitlementPath, appTarget.podfilePropertiesPath].filter((p) => p != null),
+  ];
 
   const scriptPhases = scriptPhasesForModules(modules.map((m) => m.packageName));
   if (scriptPhases.length > 0) {
