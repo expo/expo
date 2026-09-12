@@ -52,6 +52,7 @@ class BarcodeScannerUtils {
     return result
   }
 
+  #if !targetEnvironment(macCatalyst)
   @available(iOS 16.0, *)
   static func visionDataScannerObjectToDictionary(item: RecognizedItem.Barcode) -> [String: Any] {
     var result = [String: Any]()
@@ -68,6 +69,7 @@ class BarcodeScannerUtils {
 
     return result
   }
+  #endif
 
   // iOS reports upc_a as ean13 with an extra leading zero; strip it so the value matches the code.
   static func normalizeBarcodeValue(_ value: String?, isEAN13: Bool) -> String? {
