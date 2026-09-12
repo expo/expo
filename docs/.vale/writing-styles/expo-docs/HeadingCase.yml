@@ -129,6 +129,7 @@ exceptions:
   - '.*Google Font.*'
   - '.*Google Service Account.*'
   - '.*Google Pay.*'
+  - '.*Grok Build.*'
   - ".*Giphy's.*"
   - '.*GLView.*'
   - '.*gitignore.*'
