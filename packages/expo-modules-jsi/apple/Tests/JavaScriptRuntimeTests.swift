@@ -1,4 +1,4 @@
-import ExpoModulesJSI
+@_spi(Testing) import ExpoModulesJSI
 import Foundation
 import Testing
 
@@ -214,6 +214,23 @@ struct JavaScriptRuntimeTests {
     let checkpoints = await recordSuspensionMatrix(on: scheduled.runtime)
 
     // A matrix that stopped early would pass vacuously, so check that every suspension ran.
+    #expect(checkpoints.map(\.label) == suspensionMatrixLabels)
+    expectNoThreadDrift(in: checkpoints)
+
+    withExtendedLifetime(scheduled) {}
+  }
+
+  @Test
+  func `schedule async stays on the JavaScript thread without a task executor preference`() async {
+    let scheduled = await TestRuntimeScheduler().makeRuntime()
+
+    // Takes the compatibility path on any operating system. No simulator runtime old enough to
+    // reach it on its own can be installed on current macOS, so without this the path would ship
+    // with no coverage. The flag is per runtime, so tests running alongside are unaffected.
+    scheduled.runtime.usesTaskExecutorPreference = false
+
+    let checkpoints = await recordSuspensionMatrix(on: scheduled.runtime)
+
     #expect(checkpoints.map(\.label) == suspensionMatrixLabels)
     expectNoThreadDrift(in: checkpoints)
 

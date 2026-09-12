@@ -139,6 +139,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Return `NSNull` instead of trapping in the deprecated `JavaScriptValue.getAny()` when it encounters a unrepresentable value. ([#47381](https://github.com/expo/expo/pull/47381) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed the `Build ExpoModulesJSI xcframework` build phase intermittently failing on Xcode 27 when clearing stale build state raced Xcode's background indexer writing into the SwiftPM index store. ([#47914](https://github.com/expo/expo/pull/47914) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Keep asynchronous `JavaScriptRuntime.schedule` and `execute` tasks on the runtime's JavaScript thread after suspension points by using a runtime-specific task executor preference on iOS 18 and newer. Two suspensions stay outside that: returning from an actor that has an executor of its own (the main actor, for instance), and an unstructured `Task { }` started inside the work, since Swift does not pass a task executor preference to unstructured tasks. ([#47900](https://github.com/expo/expo/pull/47900) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Keep asynchronous `JavaScriptRuntime.schedule` and `execute` tasks on the runtime's JavaScript thread after suspension points on iOS 16 and 17 by binding a runtime-specific serial executor while creating the task. ([#47917](https://github.com/expo/expo/pull/47917) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
