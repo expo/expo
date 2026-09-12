@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Let the on-demand filesystem follow a symlink past an ancestor watch root: the pattern for a root above `rootDir` (`..`, `../..`) was a prefix of every deeper escape, so packages linked from a global virtual store (pnpm, Bun) failed with "Unable to resolve" whenever the app's parent folder was itself a watched workspace package. ([#50078](https://github.com/expo/expo/pull/50078) by [@jeromenagle537](https://github.com/jeromenagle537))
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
