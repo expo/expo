@@ -20,6 +20,8 @@ export type SerialAsset = {
     reactClientReferences?: string[];
     // DOM Component references from the static babel pass.
     expoDomComponentReferences?: string[];
+    /** Set when Hermes bytecode compilation was deferred so DOM component html renames can be applied to the serialized JS first (see `transformJsAssetToHermesBytecodeAsync`). */
+    deferredHermesBytecode?: boolean;
     // File paths of route modules that have loader exports.
     loaderReferences?: string[];
     requires?: string[];

@@ -219,6 +219,46 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
     expect(nativeJsContents).not.toEqual(nativeBundle1Chunk);
     expect(nativeJsContents).toContain('MOCK_CONTENTS_MD5_HASH');
   });
+
+  it('should throw when the native bundle is already compiled Hermes bytecode', () => {
+    const domComponentReference = 'file:///app/components/DomView.tsx';
+    const htmlOutputName = 'www.bundle/dom1.html';
+    const nativeBundle: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/ios/entry-native1.hbc',
+          originFilename: 'node_modules/expo-router/entry.js',
+          type: 'js',
+          metadata: {},
+          source: '',
+        },
+      ],
+      assets: [],
+    };
+    const files: ExportAssetMap = new Map([
+      [
+        '_expo/static/js/ios/entry-native1.hbc',
+        {
+          contents: Buffer.from([0xc6, 0x1f, 0xbc, 0x03]),
+        },
+      ],
+      [
+        htmlOutputName,
+        {
+          contents: '<html></html>',
+        },
+      ],
+    ]);
+
+    expect(() =>
+      transformNativeBundleForMd5Filename({
+        domComponentReference,
+        nativeBundle,
+        files,
+        htmlOutputName,
+      })
+    ).toThrow(/compiled Hermes bytecode/);
+  });
 });
 
 describe('Multiple DOM components metadata accumulation', () => {
