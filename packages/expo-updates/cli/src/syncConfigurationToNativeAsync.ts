@@ -8,7 +8,7 @@ import { Workflow } from '../../utils/build/workflow';
 
 type SyncConfigurationToNativeOptions = {
   projectRoot: string;
-  platform: 'ios' | 'android';
+  platform: 'ios' | 'tvos' | 'android';
   workflow: Workflow;
 };
 
@@ -27,8 +27,10 @@ export async function syncConfigurationToNativeAsync(
     case 'android':
       await syncConfigurationToNativeAndroidAsync(options);
       break;
+    // tvOS uses the iOS config shape and its own `tvos/` project directory.
     case 'ios':
-      await syncConfigurationToNativeIosAsync(options);
+    case 'tvos':
+      await syncConfigurationToNativeAppleAsync(options, options.platform);
       break;
   }
 }
@@ -83,8 +85,9 @@ async function syncConfigurationToNativeAndroidAsync(
   await XML.writeXMLAsync({ path: stringsJSONPath, xml: updatedStringsResourceXML });
 }
 
-async function syncConfigurationToNativeIosAsync(
-  options: SyncConfigurationToNativeOptions
+async function syncConfigurationToNativeAppleAsync(
+  options: SyncConfigurationToNativeOptions,
+  platform: IOSConfig.Paths.ApplePlatform
 ): Promise<void> {
   const { exp } = getConfig(options.projectRoot, {
     isPublicConfig: false, // This must be false or it will drop codesigning config
@@ -93,26 +96,30 @@ async function syncConfigurationToNativeIosAsync(
 
   const packageVersion = require('../../package.json').version;
 
-  const expoPlist = await readExpoPlistAsync(options.projectRoot);
+  const expoPlist = await readExpoPlistAsync(options.projectRoot, platform);
   const updatedExpoPlist = await IOSConfig.Updates.setUpdatesConfigAsync(
     options.projectRoot,
     exp,
     expoPlist,
     packageVersion
   );
-  await writeExpoPlistAsync(options.projectRoot, updatedExpoPlist);
+  await writeExpoPlistAsync(options.projectRoot, platform, updatedExpoPlist);
 }
 
-async function readExpoPlistAsync(projectDir: string): Promise<IOSConfig.ExpoPlist> {
-  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir);
+async function readExpoPlistAsync(
+  projectDir: string,
+  platform: IOSConfig.Paths.ApplePlatform
+): Promise<IOSConfig.ExpoPlist> {
+  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir, platform);
   return ((await readPlistAsync(expoPlistPath)) ?? {}) as IOSConfig.ExpoPlist;
 }
 
 async function writeExpoPlistAsync(
   projectDir: string,
+  platform: IOSConfig.Paths.ApplePlatform,
   expoPlist: IOSConfig.ExpoPlist
 ): Promise<void> {
-  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir);
+  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir, platform);
   await writePlistAsync(expoPlistPath, expoPlist);
 }
 
