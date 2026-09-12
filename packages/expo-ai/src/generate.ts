@@ -16,6 +16,7 @@ import type {
 } from './LanguageModels.types';
 import { createOperation } from './Operation';
 import { observeBackground } from './background';
+import { runCleanup } from './cleanup';
 import { snapshotImages } from './images';
 import { compileSchema } from './schema';
 
@@ -26,22 +27,7 @@ function disposeOwnedSession(
   taskFailed: boolean,
   backgroundSubscription?: { remove(): void }
 ) {
-  let cleanupFailure: unknown;
-  let cleanupFailed = false;
-  try {
-    session?.dispose();
-  } catch (cause) {
-    cleanupFailed = true;
-    cleanupFailure = cause;
-  }
-  try {
-    backgroundSubscription?.remove();
-  } catch (cause) {
-    if (!cleanupFailed) cleanupFailure = cause;
-    cleanupFailed = true;
-  }
-  // Attempt both releases, preserving the original task error.
-  if (!taskFailed && cleanupFailed) throw normalizeError(cleanupFailure);
+  runCleanup([() => session?.dispose(), () => backgroundSubscription?.remove()], taskFailed);
 }
 
 /**

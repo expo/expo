@@ -52,7 +52,8 @@ internal class LanguageModelSessionController(
       tasks.start(requestId, promise, onSuccess = { response ->
         // Promise delivery can precede cancellation or JavaScript validation.
         // Only an explicit acceptance may add this turn to the conversation.
-        pendingResult = PendingResult(requestId, LanguageModelTurn(prompt, response as String))
+        val text = org.json.JSONObject(response as String).getString("text")
+        pendingResult = PendingResult(requestId, LanguageModelTurn(prompt, text))
       }) { request ->
         requireForeground()
         val input = conversationPrompt(previousTurns, prompt)
@@ -64,7 +65,7 @@ internal class LanguageModelSessionController(
         }
         request.ensureActive()
         requireForeground()
-        text
+        generationResult(text)
       }
     }
   }

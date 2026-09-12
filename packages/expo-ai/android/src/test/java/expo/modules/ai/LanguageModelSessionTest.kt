@@ -29,7 +29,7 @@ class LanguageModelSessionTest {
     }
     controller.generate("first", "Remember this", "{}", first)
     runCurrent()
-    assertEquals(listOf("answer"), next.results)
+    assertEquals(listOf(generationResult("answer")), next.results)
     assertTrue(backend.prompts.last().contains("Remember this"))
     controller.dispose()
   }
@@ -123,7 +123,7 @@ class LanguageModelSessionTest {
     controller.generate("first", "Remember pear", "{}", first)
     assertFalse(controller.acceptResult("first"))
     runCurrent()
-    assertEquals(listOf("answer"), first.results)
+    assertEquals(listOf(generationResult("answer")), first.results)
     assertFalse(controller.acceptResult("unknown"))
     controller.discardResult("unknown")
     try {
@@ -159,7 +159,7 @@ class LanguageModelSessionTest {
     runCurrent()
     controller.cancel("canceled")
     assertFalse(controller.acceptResult("canceled"))
-    assertEquals(listOf("answer"), canceled.results)
+    assertEquals(listOf(generationResult("answer")), canceled.results)
     assertTrue(canceled.errors.isEmpty())
 
     controller.generate("discarded", "Invalid secret", "{}", TestPromise())
@@ -297,7 +297,7 @@ class LanguageModelSessionTest {
     val completed = TestPromise()
     controller.generate("completed", "Remember pear", "{}", completed)
     runCurrent()
-    assertEquals(listOf("answer"), completed.results)
+    assertEquals(listOf(generationResult("answer")), completed.results)
     assertTrue(controller.acceptResult("completed"))
     backend.response = { _, _ -> CompletableDeferred<String>().await() }
     val promise = TestPromise()
@@ -326,7 +326,7 @@ class LanguageModelSessionTest {
     val fresh = TestPromise()
     controller.generate("4", "fresh", "{}", fresh)
     runCurrent()
-    assertEquals(listOf("recovered"), fresh.results)
+    assertEquals(listOf(generationResult("recovered")), fresh.results)
     assertTrue(backend.prompts.last().contains("Remember pear"))
     assertFalse(backend.prompts.last().contains("Do not remember pending turn"))
     assertFalse(backend.prompts.last().contains("background"))

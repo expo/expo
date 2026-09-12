@@ -114,7 +114,7 @@ export class BrowserLanguageModelSession implements NativeSession {
       // Transfer the clone to pending ownership without changing committed history.
       this.pending = { id: requestId, model };
       active.model = undefined;
-      return text;
+      return JSON.stringify({ text, usage: { inputTokens: null, outputTokens: null } });
     } catch (cause) {
       operation.check();
       const error = browserError(cause, 'ERR_GENERATION_FAILED');
