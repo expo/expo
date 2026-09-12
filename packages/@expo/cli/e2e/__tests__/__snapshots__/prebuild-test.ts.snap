@@ -118,6 +118,7 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
   "ios/basicprebuild/Images.xcassets/Contents.json",
   "ios/basicprebuild/Info.plist",
+  "ios/basicprebuild/SceneDelegate.swift",
   "ios/basicprebuild/SplashScreen.storyboard",
   "ios/basicprebuild/Supporting/Expo.plist",
   "ios/basicprebuild/basicprebuild-Bridging-Header.h",

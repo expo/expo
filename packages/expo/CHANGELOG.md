@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
+
+- Adopted the UIKit scene-based life cycle on iOS so apps built with the iOS 27 SDK launch correctly. ([#46733](https://github.com/expo/expo/pull/46733) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Mark `ExpoAppSceneDelegate` as unavailable in extensions. ([#46799](https://github.com/expo/expo/pull/46799) by [@jakex7](https://github.com/jakex7))
+- [iOS] Fix `Linking.getInitialURL()` returning `null` and deep links being dropped when a URL cold-starts an app on the UIKit scene life cycle. ([#47628](https://github.com/expo/expo/pull/47628) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Mark `ExpoAppSceneDelegate` as unavailable in `iOSApplicationExtension` for widgets. ([#47894](https://github.com/expo/expo/pull/47894) by [@jakex7](https://github.com/jakex7))
+- [iOS] Forward URL, user activity, life cycle and quick action events to `AppDelegate` overrides under the UIScene life cycle. ([#49925](https://github.com/expo/expo/pull/49925) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 57.0.22 — 2026-09-11

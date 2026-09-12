@@ -138,10 +138,23 @@ public struct Utilities {
     return convertToUrl(string: string)
   }
 
+  /**
+   Returns the app's key window. On iOS and tvOS it is resolved from the foregrounded scene, so
+   callers presenting UI don't reach a window in a scene the user isn't looking at.
+   */
+  @MainActor
+  public static func keyWindow() -> UIWindow? {
+#if os(iOS) || os(tvOS)
+    return SceneGeometry.keyWindow()
+#elseif os(macOS)
+    return NSApplication.shared.keyWindow
+#endif
+  }
+
   nonisolated public func currentViewController() -> UIViewController? {
     return MainActor.assumeIsolated {
 #if os(iOS) || os(tvOS)
-      var controller = UIApplication.shared.keyWindow?.rootViewController
+      var controller = Utilities.keyWindow()?.rootViewController
 
       while let presentedController = controller?.presentedViewController, !presentedController.isBeingDismissed {
         controller = presentedController
@@ -149,7 +162,7 @@ public struct Utilities {
       return controller
 #elseif os(macOS)
       // Even though the function's return type is `UIViewController`, react-native-macos will alias `NSViewController` to `UIViewController`.
-      return NSApplication.shared.keyWindow?.contentViewController
+      return Utilities.keyWindow()?.contentViewController
 #endif
     }
   }

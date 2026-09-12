@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Resolve the key window and presentation controller through scene-aware utilities. ([#46956](https://github.com/expo/expo/pull/46956), [#48319](https://github.com/expo/expo/pull/48319))
+
 ### 💡 Others
 
 ## 57.0.18 — 2026-09-11
