@@ -5,6 +5,8 @@ import Foundation
 #endif
 
 internal enum LanguageModelNativeChecks {
+  private struct GenerationEnvelope: Decodable { let text: String }
+
   static func require(_ condition: Bool, _ message: String) throws {
     if !condition { throw LanguageModelException("ERR_TEST_FAILED", message) }
   }
@@ -20,6 +22,7 @@ internal enum LanguageModelNativeChecks {
     } else {
       try require(try fixture.boolean("availability.status === 'unavailable' && availability.reason === 'unsupported-os'"), "Older OS availability must fail gracefully")
     }
+    try require(try fixture.boolean("availability.capabilities.provider === 'apple-foundation-models' && availability.capabilities.execution === 'on-device'"), "Native availability omitted Apple capabilities")
     print("Native availability: \(try fixture.string("JSON.stringify(availability)"))")
     try fixture.evaluate("globalThis.checks = []; globalThis.last = null;")
     try fixture.evaluate("""
@@ -38,7 +41,8 @@ internal enum LanguageModelNativeChecks {
       """)
     try await fixture.wait("typeof globalThis.result === 'string' || !!globalThis.failure")
     try require(try fixture.string("String(globalThis.failure || '')") == "", "Unexpected bridge failure")
-    try require(try fixture.string("result") == "from JavaScript", "The JS tool reply did not return to native generation")
+    try require(try fixture.string("JSON.parse(result).text") == "from JavaScript", "The JS tool reply did not return to native generation")
+    try require(try fixture.boolean("JSON.parse(result).usage.inputTokens === null && JSON.parse(result).usage.outputTokens === null"), "Unknown usage did not survive the generation bridge")
     try require(try fixture.boolean("checks.length === 5 && checks.every(Boolean)"), "Class, snapshot, tool arguments, or duplicate reply checks failed")
     try require(try fixture.boolean("session.acceptResult('roundtrip')"), "The bridge result was not ready for acceptance")
 
@@ -55,14 +59,14 @@ internal enum LanguageModelNativeChecks {
       })).then(value => { globalThis.structured = JSON.parse(value); }, error => { globalThis.failure = String(error); });
       """)
     try await fixture.wait("globalThis.structured !== null || !!globalThis.failure")
-    try require(try fixture.boolean("structured.category === 'note' && structuredSnapshot.category === 'note'"), "Structured schema/result/snapshot round trip failed")
+    try require(try fixture.boolean("JSON.parse(structured.text).category === 'note' && structuredSnapshot.category === 'note'"), "Structured schema/result/snapshot round trip failed")
     try require(try fixture.boolean("session.acceptResult('structured')"), "The structured result was not ready for acceptance")
 
-    // Exercise the optional metadata bridge with a backend that reports no token
-    // counts. Unknown values must cross Hermes as null, never fabricated zeroes.
+    // Every generation uses the same result envelope. Unknown values must cross
+    // Hermes as null, never fabricated zeroes.
     try fixture.evaluate("""
       globalThis.metadata = null;
-      session.generateWithMetadataAsync('metadata', 'structured', JSON.stringify({
+      session.generateAsync('metadata', 'structured', JSON.stringify({
         schema: { type: 'object', properties: { category: { type: 'string' } }, required: ['category'], additionalProperties: false }
       })).then(value => { globalThis.metadata = JSON.parse(value); }, error => { globalThis.failure = String(error); });
       """)
@@ -106,7 +110,7 @@ internal enum LanguageModelNativeChecks {
       session.generateAsync('next-request', 'tool', '{"maximumToolCalls":1}').then(value => { globalThis.result = value; });
       """)
     try await fixture.wait("globalThis.result !== null")
-    try require(try fixture.boolean("oldRejected && result === 'fresh'"), "Old request callback targeted a newer request")
+    try require(try fixture.boolean("oldRejected && JSON.parse(result).text === 'fresh'"), "Old request callback targeted a newer request")
     try require(try fixture.boolean("session.acceptResult('next-request')"), "The reused session result was not ready for acceptance")
 
     // Test native budget enforcement without relying on the JS wrapper.
@@ -202,7 +206,8 @@ internal enum LanguageModelNativeChecks {
     }
     session.discardResult(requestId: "stale")
     let next = try await session.generate(requestId: "next", prompt: "latest", optionsJSON: "{}")
-    try require(next == "accepted|latest", "An unaccepted result entered the next prompt")
+    let nextText = try JSONDecoder().decode(GenerationEnvelope.self, from: Data(next.utf8)).text
+    try require(nextText == "accepted|latest", "An unaccepted result entered the next prompt")
     try require(!session.acceptResult(requestId: "stale"), "A superseded result was accepted")
     try require(session.acceptResult(requestId: "next"), "A stale acceptance altered the ready result")
     try require(backend.turns == ["accepted", "latest"], "Successful native history was not preserved")
@@ -252,12 +257,12 @@ internal enum LanguageModelNativeChecks {
       globalThis.historyCheck = null;
       expo.modules.ExpoAI.createSessionAsync('{}').then(async session => {
         globalThis.session = session;
-        const first = await session.generateWithMetadataAsync('accepted', 'accepted', '{}');
+        const first = await session.generateAsync('accepted', 'accepted', '{}');
         const results = [JSON.parse(first).text === 'accepted', !session.acceptResult('wrong'), session.acceptResult('accepted'), !session.acceptResult('accepted')];
         await session.generateAsync('discarded', 'discarded', '{}');
         session.discardResult('discarded');
         results.push(!session.acceptResult('discarded'));
-        results.push(await session.generateAsync('next', 'next', '{}') === 'accepted|next');
+        results.push(JSON.parse(await session.generateAsync('next', 'next', '{}')).text === 'accepted|next');
         results.push(session.acceptResult('next'));
         await session.generateAsync('disposed', 'disposed', '{}');
         session.dispose();
@@ -293,7 +298,7 @@ internal enum LanguageModelNativeChecks {
     fixture.resumeScheduler()
     try fixture.evaluate("session.resolveTool(last.callId, 'resumed reply', null);")
     try await fixture.wait("globalThis.result !== undefined || globalThis.failure !== undefined")
-    try require(try fixture.boolean("result === 'resumed reply' && globalThis.failure === undefined"), "Resuming the scheduler did not complete the tool reply")
+    try require(try fixture.boolean("JSON.parse(result).text === 'resumed reply' && globalThis.failure === undefined"), "Resuming the scheduler did not complete the tool reply")
     try await fixture.verifySessionReuse()
   }
 
@@ -614,7 +619,7 @@ private final class BridgeFixture {
         }, error => { globalThis.failure = error.code; });
       """)
     try await wait("globalThis.result !== undefined || globalThis.failure !== undefined")
-    try LanguageModelNativeChecks.require(try boolean("result === 'next reply' && globalThis.failure === undefined"), "The explicit session was not usable after scheduler recovery")
+    try LanguageModelNativeChecks.require(try boolean("JSON.parse(result).text === 'next reply' && globalThis.failure === undefined"), "The explicit session was not usable after scheduler recovery")
   }
 
   func destroyModule() { context.moduleRegistry.unregister(moduleName: "ExpoAI") }

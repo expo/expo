@@ -21,10 +21,19 @@ export function availableModel(overrides: Partial<ModelCapabilities> = {}) {
   });
 }
 
+export function nativeResult(
+  text: string,
+  usage: Record<string, number | null> = { inputTokens: null, outputTokens: null }
+) {
+  return JSON.stringify({ text, usage });
+}
+
 type Event = NativeTextEvent | NativeToolEvent;
 export class FakeSession implements NativeSession {
   listeners = new Map<string, Set<(event: never) => void>>();
-  generateAsync = jest.fn<Promise<string>, [string, string, string]>().mockResolvedValue('ready');
+  generateAsync = jest
+    .fn<Promise<string>, [string, string, string]>()
+    .mockResolvedValue(nativeResult('ready'));
   acceptResult = jest.fn<boolean, [string]>().mockReturnValue(true);
   discardResult = jest.fn<void, [string]>();
   cancel = jest.fn();

@@ -40,6 +40,7 @@ async function availability(
     return {
       status: 'unavailable',
       reason: 'browser-api-unavailable',
+      capabilities,
     } as const;
   const status = await api.availability(options);
   if (!['available', 'downloadable', 'downloading', 'unavailable'].includes(status)) {

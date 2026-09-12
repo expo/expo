@@ -1,7 +1,7 @@
 import NativeModule from '../ExpoAI';
 import { Tools } from '../apple';
 import { createSessionAsync, generateAsync, getAvailabilityAsync, schema } from '../index';
-import { availableModel, FakeSession } from './fixtures/FakeSession';
+import { availableModel, FakeSession, nativeResult } from './fixtures/FakeSession';
 
 jest.mock('../ExpoAI', () => ({
   __esModule: true,
@@ -25,12 +25,7 @@ beforeEach(() => {
 
 it('reports image tools independently of model vision and checks both requirements', async () => {
   nativeModule.getAvailabilityAsync.mockResolvedValue(
-    JSON.stringify({
-      status: 'available',
-      images: false,
-      imageTools: true,
-      contextTokens: 4096,
-    })
+    availableModel({ images: 'unsupported', imageTools: 'supported', contextTokens: 4096 })
   );
   await expect(getAvailabilityAsync({ requires: ['imageTools'] })).resolves.toMatchObject({
     status: 'available',
@@ -39,6 +34,20 @@ it('reports image tools independently of model vision and checks both requiremen
   await expect(getAvailabilityAsync({ requires: ['images'] })).resolves.toEqual({
     status: 'unavailable',
     reason: 'unsupported-feature',
+  });
+});
+
+it('requires the common Apple availability and generation envelopes', async () => {
+  nativeModule.getAvailabilityAsync.mockResolvedValue(
+    JSON.stringify({ status: 'available', images: false, contextTokens: 4096 })
+  );
+  await expect(getAvailabilityAsync()).rejects.toMatchObject({
+    code: 'ERR_PROVIDER_RESPONSE_INVALID',
+  });
+  nativeModule.getAvailabilityAsync.mockResolvedValue(availableModel());
+  native.generateAsync.mockResolvedValue('legacy text-only response');
+  await expect(generateAsync('Read this.')).rejects.toMatchObject({
+    code: 'ERR_PROVIDER_RESPONSE_INVALID',
   });
 });
 
@@ -169,7 +178,7 @@ it('waits for approval before executing Vision and serializes ordinary native da
   await flush();
   expect(executeBuiltinToolAsync).toHaveBeenCalledWith('read-1', 'ocr', 'receipt');
   expect(native.resolveTool).toHaveBeenCalledWith('read-1', '{"text":"Total 42"}', null);
-  respond('42');
+  respond(nativeResult('42'));
   await expect(request).resolves.toMatchObject({ value: '42' });
 });
 
@@ -234,12 +243,9 @@ it('returns real metadata for text, structured, and streamed completions', async
     reasoningTokens: 0,
     contextTokens: 90,
   };
-  const generateWithMetadataAsync = jest
-    .fn()
-    .mockResolvedValue(JSON.stringify({ text: 'ready', usage }));
-  Object.assign(native, { generateWithMetadataAsync });
+  native.generateAsync.mockResolvedValue(JSON.stringify({ text: 'ready', usage }));
   await expect(generateAsync('Read this.')).resolves.toMatchObject({ value: 'ready', usage });
-  generateWithMetadataAsync.mockResolvedValue(JSON.stringify({ text: '{"total":42}', usage }));
+  native.generateAsync.mockResolvedValue(JSON.stringify({ text: '{"total":42}', usage }));
   await expect(
     generateAsync('Read this.', { schema: schema.object({ total: schema.number() }) })
   ).resolves.toMatchObject({ value: { total: 42 }, usage });
@@ -248,18 +254,16 @@ it('returns real metadata for text, structured, and streamed completions', async
   for await (const event of session.generateStream('Read this.')) events.push(event);
   expect(events.at(-1)).toMatchObject({ type: 'result', result: { usage } });
   session.dispose();
-  expect(native.generateAsync).not.toHaveBeenCalled();
+  expect(native.generateAsync).toHaveBeenCalledTimes(3);
 });
 
 it('keeps iOS 26 context counting separate from unknown request usage', async () => {
-  Object.assign(native, {
-    generateWithMetadataAsync: jest.fn().mockResolvedValue(
-      JSON.stringify({
-        text: 'ready',
-        usage: { inputTokens: null, outputTokens: null, contextTokens: 100 },
-      })
-    ),
-  });
+  native.generateAsync.mockResolvedValue(
+    JSON.stringify({
+      text: 'ready',
+      usage: { inputTokens: null, outputTokens: null, contextTokens: 100 },
+    })
+  );
   await expect(generateAsync('Read this.')).resolves.toMatchObject({
     usage: { inputTokens: null, outputTokens: null, contextTokens: 100 },
   });
@@ -269,22 +273,19 @@ it('aggregates measured calls across output repair without summing independent c
   nativeModule.getAvailabilityAsync.mockResolvedValue(
     availableModel({ constrainedOutput: 'unsupported' })
   );
-  Object.assign(native, {
-    generateWithMetadataAsync: jest
-      .fn()
-      .mockResolvedValueOnce(
-        JSON.stringify({
-          text: '{"total":"wrong"}',
-          usage: { inputTokens: 10, outputTokens: 4, contextTokens: 14 },
-        })
-      )
-      .mockResolvedValueOnce(
-        JSON.stringify({
-          text: '{"total":42}',
-          usage: { inputTokens: 20, outputTokens: 5, contextTokens: 25 },
-        })
-      ),
-  });
+  native.generateAsync
+    .mockResolvedValueOnce(
+      JSON.stringify({
+        text: '{"total":"wrong"}',
+        usage: { inputTokens: 10, outputTokens: 4, contextTokens: 14 },
+      })
+    )
+    .mockResolvedValueOnce(
+      JSON.stringify({
+        text: '{"total":42}',
+        usage: { inputTokens: 20, outputTokens: 5, contextTokens: 25 },
+      })
+    );
   await expect(
     generateAsync('Read this.', { schema: schema.object({ total: schema.number() }) })
   ).resolves.toMatchObject({
@@ -300,9 +301,7 @@ it.each([
   { text: 'ready', usage: { inputTokens: null, outputTokens: null, contextTokens: '100' } },
   { text: 42, usage: { inputTokens: null, outputTokens: null } },
 ])('rejects malformed native metadata: %j', async (response) => {
-  Object.assign(native, {
-    generateWithMetadataAsync: jest.fn().mockResolvedValue(JSON.stringify(response)),
-  });
+  native.generateAsync.mockResolvedValue(JSON.stringify(response));
   await expect(generateAsync('Read this.')).rejects.toMatchObject({
     code: 'ERR_PROVIDER_RESPONSE_INVALID',
   });

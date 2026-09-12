@@ -1,6 +1,6 @@
 import NativeModule from '../ExpoAI';
 import { createSessionAsync, schema } from '../index';
-import { availableModel, FakeSession } from './fixtures/FakeSession';
+import { availableModel, FakeSession, nativeResult } from './fixtures/FakeSession';
 
 jest.mock('../ExpoAI', () => ({
   __esModule: true,
@@ -35,6 +35,7 @@ function retainedNative() {
     history,
     contexts,
     text: 'ready',
+    response: undefined as string | undefined,
     delivery: undefined as Promise<void> | undefined,
   };
   native.generateAsync.mockImplementation(async (id, prompt) => {
@@ -45,7 +46,7 @@ function retainedNative() {
     const delivery = fixture.delivery;
     fixture.delivery = undefined;
     if (delivery) await delivery;
-    return text;
+    return fixture.response ?? nativeResult(text);
   });
   native.acceptResult.mockImplementation((id) => {
     if (pending?.id !== id) return false;
@@ -122,8 +123,7 @@ it('discards invalid completion metadata from native and shared compatibility hi
   );
   const session = await createSessionAsync();
   await session.generateAsync('accepted');
-  Object.assign(fixture.native, { generateWithMetadataAsync: fixture.native.generateAsync });
-  fixture.text = JSON.stringify({
+  fixture.response = JSON.stringify({
     text: 'invalid usage',
     usage: { inputTokens: -1, outputTokens: 2 },
   });
@@ -131,7 +131,8 @@ it('discards invalid completion metadata from native and shared compatibility hi
     code: 'ERR_PROVIDER_RESPONSE_INVALID',
   });
   const completion = new FakeSession();
-  completion.generateAsync.mockResolvedValue('"answer"');
+  fixture.response = undefined;
+  completion.generateAsync.mockResolvedValue(nativeResult('"answer"'));
   nativeModule.createSessionAsync.mockResolvedValueOnce(completion);
   await expect(
     session.generateAsync('compatibility', { schema: schema.string() })
@@ -250,7 +251,7 @@ it('rejects failed native acceptance without recording a successful shared turn'
     code: 'ERR_PROVIDER_RESPONSE_INVALID',
   });
   const completion = new FakeSession();
-  completion.generateAsync.mockResolvedValue('"answer"');
+  completion.generateAsync.mockResolvedValue(nativeResult('"answer"'));
   nativeModule.createSessionAsync.mockResolvedValueOnce(completion);
   await session.generateAsync('compatibility', { schema: schema.string() });
   expect(
