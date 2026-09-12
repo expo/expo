@@ -1,5 +1,6 @@
 package expo.modules.updates.loader
 
+import android.content.Context
 import android.net.Uri
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -34,6 +35,7 @@ import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class RemoteLoaderTest {
+  private lateinit var context: Context
   private lateinit var db: UpdatesDatabase
   private lateinit var configuration: UpdatesConfiguration
   private lateinit var logger: UpdatesLogger
@@ -50,7 +52,7 @@ class RemoteLoaderTest {
       "runtimeVersion" to "1.0"
     )
     configuration = UpdatesConfiguration(null, configMap)
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    context = InstrumentationRegistry.getInstrumentation().targetContext
     logger = UpdatesLogger(context.filesDir)
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
     mockLoaderFiles = mockk(relaxed = true)
@@ -76,7 +78,7 @@ class RemoteLoaderTest {
       directiveUpdateResponsePart = null
     )
 
-    coEvery { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) } answers {
+    coEvery { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) } answers {
       val asset = firstArg<AssetEntity>()
       FileDownloader.AssetDownloadResult(asset, true)
     }
@@ -89,7 +91,7 @@ class RemoteLoaderTest {
     }
 
     Assert.assertNotNull(result.updateEntity)
-    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -100,7 +102,7 @@ class RemoteLoaderTest {
 
   @Test
   fun testRemoteLoader_FailureToDownloadAssets() = runTest {
-    coEvery { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) } throws IOException("mock failed to download asset")
+    coEvery { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) } throws IOException("mock failed to download asset")
 
     try {
       loader.load { _ ->
@@ -110,7 +112,7 @@ class RemoteLoaderTest {
       Assert.assertEquals("mock failed to download asset", e.message)
     }
 
-    coVerify(atLeast = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(atLeast = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -137,7 +139,7 @@ class RemoteLoaderTest {
     Assert.assertNotNull(result.updateEntity)
 
     // only 1 asset (bundle) should be downloaded since the other asset already exists
-    coVerify(exactly = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -166,7 +168,7 @@ class RemoteLoaderTest {
     Assert.assertNotNull(result.updateEntity)
 
     // both assets should be downloaded regardless of what the database says
-    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -205,7 +207,7 @@ class RemoteLoaderTest {
     }
 
     Assert.assertNotNull(result.updateEntity)
-    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -233,7 +235,7 @@ class RemoteLoaderTest {
     Assert.assertNotNull(result.updateEntity)
 
     // missing assets should still be downloaded
-    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -266,7 +268,7 @@ class RemoteLoaderTest {
     }
 
     Assert.assertNotNull(result.updateEntity)
-    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -292,7 +294,7 @@ class RemoteLoaderTest {
     }
 
     Assert.assertNotNull(result.updateEntity)
-    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -314,7 +316,7 @@ class RemoteLoaderTest {
 
     Assert.assertEquals(updateDirective, result.updateDirective)
     Assert.assertNull(result.updateEntity)
-    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(0, updates.size)
@@ -331,10 +333,70 @@ class RemoteLoaderTest {
       Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
     }
 
-    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     Assert.assertEquals(2, progressUpdates.size)
     Assert.assertEquals(0.5, progressUpdates[0], 0.001)
     Assert.assertEquals(1.0, progressUpdates[1], 0.001)
+  }
+
+  @Test
+  fun testRemoteLoader_EmbeddedAssetExtractor_CopiesTheEmbeddedLaunchAssetFromTheApk() = runTest {
+    val extractor = captureEmbeddedAssetExtractor()
+
+    val launchAssetRow = AssetEntity("bundle-embedded", "js").apply {
+      isLaunchAsset = true
+      relativePath = "file:///android_asset/index.android.bundle.js"
+    }
+    every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns mockk {
+      every { assetEntityList } returns listOf(
+        AssetEntity("bundle-embedded", "js").apply {
+          isLaunchAsset = true
+          embeddedAssetFilename = "embedded-launch-asset.bundle"
+        }
+      )
+    }
+
+    val destination = File(context.cacheDir, "extracted-base")
+    destination.delete()
+    extractor(launchAssetRow, destination)
+
+    val expected = context.assets.open("embedded-launch-asset.bundle").use { it.readBytes() }
+    Assert.assertArrayEquals(expected, destination.readBytes())
+  }
+
+  @Test
+  fun testRemoteLoader_EmbeddedAssetExtractor_ThrowsWhenNoEmbeddedAssetMatches() = runTest {
+    val extractor = captureEmbeddedAssetExtractor()
+
+    val launchAssetRow = AssetEntity("bundle-unknown", "js").apply {
+      isLaunchAsset = true
+      relativePath = "file:///android_asset/index.android.bundle.js"
+    }
+    every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns mockk {
+      every { assetEntityList } returns emptyList()
+    }
+
+    val destination = File(context.cacheDir, "extracted-base")
+    try {
+      extractor(launchAssetRow, destination)
+      Assert.fail("Expected an IOException")
+    } catch (e: IOException) {
+      Assert.assertTrue(e.message!!.contains("bundle-unknown"))
+    }
+  }
+
+  /** Runs a load so RemoteLoader hands its extractor to the mocked downloader, then returns it. */
+  private suspend fun captureEmbeddedAssetExtractor(): EmbeddedAssetExtractor {
+    val extractors = mutableListOf<EmbeddedAssetExtractor?>()
+    coEvery {
+      mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), captureNullable(extractors))
+    } answers {
+      FileDownloader.AssetDownloadResult(firstArg<AssetEntity>(), true)
+    }
+    loader.load {
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
+    return extractors.firstOrNull() ?: throw AssertionError("RemoteLoader did not supply an embedded asset extractor")
   }
 }

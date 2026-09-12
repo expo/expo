@@ -9,8 +9,11 @@
 ### 🐛 Bug fixes
 
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
 
 ### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.0-preview.0 — 2026-09-10
 

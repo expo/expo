@@ -108,7 +108,7 @@ def generateExpoWidgetsLayoutRegistry = tasks.register("generateExpoWidgetsLayou
   inputs.file file("$expoWidgetsPackageDir/metro.config.js")
   inputs.file file("$expoWidgetsPackageDir/scripts/build-layout-registry.mjs")
   inputs.file file("$expoWidgetsPackageDir/bundle/layout-registry-entry.js")
-  inputs.file(expoWidgetsLayoutRegistryConfigFile).optional()
+  inputs.files(expoWidgetsLayoutRegistryConfigFile)
   outputs.file(expoWidgetsLayoutRegistryOutput)
 
   def command = [

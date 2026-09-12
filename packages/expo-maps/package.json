@@ -1,6 +1,6 @@
 {
   "name": "expo-maps",
-  "version": "58.0.0",
+  "version": "58.0.1",
   "description": "Provides a Map component that uses Google Maps on Android and Apple Maps on iOS.",
   "keywords": [
     "UI components",

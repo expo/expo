@@ -6,9 +6,16 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for `Overlay`, `Background`, and `Mask` in widgets and Live Activities. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
+- [iOS] Preserve SwiftUI view identity across widget and Live Activity updates so system update animations can run. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
+- [Android] Fix Gradle build failure when no Android widget is configured. ([#50038](https://github.com/expo/expo/pull/50038) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.0 — 2026-09-10
 
@@ -18,7 +25,6 @@
 
 ### 🎉 New features
 
-- [iOS] Add support for `Overlay`, `Background`, and `Mask` in widgets and Live Activities. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose stable ActivityKit identifiers on Live Activity instances. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
 - [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))
@@ -36,7 +42,6 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Preserve SwiftUI view identity across widget and Live Activity updates so system update animations can run. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
 - [iOS] Localize widget gallery names and descriptions using the app's `Localizable.strings` files. ([#49606](https://github.com/expo/expo/pull/49606) by [@jakex7](https://github.com/jakex7))
 - [iOS] Fix widget and Live Activity `Text` modifiers being applied twice. ([#49535](https://github.com/expo/expo/pull/49535) by [@gee1k](https://github.com/gee1k))
 - Resolve deep `react-native/*` imports as empty modules when bundling widget layouts, fixing every widget failing with "Could not create context for layout evaluation" after `@expo/ui` 57.0.14 introduced such an import. ([#49491](https://github.com/expo/expo/pull/49491) by [@usmsam](https://github.com/usmsam))

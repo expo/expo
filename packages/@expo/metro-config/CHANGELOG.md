@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
@@ -33,6 +35,7 @@
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
 - Point Metro's `assetRegistryPath` at `react-native/asset-registry`, which replaces the `@react-native/assets-registry` package as of React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- Don't rename require in tests/snapshots. ([#50039](https://github.com/expo/expo/pull/50039) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.7 - 2026-07-22
 

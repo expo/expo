@@ -24,6 +24,20 @@
 public macro OptimizedFunction() =
   #externalMacro(module: "ExpoModulesMacros", type: "OptimizedFunctionAttachedMacro")
 
+/// Options passed to `@JS` after the optional JS name, e.g. `@JS(.concurrent)` or
+/// `@JS("doWork", .concurrent)`. The macro reads them from the source, so spell them as `.option`
+/// literals rather than constants.
+public enum JSOptions {
+  /// Runs the body of an `async` function on the concurrent thread pool instead of the JavaScript
+  /// thread. Arguments are still decoded and the result encoded on the JavaScript thread, so only
+  /// the function's own work moves. Use it for work that never touches JavaScript values, such as
+  /// hashing or file IO. Only valid on an `async` function.
+  ///
+  /// The call sends the module or shared object off the JavaScript thread, so in Swift 6 language
+  /// mode the enclosing class must be `Sendable`.
+  case concurrent
+}
+
 /// Marker macro applied to module / shared-object members that should be exposed to JavaScript.
 /// The accompanying `@ExpoModule` and `@SharedObject` macros discover `@JS`-marked declarations
 /// and generate the matching `Function` / `AsyncFunction` / `Property` / `Constructor` registrations.
@@ -39,12 +53,25 @@ public macro OptimizedFunction() =
 ///     @JS
 ///     var status: String { "ok" }
 ///
+///     @JS(.concurrent)
+///     func digest(data: Data) async -> Data { ... }
+///
+///     @JS("doWork", .concurrent)
+///     func performHeavyWork() async throws { ... }
+///
 /// Also emits a never-called `_assertTypesConformance_<member>` peer that statically asserts every
 /// type crossing the JS boundary conforms to the JS-convertible protocol, so a non-conforming type
 /// fails to compile on the user's declaration. The peer name embeds the member name, hence
 /// `names: arbitrary`.
+///
+/// Trailing `JSOptions` tune the binding. The options-only overload exists because `.concurrent`
+/// can't fill the unlabeled `jsName` slot.
 @attached(peer, names: arbitrary)
-public macro JS(_ jsName: String? = nil) =
+public macro JS(_ jsName: String? = nil, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
+@attached(peer, names: arbitrary)
+public macro JS(_ options: JSOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
 /// Turns a function-typed `var` on a module or shared object into a typed JavaScript event.
@@ -155,3 +182,42 @@ public macro SharedObject(_ name: String? = nil) =
 @attached(extension, conformances: Record)
 public macro Record() =
   #externalMacro(module: "ExpoModulesMacros", type: "RecordMacro")
+
+/// Member + extension macro applied to an `enum` whose cases each carry one associated value. The enum
+/// becomes a typed union of the payload types (`A | B` in TypeScript), the named, N-case counterpart
+/// of `Either`. It can be a `@JS` argument or return value, an `@Event` payload, or nested in an
+/// optional, array or dictionary. Synthesized members:
+///
+/// - `decode(_:in:)` tries the cases in declaration order and returns the first whose payload decodes.
+///   Overlapping payloads (`Int` and `Double`, records with compatible fields) resolve to the earlier
+///   case, so put the more specific case first. Throws `Exceptions.UnionCaseMismatch` when none match.
+/// - `encode(_:in:)` encodes the payload of the held case.
+/// - `as(_:)`, one overload per payload type: `try source.as(String.self)` unwraps the payload without
+///   naming the case and throws `Exceptions.UnionCaseMismatch` when a different case is held.
+///
+/// The type is conformed to `JavaScriptDecodable` and `JavaScriptEncodable`, and every payload type
+/// must conform to both. Generic enums, payload-less cases, multiple associated values, defaults on an
+/// associated value and repeated payload types are compile errors.
+///
+/// Usage:
+///
+///     @Union
+///     enum Source {
+///       case text(String)
+///       case options(SourceOptions)   // a @Record
+///     }
+///
+///     @JS
+///     func load(_ source: Source) {       // JS: string | SourceOptions
+///       switch source {
+///       case .text(let text): ...
+///       case .options(let options): ...
+///       }
+///     }
+@attached(
+  member,
+  names: named(decode), named(encode), named(`as`), named(_payloadTypeName),
+  named(_assertTypesConformance))
+@attached(extension, conformances: JavaScriptDecodable, JavaScriptEncodable)
+public macro Union() =
+  #externalMacro(module: "ExpoModulesMacros", type: "UnionMacro")
