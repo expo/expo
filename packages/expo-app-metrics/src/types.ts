@@ -582,8 +582,7 @@ export interface ExpoAppMetricsModuleType {
    * is synchronous and never returns `null`. Metrics and logs are fetched
    * lazily via the returned object.
    *
-   * The returned object is a static reference: repeated calls return the same
-   * object while it stays referenced, so `getMainSession() === getMainSession()`.
+   * The returned object is a static reference, so `getMainSession() === getMainSession()`.
    *
    * @private This API is unstable and may change without notice.
    */
