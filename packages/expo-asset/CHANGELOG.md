@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow linking assets of any file type with the config plugin, instead of a fixed list of extensions ([#49285](https://github.com/expo/expo/pull/49285) by [@giaBaoJS](https://github.com/giaBaoJS))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
