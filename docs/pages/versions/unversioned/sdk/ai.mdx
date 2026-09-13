@@ -1,15 +1,15 @@
 ---
 title: Expo AI
 description: A library for generating text, structured values, and tool calls with a system-provided on-device language model.
-sourceCodeUrl: "https://github.com/expo/expo/tree/main/packages/expo-ai"
-packageName: "expo-ai"
-platforms: ["android", "ios", "macos", "web"]
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ai'
+packageName: 'expo-ai'
+platforms: ['android', 'ios', 'macos', 'web']
 isAlpha: true
 ---
 
-import APISection from "~/components/plugins/APISection";
-import { APIInstallSection } from "~/components/plugins/InstallSection";
-import { ConfigPluginExample } from "~/ui/components/ConfigSection";
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 
 > **important** **This API is experimental and may change before release.**
 
@@ -44,7 +44,7 @@ Generation uses the on-device system model. Tools execute application code, so a
 
 ## Installation
 
-<APIInstallSection cmd={["$ npx expo install expo-ai"]} />
+<APIInstallSection cmd={['$ npx expo install expo-ai']} />
 
 Create a new [development build](/develop/development-builds/introduction/) after adding the native package. Building the Apple implementation requires Xcode 26.4 or later. Your app can keep an iOS deployment target of 16.4 or later; model generation requires iOS 26 or later at runtime. Test model generation on supported hardware with Apple Intelligence enabled. This preview is not included in Expo Go and cannot run in Snack.
 
@@ -54,7 +54,7 @@ Model image understanding requires a build with Xcode 27 or later. Builds made w
 
 The Android backend requires a minimum SDK version of 26 and Kotlin 2.2.21 or later to compile its ML Kit dependency. Install `expo-build-properties` before creating an Android development build:
 
-<APIInstallSection cmd={["$ npx expo install expo-build-properties"]} />
+<APIInstallSection cmd={['$ npx expo install expo-build-properties']} />
 
 Then add the [config plugin](/versions/latest/sdk/build-properties/) to your app configuration. Keep higher compatible versions if your app already configures them:
 
@@ -84,16 +84,27 @@ The plugin writes these Android settings during [Prebuild](/workflow/continuous-
 
 For native projects that do not use Prebuild, set the app's minimum SDK to 26 or later and use Kotlin 2.2.21 or later in the root project's Kotlin Gradle plugin dependency.
 
+If the app's minimum SDK is lower than 26, the Android build fails while merging manifests:
+
+```text
+uses-sdk:minSdkVersion 24 cannot be smaller than version 26 declared in library [:expo-ai]
+	Suggestion: use a compatible library with a minSdk of at most 24,
+		or increase this project's minSdk version to at least 26,
+		or use tools:overrideLibrary="expo.modules.ai" to force usage (may lead to runtime failures)
+```
+
+Raise the app's minimum SDK to 26, as shown above. Do not apply the `tools:overrideLibrary` suggestion. It silences the check without changing the requirement, and the ML Kit dependency still needs Android 8.0 or later at runtime.
+
 ## Generate text
 
 Call `generateAsync()` with a prompt. Read the completed text from `result.value`:
 
 ```ts
-import { generateAsync } from "expo-ai";
+import { generateAsync } from 'expo-ai';
 
 export async function suggestTitle(notes: string) {
   const result = await generateAsync(notes, {
-    instructions: "Suggest a short title for these notes.",
+    instructions: 'Suggest a short title for these notes.',
   });
 
   return result.value;
@@ -103,7 +114,7 @@ export async function suggestTitle(notes: string) {
 Every successful one-shot helper returns the same result envelope. In addition to `value`, it identifies the selected provider and model, reports the output format, and includes token usage when the provider makes it available:
 
 ```ts
-const result = await generateAsync("Suggest a short title for my notes.");
+const result = await generateAsync('Suggest a short title for my notes.');
 
 console.log({
   title: result.value,
@@ -123,12 +134,12 @@ On Android, the package passes `instructions` as a native system instruction whe
 `summarizeAsync()` and `categorizeAsync()` add task instructions to the same generation pipeline. They return the same result envelope and accept the applicable generation options, including cancellation, updates, and deadlines:
 
 ```ts
-import { categorizeAsync, summarizeAsync } from "expo-ai";
+import { categorizeAsync, summarizeAsync } from 'expo-ai';
 
 export async function organizeNote(text: string) {
-  const summary = await summarizeAsync(text, { length: "short" });
+  const summary = await summarizeAsync(text, { length: 'short' });
   const category = await categorizeAsync(text, {
-    categories: ["work", "personal", "other"],
+    categories: ['work', 'personal', 'other'],
   });
 
   return {
@@ -145,11 +156,11 @@ Summary length can be `short`, `medium`, or `long` and defaults to `medium`. It 
 Pass `schema` to request a structured result. The package automatically uses native schema constraints when the provider supports them and validates the completed value in JavaScript. Otherwise, it requests JSON and validates the response, with bounded repair attempts. A successful request returns a validated value; failure rejects with an error. The optional schema helpers infer the result's TypeScript type without requiring `as const`:
 
 ```ts
-import { generateAsync, schema } from "expo-ai";
+import { generateAsync, schema } from 'expo-ai';
 
 const noteSchema = schema.object({
-  category: schema.enum(["work", "personal", "other"]),
-  summary: schema.string({ description: "A one-sentence summary." }),
+  category: schema.enum(['work', 'personal', 'other']),
+  summary: schema.string({ description: 'A one-sentence summary.' }),
   confidence: schema.number({ minimum: 0, maximum: 1 }),
   suggestedTitle: schema.optional(schema.string()),
 });
@@ -210,7 +221,7 @@ Apple Foundation Models expresses numeric bounds as native generation guides. An
 Use `maximumRetries` to bound additional library repair attempts per response. This option does not change which provider capabilities are used. Provider failures and refusals end the task; they do not trigger a retry through a weaker generation path:
 
 ```ts
-import { generateAsync, schema } from "expo-ai";
+import { generateAsync, schema } from 'expo-ai';
 
 export async function detectQuestion(text: string) {
   const result = await generateAsync(`Is this text a question? ${text}`, {
@@ -232,12 +243,9 @@ export async function detectQuestion(text: string) {
 Pass an optional `onUpdate` callback to display a response as it is generated. Each update contains the complete current text snapshot. Replace the displayed text with the snapshot instead of appending it. The returned promise supplies the final result:
 
 ```ts
-import { generateAsync } from "expo-ai";
+import { generateAsync } from 'expo-ai';
 
-export async function previewSummary(
-  text: string,
-  setPreview: (text: string) => void,
-) {
+export async function previewSummary(text: string, setPreview: (text: string) => void) {
   const result = await generateAsync(`Summarize: ${text}`, {
     onUpdate: ({ text }) => setPreview(text),
   });
@@ -254,32 +262,29 @@ Updates are provisional. For structured generation, wait for the final validated
 Pass ordinary tool definition objects through `tools`. Each definition has a name, description, object input schema, and handler. Use `ToolDefinition<S>` for a reusable typed definition, where `S` is the input schema's type:
 
 ```ts
-import { generateAsync, schema, type ToolDefinition } from "expo-ai";
+import { generateAsync, schema, type ToolDefinition } from 'expo-ai';
 
 const categoryInput = schema.object({
-  category: schema.enum(["work", "personal"]),
+  category: schema.enum(['work', 'personal']),
 });
 
 const lookupCategory: ToolDefinition<typeof categoryInput> = {
-  name: "lookupCategory",
-  description: "Read the description of a category.",
+  name: 'lookupCategory',
+  description: 'Read the description of a category.',
   inputSchema: categoryInput,
   execute: ({ category }, { signal }) => {
     if (signal.aborted) {
-      throw new Error("Tool canceled.");
+      throw new Error('Tool canceled.');
     }
     return {
       category,
-      description:
-        category === "work"
-          ? "Projects and professional tasks."
-          : "Home and leisure.",
+      description: category === 'work' ? 'Projects and professional tasks.' : 'Home and leisure.',
     };
   },
 };
 
 export async function explainCategory() {
-  const result = await generateAsync("Look up and explain the work category.", {
+  const result = await generateAsync('Look up and explain the work category.', {
     tools: [lookupCategory],
     maximumToolCalls: 2,
   });
@@ -309,12 +314,12 @@ Tool definitions are validated and copied when a task starts. Handlers can retur
 Supplied tools run automatically unless you provide `beforeTool`. This optional callback receives the tool name, validated arguments, call ID, and cancellation signal. Return `true` to allow the call or `false` to reject the task with `ERR_TOOL_DENIED` without running the handler. The callback can return a promise while your app displays an approval interface:
 
 ```ts
-import { generateAsync, type ToolCall, type ToolDefinition } from "expo-ai";
+import { generateAsync, type ToolCall, type ToolDefinition } from 'expo-ai';
 
 export async function runWithApproval(
   prompt: string,
   tools: ToolDefinition[],
-  requestApproval: (call: ToolCall) => Promise<boolean>,
+  requestApproval: (call: ToolCall) => Promise<boolean>
 ) {
   return await generateAsync(prompt, {
     tools,
@@ -336,16 +341,16 @@ A handler failure ends the task. The package does not retry the handler or execu
 Pass local image files in `images`. Import predefined tool objects from `expo-ai/apple` to read text, barcodes, or QR codes:
 
 ```ts
-import { generateAsync, schema } from "expo-ai";
-import { Tools } from "expo-ai/apple";
+import { generateAsync, schema } from 'expo-ai';
+import { Tools } from 'expo-ai/apple';
 
 export async function readReceipt(uri: string) {
-  return await generateAsync("Read the receipt image and return its total.", {
-    images: [{ uri, label: "receipt" }],
+  return await generateAsync('Read the receipt image and return its total.', {
+    images: [{ uri, label: 'receipt' }],
     tools: [Tools.ocr],
     schema: schema.object({
       total: schema.string({
-        description: "The total, including the currency shown.",
+        description: 'The total, including the currency shown.',
       }),
     }),
   });
@@ -359,12 +364,12 @@ The existing `beforeTool`, `maximumToolCalls`, cancellation, and deadline option
 On iOS 26, the language model receives the labels and the image tool's recognized data; it cannot see the image pixels. On iOS 27, the package uses [native image attachments](https://developer.apple.com/documentation/foundationmodels/analyzing-images-with-multimodal-prompting) when the system model reports vision support. For general visual descriptions, require `images` support:
 
 ```ts
-import { generateAsync } from "expo-ai";
+import { generateAsync } from 'expo-ai';
 
 export async function describeImage(uri: string) {
-  return await generateAsync("Describe the image in one sentence.", {
+  return await generateAsync('Describe the image in one sentence.', {
     images: [{ uri }],
-    requires: ["images"],
+    requires: ['images'],
   });
 }
 ```
@@ -380,11 +385,11 @@ Successful results include `usage`. Counts remain `null` when the provider canno
 On iOS 26.4 and macOS 26.4 or later, `usage.contextTokens` reports the token count of the completed context when counting succeeds. It describes context occupancy, not the number of input tokens consumed by that request. Earlier Apple versions, Android, and Web leave unavailable measurements unknown.
 
 ```ts
-import { generateAsync } from "expo-ai";
+import { generateAsync } from 'expo-ai';
 
 export async function suggestTitleWithUsage(notes: string) {
   const result = await generateAsync(notes, {
-    instructions: "Suggest a short title.",
+    instructions: 'Suggest a short title.',
   });
   return {
     title: result.value,
@@ -402,12 +407,9 @@ For library repair loops, input and output counts are added across model calls o
 Both cancellation and deadlines are optional. Pass an `AbortSignal` to cancel a task. Set `timeoutMs` to impose an overall deadline, including session creation, generation, tool handlers, waiting for approval, and library repairs. When omitted, the library imposes no deadline. Provider limits and tool or repair budgets still apply.
 
 ```ts
-import { generateAsync } from "expo-ai";
+import { generateAsync } from 'expo-ai';
 
-export async function summarizeWithCancellation(
-  text: string,
-  signal: AbortSignal,
-) {
+export async function summarizeWithCancellation(text: string, signal: AbortSignal) {
   const result = await generateAsync(`Summarize: ${text}`, {
     signal,
     timeoutMs: 60_000,
@@ -426,12 +428,12 @@ Cancellation stops updates, reaches pending approval and tool handlers, and rele
 Use `getAvailabilityAsync()` when readiness or capability information helps your interface:
 
 ```ts
-import { getAvailabilityAsync } from "expo-ai";
+import { getAvailabilityAsync } from 'expo-ai';
 
 export async function canCategorize() {
   const availability = await getAvailabilityAsync();
 
-  return availability.status === "available";
+  return availability.status === 'available';
 }
 ```
 
@@ -444,19 +446,13 @@ The Android SDK does not expose a supported-language query. Explicit `inputLangu
 Public operations reject with `LanguageModelError`, which has a stable `code`, a readable message, and an underlying `cause` when available. Handle codes instead of parsing error messages. A readiness failure can show a preparation button:
 
 ```ts
-import { generateAsync, LanguageModelError } from "expo-ai";
+import { generateAsync, LanguageModelError } from 'expo-ai';
 
-export async function generateWhenReady(
-  prompt: string,
-  offerPreparation: () => void,
-) {
+export async function generateWhenReady(prompt: string, offerPreparation: () => void) {
   try {
     return await generateAsync(prompt);
   } catch (error) {
-    if (
-      error instanceof LanguageModelError &&
-      error.code === "ERR_MODEL_NOT_READY"
-    ) {
+    if (error instanceof LanguageModelError && error.code === 'ERR_MODEL_NOT_READY') {
       offerPreparation();
     }
     throw error;
@@ -475,11 +471,11 @@ Omitting `allowDownload` or setting it to `false` only checks current availabili
 Call `prepareAsync()` from an explicit preparation action in your app. Pass `onProgress` to update the interface and `signal` to cancel the app's preparation request:
 
 ```ts
-import { prepareAsync } from "expo-ai";
+import { prepareAsync } from 'expo-ai';
 
 export async function prepareModel(
   signal: AbortSignal,
-  setProgress: (progress: number | null) => void,
+  setProgress: (progress: number | null) => void
 ) {
   const availability = await prepareAsync({
     allowDownload: true,
@@ -487,7 +483,7 @@ export async function prepareModel(
     onProgress: setProgress,
   });
 
-  return availability.status === "available";
+  return availability.status === 'available';
 }
 ```
 
@@ -518,16 +514,16 @@ Other typed codes cover invalid options and schemas, tool failures, and executio
 Use `createSessionAsync()` when a task needs conversation history across requests. Top-level functions remain independent; an explicit session retains its own successful history. Call `dispose()` when you finish:
 
 ```ts
-import { createSessionAsync } from "expo-ai";
+import { createSessionAsync } from 'expo-ai';
 
 export async function refineTitle(notes: string) {
   const session = await createSessionAsync({
-    instructions: "Suggest concise note titles.",
+    instructions: 'Suggest concise note titles.',
   });
 
   try {
     await session.generateAsync(notes);
-    const result = await session.generateAsync("Make that title shorter.");
+    const result = await session.generateAsync('Make that title shorter.');
     return result.value;
   } finally {
     session.dispose();
@@ -550,19 +546,16 @@ Only one generation can run in a session at a time. The package does not silentl
 An explicit session also provides `generateStream()`, which returns an async iterable. Text events contain cumulative snapshots, and a successful stream ends with one validated `result` event:
 
 ```ts
-import { createSessionAsync } from "expo-ai";
+import { createSessionAsync } from 'expo-ai';
 
-export async function streamSummary(
-  text: string,
-  onText: (text: string) => void,
-) {
+export async function streamSummary(text: string, onText: (text: string) => void) {
   const session = await createSessionAsync();
 
   try {
     for await (const event of session.generateStream(`Summarize: ${text}`)) {
-      if (event.type === "text") {
+      if (event.type === 'text') {
         onText(event.text);
-      } else if (event.type === "result") {
+      } else if (event.type === 'result') {
         onText(event.result.value);
       }
     }
@@ -577,7 +570,7 @@ Breaking out of the loop cancels that generation. Stream failures throw from the
 ## API
 
 ```ts
-import * as ExpoAI from "expo-ai";
+import * as ExpoAI from 'expo-ai';
 ```
 
 <APISection packageName="expo-ai" apiName="ExpoAI" />
