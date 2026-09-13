@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Write the page's markup before the bootstrap script during streaming SSR, instead of outlining completed Suspense boundaries behind it ([#49878](https://github.com/expo/expo/pull/49878) by [@kev-flex](https://github.com/kev-flex))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
