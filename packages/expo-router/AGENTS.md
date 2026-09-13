@@ -25,6 +25,7 @@ File-based routing library for React Native and web applications. It provides au
 │   │   ├── navigationRef.ts   # Imperative navigation ref
 │   │   ├── routing.ts         # Navigation queue and routing functions
 │   │   ├── getRouteInfoFromState.ts, routeInfoCache.ts, useRouteInfo.ts  # Current route information
+│   │   ├── browserHistory.ts, browserHistoryAdapter.ts, BrowserHistorySync.tsx  # Web browser history (see State Management)
 │   │   └── serverLocationContext.ts  # Server-side location context
 │   │
 │   ├── layouts/               # Navigation layouts
@@ -261,7 +262,8 @@ const screenProps = MockedComponent.mock.calls[1][0];
 ### State Management
 
 - **Router state**: Use `RouterConfigContext`, `NavigationContainerRefContext`, and `RootNavigationStateContext` for in-tree reads, and `navigationRef` for the imperative `router.*` API
-- **Routing Queue** (`global-state/routing.ts`): Batches navigation actions and processes them sequentially
+- **Routing Queue** (`global-state/routingQueueContext.tsx`, `RoutingQueueDrainer.tsx`): Batches navigation intents and reduces them inside a transition
+- **Browser history (web)**: The navigation reducer (`useNavigationTreeReducer`) owns the browser entries (`browserHistory.ts`: `entries` + `index`) and emits `browser-history` report events (`push`, `replace`, `go`). `useNavigationTreeReportEvents` hands them to the adapter (`browserHistoryAdapter.ts`), the only code that writes `window.history`. `popstate` enters the reducer as a `BROWSER_HISTORY_CHANGED` intent (`BrowserHistorySync.tsx`). Native uses `.native.ts` no-ops.
 
 ### Platform-Specific Code
 

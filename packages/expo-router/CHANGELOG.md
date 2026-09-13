@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Derive the browser history on web from the navigation reducer instead of a dispatch-time buffer, so the address bar stays in sync across transitions, blocked back navigation and hash links. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-16
