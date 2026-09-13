@@ -9,7 +9,8 @@ import resolveFrom from 'resolve-from';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
-import { normalizeAutolinkingConfigForHash } from './AutolinkingConfig';
+import { profile } from '../utils/Profile';
+import { normalizeAutolinkingConfig } from './AutolinkingConfig';
 import { SourceSkips } from './SourceSkips';
 import {
   createAutolinkingHashSourceAsync,
@@ -227,7 +228,7 @@ async function parseCoreAutolinkingSourcesAsync({
     type: 'contents',
     id: contentsId,
     contents: JSON.stringify(
-      normalizeAutolinkingConfigForHash(autolinkingConfig, {
+      profile(options, normalizeAutolinkingConfig)(autolinkingConfig, {
         stripPaths: !!(options.sourceSkips & SourceSkips.AutolinkingConfigPaths),
         roots: [root],
       })

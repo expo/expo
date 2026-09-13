@@ -5,7 +5,19 @@ import { toPosixPath } from '../utils/Path';
 const NAMED_ARRAY_KEYS = new Set(['modules', 'projects', 'plugins', 'pods', 'extraDependencies']);
 const STRING_ARRAY_KEYS = new Set(['coreFeatures', 'configurations', 'buildTypes']);
 
-export function normalizeAutolinkingConfigForHash(
+const FILE_URL_REGEX = /^file:/i;
+const NETWORK_URL_REGEX = /^[a-z][a-z0-9+.-]*:\/\//i;
+const RELATIVE_OR_NODE_MODULES_PATH_REGEX = /^(?:\.\.?\/|node_modules\/)/;
+
+/**
+ * Normalizes resolved autolinking config before it is hashed.
+ * Converts react-native-config dependency maps to a sorted array of objects and sorts known
+ * arrays by their identifying field. `scriptPhases` is left in order.
+ *
+ * When `stripPaths` is true, filesystem path fields are omitted. Linked names, `scriptPhases`,
+ * and similar non-path overrides remain.
+ */
+export function normalizeAutolinkingConfig(
   config: unknown,
   options: { stripPaths: boolean; roots?: string[] }
 ): unknown {
@@ -47,6 +59,10 @@ function normalizeNode(
   return value;
 }
 
+/**
+ * True when `value` is a `{ [packageName]: { root | platforms } }` map from react-native-config.
+ * Those maps are converted to arrays because object key order is not stable across autolinking.
+ */
 function isNamedDependencyMap(value: object): value is Record<string, Record<string, unknown>> {
   const entries = Object.entries(value);
   if (entries.length === 0) {
@@ -104,17 +120,17 @@ function compareStrings(left: string, right: string): number {
 
 /**
  * True when `value` is a filesystem path, including values already rewritten relative to
- * `projectRoot` / a dependency root.
+ * `projectRoot` or a dependency root.
  * URLs are kept so extra Maven repos and similar project settings still hash.
  */
 export function isPathLike(value: string, roots: string[]): boolean {
   if (!value) {
     return false;
   }
-  if (/^file:/i.test(value)) {
+  if (FILE_URL_REGEX.test(value)) {
     return true;
   }
-  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) {
+  if (NETWORK_URL_REGEX.test(value)) {
     return false;
   }
 
@@ -130,9 +146,5 @@ export function isPathLike(value: string, roots: string[]): boolean {
       return true;
     }
   }
-  return (
-    posixValue.startsWith('../') ||
-    posixValue.startsWith('./') ||
-    posixValue.startsWith('node_modules/')
-  );
+  return RELATIVE_OR_NODE_MODULES_PATH_REGEX.test(posixValue);
 }

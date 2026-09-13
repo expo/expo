@@ -1,6 +1,6 @@
-import { isPathLike, normalizeAutolinkingConfigForHash } from '../AutolinkingConfig';
+import { isPathLike, normalizeAutolinkingConfig } from '../AutolinkingConfig';
 
-describe('normalizeAutolinkingConfigForHash', () => {
+describe('normalizeAutolinkingConfig', () => {
   const roots = ['/root/apps/demo'];
 
   it('should convert a dependency map to a sorted array of objects', () => {
@@ -15,18 +15,28 @@ describe('normalizeAutolinkingConfigForHash', () => {
       },
     };
 
-    expect(normalizeAutolinkingConfigForHash(config, { stripPaths: false, roots })).toEqual([
-      {
-        name: 'expo',
-        root: '../../node_modules/expo',
-        platforms: { ios: { configurations: [] } },
-      },
-      {
-        name: 'react-native-reanimated',
-        root: '../../node_modules/react-native-reanimated',
-        platforms: { ios: { configurations: [] } },
-      },
-    ]);
+    expect(normalizeAutolinkingConfig(config, { stripPaths: false, roots })).toMatchInlineSnapshot(`
+      [
+        {
+          "name": "expo",
+          "platforms": {
+            "ios": {
+              "configurations": [],
+            },
+          },
+          "root": "../../node_modules/expo",
+        },
+        {
+          "name": "react-native-reanimated",
+          "platforms": {
+            "ios": {
+              "configurations": [],
+            },
+          },
+          "root": "../../node_modules/react-native-reanimated",
+        },
+      ]
+    `);
   });
 
   it('should sort known arrays by their identifying field', () => {
@@ -42,17 +52,38 @@ describe('normalizeAutolinkingConfigForHash', () => {
       ],
     };
 
-    expect(normalizeAutolinkingConfigForHash(config, { stripPaths: false, roots })).toEqual({
-      extraDependencies: [{ url: 'https://a.example/maven' }, { url: 'https://b.example/maven' }],
-      coreFeatures: ['alpha', 'zeta'],
-      modules: [
-        { packageName: 'expo' },
-        {
-          packageName: 'expo-modules-core',
-          projects: [{ name: 'core-a' }, { name: 'core-b' }],
-        },
-      ],
-    });
+    expect(normalizeAutolinkingConfig(config, { stripPaths: false, roots })).toMatchInlineSnapshot(`
+      {
+        "coreFeatures": [
+          "alpha",
+          "zeta",
+        ],
+        "extraDependencies": [
+          {
+            "url": "https://a.example/maven",
+          },
+          {
+            "url": "https://b.example/maven",
+          },
+        ],
+        "modules": [
+          {
+            "packageName": "expo",
+          },
+          {
+            "packageName": "expo-modules-core",
+            "projects": [
+              {
+                "name": "core-a",
+              },
+              {
+                "name": "core-b",
+              },
+            ],
+          },
+        ],
+      }
+    `);
   });
 
   it('should not sort scriptPhases', () => {
@@ -70,7 +101,7 @@ describe('normalizeAutolinkingConfigForHash', () => {
       ],
     };
 
-    const normalized = normalizeAutolinkingConfigForHash(config, { stripPaths: false, roots }) as {
+    const normalized = normalizeAutolinkingConfig(config, { stripPaths: false, roots }) as {
       modules: { platforms: { ios: { scriptPhases: { name: string }[] } } }[];
     };
     expect(normalized.modules[0]?.platforms.ios.scriptPhases.map((phase) => phase.name)).toEqual([
@@ -92,9 +123,25 @@ describe('normalizeAutolinkingConfigForHash', () => {
       },
     };
 
-    const normalized = normalizeAutolinkingConfigForHash(config, { stripPaths: false, roots });
-    expect(JSON.stringify(normalized)).toContain('podspecPath');
-    expect(JSON.stringify(normalized)).toContain('./scripts/setup.sh');
+    expect(normalizeAutolinkingConfig(config, { stripPaths: false, roots })).toMatchInlineSnapshot(`
+      [
+        {
+          "name": "expo",
+          "platforms": {
+            "ios": {
+              "podspecPath": "../../node_modules/expo/Expo.podspec",
+              "scriptPhases": [
+                {
+                  "name": "setup",
+                  "path": "./scripts/setup.sh",
+                },
+              ],
+            },
+          },
+          "root": "../../node_modules/expo",
+        },
+      ]
+    `);
   });
 
   it('should drop path-like fields when stripPaths is true', () => {
@@ -117,20 +164,28 @@ describe('normalizeAutolinkingConfigForHash', () => {
       },
     };
 
-    expect(normalizeAutolinkingConfigForHash(config, { stripPaths: true, roots })).toEqual([
-      {
-        name: 'expo',
-        platforms: {
-          ios: {
-            configurations: ['Debug'],
-            scriptPhases: [{ name: 'setup' }],
-          },
-          android: {
-            packageImportPath: 'import expo.modules.ExpoModulesPackage;',
+    expect(normalizeAutolinkingConfig(config, { stripPaths: true, roots })).toMatchInlineSnapshot(`
+      [
+        {
+          "name": "expo",
+          "platforms": {
+            "android": {
+              "packageImportPath": "import expo.modules.ExpoModulesPackage;",
+            },
+            "ios": {
+              "configurations": [
+                "Debug",
+              ],
+              "scriptPhases": [
+                {
+                  "name": "setup",
+                },
+              ],
+            },
           },
         },
-      },
-    ]);
+      ]
+    `);
   });
 
   it('should keep a null platform entry when a module is unlinked on one platform', () => {
@@ -147,17 +202,19 @@ describe('normalizeAutolinkingConfigForHash', () => {
       },
     };
 
-    expect(normalizeAutolinkingConfigForHash(config, { stripPaths: true, roots })).toEqual([
-      {
-        name: 'react-native-navigation-bar-color',
-        platforms: {
-          ios: null,
-          android: {
-            packageImportPath: 'import com.thebylito.navigationbarcolor.NavigationBarColorPackage;',
+    expect(normalizeAutolinkingConfig(config, { stripPaths: true, roots })).toMatchInlineSnapshot(`
+      [
+        {
+          "name": "react-native-navigation-bar-color",
+          "platforms": {
+            "android": {
+              "packageImportPath": "import com.thebylito.navigationbarcolor.NavigationBarColorPackage;",
+            },
+            "ios": null,
           },
         },
-      },
-    ]);
+      ]
+    `);
   });
 
   it('should keep extraDependencies urls when stripPaths is true', () => {
@@ -171,10 +228,20 @@ describe('normalizeAutolinkingConfigForHash', () => {
       ],
     };
 
-    expect(normalizeAutolinkingConfigForHash(config, { stripPaths: true, roots })).toEqual({
-      extraDependencies: [{ url: 'https://customers.pspdfkit.com/maven/' }],
-      modules: [{ packageName: 'expo' }],
-    });
+    expect(normalizeAutolinkingConfig(config, { stripPaths: true, roots })).toMatchInlineSnapshot(`
+      {
+        "extraDependencies": [
+          {
+            "url": "https://customers.pspdfkit.com/maven/",
+          },
+        ],
+        "modules": [
+          {
+            "packageName": "expo",
+          },
+        ],
+      }
+    `);
   });
 });
 
@@ -184,6 +251,7 @@ describe(isPathLike, () => {
     expect(isPathLike('../../node_modules/expo', [])).toBe(true);
     expect(isPathLike('./scripts/setup.sh', [])).toBe(true);
     expect(isPathLike('node_modules/expo/android', [])).toBe(true);
+    expect(isPathLike('file:///tmp/module', [])).toBe(true);
   });
 
   it('should not treat package names, java imports, or https urls as path-like', () => {
