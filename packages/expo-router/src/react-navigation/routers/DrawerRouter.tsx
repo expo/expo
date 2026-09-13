@@ -8,6 +8,7 @@ import {
   type TabRouterOptions,
 } from './TabRouter';
 import { ensureStateType } from './ensureStateType';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import type { CommonNavigationAction, ParamListBase, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
@@ -67,23 +68,16 @@ export const DrawerActions = {
   },
 };
 
-/**
- * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function DrawerRouter({
-  defaultStatus = 'closed',
-  ...rest
-}: DrawerRouterOptions): Router<
+function drawerRouterExtension({
+  baseRouter: router,
+  options: { defaultStatus = 'closed', backBehavior = 'firstRoute', initialRouteName },
+}: RouterExtensionContext<
   DrawerNavigationState<ParamListBase>,
-  DrawerActionType | CommonNavigationAction
+  DrawerActionType | CommonNavigationAction,
+  DrawerRouterOptions
+>): Partial<
+  Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction>
 > {
-  const { backBehavior = 'firstRoute', initialRouteName } = rest;
-
-  const router = TabRouter(rest) as unknown as Router<
-    DrawerNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction
-  >;
-
   // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
   // drawer entries in `history`, which reconstruction never produces.
   const ensureDrawerStateOptionalProperties = (state: DrawerNavigationState<ParamListBase>) =>
@@ -149,8 +143,6 @@ export function DrawerRouter({
   };
 
   return {
-    ...router,
-
     type: 'drawer',
 
     getStateForRouteFocus(state, key) {
@@ -198,7 +190,7 @@ export function DrawerRouter({
 
             return {
               ...actionResult,
-              state: closeDrawer(nextState as DrawerNavigationState<ParamListBase>),
+              state: closeDrawer(nextState),
             };
           }
 
@@ -223,3 +215,8 @@ export function DrawerRouter({
     actionCreators: DrawerActions,
   };
 }
+
+/**
+ * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export const DrawerRouter = extendRouter(TabRouter, drawerRouterExtension);

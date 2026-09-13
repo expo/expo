@@ -4,6 +4,7 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
@@ -302,24 +303,21 @@ const changeIndex = (
   };
 };
 
-/**
- * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function TabRouter({
-  initialRouteName,
-  backBehavior = 'firstRoute',
-}: TabRouterOptions): Router<
+function tabRouterExtension({
+  baseRouter,
+  options: { initialRouteName, backBehavior = 'firstRoute' },
+}: RouterExtensionContext<
   TabNavigationState<ParamListBase>,
-  TabActionType | CommonNavigationAction
-> {
+  TabActionType | CommonNavigationAction,
+  TabRouterOptions
+>) {
   // TODO: Simplify the action handling in this router.
-  const router: Router<
-    TabNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction
+  const router: Omit<
+    Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>,
+    'shouldActionChangeFocus' | 'getStateForDeclaredRoutes'
   > = {
-    ...BaseRouter,
-
     type: 'tab',
+    normalizeState: clearFocusedPreloadedRoute,
 
     getStateForRouteFocus(inputState, key) {
       const state = ensureStateType(
@@ -335,7 +333,8 @@ export function TabRouter({
       return changeIndex(state, index, backBehavior, initialRouteName);
     },
 
-    getStateForAction(inputState, action, { routeGetIdList }) {
+    getStateForAction(inputState, action, options) {
+      const { routeGetIdList } = options;
       const state = ensureStateType(
         ensureStateHistory(inputState, backBehavior, initialRouteName),
         'tab'
@@ -516,7 +515,7 @@ export function TabRouter({
 
         case 'SET_PARAMS':
         case 'REPLACE_PARAMS': {
-          const actionResult = BaseRouter.getStateForAction(state, action);
+          const actionResult = baseRouter.getStateForAction(state, action, options);
 
           if (actionResult !== null) {
             const nextState = actionResult.state;
@@ -721,7 +720,7 @@ export function TabRouter({
         }
 
         default: {
-          const result = BaseRouter.getStateForAction(state, action);
+          const result = baseRouter.getStateForAction(state, action, options);
 
           if (result === null) {
             return result;
@@ -746,27 +745,13 @@ export function TabRouter({
     actionCreators: TabActions,
   };
 
-  const routerWithClearedFocusedPreloadedRoute: typeof router = {
-    ...router,
-    getStateForDeclaredRoutes(state, routeNames) {
-      return clearFocusedPreloadedRoute(router.getStateForDeclaredRoutes(state, routeNames));
-    },
-    getStateForRouteFocus(state, key) {
-      return clearFocusedPreloadedRoute(router.getStateForRouteFocus(state, key));
-    },
-    getStateForAction(state, action, options) {
-      const result = router.getStateForAction(state, action, options);
-      if (result === null) {
-        return null;
-      }
-
-      const normalizedState = clearFocusedPreloadedRoute(result.state);
-      return normalizedState === result.state ? result : { ...result, state: normalizedState };
-    },
-  };
-
-  return routerWithClearedFocusedPreloadedRoute;
+  return router;
 }
+
+/**
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export const TabRouter = extendRouter(BaseRouter, tabRouterExtension);
 
 function removeReplacedRouteFromHistory(
   previousState: TabNavigationStateWithHistory,

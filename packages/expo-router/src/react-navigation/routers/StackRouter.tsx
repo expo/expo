@@ -3,6 +3,7 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
@@ -206,22 +207,24 @@ export const StackActions = {
   },
 };
 
-/**
- * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function StackRouter(options: StackRouterOptions) {
-  const { initialRouteName } = options;
-  const router: Router<
-    StackNavigationState<ParamListBase>,
-    CommonNavigationAction | StackActionType
+function stackRouterExtension({
+  baseRouter,
+  options: { initialRouteName },
+}: RouterExtensionContext<
+  StackNavigationState<ParamListBase>,
+  CommonNavigationAction | StackActionType,
+  StackRouterOptions
+>) {
+  const router: Omit<
+    Router<StackNavigationState<ParamListBase>, CommonNavigationAction | StackActionType>,
+    'shouldActionChangeFocus'
   > = {
-    ...BaseRouter,
-
     // TODO: Keep this value in sync with the `ensureStateType` calls below.
     type: 'stack',
+    normalizeState: markPreloadedRoutes,
 
     getStateForDeclaredRoutes(state, routeNames) {
-      const filteredState = BaseRouter.getStateForDeclaredRoutes(state, routeNames);
+      const filteredState = baseRouter.getStateForDeclaredRoutes(state, routeNames);
 
       if (filteredState === state || filteredState.routes.length === 0) {
         return filteredState;
@@ -673,7 +676,7 @@ export function StackRouter(options: StackRouterOptions) {
         }
 
         default: {
-          const result = BaseRouter.getStateForAction(state, action);
+          const result = baseRouter.getStateForAction(state, action, options);
 
           if (result === null) {
             return result;
@@ -687,24 +690,10 @@ export function StackRouter(options: StackRouterOptions) {
     actionCreators: StackActions,
   };
 
-  const routerWithMarkedPreloadedRoutes: typeof router = {
-    ...router,
-    getStateForDeclaredRoutes(state, routeNames) {
-      return markPreloadedRoutes(router.getStateForDeclaredRoutes(state, routeNames));
-    },
-    getStateForRouteFocus(state, key) {
-      return markPreloadedRoutes(router.getStateForRouteFocus(state, key));
-    },
-    getStateForAction(state, action, options) {
-      const result = router.getStateForAction(state, action, options);
-      if (result === null) {
-        return null;
-      }
-
-      const normalizedState = markPreloadedRoutes(result.state);
-      return normalizedState === result.state ? result : { ...result, state: normalizedState };
-    },
-  };
-
-  return routerWithMarkedPreloadedRoutes;
+  return router;
 }
+
+/**
+ * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export const StackRouter = extendRouter(BaseRouter, stackRouterExtension);

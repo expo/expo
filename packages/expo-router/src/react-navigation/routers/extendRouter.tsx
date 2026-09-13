@@ -65,7 +65,10 @@ export function extendRouter<
 >(
   base: RouterFactory<BaseState, BaseAction, BaseOptions>,
   extension: RouterExtension<State, Action, Options>
-): RouterFactory<State, Action, Options> {
+  // A function type instead of `RouterFactory` keeps the result structurally comparable to other
+  // factories. TypeScript measures the alias as invariant in `State` because `Router` conditionally
+  // requires `type`, which would reject passing a stack factory where any factory is accepted.
+): (options: Options) => Router<State, Action> {
   return (options) => {
     // The extension owns the state and action types of the router it produces. The base router
     // is created for the base types and the extension decides which of its members still apply.
@@ -163,7 +166,7 @@ export function extendRouterActions<
 >(
   base: RouterFactory<State, BaseAction, BaseOptions>,
   reducer: RouterActionReducer<State, Action, Options>
-): RouterFactory<State, Action, Options> {
+): (options: Options) => Router<State, Action> {
   return extendRouter<State, BaseAction, BaseOptions, State, Action, Options>(
     base,
     ({ baseRouter, options }) => {
