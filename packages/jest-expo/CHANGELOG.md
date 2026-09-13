@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Default `Constants.fingerprint` to null in the module mock. ([#48922](https://github.com/expo/expo/pull/48922) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
