@@ -26,7 +26,7 @@ test('same-route navigation preserves merge semantics without consuming another 
         params: { id: 'one', filter: 'recent' },
         state: childState,
       },
-      { key: '[id]:1', name: '[id]', params: { id: 'preloaded' } },
+      { key: '[id]:1', name: '[id]', params: { id: 'preloaded' }, isPreloaded: true },
     ],
   };
 
