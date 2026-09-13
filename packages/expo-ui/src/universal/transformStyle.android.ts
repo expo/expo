@@ -4,13 +4,10 @@ import {
   border,
   clickable,
   clip,
-  fillMaxHeight,
-  fillMaxWidth,
   height,
   padding,
   paddingAll,
   Shapes,
-  size,
   testID as testIDModifier,
   width,
   type ModifierConfig,
@@ -18,24 +15,6 @@ import {
 
 import { omitUserOverridden } from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
-
-// fillMaxWidth/fillMaxHeight require fraction ∈ [0, 1]; values outside throw IllegalArgumentException.
-function parsePercentage(value: unknown): number | null {
-  if (typeof value !== 'string' || !value.endsWith('%')) return null;
-  const n = parseFloat(value);
-  if (isNaN(n)) return null;
-  const fraction = n / 100;
-  if (fraction < 0 || fraction > 1) {
-    if (__DEV__) {
-      console.warn(
-        `expo-ui: percentage "${value}" is out of the valid range [0%, 100%] and will be ignored. ` +
-          `Compose's fillMaxWidth/fillMaxHeight require a fraction in [0, 1].`
-      );
-    }
-    return null;
-  }
-  return fraction;
-}
 
 /**
  * Converts universal style/event/lifecycle/behavior props into a Jetpack
@@ -58,79 +37,21 @@ export function transformToModifiers(
 
   if (style) {
     // Sizing (outermost)
-    // Percentage strings → fillMax* modifiers; the native bridge throws FieldCastException on string Int fields.
-    // Emit fillMaxWidth + fillMaxHeight separately (never fillMaxSize) so omitUserOverridden matches per-axis.
-    const wPct = parsePercentage(style.width);
-    const hPct = parsePercentage(style.height);
-    const isNumeric = (v: unknown): v is number => typeof v !== 'string';
-
-    if (style.width != null && style.height != null) {
-      if (wPct !== null && hPct !== null) {
-        mods.push(fillMaxWidth(wPct));
-        mods.push(fillMaxHeight(hPct));
-      } else if (wPct !== null) {
-        mods.push(fillMaxWidth(wPct));
-        if (isNumeric(style.height)) {
-          mods.push(height(style.height));
-        } else if (__DEV__) {
-          console.warn(
-            `expo-ui: non-percentage string height "${style.height}" is not supported on Android and will be ignored.`
-          );
-        }
-      } else if (hPct !== null) {
-        if (isNumeric(style.width)) {
-          mods.push(width(style.width));
-        } else if (__DEV__) {
-          console.warn(
-            `expo-ui: non-percentage string width "${style.width}" is not supported on Android and will be ignored.`
-          );
-        }
-        mods.push(fillMaxHeight(hPct));
-      } else {
-        if (isNumeric(style.width) && isNumeric(style.height)) {
-          mods.push(size(style.width, style.height));
-        } else if (isNumeric(style.width)) {
-          mods.push(width(style.width));
-          if (__DEV__) {
-            console.warn(
-              `expo-ui: non-percentage string height "${style.height}" is not supported on Android and will be ignored.`
-            );
-          }
-        } else if (isNumeric(style.height)) {
-          if (__DEV__) {
-            console.warn(
-              `expo-ui: non-percentage string width "${style.width}" is not supported on Android and will be ignored.`
-            );
-          }
-          mods.push(height(style.height));
-        } else {
-          if (__DEV__) {
-            console.warn(
-              `expo-ui: non-percentage string width "${style.width}" and height "${style.height}" are not supported on Android and will be ignored.`
-            );
-          }
-        }
-      }
-    } else if (style.width != null) {
-      if (wPct !== null) {
-        mods.push(fillMaxWidth(wPct));
-      } else if (isNumeric(style.width)) {
-        mods.push(width(style.width));
-      } else if (__DEV__) {
+    if (typeof style.width === 'string') {
+      __DEV__ &&
         console.warn(
-          `expo-ui: non-percentage string width "${style.width}" is not supported on Android and will be ignored.`
+          '[expo-ui] width does not accept string values; use the modifiers prop with fillMaxWidth() instead.'
         );
-      }
-    } else if (style.height != null) {
-      if (hPct !== null) {
-        mods.push(fillMaxHeight(hPct));
-      } else if (isNumeric(style.height)) {
-        mods.push(height(style.height));
-      } else if (__DEV__) {
+    } else if (style.width !== undefined) {
+      mods.push(width(style.width));
+    }
+    if (typeof style.height === 'string') {
+      __DEV__ &&
         console.warn(
-          `expo-ui: non-percentage string height "${style.height}" is not supported on Android and will be ignored.`
+          '[expo-ui] height does not accept string values; use the modifiers prop with fillMaxHeight() instead.'
         );
-      }
+    } else if (style.height !== undefined) {
+      mods.push(height(style.height));
     }
 
     // Border + background + borderRadius handling.

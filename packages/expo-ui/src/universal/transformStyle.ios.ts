@@ -22,30 +22,6 @@ import type { UniversalTextStyle } from './Text/types';
 import { omitUserOverridden } from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
 
-// SwiftUI frame() expects numeric CGFloat; string dimensions (including percentages) crash or coerce.
-// Percentage sizing isn't reachable from this layer — use frame(maxWidth: .infinity) via the modifiers escape hatch.
-function safeNumericDimension(axis: 'width' | 'height', value: unknown): number | undefined {
-  if (value == null) return undefined;
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
-    if (__DEV__) {
-      if (value.endsWith('%')) {
-        console.warn(
-          `expo-ui: percentage ${axis} "${value}" is not supported on iOS via the style prop. ` +
-            `Use a SwiftUI frame(maxWidth: .infinity) / frame(maxHeight: .infinity) modifier ` +
-            `through the modifiers escape hatch instead.`
-        );
-      } else {
-        console.warn(
-          `expo-ui: non-numeric string ${axis} "${value}" is not supported on iOS and will be ignored.`
-        );
-      }
-    }
-    return undefined;
-  }
-  return undefined;
-}
-
 const FONT_WEIGHT_MAP: Record<string, Parameters<typeof font>[0]['weight']> = {
   '100': 'ultraLight',
   '200': 'thin',
@@ -144,8 +120,20 @@ export function transformToModifiers(
 
     // Sizing (before background so background fills the frame)
     if (style.width != null || style.height != null) {
-      const w = safeNumericDimension('width', style.width);
-      const h = safeNumericDimension('height', style.height);
+      if (typeof style.width === 'string') {
+        __DEV__ &&
+          console.warn(
+            '[expo-ui] width does not accept string values; use the modifiers prop instead.'
+          );
+      }
+      if (typeof style.height === 'string') {
+        __DEV__ &&
+          console.warn(
+            '[expo-ui] height does not accept string values; use the modifiers prop instead.'
+          );
+      }
+      const w = typeof style.width === 'string' ? undefined : style.width;
+      const h = typeof style.height === 'string' ? undefined : style.height;
       if (w != null || h != null || options?.frameAlignment != null) {
         mods.push(frame({ width: w, height: h, alignment: options?.frameAlignment }));
       }

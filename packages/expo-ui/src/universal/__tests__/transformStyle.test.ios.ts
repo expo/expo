@@ -57,25 +57,31 @@ describe('transformToModifiers (iOS)', () => {
     ]);
   });
 
-  // String dimensions (percentage or otherwise) are ignored — SwiftUI frame() expects numeric CGFloat.
-  it('ignores a negative percentage width on iOS', () => {
+  // String dimensions are not accepted — warn in dev, emit no frame modifier.
+  it('warns and emits no modifier for a string width on iOS', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(transformToModifiers({ width: '-50%' }, {})).toEqual([]);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"-50%"'));
+    expect(transformToModifiers({ width: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
     warn.mockRestore();
   });
 
-  it('ignores a percentage width above 100% on iOS', () => {
+  it('warns and emits no modifier for a non-percentage string width on iOS', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(transformToModifiers({ width: '150%' }, {})).toEqual([]);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"150%"'));
+    expect(transformToModifiers({ width: 'auto' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
     warn.mockRestore();
   });
 
-  it('ignores a non-percentage string width (e.g. "auto") on iOS', () => {
+  it('warns and emits no modifier for a string height on iOS', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(transformToModifiers({ width: 'auto' }, {})).toEqual([]);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"auto"'));
+    expect(transformToModifiers({ height: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('height does not accept string values')
+    );
     warn.mockRestore();
   });
 });

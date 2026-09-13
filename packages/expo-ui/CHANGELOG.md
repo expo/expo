@@ -8,8 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `Column`/`Row` percent-width crash: percentage strings (e.g. `width: "100%"`) are now correctly converted to `fillMaxWidth`/`fillMaxHeight` Compose modifiers instead of being passed as raw strings to the native bridge, which would throw a `FieldCastException`. Out-of-range percentages (e.g. `"-50%"`, `"150%"`) and unsupported string values (e.g. `"auto"`) are now ignored with a dev-mode warning instead of crashing. `fillMaxWidth` and `fillMaxHeight` are always emitted as separate modifiers so that user-supplied overrides via the `modifiers` escape hatch are matched correctly per-axis.
-- [iOS] Percentage and other string values passed to `style.width` / `style.height` are now ignored with a dev-mode warning instead of being forwarded to the SwiftUI `frame` modifier as invalid types. Use a SwiftUI `frame(maxWidth: .infinity)` / `frame(maxHeight: .infinity)` modifier via the `modifiers` escape hatch for percentage sizing on iOS.
+- Narrowed `UniversalStyle` dimension props (`width`, `height`) to `number | undefined`. String values such as `"100%"` are no longer accepted by the TypeScript type and produce a dev-mode `console.warn` at runtime. Use the `modifiers` prop with `fillMaxWidth()` / `fillMaxHeight()` for percentage sizing. ([#50094](https://github.com/expo/expo/pull/50094) by [@benjaminkomen](https://github.com/benjaminkomen))
 
 ### 💡 Others
 

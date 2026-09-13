@@ -2,11 +2,8 @@ import {
   alpha,
   background,
   clickable,
-  fillMaxHeight,
-  fillMaxWidth,
   height,
   paddingAll,
-  size,
   width,
 } from '../../jetpack-compose/modifiers';
 import { transformToModifiers } from '../transformStyle';
@@ -38,72 +35,46 @@ describe('transformToModifiers (Android)', () => {
     ]);
   });
 
-  // Percentage strings must never reach the native bridge (FieldCastException on Int fields).
-  it('converts width "100%" to fillMaxWidth(1)', () => {
-    expect(transformToModifiers({ width: '100%' }, {})).toEqual([fillMaxWidth(1)]);
+  it('emits width() for a numeric width', () => {
+    expect(transformToModifiers({ width: 100 }, {})).toEqual([width(100)]);
   });
 
-  it('converts height "100%" to fillMaxHeight(1)', () => {
-    expect(transformToModifiers({ height: '100%' }, {})).toEqual([fillMaxHeight(1)]);
+  it('emits height() for a numeric height', () => {
+    expect(transformToModifiers({ height: 200 }, {})).toEqual([height(200)]);
   });
 
-  it('converts width "50%" to fillMaxWidth(0.5)', () => {
-    expect(transformToModifiers({ width: '50%' }, {})).toEqual([fillMaxWidth(0.5)]);
-  });
-
-  it('converts width "100%" and height "100%" to fillMaxWidth(1) + fillMaxHeight(1)', () => {
-    // fillMaxSize is never emitted — always use separate fillMaxWidth + fillMaxHeight
-    // so that omitUserOverridden can match each axis independently.
-    expect(transformToModifiers({ width: '100%', height: '100%' }, {})).toEqual([
-      fillMaxWidth(1),
-      fillMaxHeight(1),
-    ]);
-  });
-
-  it('converts width "50%" and height "100%" to fillMaxWidth + fillMaxHeight', () => {
-    expect(transformToModifiers({ width: '50%', height: '100%' }, {})).toEqual([
-      fillMaxWidth(0.5),
-      fillMaxHeight(1),
-    ]);
-  });
-
-  it('converts width "100%" with numeric height to fillMaxWidth + height', () => {
-    expect(transformToModifiers({ width: '100%', height: 200 }, {})).toEqual([
-      fillMaxWidth(1),
+  it('emits width() and height() for numeric width and height', () => {
+    expect(transformToModifiers({ width: 100, height: 200 }, {})).toEqual([
+      width(100),
       height(200),
     ]);
   });
 
-  it('converts numeric width with height "100%" to width + fillMaxHeight', () => {
-    expect(transformToModifiers({ width: 100, height: '100%' }, {})).toEqual([
-      width(100),
-      fillMaxHeight(1),
-    ]);
-  });
-
-  it('keeps numeric width and height as size()', () => {
-    expect(transformToModifiers({ width: 100, height: 200 }, {})).toEqual([size(100, 200)]);
-  });
-
-  // Out-of-range and non-percentage strings are silently ignored (dev warning, no crash).
-  it('ignores a negative percentage width (out of [0%, 100%] range)', () => {
+  // String values are not accepted — warn in dev, emit no modifier.
+  it('warns and emits no modifier for a string width', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(transformToModifiers({ width: '-50%' }, {})).toEqual([]);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"-50%"'));
+    expect(transformToModifiers({ width: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
     warn.mockRestore();
   });
 
-  it('ignores a percentage width above 100% (out of [0%, 100%] range)', () => {
+  it('warns and emits no modifier for a string height', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(transformToModifiers({ width: '150%' }, {})).toEqual([]);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"150%"'));
+    expect(transformToModifiers({ height: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('height does not accept string values')
+    );
     warn.mockRestore();
   });
 
-  it('ignores a non-percentage string width (e.g. "auto")', () => {
+  it('warns for string width but still emits height() when height is numeric', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(transformToModifiers({ width: 'auto' }, {})).toEqual([]);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"auto"'));
+    expect(transformToModifiers({ width: 'auto' as any, height: 200 }, {})).toEqual([height(200)]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
     warn.mockRestore();
   });
 });
