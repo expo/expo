@@ -67,24 +67,6 @@ class UnsupportedModulesError extends Error {
 }
 
 /**
- * The `spm.config.json` product declaring `podName`, or null. A module with one
- * can be built into an XCFramework by the Expo prebuild pipeline, which compiles
- * mixed Swift/ObjC/C++ targets — so it needs no SwiftPM manifest at all. A
- * `sourceOnly` product declares the opposite: it never produces an artifact.
- */
-function spmConfigProduct(moduleRoot, podName) {
-  let config;
-  try {
-    config = JSON.parse(fs.readFileSync(path.join(moduleRoot, 'spm.config.json'), 'utf8'));
-  } catch {
-    return null;
-  }
-  const product = (config.products ?? []).find((p) => (p.podName ?? p.name) === podName);
-  if (product == null) return null;
-  return { name: product.name, sourceOnly: product.sourceOnly === true };
-}
-
-/**
  * Why each uncovered pod is uncovered. A missing interface tree is a single
  * project-level fault that would otherwise be reported once per module, so it
  * collapses into one entry naming the modules it took down.
@@ -350,7 +332,6 @@ module.exports = {
   COVERED_POD_PREFIXES,
   UNMAPPED_POD_ALLOWLIST,
   classifyUnsupported,
-  spmConfigProduct,
   podspecDependencies,
   unmappedPodDependencies,
   collectUnmappedDependencies,

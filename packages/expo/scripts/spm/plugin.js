@@ -36,7 +36,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { resolveAppTarget } = require('./app-target');
-const { resolveExpoModules, generateModulesProvider } = require('./cli');
+const { resolveExpoModules, prebuiltMetadata, generateModulesProvider } = require('./cli');
 const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
 const {
   classifyUnsupported,
@@ -44,12 +44,35 @@ const {
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
   reportUnsupported,
-  spmConfigProduct,
 } = require('./diagnostics');
 const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
 const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
 const { PodspecSyntaxError, readPodspecs } = require('./podspec');
 const { scriptPhasesForModules } = require('./script-phases');
+
+/**
+ * A pod's identity — where its npm package lives, what its product is called,
+ * and whether the Expo prebuild pipeline can build it into an XCFramework.
+ *
+ * The document covers only packages that ship an spm.config.json, so the
+ * filesystem walk stays as the fallback. A documented root that is gone falls
+ * back too — a stale entry is not identity — but its product name still holds.
+ *
+ * The pod name is NOT the product name — react-native-skia ships RNSkia — so
+ * the product is what artifacts and prebuild diagnostics are named after.
+ */
+function podIdentity(metadata, pod) {
+  const entry = metadata[pod.podName];
+  return {
+    moduleRoot:
+      entry != null && fs.existsSync(entry.packageRoot)
+        ? entry.packageRoot
+        : findModuleRoot(pod.podspecDir),
+    productName: entry?.productName ?? pod.podName,
+    prebuildProduct:
+      entry != null ? { name: entry.productName, sourceOnly: entry.sourceOnly === true } : null,
+  };
+}
 
 module.exports = function expoSpmPlugin(context) {
   const { react, outputDir } = context;
@@ -61,6 +84,7 @@ module.exports = function expoSpmPlugin(context) {
   // us that root directly.
   const appRoot = context.projectRoot;
   const modules = resolveExpoModules(appRoot);
+  const metadata = prebuiltMetadata(appRoot);
   const outDir = path.join(outputDir, 'expo');
   // The old contract generated mutable binaryTarget packages here. They are
   // invalid under automatic configuration selection and must never survive a
@@ -94,12 +118,12 @@ module.exports = function expoSpmPlugin(context) {
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
-      const moduleRoot = findModuleRoot(pod.podspecDir);
+      const { moduleRoot, productName } = podIdentity(metadata, pod);
       const needsReact = moduleNeedsReact(pod.podName, moduleRoot);
       const framework = resolveFlavoredFramework({
         packageName: mod.packageName,
         moduleRoot,
-        frameworkName: pod.podName,
+        frameworkName: productName,
         cacheDir: artifactCacheDir,
       });
       if (framework != null) {
@@ -124,7 +148,7 @@ module.exports = function expoSpmPlugin(context) {
       const pods = mod.pods ?? [];
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
-      const moduleRoot = findModuleRoot(pod.podspecDir);
+      const { moduleRoot } = podIdentity(metadata, pod);
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
         // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
@@ -213,7 +237,7 @@ module.exports = function expoSpmPlugin(context) {
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
-      const moduleRoot = findModuleRoot(pod.podspecDir);
+      const { moduleRoot, prebuildProduct } = podIdentity(metadata, pod);
       pending.push({
         podName: pod.podName,
         packageName: mod.packageName,
@@ -223,7 +247,7 @@ module.exports = function expoSpmPlugin(context) {
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         podspecError: podspecErrors.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
-        prebuildProduct: spmConfigProduct(moduleRoot, pod.podName),
+        prebuildProduct,
       });
     }
   }
@@ -317,7 +341,7 @@ module.exports = function expoSpmPlugin(context) {
   const moduleRoots = new Set();
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
-      moduleRoots.add(findModuleRoot(pod.podspecDir));
+      moduleRoots.add(podIdentity(metadata, pod).moduleRoot);
     }
   }
   // The registry's other inputs: app groups come from the entitlements file and

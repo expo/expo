@@ -15,6 +15,9 @@ export interface PrebuiltMetadataEntry {
   packageRoot: string;
   podspecDir: string;
   productName: string;
+  /** The product is built from source only — the prebuild pipeline never
+   * produces an XCFramework for it. Absent where it does. */
+  sourceOnly?: boolean;
 }
 
 export type PrebuiltMetadataDocument = Record<string, PrebuiltMetadataEntry>;
@@ -136,6 +139,7 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
         packageRoot,
         podspecDir: resolvePodspecDir(packageRoot, podName),
         productName: product.name || podName,
+        ...(product.sourceOnly === true && { sourceOnly: true }),
       };
     }
   } catch (error) {
@@ -178,6 +182,7 @@ async function scanExternalConfigsAsync(
           packageRoot,
           podspecDir: packageRoot,
           productName: product.name || podName,
+          ...(product.sourceOnly === true && { sourceOnly: true }),
         };
       }
     } catch (error) {
