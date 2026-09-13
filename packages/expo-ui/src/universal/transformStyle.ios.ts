@@ -22,6 +22,40 @@ import type { UniversalTextStyle } from './Text/types';
 import { omitUserOverridden } from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
 
+/**
+ * Converts a dimension value to a number, or undefined when the value is a
+ * string. The SwiftUI frame() modifier expects numeric CGFloat values; a string
+ * value (including percentage strings like "50%") would be passed through the
+ * bridge as-is and may be silently coerced or cause a crash.
+ *
+ * Unlike Android, SwiftUI does not have a fillMaxWidth/fillMaxHeight equivalent
+ * that is directly reachable from this layer, so percentage widths/heights are
+ * not supported via the style prop on iOS. Use a SwiftUI frame() modifier with
+ * maxWidth: .infinity / maxHeight: .infinity directly through the modifiers
+ * escape hatch instead.
+ */
+function safeNumericDimension(axis: 'width' | 'height', value: unknown): number | undefined {
+  if (value == null) return undefined;
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    if (__DEV__) {
+      if (value.endsWith('%')) {
+        console.warn(
+          `expo-ui: percentage ${axis} "${value}" is not supported on iOS via the style prop. ` +
+            `Use a SwiftUI frame(maxWidth: .infinity) / frame(maxHeight: .infinity) modifier ` +
+            `through the modifiers escape hatch instead.`
+        );
+      } else {
+        console.warn(
+          `expo-ui: non-numeric string ${axis} "${value}" is not supported on iOS and will be ignored.`
+        );
+      }
+    }
+    return undefined;
+  }
+  return undefined;
+}
+
 const FONT_WEIGHT_MAP: Record<string, Parameters<typeof font>[0]['weight']> = {
   '100': 'ultraLight',
   '200': 'thin',
@@ -120,13 +154,14 @@ export function transformToModifiers(
 
     // Sizing (before background so background fills the frame)
     if (style.width != null || style.height != null) {
-      mods.push(
-        frame({
-          width: style.width as number | undefined,
-          height: style.height as number | undefined,
-          alignment: options?.frameAlignment,
-        })
-      );
+      // safeNumericDimension rejects string values (including percentage strings)
+      // with a dev-mode warning and returns undefined, so only valid numeric
+      // dimensions reach the SwiftUI frame modifier.
+      const w = safeNumericDimension('width', style.width);
+      const h = safeNumericDimension('height', style.height);
+      if (w != null || h != null || options?.frameAlignment != null) {
+        mods.push(frame({ width: w, height: h, alignment: options?.frameAlignment }));
+      }
     }
 
     // Background (fills the frame area including padding)

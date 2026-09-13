@@ -3,7 +3,6 @@ import {
   background,
   clickable,
   fillMaxHeight,
-  fillMaxSize,
   fillMaxWidth,
   height,
   paddingAll,
@@ -54,8 +53,13 @@ describe('transformToModifiers (Android)', () => {
     expect(transformToModifiers({ width: '50%' }, {})).toEqual([fillMaxWidth(0.5)]);
   });
 
-  it('converts width "100%" and height "100%" to fillMaxSize(1)', () => {
-    expect(transformToModifiers({ width: '100%', height: '100%' }, {})).toEqual([fillMaxSize(1)]);
+  it('converts width "100%" and height "100%" to fillMaxWidth(1) + fillMaxHeight(1)', () => {
+    // fillMaxSize is never emitted — always use separate fillMaxWidth + fillMaxHeight
+    // so that omitUserOverridden can match each axis independently.
+    expect(transformToModifiers({ width: '100%', height: '100%' }, {})).toEqual([
+      fillMaxWidth(1),
+      fillMaxHeight(1),
+    ]);
   });
 
   it('converts width "50%" and height "100%" to fillMaxWidth + fillMaxHeight', () => {
@@ -81,5 +85,28 @@ describe('transformToModifiers (Android)', () => {
 
   it('keeps numeric width and height as size()', () => {
     expect(transformToModifiers({ width: 100, height: 200 }, {})).toEqual([size(100, 200)]);
+  });
+
+  // Out-of-range and non-percentage strings must be silently ignored (with a
+  // dev-mode warning) instead of crashing the native Compose runtime.
+  it('ignores a negative percentage width (out of [0%, 100%] range)', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: '-50%' }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"-50%"'));
+    warn.mockRestore();
+  });
+
+  it('ignores a percentage width above 100% (out of [0%, 100%] range)', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: '150%' }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"150%"'));
+    warn.mockRestore();
+  });
+
+  it('ignores a non-percentage string width (e.g. "auto")', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: 'auto' }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"auto"'));
+    warn.mockRestore();
   });
 });

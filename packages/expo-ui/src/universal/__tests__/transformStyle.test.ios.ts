@@ -56,4 +56,28 @@ describe('transformToModifiers (iOS)', () => {
       disabled(false),
     ]);
   });
+
+  // String dimension values (percentage or otherwise) must be silently ignored
+  // on iOS — the SwiftUI frame() modifier expects numeric CGFloat values and the
+  // bridge does not support percentage sizing directly.
+  it('ignores a negative percentage width on iOS', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: '-50%' }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"-50%"'));
+    warn.mockRestore();
+  });
+
+  it('ignores a percentage width above 100% on iOS', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: '150%' }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"150%"'));
+    warn.mockRestore();
+  });
+
+  it('ignores a non-percentage string width (e.g. "auto") on iOS', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: 'auto' }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"auto"'));
+    warn.mockRestore();
+  });
 });
