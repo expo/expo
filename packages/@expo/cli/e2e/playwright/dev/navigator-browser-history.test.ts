@@ -102,6 +102,27 @@ test.describe(inputDir, () => {
     expect(pageErrors.all).toEqual([]);
   });
 
+  test('creates one browser entry per push in a batch', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-explore"]').click();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+
+    await page.locator('[data-testid="push-details-and-final"]').click();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await expect(page).toHaveURL(/\/explore\/details$/);
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+    await expect(page).toHaveURL(/\/explore$/);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
   test('restores a nested tab stack without remounting', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
 

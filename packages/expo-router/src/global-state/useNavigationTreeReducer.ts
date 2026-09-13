@@ -1,5 +1,6 @@
 'use client';
 
+import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 
 import type { RouteNode } from '../Route';
@@ -9,6 +10,13 @@ import { deepFreeze } from '../react-navigation/core/deepFreeze';
 import type { InitialState, NavigationAction, NavigationState } from '../react-navigation/routers';
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
+import {
+  createBrowserHistory,
+  projectBrowserHistory,
+  refreshBrowserHistory,
+  restoreBrowserHistory,
+} from './browserHistory';
+import type { BrowserHistory, BrowserHistoryEvent } from './browserHistoryTypes';
 import {
   completeNavigationState,
   createSeededNavigationState,
@@ -26,6 +34,7 @@ type ReducerConfig = {
   routeNode?: RouteNode;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
+  browserHistoryIdPrefix: string;
 };
 
 type TreeOperation =
@@ -77,7 +86,8 @@ type NavigationTreeReportEventData =
       type: 'action-dispatched';
       action: NavigationAction;
       state: NavigationState;
-    };
+    }
+  | BrowserHistoryEvent;
 
 export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
   id: number;
@@ -87,6 +97,8 @@ type NavigationTreeResult = {
   state: NavigationState;
   report: NavigationTreeReport | undefined;
   eventSeq: number;
+  // Web only; the browser entries this app owns.
+  history: BrowserHistory | undefined;
 };
 
 const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
@@ -106,9 +118,41 @@ function warnIfStaleState(state: NavigationState) {
   }
 }
 
+// Reduces the navigation state, then derives the browser history from the change.
 function navigationTreeReducer(
   result: NavigationTreeResult,
   operation: TreeOperation,
+  config: ReducerConfig
+): NavigationTreeResult {
+  if (operation.type === 'BROWSER_HISTORY_CHANGED') {
+    if (!result.history) {
+      return result;
+    }
+    const restored = restoreBrowserHistory(
+      result.history,
+      result,
+      operation.payload,
+      config,
+      (current, intent) => reduceTree(current, intent, config)
+    );
+    return appendReportEvents({ ...restored.result, history: restored.history }, restored.events);
+  }
+
+  const next = reduceTree(result, operation, config);
+  if (next.state === result.state || !next.history) {
+    return next;
+  }
+  // Structural repairs are not navigations, so they never move the browser.
+  const projected =
+    operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
+      ? refreshBrowserHistory(next.history, next.state, config)
+      : projectBrowserHistory(next.history, result.state, next.state, config);
+  return appendReportEvents({ ...next, history: projected.history }, projected.events);
+}
+
+function reduceTree(
+  result: NavigationTreeResult,
+  operation: Exclude<TreeOperation, { type: 'BROWSER_HISTORY_CHANGED' }>,
   config: ReducerConfig
 ): NavigationTreeResult {
   const state = result.state;
@@ -145,11 +189,7 @@ function navigationTreeReducer(
         );
         return result;
       }
-      return navigationTreeReducer(
-        result,
-        { type: 'ACTION', payload: { action: resolution.action } },
-        config
-      );
+      return reduceTree(result, { type: 'ACTION', payload: { action: resolution.action } }, config);
     }
     case 'COMPUTED_ACTION': {
       let action: NavigationAction | undefined;
@@ -167,9 +207,12 @@ function navigationTreeReducer(
       if (!action) {
         return result;
       }
-      return navigationTreeReducer(
+      return reduceTree(
         result,
-        { type: 'ACTION', payload: { action, originKey: operation.payload.originKey } },
+        {
+          type: 'ACTION',
+          payload: { action, originKey: operation.payload.originKey },
+        },
         config
       );
     }
@@ -287,6 +330,9 @@ function appendReportEvents(
   result: NavigationTreeResult,
   events: NavigationTreeReportEventData[]
 ): NavigationTreeResult {
+  if (events.length === 0) {
+    return result;
+  }
   const eventsWithIds: NavigationTreeReportEvent[] = events.map((event, index) => ({
     ...event,
     id: result.eventSeq + index,
@@ -308,12 +354,14 @@ export function useNavigationTreeReducer({
   linking,
   redirects,
 }: Options) {
+  const [browserHistoryIdPrefix] = React.useState(() => nanoid());
   const config: ReducerConfig = {
     registry,
     routesWithRemovalPrevented,
     routeNode,
     linking,
     redirects,
+    browserHistoryIdPrefix,
   };
   const [result, reactDispatch] = React.useReducer(
     (result: NavigationTreeResult, operation: TreeOperation) =>
@@ -327,7 +375,12 @@ export function useNavigationTreeReducer({
         );
       }
       // TODO(@ubax): check if deepFreeze is needed here.
-      return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
+      const state = deepFreeze(value);
+      const initial = createBrowserHistory(state, config);
+      return appendReportEvents(
+        { state, report: undefined, eventSeq: 0, history: initial.history },
+        initial.events
+      );
     }
   );
   const [previousRegistry, setPreviousRegistry] = React.useState(registry);
