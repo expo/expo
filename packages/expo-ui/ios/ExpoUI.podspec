@@ -27,4 +27,14 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES'
   }
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
+  s.exclude_files = "Tests/**"
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.requires_app_host = false
+
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+    }
+  end
 end

@@ -24,7 +24,12 @@ type NativeListForEachProps = CommonViewModifierProps &
     deleteEnabled?: boolean;
     moveEnabled?: boolean;
     onRequestItem?: (event: {
-      nativeEvent: { key: string; keys: string[]; revision: number; dataVersion: number };
+      nativeEvent: {
+        key: string;
+        keys: string[];
+        revision: number;
+        dataVersion: number;
+      };
     }) => void;
     onRenderWindowChange?: (event: {
       nativeEvent: { keys: string[]; revision: number; dataVersion: number };
@@ -104,16 +109,23 @@ export interface ListForEachDataProps<T> extends Omit<ListForEachProps, 'childre
   children: (item: T, index: number) => React.ReactNode;
   /** Estimated content height before a row is measured. Defaults to 64. */
   estimatedRowHeight?: number;
+  /**
+   * Number of neighboring rows to prerender on each side of active rows. Defaults to 10.
+   * Neighbors render asynchronously. Larger values use more memory and rendering work.
+   * Must be a non-negative integer. The first 10 rows remain mounted independently.
+   */
+  overscanCount?: number;
 }
-const ListItemNativeView = requireNativeView<{ rowKey: string; children: React.ReactNode }>(
-  'ExpoUI',
-  'ListItemView'
-);
+const ListItemNativeView = requireNativeView<{
+  rowKey: string;
+  children: React.ReactNode;
+}>('ExpoUI', 'ListItemView');
 function WindowedForEach<T>({
   data,
   keyExtractor,
   children: renderItem,
   estimatedRowHeight = 64,
+  overscanCount = 10,
   ...props
 }: ListForEachDataProps<T>) {
   // One dataset pass when its inputs change, not when native requests another row.
@@ -134,21 +146,26 @@ function WindowedForEach<T>({
   if (!Number.isFinite(estimatedRowHeight) || estimatedRowHeight <= 0) {
     throw new Error('List.ForEach estimatedRowHeight must be a finite positive number.');
   }
+  if (!Number.isSafeInteger(overscanCount) || overscanCount < 0) {
+    throw new Error('List.ForEach overscanCount must be a non-negative safe integer.');
+  }
   const [mounted, setMounted] = useState(() => ({
     rows,
+    overscanCount,
     activeKeys: new Set<string>(),
-    keys: renderWindowKeys(rows, []),
+    keys: renderWindowKeys(rows, [], overscanCount),
     revision: 0,
     dataVersion: 0,
   }));
-  if (mounted.rows !== rows) {
+  if (mounted.rows !== rows || mounted.overscanCount !== overscanCount) {
     const activeKeys = new Set([...mounted.activeKeys].filter((key) => rows.byKey.has(key)));
     setMounted({
       ...mounted,
       rows,
+      overscanCount,
       activeKeys,
-      keys: renderWindowKeys(rows, activeKeys),
-      dataVersion: mounted.dataVersion + 1,
+      keys: renderWindowKeys(rows, activeKeys, overscanCount),
+      dataVersion: mounted.dataVersion + (mounted.rows !== rows ? 1 : 0),
     });
   }
 
@@ -170,7 +187,7 @@ function WindowedForEach<T>({
             return current;
           const activeKeys = new Set(keys.filter((key) => current.rows.byKey.has(key)));
           activeKeys.add(key);
-          const allowed = renderWindowKeys(current.rows, activeKeys);
+          const allowed = renderWindowKeys(current.rows, activeKeys, current.overscanCount);
           // Trim old content even if background work is starved during a fling. Only mount active
           // content urgently; missing neighbors are still mounted by the asynchronous window event.
           const retained = new Set([...current.keys].filter((key) => allowed.has(key)));
@@ -194,7 +211,7 @@ function WindowedForEach<T>({
               ...current,
               revision,
               activeKeys,
-              keys: renderWindowKeys(current.rows, activeKeys),
+              keys: renderWindowKeys(current.rows, activeKeys, current.overscanCount),
             };
           });
         });
@@ -235,9 +252,9 @@ const MemoizedListItem = memo(ListItem) as typeof ListItem;
 // Work is limited to active rows and their neighboring keys, not a scan over the dataset.
 function renderWindowKeys(
   rows: { keys: string[]; byKey: ReadonlyMap<string, { index: number }> },
-  activeKeys: Iterable<string>
+  activeKeys: Iterable<string>,
+  overscanCount: number
 ): Set<string> {
-  const overscanCount = 10;
   const initialNumToRender = 10;
   const result = new Set(rows.keys.slice(0, initialNumToRender));
   for (const key of activeKeys) {
