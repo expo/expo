@@ -19,12 +19,7 @@ import {
 import { omitUserOverridden } from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
 
-/**
- * Parses a CSS percentage string (e.g. "100%", "50%") into a fraction (1.0, 0.5).
- * Returns null when the value is not a percentage string, or when the resulting
- * fraction is outside [0, 1] (Compose's fillMaxWidth/fillMaxHeight require
- * fraction ∈ [0, 1] and throw an IllegalArgumentException otherwise).
- */
+// fillMaxWidth/fillMaxHeight require fraction ∈ [0, 1]; values outside throw IllegalArgumentException.
 function parsePercentage(value: unknown): number | null {
   if (typeof value !== 'string' || !value.endsWith('%')) return null;
   const n = parseFloat(value);
@@ -63,23 +58,10 @@ export function transformToModifiers(
 
   if (style) {
     // Sizing (outermost)
-    // Percentage strings (e.g. "100%") must be converted to fillMax* modifiers
-    // because the native bridge expects Int for width/height and throws a
-    // FieldCastException when it receives a string.
-    //
-    // We always emit fillMaxWidth + fillMaxHeight separately (never fillMaxSize)
-    // so that omitUserOverridden can match each axis independently when the user
-    // supplies their own fillMaxWidth or fillMaxHeight modifier.
-    //
-    // Non-percentage strings (e.g. "auto") are skipped with a dev warning — the
-    // native bridge cannot accept them and would throw a FieldCastException.
+    // Percentage strings → fillMax* modifiers; the native bridge throws FieldCastException on string Int fields.
+    // Emit fillMaxWidth + fillMaxHeight separately (never fillMaxSize) so omitUserOverridden matches per-axis.
     const wPct = parsePercentage(style.width);
     const hPct = parsePercentage(style.height);
-
-    // Returns true when a dimension value is safe to cast to number (i.e. it is
-    // a number, not a string). A string that is not a valid percentage has already
-    // been rejected by parsePercentage above, so any remaining string must be a
-    // non-percentage value (e.g. "auto") that the bridge cannot accept.
     const isNumeric = (v: unknown): v is number => typeof v !== 'string';
 
     if (style.width != null && style.height != null) {

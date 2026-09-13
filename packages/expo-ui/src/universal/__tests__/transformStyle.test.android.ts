@@ -38,9 +38,7 @@ describe('transformToModifiers (Android)', () => {
     ]);
   });
 
-  // Percentage width/height — these must never reach the native bridge as strings
-  // because the native WidthParams/HeightParams fields expect Int and throw a
-  // FieldCastException when they receive a string value.
+  // Percentage strings must never reach the native bridge (FieldCastException on Int fields).
   it('converts width "100%" to fillMaxWidth(1)', () => {
     expect(transformToModifiers({ width: '100%' }, {})).toEqual([fillMaxWidth(1)]);
   });
@@ -87,8 +85,7 @@ describe('transformToModifiers (Android)', () => {
     expect(transformToModifiers({ width: 100, height: 200 }, {})).toEqual([size(100, 200)]);
   });
 
-  // Out-of-range and non-percentage strings must be silently ignored (with a
-  // dev-mode warning) instead of crashing the native Compose runtime.
+  // Out-of-range and non-percentage strings are silently ignored (dev warning, no crash).
   it('ignores a negative percentage width (out of [0%, 100%] range)', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     expect(transformToModifiers({ width: '-50%' }, {})).toEqual([]);
