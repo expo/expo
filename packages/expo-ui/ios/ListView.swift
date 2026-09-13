@@ -12,6 +12,7 @@ struct ListView: ExpoSwiftUI.View {
   @ObservedObject var props: ListProps
   @State private var selection = Set<AnyHashable>()
 
+  @ViewBuilder
   var body: some View {
     if props.selection != nil {
       List(selection: $selection) {

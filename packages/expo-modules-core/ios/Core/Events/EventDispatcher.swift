@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import Foundation
+
 /**
  An object that can dispatch native events.
  */
@@ -21,6 +23,9 @@ public final class EventDispatcher {
    */
   internal var handler: Handler?
 
+  // Installed only for Fabric-backed SwiftUI views. Other event sources stay asynchronous.
+  internal var synchronousHandler: Handler?
+
   public var onEventSent: (([String: Any]) -> Void)?
 
   /**
@@ -38,6 +43,18 @@ public final class EventDispatcher {
    */
   public func callAsFunction(_ payload: [String: Any]) {
     handler?(payload)
+    onEventSent?(payload)
+  }
+
+  /**
+   Enqueues an urgent event and requests React Native's synchronous event beat.
+   */
+  public func experimentalRequestSynchronous(_ payload: [String: Any]) {
+    precondition(Thread.isMainThread, "Synchronous view events require the main thread")
+    guard let synchronousHandler else {
+      preconditionFailure("Synchronous events require a Fabric-backed SwiftUI view")
+    }
+    synchronousHandler(payload)
     onEventSent?(payload)
   }
 

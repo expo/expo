@@ -21,6 +21,11 @@ public:
    This is basically exposing `dispatchEvent` from `facebook::react::EventEmitter` for public use.
    */
   void dispatch(const std::string &eventName, const react::ValueFactory& payloadFactory) const;
+
+  /**
+   Enqueues a discrete event and requests a synchronous event beat.
+   */
+  void experimental_requestSynchronous(const std::string &eventName, const react::ValueFactory& payloadFactory) const;
 };
 
 } // namespace expo
