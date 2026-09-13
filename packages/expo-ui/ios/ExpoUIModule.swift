@@ -166,6 +166,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(HStackView.self)
     ExpoUIView(LazyHStackView.self)
     ExpoUIView(LazyVStackView.self)
+    ExpoUIView(RecyclingListView.self)
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
