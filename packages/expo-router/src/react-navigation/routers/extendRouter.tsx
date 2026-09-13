@@ -65,9 +65,10 @@ export function extendRouter<
 >(
   base: RouterFactory<BaseState, BaseAction, BaseOptions>,
   extension: RouterExtension<State, Action, Options>
-  // A function type instead of `RouterFactory` keeps the result structurally comparable to other
-  // factories. TypeScript measures the alias as invariant in `State` because `Router` conditionally
-  // requires `type`, which would reject passing a stack factory where any factory is accepted.
+  // Not `RouterFactory`: TypeScript compares two instantiations of that alias by measured variance,
+  // and `Router`'s conditional `type` requirement makes `State` measure as invariant. `typeof
+  // StackRouter` then fails constraints such as `RouterFactory<NavigationState, NavigationAction,
+  // DefaultRouterOptions>` (TS2344 in `views/Navigator.tsx`). A function type is compared structurally.
 ): (options: Options) => Router<State, Action> {
   return (options) => {
     // The extension owns the state and action types of the router it produces. The base router
@@ -112,7 +113,16 @@ export type RouterActionContext<
    * The router being extended. Call its `getStateForAction` to delegate an action or to
    * post-process the base result. Actions it does not recognize return `null`.
    */
-  baseRouter: Router<State, Action>;
+  baseRouter: Router<State, Action> & {
+    /**
+     * `config` defaults to the config of the action being reduced.
+     */
+    getStateForAction(
+      state: State,
+      action: Action,
+      config?: RouterConfigOptions
+    ): RouterActionResult<State> | null;
+  };
   /**
    * The options the navigator passed to the router factory.
    */
@@ -177,9 +187,9 @@ export function extendRouterActions<
           // One counter shared by `nextKey` and delegation, so keys minted on either side never
           // collide regardless of the order the reducer uses them in.
           let routeKeySeq = state.routeKeySeq;
-          const delegate: Router<State, Action> = {
+          const delegate: RouterActionContext<State, Action, Options>['baseRouter'] = {
             ...baseRouter,
-            getStateForAction(delegateState, delegateAction, delegateConfig) {
+            getStateForAction(delegateState, delegateAction, delegateConfig = config) {
               const result = baseRouter.getStateForAction(
                 delegateState.routeKeySeq < routeKeySeq
                   ? { ...delegateState, routeKeySeq }
@@ -210,7 +220,7 @@ export function extendRouterActions<
 
           let result = reducer(state, action, context);
           if (result === undefined) {
-            result = delegate.getStateForAction(state, action, config);
+            result = delegate.getStateForAction(state, action);
           }
           if (result === null) {
             return null;

@@ -38,7 +38,7 @@ export function MockRouter(options: DefaultRouterOptions) {
       return { ...state, index };
     },
 
-    getStateForAction(state, action, options) {
+    getStateForAction(state, action, config) {
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
           const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
@@ -140,7 +140,7 @@ export function MockRouter(options: DefaultRouterOptions) {
         }
 
         default: {
-          const result = base.getStateForAction(state, action, options);
+          const result = base.getStateForAction(state, action, config);
           return result === null
             ? null
             : { ...result, state: { ...result.state, type: 'test' } };

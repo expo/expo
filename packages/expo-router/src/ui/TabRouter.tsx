@@ -40,8 +40,6 @@ export const ExpoTabRouter = extendRouterActions(
     {
       baseRouter,
       options,
-      routeNames,
-      routeGetIdList,
     }: RouterActionContext<
       TabNavigationState<ParamListBase>,
       ExpoTabActionType,
@@ -84,6 +82,6 @@ export const ExpoTabRouter = extendRouterActions(
       }
     }
 
-    return baseRouter.getStateForAction(state, action, { routeNames, routeGetIdList });
+    return baseRouter.getStateForAction(state, action);
   }
 );

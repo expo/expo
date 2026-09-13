@@ -26,7 +26,7 @@ test('same-route navigation preserves merge semantics without consuming another 
         params: { id: 'one', filter: 'recent' },
         state: childState,
       },
-      { key: '[id]:1', name: '[id]', params: { id: 'preloaded' }, isPreloaded: true },
+      { key: '[id]:1', name: '[id]', params: { id: 'preloaded' } },
     ],
   };
 
@@ -43,7 +43,7 @@ test('same-route navigation preserves merge semantics without consuming another 
   });
   expect(result.state.routes[0]!.state).toBe(childState);
   expect(result.state.routes[result.state.index]!.state).toBeUndefined();
-  expect(result.state.routes).toContain(state.routes[1]);
+  expect(result.state.routes).toContainEqual({ ...state.routes[1], isPreloaded: true });
 });
 
 test('same-route navigation attaches fresh trusted state', () => {

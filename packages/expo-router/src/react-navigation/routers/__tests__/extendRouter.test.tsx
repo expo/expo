@@ -206,6 +206,22 @@ describe('extendRouterActions', () => {
     expect(result?.state.routes).toHaveLength(1);
   });
 
+  test('delegates with the config of the reduced action when none is passed', () => {
+    const RecordingRouter = extendRouter(TestRouter, () => ({
+      getStateForAction: (state, action, config) => ({
+        state: { ...state, routeNames: config.routeNames },
+        affectedRouteKey: undefined,
+      }),
+    }));
+    const router = extendRouterActions(RecordingRouter, (state, action, { baseRouter }) =>
+      baseRouter.getStateForAction(state, action)
+    )({});
+
+    const result = router.getStateForAction(state, { type: 'GO_BACK' }, config);
+
+    expect(result?.state.routeNames).toBe(config.routeNames);
+  });
+
   test('mints route keys with nextKey and stamps routeKeySeq on the result', () => {
     const router = extendRouterActions(StackRouter, (state, action, { nextKey }) =>
       action.type === 'PUSH'

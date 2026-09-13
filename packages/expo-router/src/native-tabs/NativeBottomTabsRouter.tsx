@@ -78,14 +78,11 @@ function appendNoAnimationParamToFocusedRoutes<
 
 export const NativeBottomTabsRouter = extendRouterActions(
   TabRouter,
-  (state, action, { baseRouter, routeNames, routeGetIdList }) => {
+  (state, action, { baseRouter }) => {
     switch (action.type) {
       case 'PUSH':
       case 'NAVIGATE': {
-        const actionResult = baseRouter.getStateForAction(state, action, {
-          routeNames,
-          routeGetIdList,
-        });
+        const actionResult = baseRouter.getStateForAction(state, action);
         const newStateFromNavigation = actionResult?.state;
 
         if (!newStateFromNavigation) {
