@@ -15,14 +15,6 @@ This package has no JavaScript runtime code. It is consumed natively on Apple pl
 
 This package is not meant to be installed directly. It ships as a transitive native dependency of [`expo-modules-core`](../expo-modules-core), which is included in any Expo project. Adding it to your app's `package.json` is unnecessary and unsupported.
 
-# Architecture
-
-Three-layer design bridging JSI C++ to Swift:
-
-1. **Swift layer** (`apple/Sources/ExpoModulesJSI/`): the public API. Type-safe wrappers around JSI concepts, such as `JavaScriptRuntime`, `JavaScriptValue`, `JavaScriptObject` and `JavaScriptFunction`. All JS value types are non-copyable (`~Copyable`) and conform to `JavaScriptType`. Use `JavaScriptRef<T>` to switch to reference semantics when needed (escaping closures, containers, crossing isolation contexts).
-2. **C++ utilities layer** (`apple/Sources/ExpoModulesJSI-Cxx/`): C++ helpers that bridge Swift and JSI. Most headers under `include/` are in-package only, but a small set under `include/Public/` (today just `NativeState.h`) is shipped from the xcframework so non-interop C++ consumers, such as `expo-modules-core`'s shared cross-platform sources, can include them via `<ExpoModulesJSI/NativeState.h>` and probe their availability with `__has_include`.
-3. **JSI and Hermes**: binary xcframeworks (`React`, `hermesvm`, `ReactNativeDependencies`) consumed as SPM binary targets.
-
 # Public API
 
 - `JavaScriptRuntime`: entry point for evaluating scripts, scheduling work on the JS thread, and creating values.
