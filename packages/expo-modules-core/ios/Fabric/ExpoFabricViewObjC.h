@@ -49,6 +49,7 @@
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
+- (void)requestSynchronousEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
 
