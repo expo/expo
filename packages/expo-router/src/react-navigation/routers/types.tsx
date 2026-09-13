@@ -207,6 +207,14 @@ export type Router<
   shouldActionChangeFocus(action: NavigationAction): boolean;
 
   /**
+   * Runs on every state the router returns to restore router invariants, such as preload
+   * markers. It must be idempotent and must not change the state's `type`.
+   *
+   * @param state State object to normalize.
+   */
+  normalizeState?(state: State): State;
+
+  /**
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;

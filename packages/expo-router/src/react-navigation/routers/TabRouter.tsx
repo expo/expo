@@ -104,7 +104,7 @@ type TabNavigationStateWithHistory = TabNavigationState<ParamListBase> &
 
 const TYPE_ROUTE = 'route' as const;
 
-export function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
+function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
   state: TabNavigationState<ParamList>
 ) {
   const route = state.routes[state.index];
