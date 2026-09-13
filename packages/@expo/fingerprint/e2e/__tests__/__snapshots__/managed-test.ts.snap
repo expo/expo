@@ -102,6 +102,14 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "version": "*",
   },
   {
+    "contents": "{"extraDependencies":[],"coreFeatures":[],"modules":[{"packageName":"@expo/dom-webview","projects":[{"name":"expo-dom-webview","modules":[{"classifier":"expo.modules.webview.DomWebViewModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"expo.modules.webview","artifactId":"expo.modules.webview","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"@expo/log-box","projects":[{"name":"expo-log-box","modules":[],"services":[],"packages":["expo.modules.logbox.ExpoLogBoxPackage"]}],"packageVersion":"*"},{"packageName":"expo","projects":[{"name":"expo","modules":[{"classifier":"expo.modules.fetch.ExpoFetchModule","name":null}],"services":[],"packages":["expo.modules.ExpoModulesPackage"]}],"packageVersion":"*"},{"packageName":"expo-asset","projects":[{"name":"expo-asset","modules":[{"classifier":"expo.modules.asset.AssetModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"expo.modules.asset","artifactId":"expo.modules.asset","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-constants","projects":[{"name":"expo-constants","modules":[{"classifier":"expo.modules.constants.ConstantsModule","name":null}],"services":["expo.modules.constants.ConstantsService"],"packages":[]}],"packageVersion":"*"},{"packageName":"expo-file-system","projects":[{"name":"expo-file-system","modules":[{"classifier":"expo.modules.filesystem.FileSystemModule","name":null},{"classifier":"expo.modules.filesystem.legacy.FileSystemLegacyModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"host.exp.exponent","artifactId":"expo.modules.filesystem","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-font","projects":[{"name":"expo-font","modules":[{"classifier":"expo.modules.font.FontLoaderModule","name":null},{"classifier":"expo.modules.font.FontUtilsModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"host.exp.exponent","artifactId":"expo.modules.font","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-keep-awake","projects":[{"name":"expo-keep-awake","modules":[{"classifier":"expo.modules.keepawake.KeepAwakeModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"host.exp.exponent","artifactId":"expo.modules.keepawake","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-modules-core","projects":[{"name":"expo-modules-core","modules":[],"services":[],"packages":["expo.modules.adapters.react.ReactAdapterPackage","expo.modules.core.BasePackage","expo.modules.kotlin.edgeToEdge.EdgeToEdgePackage"]}],"plugins":[{"id":"expo-module-gradle-plugin","group":"expo.modules","applyToRootProject":false}],"packageVersion":"*"},{"packageName":"expo-status-bar","projects":[{"name":"expo-status-bar","modules":[],"services":[],"packages":["expo.modules.statusbar.StatusBarPackage"],"publication":{"groupId":"host.exp.exponent","artifactId":"expo.modules.statusbar","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"}]}",
+    "id": "expoAutolinkingConfig:android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "contents",
+  },
+  {
     "filePath": "node_modules/@expo/dom-webview/package.json",
     "name": "@expo/dom-webview",
     "reasons": [
@@ -201,6 +209,14 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "version": "*",
   },
   {
+    "contents": "{"extraDependencies":[],"coreFeatures":[],"modules":[{"packageName":"@expo/dom-webview","pods":[{"podName":"ExpoDomWebView"}],"swiftModuleNames":["ExpoDomWebView"],"modules":[{"name":null,"class":"DomWebViewModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"@expo/log-box","pods":[{"podName":"ExpoLogBox"}],"swiftModuleNames":["ExpoLogBox"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo","pods":[{"podName":"Expo"}],"swiftModuleNames":["Expo"],"modules":[{"name":null,"class":"ExpoFetchModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-asset","pods":[{"podName":"ExpoAsset"}],"swiftModuleNames":["ExpoAsset"],"modules":[{"name":null,"class":"AssetModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-constants","pods":[{"podName":"EXConstants"}],"swiftModuleNames":["EXConstants"],"modules":[{"name":null,"class":"ConstantsModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-file-system","pods":[{"podName":"ExpoFileSystem"}],"swiftModuleNames":["ExpoFileSystem"],"modules":[{"name":null,"class":"FileSystemModule"},{"name":null,"class":"FileSystemLegacyModule"}],"appDelegateSubscribers":["FileSystemBackgroundSessionHandler"],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-font","pods":[{"podName":"ExpoFont"}],"swiftModuleNames":["ExpoFont"],"modules":[{"name":null,"class":"FontLoaderModule"},{"name":null,"class":"FontUtilsModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-keep-awake","pods":[{"podName":"ExpoKeepAwake"}],"swiftModuleNames":["ExpoKeepAwake"],"modules":[{"name":null,"class":"KeepAwakeModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-modules-core","pods":[{"podName":"ExpoModulesCore"},{"podName":"ExpoModulesWorklets"}],"swiftModuleNames":["ExpoModulesCore","ExpoModulesWorklets"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-modules-jsi","pods":[{"podName":"ExpoModulesJSI"}],"swiftModuleNames":["ExpoModulesJSI"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"}]}",
+    "id": "expoAutolinkingConfig:ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "contents",
+  },
+  {
     "filePath": "assets/icon.png",
     "overrideHashKey": "expoConfigExternalFile:contentsOnly",
     "reasons": [
@@ -257,6 +273,14 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "version": "*",
   },
   {
+    "contents": "[{"name":"expo","platforms":{"android":{"packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}]",
+    "id": "rncoreAutolinkingConfig:android",
+    "reasons": [
+      "rncoreAutolinkingAndroid",
+    ],
+    "type": "contents",
+  },
+  {
     "filePath": "node_modules/expo/package.json",
     "name": "expo",
     "reasons": [
@@ -264,6 +288,14 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     ],
     "type": "package",
     "version": "*",
+  },
+  {
+    "contents": "[{"name":"expo","platforms":{"ios":{"version":"*","configurations":[],"scriptPhases":[]}}}]",
+    "id": "rncoreAutolinkingConfig:ios",
+    "reasons": [
+      "rncoreAutolinkingIos",
+    ],
+    "type": "contents",
   },
   {
     "filePath": "node_modules/react-native/package.json",
