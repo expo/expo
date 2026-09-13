@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `RecyclingList` with fixed-height row recycling, configurable backward overscan and programmatic scrolling on iOS/tvOS 18+. (by [@dougbot-agent](https://github.com/dougbot-agent))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
