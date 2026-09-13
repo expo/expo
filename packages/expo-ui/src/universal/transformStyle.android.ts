@@ -4,6 +4,9 @@ import {
   border,
   clickable,
   clip,
+  fillMaxHeight,
+  fillMaxSize,
+  fillMaxWidth,
   height,
   padding,
   paddingAll,
@@ -16,6 +19,16 @@ import {
 
 import { omitUserOverridden } from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
+
+/**
+ * Parses a CSS percentage string (e.g. "100%", "50%") into a fraction (1.0, 0.5).
+ * Returns null when the value is not a percentage string.
+ */
+function parsePercentage(value: unknown): number | null {
+  if (typeof value !== 'string' || !value.endsWith('%')) return null;
+  const n = parseFloat(value);
+  return isNaN(n) ? null : n / 100;
+}
 
 /**
  * Converts universal style/event/lifecycle/behavior props into a Jetpack
@@ -38,12 +51,32 @@ export function transformToModifiers(
 
   if (style) {
     // Sizing (outermost)
+    // Percentage strings (e.g. "100%") must be converted to fillMax* modifiers
+    // because the native bridge expects Int for width/height and throws a
+    // FieldCastException when it receives a string.
+    const wPct = parsePercentage(style.width);
+    const hPct = parsePercentage(style.height);
     if (style.width != null && style.height != null) {
-      mods.push(size(style.width as number, style.height as number));
+      if (wPct !== null && hPct !== null) {
+        if (wPct === hPct) {
+          mods.push(fillMaxSize(wPct));
+        } else {
+          mods.push(fillMaxWidth(wPct));
+          mods.push(fillMaxHeight(hPct));
+        }
+      } else if (wPct !== null) {
+        mods.push(fillMaxWidth(wPct));
+        mods.push(height(style.height as number));
+      } else if (hPct !== null) {
+        mods.push(width(style.width as number));
+        mods.push(fillMaxHeight(hPct));
+      } else {
+        mods.push(size(style.width as number, style.height as number));
+      }
     } else if (style.width != null) {
-      mods.push(width(style.width as number));
+      mods.push(wPct !== null ? fillMaxWidth(wPct) : width(style.width as number));
     } else if (style.height != null) {
-      mods.push(height(style.height as number));
+      mods.push(hPct !== null ? fillMaxHeight(hPct) : height(style.height as number));
     }
 
     // Border + background + borderRadius handling.

@@ -1,4 +1,15 @@
-import { alpha, background, clickable, paddingAll } from '../../jetpack-compose/modifiers';
+import {
+  alpha,
+  background,
+  clickable,
+  fillMaxHeight,
+  fillMaxSize,
+  fillMaxWidth,
+  height,
+  paddingAll,
+  size,
+  width,
+} from '../../jetpack-compose/modifiers';
 import { transformToModifiers } from '../transformStyle';
 
 describe('transformToModifiers (Android)', () => {
@@ -26,5 +37,49 @@ describe('transformToModifiers (Android)', () => {
       clickable(onPress),
       userClick,
     ]);
+  });
+
+  // Percentage width/height — these must never reach the native bridge as strings
+  // because the native WidthParams/HeightParams fields expect Int and throw a
+  // FieldCastException when they receive a string value.
+  it('converts width "100%" to fillMaxWidth(1)', () => {
+    expect(transformToModifiers({ width: '100%' }, {})).toEqual([fillMaxWidth(1)]);
+  });
+
+  it('converts height "100%" to fillMaxHeight(1)', () => {
+    expect(transformToModifiers({ height: '100%' }, {})).toEqual([fillMaxHeight(1)]);
+  });
+
+  it('converts width "50%" to fillMaxWidth(0.5)', () => {
+    expect(transformToModifiers({ width: '50%' }, {})).toEqual([fillMaxWidth(0.5)]);
+  });
+
+  it('converts width "100%" and height "100%" to fillMaxSize(1)', () => {
+    expect(transformToModifiers({ width: '100%', height: '100%' }, {})).toEqual([fillMaxSize(1)]);
+  });
+
+  it('converts width "50%" and height "100%" to fillMaxWidth + fillMaxHeight', () => {
+    expect(transformToModifiers({ width: '50%', height: '100%' }, {})).toEqual([
+      fillMaxWidth(0.5),
+      fillMaxHeight(1),
+    ]);
+  });
+
+  it('converts width "100%" with numeric height to fillMaxWidth + height', () => {
+    expect(transformToModifiers({ width: '100%', height: 200 }, {})).toEqual([
+      fillMaxWidth(1),
+      height(200),
+    ]);
+  });
+
+  it('converts numeric width with height "100%" to width + fillMaxHeight', () => {
+    expect(transformToModifiers({ width: 100, height: '100%' }, {})).toEqual([
+      width(100),
+      fillMaxHeight(1),
+    ]);
+  });
+
+  it('keeps numeric width and height as size()', () => {
+    expect(transformToModifiers({ width: 100, height: 200 }, {})).toEqual([size(100, 200)]);
   });
 });
