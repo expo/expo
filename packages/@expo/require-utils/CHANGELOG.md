@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed default imports of `__esModule` CommonJS modules, such as compiled config plugins, resolving to the module namespace object instead of the default export when a TypeScript file is transformed to CommonJS without `typescript` installed ([#49566](https://github.com/expo/expo/pull/49566) by [@gustavohariel](https://github.com/gustavohariel))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
