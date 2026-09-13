@@ -87,7 +87,7 @@ class DatabaseLauncher(
     // verify that we have all assets on disk
     // according to the database, we should, but something could have gone wrong on disk
     val launchAsset = database.updateDao().loadLaunchAssetForUpdate(launchedUpdate!!.id)
-      ?: throw Exception("Launch asset not found for update; this should never happen. Debug info: ${launchedUpdate!!.debugInfo()}")
+      ?: throw Exception("Launch asset not found for update. The update row has no launch asset; an interrupted registration in an older version of expo-updates can leave an update in this state, and it is replaced once a newer update is downloaded. Debug info: ${launchedUpdate!!.debugInfo()}")
 
     if (launchAsset.relativePath == null) {
       throw Exception("Launch asset relative path should not be null. Debug info: ${launchedUpdate!!.debugInfo()}")
@@ -159,6 +159,15 @@ class DatabaseLauncher(
 
       // If embedded update is disabled, we should exclude embedded update from launchable updates
       if (!configuration.hasEmbeddedUpdate && embeddedUpdate?.updateEntity?.id == update.id) {
+        continue
+      }
+
+      // An update with no launch asset can never launch. Excluding it here lets the loader
+      // re-run and repair the row instead of failing every cold start.
+      if (update.status != UpdateStatus.DEVELOPMENT &&
+        database.updateDao().loadLaunchAssetForUpdate(update.id) == null
+      ) {
+        logger.warn("Skipping launchable update with no launch asset. Debug info: ${update.debugInfo()}")
         continue
       }
       filteredLaunchableUpdates.add(update)

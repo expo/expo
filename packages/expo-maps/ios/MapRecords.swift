@@ -60,6 +60,14 @@ struct SelectionConfig {
   let moveCamera: Bool
 }
 
+/// The point of an annotation's content that is placed at its coordinates,
+/// in the same normalized space as SwiftUI's `UnitPoint`: (0, 0) is the top-left
+/// corner and (1, 1) the bottom-right one.
+struct MapAnchor: Record {
+  @Field var x: Double = 0.5
+  @Field var y: Double = 0.5
+}
+
 struct MapAnnotation: Record, Identifiable {
   @Field var id: String = UUID().uuidString
   @Field var coordinates: Coordinate
@@ -68,12 +76,17 @@ struct MapAnnotation: Record, Identifiable {
   @Field var textColor: Color = .black
   @Field var text: String = ""
   @Field var icon: SharedRef<UIImage>?
+  @Field var anchor: MapAnchor = MapAnchor()
 
   var clLocationCoordinate2D: CLLocationCoordinate2D {
     CLLocationCoordinate2D(
       latitude: coordinates.latitude,
       longitude: coordinates.longitude
     )
+  }
+
+  var unitPoint: UnitPoint {
+    UnitPoint(x: CGFloat(anchor.x), y: CGFloat(anchor.y))
   }
 
   var mkPlacemark: MKPlacemark {

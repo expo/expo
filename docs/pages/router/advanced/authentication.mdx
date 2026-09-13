@@ -27,13 +27,13 @@ With Expo Router, all routes are always defined and accessible. You can use runt
     [
       'src/app/sign-in.tsx',
       <span>
-        Always accessible <LockUnlocked01Icon className="mb-1 inline" />
+        Always accessible <LockUnlocked01Icon aria-hidden="true" className="mb-1 inline" />
       </span>,
     ],
     [
       'src/app/(app)/_layout.tsx',
       <span>
-        Requires authorization <Lock01Icon className="mb-1 inline" />
+        Requires authorization <Lock01Icon aria-hidden="true" className="mb-1 inline" />
       </span>,
     ],
     ['src/app/(app)/index.tsx', <span>Should be protected by the (app)/_layout</span>],
@@ -335,7 +335,7 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
     [
       'src/app/(app)/(root)/index.tsx',
       <span>
-        Requires authorization <Lock01Icon className="mb-1 inline" />
+        Requires authorization <Lock01Icon aria-hidden="true" className="mb-1 inline" />
       </span>,
     ],
   ]}

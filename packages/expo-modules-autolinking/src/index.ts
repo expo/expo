@@ -2,6 +2,7 @@ import commander from 'commander';
 
 import { generateModulesProviderCommand } from './commands/generateModulesProviderCommand';
 import { mirrorKotlinInlineModulesCommand } from './commands/mirrorKotlinInlineModulesCommand';
+import { prebuiltMetadataCommand } from './commands/prebuiltMetadataCommand';
 import { reactNativeConfigCommand } from './commands/reactNativeConfigCommand';
 import { resolveCommand } from './commands/resolveCommand';
 import { searchCommand } from './commands/searchCommand';
@@ -16,6 +17,7 @@ async function main(args: string[]) {
   verifyCommand(cli);
   searchCommand(cli);
   resolveCommand(cli);
+  prebuiltMetadataCommand(cli);
   mirrorKotlinInlineModulesCommand(cli);
   generateModulesProviderCommand(cli);
   reactNativeConfigCommand(cli);

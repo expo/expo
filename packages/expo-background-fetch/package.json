@@ -1,6 +1,6 @@
 {
   "name": "expo-background-fetch",
-  "version": "57.0.7",
+  "version": "58.0.0",
   "description": "Expo universal module for BackgroundFetch API",
   "keywords": [
     "background",
@@ -37,7 +37,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "expo-task-manager": "workspace:~56.0.15"
+    "expo-task-manager": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

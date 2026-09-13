@@ -273,12 +273,10 @@
 /workflow/build/building-on-ci/ /build/building-on-ci 301
 /task-manager /versions/latest/sdk/task-manager 301
 /task-manager/ /versions/latest/sdk/task-manager 301
-/versions/latest/sdk/filesystem.md /versions/latest/sdk/filesystem 301
 /guides/how-expo-works /faq 301
 /guides/how-expo-works/ /faq 301
 /config/app /workflow/configuration 301
 /config/app/ /workflow/configuration 301
-/guides/authentication.md /guides/authentication 301
 /versions/latest/workflow/linking /guides/linking 301
 /versions/latest/workflow/linking/ /guides/linking 301
 /versions/latest/sdk/overview /versions/latest 301
@@ -582,6 +580,91 @@
 /versions/v55.0.0/sdk/ui/jetpack-compose/textinput /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/textinput/ /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
 
+# AI agents guess /<section>/introduction as a section's first page; redirect the HTML and .md forms to the real one.
+# Keep this block above the first splat rule, or the parser's 100 dynamic-rule cap silently drops the rest of the file.
+/agents/introduction /agents 301
+/agents/introduction/ /agents 301
+/agents/introduction.md /agents.md 301
+/develop/introduction /develop/tools 301
+/develop/introduction/ /develop/tools 301
+/develop/introduction.md /develop/tools.md 301
+/review/introduction /review/overview 301
+/review/introduction/ /review/overview 301
+/review/introduction.md /review/overview.md 301
+/deploy/introduction /deploy/build-project 301
+/deploy/introduction/ /deploy/build-project 301
+/deploy/introduction.md /deploy/build-project.md 301
+/monitoring/introduction /monitoring/services 301
+/monitoring/introduction/ /monitoring/services 301
+/monitoring/introduction.md /monitoring/services.md 301
+/debugging/introduction /debugging/errors-and-warnings 301
+/debugging/introduction/ /debugging/errors-and-warnings 301
+/debugging/introduction.md /debugging/errors-and-warnings.md 301
+/guides/introduction /guides/overview 301
+/guides/introduction/ /guides/overview 301
+/guides/introduction.md /guides/overview.md 301
+/workflow/introduction /workflow/overview 301
+/workflow/introduction/ /workflow/overview 301
+/workflow/introduction.md /workflow/overview.md 301
+/modules/introduction /modules/overview 301
+/modules/introduction/ /modules/overview 301
+/modules/introduction.md /modules/overview.md 301
+/push-notifications/introduction /push-notifications/overview 301
+/push-notifications/introduction/ /push-notifications/overview 301
+/push-notifications/introduction.md /push-notifications/overview.md 301
+/regulatory-compliance/introduction /regulatory-compliance/data-and-privacy-protection 301
+/regulatory-compliance/introduction/ /regulatory-compliance/data-and-privacy-protection 301
+/regulatory-compliance/introduction.md /regulatory-compliance/data-and-privacy-protection.md 301
+/linking/introduction /linking/overview 301
+/linking/introduction/ /linking/overview 301
+/linking/introduction.md /linking/overview.md 301
+/bare/introduction /bare/overview 301
+/bare/introduction/ /bare/overview 301
+/bare/introduction.md /bare/overview.md 301
+/brownfield/introduction /brownfield/overview 301
+/brownfield/introduction/ /brownfield/overview 301
+/brownfield/introduction.md /brownfield/overview.md 301
+/troubleshooting/introduction /troubleshooting/overview 301
+/troubleshooting/introduction/ /troubleshooting/overview 301
+/troubleshooting/introduction.md /troubleshooting/overview.md 301
+/eas/introduction /eas 301
+/eas/introduction/ /eas 301
+/eas/introduction.md /eas.md 301
+/eas/metadata/introduction /eas/metadata 301
+/eas/metadata/introduction/ /eas/metadata 301
+/eas/metadata/introduction.md /eas/metadata.md 301
+/accounts/introduction /accounts/account-types 301
+/accounts/introduction/ /accounts/account-types 301
+/accounts/introduction.md /accounts/account-types.md 301
+/billing/introduction /billing/overview 301
+/billing/introduction/ /billing/overview 301
+/billing/introduction.md /billing/overview.md 301
+/app-signing/introduction /app-signing/app-credentials 301
+/app-signing/introduction/ /app-signing/app-credentials 301
+/app-signing/introduction.md /app-signing/app-credentials.md 301
+/custom-builds/introduction /custom-builds/get-started 301
+/custom-builds/introduction/ /custom-builds/get-started 301
+/custom-builds/introduction.md /custom-builds/get-started.md 301
+/additional-resources/introduction /additional-resources 301
+/additional-resources/introduction/ /additional-resources 301
+/additional-resources/introduction.md /additional-resources.md 301
+/versions/introduction /versions/latest 301
+/versions/introduction/ /versions/latest 301
+/versions/introduction.md /versions/latest.md 301
+/technical-specs/introduction /technical-specs/expo-updates-1 301
+/technical-specs/introduction/ /technical-specs/expo-updates-1 301
+/technical-specs/introduction.md /technical-specs/expo-updates-1.md 301
+/more/introduction /more/expo-cli 301
+/more/introduction/ /more/expo-cli 301
+/more/introduction.md /more/expo-cli.md 301
+/archive/introduction /archive 301
+/archive/introduction/ /archive 301
+/archive/introduction.md /archive.md 301
+
+# .md siblings of introduction redirects declared elsewhere in this file
+/get-started/introduction.md /get-started/create-a-project.md 301
+/submit/introduction.md /deploy/submit-to-app-stores.md 301
+
 # EAS Build, Submit, Update, and Insights predate the /eas/* URL convention;
 /eas/build/* /build/:splat 301
 /eas/build /build/introduction 301
@@ -646,3 +729,8 @@
 /llms-sdk-v54.0.0.txt /llms.txt 301
 /llms-sdk-v55.0.0.txt /llms.txt 301
 /llms-sdk-v56.0.0.txt /llms.txt 301
+# Agent discovery paths probed by AI-readiness checkers
+/api /versions/latest 301
+/api/ /versions/latest 301
+/developers / 301
+/developers/ / 301

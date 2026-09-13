@@ -1,10 +1,12 @@
 ---
 title: Configure EAS Observe
 sidebar_title: Configuration
-description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
+description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, custom endpoints, and data ingestion.
 ---
 
-Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, using a custom endpoint, and separating data by environment. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, using a custom endpoint, separating data by environment, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
 
 ## Sampling
 
@@ -74,3 +76,18 @@ The path includes your project ID before the standard `/v1/metrics` and `/v1/log
 All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](/versions/latest/sdk/observe/#configureconfig).
 
 The environment is a metadata tag attached to each metric and is independent of how the bundle was built. To control whether debug-build metrics are dispatched, see [Enable metrics in development](#enable-metrics-in-development). To disable all dispatching globally, use `configure({ dispatchingEnabled: false })`.
+
+## Turn off data ingestion
+
+The options above control what your app sends. You can also stop EAS Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the EAS dashboard:
+
+- **Account level**: open [Account settings](https://expo.dev/accounts/[account]/settings) and turn off **Observe data ingestion**. This pauses ingestion for all projects in the account.
+- **Project level**: open [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) and turn off **Observe data ingestion**. This pauses ingestion for that project only.
+
+<ContentSpotlight
+  alt="The Observe data ingestion toggle in the EAS dashboard account settings."
+  src="/static/images/expo-observe/observe-data-ingestion-light.webp"
+  darkSrc="/static/images/expo-observe/observe-data-ingestion-dark.webp"
+/>
+
+While ingestion is paused, EAS Observe does not accept events, metrics, or logs sent by your apps. Data that was already ingested stays available in the dashboard and the CLI. Turn the toggle back on to resume ingestion.

@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- Support React Native 0.87's native `backgroundImage` style: widen the style type to accept gradient arrays in addition to CSS strings, and stop stripping the property from styles on native. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 57.0.0 - 2026-06-25
 
 _This version does not introduce any user-facing changes._

@@ -3,14 +3,18 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal class MaskViewProps: UIBaseViewProps {
+public final class MaskViewProps: UIBaseViewProps {
   @Field var alignment: AlignmentOptions?
 }
 
-internal struct MaskView: ExpoSwiftUI.View {
-  @ObservedObject var props: MaskViewProps
+public struct MaskView: ExpoSwiftUI.View {
+  @ObservedObject public var props: MaskViewProps
 
-  var body: some View {
+  public init(props: MaskViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     if let mask = props.children?.slot("content") {
       baseContent.mask(alignment: props.alignment?.toAlignment() ?? .center) {
         mask
@@ -22,7 +26,7 @@ internal struct MaskView: ExpoSwiftUI.View {
 
   @ViewBuilder
   private var baseContent: some View {
-    ForEach(props.children?.withoutSlots() ?? [], id: \.id) { child in
+    ForEach(props.children?.withoutSlots() ?? [], id: \.childIdentity) { child in
       let view: any View = child.childView
       AnyView(view)
     }

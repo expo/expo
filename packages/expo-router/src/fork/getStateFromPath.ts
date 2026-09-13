@@ -1,8 +1,7 @@
-import escape from 'escape-string-regexp';
-
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { PathConfigMap } from '../react-navigation/native';
 import type { InitialState, NavigationState, PartialState } from '../react-navigation/routers';
+import { escapeStringRegexp as escape } from '../utils/escapeStringRegexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';

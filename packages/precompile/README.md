@@ -47,7 +47,7 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │     - configure_header_search_paths                                        │
 │     - configure_codegen_for_prebuilt_modules                               │
 │     - stub_bundled_pod_targets                                             │
-│     - configure_use_frameworks (if use_frameworks! active)                 │
+│     - ensure_modular_react_header_flags (prebuilt React only)              │
 │                                                                             │
 │   Result in Pods/<PodName>/:                                               │
 │     <Product>.xcframework/            (extracted by CocoaPods)             │
@@ -365,8 +365,7 @@ packages/precompile/.cache/
 └── react/
     └── 0.76.7/
         └── debug/
-            ├── React.xcframework/
-            └── React-VFS.yaml
+            └── React.xcframework/
 ```
 
 ### Environment Variable
@@ -411,7 +410,7 @@ et prebuild --local-react-native-tarball "/path/to/{flavor}/React.xcframework.ta
 | `name`                 | string | Product/XCFramework name (required)                                                             |
 | `podName`              | string | CocoaPods pod name from podspec (required)                                                      |
 | `codegenName`          | string | Codegen module name from `codegenConfig.name` in package.json (optional, for Fabric components) |
-| `platforms`            | array  | SPM platforms, e.g., `["iOS(.v15)"]`. Supported: `iOS(.v15)`, `macOS(.v11)`, `tvOS(.v15)`, `macCatalyst(.v15)`, `iOS(.v15_1)`, `tvOS(.v15_1)` |
+| `platforms`            | array  | SPM platforms, e.g., `["iOS(\"16.4\")"]`. Supported: `iOS(.v15)`, `iOS(.v16)`, `iOS("16.4")`, `macOS(.v11)`, `tvOS(.v15)`, `macCatalyst(.v15)` |
 | `externalDependencies` | array  | External package dependencies (React, Hermes, other expo packages)                              |
 | `spmPackages`          | array  | Third-party SPM package dependencies (see below)                                                |
 | `swiftLanguageVersions`| array  | Swift language versions supported                                                               |
@@ -448,7 +447,7 @@ Version specifiers: `{ "exact": "4.5.0" }`, `{ "from": "4.0.0" }`, `{ "branch": 
 | `path`               | string          | Source path relative to package root               |
 | `pattern`            | string          | Glob pattern for source files                      |
 | `headerPattern`      | string          | Glob pattern for header files (objc/cpp only)      |
-| `exclude`            | array           | Paths to exclude from sources                      |
+| `exclude`            | array           | Paths to exclude from sources. `**/Tests/**` is always excluded, and generated `.swiftinterface` files are rejected if they import test-only modules such as `Testing` |
 | `dependencies`       | array           | Target dependencies                                |
 | `linkedFrameworks`   | array           | System frameworks to link                          |
 | `includeDirectories` | array           | Header search paths (objc/cpp only, default: `["include"]`) |
@@ -458,7 +457,6 @@ Version specifiers: `{ "exact": "4.5.0" }`, `{ "from": "4.0.0" }`, `{ "branch": 
 | `fileMapping`        | array           | File mapping rules (objects with `from`, `to`, `type`) |
 | `moduleMapContent`   | string          | Custom module map content                          |
 | `publicHeaders`      | boolean         | Whether headers are public (default: `true`)       |
-| `vfsOverlayPath`     | string          | Path to VFS overlay file (framework targets only)  |
 
 #### Framework Target Type
 
@@ -578,7 +576,7 @@ This means **most podspecs don't need manual modification** to support precompil
 | `configure_header_search_paths(installer)` | Ensures ExpoModulesJSI headers are found |
 | `configure_codegen_for_prebuilt_modules(installer)` | Excludes prebuilt modules from ReactCodegen |
 | `stub_bundled_pod_targets(installer)` | Removes implementation sources from bundled pod compile phases |
-| `configure_use_frameworks(installer)` | Patches modulemaps and injects flags for `use_frameworks!` builds |
+| `ensure_modular_react_header_flags(installer)` | Extends React Native's prebuilt module-map coverage to the Expo pods |
 | `disable_swift_interface_verification(installer)` | Adds `SWIFT_EMIT_MODULE_INTERFACE = NO` when prebuilt React active |
 | `clear_cocoapods_cache` | Removes stale CocoaPods cache entries for prebuilt pods |
 

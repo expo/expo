@@ -11,7 +11,7 @@
       "url": "https://raw.githubusercontent.com/react-navigation/react-navigation.github.io/main/versioned_docs/version-7.x/bottom-tab-navigator.md"
     }
   ],
-  "fetchedAt": "2026-08-17T07:19:14.158Z",
+  "fetchedAt": "2026-08-17T08:34:10.644Z",
   "totalOptions": 79,
   "categories": {
     "header": 28,
@@ -105,14 +105,14 @@
     },
     {
       "name": "animation",
-      "description": "How the screen should animate when pushed or popped.\n\nSupported values:\n\n<div className=\"options-grid\">\n\n- \n\n  `default`\n\n  Use the platform default animation.\n\n- \n\n  `fade`\n\n  Fade the screen in or out.\n\n- \n\n  `fade_from_bottom`\n\n  Fade the new screen in from the bottom.\n\n- \n\n  `flip`\n\n  Flip the screen. Requires `presentation: \"modal\"` on iOS.\n\n- \n\n  `simple_push`\n\n  Use the default animation without the shadow and native header transition. On Android, this falls back to the default animation.\n\n- \n\n  `slide_from_bottom`\n\n  Slide the new screen in from the bottom.\n\n- \n\n  `slide_from_right`\n\n  Slide the new screen in from the right. On iOS, this falls back to the default animation.\n\n- \n\n  `slide_from_left`\n\n  Slide the new screen in from the left. On iOS, this falls back to the default animation.\n\n- \n\n  `none`\n\n  Don't animate the screen.\n\n</div>",
+      "description": "How the screen should animate when pushed or popped.\n\nSupported values: `default`, `fade`, `fade_from_bottom`, `flip`, `simple_push`, `slide_from_bottom`, `slide_from_right`, `slide_from_left`, `none`",
       "platform": "Android only",
       "category": "other",
       "origin": "native-stack-navigator"
     },
     {
       "name": "presentation",
-      "description": "How should the screen be presented.\n\nSupported values:\n\n<div className=\"options-grid\">\n\n- \n\n  `card`\n\n  The new screen will be pushed onto a stack, which means the default animation will be slide from the side on iOS, the animation on Android will vary depending on the OS version and theme.\n\n- \n\n  `modal`\n\n  The new screen will be presented modally. This also allows for a nested stack to be rendered inside the screen.\n\n- \n\n  `containedModal`\n\n  Uses \"UIModalPresentationCurrentContext\" modal style on iOS and falls back to \"modal\" on Android.\n\n- \n\n  `fullScreenModal`\n\n  Uses \"UIModalPresentationFullScreen\" modal style on iOS and falls back to \"modal\" on Android. A screen using this presentation style can't be dismissed by gesture.\n\n- \n\n  `transparentModal`\n\n  The new screen will be presented modally, but in addition, the previous screen will stay so that the content below can still be seen if the screen has translucent background.\n\n- \n\n  `containedTransparentModal`\n\n  Uses \"UIModalPresentationOverCurrentContext\" modal style on iOS and falls back to \"transparentModal\" on Android.\n\n- \n\n  `formSheet`\n\n  Uses \"BottomSheetBehavior\" on Android and \"UIModalPresentationFormSheet\" modal style on iOS. See Form Sheets for a detailed guide.\n\n</div>",
+      "description": "How should the screen be presented.\n\nSupported values: `card`, `modal`, `containedModal`, `fullScreenModal`, `transparentModal`, `containedTransparentModal`, `formSheet`",
       "platform": "Android only",
       "category": "other",
       "origin": "native-stack-navigator"
@@ -336,7 +336,7 @@
     },
     {
       "name": "headerBlurEffect",
-      "description": "Blur effect for the translucent header. The `headerTransparent` option needs to be set to `true` for this to work.\n\nSupported values:\n\n<div className=\"options-grid\">\n\n- \n\n  `extraLight`\n\n- \n\n  `light`\n\n- \n\n  `regular`\n\n- \n\n  `prominent`\n\n- \n\n  `systemUltraThinMaterial`\n\n- \n\n  `systemThinMaterial`\n\n- \n\n  `systemMaterial`\n\n- \n\n  `systemThickMaterial`\n\n- \n\n  `systemChromeMaterial`\n\n- \n\n  `systemUltraThinMaterialLight`\n\n- \n\n  `systemThinMaterialLight`\n\n- \n\n  `systemMaterialLight`\n\n- \n\n  `systemThickMaterialLight`\n\n- \n\n  `systemChromeMaterialLight`\n\n- \n\n  `dark`\n\n- \n\n  `systemUltraThinMaterialDark`\n\n- \n\n  `systemThinMaterialDark`\n\n- \n\n  `systemMaterialDark`\n\n- \n\n  `systemThickMaterialDark`\n\n- \n\n  `systemChromeMaterialDark`\n\n</div>\n\nUsing both `headerBlurEffect` and `scrollEdgeEffects` (>= iOS 26) simultaneously may cause overlapping effects.",
+      "description": "Blur effect for the translucent header. The `headerTransparent` option needs to be set to `true` for this to work.\n\nSupported values: `extraLight`, `light`, `regular`, `prominent`, `systemUltraThinMaterial`, `systemThinMaterial`, `systemMaterial`, `systemThickMaterial`, `systemChromeMaterial`, `systemUltraThinMaterialLight`, `systemThinMaterialLight`, `systemMaterialLight`, `systemThickMaterialLight`, `systemChromeMaterialLight`, `dark`, `systemUltraThinMaterialDark`, `systemThinMaterialDark`, `systemMaterialDark`, `systemThickMaterialDark`, `systemChromeMaterialDark`\n\nUsing both `headerBlurEffect` and `scrollEdgeEffects` (>= iOS 26) simultaneously may cause overlapping effects.",
       "platform": "iOS only",
       "category": "header",
       "origin": "native-stack-navigator"
@@ -441,7 +441,7 @@
     },
     {
       "name": "tabBarLabelPosition",
-      "description": "Whether the label is shown below the icon or beside the icon. By default, the position is chosen automatically based on device width.\n\n<div className=\"options-grid\">\n\n- \n\n  `below-icon`\n\n  The label is shown below the icon (typical for devices with smaller widths such as phones)\n\n- \n\n  `beside-icon`\n\n  The label is shown next to the icon (typical for larger devices such as tablets)\n\n</div>",
+      "description": "Whether the label is shown below the icon or beside the icon. By default, the position is chosen automatically based on device width.\n\n- `below-icon`\n\n  The label is shown below the icon (typical for devices with smaller widths such as phones)\n\n- `beside-icon`\n\n  The label is shown next to the icon (typical for larger devices such as tablets)",
       "platform": "Both",
       "category": "tabBar",
       "origin": "bottom-tab-navigator"
@@ -546,14 +546,14 @@
     },
     {
       "name": "tabBarStyle",
-      "description": "Style object for the tab bar. You can configure styles such as background color here.\n\nTo show your screen under the tab bar, you can set the `position` style to absolute:\n\n<ConfigTabs>\n<TabItem value=\"static\">\n\n```js\ncreateBottomTabNavigator({\n  screenOptions: {\n    tabBarStyle: { position: 'absolute' },\n  },\n  screens: {\n    // ...\n  },\n});\n```\n\n</TabItem>\n<TabItem value=\"dynamic\">\n\n```js\n<Tab.Navigator\n  screenOptions={{\n    tabBarStyle: { position: 'absolute' },\n  }}\n>\n```\n\n</TabItem>\n</ConfigTabs>\n\nYou also might need to add a bottom margin to your content if you have an absolutely positioned tab bar. React Navigation won't do it automatically. See `useBottomTabBarHeight` for more details.",
+      "description": "Style object for the tab bar. You can configure styles such as background color here.\n\nTo show your screen under the tab bar, you can set the `position` style to absolute:\n\n```js\ncreateBottomTabNavigator({\n  screenOptions: {\n    tabBarStyle: { position: 'absolute' },\n  },\n  screens: {\n    // ...\n  },\n});\n```\n\n```js\n<Tab.Navigator\n  screenOptions={{\n    tabBarStyle: { position: 'absolute' },\n  }}\n>\n```\n\nYou also might need to add a bottom margin to your content if you have an absolutely positioned tab bar. React Navigation won't do it automatically. See `useBottomTabBarHeight` for more details.",
       "platform": "Both",
       "category": "tabBar",
       "origin": "bottom-tab-navigator"
     },
     {
       "name": "tabBarBackground",
-      "description": "Function which returns a React Element to use as background for the tab bar. You could render an image, a gradient, blur view etc.:\n\n<ConfigTabs>\n<TabItem value=\"static\">\n\n```js\nimport { BlurView } from 'expo-blur';\nimport { StyleSheet } from 'react-native';\nimport { createBottomTabNavigator } from '@react-navigation/bottom-tabs';\n\n// ...\n\ncreateBottomTabNavigator({\n  screenOptions: {\n    tabBarStyle: { position: 'absolute' },\n    tabBarBackground: () => (\n      <BlurView tint=\"light\" intensity={100} style={StyleSheet.absoluteFill} />\n    ),\n  },\n  screens: {\n    // ...\n  },\n});\n```\n\n</TabItem>\n<TabItem value=\"dynamic\">\n\n```js\nimport { BlurView } from 'expo-blur';\nimport { StyleSheet } from 'react-native';\n\n// ...\n\n<Tab.Navigator\n  screenOptions={{\n    tabBarStyle: { position: 'absolute' },\n    tabBarBackground: () => (\n      <BlurView tint=\"light\" intensity={100} style={StyleSheet.absoluteFill} />\n    ),\n  }}\n>\n```\n\n</TabItem>\n</ConfigTabs>\n\nWhen using `BlurView`, make sure to set `position: 'absolute'` in `tabBarStyle` as well. You'd also need to use `useBottomTabBarHeight` to add bottom padding to your content.",
+      "description": "Function which returns a React Element to use as background for the tab bar. You could render an image, a gradient, blur view etc.:\n\n```js\nimport { BlurView } from 'expo-blur';\nimport { StyleSheet } from 'react-native';\nimport { createBottomTabNavigator } from '@react-navigation/bottom-tabs';\n\n// ...\n\ncreateBottomTabNavigator({\n  screenOptions: {\n    tabBarStyle: { position: 'absolute' },\n    tabBarBackground: () => (\n      <BlurView tint=\"light\" intensity={100} style={StyleSheet.absoluteFill} />\n    ),\n  },\n  screens: {\n    // ...\n  },\n});\n```\n\n```js\nimport { BlurView } from 'expo-blur';\nimport { StyleSheet } from 'react-native';\n\n// ...\n\n<Tab.Navigator\n  screenOptions={{\n    tabBarStyle: { position: 'absolute' },\n    tabBarBackground: () => (\n      <BlurView tint=\"light\" intensity={100} style={StyleSheet.absoluteFill} />\n    ),\n  }}\n>\n```\n\nWhen using `BlurView`, make sure to set `position: 'absolute'` in `tabBarStyle` as well. You'd also need to use `useBottomTabBarHeight` to add bottom padding to your content.",
       "platform": "Both",
       "category": "tabBar",
       "origin": "bottom-tab-navigator"

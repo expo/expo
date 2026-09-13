@@ -78,7 +78,7 @@ const InnerTabs = ({
       onValueChange={value => {
         setIndex(Number(value));
       }}
-      className="my-4 rounded-md border border-default shadow-xs">
+      className="my-4 rounded-3xl border border-default shadow-xs">
       <TabsPrimitive.List className="flex flex-wrap gap-1 border-b border-secondary px-4 py-3">
         {tabTitles.map((title, index) => (
           <TabButton

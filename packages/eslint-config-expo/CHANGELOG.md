@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.1 - 2026-07-29
 
 _This version does not introduce any user-facing changes._

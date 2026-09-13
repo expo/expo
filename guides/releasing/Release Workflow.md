@@ -227,7 +227,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - Run `et eas ios-simulator-build` to trigger building Expo Go for iOS simulators on EAS.
-- Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas ios-simulator-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
+- Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas ios-simulator-upload` to download the simulator build artifact and the device IPA (built by `ios-client-build-and-submit`) and upload both to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
 - Run `et eas android-apk-build` to trigger building Expo Go for Android APK on EAS.
 - Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas android-apk-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
 - Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.

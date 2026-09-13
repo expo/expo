@@ -56,10 +56,10 @@ it(`can create a micro Metro graph fixture`, async () => {
             "output": [
               {
                 "data": {
-                  "code": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+                  "code": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      var _foo = _$$_REQUIRE(_dependencyMap[0], "./foo");
+      var _foo = require(_dependencyMap[0], "./foo");
       console.log(_foo.foo);
     });",
                   "expoDomComponentReference": undefined,
@@ -76,7 +76,7 @@ it(`can create a micro Metro graph fixture`, async () => {
                     "__count": 18,
                     "__names": [
                       "_foo",
-                      "_$$_REQUIRE",
+                      "require",
                       "_dependencyMap",
                       "console",
                       "log",
@@ -104,17 +104,17 @@ it(`can create a micro Metro graph fixture`, async () => {
                       4,
                       1,
                       4,
-                      24,
+                      20,
                       2,
                       4,
                       -1,
                       4,
-                      25,
+                      21,
                       2,
                       4,
                       2,
                       4,
-                      39,
+                      35,
                       2,
                       4,
                       -1,
@@ -193,7 +193,7 @@ it(`can create a micro Metro graph fixture`, async () => {
             "output": [
               {
                 "data": {
-                  "code": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+                  "code": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {

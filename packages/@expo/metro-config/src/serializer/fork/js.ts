@@ -17,6 +17,7 @@ import assert from 'assert';
 import jscSafeUrl from 'jsc-safe-url';
 import path from 'path';
 
+import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';
 import { toPosixPath as normalizePathSeparatorsToPosix } from '../../utils/filePath';
 
 export type Options = {
@@ -102,7 +103,7 @@ export function getModuleParams(
           // most parameters from the main bundle's URL.
 
           const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl));
-          if (dependency.data.data.asyncType === 'worker') {
+          if ((dependency.data.data.asyncType as AsyncDependencyType | null) === 'worker') {
             // Include all modules and run the module when of type worker.
             searchParams.set('modulesOnly', 'false');
             searchParams.set('runModule', 'true');

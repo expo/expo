@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Column`](../universal/column) — it renders the appropriate native component per platform.
@@ -30,25 +31,49 @@ Expo UI Column matches the official Jetpack Compose [Column](https://developer.a
 
 `Column` places children vertically. Use `verticalArrangement` and `horizontalAlignment` to control spacing and alignment.
 
-```tsx ColumnExample.tsx
-import { Host, Column, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+<ComponentExample
+  title="ColumnExample.tsx"
+  src="/static/images/expo-ui/examples/column-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/column-basic-android-dark.webp"
+  alt="Three labels, First, Second, and Third, stacked vertically and centered horizontally">
+
+```tsx
+import {
+  Host,
+  Column,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  paddingAll,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function ColumnExample() {
+  const colors = useMaterialColors();
+
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Column
         verticalArrangement={{ spacedBy: 8 }}
         horizontalAlignment="center"
         modifiers={[fillMaxWidth(), paddingAll(16)]}>
-        <Text>First</Text>
-        <Text>Second</Text>
-        <Text>Third</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          First
+        </Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Second
+        </Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Third
+        </Text>
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -56,4 +81,7 @@ export default function ColumnExample() {
 import { Column } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/column" apiName="Column" />
+<APISection
+  packageName="expo-ui/jetpack-compose/column"
+  apiName="Column"
+/>

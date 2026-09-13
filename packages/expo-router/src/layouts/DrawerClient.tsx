@@ -32,6 +32,7 @@ export const Drawer = unstable_integrateWithRouter<
   DrawerRouterOptions,
   DrawerNavigatorCreateProps
 >(createStandardDrawerNavigator, DrawerRouter, {
+  activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, navigation, dispatch }) => ({

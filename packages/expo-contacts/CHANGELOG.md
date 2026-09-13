@@ -8,11 +8,20 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - [iOS] Fix `Contact.getAllDetails` always returning `null` for `thumbnail`, `birthday` and `nonGregorianBirthday`. ([#48384](https://github.com/expo/expo/pull/48384) by [@martintreurnicht](https://github.com/martintreurnicht))
 - [iOS] Fix `Contact.getAll` and `Contact.getAllDetails` returning contacts linked across accounts once per account record, and honour the `rawContacts` query option. ([#48387](https://github.com/expo/expo/pull/48387) by [@martintreurnicht](https://github.com/martintreurnicht))
 - [iOS] Return contact image and thumbnail URIs instead of bare file paths, matching the documented contract and Android. ([#48385](https://github.com/expo/expo/pull/48385) by [@martintreurnicht](https://github.com/martintreurnicht))
-
-### 💡 Others
+- [iOS] Map predefined `CNLabeledValue` labels to JS values (`CNLabelHome` → `"home"`) and JS labels back case-insensitively (`"Home"` → `CNLabelHome`). Default missing or blank labels to `"other"`/`CNLabelOther`. ([#49874](https://github.com/expo/expo/pull/49874) by [@Wenszel](https://github.com/Wenszel))
 
 ## 57.0.3 - 2026-07-29
 

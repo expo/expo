@@ -33,7 +33,7 @@ export function Item({
     <DropdownMenu.Item
       aria-disabled={disabled}
       className={mergeClasses(
-        'group relative z-40 flex cursor-pointer items-center justify-between rounded-sm px-2 py-1 transition-colors select-none',
+        'group relative z-40 flex cursor-pointer items-center justify-between rounded-lg px-2 py-1 transition-colors select-none',
         'hover:outline-0 hocus:bg-hover',
         disabled && 'cursor-default opacity-60 hocus:bg-default'
       )}

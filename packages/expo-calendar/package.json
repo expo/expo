@@ -1,6 +1,6 @@
 {
   "name": "expo-calendar",
-  "version": "57.0.1",
+  "version": "58.0.0",
   "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "keywords": [
     "calendar",

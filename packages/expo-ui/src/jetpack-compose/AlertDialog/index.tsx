@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ViewEvent, type ModifierConfig, type DialogProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -123,7 +124,11 @@ function AlertDialogIcon(props: { children: React.ReactNode }) {
  */
 function AlertDialogComponent(props: AlertDialogProps) {
   const { children, ...restProps } = props;
-  return <AlertDialogNativeView {...transformProps(restProps)}>{children}</AlertDialogNativeView>;
+  return (
+    <AlertDialogNativeView {...transformProps(restProps)}>
+      <PresentedContent>{children}</PresentedContent>
+    </AlertDialogNativeView>
+  );
 }
 
 AlertDialogComponent.Title = AlertDialogTitle;

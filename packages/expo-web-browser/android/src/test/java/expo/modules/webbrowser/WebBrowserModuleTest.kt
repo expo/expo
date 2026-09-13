@@ -141,6 +141,33 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
+  fun testToolbarColorsCorrectlyPassedToIntent() = withWebBrowserMock {
+    // given
+    val toolbarColor = 0xFF361030.toInt()
+    val secondaryToolbarColor = 0xFF1B5E20.toInt()
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync(
+      "http://expo.io",
+      OpenBrowserOptions(
+        toolbarColor = toolbarColor,
+        secondaryToolbarColor = secondaryToolbarColor
+      )
+    )
+
+    // then
+    val colorSchemeParams = CustomTabsIntent.getColorSchemeParams(
+      intentSlot.captured.intent,
+      CustomTabsIntent.COLOR_SCHEME_LIGHT
+    )
+    assertEquals(toolbarColor, colorSchemeParams.toolbarColor)
+    assertEquals(secondaryToolbarColor, colorSchemeParams.secondaryToolbarColor)
+  }
+
+  @Test
   fun testActivitiesAndServicesReturnedForValidKeys() = withWebBrowserMock {
     // given
     val services = arrayListOf("service1", "service2")

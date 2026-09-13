@@ -5,6 +5,7 @@ import { stripVTControlCharacters } from 'node:util';
 
 import type { loadEnvFiles } from '../';
 import {
+  consumeConfigEnvMode,
   getEnvFiles,
   getOriginalEnv,
   getOriginalEnvValue,
@@ -58,6 +59,24 @@ describe(setNodeEnv, () => {
       EXAMPLE: 'value',
     });
     expect(process.env.NODE_ENV).toBe('development');
+  });
+});
+
+describe(consumeConfigEnvMode, () => {
+  it('reads and removes __EXPO_CONFIG_MODE', () => {
+    const systemEnv = { __EXPO_CONFIG_MODE: 'production' };
+
+    expect(consumeConfigEnvMode({ systemEnv })).toBe('production');
+    expect(systemEnv.__EXPO_CONFIG_MODE).toBeUndefined();
+  });
+
+  it('removes an invalid __EXPO_CONFIG_MODE value', () => {
+    process.env.__EXPO_CONFIG_MODE = 'staging';
+
+    expect(() => consumeConfigEnvMode()).toThrow(
+      'Invalid __EXPO_CONFIG_MODE value: "staging". Use "development" or "production".'
+    );
+    expect(process.env.__EXPO_CONFIG_MODE).toBeUndefined();
   });
 });
 
@@ -498,6 +517,49 @@ describe(getOriginalEnv, () => {
     expect(getOriginalEnv()[LOADED_ENV_NAME]).toBeUndefined();
   });
 
+  it('removes dotenv values inherited from a parent process', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      PRE_EXISTING: 'original',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+
+    expect(getOriginalEnv(inheritedEnv)).toEqual({ PRE_EXISTING: 'original' });
+  });
+
+  it('keeps inherited dotenv values listed in EXPO_UNSAFE_DOTENV_KEYS', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'DOTENV_VALUE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        const inheritedEnv = {
+          DOTENV_VALUE: 'from-parent-dotenv',
+          [LOADED_ENV_NAME]: JSON.stringify(['DOTENV_VALUE']),
+        };
+
+        expect(mod.getOriginalEnv(inheritedEnv)).toEqual({
+          DOTENV_VALUE: 'from-parent-dotenv',
+        });
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+
+  it('removes inherited dotenv values after a forced local load', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+    vol.fromJSON({ '.env': 'BAR=from-current-dotenv' }, '/');
+
+    loadProjectEnv('/', { force: true, systemEnv: inheritedEnv });
+
+    expect(getOriginalEnv(inheritedEnv)).toEqual({});
+  });
+
   it('preserves the pre-load value when loadProjectEnv skipped the assignment', () => {
     process.env.FOO = 'shell-provided';
     vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
@@ -593,6 +655,18 @@ describe(getOriginalEnvValue, () => {
     expect(process.env.FOO).toBe('bar');
 
     expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('returns undefined for a dotenv value inherited from a parent process', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      PRE_EXISTING: 'original',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+
+    expect(getOriginalEnvValue('FOO', inheritedEnv)).toBeUndefined();
+    expect(getOriginalEnvValue('PRE_EXISTING', inheritedEnv)).toBe('original');
+    expect(getOriginalEnvValue(LOADED_ENV_NAME, inheritedEnv)).toBeUndefined();
   });
 
   it('falls through to systemEnv for keys @expo/env never touched', () => {
@@ -758,6 +832,28 @@ describe('isLocalEnvKey policy', () => {
 
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/NODE_OPTIONS/);
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/EXPO_UNSAFE_DOTENV_KEYS/);
+  });
+
+  it('blocks __EXPO_CONFIG_MODE in env files', () => {
+    vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
+  });
+
+  it('keeps __EXPO_CONFIG_MODE blocked when the unsafe list includes it', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = '__EXPO_CONFIG_MODE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
+
+        expect(() => mod.parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
   });
 
   it('combines both violation classes into a single thrown error', () => {

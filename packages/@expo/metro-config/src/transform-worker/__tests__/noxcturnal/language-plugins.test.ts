@@ -1306,6 +1306,11 @@ it.each([
     'module.exports = async (...rest) => rest.length',
     /\(\.\.\.rest\)\s*=>\s*\(async\s*\(\)\s*=>\s*\{\s*return rest\.length;/,
   ],
+  [
+    'rest parameter with block body',
+    'module.exports = async (...rest) => { return rest.length; }',
+    /\(\.\.\.rest\)\s*=>\s*\(async\s*\(\)\s*=>\s*\{\s*return rest\.length;/,
+  ],
 ])('applies the maintained async-arrow workaround for %s', async (_name, source, expected) => {
   const result = await transformNodeModuleWithNoxcturnal({
     filename,
@@ -1357,6 +1362,24 @@ it('preserves runtime behavior across maintained async-arrow rewrites', async ()
   const module = { exports: undefined as unknown };
   Function('module', 'exports', result.result.code)(module, module.exports);
   await expect((module.exports as () => Promise<unknown>)()).resolves.toEqual([1, 7, 'a:b', 1]);
+});
+
+it('preserves source mappings for a composite rest-parameter async-arrow rewrite', async () => {
+  const source = `module.exports = async (...rest) => rest.length;`;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+  if (result.status === 'fallback') throw new Error(result.reason);
+  const original = originalPositionFor(
+    new TraceMap({ version: 3, sources: [filename], ...result.result.map } as any),
+    generatedPositionOf(result.result.code, 'rest.length')
+  );
+
+  expect(original).toMatchObject({ line: 1, column: source.indexOf('rest.length') });
 });
 
 it.each([

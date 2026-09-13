@@ -1,8 +1,11 @@
-import Color from 'color';
-import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
-import { type LinkProps, useLinkProps, useTheme } from '../native';
+import { router } from '../../imperative-api';
+import { resolveHref } from '../../link/href';
+import useLinkToPathProps from '../../link/useLinkToPathProps';
+import type { Href } from '../../types';
+import { alpha, darken, isDark } from '../../utils/color';
+import { useTheme } from '../native';
 import { PlatformPressable, type Props as PlatformPressableProps } from './PlatformPressable';
 import { Text } from './Text';
 
@@ -12,39 +15,39 @@ type ButtonBaseProps = Omit<PlatformPressableProps, 'children'> & {
   children: string | string[];
 };
 
-type ButtonLinkProps<ParamList extends ReactNavigation.RootParamList> = LinkProps<ParamList> &
-  Omit<ButtonBaseProps, 'onPress'>;
+type ButtonProps = Omit<ButtonBaseProps, 'href'> & {
+  href?: Href;
+};
 
 const BUTTON_RADIUS = 40;
 
-export function Button<ParamList extends ReactNavigation.RootParamList>(
-  props: ButtonLinkProps<ParamList>
-): React.JSX.Element;
-
-export function Button(props: ButtonBaseProps): React.JSX.Element;
-
-export function Button<ParamList extends ReactNavigation.RootParamList>(
-  props: ButtonBaseProps | ButtonLinkProps<ParamList>
-) {
-  if ('screen' in props || 'action' in props) {
-    // @ts-expect-error: This is already type-checked by the prop types
-    return <ButtonLink {...props} />;
-  } else {
-    return <ButtonBase {...props} />;
+export function Button({ href, ...rest }: ButtonProps) {
+  if (href != null) {
+    return <ButtonLink {...rest} href={href} />;
   }
+
+  return <ButtonBase {...rest} />;
 }
 
-function ButtonLink<ParamList extends ReactNavigation.RootParamList>({
-  screen,
-  params,
-  action,
-  href,
-  ...rest
-}: ButtonLinkProps<ParamList>) {
-  // @ts-expect-error: This is already type-checked by the prop types
-  const props = useLinkProps({ screen, params, action, href });
+function ButtonLink({ href, onPress, ...rest }: ButtonProps & { href: Href }) {
+  const { href: resolvedHref } = useLinkToPathProps({
+    href: resolveHref(href),
+  });
 
-  return <ButtonBase {...rest} {...props} />;
+  return (
+    <ButtonBase
+      {...rest}
+      href={resolvedHref}
+      onPress={(event) => {
+        onPress?.(event);
+        // `PlatformPressable` prevents unmodified web clicks before calling `onPress`, so a
+        // consumer cannot cancel navigation there with `preventDefault`; on native, they can.
+        if (Platform.OS === 'web' || !event?.defaultPrevented) {
+          router.navigate(href);
+        }
+      }}
+    />
+  );
 }
 
 function ButtonBase({
@@ -58,6 +61,7 @@ function ButtonBase({
   const { colors, fonts } = useTheme();
 
   const color = customColor ?? colors.primary;
+  const fadedColor = alpha(color);
 
   let backgroundColor;
   let textColor;
@@ -68,12 +72,13 @@ function ButtonBase({
       textColor = color;
       break;
     case 'tinted':
-      backgroundColor = Color(color).fade(0.85).string();
+      backgroundColor =
+        (fadedColor === undefined ? undefined : alpha(color, fadedColor * 0.15)) ?? color;
       textColor = color;
       break;
     case 'filled':
       backgroundColor = color;
-      textColor = Color(color).isDark() ? 'white' : Color(color).darken(0.71).string();
+      textColor = isDark(color) ? 'white' : (darken(color, 0.71) ?? color);
       break;
   }
 
@@ -82,7 +87,7 @@ function ButtonBase({
       {...rest}
       android_ripple={{
         radius: BUTTON_RADIUS,
-        color: Color(textColor).fade(0.85).string(),
+        color: alpha(textColor, (alpha(textColor) ?? 1) * 0.15) ?? textColor,
         ...android_ripple,
       }}
       pressOpacity={Platform.OS === 'ios' ? undefined : 1}

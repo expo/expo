@@ -40,6 +40,10 @@ internal fun Project.applyPikaPlugin() {
   pika.introspectableAnnotation("expo.modules.kotlin.views.OptimizedComposeProps")
 }
 
+internal fun Project.applyExpoModulesV2Plugin() {
+  applyPluginIfNeeded("io.github.expo.modules.v2")
+}
+
 private fun Project.applyPluginIfNeeded(id: String) {
   if (!plugins.hasPlugin(id)) {
     plugins.apply(id)

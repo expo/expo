@@ -2,7 +2,7 @@ require 'json'
 require 'pathname'
 require 'colored2' # dependency of CocoaPods
 
-require File.join(File.dirname(`node --print "require.resolve('expo-modules-autolinking/package.json', { paths: ['#{__dir__}'] })"`), "scripts/ios/autolinking_manager")
+require File.join(File.dirname(`node --print "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })"`), "scripts/ios/autolinking_manager")
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 
 def use_expo_modules_widgets!(options = {})

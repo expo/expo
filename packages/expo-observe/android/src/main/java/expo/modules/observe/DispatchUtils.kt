@@ -11,7 +11,7 @@ import kotlin.math.pow
 import kotlin.random.Random
 
 /**
- * Outcome of a single dispatch attempt to the OTLP endpoint. Four cases, modeled after the
+ * Outcome of a single dispatch attempt to the OTLP endpoint. Five cases, modeled after the
  * OTLP retry guidance (see https://opentelemetry.io/docs/specs/otlp/#otlphttp-response):
  *
  * - `Success` — server accepted the batch without rejections.
@@ -22,6 +22,7 @@ import kotlin.random.Random
  *   it as a drop.
  * - `RetryableFailure` — transient failure (429/502/503/504 or transport error); retry
  *   the same batch after `retryAfterMs` or a client-computed backoff.
+ * - `PayloadTooLarge` — HTTP 413; retry immediately with fewer records.
  * - `NonRetryableFailure` — permanent failure (4xx/5xx outside the retryable set, encoding
  *   error); drop the batch so it can't wedge the queue.
  *
@@ -33,6 +34,7 @@ sealed class DispatchResult {
   object Success : DispatchResult()
   data class PartialSuccess(val partial: OTPartialSuccess) : DispatchResult()
   data class RetryableFailure(val retryAfterMs: Long? = null) : DispatchResult()
+  object PayloadTooLarge : DispatchResult()
   data class NonRetryableFailure(val reason: String) : DispatchResult()
 }
 
@@ -43,7 +45,7 @@ sealed class DispatchResult {
  */
 object DispatchUtils {
   /**
-   * Pure classifier that maps an HTTP response into one of three retry outcomes. Extracted
+   * Pure classifier that maps an HTTP response into a dispatch outcome. Extracted
    * from the dispatch call site so the OTLP-spec rules can be unit-tested without a real
    * network call.
    *
@@ -57,8 +59,6 @@ object DispatchUtils {
     responseBody: String?,
     bodyExcerpt: () -> String = { "" }
   ): DispatchResult {
-    val retryAfter = parseRetryAfter(retryAfterHeader)
-
     if (statusCode in 200..299) {
       // The OTLP spec allows `partial_success` to carry a warning-only payload —
       // `rejectedCount == 0` with a non-empty `errorMessage`. Treat that as a successful send
@@ -78,32 +78,14 @@ object DispatchUtils {
     }
 
     return when (statusCode) {
-      429, 502, 503, 504 -> DispatchResult.RetryableFailure(retryAfter)
+      413 -> DispatchResult.PayloadTooLarge
+      429, 502, 503, 504 -> DispatchResult.RetryableFailure(parseRetryAfter(retryAfterHeader))
       else -> {
         val excerpt = bodyExcerpt()
         val suffix = if (excerpt.isEmpty()) "" else ": $excerpt"
         DispatchResult.NonRetryableFailure(reason = "HTTP $statusCode$suffix")
       }
     }
-  }
-
-  /**
-   * Whether the dispatch caller should remove the just-sent pending IDs from the queue.
-   *
-   * - `Success` and `PartialSuccess` remove them — the rows have been accepted by the server
-   *   (partial success rejects a subset server-side, but the bytes still landed; re-sending
-   *   them would just re-trip the same rejection).
-   * - `NonRetryableFailure` ALSO removes them — the server has refused these rows
-   *   permanently, so retrying would produce the same answer; removing them drops the batch
-   *   so it can't wedge subsequent rounds. This is the acceptance-criterion behavior: a
-   *   400/403 must not be re-sent on the next cycle.
-   * - `RetryableFailure` keeps them so the next dispatch round picks the same rows up again.
-   */
-  fun shouldRemovePending(result: DispatchResult): Boolean = when (result) {
-    is DispatchResult.Success,
-    is DispatchResult.PartialSuccess,
-    is DispatchResult.NonRetryableFailure -> true
-    is DispatchResult.RetryableFailure -> false
   }
 
   /**
@@ -218,6 +200,8 @@ object DispatchUtils {
    *   server-side) doesn't introduce a new pause.
    * - `NonRetryableFailure` also resets the counter. A permanent drop isn't a sign that the
    *   server is unhealthy and shouldn't pause subsequent rounds.
+   * - `PayloadTooLarge` also resets the counter because a reachable server returned a definitive
+   *   response, and leaves the gate alone because chunk-size retries are immediate.
    * - `RetryableFailure` increments the counter and sets the gate to `now + delay`, where
    *   `delay` is the server-supplied `retryAfterMs` if present, otherwise `backoff(nextCount)`.
    *
@@ -232,7 +216,8 @@ object DispatchUtils {
   ): RetryGateState = when (result) {
     is DispatchResult.Success,
     is DispatchResult.PartialSuccess,
-    is DispatchResult.NonRetryableFailure ->
+    is DispatchResult.NonRetryableFailure,
+    is DispatchResult.PayloadTooLarge ->
       currentState.copy(consecutiveRetryableFailures = 0)
     is DispatchResult.RetryableFailure -> {
       val nextCount = currentState.consecutiveRetryableFailures + 1

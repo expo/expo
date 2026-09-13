@@ -19,6 +19,7 @@ const createNavigationState = (
   const allRoutes = routes.concat(options.preloadedRoutes ?? []);
   return {
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
     key: 'stack-1',
     index: options.index ?? routes.length - 1,
@@ -56,7 +57,9 @@ const createProps = (
   state: createNavigationState(routes, options),
   descriptors: createDescriptors(routes, options),
   direction: 'ltr' as const,
-  navigation: {} as any,
+  emit: jest.fn(),
+  pop: jest.fn(),
+  restoreRoute: jest.fn(() => false),
   describe: (() => {}) as any,
 });
 
@@ -309,6 +312,24 @@ describe('StackView.getDerivedStateFromProps', () => {
   });
 
   describe('edge cases', () => {
+    test('restores a route when its close animation is cancelled', () => {
+      const routeA = createRoute('A');
+      const routeB = createRoute('B');
+      const restoreRoute = jest.fn(() => true);
+      const view = new StackView({ ...createProps([routeA]), restoreRoute });
+      view.state = createState({ closingRouteKeys: ['B'] }, [routeA, routeB]);
+
+      // The handler is private because it is normally called by CardStack.
+      (
+        view as unknown as {
+          handleOpenRoute: (props: { route: Route<string> }) => void;
+        }
+      ).handleOpenRoute({ route: routeB });
+
+      expect(restoreRoute).toHaveBeenCalledWith(routeB);
+      expect(view.state.closingRouteKeys).toEqual(['B']);
+    });
+
     test('handles route closing before opening animation finishes', () => {
       const routeA = createRoute('A');
       const routeB = createRoute('B');

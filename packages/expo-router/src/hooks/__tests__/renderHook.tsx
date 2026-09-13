@@ -1,4 +1,7 @@
-import { renderHook as tlRenderHook } from '@testing-library/react-native';
+import {
+  renderHook as tlRenderHook,
+  renderHookAsync as tlRenderHookAsync,
+} from '@testing-library/react-native';
 import React from 'react';
 
 import { ExpoRoot } from '../../exports';
@@ -18,22 +21,41 @@ export function renderHook<T>(
   }: { initialUrl?: string; wrapper?: React.ComponentType<{ children: React.ReactNode }> } = {}
 ) {
   return tlRenderHook(renderCallback, {
-    wrapper: function Wrapper({ children }) {
-      const context: MemoryContext = {};
-      for (const key of routes) {
-        context[key] = () => <>{children}</>;
-      }
-
-      const root = (
-        <ExpoRoot
-          context={inMemoryContext(context)}
-          location={new URL(initialUrl, 'test://test')}
-        />
-      );
-
-      return RootWrapper ? <RootWrapper>{root}</RootWrapper> : root;
-    },
+    wrapper: createWrapper(routes, initialUrl, RootWrapper),
   });
+}
+
+export function renderHookAsync<T>(
+  renderCallback: () => T,
+  routes: string[] = ['index'],
+  {
+    initialUrl = '/',
+    wrapper: RootWrapper,
+  }: { initialUrl?: string; wrapper?: React.ComponentType<{ children: React.ReactNode }> } = {}
+) {
+  // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
+  return tlRenderHookAsync(renderCallback, {
+    wrapper: createWrapper(routes, initialUrl, RootWrapper),
+  });
+}
+
+function createWrapper(
+  routes: string[],
+  initialUrl: string,
+  RootWrapper?: React.ComponentType<{ children: React.ReactNode }>
+) {
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    const context: MemoryContext = {};
+    for (const key of routes) {
+      context[key] = () => <>{children}</>;
+    }
+
+    const root = (
+      <ExpoRoot context={inMemoryContext(context)} location={new URL(initialUrl, 'test://test')} />
+    );
+
+    return RootWrapper ? <RootWrapper>{root}</RootWrapper> : root;
+  };
 }
 
 export function renderHookOnce<T>(

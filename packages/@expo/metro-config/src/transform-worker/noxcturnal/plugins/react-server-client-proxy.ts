@@ -76,19 +76,10 @@ export function createReactServerClientProxyPlugin(
         }
       ),
       nox.defineVisitor(
-        'ExportAllDeclaration',
-        { ancestry: { mode: 'programParent' } },
-        (exportPath, state) => {
-          if (state.enabled && exportPath.parentPath?.node.type === 'Program') {
-            state.exports.add('*');
-          }
-        }
-      ),
-      nox.defineVisitor(
         'ExportNamedDeclaration',
         {
+          fields: ['exportKind'],
           ancestry: { mode: 'programParent' },
-          scope: true,
           children: {
             declaration: {
               route: 'Declaration',
@@ -104,13 +95,22 @@ export function createReactServerClientProxyPlugin(
             },
             specifiers: {
               route: 'ExportSpecifier',
-              fields: ['exported'],
+              fields: ['exported', 'exportKind'],
             },
           } as any,
         },
         (exportPath, state) => {
           if (!state.enabled || exportPath.parentPath?.node.type !== 'Program') return;
+          if (exportPath.node.exportKind === 'type') return;
           const declaration = exportPath.getChild('declaration') as any;
+          if (
+            declaration?.node.type === 'TSInterfaceDeclaration' ||
+            declaration?.node.type === 'TSTypeAliasDeclaration' ||
+            declaration?.node.type === 'TypeAlias' ||
+            declaration?.node.type === 'InterfaceDeclaration'
+          ) {
+            return;
+          }
           if (typeof declaration?.node.name === 'string') {
             state.exports.add(declaration.node.name);
           } else if (declaration?.node.type === 'VariableDeclaration') {
@@ -122,6 +122,7 @@ export function createReactServerClientProxyPlugin(
             }
           }
           for (const specifier of exportPath.getChildList('specifiers')) {
+            if (specifier.node.exportKind === 'type') continue;
             state.exports.add(String(specifier.node.exported));
           }
         }

@@ -77,7 +77,7 @@ class SnacksListViewModel: ObservableObject {
   @Published var hasMore = false
 
   private let accountName: String
-  private var currentOffset = 0
+  private var endCursor: String?
   private let pageSize = 20
 
   init(accountName: String) {
@@ -86,19 +86,17 @@ class SnacksListViewModel: ObservableObject {
 
   func loadInitial() async {
     guard snacks.isEmpty else { return }
-    currentOffset = 0
+    endCursor = nil
     await fetchSnacks()
   }
 
   func refresh() async {
-    currentOffset = 0
-    snacks = []
+    endCursor = nil
     await fetchSnacks()
   }
 
   func loadMore() async {
-    guard !isLoading else { return }
-    currentOffset += pageSize
+    guard !isLoading, hasMore else { return }
     await fetchSnacks()
   }
 
@@ -106,26 +104,36 @@ class SnacksListViewModel: ObservableObject {
     isLoading = true
     defer { isLoading = false }
 
+    let isFirstPage = endCursor == nil
+    var variables: [String: Any] = [
+      "accountName": accountName,
+      "first": pageSize
+    ]
+    if let endCursor {
+      variables["after"] = endCursor
+    }
+
     do {
       let response: SnacksListResponse = try await APIClient.shared.request(
         Queries.getSnacksList(),
-        variables: [
-          "accountName": accountName,
-          "limit": pageSize,
-          "offset": currentOffset
-        ]
+        variables: variables
       )
 
-      let newSnacks = response.data.account.byName.snacks
+      let connection = response.data.account.byName.snacksPaginated
+      let newSnacks = connection.edges.map { $0.node }
 
-      if currentOffset == 0 {
+      if isFirstPage {
         snacks = newSnacks
       } else {
         snacks.append(contentsOf: newSnacks)
       }
 
-      hasMore = newSnacks.count >= pageSize
+      hasMore = connection.pageInfo?.hasNextPage ?? false
+      endCursor = connection.pageInfo?.endCursor
     } catch {
+      if (error as? APIError)?.isCancellation == true {
+        return
+      }
       self.error = error
       self.showingError = true
     }

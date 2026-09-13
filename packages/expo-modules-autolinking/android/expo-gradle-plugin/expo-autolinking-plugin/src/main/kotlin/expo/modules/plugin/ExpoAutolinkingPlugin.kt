@@ -15,6 +15,7 @@ import org.gradle.api.tasks.TaskProvider
 
 const val generatedPackageListNamespace = "expo.modules"
 const val generatedPackageListFilename = "ExpoModulesPackageList.kt"
+const val generatedV2ModuleListFilename = "ExpoModulesV2ModuleList.kt"
 const val generatedFilesSrcDir = "generated/expo/src/main/java"
 
 open class ExpoAutolinkingPlugin : Plugin<Project> {

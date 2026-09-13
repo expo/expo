@@ -76,8 +76,16 @@ const Nav = unstable_createStandardRouterNavigator<
   TabRouterOptions
 >(Content, TabRouter);
 
+export type _TabActivityIsBoolean = Expect<
+  Equal<ComponentProps<typeof Nav>['activityEnabled'], boolean | undefined>
+>;
+export type _TabScreenActivityIsBoolean = Expect<
+  Equal<ComponentProps<typeof Nav.Screen>['activityEnabled'], boolean | undefined>
+>;
+
 type TypelessNavigationState = Readonly<{
   key: string;
+  routeKeySeq: number;
   index: number;
   routeNames: string[];
   routes: { key: string; name: string; params?: object }[];
@@ -89,19 +97,18 @@ const TypelessRouter: RouterFactory<
   NavigationAction,
   DefaultRouterOptions
 > = () => ({
-  getRehydratedState: () => {
-    throw new Error('Type test only');
-  },
   getStateForDeclaredRoutes: (state) => state,
   getStateForRouteFocus: (state) => state,
-  getStateForAction: (state) => state,
+  getStateForAction: (state) => ({
+    state,
+    affectedRouteKey: state.routes[state.index]?.key,
+  }),
   shouldActionChangeFocus: () => false,
 });
 
 unstable_createStandardRouterNavigator(Content, TypelessRouter);
 
-// A router may omit `type` only when its state has none. Otherwise initialization accepts the
-// typeless state, rehydration adds a type, and `isStateValid` rejects it in a loop.
+// A router may omit `type` only when its state has none.
 export type _BaseRouterTypeIsOptional = Expect<
   Equal<Pick<Router<NavigationState, NavigationAction>, 'type'>, { type?: string }>
 >;

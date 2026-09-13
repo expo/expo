@@ -140,6 +140,21 @@ class EventDispatcherTest {
     }
 
   @Test
+  fun `dispatch returns PayloadTooLarge on 413 response`() =
+    runTest {
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(413)
+          .setBody("""{"error": "Payload Too Large"}""")
+      )
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertEquals(DispatchResult.PayloadTooLarge, result)
+      assertEquals(1, mockServer.requestCount)
+    }
+
+  @Test
   fun `dispatch returns NonRetryable on 500 server error`() =
     runTest {
       // 500 is NOT in OTLP's retryable list — only 429/502/503/504 are. 500 means an

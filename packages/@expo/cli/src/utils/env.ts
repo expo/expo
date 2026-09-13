@@ -245,11 +245,6 @@ class Env {
     return getOriginalEnvValue('__EXPO_EAGER_BUNDLE_OPTIONS') || '';
   }
 
-  /** @internal Mode passed to `expo config` or `expo prebuild` by another tool. */
-  get EXPO_CONFIG_MODE(): string | undefined {
-    return getOriginalEnvValue('EXPO_CONFIG_MODE') || undefined;
-  }
-
   /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
   get EXPO_NO_DEPLOY(): boolean {
     return boolish('EXPO_NO_DEPLOY', false);
@@ -290,23 +285,9 @@ class Env {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
 
-  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
-  get EXPO_UNSTABLE_WEB_MODAL(): boolean {
-    return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
-  }
-
   /** Disable @react-navigation checks for expo-router projects */
   get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
     return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
-  }
-
-  /**
-   * Disable Material Symbols (`md`) icon support in expo-router's NativeTabs on Android.
-   * When enabled, the Metro resolver swaps the Android-specific md icon converter for a no-op
-   * stub, so the `expo-symbols` dependency is tree-shaken out of the Android bundle.
-   */
-  get EXPO_ROUTER_DISABLE_NATIVE_TABS_MD(): boolean {
-    return boolish('EXPO_ROUTER_DISABLE_NATIVE_TABS_MD', false);
   }
 
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */

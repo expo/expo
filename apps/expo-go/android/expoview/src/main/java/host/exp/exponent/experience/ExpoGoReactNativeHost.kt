@@ -100,7 +100,7 @@ class KernelReactNativeHost(
       WorkletsPackage(),
       ReanimatedPackage(),
       ExponentPackage.kernelExponentPackage(
-        application.applicationContext,
+        getApplication().applicationContext,
         exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
         data?.initialURL
       ),

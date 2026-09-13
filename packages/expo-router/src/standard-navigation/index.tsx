@@ -4,7 +4,7 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
+import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -29,9 +29,11 @@ export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
   StandardNavigatorDescriptor,
+  StandardNavigatorEmit,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
+export { IsWithinNativeNavigator } from './IsWithinNativeNavigator';
 
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
@@ -173,7 +175,9 @@ export function unstable_integrateWithRouter<
     RouterOptions
   >;
 
-  function StandardRouterNavigator(props: NavPropsType) {
+  function StandardRouterNavigator(allProps: NavPropsType) {
+    const { unstable_screenErrorBoundary, ...rest } = allProps;
+    const props = rest as NavPropsType;
     const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
@@ -188,9 +192,11 @@ export function unstable_integrateWithRouter<
       Record<string, (...args: unknown[]) => void>,
       NavigatorOptions,
       EventMap
-    >(router, useNavigationBuilderProps);
+    >(router, useNavigationBuilderProps, {
+      activityDefaultThreshold: options?.activityDefaultThreshold,
+    });
 
-    const { dispatch } = navigation;
+    const { dispatch, dispatchSync } = navigation;
 
     const processedDescriptors = useMemo(
       () =>
@@ -205,8 +211,9 @@ export function unstable_integrateWithRouter<
     );
 
     const derivedProps = useMemo<Partial<CreateProps>>(
-      () => options?.createProps?.({ state: processedState, dispatch, navigation }) ?? {},
-      [processedState, dispatch, navigation, options]
+      () =>
+        options?.createProps?.({ state: processedState, dispatch, dispatchSync, navigation }) ?? {},
+      [processedState, dispatch, dispatchSync, navigation, options]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
@@ -216,7 +223,7 @@ export function unstable_integrateWithRouter<
       emitter: useStandardEmitter(navigation),
     };
 
-    return (
+    const content = (
       <NavigationContent>
         <NavigatorContent
           // `extraProps` is everything that is not a `useNavigationBuilder` option, which is the
@@ -232,6 +239,14 @@ export function unstable_integrateWithRouter<
           {...standardArgs}
         />
       </NavigationContent>
+    );
+
+    return unstable_screenErrorBoundary ? (
+      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+        {content}
+      </ScreenErrorBoundaryContext>
+    ) : (
+      content
     );
   }
 
@@ -267,6 +282,7 @@ function partitionNavigatorProps<
   const {
     id,
     children,
+    activityEnabled,
     initialRouteName: _initialRouteName,
     layout,
     // `ref` is supplied by `withLayoutContext` and consumed by React; it must not be forwarded
@@ -290,6 +306,7 @@ function partitionNavigatorProps<
   > = {
     id,
     children,
+    activityEnabled,
     initialRouteName: routeNodeInitialRouteName,
     layout,
     screenLayout,

@@ -4,18 +4,12 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import { HeaderShownContext, SafeAreaProviderCompat } from '../../../elements';
-import {
-  CommonActions,
-  type LocaleDirection,
-  type ParamListBase,
-  type Route,
-  StackActions,
-  type StackNavigationState,
-} from '../../../native';
+import { type LocaleDirection, type Route } from '../../../native';
 import type {
-  StackDescriptorMap,
   StackNavigationConfig,
-  StackNavigationHelpers,
+  StackViewDescriptorMap,
+  StackViewEmit,
+  StackViewState,
 } from '../../types';
 import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
 import { GestureHandlerRootView } from '../GestureHandler';
@@ -24,18 +18,20 @@ import { CardStack, getAnimationEnabled } from './CardStack';
 
 type Props = StackNavigationConfig & {
   direction: LocaleDirection;
-  state: StackNavigationState<ParamListBase>;
-  navigation: StackNavigationHelpers;
-  descriptors: StackDescriptorMap;
+  state: StackViewState;
+  emit: StackViewEmit;
+  pop: (count: number, sourceRouteKey: string) => void;
+  restoreRoute: (route: Route<string>) => boolean;
+  descriptors: StackViewDescriptorMap;
 };
 
 type State = {
   // Local copy of the routes which are actually rendered
   routes: Route<string>[];
   // Previous navigation state for comparison
-  previousState: StackNavigationState<ParamListBase> | undefined;
+  previousState: StackViewState | undefined;
   // Previous descriptors, to compare whether descriptors have changed or not
-  previousDescriptors: StackDescriptorMap;
+  previousDescriptors: StackViewDescriptorMap;
   // List of routes being opened, we need to animate pushing of these new routes
   openingRouteKeys: string[];
   // List of routes being closed, we need to animate popping of these routes
@@ -44,7 +40,7 @@ type State = {
   replacingRouteKeys: string[];
   // Since the local routes can vary from the routes from props, we need to keep the descriptors for old routes
   // Otherwise we won't be able to access the options for routes that were removed
-  descriptors: StackDescriptorMap;
+  descriptors: StackViewDescriptorMap;
 };
 
 const GestureHandlerWrapper = GestureHandlerRootView ?? View;
@@ -106,7 +102,7 @@ export class StackView extends React.Component<Props, State> {
       let previousDescriptors = state.previousDescriptors;
 
       if (props.descriptors !== state.previousDescriptors) {
-        descriptors = routes.reduce<StackDescriptorMap>((acc, route) => {
+        descriptors = routes.reduce<StackViewDescriptorMap>((acc, route) => {
           acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key])!;
 
           return acc;
@@ -265,7 +261,7 @@ export class StackView extends React.Component<Props, State> {
     const descriptors = [
       ...routes,
       ...allRoutes.filter((route) => !routeKeys.has(route.key)),
-    ].reduce<StackDescriptorMap>((acc, route) => {
+    ].reduce<StackViewDescriptorMap>((acc, route) => {
       acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key])!;
 
       return acc;
@@ -310,73 +306,56 @@ export class StackView extends React.Component<Props, State> {
   };
 
   private handleOpenRoute = ({ route }: { route: Route<string> }) => {
-    const { state, navigation } = this.props;
+    const { state, restoreRoute } = this.props;
     const { closingRouteKeys, replacingRouteKeys } = this.state;
     const activeRoutes = state.routes.slice(0, state.index + 1);
 
     if (
       closingRouteKeys.some((key) => key === route.key) &&
       replacingRouteKeys.every((key) => key !== route.key) &&
-      state.routeNames.includes(route.name) &&
       !activeRoutes.some((r) => r.key === route.key)
     ) {
       // If route isn't present in current state, but was closing, assume that a close animation was cancelled
       // So we need to add this route back to the state
-      navigation.dispatch((state) => {
-        const activeRoutes = state.routes
-          .slice(0, state.index + 1)
-          .filter((r) => r.key !== route.key);
-        const preloadedRoutes = state.routes
-          .slice(state.index + 1)
-          .filter((r) => r.key !== route.key);
-        const routes = [...activeRoutes, route];
-
-        return CommonActions.reset({
-          ...state,
-          routes: routes.concat(preloadedRoutes),
-          index: routes.length - 1,
-        });
-      });
-    } else {
-      this.setState((state) => {
-        const routeIndex = state.routes.findIndex((r) => r.key === route.key);
-
-        // Remove replacing routes that were before the route that just opened
-        // Those were replaced by this or earlier routes and should be cleaned up
-        const replacingRoutesToRemove = new Set(
-          state.routes
-            .slice(0, routeIndex)
-            .filter((r) => state.replacingRouteKeys.includes(r.key))
-            .map((r) => r.key)
-        );
-
-        const newRoutes = state.routes.filter((r) => !replacingRoutesToRemove.has(r.key));
-
-        return {
-          routes: newRoutes,
-          openingRouteKeys: state.openingRouteKeys.filter((key) => key !== route.key),
-          closingRouteKeys: state.closingRouteKeys.filter((key) => key !== route.key),
-          replacingRouteKeys: state.replacingRouteKeys.filter(
-            (key) => !replacingRoutesToRemove.has(key)
-          ),
-        };
-      });
+      if (restoreRoute(route)) {
+        return;
+      }
     }
+
+    this.setState((state) => {
+      const routeIndex = state.routes.findIndex((r) => r.key === route.key);
+
+      // Remove replacing routes that were before the route that just opened
+      // Those were replaced by this or earlier routes and should be cleaned up
+      const replacingRoutesToRemove = new Set(
+        state.routes
+          .slice(0, routeIndex)
+          .filter((r) => state.replacingRouteKeys.includes(r.key))
+          .map((r) => r.key)
+      );
+
+      const newRoutes = state.routes.filter((r) => !replacingRoutesToRemove.has(r.key));
+
+      return {
+        routes: newRoutes,
+        openingRouteKeys: state.openingRouteKeys.filter((key) => key !== route.key),
+        closingRouteKeys: state.closingRouteKeys.filter((key) => key !== route.key),
+        replacingRouteKeys: state.replacingRouteKeys.filter(
+          (key) => !replacingRoutesToRemove.has(key)
+        ),
+      };
+    });
   };
 
   private handleCloseRoute = ({ route }: { route: Route<string> }) => {
-    const { state, navigation } = this.props;
+    const { state, pop } = this.props;
     const activeRoutes = state.routes.slice(0, state.index + 1);
 
     if (activeRoutes.some((r) => r.key === route.key)) {
       // If a route exists in state, trigger a pop
       // This will happen in when the route was closed from the card component
       // e.g. When the close animation triggered from a gesture ends
-      navigation.dispatch({
-        ...StackActions.pop(),
-        source: route.key,
-        target: state.key,
-      });
+      pop(1, route.key);
     } else {
       // We need to clean up any state tracking the route and pop it immediately
       this.setState((state) => ({
@@ -388,35 +367,35 @@ export class StackView extends React.Component<Props, State> {
   };
 
   private handleTransitionStart = ({ route }: { route: Route<string> }, closing: boolean) =>
-    this.props.navigation.emit({
+    this.props.emit({
       type: 'transitionStart',
       data: { closing },
       target: route.key,
     });
 
   private handleTransitionEnd = ({ route }: { route: Route<string> }, closing: boolean) =>
-    this.props.navigation.emit({
+    this.props.emit({
       type: 'transitionEnd',
       data: { closing },
       target: route.key,
     });
 
   private handleGestureStart = ({ route }: { route: Route<string> }) => {
-    this.props.navigation.emit({
+    this.props.emit({
       type: 'gestureStart',
       target: route.key,
     });
   };
 
   private handleGestureEnd = ({ route }: { route: Route<string> }) => {
-    this.props.navigation.emit({
+    this.props.emit({
       type: 'gestureEnd',
       target: route.key,
     });
   };
 
   private handleGestureCancel = ({ route }: { route: Route<string> }) => {
-    this.props.navigation.emit({
+    this.props.emit({
       type: 'gestureCancel',
       target: route.key,
     });

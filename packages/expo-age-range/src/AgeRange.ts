@@ -6,6 +6,7 @@ import type {
   AgeRangeResponse,
   AgeRangeRegulatoryFeature,
   AgeSignalsStatus,
+  FakeAgeSignals,
 } from './ExpoAgeRange.types';
 
 /**
@@ -128,4 +129,35 @@ export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus |
     return ExpoAgeRange.requestAgeSignalsAccessAsync();
   }
   return null;
+}
+
+/**
+ * Fakes the age signals that [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) and
+ * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) report, using Play Age Signals
+ * [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api).
+ * Pass `null` to go back to the real signals.
+ *
+ * Only debuggable builds can fake signals. Passing anything other than `null` in a build that is not debuggable
+ * throws.
+ *
+ * @param fake The signals or an error to report, or `null` to report the real signals.
+ *
+ * @example
+ * ```ts
+ * // A supervised 13 to 15 year old with a change waiting for approval.
+ * setFakeAgeSignals({
+ *   ageSignalsStatus: 'SHARED',
+ *   lowerBound: 13,
+ *   upperBound: 15,
+ *   ageRangeSource: 'TIER_B',
+ *   significantChangeStatus: 'PENDING',
+ * });
+ * ```
+ *
+ * @platform android
+ */
+export function setFakeAgeSignals(fake: FakeAgeSignals | null): void {
+  if (Platform.OS === 'android') {
+    ExpoAgeRange.setFakeAgeSignals(fake);
+  }
 }

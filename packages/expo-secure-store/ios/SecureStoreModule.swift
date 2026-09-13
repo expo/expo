@@ -45,9 +45,17 @@ public final class SecureStoreModule: Module {
       let authSearchDictionary = query(with: key, options: options, requireAuthentication: true)
       let legacySearchDictionary = query(with: key, options: options)
 
-      SecItemDelete(legacySearchDictionary as CFDictionary)
-      SecItemDelete(authSearchDictionary as CFDictionary)
-      SecItemDelete(noAuthSearchDictionary as CFDictionary)
+      // Delete all three aliases before reporting a failure, so that a failing alias
+      // cannot leave the remaining entries behind.
+      let statuses = [
+        SecItemDelete(legacySearchDictionary as CFDictionary),
+        SecItemDelete(authSearchDictionary as CFDictionary),
+        SecItemDelete(noAuthSearchDictionary as CFDictionary)
+      ]
+
+      if let failure = statuses.first(where: { $0 != errSecSuccess && $0 != errSecItemNotFound }) {
+        throw KeyChainException(failure)
+      }
     }
 
     Function("canUseBiometricAuthentication") {() -> Bool in
@@ -101,12 +109,7 @@ public final class SecureStoreModule: Module {
         throw MissingPlistKeyException()
       }
 
-      var error: Unmanaged<CFError>? = nil
-      guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, .biometryCurrentSet, &error) else {
-        let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
-        throw SecAccessControlError(errorCode)
-      }
-      setItemQuery[kSecAttrAccessControl as String] = accessOptions
+      setItemQuery[kSecAttrAccessControl as String] = try accessControlWith(options: options)
     }
 
     let status = SecItemAdd(setItemQuery as CFDictionary, nil)
@@ -127,8 +130,19 @@ public final class SecureStoreModule: Module {
   private func update(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
     var query = query(with: key, options: options, requireAuthentication: options.requireAuthentication)
 
-    let valueData = value.data(using: .utf8)
-    let updateDictionary = [kSecValueData as String: valueData]
+    let valueData = Data(value.utf8)
+
+    var updateDictionary: [CFString: Any] = [kSecValueData: valueData]
+
+    // Keychain updates keep the existing access settings by default, so include the
+    // requested accessibility setting when one is provided.
+    if options.keychainAccessible != nil {
+      if options.requireAuthentication {
+        updateDictionary[kSecAttrAccessControl] = try accessControlWith(options: options)
+      } else {
+        updateDictionary[kSecAttrAccessible] = attributeWith(options: options)
+      }
+    }
 
     if let authPrompt = options.authenticationPrompt {
       query[kSecUseOperationPrompt as String] = authPrompt
@@ -192,7 +206,7 @@ public final class SecureStoreModule: Module {
   }
 
   private func attributeWith(options: SecureStoreOptions) -> CFString {
-    switch options.keychainAccessible {
+    switch options.keychainAccessible ?? .whenUnlocked {
     case .afterFirstUnlock:
       return kSecAttrAccessibleAfterFirstUnlock
     case .afterFirstUnlockThisDeviceOnly:
@@ -208,6 +222,20 @@ public final class SecureStoreModule: Module {
     case .whenUnlockedThisDeviceOnly:
       return kSecAttrAccessibleWhenUnlockedThisDeviceOnly
     }
+  }
+
+  private func accessControlWith(options: SecureStoreOptions) throws -> SecAccessControl {
+    var error: Unmanaged<CFError>?
+    guard let accessControl = SecAccessControlCreateWithFlags(
+      kCFAllocatorDefault,
+      attributeWith(options: options),
+      .biometryCurrentSet,
+      &error
+    ) else {
+      let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
+      throw SecAccessControlError(errorCode)
+    }
+    return accessControl
   }
 
   private func validate(for key: String) -> String? {

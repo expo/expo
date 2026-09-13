@@ -8,8 +8,25 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A controlled toggle. Pair [`value`](#value) with [`onValueChange`](#onvaluechange) to manage state from React.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/switch/android-light.webp',
+    darkSrc: '/static/images/expo-ui/switch/android-dark.webp',
+    alt: 'Two Material 3 switches showing on and off states',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/switch/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/switch/ios-dark.webp',
+    alt: 'Two switches showing on and off states',
+  }}
+/>
 
 ## Installation
 
@@ -19,7 +36,20 @@ A controlled toggle. Pair [`value`](#value) with [`onValueChange`](#onvaluechang
 
 ### Basic switch
 
-```tsx SwitchExample.tsx
+<ComponentExample
+  title="SwitchExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-switch-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-switch-basic-android-dark.webp',
+    alt: 'A switch in the off position',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-switch-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-switch-basic-ios-dark.webp',
+    alt: 'A switch in the off position',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Host, Switch } from '@expo/ui';
 
@@ -34,11 +64,26 @@ export default function SwitchExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With label
 
 When `label` is provided, the switch is rendered alongside its text in a labeled row.
 
-```tsx LabeledSwitchExample.tsx
+<ComponentExample
+  title="LabeledSwitchExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-switch-labeled-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-switch-labeled-android-dark.webp',
+    alt: 'An on switch with the label Enable notifications',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-switch-labeled-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-switch-labeled-ios-dark.webp',
+    alt: 'An on switch with the label Enable notifications',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Host, Switch } from '@expo/ui';
 
@@ -46,12 +91,14 @@ export default function LabeledSwitchExample() {
   const [notifications, setNotifications] = useState(true);
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Switch label="Enable notifications" value={notifications} onValueChange={setNotifications} />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -60,3 +107,5 @@ import { Switch } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/switch" apiName="Switch" />
+
+</PlatformTabsGroup>

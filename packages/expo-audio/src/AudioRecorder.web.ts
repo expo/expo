@@ -20,6 +20,8 @@ export class AudioRecorderWeb
   }
 
   async setup() {
+    this.clearTimeouts();
+    this.durationLimitMillis = null;
     this.mediaRecorder = await this.createMediaRecorder(this.options);
   }
 
@@ -32,6 +34,7 @@ export class AudioRecorderWeb
   private mediaRecorderUptimeOfLastStartResume = 0;
   private mediaRecorderIsRecording = false;
   private timeoutIds: ReturnType<typeof setTimeout>[] = [];
+  private durationLimitMillis: number | null = null;
   private cachedInputs: RecordingInput[] = [];
   private selectedDeviceId: string | null = null;
   private stream: MediaStream | null = null;
@@ -53,22 +56,31 @@ export class AudioRecorderWeb
       );
     }
 
-    // Clear any existing timeouts
+    const wasPaused = this.mediaRecorder.state === 'paused';
     this.clearTimeouts();
 
     // Note: atTime is not supported on Web (no native equivalent), so we ignore it entirely
     // Only forDuration is implemented using setTimeout
-    const { forDuration } = options || {};
+    const { atTime, forDuration } = options || {};
+    if (forDuration !== undefined) {
+      this.durationLimitMillis = forDuration * 1000;
+    } else if (!wasPaused || atTime !== undefined) {
+      // A bare record() resumes the current capture and keeps its limit. Starting a
+      // new capture without forDuration, including record({ atTime }), clears it.
+      this.durationLimitMillis = null;
+    }
+
+    if (
+      wasPaused &&
+      this.durationLimitMillis !== null &&
+      this.getAudioRecorderDurationMillis() >= this.durationLimitMillis
+    ) {
+      this.stop();
+      return;
+    }
 
     this.startActualRecording();
-
-    if (forDuration !== undefined) {
-      this.timeoutIds.push(
-        setTimeout(() => {
-          this.stop();
-        }, forDuration * 1000)
-      );
-    }
+    this.scheduleRecordingStop();
   }
 
   private startActualRecording(): void {
@@ -126,7 +138,8 @@ export class AudioRecorderWeb
       );
     }
 
-    this.mediaRecorder?.pause();
+    this.clearTimeouts();
+    this.mediaRecorder.pause();
   }
 
   recordForDuration(seconds: number): void {
@@ -151,6 +164,9 @@ export class AudioRecorderWeb
       );
     }
 
+    this.clearTimeouts();
+    this.durationLimitMillis = null;
+
     const dataPromise = new Promise<Blob>((resolve) =>
       this.mediaRecorder?.addEventListener('dataavailable', (e) => resolve(e.data))
     );
@@ -174,6 +190,23 @@ export class AudioRecorderWeb
 
   clearTimeouts() {
     this.timeoutIds.forEach((id) => clearTimeout(id));
+    this.timeoutIds = [];
+  }
+
+  private scheduleRecordingStop() {
+    if (this.durationLimitMillis === null) {
+      return;
+    }
+
+    const remainingDuration = Math.max(
+      0,
+      this.durationLimitMillis - this.getAudioRecorderDurationMillis()
+    );
+    this.timeoutIds.push(
+      setTimeout(() => {
+        this.stop();
+      }, remainingDuration)
+    );
   }
 
   private async createMediaRecorder(
@@ -252,6 +285,8 @@ export class AudioRecorderWeb
     });
 
     mediaRecorder?.addEventListener('stop', () => {
+      this.clearTimeouts();
+      this.durationLimitMillis = null;
       this.currentTime = 0;
       this.mediaRecorderIsRecording = false;
       this.stream = null;

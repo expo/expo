@@ -21,9 +21,11 @@ In the example below, **src/app/\_layout.tsx** is the tab bar and each route has
   ]}
 />
 
-> When reloading the page, the first alphabetical match is rendered.
+Group segments are not part of the URL, so every shared route matches the same URL. Expo Router uses the group you are in to select between them. In-app navigation keeps the current group. A page reload, a bookmark, a shared URL, and a deep link are all cold links. A cold link has no current group, so Expo Router renders the first alphabetical match. The same URL can therefore render one screen after in-app navigation and a different screen after a page reload.
 
-Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout.
+Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout. Use this form when a link must always open one specific group.
+
+> **warning** Do not use shared routes to give different user roles a different version of a screen. The URL does not carry the user's role, so a cold link cannot select the correct group, and [protected routes](/router/advanced/protected/) do not change that. Declare the screen once and control access with `Stack.Protected`.
 
 ## Arrays
 

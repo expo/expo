@@ -3,6 +3,7 @@ import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
 
 const state: DrawerNavigationState<ParamListBase> = {
   stale: false,
+  routeKeySeq: 0,
   key: 'drawer',
   index: 0,
   routeNames: ['index'],

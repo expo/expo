@@ -15,16 +15,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import expo.modules.observe.storage.PendingLogsManager
-import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
- * Background worker that dispatches previously queued metrics to EAS Observe.
- *
- * This worker intentionally does NOT register a [SessionManager.MetricsInsertListener].
- * It only dispatches metrics that were already queued in the pending table by the foreground
- * [ObservabilityManager].
+ * Background worker that dispatches stored metrics, logs, and spans to EAS Observe.
  */
 class ObservabilityBackgroundWorker(
   context: Context,
@@ -42,15 +36,10 @@ class ObservabilityBackgroundWorker(
       context = context
     )
 
-    val pendingMetricsManager = PendingMetricsManager(context)
-    val pendingLogsManager = PendingLogsManager(context)
-
     BaseObservabilityManager(
       context = context,
       projectId = projectId,
       sessionManager = sessionManager,
-      pendingMetricsManager = pendingMetricsManager,
-      pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
       isDebugBuild = BuildConfig.DEBUG
     )
@@ -83,10 +72,11 @@ class ObservabilityBackgroundWorker(
       observabilityManager.cleanup()
       observabilityManager.dispatchUnsentMetrics()
       observabilityManager.dispatchUnsentLogs()
-      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics and logs")
+      observabilityManager.dispatchUnsentSpans()
+      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics, logs, and spans")
       Result.success()
     } catch (e: Exception) {
-      Log.e(OBSERVE_TAG, "Failed to dispatch metrics", e)
+      Log.e(OBSERVE_TAG, "Failed to dispatch metrics, logs, and spans", e)
       // Retry with exponential backoff
       Result.retry()
     }
@@ -119,7 +109,8 @@ class ObservabilityBackgroundWorker(
         .getInstance(context)
         .enqueueUniqueWork(
           WORK_NAME,
-          ExistingWorkPolicy.REPLACE,
+          // Keep an in-flight dispatch; canceling it can duplicate a request the server received.
+          ExistingWorkPolicy.KEEP,
           periodicWork
         )
     }

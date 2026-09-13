@@ -632,6 +632,19 @@ struct JavaScriptRuntimeTests {
     #expect(result.getInt() == 42)
   }
 
+  @Test
+  func `host function results of primitive kinds reach JavaScript unchanged`() throws {
+    runtime.global().setProperty("yes", value: runtime.createFunction("yes") { _, _ in .true() }.asValue())
+    runtime.global().setProperty("no", value: runtime.createFunction("no") { _, _ in .false() }.asValue())
+    runtime.global().setProperty("nothing", value: runtime.createFunction("nothing") { _, _ in .null }.asValue())
+    runtime.global().setProperty("half", value: runtime.createFunction("half") { _, _ in .number(0.5) }.asValue())
+    let result = try runtime.eval("[yes() === true, no() === false, nothing() === null, half() === 0.5]").getArray()
+    #expect(result[0].getBool() == true)
+    #expect(result[1].getBool() == true)
+    #expect(result[2].getBool() == true)
+    #expect(result[3].getBool() == true)
+  }
+
   // MARK: - Async functions
 
   @Test
@@ -1035,99 +1048,6 @@ struct JavaScriptRuntimeTests {
     #expect(survives == true)
   }
 }
-
-private final class TestRuntimeScheduler: @unchecked Sendable {
-  // A serial dispatch queue may use different worker threads between callbacks, but
-  // JavaScriptRuntime tracks affinity to the specific thread on which it was created.
-  private let state: State
-  private let thread: Thread
-
-  init() {
-    let state = State()
-    self.state = state
-    self.thread = Thread {
-      state.run()
-    }
-    thread.name = "expo.modules.jsi.tests.runtime"
-    thread.start()
-    state.waitUntilReady()
-  }
-
-  deinit {
-    state.stop()
-  }
-
-  var opaquePointer: UnsafeMutableRawPointer {
-    return Unmanaged.passUnretained(self).toOpaque()
-  }
-
-  func schedule(_ operation: @escaping @convention(block) () -> Void) {
-    state.schedule(operation)
-  }
-
-  func run<R: Sendable>(_ operation: @escaping @Sendable () -> R) async -> R {
-    return await withCheckedContinuation { continuation in
-      schedule {
-        continuation.resume(returning: operation())
-      }
-    }
-  }
-
-  private final class State: @unchecked Sendable {
-    private let condition = NSCondition()
-    private let ready = DispatchSemaphore(value: 0)
-    private var operations: [@convention(block) () -> Void] = []
-    private var isStopped = false
-
-    func schedule(_ operation: @escaping @convention(block) () -> Void) {
-      condition.lock()
-      operations.append(operation)
-      condition.signal()
-      condition.unlock()
-    }
-
-    func waitUntilReady() {
-      ready.wait()
-    }
-
-    func stop() {
-      condition.lock()
-      isStopped = true
-      condition.signal()
-      condition.unlock()
-    }
-
-    func run() {
-      ready.signal()
-
-      while true {
-        condition.lock()
-        while operations.isEmpty && !isStopped {
-          condition.wait()
-        }
-        if isStopped {
-          condition.unlock()
-          return
-        }
-        let operation = operations.removeFirst()
-        condition.unlock()
-
-        operation()
-      }
-    }
-  }
-}
-
-private let scheduleOnTestRuntime:
-  @convention(c) (
-    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
-  ) -> Void = { schedulerPointer, _, callback in
-    guard let schedulerPointer else {
-      return
-    }
-    let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
-    scheduler.schedule(callback)
-  }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
 /// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).

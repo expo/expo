@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+
+### 💡 Others
+
+- [iOS] Split the mixed Swift/Objective-C sources into `EXConstants` and `EXConstantsObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#47649](https://github.com/expo/expo/pull/47649) by [@chrfalch](https://github.com/chrfalch))
+
 ## 57.0.8 - 2026-07-29
 
 _This version does not introduce any user-facing changes._

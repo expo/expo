@@ -24,16 +24,16 @@ internal enum ContainerBackgroundPlacementOptions: String, Enumerable {
 }
 
 internal struct ContainerBackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
+  @Field var style: ShapeStyleValue?
   @Field var container: ContainerBackgroundPlacementOptions?
 
   func body(content: Content) -> some View {
 #if !os(tvOS)
-    if let color, let container {
+    if let shapeStyle = style?.toAnyShapeStyle(), let container {
       if #available(iOS 18.0, *) {
-        content.containerBackground(color, for: container.toContainerBackgroundPlacement)
+        content.containerBackground(shapeStyle, for: container.toContainerBackgroundPlacement)
       } else if #available(iOS 17.0, *) {
-        content.containerBackground(color, for: .widget)
+        content.containerBackground(shapeStyle, for: .widget)
       } else {
         content
       }

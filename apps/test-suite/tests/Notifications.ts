@@ -38,7 +38,98 @@ export async function test(t: JasmineInterface) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
   const onlyInteractiveDescribe = isInteractive() ? t.describe : t.xdescribe;
 
+  const describeForegroundBehavior = ['ios', 'android'].includes(Platform.OS)
+    ? describeWithPermissions
+    : t.xdescribe;
+
   t.describe('Notifications', () => {
+    // Keep this block first. Its first spec covers the behavior that applies until something
+    // calls `setNotificationHandler`, and nothing puts the module back into that state.
+    describeForegroundBehavior('foreground notification behavior', () => {
+      // Every spec below asserts over the notifications that the system currently shows, so a
+      // notification left behind by an earlier run would answer for the one the spec schedules.
+      t.beforeEach(async () => {
+        await Notifications.dismissAllNotificationsAsync();
+      });
+
+      const presentedIdentifiers = async () =>
+        (await Notifications.getPresentedNotificationsAsync()).map(
+          (notification) => notification.request.identifier
+        );
+
+      // The notification center lists a notification that arrived while the app is in the
+      // foreground even before anything decided how to present it, and drops it again when the
+      // answer asks for nothing. So the list says nothing until the answer is in, and every spec
+      // below has to read it only after the decision settled. The native code waits 3 seconds for
+      // a handler, which is the longest that can take.
+      const settleDecision = () => waitFor(5000);
+
+      t.it(
+        'shows the local notification when the app sets no handler',
+        async () => {
+          const identifier = 'test-default-foreground-behavior';
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: { title: 'Default behavior', body: 'Shown without a notification handler' },
+            trigger: null,
+          });
+
+          // Without a built-in handler nothing would answer the notification center, which answers
+          // for itself with "present nothing" and would drop the notification from the list. Reading
+          // the list after the decision settled is therefore what covers the default.
+          await settleDecision();
+          t.expect(await presentedIdentifiers()).toContain(identifier);
+          await Notifications.dismissNotificationAsync(identifier);
+        },
+        15000
+      );
+
+      t.it(
+        'when the handler of the app does not respond in time, we show the notification once the handler times out',
+        async () => {
+          Notifications.setNotificationHandler({
+            handleNotification: async () => {
+              await waitFor(4000);
+              return behaviorEnableAll;
+            },
+          });
+
+          const identifier = 'test-slow-handler';
+          t.expect(await presentedIdentifiers()).not.toContain(identifier);
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: { title: 'Slow handler', body: 'Shown after the handler times out' },
+            trigger: null,
+          });
+          // The handler answers after 4 seconds, so the 3 second timeout of the native
+          // code is what presents this notification. Without that fallback the notification
+          // center would never get an answer and would drop the notification.
+          await settleDecision();
+          t.expect(await presentedIdentifiers()).toContain(identifier);
+          await Notifications.dismissNotificationAsync(identifier);
+        },
+        20000
+      );
+
+      t.it(
+        'when the app removes the handler, we do not show the notification',
+        async () => {
+          Notifications.setNotificationHandler(null);
+
+          const identifier = 'test-removed-handler';
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: { title: 'No handler', body: 'Not shown by expo-notifications' },
+            trigger: null,
+          });
+
+          await settleDecision();
+          t.expect(await presentedIdentifiers()).not.toContain(identifier);
+        },
+        15000
+      );
+    });
+
     t.describe('getDevicePushTokenAsync', () => {
       t.it('resolves with a token equal to the one from addPushTokenListener()', async () => {
         // Held in an object so the assignment from the listener is visible to

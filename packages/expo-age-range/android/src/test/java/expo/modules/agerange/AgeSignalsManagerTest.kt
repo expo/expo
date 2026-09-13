@@ -89,9 +89,13 @@ class AgeSignalsManagerTest {
     // ones and null. Whatever it means, we don't leak it to JS, so it
     // maps to null like an absent or unrecognised value does, in every mapping.
     assertEquals(null, requestAccessAndAwait(AgeSignalsStatus.UNSPECIFIED))
-    assertEquals(null, ageSignalsStatusToString(null))
-    assertEquals(null, ageRangeSourceToString(AgeRangeSource.UNSPECIFIED))
-    assertEquals(null, significantChangeStatusToString(99))
+    assertEquals(
+      AgeRangeSourceValue.TIER_B,
+      AgeRangeSourceValue.fromPlayValue(AgeRangeSource.TIER_B)
+    )
+    assertEquals(null, AgeSignalsStatusValue.fromPlayValue(null))
+    assertEquals(null, AgeRangeSourceValue.fromPlayValue(AgeRangeSource.UNSPECIFIED))
+    assertEquals(null, SignificantChangeStatusValue.fromPlayValue(99))
   }
 
   @Test

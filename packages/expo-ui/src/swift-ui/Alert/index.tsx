@@ -73,6 +73,7 @@ function Alert(props: AlertProps) {
   return (
     <AlertNativeView
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      modifiers={modifiers}
       {...restProps}
       onIsPresentedChange={handleIsPresentedChange}>
       {children}

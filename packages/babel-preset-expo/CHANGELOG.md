@@ -6,14 +6,27 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Add `ios`, `android`, `macos`, `tvos` per-platform override support ([#46508](https://github.com/expo/expo/pull/46508) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
 - Escape backslashes when serializing `'widget'` functions so escape sequences like `\n` in a widget layout survive the template-literal round-trip instead of corrupting the stored function and crashing the widget with `SyntaxError: Unexpected EOF`. ([#47626](https://github.com/expo/expo/pull/47626) by [@alecmolloy](https://github.com/alecmolloy))
 - Fix legacy decorators on class properties when corresponding class transforms are disabled, which the decorators plugin relies on ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano), [@kitten](https://github.com/kitten))
+- Disable `@babel/plugin-transform-object-rest-spread` in Hermes v1 and Modern Web sub-presets. The ordering dependence on `@babel/plugin-transform-destructuring` could cause computed exclusion to be missed ([#49278](https://github.com/expo/expo/pull/49278) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.5 - 2026-07-29
 

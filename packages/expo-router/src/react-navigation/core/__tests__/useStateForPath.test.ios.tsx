@@ -198,7 +198,6 @@ test('gets path in each screen', () => {
       screens: {
         bar: {
           path: 'mybar/:answer?',
-          // @ts-expect-error - don't have proper types for test
           screens: {
             'bar-a': 'a',
             'bar-b': 'b',

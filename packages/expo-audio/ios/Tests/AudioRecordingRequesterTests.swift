@@ -11,7 +11,7 @@ struct AudioRecordingRequesterTests {
   func `reports denied when the usage description is missing`() {
     let permissions = AudioRecordingRequester.permissions(systemStatus: .granted, usageDescription: nil)
 
-    #expect(permissions["status"] as? Int == EXPermissionStatusDenied.rawValue)
+    #expect(permissions["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
   }
 
   @Test(arguments: [
@@ -28,7 +28,33 @@ struct AudioRecordingRequesterTests {
       usageDescription: "Allow $(PRODUCT_NAME) to access your microphone"
     )
 
-    #expect(permissions["status"] as? Int == expected.rawValue)
+    #expect(permissions["status"] as? UInt32 == expected.rawValue)
+  }
+
+  @Test
+  func `resolves denied without a system request when the usage description is missing`() {
+    let requester = AudioRecordingRequester()
+    var resolved: [AnyHashable: Any]?
+
+    requester.requestPermissions(usageDescription: nil) { result in
+      resolved = result as? [AnyHashable: Any]
+    } rejecter: { _, _, _ in
+      Issue.record("requestPermissions rejected instead of resolving")
+    }
+
+    #expect(resolved?["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
+  }
+
+  @Test
+  func `requireUsageDescription throws when the usage description is missing`() {
+    #expect(throws: MicrophoneUsageDescriptionException.self) {
+      try AudioRecordingRequester.requireUsageDescription(nil)
+    }
+  }
+
+  @Test
+  func `requireUsageDescription accepts a present usage description`() throws {
+    try AudioRecordingRequester.requireUsageDescription("Allow $(PRODUCT_NAME) to access your microphone")
   }
 }
 #endif

@@ -19,6 +19,7 @@ exceptions:
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
   - '.*e2e-test.*'
+  - '.*env.*-simulator.*'
   - '.*get-build.*'
   - '.*hello\.yml.*'
   - '.*^iOS(.*)'

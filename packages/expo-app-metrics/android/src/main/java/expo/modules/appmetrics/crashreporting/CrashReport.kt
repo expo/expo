@@ -1,5 +1,9 @@
 package expo.modules.appmetrics.crashreporting
 
+import expo.modules.appmetrics.logevents.Severity
+import expo.modules.appmetrics.logevents.truncateToMaxLength
+import expo.modules.appmetrics.storage.LogRecord
+import expo.modules.appmetrics.utils.JsonAny
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -28,6 +32,51 @@ data class CrashReport(
    */
   val ingestedAt: String
 ) {
+  fun toLogRecord(sessionId: String, details: CrashLogDetails = CrashLogDetails()): LogRecord {
+    val attributes = buildMap<String, Any?> {
+      put("exception.type", details.exceptionType ?: signal?.let(::signalName) ?: "NativeCrash")
+      put("exception.message", terminationReason ?: exceptionReason ?: signal?.let(::signalName) ?: "Native crash")
+      put("exception.stacktrace", renderStacktrace(details.stackFrames))
+      put("expo.error.source", "nativeCrash")
+      put("expo.error.is_fatal", true)
+      signal?.let {
+        put("expo.crash.signal", signalName(it))
+        put("expo.crash.signal_number", it)
+      }
+      terminationReason?.let { put("expo.crash.termination_reason", it) }
+    }
+    return LogRecord(
+      sessionId = sessionId,
+      timestamp = timestampBegin,
+      name = "native.exception",
+      severity = Severity.FATAL.rawValue,
+      attributes = JsonAny.encodeMapToJsonString(attributes)
+    )
+  }
+
+  private fun renderStacktrace(stackFrames: List<String>?): String? {
+    val callStacks = callStackTree?.callStacks.orEmpty()
+    val attributedStacks = callStacks.filter { it.threadAttributed == true }
+    val selectedStacks = attributedStacks.ifEmpty { callStacks }
+    val frames = stackFrames ?: selectedStacks
+      .flatMap { it.callStackRootFrames.orEmpty() }
+      .map { it.symbol ?: "<unknown>" }
+    if (frames.isEmpty()) {
+      return null
+    }
+    val rendered = buildList {
+      addAll(frames.take(MAX_LOG_STACK_FRAMES))
+      if (frames.size > MAX_LOG_STACK_FRAMES) {
+        add("… +${frames.size - MAX_LOG_STACK_FRAMES} more frames")
+      }
+    }.joinToString("\n")
+    return truncateToMaxLength(
+      rendered,
+      MAX_LOG_STACKTRACE_LENGTH,
+      "Native crash stack trace exceeded the maximum length and was truncated."
+    )
+  }
+
   @Serializable
   data class CallStackTree(
     val callStacks: List<CallStack>? = null
@@ -93,5 +142,25 @@ data class CrashReport(
     }
 
     private const val MAX_CAUSE_DEPTH = 5
+    private const val MAX_LOG_STACK_FRAMES = 25
+    private const val MAX_LOG_STACKTRACE_LENGTH = 65_536
+
+    private fun signalName(signal: Int): String =
+      when (signal) {
+        4 -> "SIGILL"
+        5 -> "SIGTRAP"
+        6 -> "SIGABRT"
+        7 -> "SIGBUS"
+        8 -> "SIGFPE"
+        9 -> "SIGKILL"
+        11 -> "SIGSEGV"
+        15 -> "SIGTERM"
+        else -> "SIG$signal"
+      }
   }
 }
+
+data class CrashLogDetails(
+  val exceptionType: String? = null,
+  val stackFrames: List<String>? = null
+)

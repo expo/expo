@@ -65,6 +65,41 @@ Tests are in `apple/Tests/` and each file covers one type. Some suites use the g
 
 Run them with `pnpm test:integration` from the package root, which calls `apple/scripts/test.sh`. The script needs an installed host app's `Pods` directory (defaults to `$EXPO_ROOT_DIR/apps/bare-expo/ios/Pods`); override with `PODS_ROOT`. It symlinks React / hermesvm / ReactNativeDependencies xcframeworks into `apple/.test-frameworks/` so SPM can resolve them as relative-path binary targets, generates the `jsi` modulemap, and runs `xcodebuild test` against an iOS Simulator (override with `DESTINATION`). Extra args pass through to xcodebuild &mdash; e.g. `pnpm test -only-testing TestName`.
 
+## Benchmarks
+
+Performance benchmarks live in `apple/Benchmarks/` as a separate opt-in test target. Run them with
+`pnpm benchmark` from the package root; it reuses the test harness (`apple/scripts/test.sh`, same
+Pods requirements as tests) but builds in the Release configuration, which is required for
+meaningful numbers. Regular test runs build the target but skip every suite: the suites are gated
+on the `EXPO_BENCHMARK` environment variable, which the script forwards to the test runner via
+`TEST_RUNNER_EXPO_BENCHMARK=1`.
+
+Benchmarks default to the Mac Catalyst destination (the prebuilt xcframeworks ship catalyst
+slices): they run natively on the Mac with no simulator, and measured spreads drop to 1-2% versus
+roughly 10-25% on a simulator. Set `DESTINATION` to override, e.g. for a simulator or device run.
+
+Each benchmark prints one line to the xcodebuild log:
+
+```
+[benchmark] <name>: median <X> ns/op, min <Y> ns/op (<iterations> iterations, <samples> samples)
+```
+
+Every benchmark is a test in the single `JSIBenchmarks` suite (extended across the files), which
+is `.serialized` so only one benchmark runs at a time: the `JavaScriptActor` executor runs jobs
+synchronously on the calling thread, so parallel suites would disturb each other's measurements.
+Each test wraps its content in `benchmarkCase { runtime in ... }`, which creates a fresh runtime
+and runs the case in a high-priority task; at the testing library's default priority the scheduler
+sometimes places the run on efficiency cores, which produced multi-fold run-to-run swings.
+
+Inside a case, the `benchmark(_:runtime:samples:_:)` helper calibrates the iteration count to
+~50ms per sample (two-phase: tenfold growth to get an estimate, then a rescale from the warmup
+run), and collects garbage between samples. The body receives the iteration count and must perform
+exactly that many operations: loop in Swift for micro benchmarks, or pass the count to a
+JavaScript driver function to measure a full JS-to-native round trip (see
+`HostFunctionBenchmarks.swift`, which includes an empty-driver-loop baseline to read the other
+results against). Expect run-to-run medians to agree within roughly ±10-25% on a workstation;
+compare medians, and treat anything within that band as noise.
+
 ## Formatting
 
 Swift sources are formatted with swift-format. From the package root, `pnpm swift:format` rewrites files in place and `pnpm swift:lint` checks without modifying; both delegate to the repo-root `scripts/swift-format.sh`, which reads the repo-root `.swift-format` config and only touches tracked `.swift` files. CI enforces this via `.github/workflows/swift-format.yml`, which pins a specific swift-format version &mdash; mismatched local versions can produce different output, so prefer the pinned one. Style conventions beyond what the formatter enforces live in [`guides/Swift Style Guide.md`](../../guides/Swift%20Style%20Guide.md) at the repo root.

@@ -4,13 +4,12 @@ import type { LoaderFunction } from 'expo-server';
 import { use, useEffect, useMemo, useState } from 'react';
 
 import { useContextKey } from '../Route';
-import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { LoaderContext } from '../loaders/LoaderContext';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../loaders/readLoaderData';
+import { resolveLoaderPath } from '../loaders/resolveLoaderPath';
 import { fetchLoader } from '../loaders/utils';
-import { useStateForPath } from '../react-navigation/native';
-import { getSingularId } from '../useScreens';
+import { useCurrentRouteInfo } from './useCurrentRouteInfo';
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
@@ -39,17 +38,13 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
 
   const { client, store } = ctx;
 
-  const stateForPath = useStateForPath();
+  const routeInfo = useCurrentRouteInfo();
   const contextKey = useContextKey();
 
-  const resolvedPath = useMemo(() => {
-    const routeInfo = getRouteInfoFromState(stateForPath);
-    const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
-    const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
-    const searchString = routeInfo.searchParams?.toString() || '';
-
-    return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
-  }, [contextKey, stateForPath]);
+  const resolvedPath = useMemo(
+    () => resolveLoaderPath(contextKey, routeInfo),
+    [contextKey, routeInfo]
+  );
 
   // Loader data stays in the shared Suspense store; local state only invalidates this reader.
   const [, setVersion] = useState(0);
@@ -70,12 +65,16 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   useEffect(() => {
     // Seeded routes do not reach a read miss, so register their fetcher explicitly for HMR.
     client.registerFetcher(resolvedPath, fetchLoader);
-    const unsubscribe = client.subscribeLoader(resolvedPath, (result, isCurrentSource) => {
-      if (isCurrentSource) {
-        store.set(resolvedPath, result);
-        setVersion((version) => version + 1);
-      }
-    });
+    const unsubscribe = client.subscribeLoader(
+      resolvedPath,
+      (result, isCurrentSource) => {
+        if (isCurrentSource) {
+          store.set(resolvedPath, result);
+          setVersion((version) => version + 1);
+        }
+      },
+      { committed: true }
+    );
     if (store.get(resolvedPath) !== entryAtRender) {
       setVersion((version) => version + 1);
     }
@@ -94,5 +93,17 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   }
 
   const result = readLoaderData<LoaderFunctionResult<T>>(ctx, resolvedPath, fetchLoader);
-  return result instanceof Promise ? use(result) : result;
+  // React can replay a suspended render once its promise settles. The store then holds the
+  // settled value, so the replay must still call `use()`, or React throws "Update hook called
+  // on initial render" for every hook after this one. A fulfilled thenable makes React reuse
+  // the original promise without suspending.
+  return use(result instanceof Promise ? result : fulfilled(result));
+}
+
+function fulfilled<T>(value: T): PromiseLike<T> {
+  return {
+    status: 'fulfilled',
+    value,
+    then: (onFulfilled) => Promise.resolve(value).then(onFulfilled),
+  } as PromiseLike<T>; // `status` and `value` are the React thenable extensions, not part of `PromiseLike`.
 }

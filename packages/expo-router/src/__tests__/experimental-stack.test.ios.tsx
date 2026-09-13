@@ -1,11 +1,36 @@
 import { act, screen } from '@testing-library/react-native';
-import { type ReactNode } from 'react';
-import { Text } from 'react-native';
+import { use, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import { Text, type NativeSyntheticEvent } from 'react-native';
+import type { TabSelectedEvent, TabsHostProps } from 'react-native-screens';
 
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
+import { NativeTabs } from '../native-tabs';
 import { usePreventRemove } from '../react-navigation/native';
+import { IsWithinNativeNavigator } from '../standard-navigation';
 import { renderRouter } from '../testing-library';
+
+jest.mock('react-native-screens', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actual: typeof import('react-native-screens') = jest.requireActual('react-native-screens');
+  let triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = () => {};
+
+  return {
+    ...actual,
+    Tabs: {
+      ...actual.Tabs,
+      Host: jest.fn(({ children, onTabSelected }: { children?: ReactNode } & TabsHostProps) => {
+        triggerTabSelected = onTabSelected ?? (() => {});
+        return <View testID="Tabs.Host">{children}</View>;
+      }),
+      Screen: jest.fn(({ children }: { children?: ReactNode }) => (
+        <View testID="Tabs.Screen">{children}</View>
+      )),
+    },
+    __triggerTabSelected: (event: Parameters<NonNullable<TabsHostProps['onTabSelected']>>[0]) =>
+      triggerTabSelected(event),
+  };
+});
 
 jest.mock('react-native-screens/experimental', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -38,6 +63,11 @@ const { Stack: MockedStackV5 } = jest.requireMock(
 const MockedHost = MockedStackV5.Host as unknown as jest.Mock;
 const MockedScreen = MockedStackV5.Screen as unknown as jest.Mock;
 const MockedHeaderConfig = MockedStackV5.HeaderConfig as unknown as jest.Mock;
+let warnSpy: jest.SpyInstance | undefined;
+
+function NativeNavigatorContextProbe() {
+  return <Text>{String(use(IsWithinNativeNavigator))}</Text>;
+}
 
 const screenPropsByKey = (): Record<string, any> => {
   const map: Record<string, any> = {};
@@ -67,7 +97,21 @@ beforeEach(() => {
   MockedHeaderConfig.mockClear();
 });
 
+afterEach(() => {
+  warnSpy?.mockRestore();
+  warnSpy = undefined;
+});
+
 describe('ExperimentalStack — basic navigation', () => {
+  it('marks its routes as nested inside a native navigator', () => {
+    renderRouter({
+      _layout: () => <ExperimentalStack />,
+      index: NativeNavigatorContextProbe,
+    });
+
+    expect(screen.getByText('true')).toBeVisible();
+  });
+
   it('renders Stack.Host and pushes new routes', () => {
     renderRouter(
       {
@@ -86,6 +130,40 @@ describe('ExperimentalStack — basic navigation', () => {
 
     expect(screen).toHavePathname('/b');
     expect(router.canDismiss()).toBe(true);
+  });
+
+  it('removes guarded routes from history when a guard flips false', () => {
+    let setGuard: Dispatch<SetStateAction<boolean>>;
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter({
+      _layout: function Layout() {
+        const [guard, setState] = useState(true);
+        setGuard = setState;
+        return (
+          <ExperimentalStack>
+            <ExperimentalStack.Protected guard={guard}>
+              <ExperimentalStack.Screen name="secret" />
+            </ExperimentalStack.Protected>
+            <ExperimentalStack.Screen name="other" />
+          </ExperimentalStack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+      other: () => <Text testID="other">other</Text>,
+    });
+
+    act(() => router.push('/secret'));
+    act(() => router.push('/other'));
+    act(() => setGuard(false));
+    act(() => router.back());
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("ignoring unsupported screenOption 'hidden'")
+    );
+    expect(screen).toHavePathname('/');
+    expect(router.canGoBack()).toBe(false);
   });
 
   it('pops via router.dismiss', () => {
@@ -123,6 +201,45 @@ describe('ExperimentalStack — basic navigation', () => {
     act(() => router.replace('/b'));
     expect(screen).toHavePathname('/b');
     expect(router.canDismiss()).toBe(false);
+  });
+
+  it('does not pop to top for native tabPress events', () => {
+    renderRouter(
+      {
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="home" />
+          </NativeTabs>
+        ),
+        'home/_layout': () => <ExperimentalStack />,
+        'home/index': () => null,
+        'home/second': () => null,
+      },
+      { initialUrl: '/home' }
+    );
+
+    act(() => router.push('/home/second'));
+    const mockedScreens: typeof import('react-native-screens') & {
+      __triggerTabSelected: (event: NativeSyntheticEvent<TabSelectedEvent>) => void;
+      Tabs: {
+        Screen: jest.MockedFunction<typeof import('react-native-screens').Tabs.Screen>;
+      };
+    } = jest.requireMock('react-native-screens');
+    const homeTabKey = mockedScreens.Tabs.Screen.mock.calls.at(-1)![0].screenKey!;
+    act(() =>
+      mockedScreens.__triggerTabSelected({
+        nativeEvent: {
+          selectedScreenKey: homeTabKey,
+          provenance: 0,
+          isRepeated: false,
+          hasTriggeredSpecialEffect: false,
+          actionOrigin: 'user',
+        },
+        // React Native's synthetic event has runtime fields irrelevant to this callback.
+      } as NativeSyntheticEvent<TabSelectedEvent>)
+    );
+    act(() => jest.runAllTimers());
+    expect(screen).toHavePathname('/home/second');
   });
 });
 
@@ -228,8 +345,8 @@ describe('ExperimentalStack — Screen activityMode', () => {
 
     const props = screenPropsByKey();
     const keys = Object.keys(props);
-    expect(keys.some((k) => k.startsWith('a-'))).toBe(true);
-    expect(keys.some((k) => k.startsWith('b-'))).toBe(true);
+    expect(keys.some((k) => k.startsWith('a:'))).toBe(true);
+    expect(keys.some((k) => k.startsWith('b:'))).toBe(true);
   });
 });
 
@@ -248,7 +365,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey?.startsWith('b-'));
+      .find((p: any) => p.screenKey?.startsWith('b:'));
 
     expect(propsB).toBeDefined();
     expect(propsB.onDismiss).toBeUndefined();
@@ -296,7 +413,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey?.startsWith('b-'));
+      .find((p: any) => p.screenKey?.startsWith('b:'));
 
     act(() => {
       propsB.onNativeDismiss(propsB.screenKey);
@@ -322,7 +439,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
       const propsB = MockedScreen.mock.calls
         .map((call) => call[0])
         .reverse()
-        .find((props: any) => props.screenKey?.startsWith('b-'));
+        .find((props: any) => props.screenKey?.startsWith('b:'));
 
       expect(propsB.preventNativeDismiss).toBe(false);
       act(() => propsB.onNativeDismissPrevented());
@@ -361,7 +478,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsNested = MockedScreen.mock.calls
       .map((call) => call[0])
       .reverse()
-      .find((props: any) => props.screenKey?.startsWith('nested-'));
+      .find((props: any) => props.screenKey?.startsWith('nested:'));
 
     expect(propsNested.preventNativeDismiss).toBe(true);
     act(() => propsNested.onNativeDismissPrevented());

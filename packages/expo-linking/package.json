@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "57.0.4",
+  "version": "58.0.0",
   "description": "Create and open deep links universally",
   "keywords": [
     "expo",
@@ -52,7 +52,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "expo-constants": "workspace:~56.0.16",
+    "expo-constants": "workspace:~",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

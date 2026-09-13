@@ -343,6 +343,78 @@ describe(withBuildProperties, () => {
       value: 'canary',
     });
   });
+
+  it('generates the expo.gif.enabled property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { gifEnabled: false },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.gif.enabled',
+      value: 'false',
+    });
+  });
+
+  it('generates the expo.webp.enabled property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { webpEnabled: false },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.webp.enabled',
+      value: 'false',
+    });
+  });
+
+  it('generates the expo.webp.animated property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { webpAnimated: true },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.webp.animated',
+      value: 'true',
+    });
+  });
 });
 
 describe('shared config fields', () => {

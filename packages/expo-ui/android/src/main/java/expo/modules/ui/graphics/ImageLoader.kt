@@ -9,6 +9,7 @@ import android.net.Uri
 import android.util.Log
 import android.util.LruCache
 import android.util.Xml
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
@@ -317,6 +318,7 @@ class ImageLoader(
     try {
       var pathData = ""
       var fillColor: androidx.compose.ui.graphics.Color? = null
+      var pathFillType = PathFillType.NonZero
 
       for (i in 0 until parser.attributeCount) {
         when (parser.getAttributeName(i)) {
@@ -324,7 +326,13 @@ class ImageLoader(
           "fillColor" -> {
             fillColor = parseColor(parser.getAttributeValue(i))
           }
-          // Note: stroke properties, fillType, opacity not yet supported
+          "fillType" -> {
+            pathFillType = when (parser.getAttributeValue(i)) {
+              "evenOdd", "1" -> PathFillType.EvenOdd
+              else -> PathFillType.NonZero
+            }
+          }
+          // Note: stroke properties and opacity are not yet supported
         }
       }
 
@@ -332,7 +340,8 @@ class ImageLoader(
         val nodes = PathParser().parsePathString(pathData).toNodes()
         builder.addPath(
           pathData = nodes,
-          fill = fillColor?.let { SolidColor(it) }
+          fill = fillColor?.let { SolidColor(it) },
+          pathFillType = pathFillType
         )
       }
     } catch (e: Exception) {

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
-import { pageCollectErrors, trackLoaderNetworkStatuses } from '../page';
+import { pageCollectErrors, trackLoaderNetworkStatuses, waitForLoaderData } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -51,7 +51,7 @@ for (const outputMode of outputModes) {
       expect(loaderRequests).toHaveLength(0);
 
       await page.click('a[href="/posts/static-post-1"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
+      await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
       expect(loaderRequests).toContainEqual(
         expect.stringContaining('/_expo/loaders/posts/static-post-1')
       );
@@ -85,17 +85,19 @@ for (const outputMode of outputModes) {
       await page.goto(expoStart.url.href);
 
       await page.click('a[href="/posts/static-post-1"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
+      await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
 
       await page.click('a[href="/"]');
+      await waitForLoaderData(page, { data: 'root-index' });
 
       await page.click('a[href="/posts/static-post-2"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
+      await waitForLoaderData(page, { params: { postId: 'static-post-2' } });
 
       await page.click('a[href="/"]');
+      await waitForLoaderData(page, { data: 'root-index' });
 
       await page.click('a[href="/posts/static-post-1"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
+      await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
 
       expect(loaderRequests).toEqual([
         expect.stringContaining('/_expo/loaders/posts/static-post-1'),
@@ -172,6 +174,34 @@ for (const outputMode of outputModes) {
       await expect(suspenseFallback).not.toBeVisible();
     });
 
+    test('abandons a suspended load on Back and starts fresh on revisit', async ({ page }) => {
+      const pageErrors = pageCollectErrors(page);
+      const slowRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/slow')) {
+          slowRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+      await page.click('a[href="/slow"]');
+      await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
+      await expect.poll(() => slowRequests).toHaveLength(1);
+
+      await page.goBack();
+      await expect(page).toHaveURL(expoStart.url.href);
+
+      await page.click('a[href="/slow"]');
+      await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
+      await expect.poll(() => slowRequests).toHaveLength(2);
+
+      const loaderResult = page.locator('[data-testid="loader-result"]');
+      await expect(loaderResult).toBeVisible({ timeout: 10_000 });
+      expect(JSON.parse((await loaderResult.textContent())!)).toMatchObject({ data: 'slow' });
+      expect(slowRequests).toHaveLength(2);
+      expect(pageErrors.all).toEqual([]);
+    });
+
     test('navigates from route without loader to route with loader', async ({ page }) => {
       const pageErrors = pageCollectErrors(page);
 
@@ -183,7 +213,7 @@ for (const outputMode of outputModes) {
 
       // Navigate to index route (has loader)
       await page.click('a[href="/"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
+      await waitForLoaderData(page, { data: 'root-index' });
 
       const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
       expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'root-index' });
@@ -208,6 +238,7 @@ for (const outputMode of outputModes) {
 
       // Navigate to posts route (has loader)
       await page.click('a[href="/posts/static-post-1"]');
+      await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
       const postsLoaderDataContent = await page
         .locator('[data-testid="loader-result"]')
         .textContent();

@@ -14,20 +14,49 @@ import {
 } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Claude Code, Codex, Cursor, and other AI coding agents can help you build, upgrade, debug, and deploy your Expo and React Native projects. When you use [`create-expo-app`](/more/create-expo/) to create a new project, that new project is already set up with the configuration files required by an AI agent. This setup is also committed to your project, so everyone on your team starts from the same SDK version and project instructions, and their agents read the same project context.
+
+## Quick start
+
+Claude Code and Codex have an official Expo plugin. One command installs [Expo Skills](/skills/) and registers the [Expo Model Context Protocol (MCP) Server](/mcp/).
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+<Terminal cmd={['$ claude plugin install expo@claude-plugins-official']} />
+
+Then run `/mcp` inside your Claude Code session to sign in to your Expo account.
+
+</Tab>
+
+<Tab label="Codex">
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+Then sign in to your Expo account:
+
+<Terminal cmd={['$ codex mcp login expo']} />
+
+</Tab>
+
+</Tabs>
+
+Cursor and other agents do not have an official Expo plugin. To configure them, install [Expo Skills](/skills/) and the [Expo MCP Server](/mcp/) separately.
 
 ## How Expo supports AI agents
 
 Three pieces work together to give an AI agent consistent, Expo-specific context:
 
-- **Expo Skills:** A plugin that adds Expo-specific instructions and slash commands to the agent. The agent applies known-good Expo patterns (SDK upgrades, EAS Workflows, native UI with Jetpack Compose and SwiftUI, API routes) instead of guessing from training data. Skills install once per machine.
-- **Expo MCP Server:** A remote Model Context Protocol (MCP) server that gives the agent live access to the latest Expo documentation, EAS Build history, EAS Update channels, and TestFlight metadata. The agent can install SDK-matching packages, read build logs, and take simulator screenshots through it.
+- **Expo Skills:** The `expo` plugin adds Expo-specific instructions and slash commands to the agent. The agent applies known-good Expo patterns (SDK upgrades, EAS Workflows, native UI with Jetpack Compose and SwiftUI, API routes) instead of guessing from training data. Skills install once per machine.
+- **Expo MCP Server:** A remote Model Context Protocol (MCP) server that gives the agent live access to the latest Expo documentation, EAS Build history, EAS Update channels, and TestFlight metadata. The agent can install SDK-matching packages, read build logs, and take simulator screenshots through it. For Claude Code and Codex, the `expo` plugin registers this server, so you do not add it separately.
 - **Project context files:** `create-expo-app` writes **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json** at the project root. These are the first thing the agent reads when you open the project. They point the agent to the documentation for the Expo SDK version your project targets.
 
 ## Set up Expo Skills and Expo MCP Server
 
-Expo Skills and the Expo MCP Server work with every supported agent. Set up each one by following the guides below:
+Expo Skills and the Expo MCP Server work with every supported agent. If you installed the `expo` plugin above, both are already set up. The guides below cover every install option, including agents that have no plugin:
 
 <BoxLink
   title="Expo Skills"
@@ -123,6 +152,8 @@ Create **.claude/settings.json** to enable the official Expo plugin from the Cla
   }
 }
 ```
+
+This file enables the plugin for everyone who opens the project. Each developer still installs it once on their own machine with `claude plugin install expo@claude-plugins-official`.
 
 </Step>
 

@@ -5,6 +5,16 @@ import { evalModule } from '../load';
 const basepath = path.join(__dirname, 'fixtures');
 
 describe('evalModule', () => {
+  const actualNodeVersion = process.versions.node;
+
+  afterEach(() => {
+    Object.defineProperty(process.versions, 'node', {
+      value: actualNodeVersion,
+    });
+    jest.dontMock('node:module');
+    jest.dontMock('typescript');
+  });
+
   it('accepts .js code and turns it to CommonJS with default imports', () => {
     const mod = evalModule(
       `
@@ -120,5 +130,37 @@ describe('evalModule', () => {
     }
 
     expect(caught).toEqual({ code: 'CUSTOM_THROW' });
+  });
+
+  it('uses Node TypeScript stripping defaults on Node 26', () => {
+    jest.isolateModules(() => {
+      Object.defineProperty(process.versions, 'node', {
+        value: '26.0.0',
+      });
+      const actualNodeModule = jest.requireActual('node:module');
+      const stripTypeScriptTypes = jest.fn((code: string) => code.replace(' as string', ''));
+      const moduleNotFoundError = new Error(
+        "Cannot find module 'typescript'"
+      ) as NodeJS.ErrnoException;
+      moduleNotFoundError.code = 'MODULE_NOT_FOUND';
+
+      jest.doMock('node:module', () => ({
+        ...actualNodeModule,
+        stripTypeScriptTypes,
+      }));
+      jest.doMock('typescript', () => {
+        throw moduleNotFoundError;
+      });
+
+      const { evalModule } = require('../load') as typeof import('../load');
+      const mod = evalModule(
+        `module.exports = { value: 'test' as string };`,
+        path.join(basepath, 'eval.ts')
+      );
+
+      expect(mod).toEqual({ value: 'test' });
+      expect(stripTypeScriptTypes).toHaveBeenCalledTimes(1);
+      expect(stripTypeScriptTypes).toHaveBeenCalledWith(expect.any(String));
+    });
   });
 });

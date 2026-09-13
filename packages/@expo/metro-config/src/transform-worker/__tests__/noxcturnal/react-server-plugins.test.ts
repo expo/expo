@@ -567,6 +567,52 @@ it.each(['use client', 'use dom'])(
   }
 );
 
+it('excludes type-only and export-all declarations from client proxy exports', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/src/client.ts',
+    projectRoot: '/app',
+    source: `'use client';
+      export interface Props { value: string }
+      export type Value = string;
+      export type { External } from './types';
+      const mixed = 2;
+      export { type Value as MixedType, mixed };
+      export * from './other';
+      export const value = 1;`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.metadata.proxyExports).toEqual(['mixed', 'value']);
+  expect(result.result.code).not.toContain('registerClientReference(proxy, "*"');
+});
+
+it('excludes Flow type declarations from client proxy exports', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/src/client.js',
+    projectRoot: '/app',
+    source: `// @flow
+      'use client';
+      export interface Props { value: string }
+      export type Value = string;
+      export const value = 1;`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.metadata.proxyExports).toEqual(['value']);
+});
+
 it("keeps conflicting React Server directives on Babel's diagnostic path", async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename: '/app/src/conflict.js',

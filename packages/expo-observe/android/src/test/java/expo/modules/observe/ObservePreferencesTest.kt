@@ -139,4 +139,38 @@ class ObservePreferencesTest {
   }
 
   // endregion
+
+  // region Dispatch cursors
+
+  @Test
+  fun `dispatch cursors default to -1`() {
+    assertEquals(-1L, ObservePreferences.getLastDispatchedMetricId(context))
+    assertEquals(-1L, ObservePreferences.getLastDispatchedLogId(context))
+  }
+
+  @Test
+  fun `metric dispatch cursor round trips`() {
+    ObservePreferences.setLastDispatchedMetricId(context, 42)
+
+    assertEquals(42L, ObservePreferences.getLastDispatchedMetricId(context))
+  }
+
+  @Test
+  fun `log dispatch cursor round trips`() {
+    ObservePreferences.setLastDispatchedLogId(context, 84)
+
+    assertEquals(84L, ObservePreferences.getLastDispatchedLogId(context))
+  }
+
+  @Test
+  fun `dispatch cursor keys are independent`() {
+    ObservePreferences.setLastDispatchedMetricId(context, 42)
+    ObservePreferences.setLastDispatchedLogId(context, 84)
+    ObservePreferences.setLastDispatchedMetricId(context, 126)
+
+    assertEquals(126L, ObservePreferences.getLastDispatchedMetricId(context))
+    assertEquals(84L, ObservePreferences.getLastDispatchedLogId(context))
+  }
+
+  // endregion
 }

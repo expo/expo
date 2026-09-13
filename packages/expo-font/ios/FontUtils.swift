@@ -2,6 +2,11 @@ import CoreGraphics
 
 /**
  * Queries custom native font names from the Info.plist `UIAppFonts`.
+ * We return this in JS from `getLoadedFonts()`. The JS api is mostly documented around font families, but this returns postScript names.
+ * Returning families would probably be "more correct" but would break loading fonts at runtime:
+ * loading e.g. Inter would succeed and then loading Inter-Bold would be skipped, both being the
+ * Inter family.
+ * For now, providing a postScript name as `fontFamily` style works because RN core is forgiving about this:  https://github.com/react/react-native/blob/v0.86.0/packages/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm#L359
  */
 internal func queryCustomNativeFonts() -> [String] {
   // [0] Read from main bundle's Info.plist
@@ -9,41 +14,88 @@ internal func queryCustomNativeFonts() -> [String] {
     return []
   }
 
-  // [1] Get font family names for each font file
-  let fontFamilies: [[String]] = fontFilePaths.compactMap { fontFilePath in
-    guard let fontUrl = Bundle.main.url(forResource: fontFilePath, withExtension: nil) else {
-      return []
+  // [1] Get font family names for each font file. A variable font file has one descriptor per named
+  // instance of its variation axes, and they all share a family name, so the family names are
+  // deduplicated to avoid looking up — and returning — the same family once per instance.
+  var fontFamilyNames = [String]()
+
+  for fontFilePath in fontFilePaths {
+    guard let fontUrl = Bundle.main.url(forResource: fontFilePath, withExtension: nil),
+      let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(fontUrl as CFURL) as? [CTFontDescriptor] else {
+      continue
     }
-    guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(fontUrl as CFURL) as? [CTFontDescriptor] else {
-      return []
-    }
-    return fontDescriptors.compactMap { descriptor in
-      return CTFontDescriptorCopyAttribute(descriptor, kCTFontFamilyNameAttribute) as? String
+    for descriptor in fontDescriptors {
+      guard let fontFamilyName = CTFontDescriptorCopyAttribute(descriptor, kCTFontFamilyNameAttribute) as? String else {
+        continue
+      }
+      if !fontFamilyNames.contains(fontFamilyName) {
+        fontFamilyNames.append(fontFamilyName)
+      }
     }
   }
 
   // [2] Retrieve font names by family names
-  return fontFamilies.flatMap { fontFamilyNames in
-    return fontFamilyNames.flatMap { fontFamilyName in
-    #if os(iOS) || os(tvOS)
-      return UIFont.fontNames(forFamilyName: fontFamilyName)
-    #elseif os(macOS)
-      return NSFontManager.shared.availableMembers(ofFontFamily: fontFamilyName)?.compactMap { $0[0] as? String } ?? []
-    #endif
-    }
+  return fontFamilyNames.flatMap { fontFamilyName in
+  #if os(iOS) || os(tvOS)
+    return UIFont.fontNames(forFamilyName: fontFamilyName)
+  #elseif os(macOS)
+    return NSFontManager.shared.availableMembers(ofFontFamily: fontFamilyName)?.compactMap { $0[0] as? String } ?? []
+  #endif
   }
 }
 
 /**
- Loads the font from the given url and returns it as ``CGFont``.
+ Returns the PostScript names to register an alias for, for the file at the given url.
+
+ A variable font file exposes each of the named instances of its variation axes under its own
+ PostScript name. RN walks every name the family reports and keeps the one
+ whose weight is closest to the requested one, so a name it cannot see is a weight it cannot pick:
+ https://github.com/react/react-native/blob/v0.86.0/packages/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm#L372-L386
+
+ Every other file resolves to the single name of its default font, which leaves the alias behaving
+ as it did before variable fonts were handled: ``UIFont/_expo_fontNames(forFamilyName:)`` looks that
+ name up as a family name, so fonts registered elsewhere under the same family stay reachable
+ through the alias.
  */
-internal func loadFont(fromUrl url: CFURL, alias: String) throws -> CGFont {
-  guard let provider = CGDataProvider(url: url),
-    let cgFont = CGFont(provider) else {
+internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [String] {
+  guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(url) as? [CTFontDescriptor] else {
     throw FontCreationFailedException(alias)
   }
 
-  return cgFont
+  var postScriptNames = fontDescriptors.compactMap { descriptor in
+    return CTFontDescriptorCopyAttribute(descriptor, kCTFontNameAttribute) as? String
+  }
+
+  if postScriptNames.isEmpty {
+    throw FontNoPostScriptException(alias)
+  }
+
+  // ``CGFont`` reports the PostScript name of the file's default instance, which is the one to
+  // move up front.
+  let defaultPostScriptName = CGDataProvider(url: url).flatMap { CGFont($0)?.postScriptName as String? }
+
+  let hasVariationAxes = fontDescriptors.contains { descriptor in
+    let axes = CTFontDescriptorCopyAttribute(descriptor, kCTFontVariationAxesAttribute) as? [Any]
+    return !(axes?.isEmpty ?? true)
+  }
+
+  if hasVariationAxes, postScriptNames.count > 1 {
+    // RN falls back to the first name when no font matches the requested traits (e.g. an
+    // italic style against a font with only upright instances) so the first name has to be the default weight:
+    // https://github.com/react/react-native/blob/v0.86.0/packages/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm#L388-L393
+    // This lookup did not miss on any font tested — Inter, Roboto Flex, Roboto Serif, and one
+    // with no named instance at the default location. `CTFontManagerCreateFontDescriptorsFromURL`
+    // appears to always return a descriptor for the axes' default location, carrying the name
+    // ``CGFont`` reports.
+    if let defaultPostScriptName,
+      let defaultIndex = postScriptNames.firstIndex(of: defaultPostScriptName) {
+      postScriptNames.remove(at: defaultIndex)
+      postScriptNames.insert(defaultPostScriptName, at: 0)
+    }
+    return postScriptNames
+  }
+
+  return [defaultPostScriptName ?? postScriptNames[0]]
 }
 
 /**
@@ -76,11 +128,11 @@ internal func unregisterFont(url: CFURL) throws -> Bool {
 
   if !CTFontManagerUnregisterFontsForURL(url, .process, &error), let error = error?.takeRetainedValue() {
     if let ctFontManagerError = CTFontManagerError(rawValue: CFErrorGetCode(error as CFError)) {
-      switch ctFontManagerError {
+      return switch ctFontManagerError {
       case .systemRequired, .inUse:
-        return false
+        false
       case .notRegistered:
-        return true
+        true
       default:
         throw UnregisteringFontFailedException(error)
       }

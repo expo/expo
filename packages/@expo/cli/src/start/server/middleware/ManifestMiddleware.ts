@@ -130,8 +130,9 @@ export abstract class ManifestMiddleware<
     const user = await getUserAsync();
     const username = getActorDisplayName(user);
 
-    // We emit relative URLs if the client reported a forwarded authority
-    const shouldUseRelativeManifestUrls = !!forwarded?.authority;
+    // We emit relative URLs only if the client itself reported the authority,
+    // via a `Forwarded` header to differentiate older/newer clients
+    const shouldUseRelativeManifestUrls = !!forwarded?.viaForwardedHeader;
     // `hostUri` and `debuggerHost` can only hold an authority, so they can't be made relative
     const hostUri = forwarded?.authority ?? this.options.constructUrl({ scheme: '', hostname });
 

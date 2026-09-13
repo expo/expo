@@ -13,8 +13,6 @@ final class LiveActivity: SharedObject {
   }
 
   func update(props: String?, staleDate: Date?) async throws {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
@@ -24,8 +22,6 @@ final class LiveActivity: SharedObject {
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
@@ -45,8 +41,6 @@ final class LiveActivity: SharedObject {
   }
 
   func getPushToken() throws -> String? {
-    guard #available(iOS 16.1, *) else { throw LiveActivitiesNotSupportedException() }
-
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
@@ -56,13 +50,15 @@ final class LiveActivity: SharedObject {
     return tokenData.reduce("") { $0 + String(format: "%02x", $1) }
   }
 
-  @available(iOS 16.1, *)
   func observePushTokenUpdates(for activity: Activity<LiveActivityAttributes>, pushNotificationsEnabled: Bool) {
     guard pushNotificationsEnabled else {
       return
     }
 
-    pushTokenObserverTask?.cancel()
+    guard pushTokenObserverTask == nil else {
+      return
+    }
+
     pushTokenObserverTask = Task {
       for await data in activity.pushTokenUpdates {
         let token = data.reduce("") { $0 + String(format: "%02x", $1) }

@@ -4,13 +4,24 @@
 
 ### 🛠 Breaking changes
 
-- Align `jest-expo` Babel options for all platforms with `resolveBabelOptions` output
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- Align `jest-expo` Babel options for all platforms with `resolveBabelOptions` output
+
+### 🐛 Bug fixes
+
+- Support React Native 0.87's `react-native/asset-registry`. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Keep the upstream React Native `moduleNameMapper` entries in the iOS and Android presets, so React Native 0.87's `react-native/setup-env` mock resolves. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 57.0.3 - 2026-07-29
 

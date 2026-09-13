@@ -4,7 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.21.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+- Use an explicit mode for `.env` files and Expo config. ([#48845](https://github.com/expo/expo/pull/48845) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🎉 New features
 
@@ -13,8 +24,13 @@
 ### 🐛 Bug fixes
 
 - [Internal] Prevent `ncc` from removing dynamic requires where we need them ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
+- Keep loaded `.env` values out of `expo install --check`. ([#48845](https://github.com/expo/expo/pull/48845) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Report a stale `@expo/dom-webview` left over from an older SDK in the overridden dependency check. ([#49345](https://github.com/expo/expo/pull/49345) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 1.20.1 - 2026-07-15
 
