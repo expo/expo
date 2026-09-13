@@ -109,6 +109,8 @@ export type {
   NativeStackViewState,
 } from './react-navigation/native-stack';
 export type {
+  CommonNavigationAction,
+  DefaultRouterOptions,
   NavigationAction,
   NavigationState,
   Router,
@@ -119,8 +121,10 @@ export type {
   RouterExtension,
   RouterExtensionContext,
   RouterFactory,
+  StackActionType,
   StackNavigationState,
   StackRouterOptions,
+  TabActionType,
   TabNavigationState,
   TabRouterOptions,
 } from './react-navigation/routers';

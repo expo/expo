@@ -4,7 +4,6 @@ import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
-import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -209,6 +208,7 @@ export const StackActions = {
 
 function stackRouterExtension({
   baseRouter,
+  createRouteKeyMinter,
   options: { initialRouteName },
 }: RouterExtensionContext<
   StackNavigationState<ParamListBase>,

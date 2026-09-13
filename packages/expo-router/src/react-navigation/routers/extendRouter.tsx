@@ -33,7 +33,8 @@ export type RouterExtensionContext<
 /**
  * Returns the router members to merge over the base router. Members that are left out are
  * inherited from the base router, including `actionCreators`: return a merged object to add
- * action creators instead of replacing them.
+ * action creators instead of replacing them. An inherited `normalizeState` runs on the extended
+ * state type, so an extension that changes the state type returns its own unless the base's fits.
  */
 export type RouterExtension<
   State extends NavigationState,
@@ -44,7 +45,8 @@ export type RouterExtension<
 /**
  * Creates a router factory that merges the members returned by `extension` over the router
  * created by `base`. The effective `normalizeState` (from the extension, else from the base
- * router) runs on every state the resulting router returns.
+ * router) runs on every state the resulting router returns. States the extension routes through
+ * `context.baseRouter` are already normalized by the base router before that.
  *
  * Annotate the extension's context or return type to change the state, action, or options types.
  *

@@ -1,6 +1,5 @@
 import { NoopRouter } from './NoopRouter';
 import { extendRouter } from './extendRouter';
-import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   NavigationAction,
@@ -15,7 +14,10 @@ import type {
  */
 export const BaseRouter = extendRouter(
   NoopRouter,
-  ({ baseRouter }): Partial<Router<NavigationState, CommonNavigationAction>> => ({
+  ({
+    baseRouter,
+    createRouteKeyMinter,
+  }): Partial<Router<NavigationState, CommonNavigationAction>> => ({
     getStateForDeclaredRoutes(state, routeNames) {
       const declaredRouteNames = new Set(routeNames);
       const routes = state.routes.filter((route) => declaredRouteNames.has(route.name));

@@ -6,8 +6,8 @@ import type {
 } from './types';
 
 /**
- * Router that handles nothing. It is the root of the built-in router chain: every other router
- * is created by extending it, directly or through `BaseRouter`.
+ * Router that handles nothing. `BaseRouter` extends it, so it is the root of every built-in
+ * router chain.
  */
 export const NoopRouter: RouterFactory<
   NavigationState,

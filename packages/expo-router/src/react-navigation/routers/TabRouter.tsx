@@ -5,7 +5,6 @@ import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
-import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -305,6 +304,7 @@ const changeIndex = (
 
 function tabRouterExtension({
   baseRouter,
+  createRouteKeyMinter,
   options: { initialRouteName, backBehavior = 'firstRoute' },
 }: RouterExtensionContext<
   TabNavigationState<ParamListBase>,

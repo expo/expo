@@ -285,6 +285,8 @@ export function useNavigationBuilder<
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);
 
+      // Overrides replace the wrapped members, so a `normalizeState` applied by `extendRouter`
+      // does not run on the states the overrides return.
       return {
         ...original,
         ...overrides,

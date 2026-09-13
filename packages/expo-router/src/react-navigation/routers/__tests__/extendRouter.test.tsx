@@ -113,6 +113,24 @@ describe('extendRouter', () => {
     expect(focused.routes[0]?.name).toBe('INDEX');
   });
 
+  test('provides a route key minter to the extension', () => {
+    const router = extendRouter(TestRouter, ({ createRouteKeyMinter }) => ({
+      getStateForAction: (state) => {
+        const minter = createRouteKeyMinter(state);
+        const route = { key: minter.mint('index'), name: 'index' };
+        return {
+          state: { ...state, routes: [...state.routes, route], routeKeySeq: minter.routeKeySeq },
+          affectedRouteKey: route.key,
+        };
+      },
+    }))({});
+
+    const result = router.getStateForAction(state, { type: 'GO_BACK' }, config);
+
+    expect(result?.affectedRouteKey).toBe('index:2');
+    expect(result?.state.routeKeySeq).toBe(3);
+  });
+
   test('can change the state, action, and options types', () => {
     type WideState = NavigationState & { type?: 'wide'; extra: number };
     type WideOptions = DefaultRouterOptions & { extra: number };
