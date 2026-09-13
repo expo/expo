@@ -46,7 +46,11 @@ const {
   reportUnsupported,
 } = require('./diagnostics');
 const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
-const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
+const {
+  emitSourceManifestPackage,
+  emitPureSwiftSourcePackage,
+  raiseFloor,
+} = require('./manifests');
 const { PodspecSyntaxError, readPodspecs } = require('./podspec');
 const { scriptPhasesForModules } = require('./script-phases');
 
@@ -143,6 +147,9 @@ module.exports = function expoSpmPlugin(context) {
   // Pass 2 — invariant source modules. They compile against the generated
   // headers/module-interface tree and leave runtime linking entirely to RN.
   const coreAvailable = precompiledFrameworks.has('ExpoModulesCore') && frameworkSearchPath != null;
+  // Every module imports ExpoModulesCore, so none may be built below its floor —
+  // the CocoaPods installer raises them the same way, after install.
+  const coreDeploymentTarget = metadata['ExpoModulesCore']?.iosDeploymentTarget ?? null;
   if (coreAvailable) {
     for (const mod of modules) {
       const pods = mod.pods ?? [];
@@ -157,7 +164,8 @@ module.exports = function expoSpmPlugin(context) {
           react,
           frameworkSearchPath,
           outDir,
-          codegenPkgPath
+          codegenPkgPath,
+          coreDeploymentTarget
         );
         if (e.unresolvedTargets != null) {
           unresolvedTargets.set(moduleRoot, e.unresolvedTargets);
@@ -170,8 +178,9 @@ module.exports = function expoSpmPlugin(context) {
         }
       } else if (isPureSwift(moduleRoot)) {
         // Pure-Swift module → single Swift target over its ios sources. Its podspec
-        // supplies nothing but the deployment floor: a module whose linkage only the
-        // podspec declares is skipped and diagnosed, never emitted half-linked.
+        // supplies nothing but a fallback deployment floor, for a module the metadata
+        // document does not cover: a module whose linkage only the podspec declares is
+        // skipped and diagnosed, never emitted half-linked.
         let podspecs = null;
         try {
           podspecs = readPodspecs(
@@ -198,7 +207,10 @@ module.exports = function expoSpmPlugin(context) {
                 frameworkSearchPath,
                 outDir,
                 codegenPkgPath,
-                podspecs.iosDeploymentTarget
+                raiseFloor(
+                  metadata[pod.podName]?.iosDeploymentTarget ?? podspecs.iosDeploymentTarget,
+                  coreDeploymentTarget
+                )
               );
         if (e != null) {
           packageDependencies.push(e.packageDep);

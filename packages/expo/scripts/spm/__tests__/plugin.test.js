@@ -668,3 +668,111 @@ describe('the source-emit pass', () => {
     ).toContain('platforms: [.iOS("16.4")],');
   });
 });
+
+// CocoaPods raises every Expo module to ExpoModulesCore's deployment floor, and
+// the document is where that floor comes from now — the podspec reader is only
+// the fallback for a module whose config has not landed yet.
+describe('the iOS deployment floor', () => {
+  let logs;
+  let outDir;
+  let thrown;
+
+  const entry = (packageRoot, podspecDir, productName, iosDeploymentTarget) => ({
+    type: 'internal',
+    npmPackage: productName,
+    packageRoot,
+    podspecDir,
+    productName,
+    iosDeploymentTarget,
+  });
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-floor-'));
+    outDir = path.join(tmp, 'out');
+    const roots = {
+      core: path.join(tmp, 'expo-modules-core'),
+      low: path.join(tmp, 'expo-low'),
+      high: path.join(tmp, 'expo-high'),
+      // Its podspec disagrees with the document, so the winner is observable.
+      disagreeing: path.join(tmp, 'expo-disagreeing'),
+    };
+    const dirs = {
+      core: pureSwiftModule(
+        roots.core,
+        'ExpoModulesCore',
+        spec("  s.platforms = { :ios => '16.4' }")
+      ),
+      low: pureSwiftModule(roots.low, 'ExpoLow', spec("  s.platforms = { :ios => '15.0' }")),
+      high: pureSwiftModule(roots.high, 'ExpoHigh', spec("  s.platforms = { :ios => '17.0' }")),
+      disagreeing: pureSwiftModule(
+        roots.disagreeing,
+        'ExpoDisagreeing',
+        spec("  s.platforms = { :ios => '18.0' }")
+      ),
+    };
+    resolveExpoModules.mockReturnValue([
+      {
+        packageName: 'expo-modules-core',
+        pods: [{ podName: 'ExpoModulesCore', podspecDir: dirs.core }],
+      },
+      { packageName: 'expo-low', pods: [{ podName: 'ExpoLow', podspecDir: dirs.low }] },
+      { packageName: 'expo-high', pods: [{ podName: 'ExpoHigh', podspecDir: dirs.high }] },
+      {
+        packageName: 'expo-disagreeing',
+        pods: [{ podName: 'ExpoDisagreeing', podspecDir: dirs.disagreeing }],
+      },
+    ]);
+    prebuiltMetadata.mockReturnValue({
+      ExpoModulesCore: entry(roots.core, dirs.core, 'ExpoModulesCore', '16.4'),
+      ExpoLow: entry(roots.low, dirs.low, 'ExpoLow', '15.0'),
+      ExpoHigh: entry(roots.high, dirs.high, 'ExpoHigh', '17.0'),
+      ExpoDisagreeing: entry(roots.disagreeing, dirs.disagreeing, 'ExpoDisagreeing', '17.5'),
+    });
+    generateModulesProvider.mockReset();
+    generateModulesProvider.mockImplementation(() => {
+      const providerPath = path.join(outDir, 'expo', 'ExpoModulesProvider.swift');
+      fs.mkdirSync(path.dirname(providerPath), { recursive: true });
+      fs.writeFileSync(providerPath, 'ExpoModulesCore.self\n');
+      return providerPath;
+    });
+    logs = {
+      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    try {
+      expoSpmPlugin({
+        react: null,
+        outputDir: outDir,
+        appRoot: path.join(tmp, 'app', 'ios'),
+        projectRoot: path.join(tmp, 'app'),
+      });
+      thrown = null;
+    } catch (error) {
+      thrown = error;
+    }
+  });
+
+  afterAll(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    restoreModuleMocks();
+  });
+
+  const emitted = (product) =>
+    fs.readFileSync(path.join(outDir, 'expo', 'expo-source', product, 'Package.swift'), 'utf8');
+
+  it('raises a module declaring less than ExpoModulesCore to the core floor', () => {
+    expect(thrown).toBeNull();
+    expect(emitted('ExpoLow')).toContain('platforms: [.iOS("16.4")],');
+  });
+
+  it('leaves a module declaring more than ExpoModulesCore alone', () => {
+    expect(emitted('ExpoHigh')).toContain('platforms: [.iOS("17.0")],');
+  });
+
+  // 17.5 is neither the podspec's 18.0 nor the core floor, so only the document
+  // can be its source.
+  it('takes the floor from the document, not from the podspec', () => {
+    expect(emitted('ExpoDisagreeing')).toContain('platforms: [.iOS("17.5")],');
+  });
+});
