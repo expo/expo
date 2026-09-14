@@ -5,6 +5,7 @@ import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.SimpleResource
 import com.caverock.androidsvg.SVG
+import android.util.Log
 import com.caverock.androidsvg.SVGParseException
 import expo.modules.image.CustomOptions
 import java.io.ByteArrayInputStream
@@ -69,8 +70,17 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
     val bytes = source.readBytes()
     val text = decodeUtf8(bytes)
       // Substituting would mean re-encoding the document as UTF-8, which would contradict its own
-      // XML declaration. Leave it alone rather than corrupt it.
-      ?: return SVG.getFromInputStream(ByteArrayInputStream(bytes))
+      // XML declaration. Leave it alone rather than corrupt it, and let the parser sniff the encoding.
+      ?: return SVG.getFromInputStream(ByteArrayInputStream(bytes)).also {
+        if (variables != null) {
+          Log.w(
+            "ExpoImage",
+            "`svgVariables` was ignored because the SVG document is not encoded in UTF-8. " +
+              "Re-encoding it would contradict the document's own XML declaration. " +
+              "Save the file as UTF-8 to use this prop."
+          )
+        }
+      }
 
     val substituted = if (variables == null) {
       SVGVariables.resolveFallbacks(text)
@@ -80,7 +90,34 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
     return SVG.getFromString(substituted)
   }
 
-  private fun decodeUtf8(bytes: ByteArray): String? = try {
+  /**
+   * Decodes the document as UTF-8, or returns null when it is encoded differently.
+   *
+   * UTF-16 is checked separately because a strict UTF-8 decode does not reject it: every byte of
+   * BOM-less UTF-16 text is a valid single-byte UTF-8 sequence, so the decode would succeed and
+   * yield NUL-interleaved text.
+   */
+  private fun decodeUtf8(bytes: ByteArray): String? = if (isUtf16(bytes)) {
+    null
+  } else {
+    decodeStrictUtf8(bytes)
+  }
+
+  /**
+   * Whether the document is UTF-16, by its byte order mark or by the NUL bytes that ASCII markup
+   * encoded as UTF-16 interleaves. Every SVG starts with `<?xml` or `<svg`, so the first few
+   * characters are ASCII in any encoding a renderer accepts.
+   */
+  private fun isUtf16(bytes: ByteArray): Boolean {
+    if (bytes.size < 2) {
+      return false
+    }
+    val hasBom = (bytes[0] == 0xFE.toByte() && bytes[1] == 0xFF.toByte()) ||
+      (bytes[0] == 0xFF.toByte() && bytes[1] == 0xFE.toByte())
+    return hasBom || bytes.take(NUL_SNIFF_LENGTH).any { it == 0.toByte() }
+  }
+
+  private fun decodeStrictUtf8(bytes: ByteArray): String? = try {
     Charsets.UTF_8.newDecoder()
       .onMalformedInput(CodingErrorAction.REPORT)
       .onUnmappableCharacter(CodingErrorAction.REPORT)
@@ -88,5 +125,10 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
       .toString()
   } catch (_: CharacterCodingException) {
     null
+  }
+
+  companion object {
+    /** How far to look for the NUL bytes that mark UTF-16, in bytes. */
+    private const val NUL_SNIFF_LENGTH = 16
   }
 }
