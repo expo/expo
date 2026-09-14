@@ -213,9 +213,7 @@ export async function createDirHashResultsAsync(
     await Promise.all(
       dirents.map(async (dirent) => {
         if (dirent.isDirectory()) {
-          // Skip nested installs inside a package. Isolated layouts put the package itself
-          // at `node_modules/.pnpm/<id>/node_modules/<pkg>`, so a path glob with two
-          // `node_modules` segments would also drop that package root.
+          // Skip nested node_modules inside a package.
           if (dirent.name === 'node_modules') {
             return null;
           }

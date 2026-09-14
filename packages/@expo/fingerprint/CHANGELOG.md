@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Stopped ignoring paths that contain two `node_modules` segments. Nested installs are skipped while hashing a directory instead, so packages in a virtual store (e.g. pnpm's **node_modules/.pnpm**) are included in the hash. Fingerprints change once on upgrade for projects using isolated installation. ([#48704](https://github.com/expo/expo/pull/48704) by [@kudo](https://github.com/kudo))
+- Hash autolinked packages that live in a virtual store, such as pnpm's `node_modules/.pnpm`. Nested `node_modules` folders inside a package are still skipped. Fingerprints change once on upgrade for isolated installs. ([#48704](https://github.com/expo/expo/pull/48704) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
