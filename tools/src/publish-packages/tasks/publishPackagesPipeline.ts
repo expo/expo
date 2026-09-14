@@ -28,7 +28,6 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
-import { updateProjectTemplates } from './updateProjectTemplates';
 import { updateVersionsEndpoint } from './updateVersionsEndpoint';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 
@@ -90,7 +89,6 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       checkPackagesWithTurbo,
       updatePackageVersions,
       updateBundledNativeModulesFile,
-      updateProjectTemplates,
       updateModuleTemplate,
       updateWorkspaceProjects,
       updateAndroidProjects,
