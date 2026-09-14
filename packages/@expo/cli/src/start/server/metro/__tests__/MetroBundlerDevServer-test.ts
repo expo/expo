@@ -309,7 +309,7 @@ describe('getStaticPageAsync', () => {
     } as unknown as ReturnType<typeof getConfig>);
   });
 
-  it('returns a ReadableStream for server output without an opt-in flag', async () => {
+  it('returns a ReadableStream for server output', async () => {
     const devServer = createDevServerForStaticPageTests();
     const stream = new ReadableStream<Uint8Array>();
     const getStreamingContent = jest.fn(async () => stream);
