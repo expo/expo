@@ -4,7 +4,9 @@ import React, { use, useEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
+  getChildren,
   getValidInitialRouteName,
+  isInternal,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -186,7 +188,7 @@ export function useSortedScreens<
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const children = node?.children ?? [];
+  const children = node ? getChildren(node) : [];
   const sorted = children.length
     ? getSortedChildren(children, order, getValidInitialRouteName(node))
     : [];
@@ -567,7 +569,7 @@ export function screenOptionsFactory(
     };
 
     // Prevent generated screens from showing up in the tab bar.
-    if (route.internal || isGuarded) {
+    if (isInternal(route) || isGuarded) {
       // TODO(@ubax): Document migrating withLayoutContext navigators to standard navigation,
       // where processScreens can map hidden to navigator-specific options.
       output.hidden = true;
