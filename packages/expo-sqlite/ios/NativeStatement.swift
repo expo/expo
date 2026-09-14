@@ -85,10 +85,12 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
     try ensureNotFinalized()
 
     try lock.withLock { _ in
-      if exsqlite3_finalize(pointer) != SQLITE_OK {
+      let ret = exsqlite3_finalize(pointer)
+      // SQLite destroys the statement even when returning an earlier execution error.
+      isFinalized = true
+      if ret != SQLITE_OK {
         throw SQLiteErrorException(database.lastErrorMessage())
       }
-      isFinalized = true
     }
   }
 }
