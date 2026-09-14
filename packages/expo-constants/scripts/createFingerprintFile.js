@@ -37,13 +37,9 @@ async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, 
   const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
   await fs.promises.rm(filePath, { force: true });
 
-  if (!enabled) {
-    return null;
-  }
-  if (isFingerprintEmbeddingDisabled()) {
-    return null;
-  }
-  if (platform !== 'ios' && platform !== 'android') {
+  const skip =
+    !enabled || isFingerprintEmbeddingDisabled() || (platform !== 'ios' && platform !== 'android');
+  if (skip) {
     return null;
   }
 
@@ -64,8 +60,6 @@ async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, 
     return null;
   }
 
-  // Spread rather than pick: a field added to `Fingerprint` travels with it instead of being
-  // silently dropped here. The version is not part of it, so it is added.
   const contents = { ...fingerprint, fingerprintVersion: readFingerprintVersion(fingerprintPath) };
   await fs.promises.writeFile(filePath, JSON.stringify(contents));
   return filePath;
