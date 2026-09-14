@@ -11,10 +11,8 @@ public enum FingerprintCheckProtocol {
   /// Selects the channel. A host would take a name out of the app's own route namespace.
   public static let markerParam = "__expo_fingerprint_check"
 
-  /// The only accepted value of `markerParam`.
   public static let markerValue = "1"
 
-  /// Ties a response to the run that asked for it.
   public static let nonceParam = "__expo_fingerprint_nonce"
 
   public static let callbackParam = "__expo_fingerprint_callback"

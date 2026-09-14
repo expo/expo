@@ -131,7 +131,6 @@ private func getManifest() -> [String: Any]? {
   }
 }
 
-/** The embedded `app.fingerprint`, for the dev-launcher responder. */
 public struct EmbeddedFingerprint {
   public let hash: String
   /** Nil when the build embedded no version. Two hashes then cannot be compared. */

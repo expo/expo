@@ -8,7 +8,6 @@ internal struct FingerprintCheckRequest: Equatable {
   let nonce: String
   let callback: URL
 
-  /** Returns nil unless `url` is a valid fingerprint-check trigger with a safe callback. */
   internal static func parse(_ url: URL) -> FingerprintCheckRequest? {
     // Matched on a reserved query parameter, not a host: hosts belong to the app's own routes.
     guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
