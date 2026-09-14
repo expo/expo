@@ -1,0 +1,9 @@
+{
+  "libraryVersion": "2.4.18",
+  "reactNativeVersion": "0.85.3",
+  "variant": "release",
+  "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+  "soFiles": ["librnskia.so"],
+  "stripped": true,
+  "cachedAt": "2026-05-13T21:03:32.907251Z"
+}
