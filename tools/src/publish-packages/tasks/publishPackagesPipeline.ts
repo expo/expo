@@ -56,11 +56,11 @@ const cleanWorkingTree = new Task<TaskArgs>(
         });
         // Remove package-root staging directories while retaining their separate Turbo outputs.
         await Promise.all(
-          parcels.flatMap(({ pkg }) =>
-            ['prebuilds', 'local-maven-repo'].map((directory) =>
-              fs.remove(path.join(pkg.path, directory))
-            )
-          )
+          parcels.flatMap(({ pkg }) => [
+            fs.remove(path.join(pkg.path, 'prebuilds')),
+            fs.remove(path.join(pkg.path, 'local-maven-repo')),
+            ...(pkg.packageName === 'expo' ? [fs.remove(path.join(pkg.path, 'template.tgz'))] : []),
+          ])
         );
         // Remove tarballs.
         await Git.cleanAsync({
