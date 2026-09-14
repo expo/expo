@@ -159,7 +159,7 @@ describe('createPages', () => {
 
   it('renders a root page registered with empty path', async () => {
     // Regression: top-level `./index.tsx` gets registered with path `''` after
-    // `getContextKey(...).replace(/\/index$/, '')`. The resolver and getBuildConfig
+    // `getRoutePathname(...).replace(/\/index$/, '')`. The resolver and getBuildConfig
     // must both handle this without throwing.
     const router = build(async ({ createPage, createLayout }) => {
       createLayout({ component: NullComponent, path: '' as any, render: 'static' });
