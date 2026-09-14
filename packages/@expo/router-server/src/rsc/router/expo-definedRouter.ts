@@ -1,5 +1,10 @@
 import { ctx } from 'expo-router/_ctx';
-import { getContextKey, sortRoutes, type RouteNode } from 'expo-router/internal/routing';
+import {
+  getChildren,
+  getContextKey,
+  sortRoutes,
+  type RouteNode,
+} from 'expo-router/internal/routing';
 
 import { getRoutes } from '../../getRoutesSSR';
 import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
@@ -91,41 +96,43 @@ async function registerRouteTree(api: CreatePagesApi, route: RouteNode): Promise
   });
 
   await Promise.all(
-    route.children.sort(sortRoutes).map(async (child) => {
-      if (child.type === 'layout') {
-        await registerRouteTree(api, child);
-        return;
-      }
-      const childPath = getContextKey(child.contextKey).replace(/\/index$/, '');
-      const childLoaded = child.loadRoute();
-      const settings = readSettings(childLoaded);
+    getChildren(route)
+      .sort(sortRoutes)
+      .map(async (child) => {
+        if (child.type === 'layout') {
+          await registerRouteTree(api, child);
+          return;
+        }
+        const childPath = getContextKey(child.contextKey).replace(/\/index$/, '');
+        const childLoaded = child.loadRoute();
+        const settings = readSettings(childLoaded);
 
-      if (childLoaded.generateStaticParams) {
-        api.createPage({
-          component: childLoaded.default as any,
-          path: childPath,
-          render: 'static',
-          staticPaths: (await loadStaticParamsForRoute(child)) as any,
-          unstable_disableSSR: settings.unstable_disableSSR,
-        });
-        if (settings.render !== 'static') {
+        if (childLoaded.generateStaticParams) {
           api.createPage({
             component: childLoaded.default as any,
             path: childPath,
-            render: 'dynamic',
+            render: 'static',
+            staticPaths: (await loadStaticParamsForRoute(child)) as any,
             unstable_disableSSR: settings.unstable_disableSSR,
           });
+          if (settings.render !== 'static') {
+            api.createPage({
+              component: childLoaded.default as any,
+              path: childPath,
+              render: 'dynamic',
+              unstable_disableSSR: settings.unstable_disableSSR,
+            });
+          }
+          return;
         }
-        return;
-      }
 
-      api.createPage({
-        component: childLoaded.default as any,
-        path: childPath,
-        render: settings.render ?? 'dynamic',
-        unstable_disableSSR: settings.unstable_disableSSR,
-      });
-    })
+        api.createPage({
+          component: childLoaded.default as any,
+          path: childPath,
+          render: settings.render ?? 'dynamic',
+          unstable_disableSSR: settings.unstable_disableSSR,
+        });
+      })
   );
 }
 
