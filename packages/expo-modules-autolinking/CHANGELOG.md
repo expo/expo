@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Add a single pure description of the precompiled xcframework artifact layout, so the producer, the CocoaPods integrator and the artifact cache can stop each encoding their own copy.
+
 ## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
