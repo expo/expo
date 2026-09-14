@@ -114,7 +114,7 @@ function NativeTabsContent({
 
   const { routes } = state;
 
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes,
     routeNames,
     focusedRouteKey: routes[state.index]?.key,
@@ -193,6 +193,10 @@ function NativeTabsContent({
     'focusedIndex' | 'provenance' | 'tabs' | 'onTabChange'
   > &
     Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
+
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
 
   if (visibleTabs.length === 0 || focusedIndex < 0) {
     return null;
