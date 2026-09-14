@@ -133,6 +133,14 @@ export default function ModifiersScreen() {
             </Box>
           </Host>
         </Section>
+        <Section title="String width (should warn, not crash)">
+          <Host style={{ height: 60 }}>
+            {/* @ts-expect-error — intentional: verify runtime warning, not crash */}
+            <Column style={{ width: '100%' }}>
+              <Box modifiers={[background('#4096FF'), height(60)]} />
+            </Column>
+          </Host>
+        </Section>
       </ScrollView>
       {showImePadding && (
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
