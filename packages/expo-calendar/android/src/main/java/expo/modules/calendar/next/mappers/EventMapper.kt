@@ -13,6 +13,7 @@ import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.utils.toMilliseconds
 import expo.modules.kotlin.types.map
+import java.util.TimeZone
 
 class EventMapper {
   fun toEventUpdate(input: EventUpdateRecord) = EventUpdate(
@@ -46,7 +47,9 @@ class EventMapper {
     guestsCanModify = eventRecord.guestsCanModify,
     guestsCanInviteOthers = eventRecord.guestsCanInviteOthers,
     guestsCanSeeGuests = eventRecord.guestsCanSeeGuests,
-    eventTimezone = eventRecord.timeZone,
+    // CalendarContract requires a timezone on insert; without one the event is
+    // created but never renders in the calendar app.
+    eventTimezone = eventRecord.timeZone ?: TimeZone.getDefault().id,
     eventEndTimezone = eventRecord.endTimeZone,
     accessLevel = eventRecord.accessLevel?.toDomain(),
     rrule = eventRecord.recurrenceRule?.toDomain()
