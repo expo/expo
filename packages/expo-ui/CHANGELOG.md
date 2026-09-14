@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [macOS] Added minimal macOS support. (by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [macOS] Added minimal macOS support. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
