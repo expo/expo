@@ -21,6 +21,27 @@ type PartialPodfileProperties = {
   'expo.inlineModules.xcodeProjectTargets'?: string;
 };
 
+/**
+ * Warns about packages that were integrated at pod install but are missing from the current
+ * resolution, which means the generated provider will not link them. A package resolving with
+ * nothing to link is not reported: the packages passed here are every package whose pods support
+ * the target, so the ones that carry no modules at all are expected to be among them.
+ */
+export function warnAboutUnresolvedPackages(
+  expectedPackageNames: string[],
+  resolvedModules: { packageName: string }[]
+): void {
+  const resolvedNames = new Set(resolvedModules.map((module) => module.packageName));
+
+  for (const packageName of expectedPackageNames) {
+    if (!resolvedNames.has(packageName)) {
+      console.warn(
+        `⚠️  Package '${packageName}' was integrated at pod install but is missing from the current resolution. Run pod install if it should still be linked.`
+      );
+    }
+  }
+}
+
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
   return registerAutolinkingArguments(cli.command('generate-modules-provider [searchPaths...]'))
@@ -55,13 +76,19 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         });
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,
-          autolinkingOptions
+          autolinkingOptions,
+          // The provider generated here is the only consumer of the scanned classes, and it runs on
+          // every build, so a scan that fails once is repaired by the next build rather than
+          // persisting until the next pod install.
+          { scanNativeModules: true }
         );
 
         const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) =>
           includeModules.has(module.packageName)
         );
+
+        warnAboutUnresolvedPackages(commandArguments.packages ?? [], filteredModules);
 
         const podfileProperties: PartialPodfileProperties = await fs.promises
           .readFile(commandArguments.podfilePropertiesFilePath, {

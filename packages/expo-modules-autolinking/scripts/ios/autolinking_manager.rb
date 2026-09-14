@@ -158,9 +158,12 @@ module Expo
       platform = @target_definition.platform
 
       @packages.select do |package|
-        # Check whether the package has any module to autolink
-        # and if there is any pod that supports target's platform.
-        package.has_something_to_link? && package.pods.any? { |pod| pod.supports_platform?(platform) }
+        # Only the target's platform is checked here. Whether a package has anything to link is
+        # decided when the provider is generated, which is also where the sources are scanned for
+        # annotated module classes: a package whose modules come only from that scan has nothing to
+        # link yet at pod install, and gating on it here would leave the package out of the
+        # generated build phase for good.
+        package.pods.any? { |pod| pod.supports_platform?(platform) }
       end
     end
 

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove the module class declaration from `expo-module.config.json`; the `@ExpoModule`-annotated class is now detected automatically by autolinking. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
 - [iOS] Migrate to the Expo Modules API 2.0 macros. ([#50047](https://github.com/expo/expo/pull/50047) by [@tsapeta](https://github.com/tsapeta))
 
 ## 58.0.0 — 2026-09-10

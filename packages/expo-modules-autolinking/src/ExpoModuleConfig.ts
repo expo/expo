@@ -90,6 +90,14 @@ export class ExpoModuleConfig {
   }
 
   /**
+   * Whether the config declares the list of Apple modules at all. A declared list, even an empty
+   * one, is a full override that opts the package out of `@ExpoModule` scanning.
+   */
+  declaresAppleModules(): boolean {
+    return this.getAppleConfig()?.modules != null;
+  }
+
+  /**
    * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
    */
   appleAppDelegateSubscribers(): string[] {

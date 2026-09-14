@@ -7,6 +7,7 @@ import {
   getSwiftModuleNames,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
+  scanNativeModulesAsync,
 } from '../apple/apple';
 
 afterEach(() => {
@@ -94,6 +95,36 @@ describe(getSwiftModuleNames, () => {
   });
 });
 
+describe(scanNativeModulesAsync, () => {
+  const searchResults = {
+    'expo-modules-core': {
+      name: 'expo-modules-core',
+      path: '/nonexistent/node_modules/expo-modules-core',
+      version: '3.0.0',
+    },
+  };
+
+  it('returns null on a non-macOS host', async () => {
+    // `process.platform` is a read-only accessor, so `jest.replaceProperty` can't restore it.
+    const descriptor = Object.getOwnPropertyDescriptor(process, 'platform')!;
+    Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
+    try {
+      expect(await scanNativeModulesAsync(searchResults)).toBeNull();
+    } finally {
+      Object.defineProperty(process, 'platform', descriptor);
+    }
+  });
+
+  it('returns null when expo-modules-core is not among the packages', async () => {
+    expect(await scanNativeModulesAsync({})).toBeNull();
+  });
+
+  it('returns null when the macros plugin cannot be resolved', async () => {
+    // The plugin is resolved from the expo-modules-core path, which doesn't exist here.
+    expect(await scanNativeModulesAsync(searchResults)).toBeNull();
+  });
+});
+
 describe(resolveModuleAsync, () => {
   afterEach(() => {
     jest.resetAllMocks();
@@ -132,6 +163,90 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
     });
+  });
+
+  it('uses scanned modules when the config declares none', async () => {
+    const name = 'expo-clipboard';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoClipboard.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['apple'] }),
+      },
+      {
+        scannedModules: {
+          [name]: [
+            { name: null, class: 'ClipboardPasteButtonModule' },
+            { name: null, class: 'ClipboardModule' },
+          ],
+        },
+      }
+    );
+
+    expect(result?.modules).toEqual([
+      { name: null, class: 'ClipboardModule' },
+      { name: null, class: 'ClipboardPasteButtonModule' },
+    ]);
+  });
+
+  it('ignores scanned modules when the config declares an empty list, as an opt-out', async () => {
+    const name = 'expo-clipboard';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoClipboard.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['apple'], apple: { modules: [] } }),
+      },
+      {
+        scannedModules: {
+          [name]: [{ name: null, class: 'ClipboardModule' }],
+        },
+      }
+    );
+
+    expect(result?.modules).toEqual([]);
+  });
+
+  it('ignores scanned modules when the config declares any, as an explicit override', async () => {
+    const name = 'expo-clipboard';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoClipboard.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({
+          platforms: ['apple'],
+          apple: { modules: ['ClipboardModule'] },
+        }),
+      },
+      {
+        scannedModules: {
+          [name]: [
+            { name: null, class: 'ClipboardModule' },
+            { name: null, class: 'ClipboardPasteButtonModule' },
+          ],
+        },
+      }
+    );
+
+    expect(result?.modules).toEqual([{ name: null, class: 'ClipboardModule' }]);
   });
 
   it('should contain coreFeature field', async () => {
