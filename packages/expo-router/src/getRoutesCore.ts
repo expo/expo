@@ -23,7 +23,7 @@ import {
 } from './matchers';
 import { getValidInitialRoute } from './routeNode';
 import type { RequireContext } from './types';
-import type { ContextKey } from './types/paths';
+import type { ContextKey, EntryPoint } from './types/paths';
 import { shouldLinkExternally } from './utils/url';
 
 export type Options = {
@@ -104,6 +104,7 @@ type DirectoryNode = {
 export type RedirectConfig = {
   source: string;
   destination: string;
+  /** A context key, or the destination URL when `external` is set. Widened because this type is public. */
   destinationContextKey: string;
   permanent?: boolean;
   methods?: string[];
@@ -113,7 +114,7 @@ export type RedirectConfig = {
 export type RewriteConfig = {
   source: string;
   destination: string;
-  destinationContextKey: string;
+  destinationContextKey: EntryPoint;
   methods?: string[];
 };
 
@@ -257,7 +258,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   const redirects: Record<string, RedirectConfig & { permanent: boolean }> = {};
   const rewrites: Record<string, RewriteConfig> = {};
 
-  let validRedirectDestinations: { contextKey: string; nameWithoutInvisible: string }[] | undefined;
+  let validRedirectDestinations:
+    | { contextKey: ContextKey; nameWithoutInvisible: string }[]
+    | undefined;
 
   const getValidDestinations = () => {
     // Loop over contexts once and cache the valid destinations
