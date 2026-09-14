@@ -11,7 +11,7 @@ interface LockScreenPlayable : Playable {
   var isActiveForLockScreen: Boolean
   var metadata: Metadata?
   var lockScreenOptions: AudioLockScreenOptions?
-  var mediaSession: MediaSession
+  var mediaSession: MediaSession?
   val serviceConnection: AudioPlaybackServiceConnection
   val isLive: Boolean
     get() = player.isCurrentMediaItemLive
@@ -20,7 +20,7 @@ interface LockScreenPlayable : Playable {
   val supportsPreviousTrack: Boolean
     get() = false
 
-  fun assignBasicMediaSession()
+  fun releaseMediaSession()
 
   fun nextTrack() = Unit
 
