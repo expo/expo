@@ -23,6 +23,7 @@ import {
   createInjectedCssAsNodes,
   createInjectedFontsAsNodes,
   createInjectedInlineCssAsNodes,
+  createInjectedScriptAsNodes,
   getBootstrapContents,
 } from '../utils/react';
 
@@ -130,6 +131,10 @@ export async function getStreamingContent(
     ? createFaviconAsNode(options?.assets?.favicon)
     : undefined;
 
+  const { headNodes: headJsNodes, bodyNodes: bodyJsNodes } = createInjectedScriptAsNodes(
+    options?.assets?.js ?? []
+  );
+
   const serverDocumentData = {
     headNodes: [
       ...(options?.metadata?.headNodes ?? []),
@@ -137,8 +142,11 @@ export async function getStreamingContent(
       getStyleElement({ key: 'rnw-style-element' }),
       ...(headCssNodes ?? []),
       ...(inlineCssNodes ?? []),
+      ...(headJsNodes ?? []),
     ].filter(Boolean),
-    bodyNodes: [<FontResources key="font-resources" />],
+    // NOTE(@hassankhan): React's bootstrapScripts emits async scripts, but Metro chunks must
+    // execute in asset order so the runtime initializes before dependent chunks.
+    bodyNodes: [<FontResources key="font-resources" />, ...(bodyJsNodes ?? [])],
   };
 
   return await ReactDOMServer.renderToReadableStream(
@@ -153,7 +161,6 @@ export async function getStreamingContent(
       // We're doubling the default here so non-JavaScript renders show some content
       progressiveChunkSize: 12800 * 2,
       bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
-      bootstrapScripts: options?.assets?.js,
       signal: options?.request?.signal,
       onError(error) {
         if (options?.request?.signal.aborted) {

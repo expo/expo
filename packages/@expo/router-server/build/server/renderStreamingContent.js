@@ -111,6 +111,7 @@ async function getStreamingContent(location, options) {
     const faviconNode = options?.assets?.favicon
         ? (0, react_1.createFaviconAsNode)(options?.assets?.favicon)
         : undefined;
+    const { headNodes: headJsNodes, bodyNodes: bodyJsNodes } = (0, react_1.createInjectedScriptAsNodes)(options?.assets?.js ?? []);
     const serverDocumentData = {
         headNodes: [
             ...(options?.metadata?.headNodes ?? []),
@@ -118,15 +119,17 @@ async function getStreamingContent(location, options) {
             getStyleElement({ key: 'rnw-style-element' }),
             ...(headCssNodes ?? []),
             ...(inlineCssNodes ?? []),
+            ...(headJsNodes ?? []),
         ].filter(Boolean),
-        bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {}, "font-resources")],
+        // NOTE(@hassankhan): React's bootstrapScripts emits async scripts, but Metro chunks must
+        // execute in asset order so the runtime initializes before dependent chunks.
+        bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {}, "font-resources"), ...(bodyJsNodes ?? [])],
     };
     return await server_2.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_1.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }), {
         // TODO(@hassankhan): Experiment and see if we can calculate a better default
         // We're doubling the default here so non-JavaScript renders show some content
         progressiveChunkSize: 12800 * 2,
         bootstrapScriptContent: (0, react_1.getBootstrapContents)({ hydrate: true, loadedData }),
-        bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
         onError(error) {
             if (options?.request?.signal.aborted) {
