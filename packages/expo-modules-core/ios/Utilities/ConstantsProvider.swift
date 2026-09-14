@@ -135,6 +135,8 @@ public struct EmbeddedFingerprint {
   public let hash: String
   /** Nil when the build embedded no version. Two hashes then cannot be compared. */
   public let fingerprintVersion: String?
+  /** The sources the hash was computed from. Empty when the build embedded none. */
+  public let sources: [[String: Any]]
 
   public static func read() -> EmbeddedFingerprint? {
     // Absent in a release build, or with `EXPO_SKIP_FINGERPRINT_EMBED` set. Not an error.
@@ -147,6 +149,10 @@ public struct EmbeddedFingerprint {
           !hash.isEmpty else {
       return nil
     }
-    return EmbeddedFingerprint(hash: hash, fingerprintVersion: parsed["fingerprintVersion"] as? String)
+    return EmbeddedFingerprint(
+      hash: hash,
+      fingerprintVersion: parsed["fingerprintVersion"] as? String,
+      sources: parsed["sources"] as? [[String: Any]] ?? []
+    )
   }
 }
