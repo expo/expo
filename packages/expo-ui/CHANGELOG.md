@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [macOS] Added minimal macOS support. (by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
