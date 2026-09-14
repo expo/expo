@@ -4,6 +4,7 @@ import type { SharedRef } from 'expo';
 import type {
   GetPositionOptions,
   LocationPermissionResponse,
+  LocationProfile,
   LocationProviderRefType,
   Position,
   RequestPermissionsOptions,
@@ -17,15 +18,14 @@ export declare class NativeLocationModuleNextClass extends NativeModule {
     options?: RequestPermissionsOptions
   ): Promise<LocationPermissionResponse>;
   getForegroundPermissions(): Promise<LocationPermissionResponse>;
-  requestBackgroundPermissions(
-    options?: RequestPermissionsOptions
-  ): Promise<LocationPermissionResponse>;
+  requestBackgroundPermissions(): Promise<LocationPermissionResponse>;
   getBackgroundPermissions(): Promise<LocationPermissionResponse>;
   setLocationProvider(provider: SharedRef<LocationProviderRefType>): void;
   getSelectedLocationProviderName(): string;
   hasLocationServicesEnabled(): boolean;
   enableLocationServices(): Promise<boolean>;
   getPosition(options?: GetPositionOptions): Promise<Position | null>;
+  watchPosition(profile?: LocationProfile): NativePositionWatchHandleClass;
   LocationProvider: typeof NativeLocationProviderClass;
   PositionWatchHandle: typeof NativePositionWatchHandleClass;
   LocationUpdatesHandle: typeof NativeLocationUpdatesHandleClass;

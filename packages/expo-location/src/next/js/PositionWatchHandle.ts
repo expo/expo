@@ -1,19 +1,15 @@
 import type { EventSubscription } from 'expo';
 
-import { NativePositionWatchHandle } from '../native';
+import { NativeLocationModuleNext } from '../native';
 import type { NativePositionWatchHandleClass } from '../native';
 import { LocationProfile } from '../types';
-import type { Position, WatchPositionParams } from '../types';
+import type { Position, PositionWatchStatus, WatchPositionParams } from '../types';
 
 export class PositionWatchHandle {
   private readonly nativeHandle: NativePositionWatchHandleClass;
 
   constructor(profile: LocationProfile = LocationProfile.DEFAULT) {
-    this.nativeHandle = new NativePositionWatchHandle(profile);
-  }
-
-  start(): boolean {
-    return this.nativeHandle.start();
+    this.nativeHandle = NativeLocationModuleNext.watchPosition(profile);
   }
 
   pause(): void {
@@ -38,13 +34,12 @@ export class PositionWatchHandle {
     return this.nativeHandle.restart();
   }
 
-  status(): {} {
+  status(): PositionWatchStatus {
     return this.nativeHandle.status();
   }
 
   dispose(): void {
-    this.nativeHandle.removeAllListeners('onPositionUpdate');
-    this.nativeHandle.pause();
+    this.nativeHandle.removeAllListeners('positionChanged');
     this.nativeHandle.release();
   }
 
@@ -52,12 +47,14 @@ export class PositionWatchHandle {
     onPosition: (position: Position) => void,
     onError?: (error: string) => void
   ): EventSubscription {
-    return this.nativeHandle.addListener('onPositionUpdate', ({ data, error }) => {
-      if (error !== null) {
+    return this.nativeHandle.addListener('positionChanged', ({ data, error }) => {
+      if (error != null) {
         onError?.(error);
         return;
       }
-      onPosition(data);
+      if (data != null) {
+        onPosition(data);
+      }
     });
   }
 }
@@ -69,6 +66,5 @@ export function watchPosition({
 }: WatchPositionParams): PositionWatchHandle {
   const handle = new PositionWatchHandle(profile);
   handle.addListener(onPosition, onError);
-  handle.start();
   return handle;
 }

@@ -15,7 +15,6 @@ export {
   setLocationProvider,
   getSelectedLocationProviderName,
 } from './LocationProvider';
-export { LocationUpdatesHandle, defineLocationTask } from './LocationUpdates';
 export {
   getForegroundPermissionsAsync,
   requestForegroundPermissionsAsync,
@@ -24,3 +23,4 @@ export {
   useForegroundPermissions,
   useBackgroundPermissions,
 } from './Permissions';
+export { LocationUpdatesHandle, defineLocationTask } from './LocationUpdates';
