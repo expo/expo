@@ -20,9 +20,7 @@ import {
 } from '../react-navigation/native';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../react-navigation/native-stack/types';
-import { makePopAction } from '../react-navigation/native-stack/utils/makePopAction';
 import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../standard-navigation';
-import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 import { StackRouter } from './stack-router';
@@ -37,6 +35,7 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
+import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 
 const RNStack = unstable_integrateWithRouter<
   NativeStackNavigationOptions,
@@ -47,19 +46,9 @@ const RNStack = unstable_integrateWithRouter<
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
-  createProps: ({
-    state,
-    dispatch,
-    dispatchSync,
-    navigation,
-    isPreloaded,
-    isRemovalPrevented,
-  }) => ({
-    isPreloaded,
-    isRemovalPrevented,
-    pop: makePopAction(dispatchSync, state.key),
-    removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
+  createProps: (args) => ({
+    ...createBaseStackProps(args),
+    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
   }),
 });
 
