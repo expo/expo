@@ -56,6 +56,15 @@ describe('resolvePrebuiltMetadataAsync', () => {
           platforms: ['iOS(.v15)'],
         },
         { name: 'ExpoFloorless', podName: 'ExpoFloorless' },
+        {
+          name: 'ExpoWithDeps',
+          podName: 'ExpoWithDeps',
+          spmPackages: [
+            { productName: 'SDWebImage' },
+            { packageName: 'nameless-package' },
+            { productName: 'libavif' },
+          ],
+        },
         { name: 'ExpoMacOnly', podName: 'ExpoMacOnly', platforms: ['macOS("13.0")'] },
         { name: 'ExpoOddFloor', podName: 'ExpoOddFloor', platforms: ['iOS(SomeConstant)'] },
         {
@@ -70,6 +79,7 @@ describe('resolvePrebuiltMetadataAsync', () => {
           podName: 'RNWorklets',
           sourceOnly: true,
           platforms: ['iOS("16.4")'],
+          spmPackages: [{ productName: 'RNWorkletsDep' }],
         },
       ]),
     });
@@ -139,5 +149,26 @@ describe('resolvePrebuiltMetadataAsync', () => {
     expect(document.ExpoFloorless).not.toHaveProperty('iosDeploymentTarget');
     expect(document.ExpoMacOnly).not.toHaveProperty('iosDeploymentTarget');
     expect(document.ExpoOddFloor).not.toHaveProperty('iosDeploymentTarget');
+  });
+
+  // A precompiled product's SPM package dependencies ship as separate
+  // xcframeworks. Consumers cannot read the config that names them, so the
+  // document has to carry them. Mirrors Ruby's `spm_dependency_frameworks`.
+  it('publishes the SPM dependency products of an internal product', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader);
+
+    expect(document.ExpoWithDeps).toMatchObject({ spmDependencies: ['SDWebImage', 'libavif'] });
+  });
+
+  it('publishes the SPM dependency products of an external product too', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader);
+
+    expect(document.RNWorklets).toMatchObject({ spmDependencies: ['RNWorkletsDep'] });
+  });
+
+  it('omits the dependencies of a product that declares none', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader);
+
+    expect(document.ExpoModulesCore).not.toHaveProperty('spmDependencies');
   });
 });
