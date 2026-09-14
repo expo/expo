@@ -4,7 +4,7 @@ import { Children, useMemo } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { StackRouter } from '../../react-navigation/native';
-import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../../standard-navigation';
+import { IsWithinNativeNavigator, integrateWithRouter } from '../../standard-navigation';
 import { isChildOfType } from '../../utils/children';
 import { Protected } from '../../views/Protected';
 import { stackRouterOverride } from '../StackClient';
@@ -17,7 +17,7 @@ import {
 } from './createExperimentalStackNavigator';
 import type { ExperimentalStackNavigationOptions } from './types';
 
-const RNExperimentalStack = unstable_integrateWithRouter<
+const RNExperimentalStack = integrateWithRouter<
   ExperimentalStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardExperimentalStackNavigationEventMap,

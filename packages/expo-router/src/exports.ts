@@ -76,8 +76,8 @@ export {
 
 export {
   IsWithinNativeNavigator,
-  unstable_createStandardRouterNavigator,
-  unstable_integrateWithRouter,
+  createStandardRouterNavigator,
+  integrateWithRouter,
 } from './standard-navigation';
 export type {
   IntegrateWithRouterOptions,
@@ -93,7 +93,7 @@ export { createNativeStackProps } from './layouts/createNativeStackProps';
 
 export type { RouteSource } from './react-navigation/native';
 
-// Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
+// Router factories for use with `createStandardRouterNavigator` / `integrateWithRouter`.
 export { StackRouter, TabRouter } from './react-navigation/routers';
 export { NativeStackView } from './react-navigation/native-stack';
 export type {

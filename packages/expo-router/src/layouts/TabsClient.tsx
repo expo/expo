@@ -20,7 +20,7 @@ import {
   type TabNavigationState,
   type TabRouterOptions,
 } from '../react-navigation/native';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
@@ -46,11 +46,11 @@ export type TabsScreenOptions = BottomTabNavigationOptions & {
  *
  * @example
  * ```tsx
- * import { TabRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { TabRouter, integrateWithRouter } from 'expo-router';
  * import { createJSTabsProps } from 'expo-router/js-tabs';
  * import { navigator } from './navigator';
  *
- * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter, {
+ * export const Tabs = integrateWithRouter(navigator, TabRouter, {
  *   createProps: createJSTabsProps,
  * });
  * ```
@@ -76,7 +76,7 @@ export function createJSTabsProps(
  *
  * @hideType
  */
-const Tabs = unstable_integrateWithRouter<
+const Tabs = integrateWithRouter<
   TabsScreenOptions,
   TabNavigationState<ParamListBase>,
   BottomTabNavigationEventMap,

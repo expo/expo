@@ -18,7 +18,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from '../react-navigation/native';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
@@ -38,11 +38,11 @@ export * from '../react-navigation/material-top-tabs';
  *
  * @example
  * ```tsx
- * import { TabRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { TabRouter, integrateWithRouter } from 'expo-router';
  * import { createJSTopTabsProps } from 'expo-router/js-top-tabs';
  * import { navigator } from './navigator';
  *
- * export const TopTabs = unstable_integrateWithRouter(navigator, TabRouter, {
+ * export const TopTabs = integrateWithRouter(navigator, TabRouter, {
  *   createProps: createJSTopTabsProps,
  * });
  * ```
@@ -57,7 +57,7 @@ export function createJSTopTabsProps(
   };
 }
 
-const TopTabs = unstable_integrateWithRouter<
+const TopTabs = integrateWithRouter<
   MaterialTopTabNavigationOptions,
   TabNavigationState<ParamListBase>,
   MaterialTopTabNavigationEventMap,

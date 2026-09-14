@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Rename `unstable_integrateWithRouter` and `unstable_createStandardRouterNavigator` to `integrateWithRouter` and `createStandardRouterNavigator`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - Add the stable `expo-router/native-tabs` entry point and deprecate `expo-router/unstable-native-tabs`. ([#50119](https://github.com/expo/expo/pull/50119) by [@Ubax](https://github.com/Ubax))

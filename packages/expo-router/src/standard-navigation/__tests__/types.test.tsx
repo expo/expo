@@ -32,7 +32,7 @@ import {
 } from '../../react-navigation/routers';
 import type { GoBackAction, NavigateAction } from '../../react-navigation/routers/CommonActions';
 import type { StackNavigatorCreateProps } from '../../react-navigation/stack/navigators/createStackNavigator';
-import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
+import { createStandardRouterNavigator, integrateWithRouter } from '../index';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
@@ -132,7 +132,7 @@ export const _invalidAction: StandardNavigationAction = { type: 'RESET', payload
 // Returned component exposes typed .Screen / .Protected
 // ---------------------------------------------------------------------------
 
-const Nav = unstable_createStandardRouterNavigator<
+const Nav = createStandardRouterNavigator<
   Opts,
   TabNavigationState<ParamListBase>,
   EventMap,
@@ -170,7 +170,7 @@ const TypelessRouter: RouterFactory<
   shouldActionChangeFocus: () => false,
 });
 
-unstable_createStandardRouterNavigator(Content, TypelessRouter);
+createStandardRouterNavigator(Content, TypelessRouter);
 
 // A router may omit `type` only when its state has none.
 export type _BaseRouterTypeIsOptional = Expect<
@@ -240,7 +240,7 @@ const publicStandardNavigator = createStandardNavigator<Opts, EventMap, NavProps
 
 // These instantiated signatures are for explicit-instantiation tests only. Inference tests below
 // call the original functions directly so they continue to exercise the carrier and `NoInfer`.
-const createSplitNav = unstable_createStandardRouterNavigator<
+const createSplitNav = createStandardRouterNavigator<
   Opts,
   TabState,
   EventMap,
@@ -248,14 +248,14 @@ const createSplitNav = unstable_createStandardRouterNavigator<
   TabRouterOptions,
   CreateProps
 >;
-const createPublicNav = unstable_createStandardRouterNavigator<
+const createPublicNav = createStandardRouterNavigator<
   Opts,
   TabState,
   EventMap,
   NavProps,
   TabRouterOptions
 >;
-const integrateSplitNav = unstable_integrateWithRouter<
+const integrateSplitNav = integrateWithRouter<
   Opts,
   TabState,
   EventMap,
@@ -263,7 +263,7 @@ const integrateSplitNav = unstable_integrateWithRouter<
   TabRouterOptions,
   CreateProps
 >;
-const integratePublicNav = unstable_integrateWithRouter<
+const integratePublicNav = integrateWithRouter<
   Opts,
   TabState,
   EventMap,
@@ -288,7 +288,7 @@ const SplitNav = createSplitNav(SplitContent, TabRouter, {
 });
 type SplitElementProps = ComponentProps<typeof SplitNav>;
 
-const InferredSplitNav = unstable_createStandardRouterNavigator(SplitContent, TabRouter, {
+const InferredSplitNav = createStandardRouterNavigator(SplitContent, TabRouter, {
   createProps: () => ({ routeNames: [], preload: () => {} }),
 });
 type InferredSplitElementProps = ComponentProps<typeof InferredSplitNav>;
@@ -304,7 +304,7 @@ export type _ElementLacksRouteNames = Expect<
   Equal<'routeNames' extends keyof InferredSplitElementProps ? true : false, false>
 >;
 
-const InferredPublicNav = unstable_createStandardRouterNavigator(RequiredPublicContent, TabRouter);
+const InferredPublicNav = createStandardRouterNavigator(RequiredPublicContent, TabRouter);
 type InferredPublicElementProps = ComponentProps<typeof InferredPublicNav>;
 export type _InferredElementRequiresPublicProp = Expect<
   Equal<InferredPublicElementProps['label'], string>
@@ -315,7 +315,7 @@ export type _InferredElementRequiresPublicProp = Expect<
 // ---------------------------------------------------------------------------
 
 // @ts-expect-error Inferred non-empty CreateProps require the options argument.
-unstable_createStandardRouterNavigator(SplitContent, TabRouter);
+createStandardRouterNavigator(SplitContent, TabRouter);
 
 type OptionalCreateProps = { a?: string };
 function OptionalCreateContent(
@@ -325,8 +325,8 @@ function OptionalCreateContent(
 }
 
 // @ts-expect-error CreateProps with optional keys still require options.
-unstable_createStandardRouterNavigator(OptionalCreateContent, TabRouter);
-unstable_createStandardRouterNavigator(OptionalCreateContent, TabRouter, {
+createStandardRouterNavigator(OptionalCreateContent, TabRouter);
+createStandardRouterNavigator(OptionalCreateContent, TabRouter, {
   createProps: () => ({}),
 });
 
@@ -380,7 +380,7 @@ createPublicNav(PublicContent, TabRouter, {
 // ---------------------------------------------------------------------------
 
 // `NoInfer` keeps a zero-argument factory from declaring injected props for content that has none.
-unstable_createStandardRouterNavigator(PublicContent, TabRouter, {
+createStandardRouterNavigator(PublicContent, TabRouter, {
   // @ts-expect-error `PublicContent` does not declare any injected props.
   createProps: () => ({ injected: true }),
 });
@@ -393,14 +393,14 @@ const broadlyAnnotatedFactoryOptions: IntegrateWithRouterOptions<TabState, objec
     // @ts-expect-error Bare options do not declare injected props, so `createProps` is forbidden.
     createProps: () => ({ injected: true }),
   };
-unstable_createStandardRouterNavigator(PublicContent, TabRouter, broadlyAnnotatedFactoryOptions);
+createStandardRouterNavigator(PublicContent, TabRouter, broadlyAnnotatedFactoryOptions);
 
 type CarrierCreateProps = { x: string };
 function CarrierContent(_props: NavigatorContentProps<Opts, EventMap, object, CarrierCreateProps>) {
   return null;
 }
 
-unstable_createStandardRouterNavigator<
+createStandardRouterNavigator<
   Opts,
   TabState,
   EventMap,
@@ -429,7 +429,7 @@ createSplitNav(SplitContent, TabRouter, {
 });
 
 // ---------------------------------------------------------------------------
-// unstable_integrateWithRouter enforces the same contract on its own signature
+// integrateWithRouter enforces the same contract on its own signature
 // ---------------------------------------------------------------------------
 
 // Shared option types are exhaustively tested above. This smoke set guards the independently
@@ -449,6 +449,6 @@ integratePublicNav(publicStandardNavigator, TabRouter);
 
 describe('standard-navigation types', () => {
   it('is type-checked by tsc via pnpm typecheck or et check-packages', () => {
-    expect(typeof unstable_createStandardRouterNavigator).toBe('function');
+    expect(typeof createStandardRouterNavigator).toBe('function');
   });
 });
