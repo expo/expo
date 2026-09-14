@@ -1,4 +1,4 @@
-import type { RouteNode } from 'expo-router/build/Route';
+import { isInternal, type RouteNode } from 'expo-router/build/Route';
 import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 /**
@@ -48,7 +48,7 @@ export function fromRuntimeManifestRoute(
   options: FromRuntimeManifestRouteOptions
 ): ResolvedLoaderRoute | null {
   // Skip internal routes (like `_sitemap` or `+not-found`)
-  if (route.internal) {
+  if (isInternal(route)) {
     return null;
   }
 

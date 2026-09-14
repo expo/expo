@@ -14,10 +14,7 @@ function createMockContextModule(map: Record<string, Record<string, any>> = {}) 
 }
 
 function dropFunctions({ loadRoute, ...node }: RouteNode): unknown {
-  return {
-    ...node,
-    children: node.children.map(dropFunctions),
-  };
+  return node.type === 'layout' ? { ...node, children: node.children.map(dropFunctions) } : node;
 }
 
 describe(assertStaticParams, () => {
@@ -84,7 +81,6 @@ describe(loadStaticParamsAsync, () => {
     expect(dropFunctions(route)).toEqual({
       children: [
         {
-          children: [],
           type: 'route',
           contextKey: './[color].tsx',
           dynamic: [{ deep: false, name: 'color' }],
@@ -105,7 +101,6 @@ describe(loadStaticParamsAsync, () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './[color].tsx',
           dynamic: [{ deep: false, name: 'color' }],
           route: '[color]',
@@ -113,7 +108,6 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './red.tsx',
           parentContextKey: './[color].tsx',
           dynamic: null,
@@ -122,7 +116,6 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './blue.tsx',
           parentContextKey: './[color].tsx',
           dynamic: null,
@@ -169,7 +162,6 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/[shape].tsx',
               dynamic: [{ deep: false, name: 'shape' }],
               route: '[shape]',
@@ -198,7 +190,6 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/[shape].tsx',
               dynamic: [{ deep: false, name: 'shape' }],
               route: '[shape]',
@@ -215,7 +206,6 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/[shape].tsx',
               dynamic: [{ deep: false, name: 'shape' }],
               route: '[shape]',
@@ -223,7 +213,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/square.tsx',
               parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
@@ -232,7 +221,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/triangle.tsx',
               parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
@@ -250,7 +238,6 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/[shape].tsx',
               dynamic: [{ deep: false, name: 'shape' }],
               route: '[shape]',
@@ -258,7 +245,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/square.tsx',
               parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
@@ -267,7 +253,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './[color]/triangle.tsx',
               parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
@@ -336,7 +321,6 @@ describe(loadStaticParamsAsync, () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './index.tsx',
           dynamic: null,
           route: 'index',
@@ -344,14 +328,12 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'api',
-          children: [],
           contextKey: './foo+api.tsx',
           dynamic: null,
           route: 'foo',
         },
         {
           type: 'api',
-          children: [],
           contextKey: './[post]+api.tsx',
           dynamic: [{ deep: false, name: 'post' }],
           route: '[post]',
@@ -368,7 +350,6 @@ describe(loadStaticParamsAsync, () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './index.tsx',
           dynamic: null,
           route: 'index',
@@ -376,14 +357,12 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'api',
-          children: [],
           contextKey: './foo+api.tsx',
           dynamic: null,
           route: 'foo',
         },
         {
           type: 'api',
-          children: [],
           contextKey: './[post]+api.tsx',
           dynamic: [{ deep: false, name: 'post' }],
           route: '[post]',
@@ -413,7 +392,6 @@ describe(loadStaticParamsAsync, () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './post/[...post].tsx',
           dynamic: [{ deep: true, name: 'post' }],
           route: 'post/[...post]',
@@ -431,7 +409,6 @@ describe(loadStaticParamsAsync, () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './post/[...post].tsx',
           dynamic: [{ deep: true, name: 'post' }],
           route: 'post/[...post]',
@@ -439,7 +416,6 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './post/123/456.tsx',
           parentContextKey: './post/[...post].tsx',
           dynamic: null,
@@ -474,7 +450,6 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: [{ deep: false, name: 'post' }],
               entryPoints: [
@@ -487,7 +462,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: [{ deep: false, name: 'post' }],
               entryPoints: [
@@ -519,7 +493,6 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: [{ deep: false, name: 'post' }],
               route: '(index)/blog/[post]',
@@ -531,7 +504,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/123.tsx',
               parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
@@ -544,7 +516,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/abc.tsx',
               parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
@@ -557,7 +528,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: [{ deep: false, name: 'post' }],
               route: '(about)/blog/[post]',
@@ -569,7 +539,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/123.tsx',
               parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
@@ -583,7 +552,6 @@ describe(loadStaticParamsAsync, () => {
             },
             {
               type: 'route',
-              children: [],
               contextKey: './(app)/(index,about)/blog/abc.tsx',
               parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
@@ -632,7 +600,6 @@ describe(loadStaticParamsAsync, () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './post/[post].tsx',
           dynamic: [{ deep: false, name: 'post' }],
           entryPoints: ['expo-router/build/views/Navigator.js', './post/[post].tsx'],
@@ -640,7 +607,6 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'route',
-          children: [],
           entryPoints: ['expo-router/build/views/Navigator.js', './a/[b]/c/[d]/[e].tsx'],
           contextKey: './a/[b]/c/[d]/[e].tsx',
           dynamic: [
@@ -671,7 +637,6 @@ describe(loadStaticParamsAsync, () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './post/[post].tsx',
           dynamic: [{ deep: false, name: 'post' }],
           route: 'post/[post]',
@@ -679,7 +644,6 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './post/123.tsx',
           parentContextKey: './post/[post].tsx',
           dynamic: null,
@@ -688,7 +652,6 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './a/[b]/c/[d]/[e].tsx',
           dynamic: [
             {
@@ -709,7 +672,6 @@ describe(loadStaticParamsAsync, () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './a/b/c/d/e.tsx',
           parentContextKey: './a/[b]/c/[d]/[e].tsx',
           dynamic: null,
