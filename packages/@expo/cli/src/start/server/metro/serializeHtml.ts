@@ -1,6 +1,6 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { injectAssetsIntoHtml } from '@expo/router-server/build/utils/html';
-import type { RouteNode } from 'expo-router/build/Route';
+import { getEntryPoints, type RouteNode } from 'expo-router/build/Route';
 import type { AssetInfo } from 'expo-server/private';
 
 import { event } from './ssrEvents';
@@ -90,11 +90,13 @@ export function serialAssetsToStaticContentAssets(
 
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
-  if (route?.entryPoints && Array.isArray(route.entryPoints)) {
+  const entryPoints = route ? getEntryPoints(route) : [];
+
+  if (entryPoints.length) {
     const syncAssets = orderedJsAssets.filter((a) => !a.metadata.isAsync);
     const sortedAsync = sortMatchedAssetsByEntryPoints(
       orderedJsAssets.filter((a) => a.metadata.isAsync),
-      route.entryPoints
+      entryPoints
     );
     const runtimeAssets = syncAssets.filter((a) => !a.metadata.requires?.length);
     const entryAssets = syncAssets.filter((a) => !!a.metadata.requires?.length);
@@ -112,12 +114,8 @@ export function serialAssetsToStaticContentAssets(
       // are left for the runtime to fetch on-demand.
       // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
       // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
-      if (
-        route?.entryPoints &&
-        Array.isArray(route.entryPoints) &&
-        Array.isArray(asset.metadata.modulePaths)
-      ) {
-        const matches = route.entryPoints.some((entryPoint) =>
+      if (route && entryPoints.length && Array.isArray(asset.metadata.modulePaths)) {
+        const matches = entryPoints.some((entryPoint) =>
           (asset.metadata.modulePaths as string[]).includes(entryPoint)
         );
         if (matches) {
