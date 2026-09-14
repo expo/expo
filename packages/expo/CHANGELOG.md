@@ -20,6 +20,7 @@
 - [iOS] The SwiftPM autolinking plugin now takes each module's iOS deployment floor from `expo-modules-autolinking prebuilt-metadata` and raises it to ExpoModulesCore's, matching `use_expo_modules!`. A module declaring a lower floor than the core it links against no longer builds below it. ([#50096](https://github.com/expo/expo/pull/50096) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Emit JavaScript `url` events for deep links delivered to a running app under the UIKit scene life cycle. ([#50235](https://github.com/expo/expo/pull/50235) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Import `Foundation` in `ResponseSink`, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] The SwiftPM autolinking plugin now loads the Expo Swift macro plugin when it compiles a module from source, the way `pod install` does. A module using `@Field`, `@Record` or `@OptimizedFunction` no longer fails to build with "external macro implementation could not be found".
 
 ### 💡 Others
 

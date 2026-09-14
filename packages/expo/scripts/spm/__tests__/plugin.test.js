@@ -671,6 +671,18 @@ describe('the source-emit pass', () => {
     );
     expect(fs.realpathSync(path.join(pkgDir, 'root'))).toBe(fs.realpathSync(packageRoot));
   });
+
+  // Without this flag a module using @Field or @Record compiles to "external macro
+  // implementation could not be found", which is the failure CocoaPods avoids in
+  // `project_integrator.rb#integrate_core_macro_plugins`.
+  it('hands the emitted package the Swift macro plugin', () => {
+    const out = fs.readFileSync(
+      path.join(outDir, 'expo', 'expo-source', 'ExpoRemote', 'Package.swift'),
+      'utf8'
+    );
+    expect(out).toContain('"-Xfrontend", "-load-plugin-executable", "-Xfrontend"');
+    expect(out).toMatch(/ExpoModulesMacros-tool#ExpoModulesMacros/);
+  });
 });
 
 // CocoaPods raises every Expo module to ExpoModulesCore's deployment floor, and the
