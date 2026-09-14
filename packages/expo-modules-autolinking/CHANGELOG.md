@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - [iOS] Mark source-only products with `sourceOnly` in the `prebuilt-metadata` document, so consumers can tell a product that never produces an XCFramework from one the prebuild pipeline can build.
+- [iOS] Publish each product's iOS deployment floor as `iosDeploymentTarget` in the `prebuilt-metadata` document, so consumers outside CocoaPods can read it from the product's own config instead of its podspec.
 
 ## 58.0.0 — 2026-09-10
 
