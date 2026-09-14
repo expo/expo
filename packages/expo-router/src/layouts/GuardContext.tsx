@@ -34,7 +34,7 @@ export function GuardContextProvider({
   const parentFallbacks = use(GuardRedirectFallbackContext);
   const params = use(LocalRouteParamsContext);
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
-  const nodeChildren = node ? getChildren(node) : undefined;
+  const nodeChildren = node?.type === 'layout' ? node.children : undefined;
   const nodeInitialRouteName = getInitialRouteName(node);
   const { fallbacks, resolvedGuards } = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
