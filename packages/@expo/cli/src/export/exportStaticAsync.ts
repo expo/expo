@@ -374,15 +374,17 @@ export async function exportFromServerAsync(
       files.set(route, contents);
     }
 
-    updateExportManifestInFiles({
-      files,
-      callback: (manifest) => {
-        manifest.pageHeaders = buildLoaderPageHeaderRules(manifest.pageHeaders, {
-          defaults: [SERVER_LOADER_DEFAULT_HEADER_RULE, ...defaultLoaderRules],
-          declared: declaredLoaderRules,
-        });
-      },
-    });
+    if (loaderReferenceCount || defaultLoaderRules.length || declaredLoaderRules.length) {
+      updateExportManifestInFiles({
+        files,
+        callback: (manifest) => {
+          manifest.pageHeaders = buildLoaderPageHeaderRules(manifest.pageHeaders, {
+            defaults: [SERVER_LOADER_DEFAULT_HEADER_RULE, ...defaultLoaderRules],
+            declared: declaredLoaderRules,
+          });
+        },
+      });
+    }
 
     // Export SSR render module and add SSR configuration to routes manifest
     if (isExportingWithSSR) {
