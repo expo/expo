@@ -309,7 +309,8 @@ async function getTemplateVersion(isLocal: boolean) {
     return 'next';
   }
   if (!isLocal) {
-    return 'latest';
+    // Resolves by npm tag
+    return 'sdk-55';
   }
   try {
     const sdkVersionMajor = await getLocalSdkMajorVersion();
@@ -339,7 +340,11 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
     let filename: string;
     try {
       filename = await npmPackAsync(`${packageName}@${templateVersion}`, tmpDir);
-    } catch {
+    } catch (error) {
+      // A newer standalone template may require substitution data this CLI does not provide.
+      if (!isLocal) {
+        throw error;
+      }
       console.log();
       console.warn(
         chalk.yellow(
