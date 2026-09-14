@@ -181,6 +181,126 @@ describe('renderPureSwiftManifest', () => {
     expect(out).not.toMatch(/\[\s*,\s*\]/);
     expect(out).toContain('swiftLanguageModes: [.v5],\n    cxxLanguageStandard: .cxx20');
   });
+
+  it('loads no macro plugin when no macro flags are given', () => {
+    expect(out).not.toContain('-Xfrontend');
+  });
+});
+
+// Expo modules use Swift macros (@Field, @Record, @OptimizedFunction). A macro only
+// expands when the compiler is handed the macro plugin executable, the same way
+// `project_integrator.rb#integrate_core_macro_plugins` hands it to CocoaPods.
+describe('macro plugin flags', () => {
+  const MACRO_FLAGS = [
+    '-Xfrontend',
+    '-load-plugin-executable',
+    '-Xfrontend',
+    '/abs/macros/ExpoModulesMacros-tool#ExpoModulesMacros',
+  ];
+  const EXPECTED_SWIFT =
+    'swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces", "-Xfrontend", ' +
+    '"-load-plugin-executable", "-Xfrontend", ' +
+    '"/abs/macros/ExpoModulesMacros-tool#ExpoModulesMacros"])]';
+
+  describe('renderPureSwiftManifest', () => {
+    const out = renderPureSwiftManifest(
+      'ExpoCrypto',
+      'ios',
+      [],
+      [],
+      '/abs/interfaces',
+      [],
+      null,
+      false,
+      MACRO_FLAGS
+    );
+
+    it('loads the macro plugin from swiftSettings', () => {
+      expect(out).toContain(EXPECTED_SWIFT);
+    });
+
+    it('never hands the Swift-only frontend flags to clang', () => {
+      expect(out).toContain('cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+      expect(out).toContain('cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+    });
+  });
+
+  describe('renderSourceManifest', () => {
+    const out = renderSourceManifest(
+      {
+        name: 'TestModule',
+        products: [{ name: 'TestModule', targets: ['Main'] }],
+        targets: [{ name: 'Main', path: 'Main', publicHeadersPath: null, siblingDeps: [] }],
+      },
+      [],
+      [],
+      '/abs/interfaces',
+      MACRO_FLAGS
+    );
+
+    it('loads the macro plugin from swiftSettings', () => {
+      expect(out).toContain(EXPECTED_SWIFT);
+    });
+
+    it('never hands the Swift-only frontend flags to clang', () => {
+      expect(out).toContain('cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+      expect(out).toContain('cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+    });
+  });
+
+  // The emit functions are what the plugin actually calls, so the flags have to
+  // survive the whole way to the file on disk, not just the render call.
+  describe('the emitted file', () => {
+    let moduleRoot;
+    let outDir;
+
+    beforeEach(() => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-macro-emit-'));
+      moduleRoot = path.join(tmp, 'module');
+      outDir = path.join(tmp, 'out');
+      fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
+    });
+
+    it('carries the flags through emitSourceManifestPackage', () => {
+      runDumpPackage.mockReturnValue(
+        JSON.stringify({
+          name: 'TestModule',
+          products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
+          targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [] }],
+        })
+      );
+      emitSourceManifestPackage(
+        moduleRoot,
+        null,
+        '/abs/interfaces',
+        outDir,
+        null,
+        null,
+        MACRO_FLAGS
+      );
+
+      expect(
+        fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
+      ).toContain(EXPECTED_SWIFT);
+    });
+
+    it('carries the flags through emitPureSwiftSourcePackage', () => {
+      emitPureSwiftSourcePackage(
+        moduleRoot,
+        'ExpoCrypto',
+        null,
+        '/abs/interfaces',
+        outDir,
+        null,
+        null,
+        MACRO_FLAGS
+      );
+
+      expect(
+        fs.readFileSync(path.join(outDir, 'expo-source', 'ExpoCrypto', 'Package.swift'), 'utf8')
+      ).toContain(EXPECTED_SWIFT);
+    });
+  });
 });
 
 describe('renderSourceManifest target dependency conditions', () => {

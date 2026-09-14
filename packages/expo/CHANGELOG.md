@@ -12,6 +12,7 @@
 - [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
 - [iOS] The SwiftPM autolinking plugin now takes module identity from `expo-modules-autolinking prebuilt-metadata` instead of re-deriving it from the filesystem, so a module whose product name differs from its pod name resolves its XCFramework (`react-native-skia` ships `RNSkia.xcframework`).
 - [iOS] The SwiftPM autolinking plugin now takes each module's iOS deployment floor from `expo-modules-autolinking prebuilt-metadata` and raises it to ExpoModulesCore's, matching `use_expo_modules!`. A module declaring a lower floor than the core it links against no longer builds below it.
+- [iOS] The SwiftPM autolinking plugin now loads the Expo Swift macro plugin when it compiles a module from source, the way `pod install` does. A module using `@Field`, `@Record` or `@OptimizedFunction` no longer fails to build with "external macro implementation could not be found".
 
 ### 💡 Others
 
