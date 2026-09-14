@@ -127,12 +127,12 @@ In the above example, when the app user visits `/blog/my-post`, the page is rend
 
 You can customize the root HTML document by creating a **src/app/+html.tsx** file. This component wraps all routes and runs only on the server.
 
-The [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, and CSS are included in the response:
+The [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, CSS, and JavaScript bundles are included in the response:
 
 - `htmlAttributes`: attributes to add to the `<html>` element
 - `bodyAttributes`: attributes to add to the `<body>` element
 - `headNodes`: React nodes for the `<head>` element (metadata, CSS, and other assets)
-- `bodyNodes`: React nodes for the `<body>` element (fonts and other deferred assets)
+- `bodyNodes`: React nodes for the `<body>` element (fonts and JavaScript bundles required for hydration). Omitting these prevents the app from hydrating and becoming interactive.
 
 > **info** When creating a custom **+html.tsx** template, you must use all properties returned to you by [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext). Otherwise, your server-side rendered HTML may appear broken or your app may not function correctly.
 

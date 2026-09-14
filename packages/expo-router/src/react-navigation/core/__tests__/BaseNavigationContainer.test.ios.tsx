@@ -2,7 +2,6 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RemovalPreventionProvider } from '../../../global-state/removalPrevention';
-import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import { RoutingQueueProvider } from '../../../global-state/routingQueueContext';
 import {
   CommonActions,
@@ -35,9 +34,7 @@ beforeEach(() => {
 function RootProviders({ children }: React.PropsWithChildren) {
   return (
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 }
@@ -169,15 +166,13 @@ test('preserves a complete initial state by identity', () => {
 
   render(
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <RawBaseNavigationContainer ref={ref} initialState={initialState}>
-            <Stack>
-              <Screen name="home">{() => null}</Screen>
-            </Stack>
-          </RawBaseNavigationContainer>
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <RawBaseNavigationContainer ref={ref} initialState={initialState}>
+          <Stack>
+            <Screen name="home">{() => null}</Screen>
+          </Stack>
+        </RawBaseNavigationContainer>
+      </RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 
@@ -240,18 +235,16 @@ test('handle dispatching with ref', () => {
 
   const element = (
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <RawBaseNavigationContainer ref={ref} initialState={initialState}>
-            <RootNavigator>
-              <Screen name="foo">{() => null}</Screen>
-              <Screen name="foo2">{() => null}</Screen>
-              <Screen name="bar">{() => null}</Screen>
-              <Screen name="baz">{() => null}</Screen>
-            </RootNavigator>
-          </RawBaseNavigationContainer>
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <RawBaseNavigationContainer ref={ref} initialState={initialState}>
+          <RootNavigator>
+            <Screen name="foo">{() => null}</Screen>
+            <Screen name="foo2">{() => null}</Screen>
+            <Screen name="bar">{() => null}</Screen>
+            <Screen name="baz">{() => null}</Screen>
+          </RootNavigator>
+        </RawBaseNavigationContainer>
+      </RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 
@@ -442,77 +435,6 @@ test('handles getRootState', () => {
     stale: false,
     routeKeySeq: 0,
   });
-});
-
-test('emits ready event when the container is ready with synchronous content', () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  const listener = jest.fn();
-
-  ref.addListener('ready', () => {
-    listener(ref.isReady(), ref.getCurrentRoute()?.name);
-  });
-
-  expect(listener).not.toHaveBeenCalled();
-
-  render(
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="foo">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(listener).toHaveBeenCalledWith(true, 'foo');
-});
-
-// TODO(@ubax): restore when actions dispatched before registration are deferred.
-// https://linear.app/expo/issue/ENG-26123/fix-event-emission-from-global-store
-test.skip('emits ready event when the container is ready with asynchronous content', async () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  const listener = jest.fn();
-
-  ref.addListener('ready', () => {
-    listener(ref.isReady(), ref.getCurrentRoute()?.name);
-  });
-
-  const wrapper = render(<BaseNavigationContainer ref={ref}>{null}</BaseNavigationContainer>);
-
-  expect(listener).not.toHaveBeenCalled();
-
-  await Promise.resolve();
-
-  wrapper.update(
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="foo">{() => null}</Screen>
-        <Screen name="bar">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(listener).toHaveBeenCalledWith(true, 'foo');
 });
 
 test('emits state events when the state changes', () => {
@@ -790,7 +712,7 @@ test("throws if the ref hasn't finished initializing", () => {
   render(element);
 });
 
-test('fires onReady after navigator is rendered', () => {
+test('isReady always returns true', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const TestNavigator = (props: any) => {
@@ -801,76 +723,25 @@ test('fires onReady after navigator is rendered', () => {
     );
   };
 
-  const onReady = jest.fn();
-
   const element = (
-    <BaseNavigationContainer
-      ref={ref}
-      onReady={onReady}
-      initialState={{ routes: [{ name: 'foo' }] }}>
+    <BaseNavigationContainer ref={ref} initialState={{ routes: [{ name: 'foo' }] }}>
       {null}
     </BaseNavigationContainer>
   );
 
   const root = render(element);
 
-  expect(onReady).not.toHaveBeenCalled();
-  expect(ref.current?.isReady()).toBe(false);
+  expect(ref.current?.isReady()).toBe(true);
 
   root.rerender(
-    <BaseNavigationContainer
-      ref={ref}
-      onReady={onReady}
-      initialState={{ routes: [{ name: 'foo' }] }}>
+    <BaseNavigationContainer ref={ref} initialState={{ routes: [{ name: 'foo' }] }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
     </BaseNavigationContainer>
   );
 
-  expect(onReady).toHaveBeenCalledTimes(1);
   expect(ref.current?.isReady()).toBe(true);
-});
-
-// TODO(@ubax): restore when unhandled actions are wired to the reducer. https://linear.app/expo/issue/ENG-26123
-test.skip('invokes the unhandled action listener with the unhandled action', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-  const fn = jest.fn();
-
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const TestScreen = () => <></>;
-
-  render(
-    <BaseNavigationContainer ref={ref} onUnhandledAction={fn}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-        <Screen name="bar" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  act(() => {
-    ref.current!.navigate('bar');
-  });
-  act(() => {
-    ref.current!.navigate('baz');
-  });
-
-  expect(fn).toHaveBeenCalledWith({
-    payload: {
-      name: 'baz',
-    },
-    type: 'NAVIGATE',
-  });
 });
 
 test('warns for duplicate route names nested inside each other', () => {
@@ -899,8 +770,7 @@ test('warns for duplicate route names nested inside each other', () => {
         </Screen>
         <Screen name="bar" component={TestScreen} />
       </TestNavigator>
-    </BaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    </BaseNavigationContainer>
   );
 
   expect(spy.mock.calls[0]![0]).toMatch(
@@ -927,8 +797,7 @@ test('warns for duplicate route names nested inside each other', () => {
           )}
         </Screen>
       </TestNavigator>
-    </BaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    </BaseNavigationContainer>
   );
 
   expect(spy.mock.calls[1]![0]).toMatch(
@@ -949,8 +818,7 @@ test('warns for duplicate route names nested inside each other', () => {
           )}
         </Screen>
       </TestNavigator>
-    </BaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    </BaseNavigationContainer>
   );
 
   expect(spy).toHaveBeenCalledTimes(2);

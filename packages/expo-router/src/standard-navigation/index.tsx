@@ -5,6 +5,7 @@ import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
 import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
+import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -29,9 +30,11 @@ export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
   StandardNavigatorDescriptor,
+  StandardNavigatorEmit,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
+export { IsWithinNativeNavigator } from './IsWithinNativeNavigator';
 
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
@@ -190,9 +193,12 @@ export function unstable_integrateWithRouter<
       Record<string, (...args: unknown[]) => void>,
       NavigatorOptions,
       EventMap
-    >(router, useNavigationBuilderProps);
+    >(router, useNavigationBuilderProps, {
+      activityDefaultThreshold: options?.activityDefaultThreshold,
+    });
 
     const { dispatch, dispatchSync } = navigation;
+    const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
     const processedDescriptors = useMemo(
       () =>
@@ -208,8 +214,16 @@ export function unstable_integrateWithRouter<
 
     const derivedProps = useMemo<Partial<CreateProps>>(
       () =>
-        options?.createProps?.({ state: processedState, dispatch, dispatchSync, navigation }) ?? {},
-      [processedState, dispatch, dispatchSync, navigation, options]
+        options?.createProps?.({
+          state: processedState,
+          dispatch,
+          dispatchSync,
+          navigation,
+          isPreloaded: (key) =>
+            processedState.routes.find((route) => route.key === key)?.isPreloaded === true,
+          isRemovalPrevented: (key) => routesWithRemovalPrevented.has(key),
+        }) ?? {},
+      [processedState, dispatch, dispatchSync, navigation, options, routesWithRemovalPrevented]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
@@ -278,6 +292,7 @@ function partitionNavigatorProps<
   const {
     id,
     children,
+    activityEnabled,
     initialRouteName: _initialRouteName,
     layout,
     // `ref` is supplied by `withLayoutContext` and consumed by React; it must not be forwarded
@@ -301,6 +316,7 @@ function partitionNavigatorProps<
   > = {
     id,
     children,
+    activityEnabled,
     initialRouteName: routeNodeInitialRouteName,
     layout,
     screenLayout,

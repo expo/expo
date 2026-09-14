@@ -18,22 +18,13 @@ import java.util.UUID
  */
 class NetworkRequestObserverTest {
   @Test
-  fun `registers only while it has event listeners`() {
+  fun `registers with the monitor on construction, regardless of JS listeners`() {
     val appContext = mockk<AppContext>(relaxed = true)
     val monitor = NetworkRequestMonitor()
     val observer = NetworkRequestObserver.forTesting(appContext, monitor)
 
-    assertEquals(0, monitor.delegateCount)
-
-    observer.onStartListeningToEvent(REQUEST_STARTED_EVENT)
-    observer.onStartListeningToEvent(REQUEST_COMPLETED_EVENT)
     assertEquals(1, monitor.delegateCount)
-
-    observer.onStopListeningToEvent(REQUEST_STARTED_EVENT)
-    assertEquals(1, monitor.delegateCount)
-
-    observer.onStopListeningToEvent(REQUEST_COMPLETED_EVENT)
-    assertEquals(0, monitor.delegateCount)
+    assertTrue(observer.shouldObserveRequest("https://expo.dev", "GET"))
   }
 
   @Test
@@ -41,7 +32,6 @@ class NetworkRequestObserverTest {
     val appContext = mockk<AppContext>(relaxed = true)
     val monitor = NetworkRequestMonitor()
     val observer = NetworkRequestObserver.forTesting(appContext, monitor)
-    observer.onStartListeningToEvent(REQUEST_COMPLETED_EVENT)
 
     observer.sharedObjectDidRelease()
 
@@ -98,7 +88,13 @@ class NetworkRequestObserverTest {
         NetworkRequest.Redirect(
           fromUrl = "https://expo.dev/a",
           toUrl = "https://expo.dev/b",
-          statusCode = 301
+          statusCode = 301,
+          respondedAtMs = 2_250_000L
+        ),
+        NetworkRequest.Redirect(
+          fromUrl = "https://expo.dev/b",
+          toUrl = "https://expo.dev/end",
+          statusCode = 302
         )
       )
     )
@@ -118,10 +114,16 @@ class NetworkRequestObserverTest {
 
     @Suppress("UNCHECKED_CAST")
     val redirects = payload["redirects"] as List<Map<String, Any?>>
-    assertEquals(1, redirects.size)
+    assertEquals(2, redirects.size)
     assertEquals("https://expo.dev/a", redirects[0]["fromUrl"])
     assertEquals("https://expo.dev/b", redirects[0]["toUrl"])
     assertEquals(301, redirects[0]["statusCode"])
+    // Hop times use the same ISO 8601 UTC format as `startedAt`, but keep milliseconds because
+    // hops within one request are usually fractions of a second apart. An unreported time is
+    // `null`.
+    assertEquals("1970-01-01T00:37:30.000Z", redirects[0]["respondedAt"])
+    assertTrue(redirects[1].containsKey("respondedAt"))
+    assertNull(redirects[1]["respondedAt"])
   }
 
   @Test

@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "57.0.9",
+  "version": "58.0.0",
   "description": "Scripts that autolink Expo modules.",
   "keywords": [
     "autolinking",

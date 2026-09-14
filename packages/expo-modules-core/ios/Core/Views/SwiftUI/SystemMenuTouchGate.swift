@@ -10,13 +10,15 @@ import UIKit.UIGestureRecognizerSubclass
   Menu when opened attaches a container view `_UIContextMenuContainerView` to the window.
   On tapping it, React Root's `RCTSurfaceTouchHandler` also listens to the touch and causes Pressables to fire onPress.
  */
-internal final class SystemMenuTouchGate: UIGestureRecognizer {
+internal final class SystemMenuTouchGate: UIGestureRecognizer, UIGestureRecognizerDelegate {
   init() {
     super.init(target: nil, action: nil)
     // Both default to true. Never hold a touch back, and never let React Native's handler see a
     // reason to cancel: it calls `_cancelTouches` for any outside recognizer that cancels in view.
     delaysTouchesEnded = false
     cancelsTouchesInView = false
+    // UIKit asks a recognizer's delegate about an event before it delivers that event's touches.
+    delegate = self
   }
 
   // MARK: - Detecting an open menu
@@ -109,18 +111,37 @@ internal final class SystemMenuTouchGate: UIGestureRecognizer {
     window.addGestureRecognizer(SystemMenuTouchGate())
   }
 
+  /**
+   Tells React Native's handlers to skip these touches while a menu is open. UIKit then delivers
+   neither `touchesBegan` nor `touchesEnded` for them, so JS sees no `touchStart`, no press and no
+   `touchEnd`. A handler that already registered a touch cancels it from `reset` at sequence end.
+   */
+  private func detachSurfaceTouchHandlers(from touches: Set<UITouch>, for event: UIEvent) {
+    guard let window = view as? UIWindow, Self.isShowingContextMenu(in: window) else {
+      return
+    }
+    for touch in touches {
+      for handler in Self.surfaceTouchHandlers(above: touch.view) {
+        handler.ignore(touch, for: event)
+      }
+    }
+  }
+
+  // MARK: - UIGestureRecognizerDelegate
+
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive event: UIEvent) -> Bool {
+    if let touches = event.allTouches {
+      detachSurfaceTouchHandlers(from: touches.filter { $0.phase == .began }, for: event)
+    }
+    return true
+  }
+
   // MARK: - UIGestureRecognizer
 
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
     super.touchesBegan(touches, with: event)
-
-    if let window = view as? UIWindow, Self.isShowingContextMenu(in: window) {
-      for touch in touches {
-        for handler in Self.surfaceTouchHandlers(above: touch.view) {
-          handler.ignore(touch, for: event)
-        }
-      }
-    }
+    // Second chance in case React Native's handler received the touch before the delegate ran.
+    detachSurfaceTouchHandlers(from: touches, for: event)
     state = .failed
   }
 }

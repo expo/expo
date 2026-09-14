@@ -48,10 +48,15 @@ export { DarkTheme } from './react-navigation/native/theming/DarkTheme';
 export { DefaultTheme } from './react-navigation/native/theming/DefaultTheme';
 export { ThemeProvider } from './react-navigation/core/theming/ThemeProvider';
 export { useTheme } from './react-navigation/core/theming/useTheme';
-export type { Theme } from './react-navigation/native/types';
+export { LocaleProvider, type LocaleProviderProps } from './LocaleProvider';
+export type { LocaleDirection, Theme } from './react-navigation/native/types';
 export { useRoutePath } from './react-navigation/native/useRoutePath';
 export { useScrollToTop } from './react-navigation/native/useScrollToTop';
 export { useRoute } from './react-navigation/core/useRoute';
+export {
+  type PreventRemoveOptions,
+  usePreventRemove,
+} from './react-navigation/core/usePreventRemove';
 
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
@@ -70,6 +75,7 @@ export {
 } from './primitives';
 
 export {
+  IsWithinNativeNavigator,
   unstable_createStandardRouterNavigator,
   unstable_integrateWithRouter,
 } from './standard-navigation';
@@ -77,9 +83,13 @@ export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
   StandardNavigatorDescriptor,
+  StandardNavigatorEmit,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './standard-navigation';
+export { createBaseStackProps } from './layouts/stack-utils/createBaseStackProps';
+export { createBaseTabProps } from './layouts/createBaseTabProps';
+export { createNativeStackProps } from './layouts/createNativeStackProps';
 
 export type { RouteSource } from './react-navigation/native';
 

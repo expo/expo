@@ -158,6 +158,23 @@ struct JavaScriptValueTests {
   }
 
   @Test
+  func `getString repairs lone surrogates the same way as the standard library`() throws {
+    // High surrogate followed by a non-surrogate, a stray low surrogate, and a high surrogate at the
+    // very end each become one U+FFFD, exactly like `String(decoding:as: UTF16.self)`.
+    let value = try runtime.eval("'a\\uD800b\\uDC00c\\uD83C\\uDF89\\uD800'")
+    let units: [UInt16] = [0x61, 0xD800, 0x62, 0xDC00, 0x63, 0xD83C, 0xDF89, 0xD800]
+    #expect(value.getString() == String(decoding: units, as: UTF16.self))
+    #expect(value.getString() == "a\u{FFFD}b\u{FFFD}c🎉\u{FFFD}")
+  }
+
+  @Test
+  func `getString covers every UTF-8 width below the bulk threshold`() throws {
+    let value = try runtime.eval("'a\\u00E9\\u4E2D\\uD83C\\uDF89'.repeat(100)")
+    #expect(value.getString() == String(repeating: "aé中🎉", count: 100))
+    #expect(value.getString().utf8.count == 1000)
+  }
+
+  @Test
   func `getString handles long non-ASCII string`() throws {
     let value = try runtime.eval("'ą'.repeat(2000)")
     #expect(value.getString() == String(repeating: "ą", count: 2000))

@@ -1,6 +1,6 @@
 {
   "name": "expo-build-properties",
-  "version": "57.0.8",
+  "version": "58.0.0",
   "description": "Config plugin to customize native build properties on prebuild",
   "keywords": [
     "build",

@@ -1,4 +1,4 @@
-import isEqual from 'fast-deep-equal';
+import isEqual from 'react-fast-compare';
 
 import type { NavigationState, PartialState, Route } from './types';
 

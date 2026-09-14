@@ -153,6 +153,16 @@ class SessionManager(
 
   suspend fun getMaxMetricId(): Long? = database.metricDao().getMaxId()
 
+  suspend fun getSpansForSession(sessionId: String): List<Span> =
+    database.spanDao().getSpansForSession(sessionId)
+
+  suspend fun getSpans(afterId: Long, limit: Int): List<Span> =
+    database.spanDao().getSpans(afterId, limit)
+
+  suspend fun getMaxSpanId(): Long? = database.spanDao().getMaxId()
+
+  suspend fun deleteSpansUpTo(rowId: Long) = database.spanDao().deleteUpTo(rowId)
+
   suspend fun getLogsForSession(sessionId: String): List<LogRecord> =
     database.logDao().getLogsForSession(sessionId)
 

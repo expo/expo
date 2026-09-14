@@ -4,7 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [Android] Remove `SessionManager` insert listeners and `JsMetric.metricId` ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
+- [iOS] [Android] Rename JavaScript exception log events from `exception` to `js.exception`. ([#49594](https://github.com/expo/expo/pull/49594) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 
@@ -12,10 +23,12 @@
 - Add an optional `displayName` to `logEvent` ([#47289](https://github.com/expo/expo/pull/47289) by [@Ubax](https://github.com/Ubax))
 - Capture React render-phase errors via `AppMetricsErrorBoundary`. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 - Describe the network a launch ran on: connection cost, request throughput, and a `slowest.*` group replacing `expo.network.requests.slowestDuration` and `slowestHost`. ([#48518](https://github.com/expo/expo/pull/48518) by [@tsapeta](https://github.com/tsapeta))
+- Add a generic `spans` table to the metrics database for trace telemetry. ([#48861](https://github.com/expo/expo/pull/48861) by [@tsapeta](https://github.com/tsapeta))
+- Persist observed network requests in the metrics database so they can be exported as telemetry. ([#49051](https://github.com/expo/expo/pull/49051) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed network request observers emitting duplicate events or continuing after their listeners were removed. ([#49609](https://github.com/expo/expo/pull/49609) by [@behenate](https://github.com/behenate))
+- [Android] Fix `NetworkRequestObserver` emitting duplicate events when a response was read and closed on different threads. ([#49609](https://github.com/expo/expo/pull/49609) by [@behenate](https://github.com/behenate), [#49743](https://github.com/expo/expo/pull/49743) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Preserve millisecond precision in log event timestamps. ([#49141](https://github.com/expo/expo/pull/49141) by [@Ubax](https://github.com/Ubax))
 - [android] Fix `UnsupportedOperationException` and `NoSuchMethodError` on Android 7.x ([#48577](https://github.com/expo/expo/pull/48577) by [@Ubax](https://github.com/Ubax))
 - [iOS] Retry the OTA `AppInfo` patch on updates state changes, so a launch where the module registry is created before `expo-updates` has assigned its startup procedure no longer keeps the embedded build's update attribution for the whole session. ([#48899](https://github.com/expo/expo/pull/48899) by [@spsaucier](https://github.com/spsaucier))

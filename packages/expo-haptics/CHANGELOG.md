@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- [android] Fix `performAndroidHapticsAsync` doing nothing by running it on the main queue. ([#49263](https://github.com/expo/expo/pull/49263) by [@KAMRONBEK](https://github.com/KAMRONBEK))
-
 ### 💡 Others
+
+- [iOS] Migrate to the Expo Modules API 2.0 macros. ([#50047](https://github.com/expo/expo/pull/50047) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [android] Fix `performAndroidHapticsAsync` doing nothing by running it on the main queue. ([#49263](https://github.com/expo/expo/pull/49263) by [@KAMRONBEK](https://github.com/KAMRONBEK))
 
 ## 57.0.1 - 2026-07-15
 

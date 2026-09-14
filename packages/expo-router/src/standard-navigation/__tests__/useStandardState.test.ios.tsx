@@ -11,10 +11,7 @@ jest.mock('../useBuildHref');
 const mockedUseBuildHref = useBuildHref as jest.MockedFunction<typeof useBuildHref>;
 type BuildHref = ReturnType<typeof useBuildHref>;
 
-function makeBuilderState(
-  routes: { key: string; name: string; params?: object }[],
-  index = 0
-): NavigationState {
+function makeBuilderState(routes: NavigationState['routes'], index = 0): NavigationState {
   return {
     key: 'builder',
     index,
@@ -57,6 +54,22 @@ describe('useStandardState', () => {
     const { result } = renderHook(() => useStandardState(makeBuilderState([], 0)));
 
     expect(result.current).toEqual({ index: 0, routes: [] });
+  });
+
+  it('preserves route state needed to restore cancelled transitions', () => {
+    const childState = makeBuilderState([{ key: 'child-1', name: 'child' }]);
+    const builderState = makeBuilderState([
+      { key: 'parent-1', name: 'parent', path: '/parent', state: childState },
+    ]);
+
+    const { result } = renderHook(() => useStandardState(builderState));
+
+    expect(result.current.routes[0]).toMatchObject({
+      key: 'parent-1',
+      name: 'parent',
+      path: '/parent',
+      state: childState,
+    });
   });
 
   it('builds the href via buildHref once per route', () => {

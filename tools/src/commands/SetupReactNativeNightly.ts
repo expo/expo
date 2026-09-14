@@ -94,14 +94,18 @@ async function addBareExpoOptionalPackagesAsync() {
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {
-  const workspacePackageJsonPath = path.join(EXPO_DIR, 'package.json');
-  const json = await JsonFile.readAsync(workspacePackageJsonPath);
-  json.resolutions ||= {};
   for (const [name, version] of Object.entries(packages)) {
     logger.log('  ', `${name}@${version}`);
-    json.resolutions[name] = version;
   }
-  await JsonFile.writeAsync(workspacePackageJsonPath, json);
+  const { stdout } = await spawnAsync('pnpm', ['config', 'get', 'overrides', '--json'], {
+    cwd: EXPO_DIR,
+  });
+  const overrides = { ...JSON.parse(stdout), ...packages };
+  await spawnAsync(
+    'pnpm',
+    ['config', 'set', '--location=project', '--json', 'overrides', JSON.stringify(overrides)],
+    { cwd: EXPO_DIR }
+  );
 }
 
 async function updateExpoModulesAsync() {

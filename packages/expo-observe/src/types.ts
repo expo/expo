@@ -167,7 +167,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * this method to flush events manually, for example, during testing or to ensure events
    * are sent before a specific point.
    *
-   * @returns A promise that resolves when the pending events have been dispatched.
+   * @returns A promise that resolves once the events have been dispatched. A call made while
+   * another dispatch is running waits for it to finish first.
    *
    * @example
    * ```ts

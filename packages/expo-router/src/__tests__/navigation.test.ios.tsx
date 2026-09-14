@@ -1870,3 +1870,78 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(screen.queryByTestId('e')).toBeNull();
   expect(screen).toHavePathname('/a/c');
 });
+
+it('preserves nested stack history when multiple pushes are batched', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      a: () => <Text testID="a" />,
+      'b/_layout': () => <Stack />,
+      'b/a': () => <Text testID="b-a" />,
+      'b/b': () => <Text testID="b-b" />,
+      'b/c': () => <Text testID="b-c" />,
+    },
+    { initialUrl: '/a' }
+  );
+
+  act(() => {
+    router.push('/b/a');
+    router.push('/b/b');
+    router.push('/b/c');
+  });
+
+  expect(screen.getByTestId('b-c')).toBeVisible();
+  expect(screen).toHavePathname('/b/c');
+
+  act(() => router.back());
+  expect(screen.getByTestId('b-b')).toBeVisible();
+  expect(screen).toHavePathname('/b/b');
+
+  act(() => router.back());
+  expect(screen.getByTestId('b-a')).toBeVisible();
+  expect(screen).toHavePathname('/b/a');
+
+  act(() => router.back());
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it.each([
+  ['dismiss(2)', () => router.dismiss(2)],
+  ['dismissTo', () => router.dismissTo('/a')],
+  [
+    'back twice',
+    () => {
+      router.back();
+      router.back();
+    },
+  ],
+])('pushes from the state produced by a queued %s', (_, returnToA) => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      a: () => <Text testID="a" />,
+      b: () => <Text testID="b" />,
+      c: () => <Text testID="c" />,
+      d: () => <Text testID="d" />,
+    },
+    { initialUrl: '/a' }
+  );
+
+  act(() => router.push('/b'));
+  act(() => router.push('/c'));
+
+  act(() => {
+    returnToA();
+    router.push('/d');
+  });
+
+  expect(screen.getByTestId('d')).toBeVisible();
+  expect(screen).toHavePathname('/d');
+
+  act(() => router.back());
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+  expect(router.canGoBack()).toBe(false);
+});

@@ -6,17 +6,16 @@ import type { RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
 
 type Props = {
-  ready: boolean;
   processIntent: (intent: RoutingIntent) => void;
 };
 
-export function RoutingQueueDrainer({ ready, processIntent }: Props) {
+export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
   const { dequeue, startTransition } = React.use(RoutingQueueApiContext)!;
   const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
-    if (!ready || intents.length === 0 || lastProcessed.current === intents) {
+    if (intents.length === 0 || lastProcessed.current === intents) {
       return;
     }
     // Strict Mode re-runs the mount effect with the same array before `dequeue` updates state.
@@ -47,7 +46,7 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
         }
       }
     });
-  }, [dequeue, intents, processIntent, ready, startTransition]);
+  }, [dequeue, intents, processIntent, startTransition]);
 
   return null;
 }

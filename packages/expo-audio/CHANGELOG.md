@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Paused time is now excluded from the `AudioRecorder` duration limit. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
 - [Android] Aligned the default audio focus request on Android 7.0–7.1 with newer versions by using transient exclusive focus when no interruption mode has been configured. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
 

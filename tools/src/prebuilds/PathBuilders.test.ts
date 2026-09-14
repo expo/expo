@@ -12,6 +12,7 @@ import { Artifacts } from './Artifacts';
 import { Dependencies } from './Dependencies';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { withPackageLocalBuildPath } from './PackageLocalBuild';
 import { SPMBuild, getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct } from './SPMBuild';
 import type { SPMProduct, SPMTarget, BuildPlatform } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
@@ -403,6 +404,21 @@ describe('Shared SPM dependency path functions', () => {
       assert.ok(result.includes('/debug/'));
       assert.ok(!result.includes('/Debug/'));
     });
+  });
+});
+
+describe('Package-local exact-build paths', () => {
+  const pkg = stubPkg();
+  const localPkg = withPackageLocalBuildPath(pkg);
+
+  it('keeps DerivedData and product intermediates outside Turbo output', () => {
+    assert.equal(
+      SPMBuild.getPackageBuildPath(localPkg, stubProduct(), 'Release'),
+      path.join(pkg.path, '.expo-prebuild', 'intermediates', 'products', 'release', 'ExpoFoo')
+    );
+    assert.ok(
+      !SPMBuild.getPackageBuildPath(localPkg, stubProduct(), 'Release').includes('/output/')
+    );
   });
 });
 

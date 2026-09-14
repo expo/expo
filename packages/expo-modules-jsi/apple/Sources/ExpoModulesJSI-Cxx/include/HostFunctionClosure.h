@@ -15,7 +15,9 @@ public:
   // The result travels through an out-parameter instead of a return value: the Swift side can then
   // write it straight into the caller's slot from inside its guaranteed-reference scope, with no
   // placeholder value to construct and no extra move of the `jsi::Value`.
-  using Closure = void(Context context, const facebook::jsi::Value *_Nonnull thisValue, const facebook::jsi::Value *_Nonnull args, size_t count, facebook::jsi::Value *_Nonnull result);
+  // Returns whether the Swift side stored an error in `CppError`'s thread-local slot. Reporting that
+  // through the return value spares the caller a thread-local read on every successful call.
+  using Closure = bool(Context context, const facebook::jsi::Value *_Nonnull thisValue, const facebook::jsi::Value *_Nonnull args, size_t count, facebook::jsi::Value *_Nonnull result);
 
   explicit HostFunctionClosure(Context context, Closure closure, Deallocator deallocator) : RetainedSwiftPointer(context, deallocator), _closure(closure) {};
 
@@ -26,8 +28,8 @@ public:
   /**
    Calls the Swift closure with given `this` value and arguments.
    */
-  inline void call(const facebook::jsi::Value &thisValue, const facebook::jsi::Value *_Nonnull args, size_t count, facebook::jsi::Value &result) const {
-    _closure(_context, &thisValue, args, count, &result);
+  inline bool call(const facebook::jsi::Value &thisValue, const facebook::jsi::Value *_Nonnull args, size_t count, facebook::jsi::Value &result) const {
+    return _closure(_context, &thisValue, args, count, &result);
   }
 
 private:

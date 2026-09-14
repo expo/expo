@@ -1,6 +1,6 @@
 {
   "name": "expo-background-fetch",
-  "version": "57.0.7",
+  "version": "58.0.0",
   "description": "Expo universal module for BackgroundFetch API",
   "keywords": [
     "background",

@@ -1,6 +1,6 @@
 {
   "name": "expo-task-manager",
-  "version": "57.0.7",
+  "version": "58.0.0",
   "description": "Expo module that provides support for tasks that can run in the background.",
   "keywords": [
     "background",

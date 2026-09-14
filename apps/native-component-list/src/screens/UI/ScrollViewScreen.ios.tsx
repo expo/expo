@@ -5,6 +5,8 @@ import {
   padding,
   font,
   scrollIndicators,
+  scrollClipDisabled,
+  shadow,
 } from '@expo/ui/swift-ui/modifiers';
 
 import { ScrollPage, Section } from '../../components/Page';
@@ -95,6 +97,45 @@ function HideIndicatorsExample() {
   );
 }
 
+function ShadowCards() {
+  return (
+    <HStack>
+      {Array.from({ length: 20 }, (_, i) => (
+        <RoundedRectangle
+          key={i}
+          cornerRadius={12}
+          modifiers={[
+            frame({ width: 100, height: 100 }),
+            foregroundStyle(`hsl(${i * 18}, 70%, 50%)`),
+            shadow({ radius: 10, color: 'secondary' }),
+          ]}
+        />
+      ))}
+    </HStack>
+  );
+}
+
+function ClipDisabledExample() {
+  return (
+    <Host style={{ height: 280 }}>
+      <VStack>
+        <Text modifiers={[foregroundStyle('secondary')]}>
+          Clipped to the scroll view bounds (default)
+        </Text>
+        <ScrollView axes="horizontal">
+          <ShadowCards />
+        </ScrollView>
+        <Text modifiers={[foregroundStyle('secondary')]}>
+          scrollClipDisabled(), so the shadows stay visible
+        </Text>
+        <ScrollView axes="horizontal" modifiers={[scrollClipDisabled()]}>
+          <ShadowCards />
+        </ScrollView>
+      </VStack>
+    </Host>
+  );
+}
+
 export default function ScrollViewScreen() {
   return (
     <ScrollPage>
@@ -109,6 +150,9 @@ export default function ScrollViewScreen() {
       </Section>
       <Section title='scrollIndicators("hidden") modifier'>
         <HideIndicatorsExample />
+      </Section>
+      <Section title="scrollClipDisabled() modifier">
+        <ClipDisabledExample />
       </Section>
     </ScrollPage>
   );

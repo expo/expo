@@ -114,6 +114,44 @@ extension JSIBenchmarks {
     }
   }
 
+  /// Sizes below the 512-code-unit threshold, where UTF-16 is transcoded by hand instead of by
+  /// `String(decoding:as:)`.
+  @Test
+  func `64 non-ASCII chars from JavaScriptValue via JavaScriptRepresentable`() async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("'zażółć gęślą jaźń '.repeat(4).slice(0, 64)")
+      try benchmark("String.fromJavaScriptValue(): 64 non-ASCII chars", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = String.fromJavaScriptValue(value)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `256 non-ASCII chars from JavaScriptValue via JavaScriptRepresentable`() async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("'zażółć gęślą jaźń '.repeat(16).slice(0, 256)")
+      try benchmark("String.fromJavaScriptValue(): 256 non-ASCII chars", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = String.fromJavaScriptValue(value)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `128 emoji from JavaScriptValue via JavaScriptRepresentable`() async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("'🎉'.repeat(128)")
+      try benchmark("String.fromJavaScriptValue(): 128 emoji (256 code units)", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = String.fromJavaScriptValue(value)
+        }
+      }
+    }
+  }
+
   @Test
   func `string to JavaScriptValue via JavaScriptRepresentable`() async throws {
     try await benchmarkCase { runtime in

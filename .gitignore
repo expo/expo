@@ -9,6 +9,7 @@ bare-apps
 
 # Node
 node_modules
+.expo-prebuild
 npm-debug.log
 yarn-error.log
 
@@ -134,6 +135,7 @@ docs/pages/versions/*/react-native/*.diff
 /apps/expo-go/src/dist
 
 # Prebuilds
+/packages/**/prebuilds/
 /packages/**/xcframeworks/
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist

@@ -15,22 +15,21 @@ import {
 
 const mockSetOptions = jest.fn();
 const mockIsFocused = jest.fn().mockReturnValue(true);
-const mockGetState = jest.fn().mockReturnValue({ type: 'stack', routes: [], index: 0 });
+const mockRoute: { key: string; name: string; params: object; isPreloaded?: true } = {
+  key: 'route-1',
+  name: 'test',
+  params: {},
+};
 
 jest.mock('../../../react-navigation/native', () => ({
-  useRoute: jest.fn(() => ({ key: 'route-1', name: 'test', params: {} })),
+  useRoute: jest.fn(() => mockRoute),
 }));
 
 jest.mock('../../../useNavigation', () => ({
   useNavigation: jest.fn(() => ({
     isFocused: mockIsFocused,
-    getState: mockGetState,
     setOptions: mockSetOptions,
   })),
-}));
-
-jest.mock('../../../utils/stack', () => ({
-  isRoutePreloadedInStack: jest.fn(() => false),
 }));
 
 function makeDescriptors(
@@ -80,7 +79,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsFocused.mockReturnValue(true);
-    mockGetState.mockReturnValue({ type: 'stack', routes: [], index: 0 });
+    delete mockRoute.isPreloaded;
     consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
@@ -194,6 +193,15 @@ describe('usePreventZoomTransitionDismissal', () => {
     expect(mockSetOptions).toHaveBeenCalledWith({
       [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]: undefined,
     });
+  });
+
+  it('does not update options for an unfocused preloaded route', () => {
+    mockRoute.isPreloaded = true;
+    mockIsFocused.mockReturnValue(false);
+
+    renderPreventDismissal();
+
+    expect(mockSetOptions).not.toHaveBeenCalled();
   });
 
   // maxX: 0, maxY: 0 is an impossible rect that effectively blocks all gestures

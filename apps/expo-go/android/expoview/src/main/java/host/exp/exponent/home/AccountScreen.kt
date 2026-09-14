@@ -133,7 +133,7 @@ private fun AccountRow(
     icon = {
       if (owner != null) {
         AsyncImage(
-          model = owner.profilePhoto,
+          model = owner.primaryAccountProfileImageUrl,
           contentDescription = "Account icon",
           modifier = Modifier
             .size(24.dp)

@@ -147,6 +147,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'NavigationStack component',
+    route: 'ui/navigationstack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationStackScreen'));
+    },
+  },
+  {
     name: 'Menu component',
     route: 'ui/menu',
     options: {},

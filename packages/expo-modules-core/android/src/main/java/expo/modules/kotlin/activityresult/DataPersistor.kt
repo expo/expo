@@ -115,8 +115,7 @@ private fun String.toBundle(): Bundle? {
   return Parcel.obtain().run {
     unmarshall(bytes, 0, bytes.size)
     setDataPosition(0)
-    @Suppress("ParcelClassLoader")
-    val bundle = readBundle(null)
+    val bundle = readBundle(DataPersistor::class.java.classLoader)
     recycle()
     bundle
   }

@@ -5,14 +5,14 @@
 // and redirects to `@expo/metro-file-map`
 
 import FileMap, { DependencyPlugin, DiskCacheManager, HastePlugin } from '@expo/metro-file-map';
-import type { ConfigT } from '@expo/metro/metro-config';
 import type MetroServer from '@expo/metro/metro/Server';
 import ciInfo from 'ci-info';
 import path from 'node:path';
 
 import { composeMetroIgnorePatterns } from '../../../utils/composeMetroIgnorePatterns';
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
 
-function getIgnorePattern(config: ConfigT): RegExp {
+function getIgnorePattern(config: ExpoMetroConfig): RegExp {
   const { blockList, blacklistRE } = config.resolver;
   return composeMetroIgnorePatterns(blacklistRE || blockList);
 }
@@ -28,7 +28,7 @@ interface CreateFileMapOptions {
  * Creates a `FileMap` using `@expo/metro-file-map`, matching the same config
  * interpretation as Metro's original `createFileMap`.
  */
-export default function createFileMap(config: ConfigT, options?: CreateFileMapOptions) {
+export default function createFileMap(config: ExpoMetroConfig, options?: CreateFileMapOptions) {
   const watch = options?.watch == null ? !ciInfo.isCI : options.watch;
 
   const { enabled: autoSaveEnabled, ...autoSaveOpts } = config.watcher.unstable_autoSaveCache ?? {};

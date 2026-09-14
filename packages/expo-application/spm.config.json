@@ -2,8 +2,8 @@
   "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
   "products": [
     {
-      "name": "EXApplication",
-      "podName": "EXApplication",
+      "name": "ExpoApplication",
+      "podName": "ExpoApplication",
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -14,9 +14,9 @@
       "targets": [
         {
           "type": "objc",
-          "name": "EXApplication_ios_objc",
-          "moduleName": "EXApplication",
-          "path": "ios/EXApplication",
+          "name": "ExpoApplication_ios_objc",
+          "moduleName": "ExpoApplication",
+          "path": "ios/ExpoApplication",
           "pattern": "**/*.m",
           "headerPattern": "**/*.h",
           "dependencies": ["Hermes", "React", "ReactNativeDependencies"],
@@ -25,7 +25,7 @@
         },
         {
           "type": "swift",
-          "name": "EXApplication",
+          "name": "ExpoApplication",
           "path": "ios",
           "pattern": "*.swift",
           "dependencies": [
@@ -33,7 +33,7 @@
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore",
-            "EXApplication_ios_objc"
+            "ExpoApplication_ios_objc"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"],
           "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]

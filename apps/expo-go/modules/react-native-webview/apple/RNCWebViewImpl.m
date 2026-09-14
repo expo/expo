@@ -519,6 +519,20 @@ RCTAutoInsetsProtocol>
     _webView = [[RNCWKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     [self setBackgroundColor: _savedBackgroundColor];
 #if !TARGET_OS_OSX
+    // Apply once at creation time. The prop is documented as non-reactive —
+    // toggling it after mount cannot restore the observers WKWebView registers internally
+    if (_removeIosKeyboardObserver) {
+      [[NSNotificationCenter defaultCenter] removeObserver:_webView
+                                                      name:UIKeyboardWillHideNotification
+                                                    object:nil];
+      [[NSNotificationCenter defaultCenter] removeObserver:_webView
+                                                      name:UIKeyboardWillShowNotification
+                                                    object:nil];
+      [[NSNotificationCenter defaultCenter] removeObserver:_webView
+                                                      name:UIKeyboardWillChangeFrameNotification
+                                                    object:nil];
+    }
+
     _webView.menuItems = _menuItems;
     _webView.suppressMenuItems = _suppressMenuItems;
     _webView.scrollView.delegate = self;

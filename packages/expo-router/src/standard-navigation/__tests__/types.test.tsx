@@ -6,7 +6,20 @@ import {
   type NavigatorDescriptor,
 } from 'standard-navigation';
 
+import type { NativeStackNavigatorCreateProps } from '../../fork/native-stack/createNativeStackNavigator';
+import type { DrawerNavigatorProps } from '../../layouts/DrawerClient';
+import type { Stack as JSStack } from '../../layouts/JSStack';
+import type NativeStack from '../../layouts/StackClient';
+import type { JSTabsProps } from '../../layouts/TabsClient';
+import type { JSTopTabsProps } from '../../layouts/TopTabsClient';
+import type { ExperimentalStack } from '../../layouts/experimental-stack';
+import type { ExperimentalStackNavigatorCreateProps } from '../../layouts/experimental-stack/createExperimentalStackNavigator';
+import type { NativeTabsNavigatorCreateProps } from '../../native-tabs/NativeBottomTabsNavigator';
+import type { NativeTabsProps } from '../../native-tabs/types';
+import type { BottomTabNavigatorCreateProps } from '../../react-navigation/bottom-tabs/navigators/createBottomTabNavigator';
 import type { CommonNavigationAction, ParamListBase } from '../../react-navigation/core';
+import type { DrawerNavigatorCreateProps } from '../../react-navigation/drawer/navigators/createDrawerNavigator';
+import type { MaterialTopTabNavigatorCreateProps } from '../../react-navigation/material-top-tabs/navigators/createMaterialTopTabNavigator';
 import {
   type DefaultRouterOptions,
   type NavigationAction,
@@ -18,6 +31,7 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import type { GoBackAction, NavigateAction } from '../../react-navigation/routers/CommonActions';
+import type { StackNavigatorCreateProps } from '../../react-navigation/stack/navigators/createStackNavigator';
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
 import type {
   IntegrateWithRouterOptions,
@@ -33,6 +47,56 @@ type Equal<A, B> =
 
 type Opts = { title?: string };
 type EventMap = { tabPress: { data: undefined; canPreventDefault: true } };
+type IsPreloadedProp = { isPreloaded: (key: string) => boolean };
+type IsRemovalPreventedProp = { isRemovalPrevented: (key: string) => boolean };
+type ContainsRemovalPreventionProp<Props> = Props extends unknown
+  ? 'isRemovalPrevented' extends keyof Props
+    ? true
+    : false
+  : never;
+
+export type _AllInternalNavigatorCreatePropsReceiveIsPreloaded = Expect<
+    | StackNavigatorCreateProps
+    | NativeStackNavigatorCreateProps
+    | ExperimentalStackNavigatorCreateProps
+    | BottomTabNavigatorCreateProps
+    | MaterialTopTabNavigatorCreateProps
+    | DrawerNavigatorCreateProps
+    | NativeTabsNavigatorCreateProps extends IsPreloadedProp
+    ? true
+    : false
+>;
+export type _TabsElementLacksIsPreloaded = Expect<
+  Equal<'isPreloaded' extends keyof JSTabsProps ? true : false, false>
+>;
+export type _DrawerElementLacksIsPreloaded = Expect<
+  Equal<'isPreloaded' extends keyof DrawerNavigatorProps ? true : false, false>
+>;
+export type _AllInternalNavigatorCreatePropsReceiveIsRemovalPrevented = Expect<
+    | StackNavigatorCreateProps
+    | NativeStackNavigatorCreateProps
+    | ExperimentalStackNavigatorCreateProps
+    | BottomTabNavigatorCreateProps
+    | MaterialTopTabNavigatorCreateProps
+    | DrawerNavigatorCreateProps
+    | NativeTabsNavigatorCreateProps extends IsRemovalPreventedProp
+    ? true
+    : false
+>;
+export type _InternalNavigatorElementsLackIsRemovalPrevented = Expect<
+  Equal<
+    ContainsRemovalPreventionProp<
+      | ComponentProps<typeof JSStack>
+      | ComponentProps<typeof NativeStack>
+      | ComponentProps<typeof ExperimentalStack>
+      | JSTabsProps
+      | JSTopTabsProps
+      | DrawerNavigatorProps
+      | NativeTabsProps
+    >,
+    false
+  >
+>;
 
 export type _DescriptorExtendsStandardDescriptor = Expect<
   StandardNavigatorDescriptor<Opts> extends NavigatorDescriptor<Opts> ? true : false
@@ -75,6 +139,13 @@ const Nav = unstable_createStandardRouterNavigator<
   { initialRouteName?: string },
   TabRouterOptions
 >(Content, TabRouter);
+
+export type _TabActivityIsBoolean = Expect<
+  Equal<ComponentProps<typeof Nav>['activityEnabled'], boolean | undefined>
+>;
+export type _TabScreenActivityIsBoolean = Expect<
+  Equal<ComponentProps<typeof Nav.Screen>['activityEnabled'], boolean | undefined>
+>;
 
 type TypelessNavigationState = Readonly<{
   key: string;
@@ -205,7 +276,15 @@ const integratePublicNav = unstable_integrateWithRouter<
 // ---------------------------------------------------------------------------
 
 const SplitNav = createSplitNav(SplitContent, TabRouter, {
-  createProps: () => ({ routeNames: [], preload: () => {} }),
+  createProps: ({ isPreloaded, isRemovalPrevented }) => {
+    isPreloaded('route-key') satisfies boolean;
+    isRemovalPrevented('route-key') satisfies boolean;
+    // @ts-expect-error Route keys are strings, not array indexes.
+    isPreloaded(0);
+    // @ts-expect-error Route keys are strings, not array indexes.
+    isRemovalPrevented(0);
+    return { routeNames: [], preload: () => {} };
+  },
 });
 type SplitElementProps = ComponentProps<typeof SplitNav>;
 

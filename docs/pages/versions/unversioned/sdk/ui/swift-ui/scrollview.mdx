@@ -198,6 +198,51 @@ export default function ScrollViewSharedPositionExample() {
 
 </ComponentExample>
 
+### Unclipped scroll content
+
+> **info** Requires iOS 17 or later. On older versions, the modifier is a no-op.
+
+A scroll view clips its content to its own bounds, which cuts off anything drawn past them, such as a shadow or a card scaled up beyond the edge. Apply the [`scrollClipDisabled`](modifiers/#scrollclipdisableddisabled) modifier to keep that content visible.
+
+```tsx ScrollViewUnclippedExample.tsx
+import {
+  Host,
+  HStack,
+  RoundedRectangle,
+  ScrollView,
+} from '@expo/ui/swift-ui';
+import {
+  frame,
+  foregroundStyle,
+  scrollClipDisabled,
+  shadow,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function ScrollViewUnclippedExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <ScrollView
+        axes="horizontal"
+        modifiers={[scrollClipDisabled()]}>
+        <HStack>
+          {Array.from({ length: 20 }, (_, i) => (
+            <RoundedRectangle
+              key={i}
+              cornerRadius={12}
+              modifiers={[
+                frame({ width: 100, height: 100 }),
+                foregroundStyle(`hsl(${i * 18}, 70%, 50%)`),
+                shadow({ radius: 10, color: 'secondary' }),
+              ]}
+            />
+          ))}
+        </HStack>
+      </ScrollView>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

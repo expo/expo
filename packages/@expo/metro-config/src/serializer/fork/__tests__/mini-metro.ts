@@ -1,6 +1,6 @@
 import metroConfigDefaults from '@expo/metro/metro-config/defaults';
 import type {
-  Dependency,
+  Dependency as MetroDependency,
   MixedOutput,
   Module,
   ReadOnlyGraph,
@@ -9,15 +9,20 @@ import type {
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import * as path from 'path';
 
+import type { Dependency as ExpoTransformDependency } from '../../../transform-worker/collect-dependencies';
 import type { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
 import { wrapTransformResultMaps } from '../../packedMap';
 
 export const projectRoot = '/app';
 
-const METRO_CONFIG_DEFAULTS = metroConfigDefaults.getDefaultValues(null);
+const METRO_CONFIG_DEFAULTS = metroConfigDefaults.getDefaultValues();
 
-function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
+type ExpoResolvedDependency = Omit<MetroDependency, 'data'> & {
+  data: ExpoTransformDependency;
+};
+
+function toDependencyMap(...deps: ExpoResolvedDependency[]): Map<string, MetroDependency> {
   const map = new Map();
 
   for (const dep of deps) {
@@ -319,6 +324,9 @@ export async function parseModule(
       // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
       {
         ...METRO_CONFIG_DEFAULTS.transformer,
+        // Matches `ExpoMetroConfig`, and the upcoming Metro default. The option goes away once
+        // Metro flips it, so fixtures shouldn't bake in the renamed `require`.
+        unstable_renameRequire: false,
         asyncRequireModulePath: 'expo-mock/async-require',
         unstable_allowRequireContext: true,
         allowOptionalDependencies: true,

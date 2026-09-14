@@ -67,7 +67,7 @@ export function buildFAQPageSchema(items: FAQItem[]) {
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Expo Documentation',
+  name: 'Expo documentation',
   description: BASE_DESCRIPTIONS.en,
   url: 'https://docs.expo.dev',
   publisher: {

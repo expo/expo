@@ -1,8 +1,10 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #pragma once
+
 #ifdef __cplusplus
 
+#include <new>
 #include <TargetConditionals.h>
 
 // `jsi.h` only forward-declares `jsi::Instrumentation`.
@@ -103,12 +105,12 @@ inline jsi::Function createHostFunction(jsi::IRuntime &runtime, const jsi::PropN
   auto closurePtr = std::shared_ptr<HostFunctionClosure>(closure);
   return jsi::Function::createFromHostFunction(runtime, propName, 0, [closurePtr](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
     jsi::Value result;
-    closurePtr->call(thisValue, args, count, result);
-
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
-    if (auto *error = CppError::getCurrent()) {
-      throw error->release();
+    if (closurePtr->call(thisValue, args, count, result)) {
+      if (auto *error = CppError::getCurrent()) {
+        throw error->release();
+      }
     }
     return result;
   });
@@ -152,6 +154,33 @@ inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
   runtime.instrumentation().collectGarbage(cause);
 }
 
+// MARK: - Result slots
+
+// Construct a host callback's result in place in the engine's result slot. `::new (slot) T(...)` is
+// placement new: it runs the constructor on existing memory and allocates nothing. These `jsi::Value`
+// constructors are inline, so each helper is two stores, whereas a move-assignment into the slot
+// calls `Value::~Value()` and `Value::Value(Value&&)`, both out-of-line in the engine library.
+//
+// Placement new does not destroy the slot's previous contents, so the slot must hold a value that
+// owns nothing; an object or string there would leak its engine handle. Both callers,
+// `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side picks
+// the helper by kind in `JavaScriptValue.writeJSIValue(to:)` and moves everything else.
+inline void emplaceUndefined(jsi::Value *_Nonnull slot) noexcept {
+  ::new (slot) jsi::Value();
+}
+
+inline void emplaceNull(jsi::Value *_Nonnull slot) noexcept {
+  ::new (slot) jsi::Value(nullptr);
+}
+
+inline void emplaceBool(jsi::Value *_Nonnull slot, bool value) noexcept {
+  ::new (slot) jsi::Value(value);
+}
+
+inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
+  ::new (slot) jsi::Value(value);
+}
+
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
@@ -168,6 +197,35 @@ inline jsi::Value callAsConstructor(jsi::IRuntime &runtime, const jsi::Function 
   return expo::CppError::tryCatch(runtime, [&] {
     return function.callAsConstructor(runtime, args, count);
   });
+}
+
+// MARK: - String
+
+/**
+ Invokes `callback` with the engine's internal representation of `string`, chunk by chunk
+ (see `jsi::Runtime::getStringData` docs). On RN 0.86+ the method is public on `IRuntime` and is
+ called directly. On older versions (e.g. react-native-macos 0.81) it is a protected member of
+ `jsi::Runtime`, which Swift cannot call, so this wrapper routes through the public
+ `jsi::String::getStringData` template helper instead. That adds one extra indirect call per chunk,
+ negligible next to the copy/transcode of the chunk itself.
+ The callback's pointer parameters mirror the unannotated `jsi.h` signature, so the same Swift
+ function can be passed to either.
+ */
+inline void getStringData(
+  jsi::IRuntime &runtime,
+  const jsi::String &string,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  runtime.getStringData(string, ctx, callback);
+#else
+  auto forward = [ctx, callback](bool ascii, const void *data, size_t num) {
+    callback(ctx, ascii, data, num);
+  };
+  string.getStringData(runtime, forward);
+#endif
 }
 
 // MARK: - ArrayBuffer

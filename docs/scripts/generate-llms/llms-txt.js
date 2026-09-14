@@ -11,7 +11,7 @@ import { WHEN_TO_USE_SECTION } from './transforms/when-to-use.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
-const TITLE = 'Expo Documentation';
+const TITLE = 'Expo documentation';
 
 function isOverviewItem(item) {
   return item.overview === true || item.url.endsWith('/overview.md');

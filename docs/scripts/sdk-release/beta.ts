@@ -564,6 +564,39 @@ function addSdkVersionsRow() {
   writeFileSync(sdkCompatibilityPath, `${JSON.stringify(updatedTable, null, 2)}\n`);
 }
 
+function addFormatterOverride() {
+  const formatterPath = join(docsDir, '.oxfmtrc.json');
+  const formatter = JSON.parse(readFileSync(formatterPath, 'utf8')) as {
+    overrides?: { files: string[]; options?: { printWidth?: number } }[];
+  };
+
+  const override = formatter.overrides?.find(entry =>
+    entry.files.some(file => file.startsWith('pages/versions/unversioned/sdk/ui/'))
+  );
+
+  if (!override) {
+    throw new Error(
+      'Could not find the Expo UI override in docs/.oxfmtrc.json. Expo UI reference pages wrap ' +
+        'their examples at a narrower printWidth than the rest of the docs, and the override that ' +
+        `does it no longer matches pages/versions/unversioned/sdk/ui/. Add the ${versionDir} globs ` +
+        'by hand and repoint this step at the renamed override.'
+    );
+  }
+
+  const globs = ['swift-ui', 'jetpack-compose'].map(
+    library => `pages/versions/${versionDir}/sdk/ui/${library}/*.mdx`
+  );
+  const missing = globs.filter(glob => !override.files.includes(glob));
+
+  if (missing.length === 0) {
+    notes.push(`.oxfmtrc.json already covered ${versionDir} Expo UI pages and was left alone.`);
+    return;
+  }
+
+  override.files.push(...missing);
+  writeFileSync(formatterPath, `${JSON.stringify(formatter, null, 2)}\n`);
+}
+
 function setBetaVersion() {
   const updated = packageJsonText.replace(
     /("version":\s*"[^"]+",\n)/,
@@ -587,6 +620,10 @@ const steps: {
   { label: 'Refresh the canary example on the Reference index', run: updateCanaryExampleAsync },
   { label: 'Regenerate unversioned API data', run: regenerateUnversionedApiData },
   { label: `Generate ${versionDir} reference docs`, run: generateVersionedDocs },
+  {
+    label: `Cover ${versionDir} Expo UI pages in the formatter override`,
+    run: addFormatterOverride,
+  },
   { label: `Clone hardcoded type links into ${versionDir}`, run: addStaticDataTypeLinks },
   { label: 'Sync app config schema and repoint the import', run: syncAppConfigSchema },
   { label: 'Create the native-modules.json stub', run: createNativeModulesStub },
