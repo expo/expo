@@ -30,7 +30,6 @@ test.describe('server loaders in production', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: 'server-loader',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
         E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     });

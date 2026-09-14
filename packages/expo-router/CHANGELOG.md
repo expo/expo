@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `unstable_useServerDataLoaders` config plugin option and enable data loaders by default.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
