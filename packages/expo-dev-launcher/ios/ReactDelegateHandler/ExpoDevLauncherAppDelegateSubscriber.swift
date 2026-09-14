@@ -9,10 +9,8 @@ public class ExpoDevLauncherAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     EXDevLauncherController.disablePackagerServerAccess()
-    // Only an app without a scene delegate reaches a launch URL here; under UIScene the URL
-    // arrives at the scene instead, and `launchOptions[.url]` is nil. Such an app then gets the
-    // same URL again through `application(_:open:)` below, so the check can run twice. That is
-    // harmless: the nonce is the same, and the second POST finds the callback port already closed.
+    // Only an app without a scene delegate gets a launch URL here, and it sees the same URL again
+    // through `application(_:open:)`. Running twice is harmless: same nonce, closed callback port.
     if let url = launchOptions?[.url] as? URL {
       _ = EXDevLauncherFingerprintCheck.handle(url)
     }

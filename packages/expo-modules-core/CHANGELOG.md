@@ -6,8 +6,7 @@
 
 ### 🎉 New features
 
-- Expose the embedded fingerprint to native code through `EmbeddedFingerprint`. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
-- [iOS] Add `FingerprintCheckProtocol`, the literals the dev-launcher responder and the expo-linking filter both match on. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `EmbeddedFingerprint`, which reads the fingerprint a debug build embedded, and `FingerprintCheckProtocol`, the literals of the fingerprint-check exchange. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
