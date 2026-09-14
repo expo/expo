@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Add interruptSync() to cancel running operations on a database connection.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

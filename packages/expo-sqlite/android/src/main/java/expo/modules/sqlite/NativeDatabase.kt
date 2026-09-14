@@ -4,9 +4,11 @@ package expo.modules.sqlite
 
 import expo.modules.kotlin.sharedobjects.SharedRef
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.locks.ReentrantLock
 
 internal class NativeDatabase(val databasePath: String, val openOptions: OpenDatabaseOptions) : SharedRef<NativeDatabaseBinding>(NativeDatabaseBinding()) {
   var isClosed = false
+  val closeLock = ReentrantLock()
   private val refCount = AtomicInteger(1)
 
   internal fun addRef(): Int {
