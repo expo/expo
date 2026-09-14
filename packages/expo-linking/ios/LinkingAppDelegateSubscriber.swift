@@ -6,6 +6,8 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
   {
+    // Early return: a fingerprint-check trigger is handled by the dev launcher, not here. Code
+    // added below this point does not run for it — put anything that must see every URL above.
     if isFingerprintCheckURL(url) {
       return false
     }
@@ -18,6 +20,7 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     guard let url = urls.first else {
       return
     }
+    // Early return, as above: code added below this point does not run for a trigger URL.
     if isFingerprintCheckURL(url) {
       return
     }
@@ -51,5 +54,7 @@ private func isFingerprintCheckURL(_ url: URL) -> Bool {
   guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems else {
     return false
   }
-  return queryItems.contains { $0.name == "__expo_fingerprint_check" && $0.value == "1" }
+  return queryItems.contains {
+    $0.name == FingerprintCheckProtocol.markerParam && $0.value == FingerprintCheckProtocol.markerValue
+  }
 }

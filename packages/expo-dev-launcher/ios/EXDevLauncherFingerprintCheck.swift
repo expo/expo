@@ -13,15 +13,19 @@ internal struct FingerprintCheckRequest: Equatable {
     // Matched on a reserved query parameter, not a host: hosts belong to the app's own routes.
     guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
           let queryItems = components.queryItems,
-          queryItems.contains(where: { $0.name == "__expo_fingerprint_check" && $0.value == "1" }),
-          let nonce = queryItems.first(where: { $0.name == "__expo_fingerprint_nonce" })?.value,
+          queryItems.contains(where: {
+            $0.name == FingerprintCheckProtocol.markerParam
+              && $0.value == FingerprintCheckProtocol.markerValue
+          }),
+          let nonce = queryItems.first(where: { $0.name == FingerprintCheckProtocol.nonceParam })?.value,
           !nonce.isEmpty,
-          let callbackString = queryItems.first(where: { $0.name == "__expo_fingerprint_callback" })?.value,
+          let callbackString = queryItems.first(where: {
+            $0.name == FingerprintCheckProtocol.callbackParam
+          })?.value,
           let callback = URL(string: callbackString),
           // The CLI never emits https, and https to an IP literal would fail TLS anyway.
           callback.scheme == "http",
-          // Matches `CALLBACK_PATH` in the agent CLI's fingerprintCheckProtocol.ts.
-          callback.path == "/fingerprint-callback",
+          callback.path == FingerprintCheckProtocol.callbackPath,
           let callbackHost = callback.host,
           isPrivateAddress(callbackHost) else {
       return nil
@@ -105,9 +109,9 @@ public class EXDevLauncherFingerprintCheck: NSObject {
     let nonce = request.nonce
     let fingerprint = EmbeddedFingerprint.read()
     let body: [String: Any] = [
-      "nonce": nonce,
-      "fingerprint": fingerprint?.hash ?? NSNull(),
-      "fingerprintVersion": fingerprint?.fingerprintVersion ?? NSNull()
+      FingerprintCheckProtocol.nonceBodyKey: nonce,
+      FingerprintCheckProtocol.fingerprintBodyKey: fingerprint?.hash ?? NSNull(),
+      FingerprintCheckProtocol.fingerprintVersionBodyKey: fingerprint?.fingerprintVersion ?? NSNull()
     ]
 
     var urlRequest = URLRequest(url: request.callback)
