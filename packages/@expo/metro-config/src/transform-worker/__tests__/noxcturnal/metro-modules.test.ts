@@ -39,6 +39,7 @@ function options(overrides: Partial<JsTransformOptions> = {}): JsTransformOption
 function fullConfig() {
   return {
     allowOptionalDependencies: false,
+    unstable_renameRequire: false,
     asyncRequireModulePath: 'metro-runtime',
     globalPrefix: '',
     unstable_compactOutput: false,
@@ -65,8 +66,7 @@ function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
     babel.traverse(file, {
       CallExpression(path) {
         if (
-          babel.types.isIdentifier(path.node.callee) &&
-          /REQUIRE$/.test(path.node.callee.name) &&
+          babel.types.isIdentifier(path.node.callee, { name: 'require' }) &&
           babel.types.isStringLiteral(path.node.arguments[1])
         ) {
           path.replaceWith(
@@ -662,6 +662,7 @@ it('collects a Flow side-effect import in the complete Metro dependency graph', 
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -671,7 +672,7 @@ it('collects a Flow side-effect import in the complete Metro dependency graph', 
 
   if (result.status === 'fallback') throw new Error(result.reason);
   expect(result.dependencies.map(({ name }) => name)).toEqual(['../Core/InitializeCore']);
-  expect(result.result.code).toContain('_$$_REQUIRE(_dependencyMap[0], "../Core/InitializeCore")');
+  expect(result.result.code).toContain('require(_dependencyMap[0], "../Core/InitializeCore")');
 });
 
 it('continues Flow JSX through the consumer-owned native JSX capability', async () => {
@@ -698,6 +699,7 @@ it('collects native lowering helpers in the complete Metro path', async () => {
     enableBabelRuntime: '7.24.0',
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -725,6 +727,7 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -735,7 +738,7 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
   expect(result).toMatchObject({ status: 'complete' });
   if (result.status !== 'complete') return;
   expect(result.result.code).toMatch(
-    /__d\(function \(global,[\s\S]*var first = _\$\$_REQUIRE\(_dependencyMap\[0\], "one"\);[\s\S]*module\.exports = \[\s*first,\s*_\$\$_REQUIRE\(_dependencyMap\[0\], "one"\),\s*_\$\$_REQUIRE\(_dependencyMap\[1\], "two"\)\s*\];[\s\S]*\}\);/
+    /__d\(function \(global,[\s\S]*var first = require\(_dependencyMap\[0\], "one"\);[\s\S]*module\.exports = \[\s*first,\s*require\(_dependencyMap\[0\], "one"\),\s*require\(_dependencyMap\[1\], "two"\)\s*\];[\s\S]*\}\);/
   );
   expect(result.dependencies.map(({ name, data }) => [name, (data as any).imports])).toEqual([
     ['one', 2],
@@ -759,7 +762,7 @@ it('inlines stable top-level require aliases before native dependency collection
   if (result.status !== 'complete') return;
   expect(result.result.code).not.toMatch(/\bone\s*=/);
   expect(result.result.code).toContain('var kept = 2;');
-  expect(result.result.code.match(/_\$\$_REQUIRE\(_dependencyMap\[0\], "one"\)/g)).toHaveLength(2);
+  expect(result.result.code.match(/require\(_dependencyMap\[0\], "one"\)/g)).toHaveLength(2);
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
@@ -781,8 +784,8 @@ it('inlines require member aliases and respects nonInlinedRequires', async () =>
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).not.toMatch(/\bmember\s*=/);
-  expect(result.result.code).toContain(`_$$_REQUIRE(_dependencyMap[1], "one").value`);
-  expect(result.result.code).toContain(`var ignored = _$$_REQUIRE`);
+  expect(result.result.code).toContain(`require(_dependencyMap[1], "one").value`);
+  expect(result.result.code).toContain(`var ignored = require`);
   expect(result.dependencies.map(({ name }) => name)).toEqual(['two', 'one']);
 });
 
@@ -851,7 +854,7 @@ it.each([
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var binding = _$$_REQUIRE');
+  expect(result.result.code).toContain('var binding = require');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
@@ -867,9 +870,9 @@ it('retains a mutated root while inlining an alias used only as its computed key
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var binding = _$$_REQUIRE');
+  expect(result.result.code).toContain('var binding = require');
   expect(result.result.code).not.toMatch(/\bkey\s*=/);
-  expect(result.result.code).toContain('binding[_$$_REQUIRE');
+  expect(result.result.code).toContain('binding[require');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one', 'key']);
 });
 
@@ -925,7 +928,7 @@ it('compacts the complete Metro output without falling back to Babel', async () 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).not.toContain('\n');
-  expect(result.result.code).toContain('_$$_REQUIRE(_dependencyMap[0])');
+  expect(result.result.code).toContain('require(_dependencyMap[0])');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
@@ -970,6 +973,7 @@ it('completes production constant folding and DCE in native code', async () => {
     isDefaultExpoTransformer: true,
     enableBabelRuntime: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -983,7 +987,7 @@ it('completes production constant folding and DCE in native code', async () => {
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain('"production"');
-  expect(result.result.code).toContain('_$$_REQUIRE(_dependencyMap[0])');
+  expect(result.result.code).toContain('require(_dependencyMap[0])');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
@@ -1061,6 +1065,7 @@ it('collects optional dependencies and lets required uses dominate duplicates', 
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1113,6 +1118,7 @@ it('collects and rewrites weak dependencies without conflating them with sync re
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1123,7 +1129,7 @@ it('collects and rewrites weak dependencies without conflating them with sync re
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain(
-    `module.exports = [_dependencyMap[0], _$$_REQUIRE(_dependencyMap[1], "one"), _dependencyMap[0]];`
+    `module.exports = [_dependencyMap[0], require(_dependencyMap[1], "one"), _dependencyMap[0]];`
   );
   expect(
     result.dependencies.map(({ name, data }) => [name, data.asyncType, (data as any).imports])
@@ -1141,6 +1147,7 @@ it('does not treat a shadowed require.resolveWeak call as a dependency', async (
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1162,6 +1169,7 @@ it('collects and rewrites worker resolution through the Metro async runtime', as
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1172,7 +1180,7 @@ it('collects and rewrites worker resolution through the Metro async runtime', as
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain(
-    `module.exports = _$$_REQUIRE(_dependencyMap[1], "metro-runtime").unstable_resolve(_dependencyMap[0], _dependencyMap.paths);`
+    `module.exports = require(_dependencyMap[1], "metro-runtime").unstable_resolve(_dependencyMap[0], _dependencyMap.paths);`
   );
   expect(
     result.dependencies.map(({ name, data }) => [name, data.asyncType, data.isESMImport])
@@ -1190,6 +1198,7 @@ it('collects and rewrites Worker URL constructors through the Metro async runtim
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1217,6 +1226,7 @@ it('collects require.context parameters and keeps distinct contexts separate', a
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1228,7 +1238,7 @@ it('collects require.context parameters and keeps distinct contexts separate', a
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain(
-    `module.exports = [_$$_REQUIRE(_dependencyMap[0], "./views"), _$$_REQUIRE(_dependencyMap[1], "./views")];`
+    `module.exports = [require(_dependencyMap[0], "./views"), require(_dependencyMap[1], "./views")];`
   );
   expect(result.dependencies.map(({ name, data }) => [name, data.contextParams])).toEqual([
     ['./views', { recursive: true, filter: { pattern: '.*', flags: '' }, mode: 'sync' }],
@@ -1251,6 +1261,7 @@ it('leaves require.context untouched when the Metro feature is disabled', async 
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1284,6 +1295,7 @@ it.each([
       options: options({ dev: true }),
       isDefaultExpoTransformer: true,
       config: {
+        unstable_renameRequire: false,
         allowOptionalDependencies: false,
         asyncRequireModulePath: 'metro-runtime',
         globalPrefix: '',
@@ -1293,7 +1305,7 @@ it.each([
 
     if (result.status === 'fallback') throw new Error(result.reason);
     expect(result.result.code).toContain(
-      `module.exports = _$$_REQUIRE(_dependencyMap[1], "metro-runtime")${method}(_dependencyMap[0], _dependencyMap.paths, "one");`
+      `module.exports = require(_dependencyMap[1], "metro-runtime")${method}(_dependencyMap[0], _dependencyMap.paths, "one");`
     );
     expect(
       result.dependencies.map(({ name, data }) => [name, data.asyncType, data.isESMImport])
@@ -1312,6 +1324,7 @@ it('deduplicates the generated async runtime dependency across import kinds', as
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1338,6 +1351,7 @@ it('collects optional dynamic imports and lets a required duplicate dominate', a
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1386,6 +1400,7 @@ it.each([
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1411,6 +1426,7 @@ it('collects optional worker dependencies without making the runtime optional', 
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1442,6 +1458,7 @@ it('honors optional dependency exclusions for dynamic imports and workers', asyn
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: { exclude: ['excluded', 'excluded-worker'] },
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1469,6 +1486,7 @@ it('collects optional weak and context dependencies', async () => {
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1485,7 +1503,7 @@ it('collects optional weak and context dependencies', async () => {
     ['weak-entry', 'weak', true],
     ['./routes', null, true],
   ]);
-  expect(result.result.code).toContain(`_$$_REQUIRE(_dependencyMap[1], "./routes")`);
+  expect(result.result.code).toContain(`require(_dependencyMap[1], "./routes")`);
 });
 
 it.each([`import(/* @metro-ignore */ 'one')`, `import(/* webpackIgnore: true */ 'one')`])(
@@ -1498,6 +1516,7 @@ it.each([`import(/* @metro-ignore */ 'one')`, `import(/* webpackIgnore: true */ 
       options: options({ dev: true }),
       isDefaultExpoTransformer: true,
       config: {
+        unstable_renameRequire: false,
         allowOptionalDependencies: true,
         asyncRequireModulePath: 'metro-runtime',
         globalPrefix: '',
@@ -1526,6 +1545,7 @@ it.each([
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2164,6 +2184,7 @@ it('lowers static ESM imports and exports through the full native path', async (
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2173,7 +2194,7 @@ it('lowers static ESM imports and exports through the full native path', async (
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain(`var _pkg = _$$_REQUIRE(_dependencyMap[0], "pkg");`);
+  expect(result.result.code).toContain(`var _pkg = require(_dependencyMap[0], "pkg");`);
   expect(result.result.code).toContain(`var value = _interopDefault(_pkg);`);
   expect(result.result.code).toContain(`return _default;`);
   expect(result.dependencies).toMatchObject([
@@ -2384,6 +2405,7 @@ it('preserves live imported references, direct-call semantics, and live local ex
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2393,7 +2415,7 @@ it('preserves live imported references, direct-call semantics, and live local ex
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var _pkg = _$$_REQUIRE(_dependencyMap[0], "pkg")');
+  expect(result.result.code).toContain('var _pkg = require(_dependencyMap[0], "pkg")');
   expect(result.result.code).not.toContain('var _pkg2 =');
   expect(result.result.code).toContain('var ns = _interopNamespace(_pkg)');
   expect(result.result.code).toContain('var local = _pkg.value');
@@ -2498,6 +2520,7 @@ it('lowers named, namespace, and export-all re-exports with live getters', async
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
+      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
