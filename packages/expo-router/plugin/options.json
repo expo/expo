@@ -189,6 +189,11 @@
           "type": "boolean",
           "default": false
         },
+        "unstable_useServerDataLoaders": {
+          "description": "(Deprecated) Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config.",
+          "type": "boolean",
+          "default": false
+        },
         "unstable_useServerRendering": {
           "description": "Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time.",
           "type": "boolean",

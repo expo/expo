@@ -244,12 +244,12 @@ export async function exportFromServerAsync(
     routes: inspect(manifest, { colors: true, depth: null }),
   });
 
-  const loaderReferenceCount = new Set(
+  const loaderReferences = new Set(
     resources.artifacts?.flatMap((artifact) => artifact.metadata?.loaderReferences ?? [])
-  ).size;
+  );
   event('static:routes', {
     total: getHtmlFiles({ manifest, includeGroupVariations: false }).length,
-    withLoaders: loaderReferenceCount,
+    withLoaders: loaderReferences.size,
   });
 
   // Group variations prerender several pathnames from one loader file, so these maps can differ
@@ -268,7 +268,12 @@ export async function exportFromServerAsync(
 
       const renderOpts: GetStaticContentOptions = {};
 
-      const loaderResponse = await executeLoaderAsync(normalizedPathname, route);
+      const isGeneratedRoute = route.dynamic === null && route.parentContextKey;
+      const contextKey = isGeneratedRoute ? route.parentContextKey! : route.contextKey;
+
+      const loaderResponse = loaderReferences.has(path.resolve(appDir, contextKey))
+        ? await executeLoaderAsync(normalizedPathname, route)
+        : undefined;
 
       if (loaderResponse !== undefined) {
         const data = await loaderResponse.json();
@@ -374,7 +379,7 @@ export async function exportFromServerAsync(
       files.set(route, contents);
     }
 
-    if (loaderReferenceCount || defaultLoaderRules.length || declaredLoaderRules.length) {
+    if (loaderReferences.size || defaultLoaderRules.length || declaredLoaderRules.length) {
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
@@ -395,11 +400,6 @@ export async function exportFromServerAsync(
       });
 
       // Export loader bundles for routes that have loader exports
-      // Get `loaderReferences` from client bundle metadata to determine which routes have loaders
-      const loaderReferences = resources.artifacts?.flatMap(
-        (artifact) => artifact.metadata?.loaderReferences ?? []
-      );
-
       await exportLoadersAsync({
         devServer,
         serverManifest,
@@ -770,7 +770,7 @@ async function exportLoadersAsync({
   files: ExportAssetMap;
   platform: string;
   /** File paths of modules with loader exports from client bundle metadata */
-  loaderReferences: string[];
+  loaderReferences: ReadonlySet<string>;
 }): Promise<void> {
   const entryPoints: { file: string; page: string }[] = [];
 
@@ -782,7 +782,7 @@ async function exportLoadersAsync({
 
     const filePath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
 
-    if (loaderReferences.includes(filePath)) {
+    if (loaderReferences.has(filePath)) {
       entryPoints.push({
         file: filePath,
         page: route.page,
