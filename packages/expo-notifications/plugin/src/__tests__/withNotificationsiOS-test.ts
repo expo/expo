@@ -54,3 +54,40 @@ describe('iOS notifications configuration', () => {
     expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_FILES.sort());
   });
 });
+
+describe('tvOS notifications configuration', () => {
+  beforeAll(async () => {
+    jest.mock('fs');
+    const sound = fsReal.readFileSync(soundPath);
+    // Both platform directories exist, as they do after prebuilding for ios and tvos.
+    vol.fromJSON(
+      { 'ios/testproject/AppDelegate.m': '', 'tvos/testproject/AppDelegate.m': '' },
+      projectRoot
+    );
+    vol.mkdirpSync('/app/assets');
+    vol.mkdirpSync('/app/ios/testproject.xcodeproj/');
+    vol.mkdirpSync('/app/tvos/testproject.xcodeproj/');
+    vol.writeFileSync('/app/assets/notificationSound.wav', sound);
+    vol.writeFileSync('/app/ios/testproject.xcodeproj/project.pbxproj', pbxproj);
+    vol.writeFileSync('/app/tvos/testproject.xcodeproj/project.pbxproj', pbxproj);
+  });
+
+  afterAll(() => {
+    jest.unmock('fs');
+    vol.reset();
+  });
+
+  it('writes the sound file into tvos, not ios', async () => {
+    const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot, 'tvos');
+    setNotificationSounds(projectRoot, {
+      sounds: ['/app/assets/notificationSound.wav'],
+      project,
+      projectName: 'testproject',
+      platform: 'tvos',
+    });
+
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(Object.keys(after)).toContain('tvos/testproject/notificationSound.wav');
+    expect(Object.keys(after)).not.toContain('ios/testproject/notificationSound.wav');
+  });
+});

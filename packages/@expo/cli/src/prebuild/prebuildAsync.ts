@@ -6,6 +6,7 @@ import chalk from 'chalk';
 
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
+import type { CocoaPodsPlatform } from '../utils/cocoapods';
 import { env } from '../utils/env';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
@@ -69,8 +70,11 @@ export async function prebuildAsync(
 ): Promise<PrebuildResults | null> {
   const { platforms } = getConfig(projectRoot).exp;
   if (platforms?.length) {
-    // Filter out platforms that aren't in the app.json.
-    const finalPlatforms = options.platforms.filter((platform) => platforms.includes(platform));
+    // Filter out platforms that aren't in the app.json. `platforms` from
+    // app.json is typed as ('android' | 'ios' | 'web')[] and doesn't yet
+    // include 'tvos', so widen for the .includes() check.
+    const appPlatforms = platforms as string[];
+    const finalPlatforms = options.platforms.filter((platform) => appPlatforms.includes(platform));
     if (finalPlatforms.length > 0) {
       options.platforms = finalPlatforms;
     } else {
@@ -181,14 +185,20 @@ export async function prebuildAsync(
     throw error;
   }
 
-  // Install CocoaPods
+  // Install CocoaPods. Both `ios` and `tvos` generate an Xcode project with its own Podfile.
+  const cocoaPodsPlatforms = options.platforms.filter(
+    (platform): platform is CocoaPodsPlatform => platform === 'ios' || platform === 'tvos'
+  );
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
-  if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  if (cocoaPodsPlatforms.length && options.install && needsPodInstall) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     const startedAt = Date.now();
-    podsInstalled = await installCocoaPodsAsync(projectRoot);
+    podsInstalled = true;
+    for (const platform of cocoaPodsPlatforms) {
+      podsInstalled = (await installCocoaPodsAsync(projectRoot, { platform })) && podsInstalled;
+    }
     event('pods:installed', { ms: Date.now() - startedAt, skipped: false });
   } else {
     event('pods:installed', { ms: 0, skipped: true });

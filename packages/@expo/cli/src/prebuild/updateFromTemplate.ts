@@ -73,8 +73,11 @@ export async function updateFromTemplateAsync(
 
   return {
     hasNewProjectFiles: !!copiedPaths.length,
-    // If the iOS folder changes or new packages are added, we should rerun pod install.
-    needsPodInstall: copiedPaths.includes('ios') || !!depsResults.changedDependencies.length,
+    // If an Apple platform folder changes or new packages are added, we should rerun pod install.
+    needsPodInstall:
+      copiedPaths.includes('ios') ||
+      copiedPaths.includes('tvos') ||
+      !!depsResults.changedDependencies.length,
     templateChecksum,
     ...depsResults,
   };

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support OOT prebuild for tvos. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -38,8 +38,8 @@ export type ConfigurationListEntry = [string, XCConfigurationList];
 
 export type ConfigurationSectionEntry = [string, XCBuildConfiguration];
 
-export function getProjectName(projectRoot: string) {
-  const sourceRoot = Paths.getSourceRoot(projectRoot);
+export function getProjectName(projectRoot: string, platform?: Paths.ApplePlatform) {
+  const sourceRoot = Paths.getSourceRoot(projectRoot, platform);
   return path.basename(sourceRoot);
 }
 
@@ -73,10 +73,14 @@ function sanitizedNameForProjects(name: string) {
 // the ios project paths. Overall this function needs to be revamped, just a
 // placeholder for now! Make this more robust when we support applying config
 // at any time (currently it's only applied on eject).
-export function getHackyProjectName(projectRoot: string, config: ExpoConfig): string {
-  // Attempt to get the current ios folder name (apply).
+export function getHackyProjectName(
+  projectRoot: string,
+  config: ExpoConfig,
+  platform?: Paths.ApplePlatform
+): string {
+  // Attempt to get the current platform folder name (apply).
   try {
-    return getProjectName(projectRoot);
+    return getProjectName(projectRoot, platform);
   } catch {
     // If no iOS project exists then create a new one (eject).
     const projectName = config.name;
@@ -333,8 +337,8 @@ export function ensureGroupRecursively(project: XcodeProject, filepath: string):
 /**
  * Get the pbxproj for the given path
  */
-export function getPbxproj(projectRoot: string): XcodeProject {
-  const projectPath = Paths.getPBXProjectPath(projectRoot);
+export function getPbxproj(projectRoot: string, platform?: Paths.ApplePlatform): XcodeProject {
+  const projectPath = Paths.getPBXProjectPath(projectRoot, platform);
   const project = xcode.project(projectPath);
   project.parseSync();
   return project;

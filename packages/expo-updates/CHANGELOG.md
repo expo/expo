@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [tvos] Accept `tvos` in `configuration:syncnative`, so a tvOS build syncs `tvos/…/Expo.plist` instead of the iOS one. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
 - [iOS] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50018](https://github.com/expo/expo/pull/50018) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50019](https://github.com/expo/expo/pull/50019) by [@alanjhughes](https://github.com/alanjhughes))
 
