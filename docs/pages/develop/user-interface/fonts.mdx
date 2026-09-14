@@ -256,6 +256,7 @@ export default function RootLayout() {
   /* @info Map the font file using `useFonts` hook. */
   const [loaded, error] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+    'Roboto Flex': require('./assets/fonts/RobotoFlex.ttf'),
   });
   /* @end */
 
@@ -290,8 +291,8 @@ Use the font on the `<Text>` by using `fontFamily` style prop in a React compone
 If the file you mapped is a [variable font](#variable-fonts), select a face with the `fontWeight` and `fontStyle` style props:
 
 ```tsx
-<Text style={{ fontFamily: 'RobotoFlex-variable', fontWeight: '300' }}>Light</Text>
-<Text style={{ fontFamily: 'RobotoFlex-variable', fontWeight: '700' }}>Bold</Text>
+<Text style={{ fontFamily: 'Roboto Flex', fontWeight: '300' }}>Roboto Flex Light</Text>
+<Text style={{ fontFamily: 'Roboto Flex', fontWeight: '700' }}>Roboto Flex Bold</Text>
 ```
 
 `useFonts` reads the weight axis only. To set another axis, such as `wdth` or `slnt`, embed the font with the [config plugin](#with-expo-font-config-plugin) on Android.
