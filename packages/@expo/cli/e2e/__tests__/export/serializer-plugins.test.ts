@@ -12,9 +12,10 @@ runExportSideEffects();
 describe('exports with serializer plugins', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-splitting-plugins';
-  const outputDir = path.join(projectRoot, outputName, 'client');
+  const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
+    // E2E_USE_MOCK_SERIALIZER_PLUGIN=1 NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production npx expo export -p web --source-maps --output-dir dist-static-splitting-plugins
     await executeExpoAsync(
       projectRoot,
       ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
@@ -22,6 +23,7 @@ describe('exports with serializer plugins', () => {
         env: {
           NODE_ENV: 'production',
           E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
+          EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'modal-splitting',
           E2E_ROUTER_ASYNC: 'production',
         },
