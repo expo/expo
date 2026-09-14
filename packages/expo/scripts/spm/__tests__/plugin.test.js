@@ -97,7 +97,7 @@ describe('the pure-Swift branch', () => {
     pureSwiftModule(
       path.join(tmp, 'expo-localization'),
       'ExpoLocalization',
-      spec("  s.platforms = { :ios => '16.4' }")
+      spec('  s.pod_target_xcconfig = {', "    'OTHER_LDFLAGS' => '$(inherited) -lc++'", '  }')
     );
     resolveExpoModules.mockReturnValue([
       {
@@ -156,16 +156,15 @@ describe('the pure-Swift branch', () => {
   it('emits no package for it, while the modules around it still render', () => {
     const emitted = (product) => path.join(outDir, 'expo', 'expo-source', product, 'Package.swift');
     expect(fs.existsSync(emitted('ExpoMediaLibrary'))).toBe(false);
-    expect(fs.readFileSync(emitted('ExpoAsset'), 'utf8')).toContain('platforms: [.iOS("16.4")],');
+    expect(fs.existsSync(emitted('ExpoAsset'))).toBe(true);
   });
 
   it('finds the podspec under ios/ when the pod points at the module root', () => {
+    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    expect(report).toContain('ExpoLocalization.podspec:3');
     expect(
-      fs.readFileSync(
-        path.join(outDir, 'expo', 'expo-source', 'ExpoLocalization', 'Package.swift'),
-        'utf8'
-      )
-    ).toContain('platforms: [.iOS("16.4")],');
+      fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoLocalization', 'Package.swift'))
+    ).toBe(true);
   });
 
   it('emits a module that links through its xcconfig, and warns about the flags', () => {
@@ -595,6 +594,7 @@ describe('a precompiled product whose name differs from its pod name', () => {
 describe('the source-emit pass', () => {
   let logs;
   let outDir;
+  let packageRoot;
   let thrown;
 
   beforeAll(() => {
@@ -603,7 +603,7 @@ describe('the source-emit pass', () => {
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     // The Swift sources live in the npm package; the pod points elsewhere, so
     // only the document leads to a root the emit can work from.
-    const packageRoot = path.join(tmp, 'node_modules', 'expo-remote');
+    packageRoot = path.join(tmp, 'node_modules', 'expo-remote');
     pureSwiftModule(packageRoot, 'ExpoRemote', spec("  s.platforms = { :ios => '16.4' }"));
     const podspecDir = path.join(tmp, 'podspecs', 'remote');
     fs.mkdirSync(podspecDir, { recursive: true });
@@ -660,18 +660,16 @@ describe('the source-emit pass', () => {
 
   it('emits the pure-Swift package found at the documented root', () => {
     expect(thrown).toBeNull();
-    expect(
-      fs.readFileSync(
-        path.join(outDir, 'expo', 'expo-source', 'ExpoRemote', 'Package.swift'),
-        'utf8'
-      )
-    ).toContain('platforms: [.iOS("16.4")],');
+    const pkgDir = path.join(outDir, 'expo', 'expo-source', 'ExpoRemote');
+    expect(fs.readFileSync(path.join(pkgDir, 'Package.swift'), 'utf8')).toContain(
+      'name: "ExpoRemote"'
+    );
+    expect(fs.realpathSync(path.join(pkgDir, 'root'))).toBe(fs.realpathSync(packageRoot));
   });
 });
 
-// CocoaPods raises every Expo module to ExpoModulesCore's deployment floor, and
-// the document is where that floor comes from now — the podspec reader is only
-// the fallback for a module whose config has not landed yet.
+// CocoaPods raises every Expo module to ExpoModulesCore's deployment floor, and the
+// prebuilt-metadata document is the only place that floor comes from.
 describe('the iOS deployment floor', () => {
   let logs;
   let outDir;
@@ -695,6 +693,8 @@ describe('the iOS deployment floor', () => {
       high: path.join(tmp, 'expo-high'),
       // Its podspec disagrees with the document, so the winner is observable.
       disagreeing: path.join(tmp, 'expo-disagreeing'),
+      // Absent from the document entirely — the case a config-less package lands in.
+      absent: path.join(tmp, 'expo-absent'),
     };
     const dirs = {
       core: pureSwiftModule(
@@ -709,6 +709,11 @@ describe('the iOS deployment floor', () => {
         'ExpoDisagreeing',
         spec("  s.platforms = { :ios => '18.0' }")
       ),
+      absent: pureSwiftModule(
+        roots.absent,
+        'ExpoAbsent',
+        spec("  s.platforms = { :ios => '18.0' }")
+      ),
     };
     resolveExpoModules.mockReturnValue([
       {
@@ -721,6 +726,7 @@ describe('the iOS deployment floor', () => {
         packageName: 'expo-disagreeing',
         pods: [{ podName: 'ExpoDisagreeing', podspecDir: dirs.disagreeing }],
       },
+      { packageName: 'expo-absent', pods: [{ podName: 'ExpoAbsent', podspecDir: dirs.absent }] },
     ]);
     prebuiltMetadata.mockReturnValue({
       ExpoModulesCore: entry(roots.core, dirs.core, 'ExpoModulesCore', '16.4'),
@@ -774,5 +780,11 @@ describe('the iOS deployment floor', () => {
   // can be its source.
   it('takes the floor from the document, not from the podspec', () => {
     expect(emitted('ExpoDisagreeing')).toContain('platforms: [.iOS("17.5")],');
+  });
+
+  // Its podspec asks for 18.0 and gets 16.4: a module the document does not describe
+  // has no floor of its own, so it lands on the core floor every module is raised to.
+  it('gives a module the document omits the core floor, not its podspec floor', () => {
+    expect(emitted('ExpoAbsent')).toContain('platforms: [.iOS("16.4")],');
   });
 });
