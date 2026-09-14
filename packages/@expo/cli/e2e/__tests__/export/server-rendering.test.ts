@@ -20,7 +20,6 @@ describe('exports server', () => {
       export: {
         env: {
           E2E_ROUTER_ASYNC: '',
-          E2E_ROUTER_SERVER_RENDERING: 'true',
           E2E_FAVICON: './assets/icon.png',
         },
         cliFlags: ['--source-maps'],

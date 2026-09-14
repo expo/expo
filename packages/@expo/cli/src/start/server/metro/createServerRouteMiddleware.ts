@@ -114,8 +114,7 @@ export function createRouteHandlerMiddleware(
       async getHtml(request, route) {
         try {
           const { exp } = options.config;
-          const isSSREnabled =
-            exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+          const isSSREnabled = exp.web?.output === 'server';
 
           const { content } = await options.getStaticPageAsync(
             request.url,

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `unstable_useServerRendering` config plugin option. Server output now renders HTML at request time by default.
+
 ### 🎉 New features
 
 - Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))

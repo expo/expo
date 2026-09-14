@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `unstable_useServerRendering` config plugin option. Server output now renders HTML at request time by default.
+
 ### 🎉 New features
 
 - Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))

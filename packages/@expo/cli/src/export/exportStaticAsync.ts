@@ -214,17 +214,14 @@ export async function exportFromServerAsync(
     mode,
   }: Options
 ): Promise<ExportAssetMap> {
-  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
-
   const logOutput =
-    exp?.web?.output === 'server' && useServerRendering
+    exp?.web?.output === 'server'
       ? `Server rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/server-rendering/')}`
       : `Static rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/static-rendering/')}`;
   Log.log(logOutput);
 
   const platform = 'web';
-  const isExportingWithSSR =
-    exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
+  const isExportingWithSSR = exportServer && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
   const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
     outputDir,

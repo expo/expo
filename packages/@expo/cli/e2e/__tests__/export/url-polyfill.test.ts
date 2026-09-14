@@ -17,7 +17,6 @@ describe('exports with url-polyfill', () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'ios', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'url-polyfill',
         E2E_ROUTER_ASYNC: 'development',
       },
