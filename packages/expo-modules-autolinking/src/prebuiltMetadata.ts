@@ -21,6 +21,9 @@ export interface PrebuiltMetadataEntry {
   /** The product's iOS deployment floor as a plain version string ("16.4").
    * Absent where the config declares none this can read. */
   iosDeploymentTarget?: string;
+  /** Product names of the SPM packages this product links, each of which ships
+   * as its own XCFramework beside the product. Absent where it links none. */
+  spmDependencies?: string[];
 }
 
 export type PrebuiltMetadataDocument = Record<string, PrebuiltMetadataEntry>;
@@ -139,6 +142,17 @@ function readIosDeploymentTarget(platforms: unknown): string | undefined {
   return undefined;
 }
 
+/** Mirrors Ruby's `spm_dependency_frameworks`: the product name of every SPM
+ * package the product links, skipping entries that name none. */
+function readSpmDependencies(spmPackages: unknown): string[] {
+  if (!Array.isArray(spmPackages)) {
+    return [];
+  }
+  return spmPackages
+    .map((pkg: { productName?: unknown } | null) => pkg?.productName)
+    .filter((name): name is string => typeof name === 'string');
+}
+
 function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: string) {
   const configPath = path.join(packageRoot, 'spm.config.json');
   const config = readJsonFile(configPath);
@@ -160,6 +174,7 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
         continue;
       }
       const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
+      const spmDependencies = readSpmDependencies(product.spmPackages);
       entries[podName] = {
         type: 'internal',
         npmPackage,
@@ -168,6 +183,7 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
         productName: product.name || podName,
         ...(product.sourceOnly === true && { sourceOnly: true }),
         ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
+        ...(spmDependencies.length > 0 && { spmDependencies }),
       };
     }
   } catch (error) {
@@ -205,6 +221,7 @@ async function scanExternalConfigsAsync(
           continue;
         }
         const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
+        const spmDependencies = readSpmDependencies(product.spmPackages);
         entries[podName] = {
           type: 'external',
           npmPackage,
@@ -213,6 +230,7 @@ async function scanExternalConfigsAsync(
           productName: product.name || podName,
           ...(product.sourceOnly === true && { sourceOnly: true }),
           ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
+          ...(spmDependencies.length > 0 && { spmDependencies }),
         };
       }
     } catch (error) {
