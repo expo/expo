@@ -4,13 +4,12 @@
 
 ### 🛠 Breaking changes
 
-- Remove the `unstable_useServerDataLoaders` config plugin option and enable data loaders by default.
-
 ### 🎉 New features
 
 - Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))
 - Export `attachRouteState` for custom router extensions. ([#49712](https://github.com/expo/expo/pull/49712) by [@Ubax](https://github.com/Ubax))
 - Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
+- Enable data loaders by default for static and server output ([#50118](https://github.com/expo/expo/pull/50118) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
