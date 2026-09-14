@@ -50,6 +50,7 @@
     "expect-type": "^1.3.0",
     "expo-module-scripts": "workspace:*",
     "expo-router": "workspace:*",
+    "node-html-parser": "^6.1.5",
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
