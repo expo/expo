@@ -1,4 +1,5 @@
 import CoreGraphics
+import Foundation
 
 /**
  * Queries custom native font names from the Info.plist `UIAppFonts`.
@@ -72,7 +73,7 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
 
   // ``CGFont`` reports the PostScript name of the file's default instance, which is the one to
   // move up front.
-  let defaultPostScriptName = CGDataProvider(url: url).flatMap { CGFont($0)?.postScriptName as String? }
+  let defaultPostScriptName = defaultInstancePostScriptName(url: url)
 
   let hasVariationAxes = fontDescriptors.contains { descriptor in
     let axes = CTFontDescriptorCopyAttribute(descriptor, kCTFontVariationAxesAttribute) as? [Any]
@@ -96,6 +97,35 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
   }
 
   return [defaultPostScriptName ?? postScriptNames[0]]
+}
+
+internal func defaultInstancePostScriptName(url: CFURL) -> String? {
+  return CGDataProvider(url: url).flatMap { CGFont($0)?.postScriptName as String? }
+}
+
+// `kCTFontWeightTrait` is 0.0 for regular, negative for lighter, positive for bolder.
+internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: CGFloat)? {
+  guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(url) as? [CTFontDescriptor],
+    !fontDescriptors.isEmpty else {
+    return nil
+  }
+
+  let defaultPostScriptName = defaultInstancePostScriptName(url: url)
+  let descriptor = defaultPostScriptName.flatMap { defaultName in
+    fontDescriptors.first { descriptor in
+      (CTFontDescriptorCopyAttribute(descriptor, kCTFontNameAttribute) as? String) == defaultName
+    }
+  } ?? fontDescriptors[0]
+
+  guard let traits = CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute) as? [String: Any] else {
+    return nil
+  }
+
+  let symbolicTraits = (traits[kCTFontSymbolicTrait as String] as? NSNumber)?.uint32Value ?? 0
+  let isItalic = symbolicTraits & CTFontSymbolicTraits.traitItalic.rawValue != 0
+  let weightTrait = (traits[kCTFontWeightTrait as String] as? NSNumber)?.doubleValue ?? 0
+
+  return (isItalic: isItalic, weightTrait: CGFloat(weightTrait))
 }
 
 /**

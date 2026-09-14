@@ -6,7 +6,8 @@
 
 ### 🎉 New features
 
-- Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync`, and generate correct `font-weight`/`font-style` `@font-face` rules on web. ([#49485](https://github.com/expo/expo/pull/49485) by [@bryanmylee](https://github.com/bryanmylee))
+- [android][ios] Select a face of a multi-face font family with the `fontWeight` and `fontStyle` style props. ([#49486](https://github.com/expo/expo/pull/49486) by [@vonovak](https://github.com/vonovak))
+- Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync` on Android, iOS, and web. Use `fontWeight` and `fontStyle` style props to select the correct face. ([#47939](https://github.com/expo/expo/pull/47939) by [@bryanmylee](https://github.com/bryanmylee))
 
 ### 🐛 Bug fixes
 
