@@ -64,11 +64,9 @@ async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, 
     return null;
   }
 
-  const contents = {
-    hash: fingerprint.hash,
-    sources: fingerprint.sources,
-    fingerprintVersion: readFingerprintVersion(fingerprintPath),
-  };
+  // Spread rather than pick: a field added to `Fingerprint` travels with it instead of being
+  // silently dropped here. The version is not part of it, so it is added.
+  const contents = { ...fingerprint, fingerprintVersion: readFingerprintVersion(fingerprintPath) };
   await fs.promises.writeFile(filePath, JSON.stringify(contents));
   return filePath;
 }
