@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
