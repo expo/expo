@@ -5,6 +5,11 @@
     "appDelegateSubscribers": ["TaskManagerAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.taskManager.TaskManagerModule"]
+    "modules": ["expo.modules.taskManager.TaskManagerModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.taskmanager",
+      "repository": "local-maven-repo"
+    }
   }
 }

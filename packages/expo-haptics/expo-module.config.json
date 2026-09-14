@@ -4,6 +4,11 @@
     "modules": ["HapticsModule"]
   },
   "android": {
-    "modules": ["expo.modules.haptics.HapticsModule"]
+    "modules": ["expo.modules.haptics.HapticsModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.haptics",
+      "repository": "local-maven-repo"
+    }
   }
 }

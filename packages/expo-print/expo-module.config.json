@@ -4,6 +4,11 @@
     "modules": ["ExpoPrintModule"]
   },
   "android": {
-    "modules": ["expo.modules.print.PrintModule"]
+    "modules": ["expo.modules.print.PrintModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.print",
+      "repository": "local-maven-repo"
+    }
   }
 }

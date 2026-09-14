@@ -13,6 +13,7 @@ import expo.modules.plugin.android.createEmptyExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createExpoPublishTask
 import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
+import expo.modules.plugin.android.validateProjectConfiguration
 import expo.modules.plugin.gradle.ExpoModuleExtension
 import io.github.expo.pika.PikaGradleExtension
 import org.gradle.api.Project
@@ -121,10 +122,18 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
       project.createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
 
       val npmLocalRepositoryRelativePath = "local-maven-repo"
-      val npmLocalRepository = File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}").toURI()
+      val precompileRepository = project.providers.gradleProperty("expo.precompileAndroid.repository")
+        .orNull
+        ?.let(::File)
+        ?.absoluteFile
+      if (precompileRepository != null) {
+        project.validateProjectConfiguration(expoModulesExtension)
+      }
+      val npmLocalRepository = precompileRepository
+        ?: File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}")
       project.publishingExtension().repositories.mavenLocal { mavenRepo ->
         mavenRepo.name = "NPMPackage"
-        mavenRepo.url = npmLocalRepository
+        mavenRepo.url = npmLocalRepository.toURI()
       }
 
       project.createExpoPublishTask(publicationInfo, expoModulesExtension, npmLocalRepositoryRelativePath)

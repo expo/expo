@@ -5,6 +5,11 @@
     "appDelegateSubscribers": ["InsightsAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.insights.ExpoInsightsModule"]
+    "modules": ["expo.modules.insights.ExpoInsightsModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.insights",
+      "repository": "local-maven-repo"
+    }
   }
 }
