@@ -79,9 +79,8 @@ export function createRouteHandlerMiddleware(
           });
         }
 
-        const { exp } = options.config;
-
-        if (manifest && exp.extra?.router?.unstable_useServerDataLoaders === true) {
+        const output = options.config.exp.web?.output;
+        if (manifest && (output === 'static' || output === 'server')) {
           // In development, set `loader` property on all HTML routes. We can't know which routes
           // have loaders without bundling via Metro to detect exports. In production, this is
           // populated by `exportStaticAsync.ts` after bundling.

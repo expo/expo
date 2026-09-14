@@ -406,7 +406,7 @@ describe('getStaticPageAsync', () => {
     });
   });
 
-  it('normalizes loader Response data and passes dynamic params to metadata', async () => {
+  it('loads data without an opt-in flag and passes dynamic params to metadata', async () => {
     jest.mocked(getConfig).mockReturnValue({
       pkg: {},
       exp: {
@@ -417,7 +417,6 @@ describe('getStaticPageAsync', () => {
         },
         extra: {
           router: {
-            unstable_useServerDataLoaders: true,
             unstable_useServerRendering: true,
           },
         },
@@ -476,9 +475,7 @@ describe('executeServerDataLoaderAsync', () => {
           output: 'static',
         },
         extra: {
-          router: {
-            unstable_useServerDataLoaders: true,
-          },
+          router: {},
         },
       },
     } as unknown as ReturnType<typeof getConfig>);
