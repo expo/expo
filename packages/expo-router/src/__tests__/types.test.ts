@@ -3,7 +3,7 @@ import type { ComponentProps } from 'react';
 import type { MiddlewareNode, RouteNode } from '../Route';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { Stack as JSStack } from '../layouts/JSStack';
-import type { AbsoluteHref, AbsolutePath, ContextKey } from '../types/paths';
+import type { AbsoluteHref, AbsolutePath, ContextKey, EntryPoint } from '../types/paths';
 import type { ScreenProps } from '../useScreens';
 import type { Navigator, Slot } from '../views/Navigator';
 
@@ -38,6 +38,12 @@ export type _SyntheticContextKeyIsAContextKey = Expect<
 >;
 export type _PlainNameIsNotAContextKey = Expect<
   Equal<'app/index.tsx' extends ContextKey ? true : false, false>
+>;
+export type _DestinationContextKeyAllowsExternalUrls = Expect<
+  Equal<RouteNode['destinationContextKey'], EntryPoint | undefined>
+>;
+export type _ExternalUrlIsAnEntryPoint = Expect<
+  Equal<'https://example.com/x' extends EntryPoint ? true : false, true>
 >;
 
 export type _UrlObjectPathnameIsAbsolutePath = Expect<Equal<UrlObject['pathname'], AbsolutePath>>;

@@ -6,7 +6,7 @@ import { createContext, use, type ComponentType, type PropsWithChildren } from '
 import { getRoutePathname } from './matchers';
 import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import type { ContextKey } from './types/paths';
+import type { ContextKey, EntryPoint } from './types/paths';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
 
@@ -55,8 +55,8 @@ export type RouteNode = {
   route: string;
   /** Context Module ID, used for matching children. */
   contextKey: ContextKey;
-  /** Redirect Context Module ID, used for matching children. */
-  destinationContextKey?: string;
+  /** Redirect Context Module ID, used for matching children. An external redirect stores its URL here. */
+  destinationContextKey?: EntryPoint;
   /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
   parentContextKey?: ContextKey;
   /** Is the redirect permanent. */
@@ -65,7 +65,13 @@ export type RouteNode = {
   generated?: boolean;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
   internal?: boolean;
-  /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
+  /**
+   * File paths for async entry modules that should be included in the initial chunk request to
+   * ensure the runtime JavaScript matches the statically rendered HTML representation.
+   *
+   * Stays `string`: the router fills these with context keys (or a destination URL for an
+   * external redirect), and static export later rewrites them to absolute module paths.
+   */
   entryPoints?: string[];
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
   methods?: string[];

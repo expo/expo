@@ -7,6 +7,8 @@
  * they stay `string`.
  */
 
+import type { ExternalPathString } from '../typed-routes/types';
+
 /** A `require.context` key as Metro produces it: relative, with the file extension. */
 export type FileContextKey = `./${string}`;
 
@@ -25,3 +27,11 @@ export type AbsolutePath = `/${string}`;
 
 /** An {@link AbsolutePath} that may carry `?query`/`#hash`, or `''` before the first navigation. */
 export type AbsoluteHref = AbsolutePath | '';
+
+/**
+ * A module to load before a route renders.
+ *
+ * Usually a context key, but an external redirect names its destination URL here,
+ * because there is no module behind it.
+ */
+export type EntryPoint = ContextKey | ExternalPathString;
