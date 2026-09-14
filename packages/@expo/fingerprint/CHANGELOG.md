@@ -9,7 +9,7 @@
 
 ### 🎉 New features
 
-- Added `SourceSkips.AutolinkingConfigPaths` to omit filesystem path fields from the resolved `expo-modules-autolinking` and `react-native-config` configs. Linked module names and `scriptPhases` names still hash. `scriptPhases[].path` is omitted. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
+- Added `SourceSkips.AutolinkingConfigPaths` to omit filesystem path fields from the resolved `expo-modules-autolinking` and `react-native-config` configs. Linked module names and `scriptPhases` names still hash. `scriptPhases[].path` and path overrides from the project's **react-native.config.js**, such as `sourceDir`, are omitted. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

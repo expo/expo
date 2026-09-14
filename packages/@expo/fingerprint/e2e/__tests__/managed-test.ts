@@ -212,27 +212,66 @@ describe('managed project test', () => {
       cwd: projectRoot,
     });
     const diff = await diffFingerprintChangesAsync(fingerprint, projectRoot);
-    const normalized = normalizeAutolinkingVersionsForSnapshot(diff);
-    expect(normalized).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          op: 'added',
-          addedSource: expect.objectContaining({
-            name: '@react-native-community/netinfo',
-            type: 'package',
-          }),
-        }),
-      ])
-    );
-    expect(
-      normalized.some(
-        (item) =>
-          item.op === 'changed' &&
-          item.afterSource.type === 'contents' &&
-          String(item.afterSource.id).includes('AutolinkingConfig') &&
-          String(item.afterSource.contents).includes('@react-native-community/netinfo')
-      )
-    ).toBe(true);
+    expect(normalizeAutolinkingVersionsForSnapshot(diff)).toMatchInlineSnapshot(`
+      [
+        {
+          "afterSource": {
+            "contents": "[{"name":"@react-native-community/netinfo","platforms":{"android":{"packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"libraryName":"RNCNetInfoSpec","componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}},{"name":"expo","platforms":{"android":{"packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}]",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:android",
+            "reasons": [
+              "rncoreAutolinkingAndroid",
+            ],
+            "type": "contents",
+          },
+          "beforeSource": {
+            "contents": "[{"name":"expo","platforms":{"android":{"packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}]",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:android",
+            "reasons": [
+              "rncoreAutolinkingAndroid",
+            ],
+            "type": "contents",
+          },
+          "op": "changed",
+        },
+        {
+          "afterSource": {
+            "contents": "[{"name":"@react-native-community/netinfo","platforms":{"ios":{"version":"*","configurations":[],"scriptPhases":[]}}},{"name":"expo","platforms":{"ios":{"version":"*","configurations":[],"scriptPhases":[]}}}]",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:ios",
+            "reasons": [
+              "rncoreAutolinkingIos",
+            ],
+            "type": "contents",
+          },
+          "beforeSource": {
+            "contents": "[{"name":"expo","platforms":{"ios":{"version":"*","configurations":[],"scriptPhases":[]}}}]",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:ios",
+            "reasons": [
+              "rncoreAutolinkingIos",
+            ],
+            "type": "contents",
+          },
+          "op": "changed",
+        },
+        {
+          "addedSource": {
+            "filePath": "node_modules/@react-native-community/netinfo/package.json",
+            "hash": "*",
+            "name": "@react-native-community/netinfo",
+            "reasons": [
+              "rncoreAutolinkingAndroid",
+              "rncoreAutolinkingIos",
+            ],
+            "type": "package",
+            "version": "*",
+          },
+          "op": "added",
+        },
+      ]
+    `);
   });
 
   it('should have same hash even if google service file path is different', async () => {
