@@ -58,7 +58,6 @@ describe(`createFingerprintFileAsync`, () => {
       });
       const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
       expect(result).toBe(filePath);
-      // The hash travels with the version that produced it; a reader needs both to compare safely.
       expect(JSON.parse(fs.readFileSync(filePath, 'utf8'))).toEqual({
         hash: 'fakehash123',
         fingerprintVersion: expect.stringMatching(/^\d+\.\d+\.\d+/),
@@ -100,8 +99,6 @@ describe(`createFingerprintFileAsync`, () => {
     expect(fs.existsSync(filePath)).toBe(false);
   });
 
-  // The version is metadata: a project whose package.json cannot be read still gets a usable hash,
-  // and the reader treats the missing version as "cannot compare" rather than as a match.
   it(`writes a null version when @expo/fingerprint's package.json cannot be resolved`, async () => {
     mockCreateProjectHashAsync.mockResolvedValue('fakehash123');
     const { createFingerprintFileAsync, FINGERPRINT_FILE_NAME } = loadModule({
