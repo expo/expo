@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Keep connections usable and cached after a failed close, allowing statement cleanup and another close attempt.
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
