@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- A debug build answers a fingerprint check on a physical iOS device: it reads the fingerprint it embedded and posts it back to the tool that asked. The responder is debug-only, accepts a private-network callback over http only, and blocks redirects. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+- [iOS] Answer a fingerprint check on a physical device from a debug build, so a tool can read the fingerprint the build embedded. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 

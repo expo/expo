@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Ignore the fingerprint-check trigger URL, so it never reaches `getLinkingURL()` or the `url` event. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+- [iOS] Ignore the fingerprint-check trigger URL, so it never reaches `getLinkingURL()` or the `url` event. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
