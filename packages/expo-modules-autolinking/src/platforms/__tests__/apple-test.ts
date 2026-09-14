@@ -2,8 +2,10 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
+import type { ModuleDescriptorIos } from '../../types';
 import {
   formatArrayOfReactDelegateHandler,
+  generateModulesProviderAsync,
   getSwiftModuleNames,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
@@ -212,6 +214,57 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
     });
+  });
+});
+
+describe(generateModulesProviderAsync, () => {
+  const targetPath = '/app/ios/ExpoModulesProvider.swift';
+
+  const commonModule: ModuleDescriptorIos = {
+    packageName: 'expo-constants',
+    pods: [{ podName: 'EXConstants', podspecDir: '/path/to/expo/packages/expo-constants/ios' }],
+    flags: { inhibit_warnings: false },
+    modules: [{ name: null, class: 'ConstantsModule' }],
+    swiftModuleNames: ['EXConstants'],
+    appDelegateSubscribers: [],
+    reactDelegateHandlers: [],
+    debugOnly: false,
+  };
+
+  const debugOnlyModule: ModuleDescriptorIos = {
+    packageName: 'expo-dev-menu',
+    pods: [{ podName: 'EXDevMenu', podspecDir: '/path/to/expo/packages/expo-dev-menu/ios' }],
+    flags: { inhibit_warnings: false },
+    modules: [{ name: null, class: 'DevMenuModule' }],
+    swiftModuleNames: ['EXDevMenu'],
+    appDelegateSubscribers: ['DevMenuAppDelegateSubscriber'],
+    reactDelegateHandlers: ['DevMenuReactDelegateHandler'],
+    debugOnly: true,
+  };
+
+  async function generateAsync(modules: ModuleDescriptorIos[]) {
+    await generateModulesProviderAsync(modules, targetPath, null, {
+      watchedDirectories: [],
+      inlineModulesTargets: { targets: [] },
+      targetPath,
+      appRoot: '/app',
+    });
+    return vol.readFileSync(targetPath, 'utf8') as string;
+  }
+
+  it('gates the debug-only import list on DEBUG as well as EXPO_CONFIGURATION_DEBUG', async () => {
+    const content = await generateAsync([debugOnlyModule]);
+    expect(content).toContain('#if DEBUG || EXPO_CONFIGURATION_DEBUG\ninternal import EXDevMenu');
+  });
+
+  it('gates every debug-only registration branch on DEBUG as well as EXPO_CONFIGURATION_DEBUG', async () => {
+    const content = await generateAsync([commonModule, debugOnlyModule]);
+
+    // The import list plus the three getters that split debug-only registration.
+    expect(content.match(/#if DEBUG \|\| EXPO_CONFIGURATION_DEBUG/g)).toHaveLength(4);
+    // A gate resting on EXPO_CONFIGURATION_DEBUG alone is unset under SwiftPM,
+    // where no pod install runs the project integrator.
+    expect(content).not.toMatch(/#if EXPO_CONFIGURATION_DEBUG/);
   });
 });
 

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Emit `#if DEBUG || EXPO_CONFIGURATION_DEBUG` in the generated modules provider, so debug-only modules (`expo-dev-menu`, `expo-dev-launcher`) still register in debug builds of a project that never ran `pod install` — for example a SwiftPM app, where the CocoaPods project integrator never sets `EXPO_CONFIGURATION_DEBUG`. ([#48254](https://github.com/expo/expo/pull/48254) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
