@@ -4,6 +4,7 @@ import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports'
 
 import { Log } from '../../log';
 import { DevToolsPlugin } from './DevToolsPlugin';
+import { ModelContextRegistry } from './modelContext/ModelContextRegistry';
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';
 
@@ -28,8 +29,12 @@ export const event = events('expo');
 
 export default class DevToolsPluginManager {
   private plugins: DevToolsPlugin[] | null = null;
+  /** Tools the running app registers at runtime through `modelContext` from `expo/devtools`. */
+  public readonly modelContextRegistry: ModelContextRegistry;
 
-  constructor(private projectRoot: string) {}
+  constructor(private projectRoot: string) {
+    this.modelContextRegistry = new ModelContextRegistry(projectRoot);
+  }
 
   public async queryPluginsAsync(): Promise<DevToolsPlugin[]> {
     if (!this.plugins) {
