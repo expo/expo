@@ -4,9 +4,9 @@
 
 ### 🛠 Breaking changes
 
-- Remove the `unstable_useServerDataLoaders` config plugin option and enable data loaders by default.
-
 ### 🎉 New features
+
+- Enable data loaders by default for static and server output ([#50118](https://github.com/expo/expo/pull/50118) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 

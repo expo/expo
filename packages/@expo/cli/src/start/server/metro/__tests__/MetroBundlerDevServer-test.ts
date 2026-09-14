@@ -406,7 +406,7 @@ describe('getStaticPageAsync', () => {
     });
   });
 
-  it('loads data without an opt-in flag and passes dynamic params to metadata', async () => {
+  it('normalizes loader Response data and passes dynamic params to metadata', async () => {
     jest.mocked(getConfig).mockReturnValue({
       pkg: {},
       exp: {
