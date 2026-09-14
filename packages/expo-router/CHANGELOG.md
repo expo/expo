@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add controls for opting queued router operations out of React transitions. (by [@Ubax](https://github.com/Ubax))
+- Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
