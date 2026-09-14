@@ -184,7 +184,7 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (58.0.0):
     - ExpoModulesCore
-  - ExpoRouter (58.0.1):
+  - ExpoRouter (58.0.2):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (58.0.0):
@@ -223,7 +223,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSensors (58.0.0):
     - ExpoModulesCore
-  - ExpoSharing (58.0.1):
+  - ExpoSharing (58.0.2):
     - ExpoModulesCore
   - ExpoSMS (58.0.0):
     - ExpoModulesCore
@@ -251,7 +251,7 @@ PODS:
   - ExpoWebBrowser (58.0.0):
     - ExpoModulesCore
   - EXStructuredHeaders (58.0.0)
-  - EXUpdates (58.0.1):
+  - EXUpdates (58.0.2):
     - boost
     - DoubleConversion
     - EASClient
@@ -4884,12 +4884,12 @@ SPEC CHECKSUMS:
   ExpoNetwork: 48f8a1742e936ca9acf2138e7e9c82ecee44c6c1
   ExpoNotifications: 48c73b2022a763e3eefd0f99998152ca85be6408
   ExpoPrint: af41587952932a7874e774d273fab6c5bad85a4a
-  ExpoRouter: 399d13bd613de6100ef6c86b842d334b657d2180
+  ExpoRouter: 6c799219ed15f48f1cf34991c27d9bace049c20c
   ExpoScreenCapture: a6298562ab38fe7facb5109666c256dabe910be1
   ExpoScreenOrientation: 11522c4a6749ba70bdf4ae1fdcf5d8cf490db573
   ExpoSecureStore: 5b305232d1425f81bdae0dde50b9a78be5f010bd
   ExpoSensors: 3a631c1f1937b463c2bfdc5548f07e70874ba0f9
-  ExpoSharing: c0f5c0809477f008b266e6eeaa3c7539ca69f2d1
+  ExpoSharing: 1cd14f30f48bfc6431b2316b201ea43aacc19af2
   ExpoSMS: de0548417822ae2993a43a6b9db32f3b17ef29f5
   ExpoSpeech: bd1d1df24f0cda4bdaca80cecf643c95cbf3ce61
   ExpoSQLite: ace17d4a6fdf7e2b293fa3e8b2c9a678f9424706
@@ -4902,7 +4902,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 425753b9da57163310b03f4bafaad28bb9971fe0
   ExpoWebBrowser: 68251c42a3cc5ca41d7299b3de477ed19c526e01
   EXStructuredHeaders: 6953b31d4ff803903fc3bf178f07a6ee7286157b
-  EXUpdates: 69d0ab9fdf51c53451997a9e6ff5ba839106d6db
+  EXUpdates: fa964ad17e3d0e5f6aa46c02f5cc13e2f7ccf8e8
   EXUpdatesInterface: e3e64a7854cc0fc05b3053ba447ea12871acfe19
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 3bfb058a0984bc787b7be62860fbaf9a6c11dd5b
