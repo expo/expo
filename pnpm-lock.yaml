@@ -2979,6 +2979,9 @@ importers:
       jest-runner-tsd:
         specifier: ^6.0.0
         version: 6.0.0(@jest/test-result@29.7.0)(@tsd/typescript@6.0.3)(jest-runner@29.7.0)
+      node-html-parser:
+        specifier: ^6.1.5
+        version: 6.1.13
       react-server-dom-webpack:
         specifier: ~19.0.6
         version: 19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
