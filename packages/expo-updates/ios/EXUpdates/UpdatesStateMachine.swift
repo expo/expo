@@ -418,12 +418,12 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEvent.InternalType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+      logger.warn(message: "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)")
       return false
     }
     let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
     if !validUpdatesStateValues.contains(newStateValue) {
-      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+      logger.warn(message: "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)")
       return false
     }
     // Successful transition
@@ -547,8 +547,8 @@ internal class UpdatesStateMachine {
 
   /**
    For a particular machine state, only certain events may be processed.
-   If the machine receives an unexpected event, an assertion failure will occur
-   and the app will crash.
+   If the machine receives an unexpected event, the event is dropped and a warning
+   is written to the updates log.
    */
   private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
     .idle: [.startStartup, .endStartup, .check, .download, .restart],

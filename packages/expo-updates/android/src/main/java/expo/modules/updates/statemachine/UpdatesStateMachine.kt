@@ -114,12 +114,12 @@ class UpdatesStateMachine(
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: Set<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: setOf()
     if (!allowedEvents.contains(event.type)) {
-      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      logger.warn("UpdatesState: invalid transition requested, event dropped: state = $state, event = ${event.type}")
       return false
     }
     val newStateValue = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
     if (!validUpdatesStateValues.contains(newStateValue)) {
-      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      logger.warn("UpdatesState: invalid transition requested, event dropped: state = $state, event = ${event.type}")
       return false
     }
     state = newStateValue
