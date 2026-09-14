@@ -27,7 +27,7 @@ First, configure your app to use server output by adding the server configuratio
     /* @hide ... */
     /* @end */
     "web": {
-      /* @info Middleware is only supported in server mode */
+      /* @info Enable server rendering */
       "output": "server"
       /* @end */
     },
@@ -35,6 +35,8 @@ First, configure your app to use server output by adding the server configuratio
   }
 }
 ```
+
+In SDK 58 and later, middleware also supports `web.output: "static"` when `apiRoutes: true` is set in the `expo-router` config plugin. This allows middleware to run before [prerendered HTML and API routes](/router/web/api-routes/#create-an-api-route).
 
 </Step>
 

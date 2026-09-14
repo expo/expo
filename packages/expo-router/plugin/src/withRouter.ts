@@ -94,6 +94,8 @@ export type Props = {
   headers?: Record<string, string | string[]>;
   /** A list of headers that are set on a specific path's response from the server. */
   pageHeaders?: PageHeadersConfig[];
+  /** Enable API routes with static or server output. Defaults to `true` for server output and `false` for static output. */
+  apiRoutes?: boolean;
   /**
    * (Deprecated) Enable experimental server middleware support. Middleware no longer requires an opt-in as of SDK 58.
    * @deprecated
@@ -137,6 +139,12 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   }
 
   validate(schema, props);
+
+  if (props.apiRoutes !== undefined && !['static', 'server'].includes(config.web?.output ?? '')) {
+    throw new Error(
+      'The `apiRoutes` option requires `web.output` to be set to `static` or `server`.'
+    );
+  }
 
   withExpoHeadIos(config);
   withGammaScreens(config);

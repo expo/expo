@@ -738,7 +738,7 @@ function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
   if (apiRoutes.length) {
     // TODO: Allow API Routes for native-only.
     Log.warn(
-      chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
+      chalk.yellow`Skipping export for API routes because API routes are disabled. Set \`apiRoutes: true\` in the \`expo-router\` config plugin to enable them. You may want to remove the routes: ${apiRoutes
         .map((v) => path.relative(appDir, v))
         .join(', ')}`
     );
@@ -747,7 +747,7 @@ function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
   const middlewareFile = getMiddlewareForDirectory(appDir, mode);
   if (middlewareFile) {
     Log.warn(
-      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
+      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server" and API routes are disabled. Set \`apiRoutes: true\` in the \`expo-router\` config plugin to enable them. You may want to remove ${path.relative(appDir, middlewareFile)}`
     );
   }
 }
