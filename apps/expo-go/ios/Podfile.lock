@@ -6,8 +6,6 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (58.0.0):
     - ExpoModulesCore
-  - EXApplication (58.0.0):
-    - ExpoModulesCore
   - EXConstants (58.0.0):
     - ExpoModulesCore
   - EXJSONUtils (58.0.0)
@@ -49,6 +47,8 @@ PODS:
   - ExpoAgeRange (58.0.0):
     - ExpoModulesCore
   - ExpoAppleAuthentication (58.0.0):
+    - ExpoModulesCore
+  - ExpoApplication (58.0.0):
     - ExpoModulesCore
   - ExpoAsset (58.0.0):
     - ExpoModulesCore
@@ -4243,13 +4243,13 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
-  - EXApplication (from `../../../packages/expo-application/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
   - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
+  - ExpoApplication (from `../../../packages/expo-application/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -4478,8 +4478,6 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/DoubleConversion.podspec"
   EASClient:
     :path: "../../../packages/expo-eas-client/ios"
-  EXApplication:
-    :path: "../../../packages/expo-application/ios"
   EXConstants:
     :path: "../../../packages/expo-constants/ios"
   EXJSONUtils:
@@ -4492,6 +4490,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-age-range/ios"
   ExpoAppleAuthentication:
     :path: "../../../packages/expo-apple-authentication/ios"
+  ExpoApplication:
+    :path: "../../../packages/expo-application/ios"
   ExpoAsset:
     :path: "../../../packages/expo-asset/ios"
   ExpoAudio:
@@ -4833,13 +4833,13 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: bc4dd37e41331d1dbaf1ad1e318b52aecf6558f8
-  EXApplication: 1732a4b20176d5541da12d08342c305cd3359430
   EXConstants: 97b6cdcd4a358ff196f1cc6ee16d7ec7d8b4bd17
   EXJSONUtils: 3b7064a062e0f6ea6979effda486a0a672b51933
   EXManifests: a6478083657b29dc16daf451118c5219afb52082
   Expo: be29bc576107c06220ca8ab71906076a7397bdc8
   ExpoAgeRange: a7a565a1af2aa08232371ecfaab3d6201fd4b5c8
   ExpoAppleAuthentication: 7919e8d2780c50d6740afd328c00691da0b642a8
+  ExpoApplication: b5a886186302c777dd8a037c09d552e52d9471ea
   ExpoAsset: 96da58295a3310957b99f272e5341706d01fcfab
   ExpoAudio: 1dcb3125338ed6e4351b91cb6cf3ceda5aeab6a2
   ExpoBackgroundFetch: 60674c61c9755c724831b489610eb79956578b56

@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- [iOS] Rename the `EXApplication` pod to `ExpoApplication`. ([#50059](https://github.com/expo/expo/pull/50059) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Migrate to the Expo Modules API 2.0 macros. ([#50059](https://github.com/expo/expo/pull/50059) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.0 — 2026-09-10
 
 _This version does not introduce any user-facing changes._

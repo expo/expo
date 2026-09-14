@@ -31,8 +31,6 @@ PODS:
   - EASClient/Tests (58.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXApplication (58.0.0):
-    - ExpoModulesCore
   - EXConstants (58.0.0):
     - ExpoModulesCore
   - EXJSONUtils (58.0.0)
@@ -277,6 +275,11 @@ PODS:
     - ExpoUI
   - ExpoAppleAuthentication (58.0.0):
     - ExpoModulesCore
+  - ExpoApplication (58.0.0):
+    - ExpoModulesCore
+  - ExpoApplication/Tests (58.0.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoAppMetrics (58.0.0):
     - ExpoModulesCore
     - EXUpdatesInterface
@@ -3135,7 +3138,6 @@ DEPENDENCIES:
   - DoubleConversion (from `build/rndeps-facades/DoubleConversion`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
   - EASClient/Tests (from `../../../packages/expo-eas-client/ios`)
-  - EXApplication (from `../../../packages/expo-application/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
@@ -3155,6 +3157,8 @@ DEPENDENCIES:
   - ExpoAppIntents (from `../../../packages/expo-app-intents/ios`)
   - ExpoAppIntents/Tests (from `../../../packages/expo-app-intents/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
+  - ExpoApplication (from `../../../packages/expo-application/ios`)
+  - ExpoApplication/Tests (from `../../../packages/expo-application/ios`)
   - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
@@ -3386,9 +3390,6 @@ EXTERNAL SOURCES:
   EASClient:
     inhibit_warnings: false
     :path: "../../../packages/expo-eas-client/ios"
-  EXApplication:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-application/ios"
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
@@ -3424,6 +3425,9 @@ EXTERNAL SOURCES:
   ExpoAppleAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-apple-authentication/ios"
+  ExpoApplication:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-application/ios"
   ExpoAppMetrics:
     inhibit_warnings: false
     :path: "../../../packages/expo-app-metrics/ios"
@@ -3863,7 +3867,6 @@ SPEC CHECKSUMS:
   boost: 8502bfdc46e2804408af2e163049ece181009af4
   DoubleConversion: 501a575c40c0b50c89685762dd3e415e6bb26fb0
   EASClient: bc4dd37e41331d1dbaf1ad1e318b52aecf6558f8
-  EXApplication: 1732a4b20176d5541da12d08342c305cd3359430
   EXConstants: 97b6cdcd4a358ff196f1cc6ee16d7ec7d8b4bd17
   EXJSONUtils: 3b7064a062e0f6ea6979effda486a0a672b51933
   EXManifests: a6478083657b29dc16daf451118c5219afb52082
@@ -3876,6 +3879,7 @@ SPEC CHECKSUMS:
   ExpoAppIntegrity: 091164fbaaeeee3f99c27002660d5b85da52b672
   ExpoAppIntents: c9da69e5bc10b2037055965922ea8da92b2d4ae7
   ExpoAppleAuthentication: 7919e8d2780c50d6740afd328c00691da0b642a8
+  ExpoApplication: b5a886186302c777dd8a037c09d552e52d9471ea
   ExpoAppMetrics: a19d3379043425278e35c906309ba9f78d6b78b3
   ExpoAsset: 96da58295a3310957b99f272e5341706d01fcfab
   ExpoAudio: 1dcb3125338ed6e4351b91cb6cf3ceda5aeab6a2
