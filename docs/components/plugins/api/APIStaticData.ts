@@ -617,6 +617,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     StackToolbarBadgeProps: '/versions/v58.0.0/sdk/router/stack/#stacktoolbarbadgeprops',
     StackToolbarIconProps: '/versions/v58.0.0/sdk/router/stack/#stacktoolbariconprops',
     StackToolbarLabelProps: '/versions/v58.0.0/sdk/router/stack/#stacktoolbarlabelprops',
+    StandardUseNavigationBuilderOptions:
+      '/versions/v58.0.0/sdk/router/#standardusenavigationbuilderoptions',
     SwitchColors: '/versions/v58.0.0/sdk/ui/jetpack-compose/switch/#switchcolors',
     TabsProps: '/versions/v58.0.0/sdk/router/ui/#tabsprops',
     TabTriggerProps: '/versions/v58.0.0/sdk/router/ui/#tabtriggerprops',
