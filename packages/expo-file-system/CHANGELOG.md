@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a crash on the JS thread when a `DownloadTask`/`UploadTask` is garbage-collected while its request completes: the release hook and the URLSession delegate queue raced on the task slot and `cancel` was sent to a freed `NSURLSessionTask`. ([#50106](https://github.com/expo/expo/pull/50106) by [@isaacrowntree](https://github.com/isaacrowntree))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
