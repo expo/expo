@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template.
+- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template. ([#50108](https://github.com/expo/expo/pull/50108) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
