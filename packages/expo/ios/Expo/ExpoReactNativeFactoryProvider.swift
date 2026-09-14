@@ -5,6 +5,10 @@ import React
 import ExpoObjC
 #endif
 
+/// The module name React Native registers when the app names none of its own. Shared with
+/// `DeferredReactNativeStart`, which tells an app's own module name from an untouched default.
+internal let defaultReactNativeFactoryModuleName = "main"
+
 /**
  Conformed to by the application's `AppDelegate` so that the scene delegate can retrieve
  the React Native factory it created during `application(_:didFinishLaunchingWithOptions:)`.
@@ -27,6 +31,6 @@ public protocol ExpoReactNativeFactoryProvider: AnyObject {
 
 public extension ExpoReactNativeFactoryProvider {
   var reactNativeFactoryModuleName: String {
-    return "main"
+    return defaultReactNativeFactoryModuleName
   }
 }

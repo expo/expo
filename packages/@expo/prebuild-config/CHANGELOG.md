@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Restore the `window`, the `factory.startReactNative(...)` call, and the Linking overrides in the generated `AppDelegate`, so config plugins that codemod those lines keep matching.
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))

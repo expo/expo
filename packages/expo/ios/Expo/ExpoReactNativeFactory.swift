@@ -8,8 +8,6 @@ import ExpoObjC
 #endif
 
 public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
-  private let defaultModuleName = "main"
-
   @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
     ExpoReactDelegate(
@@ -69,6 +67,55 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       settings.jsLocation = target
     }
 #endif
+  }
+
+  private let deferredStart = DeferredReactNativeStart()
+
+  // The manifest is fixed for the life of the process, and reading it is the only positive signal
+  // that something will replay a deferred start.
+  private lazy var declaresExpoSceneDelegate = ExpoSceneDelegateManifest.declaresExpoSceneDelegate()
+
+  // Every `startReactNativeWithModuleName:` overload funnels into this one, so overriding it here
+  // routes both the app delegate's start and the scene delegate's through the deferral.
+  public override func startReactNative(
+    withModuleName moduleName: String,
+    in window: UIWindow?,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [AnyHashable: Any]?
+  ) {
+    // Swift 6 won't let this nonisolated override send `self` into a main actor-isolated closure,
+    // so the closure below captures only the pieces it needs.
+    let deferredStart = self.deferredStart
+    let sceneDelegateWillStart = declaresExpoSceneDelegate
+    let requested = ReactNativeStartRequest(
+      moduleName: moduleName,
+      initialProperties: initialProperties,
+      launchOptions: launchOptions
+    )
+    // `super` builds a root view controller, so this only ever runs on the main thread. The
+    // assertion says so up front, because `MainActor.assumeIsolated` traps without a message.
+    assert(
+      Thread.isMainThread,
+      "startReactNative(withModuleName:in:initialProperties:launchOptions:) must be called on the main thread."
+    )
+    guard let request = MainActor.assumeIsolated({
+      deferredStart.resolve(
+        requested,
+        window: ReactNativeStartWindow(
+          hasWindow: window != nil,
+          sceneSessionRole: window?.windowScene?.session.role
+        ),
+        sceneDelegateWillStart: sceneDelegateWillStart
+      )
+    }) else {
+      return
+    }
+    super.startReactNative(
+      withModuleName: request.moduleName,
+      in: window,
+      initialProperties: request.initialProperties,
+      launchOptions: request.launchOptions
+    )
   }
 #endif
 
@@ -136,7 +183,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
       rootView = factory.superView(
-        withModuleName: moduleName ?? defaultModuleName,
+        withModuleName: moduleName ?? defaultReactNativeFactoryModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions ?? [:],
         bundleConfiguration: bundleConfiguration,
@@ -144,7 +191,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       )
 #else
       rootView = factory.superView(
-        withModuleName: moduleName ?? defaultModuleName,
+        withModuleName: moduleName ?? defaultReactNativeFactoryModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions ?? [:]
       )
@@ -155,7 +202,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
         bundleURL: withBundleURL ?? configuration?.bundleURLBlock()
       )
       rootView = rootViewFactory.view(
-        withModuleName: moduleName ?? defaultModuleName,
+        withModuleName: moduleName ?? defaultReactNativeFactoryModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions,
         bundleConfiguration: bundleConfiguration,
@@ -163,7 +210,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       )
 #else
       rootView = rootViewFactory.view(
-        withModuleName: moduleName ?? defaultModuleName,
+        withModuleName: moduleName ?? defaultReactNativeFactoryModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions
       )
