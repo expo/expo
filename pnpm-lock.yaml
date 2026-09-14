@@ -817,8 +817,8 @@ importers:
         specifier: 19.2.3
         version: 19.2.3
       react-native:
-        specifier: 0.87.1
-        version: 0.87.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+        specifier: 0.88.0-rc.0
+        version: 0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3)
 
   apps/minimal-tester:
     dependencies:
