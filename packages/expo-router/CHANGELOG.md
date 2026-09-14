@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Rename `unstable_integrateWithRouter` and `unstable_createStandardRouterNavigator` to `integrateWithRouter` and `createStandardRouterNavigator`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ubax](https://github.com/Ubax))
+- Rename `unstable_integrateWithRouter` and `unstable_createStandardRouterNavigator` to `integrateWithRouter` and `createStandardRouterNavigator`. ([#50128](https://github.com/expo/expo/pull/50128) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 
