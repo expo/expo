@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Keep connections usable and cached after a failed close, allowing statement cleanup and another close attempt.
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))

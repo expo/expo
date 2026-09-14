@@ -141,18 +141,10 @@ class SQLiteModule : Module() {
       }
 
       AsyncFunction("closeAsync") { database: NativeDatabase ->
-        maybeThrowForClosedDatabase(database)
-        val db = removeCachedDatabase(database)
-        if (db != null) {
-          closeDatabase(db)
-        }
+        closeDatabaseIfNeeded(database)
       }.runOnQueue(moduleCoroutineScope)
       Function("closeSync") { database: NativeDatabase ->
-        maybeThrowForClosedDatabase(database)
-        val db = removeCachedDatabase(database)
-        if (db != null) {
-          closeDatabase(db)
-        }
+        closeDatabaseIfNeeded(database)
       }
 
       AsyncFunction("execAsync") { database: NativeDatabase, source: String ->
@@ -568,16 +560,22 @@ class SQLiteModule : Module() {
   }
 
   @Synchronized
-  private fun removeCachedDatabase(database: NativeDatabase): NativeDatabase? {
+  private fun closeDatabaseIfNeeded(database: NativeDatabase) {
+    maybeThrowForClosedDatabase(database)
     val index = cachedDatabases.indexOf(database)
     if (index >= 0) {
       val db = cachedDatabases[index]
       if (db.release() == 0) {
+        try {
+          closeDatabase(db)
+        } catch (error: Exception) {
+          // Keep the connection cached and owned so callers can clean up and retry.
+          db.addRef()
+          throw error
+        }
         cachedDatabases.removeAt(index)
-        return db
       }
     }
-    return null
   }
 
   @Synchronized
