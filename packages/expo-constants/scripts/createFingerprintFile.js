@@ -27,7 +27,7 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
   try {
     return await writeFingerprintFileAsync(projectRoot, destinationDir, platform, enabled);
   } catch (error) {
-    warnFingerprintEmbedFailed(error);
+    warnFingerprintEmbedFailed(/** @type {Error} */ (error));
     return null;
   }
 }
@@ -73,6 +73,7 @@ async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, 
   return filePath;
 }
 
+/** @param {string} fingerprintPath */
 function readFingerprintVersion(fingerprintPath) {
   const packagePath = resolveFrom(path.dirname(fingerprintPath), '@expo/fingerprint/package.json');
   if (!packagePath) {
@@ -90,6 +91,7 @@ function isFingerprintEmbeddingDisabled() {
   return value != null && !['0', 'false', ''].includes(value.toLowerCase());
 }
 
+/** @param {Error} error */
 function warnFingerprintEmbedFailed(error) {
   // The fingerprint is optional metadata: never fail the build over it.
   console.warn(
