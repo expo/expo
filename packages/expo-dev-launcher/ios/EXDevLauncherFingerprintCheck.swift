@@ -106,7 +106,8 @@ public class EXDevLauncherFingerprintCheck: NSObject {
     let fingerprint = EmbeddedFingerprint.read()
     let body: [String: Any] = [
       "nonce": nonce,
-      "fingerprint": fingerprint ?? NSNull()
+      "fingerprint": fingerprint?.hash ?? NSNull(),
+      "fingerprintVersion": fingerprint?.fingerprintVersion ?? NSNull()
     ]
 
     var urlRequest = URLRequest(url: request.callback)

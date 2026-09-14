@@ -14,6 +14,7 @@ describe('fingerprint-check protocol parity', () => {
     callbackPath: '/fingerprint-callback',
     nonceBodyKey: 'nonce',
     fingerprintBodyKey: 'fingerprint',
+    fingerprintVersionBodyKey: 'fingerprintVersion',
   };
 
   const RESPONDER = 'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift';
@@ -43,7 +44,11 @@ describe('fingerprint-check protocol parity', () => {
     ['the callback query param', `$0.name == "${PROTOCOL.callbackParam}"`],
     ['the callback path', `callback.path == "${PROTOCOL.callbackPath}"`],
     ['the nonce body key', `"${PROTOCOL.nonceBodyKey}": nonce`],
-    ['the fingerprint body key', `"${PROTOCOL.fingerprintBodyKey}": fingerprint`],
+    ['the fingerprint body key', `"${PROTOCOL.fingerprintBodyKey}": fingerprint?.hash`],
+    [
+      'the fingerprint version body key',
+      `"${PROTOCOL.fingerprintVersionBodyKey}": fingerprint?.fingerprintVersion`,
+    ],
   ])(`the dev-launcher responder declares %s`, (_description, literal) => {
     expect(read(RESPONDER)).toContain(literal);
   });
