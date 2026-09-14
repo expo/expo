@@ -104,6 +104,11 @@ export type Props = {
    * @deprecated
    */
   unstable_useServerDataLoaders?: boolean;
+  /**
+   * (Deprecated) Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time.
+   * @deprecated
+   */
+  unstable_useServerRendering?: boolean;
   /** Disable synchronous layout updates for native screens. */
   disableSynchronousScreensUpdates?: boolean;
   /** Rerender the app on color scheme changes. When enabled, the app tree will rerender when the system theme changes (light/dark mode). Defaults to `true`. */
@@ -122,6 +127,12 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   if (Object.hasOwn(props, 'unstable_useServerDataLoaders')) {
     warnOnce(
       '`unstable_useServerDataLoaders` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
+    );
+  }
+
+  if (Object.hasOwn(props, 'unstable_useServerRendering')) {
+    warnOnce(
+      '`unstable_useServerRendering` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
     );
   }
 

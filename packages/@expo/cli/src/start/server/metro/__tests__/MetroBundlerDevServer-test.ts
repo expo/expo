@@ -302,9 +302,6 @@ describe('getStaticPageAsync', () => {
         web: {
           output: 'server',
         },
-        extra: {
-          router: {},
-        },
       },
     } as unknown as ReturnType<typeof getConfig>);
   });
@@ -375,9 +372,6 @@ describe('getStaticPageAsync', () => {
         web: {
           output: 'static',
         },
-        extra: {
-          router: {},
-        },
       },
     } as unknown as ReturnType<typeof getConfig>);
 
@@ -410,9 +404,6 @@ describe('getStaticPageAsync', () => {
         slug: 'test',
         web: {
           output: 'server',
-        },
-        extra: {
-          router: {},
         },
       },
     } as unknown as ReturnType<typeof getConfig>);
