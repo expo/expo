@@ -21,6 +21,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Built the vendored SQLite with `SQLITE_ENABLE_API_ARMOR` so misuse returns `SQLITE_MISUSE` instead of crashing. ([#49068](https://github.com/expo/expo/pull/49068) by [@kudo](https://github.com/kudo))
 
 ## 58.0.0 — 2026-09-10
 
