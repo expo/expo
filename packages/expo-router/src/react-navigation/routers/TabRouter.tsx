@@ -304,7 +304,7 @@ const changeIndex = (
 
 function tabRouterExtension({
   baseRouter,
-  createRouteKeyMinter,
+  nextKey,
   options: { initialRouteName, backBehavior = 'firstRoute' },
 }: RouterExtensionContext<
   TabNavigationState<ParamListBase>,
@@ -343,7 +343,6 @@ function tabRouterExtension({
       if (action.target && action.target !== state.key) {
         return null;
       }
-      const minter = createRouteKeyMinter(state);
 
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
@@ -357,7 +356,7 @@ function tabRouterExtension({
             state.routes.filter((route) => routeNames.includes(route.name)),
             routeNames,
             initialRouteName,
-            minter.mint
+            nextKey
           );
 
           if (routes.length === 0) {
@@ -366,7 +365,6 @@ function tabRouterExtension({
                 ...state,
                 routeNames,
                 routes,
-                routeKeySeq: minter.routeKeySeq,
                 index: -1,
                 history: [],
               },
@@ -433,7 +431,6 @@ function tabRouterExtension({
               history,
               routeNames,
               routes,
-              routeKeySeq: minter.routeKeySeq,
               index,
             },
             affectedRouteKey: routes[index]!.key,
@@ -451,7 +448,7 @@ function tabRouterExtension({
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
             const route = createRouteFromAction({
               action,
-              key: minter.mint(action.payload.name),
+              key: nextKey(action.payload.name),
             });
             return action.type === 'NAVIGATE' && action.payload.path != null
               ? { ...route, path: action.payload.path }
@@ -472,7 +469,7 @@ function tabRouterExtension({
                 const nextId = getId?.({ params: action.payload.params });
 
                 // TODO(@ubax): Rewrite `history` when `getId` re-keys a route, as `PRELOAD` does with `replacedKey`.
-                const key = currentId === nextId ? route.key : minter.mint(route.name);
+                const key = currentId === nextId ? route.key : nextKey(route.name);
 
                 let params;
 
@@ -499,7 +496,6 @@ function tabRouterExtension({
                     : route;
                 return attachRouteState(updatedRoute, action);
               }),
-              routeKeySeq: minter.routeKeySeq,
             },
             index,
             backBehavior,
@@ -576,12 +572,12 @@ function tabRouterExtension({
           if (backTargetName !== undefined && backTargetName !== focusedRoute.name) {
             const { routes, index } = addRouteIfMissing(state.routes, backTargetName, () => ({
               name: backTargetName,
-              key: minter.mint(backTargetName),
+              key: nextKey(backTargetName),
             }));
 
             if (routes !== state.routes) {
               const result = changeIndex(
-                { ...state, routes, routeKeySeq: minter.routeKeySeq },
+                { ...state, routes },
                 index,
                 backBehavior,
                 initialRouteName
@@ -639,7 +635,7 @@ function tabRouterExtension({
           if (routeIndex === -1) {
             const route = attachRouteState(
               {
-                ...createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+                ...createRouteFromAction({ action, key: nextKey(action.payload.name) }),
                 isPreloaded: true,
               },
               action
@@ -651,7 +647,7 @@ function tabRouterExtension({
             const getId = routeGetIdList[route.name];
             const currentId = getId?.({ params: route.params });
             const nextId = getId?.({ params: action.payload.params });
-            const key = currentId === nextId ? route.key : minter.mint(route.name);
+            const key = currentId === nextId ? route.key : nextKey(route.name);
             const params = action.payload.params;
             const newRoute = attachRouteState(
               params !== route.params
@@ -713,7 +709,6 @@ function tabRouterExtension({
               ...state,
               routes,
               history,
-              routeKeySeq: minter.routeKeySeq,
             },
             affectedRouteKey,
           };

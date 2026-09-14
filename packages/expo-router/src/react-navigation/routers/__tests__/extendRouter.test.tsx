@@ -113,22 +113,18 @@ describe('extendRouter', () => {
     expect(focused.routes[0]?.name).toBe('INDEX');
   });
 
-  test('provides a route key minter to the extension', () => {
-    const router = extendRouter(TestRouter, ({ createRouteKeyMinter }) => ({
-      getStateForAction: (state) => {
-        const minter = createRouteKeyMinter(state);
-        const route = { key: minter.mint('index'), name: 'index' };
-        return {
-          state: { ...state, routes: [...state.routes, route], routeKeySeq: minter.routeKeySeq },
-          affectedRouteKey: route.key,
-        };
-      },
+  test('mints route keys with nextKey and stamps routeKeySeq on every returned state', () => {
+    const router = extendRouter(TestRouter, ({ nextKey }) => ({
+      getStateForRouteFocus: (state) => ({
+        ...state,
+        routes: [...state.routes, { key: nextKey('index'), name: 'index' }],
+      }),
     }))({});
 
-    const result = router.getStateForAction(state, { type: 'GO_BACK' }, config);
+    const focused = router.getStateForRouteFocus(state, 'index:0');
 
-    expect(result?.affectedRouteKey).toBe('index:2');
-    expect(result?.state.routeKeySeq).toBe(3);
+    expect(focused.routes[2]?.key).toBe('index:2');
+    expect(focused.routeKeySeq).toBe(3);
   });
 
   test('can change the state, action, and options types', () => {

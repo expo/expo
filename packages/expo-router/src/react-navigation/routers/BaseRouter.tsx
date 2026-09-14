@@ -1,5 +1,6 @@
 import { NoopRouter } from './NoopRouter';
 import { extendRouter } from './extendRouter';
+import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   NavigationAction,
@@ -14,10 +15,7 @@ import type {
  */
 export const BaseRouter = extendRouter(
   NoopRouter,
-  ({
-    baseRouter,
-    createRouteKeyMinter,
-  }): Partial<Router<NavigationState, CommonNavigationAction>> => ({
+  ({ baseRouter }): Partial<Router<NavigationState, CommonNavigationAction>> => ({
     getStateForDeclaredRoutes(state, routeNames) {
       const declaredRouteNames = new Set(routeNames);
       const routes = state.routes.filter((route) => declaredRouteNames.has(route.name));
@@ -90,6 +88,8 @@ export const BaseRouter = extendRouter(
               return null;
             }
 
+            // The payload may carry a higher sequence than the current state, so RESET mints on
+            // its own instead of using `nextKey`.
             const minter = createRouteKeyMinter({
               key: state.key,
               routeKeySeq: Math.max(state.routeKeySeq, nextState.routeKeySeq ?? 0),

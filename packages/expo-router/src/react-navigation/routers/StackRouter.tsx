@@ -208,7 +208,7 @@ export const StackActions = {
 
 function stackRouterExtension({
   baseRouter,
-  createRouteKeyMinter,
+  nextKey,
   options: { initialRouteName },
 }: RouterExtensionContext<
   StackNavigationState<ParamListBase>,
@@ -259,7 +259,6 @@ function stackRouterExtension({
     getStateForAction(inputState, action, options) {
       const state = ensureStateType(inputState, 'stack');
       const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
-      const minter = createRouteKeyMinter(state);
 
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
@@ -286,7 +285,7 @@ function stackRouterExtension({
             const fallbackRoute =
               preloadedIndex === -1
                 ? {
-                    key: minter.mint(fallbackName),
+                    key: nextKey(fallbackName),
                     name: fallbackName,
                   }
                 : filteredPreloadedRoutes[preloadedIndex]!;
@@ -296,7 +295,6 @@ function stackRouterExtension({
 
           const result = {
             ...reconcileStackRoutes(state, routes, filteredPreloadedRoutes),
-            routeKeySeq: minter.routeKeySeq,
             routeNames,
           };
           return { state: result, affectedRouteKey: result.routes[result.index]?.key };
@@ -326,7 +324,7 @@ function stackRouterExtension({
           );
 
           if (!route) {
-            route = createRouteFromAction({ action, key: minter.mint(action.payload.name) });
+            route = createRouteFromAction({ action, key: nextKey(action.payload.name) });
           }
           route = attachRouteState(route, action);
 
@@ -337,7 +335,6 @@ function stackRouterExtension({
                 activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
                 preloadedRoutes.filter((r) => r.key !== route.key)
               ),
-              routeKeySeq: minter.routeKeySeq,
             },
             affectedRouteKey: route.key,
           };
@@ -439,7 +436,7 @@ function stackRouterExtension({
               ...activeRoutes,
               attachRouteState(
                 {
-                  key: minter.mint(action.payload.name),
+                  key: nextKey(action.payload.name),
                   name: action.payload.name,
                   path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                   params,
@@ -457,7 +454,6 @@ function stackRouterExtension({
                 routes,
                 preloadedRoutes.filter((route) => affectedRouteKey !== route.key)
               ),
-              routeKeySeq: minter.routeKeySeq,
             },
             affectedRouteKey,
           };
@@ -560,7 +556,7 @@ function stackRouterExtension({
             );
 
             if (!route) {
-              route = createRouteFromAction({ action, key: minter.mint(action.payload.name) });
+              route = createRouteFromAction({ action, key: nextKey(action.payload.name) });
             }
             route = attachRouteState(route, action);
 
@@ -573,7 +569,6 @@ function stackRouterExtension({
                   routes,
                   preloadedRoutes.filter((r) => r.key !== route.key)
                 ),
-                routeKeySeq: minter.routeKeySeq,
               },
               affectedRouteKey: route.key,
             };
@@ -654,7 +649,7 @@ function stackRouterExtension({
             };
           } else {
             const preloadedRoute = attachRouteState(
-              createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+              createRouteFromAction({ action, key: nextKey(action.payload.name) }),
               action
             );
             return {
@@ -668,7 +663,6 @@ function stackRouterExtension({
                     )
                     .concat(preloadedRoute)
                 ),
-                routeKeySeq: minter.routeKeySeq,
               },
               affectedRouteKey: preloadedRoute.key,
             };

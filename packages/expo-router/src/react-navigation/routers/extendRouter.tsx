@@ -18,16 +18,25 @@ export type RouterExtensionContext<
    * The router being extended. Delegate to it for everything the extension does not handle.
    * It is typed for the extended state and actions; actions it does not recognize return `null`.
    */
-  baseRouter: Router<State, Action>;
+  baseRouter: Router<State, Action> & {
+    /**
+     * `config` defaults to the config of the action being reduced.
+     */
+    getStateForAction(
+      state: State,
+      action: Action,
+      config?: RouterConfigOptions
+    ): RouterActionResult<State> | null;
+  };
   /**
    * The options the navigator passed to the router factory.
    */
   options: Options;
   /**
-   * Creates a route key minter for a navigation state. Write the minter's `routeKeySeq` back
-   * onto the state you return.
+   * Mints the next route key for the state being reduced or focused. `routeKeySeq` is tracked for
+   * you and stamped onto the returned state.
    */
-  createRouteKeyMinter: typeof createRouteKeyMinter;
+  nextKey(name: string): string;
 };
 
 /**
@@ -76,31 +85,69 @@ export function extendRouter<
     // The extension owns the state and action types of the router it produces. The base router
     // is created for the base types and the extension decides which of its members still apply.
     const baseRouter = base(options) as unknown as Router<State, Action>;
+
+    // The call in progress. One counter is shared by `nextKey` and delegation to the base router,
+    // so keys minted on either side never collide regardless of the order they are used in.
+    let current: { key: string; routeKeySeq: number; config?: RouterConfigOptions } = {
+      key: '',
+      routeKeySeq: 0,
+    };
+    const begin = (state: State, config?: RouterConfigOptions) => {
+      current = { key: state.key, routeKeySeq: state.routeKeySeq, config };
+    };
+    const stamp = (state: State): State =>
+      state.routeKeySeq < current.routeKeySeq
+        ? { ...state, routeKeySeq: current.routeKeySeq }
+        : state;
+    const finish = (state: State) => {
+      const stamped = stamp(state);
+      return normalizeState ? normalizeState(stamped) : stamped;
+    };
+
+    const delegate: RouterExtensionContext<State, Action, Options>['baseRouter'] = {
+      ...baseRouter,
+      // `config` is only absent while an action is being reduced, when `current.config` is set.
+      getStateForAction(state, action, config = current.config!) {
+        const result = baseRouter.getStateForAction(stamp(state), action, config);
+        if (result !== null) {
+          current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);
+        }
+        return result;
+      },
+    };
+    const nextKey = (name: string) => {
+      const minter = createRouteKeyMinter(current);
+      const key = minter.mint(name);
+      current.routeKeySeq = minter.routeKeySeq;
+      return key;
+    };
+
     const router: Router<State, Action> = {
       ...baseRouter,
-      ...extension({ baseRouter, options, createRouteKeyMinter }),
+      ...extension({ baseRouter: delegate, options, nextKey }),
     };
     const { normalizeState } = router;
 
-    if (!normalizeState) {
-      return router;
-    }
-
     return {
       ...router,
-      getStateForDeclaredRoutes: (state, routeNames) =>
-        normalizeState(router.getStateForDeclaredRoutes(state, routeNames)),
-      getStateForRouteFocus: (state, key) =>
-        normalizeState(router.getStateForRouteFocus(state, key)),
-      getStateForAction: (state, action, config) => {
+      getStateForDeclaredRoutes(state, routeNames) {
+        begin(state);
+        return finish(router.getStateForDeclaredRoutes(state, routeNames));
+      },
+      getStateForRouteFocus(state, key) {
+        begin(state);
+        return finish(router.getStateForRouteFocus(state, key));
+      },
+      getStateForAction(state, action, config) {
+        begin(state, config);
         const result = router.getStateForAction(state, action, config);
 
         if (result === null) {
           return null;
         }
 
-        const normalizedState = normalizeState(result.state);
-        return normalizedState === result.state ? result : { ...result, state: normalizedState };
+        const finishedState = finish(result.state);
+        return finishedState === result.state ? result : { ...result, state: finishedState };
       },
     };
   };
@@ -110,31 +157,8 @@ export type RouterActionContext<
   State extends NavigationState,
   Action extends NavigationAction,
   Options extends DefaultRouterOptions,
-> = RouterConfigOptions & {
-  /**
-   * The router being extended. Call its `getStateForAction` to delegate an action or to
-   * post-process the base result. Actions it does not recognize return `null`.
-   */
-  baseRouter: Router<State, Action> & {
-    /**
-     * `config` defaults to the config of the action being reduced.
-     */
-    getStateForAction(
-      state: State,
-      action: Action,
-      config?: RouterConfigOptions
-    ): RouterActionResult<State> | null;
-  };
-  /**
-   * The options the navigator passed to the router factory.
-   */
-  options: Options;
-  /**
-   * Mints the next route key for the state being reduced. `routeKeySeq` is tracked for you and
-   * stamped onto the returned state.
-   */
-  nextKey(name: string): string;
-};
+> = RouterConfigOptions &
+  Pick<RouterExtensionContext<State, Action, Options>, 'baseRouter' | 'options' | 'nextKey'>;
 
 /**
  * Reduces one action. Return a result to handle the action, `null` to reject it, or `undefined`
@@ -181,55 +205,14 @@ export function extendRouterActions<
 ): (options: Options) => Router<State, Action> {
   return extendRouter<State, BaseAction, BaseOptions, State, Action, Options>(
     base,
-    ({ baseRouter, options }) => {
+    ({ baseRouter, options, nextKey }) => {
       // `Router` requires `type` conditionally on `State`, which TypeScript cannot resolve for a
       // generic `State`; the override never sets `type`, so the shape is compatible.
       const overrides = {
         getStateForAction(state: State, action: Action, config: RouterConfigOptions) {
-          // One counter shared by `nextKey` and delegation, so keys minted on either side never
-          // collide regardless of the order the reducer uses them in.
-          let routeKeySeq = state.routeKeySeq;
-          const delegate: RouterActionContext<State, Action, Options>['baseRouter'] = {
-            ...baseRouter,
-            getStateForAction(delegateState, delegateAction, delegateConfig = config) {
-              const result = baseRouter.getStateForAction(
-                delegateState.routeKeySeq < routeKeySeq
-                  ? { ...delegateState, routeKeySeq }
-                  : delegateState,
-                delegateAction,
-                delegateConfig
-              );
-              if (result !== null) {
-                routeKeySeq = Math.max(routeKeySeq, result.state.routeKeySeq);
-              }
-              return result;
-            },
-          };
-          const context: RouterActionContext<State, Action, Options> = {
-            ...config,
-            baseRouter: delegate,
-            options,
-            nextKey(name) {
-              const minter = createRouteKeyMinter({
-                key: state.key,
-                routeKeySeq,
-              });
-              const key = minter.mint(name);
-              routeKeySeq = minter.routeKeySeq;
-              return key;
-            },
-          };
-
-          let result = reducer(state, action, context);
-          if (result === undefined) {
-            result = delegate.getStateForAction(state, action);
-          }
-          if (result === null) {
-            return null;
-          }
-
-          return result.state.routeKeySeq < routeKeySeq
-            ? { ...result, state: { ...result.state, routeKeySeq } }
+          const result = reducer(state, action, { ...config, baseRouter, options, nextKey });
+          return result === undefined
+            ? baseRouter.getStateForAction(state, action, config)
             : result;
         },
       } as Partial<Router<State, Action>>;
