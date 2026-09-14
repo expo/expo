@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Source platform identity data (react-native host package names, Apple-family membership) from `@expo/platforms` instead of local switches. No behavior change. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+
 ## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
