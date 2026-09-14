@@ -1,6 +1,9 @@
 import {
+  getChildren,
   getContextKey,
   sortRoutes,
+  type RedirectRouteNode,
+  type RewriteRouteNode,
   type RouteNode,
   type PageHeadersConfig,
 } from 'expo-router/internal/routing';
@@ -37,13 +40,13 @@ function uniqueBy<T>(arr: T[], key: (item: T) => string): T[] {
   });
 }
 
-type FlatNode = {
+type FlatNode<T extends RouteNode = RouteNode> = {
   /** The context key, normalized to remove `/index` */
   normalizedContextKey: string;
   /** The complete route path, including all parent route paths */
   absoluteRoutePath: string;
   /** The route node that maps to this flattened node */
-  route: RouteNode;
+  route: T;
 };
 
 type GetServerManifestOptions = Pick<Options, 'headers' | 'pageHeaders'>;
@@ -57,8 +60,9 @@ export function getServerManifest(
     // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
     const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
 
-    if (route.children.length) {
-      return route.children.map((child) => getFlatNodes(child, absoluteRoute)).flat();
+    const children = getChildren(route);
+    if (children.length) {
+      return children.map((child) => getFlatNodes(child, absoluteRoute)).flat();
     }
 
     // API Routes are handled differently to HTML routes because they have no nested behavior.
@@ -102,14 +106,14 @@ export function getServerManifest(
   );
 
   const redirects = uniqueBy(
-    flat.filter(({ route }) => route.type === 'redirect'),
+    flat.filter((node): node is FlatNode<RedirectRouteNode> => node.route.type === 'redirect'),
     ({ normalizedContextKey }) => normalizedContextKey
   )
     .map((redirect) => {
       // TODO(@hassankhan): ENG-16577
       // For external redirects, use `destinationContextKey` as the destination URL
-      if (shouldLinkExternally(redirect.route.destinationContextKey!)) {
-        redirect.absoluteRoutePath = redirect.route.destinationContextKey!;
+      if (shouldLinkExternally(redirect.route.destinationContextKey)) {
+        redirect.absoluteRoutePath = redirect.route.destinationContextKey;
       } else {
         redirect.absoluteRoutePath =
           flat.find(({ route }) => route.contextKey === redirect.route.destinationContextKey)
@@ -121,7 +125,7 @@ export function getServerManifest(
     .reverse();
 
   const rewrites = uniqueBy(
-    flat.filter(({ route }) => route.type === 'rewrite'),
+    flat.filter((node): node is FlatNode<RewriteRouteNode> => node.route.type === 'rewrite'),
     ({ normalizedContextKey }) => normalizedContextKey
   )
     .map((rewrite) => {
@@ -144,7 +148,7 @@ export function getServerManifest(
     rewrites: getMatchableManifestForPaths(rewrites),
   };
 
-  if (route?.middleware) {
+  if (route?.type === 'layout' && route.middleware) {
     manifest.middleware = {
       file: route.middleware.contextKey,
     };
@@ -185,11 +189,11 @@ function getMatchableManifestForPaths(paths: FlatNode[]): RouteInfo<string>[] {
       matcher.generated = true;
     }
 
-    if (route.permanent) {
+    if (route.type === 'redirect' && route.permanent) {
       matcher.permanent = true;
     }
 
-    if (route.methods) {
+    if ((route.type === 'redirect' || route.type === 'rewrite') && route.methods) {
       matcher.methods = route.methods;
     }
 
