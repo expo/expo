@@ -217,20 +217,20 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   /**
    * Values for the [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
    * that an SVG source refers to with `var()`. Each entry is substituted into the document before it
-   * is parsed, so the image is still rendered as a vector — unlike `tintColor`, which rasterizes it.
+   * is parsed, so the image stays a vector, unlike an SVG tinted with `tintColor` on iOS.
    *
    * Because the substitution happens on the document itself, different parts of one SVG can be given
-   * different values, which makes multi-color template images possible.
+   * different values, so a single document can be tinted with several colors.
    *
    * Values are not limited to colors. Anything a custom property stands in for, such as
    * `stroke-width` or `opacity`, is substituted the same way. Keys include the leading `--`.
    * Values are inserted as written and cannot refer to other custom properties: a value such as
    * `'var(--other)'` is not resolved. Reference a paint server the document defines with `url(#id)`.
    *
-   * A property that is not supplied falls back to the value declared inside its own `var()`, and
-   * when there is no fallback the declaration is dropped so the renderer applies its own default.
-   * An SVG that uses `var()` is rendered with its fallbacks even when this prop is not set, so a
-   * document authored for the browser looks the same here.
+   * A property that is not supplied falls back to the value declared inside its own `var()`. When
+   * there is no fallback, the declaration is dropped and the renderer applies its own default.
+   * An SVG that uses `var()` is rendered with its fallbacks even when this prop is not set. A
+   * document authored for the browser looks the same in the app.
    *
    * > **Note:** Colors must be values the SVG itself understands, such as `'#ff0000'` or `'red'`.
    * > React Native color descriptors like `PlatformColor` are not resolved.
