@@ -3,7 +3,7 @@
 import type { LoaderFunction } from 'expo-server';
 import { use, useEffect, useMemo, useState } from 'react';
 
-import { useContextKey } from '../Route';
+import { useRoutePathname } from '../Route';
 import { LoaderContext } from '../loaders/LoaderContext';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../loaders/readLoaderData';
@@ -39,11 +39,11 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const { client, store } = ctx;
 
   const routeInfo = useCurrentRouteInfo();
-  const contextKey = useContextKey();
+  const routePathname = useRoutePathname();
 
   const resolvedPath = useMemo(
-    () => resolveLoaderPath(contextKey, routeInfo),
-    [contextKey, routeInfo]
+    () => resolveLoaderPath(routePathname, routeInfo),
+    [routePathname, routeInfo]
   );
 
   // Loader data stays in the shared Suspense store; local state only invalidates this reader.

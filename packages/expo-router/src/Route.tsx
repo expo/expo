@@ -3,7 +3,7 @@
 import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
-import { getContextKey } from './matchers';
+import { getRoutePathname } from './matchers';
 import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
@@ -193,12 +193,13 @@ export const getValidInitialRouteName = (
   initialRouteName = isLayoutRouteNode(node) ? node.initialRouteName : undefined
 ) => getValidInitialRoute(node, initialRouteName)?.route;
 
-export function useContextKey(): string {
+/** The current route's URL pathname, derived from its context key. */
+export function useRoutePathname(): string {
   const node = useRouteNode();
   if (node == null) {
     throw new Error('No filename found. This is likely a bug in expo-router.');
   }
-  return getContextKey(node.contextKey);
+  return getRoutePathname(node.contextKey);
 }
 
 export type RouteProps = PropsWithChildren<{

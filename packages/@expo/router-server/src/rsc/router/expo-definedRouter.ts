@@ -1,6 +1,6 @@
 import { ctx } from 'expo-router/_ctx';
 import {
-  getContextKey,
+  getRoutePathname,
   isLayoutRouteNode,
   sortRoutes,
   type RouteNode,
@@ -79,7 +79,7 @@ async function loadStaticParamsForRoute(route: RouteNode): Promise<string[][] | 
 }
 
 async function registerRouteTree(api: CreatePagesApi, route: RouteNode): Promise<void> {
-  const layoutPath = getContextKey(route.contextKey).replace(/\/index$/, '');
+  const layoutPath = getRoutePathname(route.contextKey).replace(/\/index$/, '');
   const loaded = route.loadRoute();
 
   if (loaded.generateStaticParams) {
@@ -102,7 +102,7 @@ async function registerRouteTree(api: CreatePagesApi, route: RouteNode): Promise
         await registerRouteTree(api, child);
         return;
       }
-      const childPath = getContextKey(child.contextKey).replace(/\/index$/, '');
+      const childPath = getRoutePathname(child.contextKey).replace(/\/index$/, '');
       const childLoaded = child.loadRoute();
       const settings = readSettings(childLoaded);
 

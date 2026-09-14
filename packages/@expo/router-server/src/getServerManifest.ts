@@ -1,5 +1,5 @@
 import {
-  getContextKey,
+  getRoutePathname,
   isApiRouteNode,
   isLayoutRouteNode,
   isRedirectRouteNode,
@@ -222,5 +222,5 @@ function getNamedRouteRegex(
 }
 
 function getNormalizedContextKey(contextKey: string): string {
-  return getContextKey(contextKey).replace(/\/index$/, '') ?? '/';
+  return getRoutePathname(contextKey).replace(/\/index$/, '') ?? '/';
 }
