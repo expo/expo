@@ -17,10 +17,10 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 import { SynchronousCollectionList } from '@expo/ui/uikit';
 import * as React from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-function Row({ index }: { index: number }) {
+function Row({ index, swiftUI }: { index: number; swiftUI: boolean }) {
   const [state, setState] = React.useState({
     index,
     presses: 0,
@@ -31,6 +31,67 @@ function Row({ index }: { index: number }) {
     setState({ index, presses: 0, expanded: false });
   }
   const accent = index % 2 === 0 ? '#4475E5' : '#9570D6';
+  if (!swiftUI) {
+    return (
+      <View testID={`sync-collection-row-${index}`} style={{ paddingVertical: 10, gap: 14 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              backgroundColor: accent,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{ color: 'white', fontSize: 17, fontWeight: 'bold' }}>
+              {String(index + 1).padStart(2, '0')}
+            </Text>
+          </View>
+          <View style={{ flex: 1, gap: 3 }}>
+            <Text style={{ fontSize: 17, fontWeight: '600' }}>
+              {index % 2 === 0 ? 'Weekend field notes' : 'Ideas worth keeping'}
+            </Text>
+            <Text style={{ fontSize: 12, color: '#777777' }}>
+              Entry {index + 1} · {2 + (index % 5)} min read
+            </Text>
+          </View>
+        </View>
+        <Text style={{ fontSize: 15 }}>
+          {'A quiet morning, a new trail, and a little time to notice the details. '.repeat(
+            1 + (index % 3)
+          )}
+        </Text>
+        {state.expanded && (
+          <View style={{ padding: 12, gap: 8, backgroundColor: `${accent}18`, borderRadius: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: '600' }}>A little more from this entry</Text>
+            <Text style={{ fontSize: 14 }}>
+              {'Take the slower route. Write down one thing you want to remember. '.repeat(
+                2 + (index % 4)
+              )}
+            </Text>
+          </View>
+        )}
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setState((current) => ({ ...current, expanded: !current.expanded }))}
+            style={{ padding: 10, borderRadius: 18, backgroundColor: `${accent}20` }}>
+            <Text style={{ color: accent }}>{state.expanded ? 'Show less' : 'Read more'}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setState((current) => ({ ...current, presses: current.presses + 1 }))}
+            style={{ padding: 10 }}>
+            <Text style={{ color: accent }}>Like · {state.presses}</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
   return (
     <View testID={`sync-collection-row-${index}`} style={{ paddingVertical: 10 }}>
       <Host matchContents={{ vertical: true }}>
@@ -115,16 +176,24 @@ function Row({ index }: { index: number }) {
 export default function SynchronousCollectionListScreen() {
   const [count, setCount] = React.useState(10000);
   const [visible, setVisible] = React.useState(true);
+  const [swiftUI, setSwiftUI] = React.useState(true);
 
   const data = React.useMemo(() => Array.from({ length: count }, (_, index) => index), [count]);
-  const renderItem = React.useCallback(({ item }: { item: number }) => <Row index={item} />, []);
+  const renderItem = React.useCallback(
+    ({ item }: { item: number }) => <Row index={item} swiftUI={swiftUI} />,
+    [swiftUI]
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Text style={{ padding: 12 }}>
-        {count.toLocaleString()} SwiftUI rows. Tap Read more to test height changes. Likes and
-        expansion reset when a row is recycled.
+        {count.toLocaleString()} {swiftUI ? 'SwiftUI' : 'React Native'} rows. Tap Read more to test
+        height changes. Likes and expansion reset when a row is recycled.
       </Text>
+      <Button
+        title={swiftUI ? 'Test React Native rows' : 'Test SwiftUI rows'}
+        onPress={() => setSwiftUI((value) => !value)}
+      />
       <Button
         title={visible ? 'Unmount list' : 'Mount list'}
         onPress={() => setVisible((v) => !v)}
@@ -134,7 +203,12 @@ export default function SynchronousCollectionListScreen() {
         onPress={() => setCount((n) => (n === 100 ? 10000 : 100))}
       />
       {visible && (
-        <SynchronousCollectionList style={{ flex: 1 }} data={data} renderItem={renderItem} />
+        <SynchronousCollectionList
+          key={swiftUI ? 'swiftui' : 'rn'}
+          style={{ flex: 1 }}
+          data={data}
+          renderItem={renderItem}
+        />
       )}
     </SafeAreaView>
   );

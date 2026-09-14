@@ -16,6 +16,17 @@
 using namespace facebook;
 using namespace facebook::react;
 
+// Flush only this row's UIKit subtree. In particular, an attached SwiftUI Host
+// must run layout before its geometry callback can synchronously update Fabric.
+static void LayoutRowSubtree(UIView *view)
+{
+  [view setNeedsLayout];
+  [view layoutIfNeeded];
+  for (UIView *child in view.subviews) {
+    LayoutRowSubtree(child);
+  }
+}
+
 // RNTester's synchronous collection example uses compact geometry instead of
 // repeatedly asking a compositional layout to resolve thousands of estimates.
 @implementation ExpoUISynchronousCollectionLayout {
@@ -45,6 +56,12 @@ using namespace facebook::react;
     _offsets.assign(count + 1, 0);
     _dirtyFrom = 0;
   }
+  [self resolveOffsets];
+}
+
+- (void)resolveOffsets
+{
+  NSUInteger count = _heights.size();
   // Only recompute the changed suffix, without allocating attributes or
   // rendering any of the intervening React rows.
   for (NSUInteger index = _dirtyFrom; index < count; index++) {
@@ -55,11 +72,13 @@ using namespace facebook::react;
 
 - (CGSize)collectionViewContentSize
 {
+  [self resolveOffsets];
   return CGSizeMake(_width, _offsets.empty() ? 0 : _offsets.back());
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+  [self resolveOffsets];
   NSUInteger index = indexPath.item;
   if (indexPath.section != 0 || index >= _heights.size()) { return nil; }
   UICollectionViewLayoutAttributes *attributes =
@@ -70,6 +89,7 @@ using namespace facebook::react;
 
 - (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect
 {
+  [self resolveOffsets];
   NSMutableArray<UICollectionViewLayoutAttributes *> *attributes = [NSMutableArray new];
   auto first = std::upper_bound(_offsets.begin(), _offsets.end(), CGRectGetMinY(rect));
   NSUInteger index = first == _offsets.begin() ? 0 : first - _offsets.begin() - 1;
@@ -104,6 +124,13 @@ using namespace facebook::react;
     CGFloat delta = preferred.size.height - _heights[index];
     _heights[index] = preferred.size.height;
     _dirtyFrom = MIN(_dirtyFrom, index);
+    // Every following visible row moves when this height changes. Invalidate
+    // UIKit's retained attributes as well as our numeric geometry cache.
+    NSMutableArray<NSIndexPath *> *affected = [NSMutableArray arrayWithObject:preferred.indexPath];
+    for (NSIndexPath *path in self.collectionView.indexPathsForVisibleItems) {
+      if (path.section == 0 && path.item > index) { [affected addObject:path]; }
+    }
+    [context invalidateItemsAtIndexPaths:affected];
     // Keep visible content anchored when an item entirely above it changes size.
     if (CGRectGetMaxY(original.frame) <= CGRectGetMinY(self.collectionView.bounds)) {
       CGPoint adjustment = context.contentOffsetAdjustment;
@@ -345,10 +372,29 @@ static void RetireSurface(RCTFabricSurface *surface, RCTSurfacePresenter *presen
   }
   auto revision = _surface.surfaceHandler.getMountingCoordinator()->getBaseRevision();
   auto size = revision.rootShadowNode->getLayoutMetrics().frame.size;
+  // React committing does not mean hosted UIKit/SwiftUI content has completed
+  // layout. Let its geometry updates commit before reading the final row size.
+  // Bound the work rather than spinning a run loop or waiting on async content.
+  for (NSUInteger pass = 0; pass < 3; pass++) {
+    _surface.view.frame = CGRectMake(0, 0, width, MAX(0, size.height));
+    LayoutRowSubtree(_surface.view);
+    auto nextRevision = _surface.surfaceHandler.getMountingCoordinator()->getBaseRevision();
+    auto nextSize = nextRevision.rootShadowNode->getLayoutMetrics().frame.size;
+    BOOL unchanged = nextRevision.number == revision.number;
+    revision = nextRevision;
+    size = nextSize;
+    if (unchanged) { break; }
+  }
   if (!isfinite(size.height) || size.height <= 0 || fabs(size.width - width) > 1) {
     [NSException raise:NSInternalInconsistencyException format:@"React row was not mounted with a finite positive height before sizing returned"];
   }
   _measured = CGSizeMake(size.width, size.height);
+#if DEBUG
+  if (_index < 3 && [[NSUserDefaults standardUserDefaults] boolForKey:@"UICollectionSyncTraceSizing"]) {
+    NSLog(@"[UICollectionSyncSizing] render index=%ld height=%.1f attached=%d",
+          (long)_index, _measured.height, self.window != nil);
+  }
+#endif
   _surface.view.frame = (CGRect){CGPointZero, _measured};
   _renderedWidth = width;
   _dirty = NO;
@@ -361,7 +407,7 @@ static void RetireSurface(RCTFabricSurface *surface, RCTSurfacePresenter *presen
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  if (self.window && self.bounds.size.width > 0) {
+  if (!_pool.rendering && self.window && self.bounds.size.width > 0) {
     [self renderWithWidth:self.bounds.size.width];
   }
 }
@@ -386,6 +432,12 @@ static void RetireSurface(RCTFabricSurface *surface, RCTSurfacePresenter *presen
     auto size = revision.rootShadowNode->getLayoutMetrics().frame.size;
     CGSize measured = CGSizeMake(size.width, size.height);
     if (isfinite(size.height) && size.height > 0 && !CGSizeEqualToSize(measured, row->_measured)) {
+#if DEBUG
+      if (row->_index < 3 && [[NSUserDefaults standardUserDefaults] boolForKey:@"UICollectionSyncTraceSizing"]) {
+        NSLog(@"[UICollectionSyncSizing] later index=%ld height=%.1f -> %.1f",
+              (long)row->_index, row->_measured.height, measured.height);
+      }
+#endif
       row->_measured = measured;
       row->_surface.view.frame = (CGRect){CGPointZero, measured};
       [row invalidateIntrinsicContentSize];

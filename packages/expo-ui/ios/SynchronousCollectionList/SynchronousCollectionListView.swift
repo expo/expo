@@ -81,7 +81,7 @@ private final class SynchronousCollectionView: UICollectionView, UICollectionVie
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = dequeueReusableCell(withReuseIdentifier: "row", for: indexPath)
     if let cell = cell as? SynchronousCollectionCell {
-      cell.configure(pool: pool, rendererId: rendererId, index: indexPath.item, revision: revision)
+      cell.configure(pool: pool, rendererId: rendererId, index: indexPath.item, revision: revision, width: bounds.width)
     }
     return cell
   }
@@ -99,7 +99,7 @@ private final class SynchronousCollectionCell: UICollectionViewCell {
   private var row: ExpoUISynchronousCollectionRow?
   private static let horizontalInset: CGFloat = 16
 
-  func configure(pool: ExpoUISynchronousCollectionRootPool, rendererId: String, index: Int, revision: Int) {
+  func configure(pool: ExpoUISynchronousCollectionRootPool, rendererId: String, index: Int, revision: Int, width: CGFloat) {
     let row: ExpoUISynchronousCollectionRow
     if let existing = self.row {
       row = existing
@@ -116,6 +116,13 @@ private final class SynchronousCollectionCell: UICollectionViewCell {
       ])
     }
     row.configure(withRenderer: rendererId, index: index, revision: revision)
+    // Match RNTester's cellForItem path: create/update the React tree before
+    // returning the cell. Preferred sizing can then use the cached measurement.
+    let contentWidth = width - 2 * Self.horizontalInset
+    if contentWidth.isFinite, contentWidth > 0 {
+      let size = row.render(withWidth: contentWidth)
+      row.frame = CGRect(x: Self.horizontalInset, y: 0, width: size.width, height: size.height)
+    }
   }
 
   override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
