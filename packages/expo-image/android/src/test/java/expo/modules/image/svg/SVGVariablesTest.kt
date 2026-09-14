@@ -24,6 +24,19 @@ class SVGVariablesTest {
   }
 
   @Test
+  fun `matches an uppercase var reference`() {
+    // CSS function names are case-insensitive, so a browser resolves these the same as `var(`.
+    assertEquals(
+      """<rect fill="red"/>""",
+      substitute("""<rect fill="VAR(--a, #000)"/>""", mapOf("--a" to "red"))
+    )
+    assertEquals(
+      """<rect fill="#000"/>""",
+      substitute("""<rect fill="Var(--a, #000)"/>""", emptyMap())
+    )
+  }
+
+  @Test
   fun `uses the fallback when the variable is not supplied`() {
     assertEquals(
       """<svg><rect fill="#000"/></svg>""",
@@ -399,6 +412,31 @@ class SVGVariablesTest {
   }
 
   @Test
+  fun `rejects a value that refers to another custom property`() {
+    // Values are inserted as written, so a `var()` inside one would survive into the finished
+    // document, where neither renderer can resolve it. Dropping the attribute lets the renderer
+    // apply its own default instead of failing to parse the value.
+    assertEquals(
+      """<rect/>""",
+      substitute("""<rect fill="var(--a)"/>""", mapOf("--a" to "var(--b, blue)"))
+    )
+    // A rejected value is unresolved, like any other, so the attribute is dropped rather than
+    // falling back to the document's own default.
+    assertEquals(
+      """<rect/>""",
+      substitute("""<rect fill="var(--a, green)"/>""", mapOf("--a" to "VAR(--b)"))
+    )
+  }
+
+  @Test
+  fun `allows a value that merely contains the letters var`() {
+    assertEquals(
+      """<rect fill="harvard"/>""",
+      substitute("""<rect fill="var(--a)"/>""", mapOf("--a" to "harvard"))
+    )
+  }
+
+  @Test
   fun `rejects a value that could add declarations to a style attribute`() {
     // A `style` attribute is a declaration list too, so `;` would let the value set other properties.
     assertEquals(
@@ -417,6 +455,27 @@ class SVGVariablesTest {
     assertEquals(
       """<style>.a { fill: A &amp; B }</style>""",
       substitute("""<style>.a { fill: var(--a) }</style>""", mapOf("--a" to "A & B"))
+    )
+  }
+
+  @Test
+  fun `does not escape metacharacters inside a CDATA style body`() {
+    // A CDATA section is not parsed for entities, so an escaped value would reach the CSS as the
+    // literal text `A &amp; B`. Editors such as Illustrator and Inkscape wrap stylesheets this way.
+    assertEquals(
+      "<style><![CDATA[.a { fill: A & B }]]></style>",
+      substitute("<style><![CDATA[.a { fill: var(--a) }]]></style>", mapOf("--a" to "A & B"))
+    )
+  }
+
+  @Test
+  fun `still rejects a CDATA style value that could escape its rule`() {
+    assertEquals(
+      "<style><![CDATA[.a { fill:  }]]></style>",
+      substitute(
+        "<style><![CDATA[.a { fill: var(--a) }]]></style>",
+        mapOf("--a" to "red } .b { fill: blue")
+      )
     )
   }
 

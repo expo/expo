@@ -100,7 +100,14 @@ object SVGVariables {
   ): Int {
     val found = indexOfIgnoreCase(chars, "</style", start)
     val end = if (found == -1) chars.size else found
-    out.append(substituteValue(chars, start, end, variables, Context.STYLE_BODY).text)
+    // A CDATA-wrapped stylesheet, which is how some editors export one, is still CSS, but its
+    // entities are not decoded by the parser.
+    val context = if (indexOf(chars, "<![CDATA[", start) in start until end) {
+      Context.CDATA_STYLE_BODY
+    } else {
+      Context.STYLE_BODY
+    }
+    out.append(substituteValue(chars, start, end, variables, context).text)
     return end
   }
 
@@ -251,7 +258,14 @@ object SVGVariables {
     ATTRIBUTE,
 
     /** CSS text: a `<style>` element body or a `style` attribute. */
-    STYLE_BODY
+    STYLE_BODY,
+
+    /** CSS text inside a CDATA section, where the parser does not decode entities. */
+    CDATA_STYLE_BODY;
+
+    /** Whether a value here could close a CSS declaration or rule. */
+    val isCSS: Boolean
+      get() = this == STYLE_BODY || this == CDATA_STYLE_BODY
   }
 
   /**
@@ -265,8 +279,17 @@ object SVGVariables {
   private fun escape(value: String, context: Context): String? {
     // Inside CSS these could close the declaration or the rule and start another one. No legitimate
     // CSS value needs them.
-    if (context == Context.STYLE_BODY && value.any { it == '{' || it == '}' || it == ';' }) {
+    if (context.isCSS && value.any { it == '{' || it == '}' || it == ';' }) {
       return null
+    }
+    // A value is inserted as written, so a `var()` inside one would survive into the finished
+    // document where no renderer can resolve it. Treat it as unresolved instead.
+    if (containsVariableReference(value)) {
+      return null
+    }
+    // A CDATA section is not parsed for entities, so escaping would write them out literally.
+    if (context == Context.CDATA_STYLE_BODY) {
+      return value
     }
     val escaped = StringBuilder(value.length)
     for (char in value) {
@@ -312,7 +335,8 @@ object SVGVariables {
     var substitutions = 0
 
     while (index < end) {
-      val closeParen = if (matches(chars, index, "var(")) matchingParen(chars, index + 3, end) else -1
+      // CSS function names are case-insensitive, so `VAR(` and `Var(` resolve like `var(`.
+      val closeParen = if (matchesIgnoringCase(chars, index, "var(")) matchingParen(chars, index + 3, end) else -1
       if (closeParen == -1) {
         out.append(chars[index])
         index += 1
@@ -411,6 +435,33 @@ object SVGVariables {
   }
 
   // MARK: - Character helpers
+
+  /**
+   * Whether a caller-supplied value contains a `var()` reference of its own. Matches the same way
+   * the scanner does, so a value that merely contains the letters `var` is not rejected.
+   */
+  private fun containsVariableReference(value: String): Boolean {
+    val chars = value.toCharArray()
+    for (index in chars.indices) {
+      if (matchesIgnoringCase(chars, index, "var(")) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /** Case-insensitive [matches], for the ASCII needles this file searches for. */
+  private fun matchesIgnoringCase(chars: CharArray, index: Int, needle: String): Boolean {
+    if (index + needle.length > chars.size) {
+      return false
+    }
+    for (offset in needle.indices) {
+      if (!chars[index + offset].equals(needle[offset], ignoreCase = true)) {
+        return false
+      }
+    }
+    return true
+  }
 
   private fun matches(chars: CharArray, index: Int, needle: String): Boolean {
     if (index + needle.length > chars.size) {

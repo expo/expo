@@ -123,7 +123,10 @@ internal enum SVGVariables {
   ) -> Int {
     let end = firstIndex(ofCaseInsensitive: "</style", in: chars, from: start) ?? chars.count
     let body = Array(chars[start..<end])
-    out += substituteValue(body, variables: variables, context: .styleBody).text
+    // A CDATA-wrapped stylesheet, which is how some editors export one, is still CSS, but its
+    // entities are not decoded by the parser.
+    let context: Context = firstIndex(of: "<![CDATA[", in: body, from: 0) != nil ? .cdataStyleBody : .styleBody
+    out += substituteValue(body, variables: variables, context: context).text
     return end
   }
 
@@ -280,6 +283,13 @@ internal enum SVGVariables {
     case attribute
     /// CSS text: a `<style>` element body or a `style` attribute.
     case styleBody
+    /// CSS text inside a CDATA section, where the parser does not decode entities.
+    case cdataStyleBody
+
+    /// Whether a value here could close a CSS declaration or rule.
+    var isCSS: Bool {
+      return self == .styleBody || self == .cdataStyleBody
+    }
   }
 
   /// Escapes a caller-supplied value so that it cannot terminate the attribute it sits in or add
@@ -291,8 +301,17 @@ internal enum SVGVariables {
   private static func escape(_ value: String, for context: Context) -> String? {
     // Inside CSS these could close the declaration or the rule and start another one. No
     // legitimate CSS value needs them.
-    if context == .styleBody, value.contains(where: { $0 == "{" || $0 == "}" || $0 == ";" }) {
+    if context.isCSS, value.contains(where: { $0 == "{" || $0 == "}" || $0 == ";" }) {
       return nil
+    }
+    // A value is inserted as written, so a `var()` inside one would survive into the finished
+    // document where no renderer can resolve it. Treat it as unresolved instead.
+    if containsVariableReference(value) {
+      return nil
+    }
+    // A CDATA section is not parsed for entities, so escaping would write them out literally.
+    if context == .cdataStyleBody {
+      return value
     }
     var escaped = ""
     escaped.reserveCapacity(value.count)
@@ -331,7 +350,8 @@ internal enum SVGVariables {
     var substitutions = 0
 
     while index < value.count {
-      guard matches(value, at: index, "var("), let close = matchingParen(value, openParen: index + 3) else {
+      // CSS function names are case-insensitive, so `VAR(` and `Var(` resolve like `var(`.
+      guard matchesIgnoringCase(value, at: index, "var("), let close = matchingParen(value, openParen: index + 3) else {
         out.append(value[index])
         index += 1
         continue
@@ -429,6 +449,25 @@ internal enum SVGVariables {
   }
 
   // MARK: - Character helpers
+
+  /// Whether a caller-supplied value contains a `var()` reference of its own. Matches the same way
+  /// the scanner does, so a value that merely contains the letters `var` is not rejected.
+  private static func containsVariableReference(_ value: String) -> Bool {
+    let chars = Array(value)
+    for index in chars.indices where matchesIgnoringCase(chars, at: index, "var(") {
+      return true
+    }
+    return false
+  }
+
+  /// Case-insensitive `matches`, for the ASCII needles this file searches for.
+  private static func matchesIgnoringCase(_ chars: [Character], at index: Int, _ needle: String) -> Bool {
+    let end = index + needle.count
+    guard end <= chars.count else {
+      return false
+    }
+    return chars[index..<end].elementsEqual(needle, by: { $0.lowercased() == $1.lowercased() })
+  }
 
   private static func matches(_ chars: [Character], at index: Int, _ needle: String) -> Bool {
     let end = index + needle.count
