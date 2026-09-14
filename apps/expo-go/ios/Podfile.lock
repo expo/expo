@@ -233,6 +233,8 @@ PODS:
     - ExpoModulesCore
   - ExpoStoreReview (58.0.0):
     - ExpoModulesCore
+  - ExpoSymbols (58.0.0):
+    - ExpoModulesCore
   - ExpoSystemUI (58.0.1):
     - ExpoModulesCore
   - ExpoTaskManager (58.0.2):
@@ -4304,6 +4306,7 @@ DEPENDENCIES:
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
+  - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
@@ -4600,6 +4603,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-sqlite/ios"
   ExpoStoreReview:
     :path: "../../../packages/expo-store-review/ios"
+  ExpoSymbols:
+    :path: "../../../packages/expo-symbols/ios"
   ExpoSystemUI:
     :path: "../../../packages/expo-system-ui/ios"
   ExpoTaskManager:
@@ -4894,6 +4899,7 @@ SPEC CHECKSUMS:
   ExpoSpeech: bd1d1df24f0cda4bdaca80cecf643c95cbf3ce61
   ExpoSQLite: 738ba9dd8c5e0c08eaf6af9066f21e14edf3c409
   ExpoStoreReview: 992c914c25f53c9aeac76f394059d1720323d0e5
+  ExpoSymbols: a4890c7155018c1bad5358aa7b7c7698cd40205f
   ExpoSystemUI: 45f67a7fa85173c428e487e9e57da6d3fe11a0d8
   ExpoTaskManager: 5683404910266aa7fb453045d9e33818ac73aab6
   ExpoTrackingTransparency: 70c95b35095135ff067b0ba3ec5dc8b9e6f3b8f2
@@ -5045,6 +5051,6 @@ SPEC CHECKSUMS:
   Yoga: 8d06fb4b6e06edd49bd0a19b7c4486fc72db0842
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: db8e53e3184baff2a768ba7cce6154f7a7551fd7
+PODFILE CHECKSUM: 3ce96948e22b23f4b20e3239095093bdad0f65b0
 
 COCOAPODS: 1.16.2
