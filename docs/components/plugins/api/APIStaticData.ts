@@ -232,6 +232,7 @@ export const nonLinkableTypes = [
   'SQLiteTaggedQueryResult',
   'StackActionHelpers',
   'StackActionType',
+  'StandardExperimentalStackNavigationEventMap',
   'StandardNavigator',
   'StandardNavigatorCreatePropsFactoryDeps',
   'StandardRouterNavigatorProps',
@@ -355,6 +356,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   HTMLAnchorElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement',
   HTMLInputElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement',
   ImageSourcePropType: 'https://reactnative.dev/docs/image#imagesource',
+  InstanceType: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#instancetypetype',
   Int16Array:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array',
   Int32Array:
@@ -365,6 +367,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   KeepAwakeListener: '/versions/latest/sdk/keep-awake/#keepawakelistenerevent',
   KeyboardTypeOptions: 'https://reactnative.dev/docs/textinput#keyboardtype',
+  LayoutChangeEvent: 'https://reactnative.dev/docs/layoutevent',
   LiveActivityComponent: '/versions/latest/sdk/widgets/#liveactivitycomponentprops-environment',
   LiveActivityEnvironment: '/versions/latest/sdk/widgets/#liveactivityenvironment',
   LoaderFunction: '/versions/latest/sdk/server/#loaderfunctionrequest-params',
@@ -646,6 +649,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     StackToolbarBadgeProps: '/versions/unversioned/sdk/router/stack/#stacktoolbarbadgeprops',
     StackToolbarIconProps: '/versions/unversioned/sdk/router/stack/#stacktoolbariconprops',
     StackToolbarLabelProps: '/versions/unversioned/sdk/router/stack/#stacktoolbarlabelprops',
+    StandardUseNavigationBuilderOptions:
+      '/versions/unversioned/sdk/router/#standardusenavigationbuilderoptions',
     SwitchColors: '/versions/unversioned/sdk/ui/jetpack-compose/switch/#switchcolors',
     TabsProps: '/versions/unversioned/sdk/router/ui/#tabsprops',
     TabTriggerProps: '/versions/unversioned/sdk/router/ui/#tabtriggerprops',
