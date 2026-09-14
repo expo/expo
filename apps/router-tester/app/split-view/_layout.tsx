@@ -1,10 +1,11 @@
 import { Link, useGlobalSearchParams } from 'expo-router';
-import { SplitView } from 'expo-router/unstable-split-view';
 import React from 'react';
 import { PlatformColor, Pressable, ScrollView, Text, View } from 'react-native';
 // Available starting from react-native-screens@4.17.0
 // import { SafeAreaView } from 'react-native-screens/experimental';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { RouterSplitView } from '../../components/router-split-view';
 
 const passkeys = ['Github', 'Google', 'Facebook', 'Twitter', 'Apple', 'Microsoft', 'Amazon'];
 const security = ['Admin1234', 'Root'];
@@ -13,14 +14,8 @@ const all = [...passkeys, ...security];
 
 export default function Layout() {
   return (
-    <SplitView
-      preferredDisplayMode="secondaryOnly"
-      displayModeButtonVisibility="always"
-      // primaryEdge="trailing"
-      showSecondaryToggleButton
-      // showInspector
-      preferredSplitBehavior="tile">
-      <SplitView.Column>
+    <RouterSplitView
+      sidebar={
         <SafeAreaView
           // edges={{ top: true, left: true }}
           edges={['left', 'top']}
@@ -37,16 +32,14 @@ export default function Layout() {
           <PasscodeCard title="Security" param="security" />
           <PasscodeCard title="Deleted" param="deleted" />
         </SafeAreaView>
-      </SplitView.Column>
-      <SplitView.Column>
-        <PasswordElementList />
-      </SplitView.Column>
-      <SplitView.Inspector>
+      }
+      content={<PasswordElementList />}
+      detail={
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Inspector</Text>
+          <Text>Detail</Text>
         </View>
-      </SplitView.Inspector>
-    </SplitView>
+      }
+    />
   );
 }
 

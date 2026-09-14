@@ -8,6 +8,7 @@
     "icon": "./assets/icon.png",
     "ios": {
       "bundleIdentifier": "dev.expo.routertester",
+      "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
