@@ -23,6 +23,7 @@ import expo.modules.updates.manifest.ResponsePartHeaderData
 import expo.modules.updates.manifest.ResponsePartInfo
 import expo.modules.updates.manifest.UpdateFactory
 import expo.modules.updates.selectionpolicy.SelectionPolicies
+import expo.modules.updates.utils.AndroidResourceAssetUtils
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Cache
 import okhttp3.Headers
@@ -51,12 +52,15 @@ import kotlin.math.min
 
 private const val PATCH_TEMP_SUFFIX = ".patch"
 private const val PATCHED_TEMP_SUFFIX = ".patched"
+private const val PATCH_BASE_TEMP_SUFFIX = ".base"
 private const val A_IM_HEADER = "A-IM"
 private const val IM_HEADER = "im"
 private const val EXPO_BASE_UPDATE_ID_RESPONSE_HEADER = "expo-base-update-id"
 private const val EXPO_CURRENT_UPDATE_ID_HEADER = "Expo-Current-Update-ID"
 private const val EXPO_REQUESTED_UPDATE_ID_HEADER = "Expo-Requested-Update-ID"
 private const val EXPO_EMBEDDED_UPDATE_ID_HEADER = "Expo-Embedded-Update-ID"
+
+internal typealias EmbeddedAssetExtractor = (AssetEntity, File) -> Unit
 
 /**
  * Utility class that holds all the logic for downloading data and files, such as update manifests
@@ -107,7 +111,8 @@ class FileDownloader(
     progressListener: FileDownloadProgressListener? = null,
     allowPatch: Boolean,
     launchedUpdate: UpdateEntity? = null,
-    requestedUpdate: UpdateEntity? = null
+    requestedUpdate: UpdateEntity? = null,
+    embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): FileDownloadResult {
     try {
       val response = downloadData(request, progressListener)
@@ -176,7 +181,8 @@ class FileDownloader(
                 updatesDirectory = updatesDirectory,
                 launchedUpdate = launchedUpdate,
                 requestedUpdate = requestedUpdate,
-                expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash
+                expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
+                embeddedAssetExtractor = embeddedAssetExtractor
               )
             }.getOrElse {
               logger.warn(
@@ -294,36 +300,47 @@ class FileDownloader(
     updatesDirectory: File,
     launchedUpdate: UpdateEntity,
     requestedUpdate: UpdateEntity?,
-    expectedBase64URLEncodedSHA256Hash: String?
+    expectedBase64URLEncodedSHA256Hash: String?,
+    embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): ByteArray {
     val launchAssetContext = prepareAssetForDiff(
       asset = asset,
       responseBody = responseBody,
+      destination = destination,
       updatesDirectory = updatesDirectory,
-      launchedUpdate = launchedUpdate
+      launchedUpdate = launchedUpdate,
+      embeddedAssetExtractor = embeddedAssetExtractor
     )
 
-    return applyHermesDiff(
-      baseFile = launchAssetContext.baseFile,
-      diffBody = responseBody,
-      destination = destination,
-      expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
-      asset = asset,
-      requestedUpdateId = requestedUpdate?.id?.toString()
-    )
+    try {
+      return applyHermesDiff(
+        baseFile = launchAssetContext.baseFile,
+        diffBody = responseBody,
+        destination = destination,
+        expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
+        asset = asset,
+        requestedUpdateId = requestedUpdate?.id?.toString()
+      )
+    } finally {
+      if (launchAssetContext.isTemporary) {
+        launchAssetContext.baseFile.delete()
+      }
+    }
   }
 
-  internal data class LaunchAssetContext(val baseFile: File)
+  internal data class LaunchAssetContext(val baseFile: File, val isTemporary: Boolean = false)
 
   @VisibleForTesting
   internal fun prepareAssetForDiff(
     asset: AssetEntity,
     responseBody: ResponseBody,
+    destination: File,
     updatesDirectory: File,
-    launchedUpdate: UpdateEntity
+    launchedUpdate: UpdateEntity,
+    embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): LaunchAssetContext {
     return try {
-      preparePatchBaseAsset(asset, updatesDirectory, launchedUpdate)
+      preparePatchBaseAsset(asset, destination, updatesDirectory, launchedUpdate, embeddedAssetExtractor)
     } catch (e: Exception) {
       responseBody.close()
       if (e is IOException) {
@@ -336,8 +353,10 @@ class FileDownloader(
 
   private fun preparePatchBaseAsset(
     asset: AssetEntity,
+    destination: File,
     updatesDirectory: File,
-    launchedUpdate: UpdateEntity
+    launchedUpdate: UpdateEntity,
+    embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): LaunchAssetContext {
     if (!asset.isLaunchAsset) {
       throw IOException("Received patch for non-launch asset ${asset.key}")
@@ -351,29 +370,60 @@ class FileDownloader(
     val launchAssetRelativePath = launchAssetEntity.relativePath
       ?: throw IOException("Launch asset for update $currentUpdateId is missing a relative path")
 
-    val baseFile = File(updatesDirectory, launchAssetRelativePath)
+    // BSPatch needs a real path, so an asset inside the APK is extracted first.
+    val isEmbeddedLaunchAsset = AndroidResourceAssetUtils.isAndroidResourceAsset(launchAssetRelativePath)
+    val baseFile = if (isEmbeddedLaunchAsset) {
+      extractEmbeddedPatchBaseAsset(launchAssetEntity, destination, embeddedAssetExtractor)
+    } else {
+      File(updatesDirectory, launchAssetRelativePath)
+    }
     if (!baseFile.exists()) {
       throw IOException("Base asset $baseFile is missing; cannot apply patch")
     }
 
-    val actualBaseHash = try {
-      UpdatesUtils.toBase64Url(UpdatesUtils.sha256(baseFile))
-    } catch (_: Exception) {
-      null
-    }
-
     val expectedBaseHash = launchAssetEntity.expectedHash
-    if (expectedBaseHash != null && actualBaseHash != null && expectedBaseHash != actualBaseHash) {
-      logger.warn(
-        "Asset hash mismatch for update $currentUpdateId; expected=$expectedBaseHash actual=$actualBaseHash",
-        UpdatesErrorCode.AssetsFailedToLoad,
-        currentUpdateId.toString(),
-        asset.key
-      )
-      throw IOException("Asset hash mismatch for update $currentUpdateId; expected=$expectedBaseHash actual=$actualBaseHash")
+    if (expectedBaseHash != null) {
+      val actualBaseHash = try {
+        UpdatesUtils.toBase64Url(UpdatesUtils.sha256(baseFile))
+      } catch (_: Exception) {
+        null
+      }
+      if (actualBaseHash != null && expectedBaseHash != actualBaseHash) {
+        logger.warn(
+          "Asset hash mismatch for update $currentUpdateId; expected=$expectedBaseHash actual=$actualBaseHash",
+          UpdatesErrorCode.AssetsFailedToLoad,
+          currentUpdateId.toString(),
+          asset.key
+        )
+        if (isEmbeddedLaunchAsset) {
+          baseFile.delete()
+        }
+        throw IOException("Asset hash mismatch for update $currentUpdateId; expected=$expectedBaseHash actual=$actualBaseHash")
+      }
     }
 
-    return LaunchAssetContext(baseFile)
+    return LaunchAssetContext(baseFile, isTemporary = isEmbeddedLaunchAsset)
+  }
+
+  @Throws(IOException::class)
+  private fun extractEmbeddedPatchBaseAsset(
+    launchAssetEntity: AssetEntity,
+    destination: File,
+    embeddedAssetExtractor: EmbeddedAssetExtractor?
+  ): File {
+    if (embeddedAssetExtractor == null) {
+      throw IOException("The launch asset lives in the app binary and cannot be extracted without an extractor")
+    }
+
+    val baseFile = File(destination.absolutePath + PATCH_BASE_TEMP_SUFFIX)
+    try {
+      baseFile.parentFile?.mkdirs()
+      embeddedAssetExtractor(launchAssetEntity, baseFile)
+    } catch (e: Exception) {
+      baseFile.delete()
+      throw e as? IOException ?: IOException("Failed to extract the embedded launch asset", e)
+    }
+    return baseFile
   }
 
   @VisibleForTesting
@@ -678,7 +728,8 @@ class FileDownloader(
     extraHeaders: JSONObject,
     launchedUpdate: UpdateEntity?,
     requestedUpdate: UpdateEntity?,
-    assetLoadProgressListener: ((Double) -> Unit)? = null
+    assetLoadProgressListener: ((Double) -> Unit)? = null,
+    embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): AssetDownloadResult {
     if (asset.url == null) {
       val message = "Failed to download asset ${asset.key}"
@@ -722,7 +773,8 @@ class FileDownloader(
           assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
           allowPatch = canApplyPatch,
           launchedUpdate = launchedUpdate,
-          requestedUpdate = requestedUpdate
+          requestedUpdate = requestedUpdate,
+          embeddedAssetExtractor = embeddedAssetExtractor
         )
 
         asset.downloadTime = Date()

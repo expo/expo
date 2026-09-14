@@ -1,6 +1,6 @@
 {
   "name": "expo-image-manipulator",
-  "version": "58.0.0",
+  "version": "58.0.1",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "keywords": [
     "expo",

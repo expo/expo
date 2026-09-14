@@ -84,6 +84,12 @@ public final class FileDownloader {
   private let updatesDirectory: URL
   private let database: UpdatesDatabase
 
+  /// Overridable for testing, where the fixture is not in `updatesBundle`.
+  internal var embeddedLaunchAssetUrl: URL? = updatesBundle.url(
+    forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
+    withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
+  )
+
   public convenience init(
     config: UpdatesConfig,
     logger: UpdatesLogger,
@@ -558,8 +564,7 @@ public final class FileDownloader {
       throw DiffError.assetNotLaunch
     }
 
-    let baseAsset = try resolveLaunchAsset(launchedUpdate: launchedUpdate)
-    let baseFileUrl = try loadAndVerifyAsset(baseAsset)
+    let baseFileUrl = try resolveBaseFileUrl(launchedUpdate: launchedUpdate)
     let requestedUpdateId = requestedUpdate?.updateId.uuidString
 
     return try createPatchedAsset(
@@ -570,6 +575,19 @@ public final class FileDownloader {
       expectedBase64URLEncodedSHA256Hash: expectedBase64URLEncodedSHA256Hash,
       requestedUpdateId: requestedUpdateId
     )
+  }
+
+  private func resolveBaseFileUrl(launchedUpdate: Update) throws -> URL {
+    if launchedUpdate.status == UpdateStatus.StatusEmbedded {
+      // StatusEmbedded only launches for this binary's embedded update.
+      guard let embeddedLaunchAssetUrl else {
+        throw DiffError.embeddedBaseAssetMissing
+      }
+      return embeddedLaunchAssetUrl
+    }
+
+    let baseAsset = try resolveLaunchAsset(launchedUpdate: launchedUpdate)
+    return try loadAndVerifyAsset(baseAsset)
   }
 
   private func resolveLaunchAsset(launchedUpdate: Update) throws -> UpdateAsset {
@@ -1239,6 +1257,7 @@ extension FileDownloader {
     case missingHeader(String)
     case invalidHeader(String)
     case launchAssetNotFound
+    case embeddedBaseAssetMissing
     case baseAssetMissing(path: String)
     case failedToReadBaseAsset(cause: Error)
     case failedToWritePatch(cause: Error, path: String)
@@ -1266,6 +1285,8 @@ extension FileDownloader.DiffError: CustomStringConvertible {
       return "Invalid \(header) header"
     case .launchAssetNotFound:
       return "Launch asset not found for current update"
+    case .embeddedBaseAssetMissing:
+      return "Embedded bundle not found in the app binary"
     case let .baseAssetMissing(path):
       return "Base asset is missing at path \(path)"
     case let .failedToReadBaseAsset(cause):

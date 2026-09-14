@@ -43,6 +43,27 @@ struct SceneEventForwarder {
     }
   }
 
+  func willContinueUserActivity(withType userActivityType: String) {
+    // The scene callback has no return value, unlike its app-delegate counterpart. Calling the app
+    // delegate still lets every subscriber prepare; its aggregated result is intentionally ignored.
+    _ = appDelegate()?.application(
+      UIApplication.shared,
+      willContinueUserActivityWithType: userActivityType
+    )
+  }
+
+  func didFailToContinueUserActivity(withType userActivityType: String, error: Error) {
+    appDelegate()?.application(
+      UIApplication.shared,
+      didFailToContinueUserActivityWithType: userActivityType,
+      error: error
+    )
+  }
+
+  func didUpdate(_ userActivity: NSUserActivity) {
+    appDelegate()?.application(UIApplication.shared, didUpdate: userActivity)
+  }
+
   func didBecomeActive() {
     appDelegate()?.applicationDidBecomeActive(UIApplication.shared)
   }

@@ -107,8 +107,24 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     URLContexts.forEach { forwarder.open(url: $0.url, options: Self.openURLOptions(from: $0.options)) }
   }
 
+  open func scene(_ scene: UIScene, willContinueUserActivityWithType userActivityType: String) {
+    forwarder.willContinueUserActivity(withType: userActivityType)
+  }
+
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     forwarder.continue(userActivity)
+  }
+
+  open func scene(
+    _ scene: UIScene,
+    didFailToContinueUserActivityWithType userActivityType: String,
+    error: Error
+  ) {
+    forwarder.didFailToContinueUserActivity(withType: userActivityType, error: error)
+  }
+
+  open func scene(_ scene: UIScene, didUpdate userActivity: NSUserActivity) {
+    forwarder.didUpdate(userActivity)
   }
 
 #if os(iOS)

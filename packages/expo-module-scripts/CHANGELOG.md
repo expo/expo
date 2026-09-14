@@ -19,6 +19,7 @@
 - Enabled the `react/use-memo`, `react/void-use-memo`, `react/purity`, `react/preserve-manual-memoization`, and `react/static-components` rules in the shared oxlint config. ([#49242](https://github.com/expo/expo/pull/49242) by [@tsapeta](https://github.com/tsapeta))
 - Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 - [Internal] Remove the remaining `@expo/metro` type augmentations, which `@expo/metro@56.1.0` covers with Metro's own types. ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.3 - 2026-05-29
 
