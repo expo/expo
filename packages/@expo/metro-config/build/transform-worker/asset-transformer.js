@@ -36,13 +36,14 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         platform: '',
         projectRoot: '',
     };
+    const customTransformOptions = options.customTransformOptions;
     // Is bundling for webview.
-    const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
-    const useMd5Filename = options.customTransformOptions?.useMd5Filename;
+    const isDomComponent = options.platform === 'web' && customTransformOptions?.dom;
+    const useMd5Filename = customTransformOptions?.useMd5Filename;
     const isExport = options.publicPath.includes('?export_path=');
-    const isHosted = options.platform === 'web' || (options.customTransformOptions?.hosted && isExport);
-    const isReactServer = options.customTransformOptions?.environment === 'react-server';
-    const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
+    const isHosted = options.platform === 'web' || (customTransformOptions?.hosted && isExport);
+    const isReactServer = customTransformOptions?.environment === 'react-server';
+    const isServerEnv = isReactServer || customTransformOptions?.environment === 'node';
     const absolutePath = node_path_1.default.resolve(options.projectRoot, filename);
     const getClientReference = () => isReactServer ? node_url_1.default.pathToFileURL(absolutePath).href : undefined;
     if ((options.platform !== 'web' ||

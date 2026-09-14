@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Remove the `@expo/metro` type augmentations, which Metro's own types now cover, along with the `@expo/metro` devDependency they needed. ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+
 ## 56.0.3 — 2026-05-29
 
 ### 🐛 Bug fixes

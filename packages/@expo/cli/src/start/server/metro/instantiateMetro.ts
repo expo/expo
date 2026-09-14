@@ -10,7 +10,7 @@ import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/Revision
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
 import { Terminal } from '@expo/metro/metro-core';
-import type { createStableModuleIdFactory } from '@expo/metro-config';
+import type { createStableModuleIdFactory, ExpoCustomTransformOptions } from '@expo/metro-config';
 import { loadUserConfig } from '@expo/metro-config';
 import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
 import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
@@ -19,6 +19,7 @@ import type http from 'http';
 import path from 'path';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { replaceMetroFileMap } from './createFileMap-fork';
@@ -222,7 +223,7 @@ export async function loadMetroConfigAsync(
 
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  let config = await loadUserConfig({
+  let config: ExpoMetroConfig = await loadUserConfig({
     projectRoot,
     serverRoot,
     // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
@@ -506,7 +507,9 @@ export async function instantiateMetroAsync(
     const ctx = {
       // TODO(@kitten): Increase type-safety here
       platform: graph.transformOptions.platform!,
-      environment: graph.transformOptions.customTransformOptions?.environment,
+      environment: (
+        graph.transformOptions.customTransformOptions as ExpoCustomTransformOptions | undefined
+      )?.environment,
     };
     // Assign IDs to modules in a consistent order
     for (const module of modules) {
@@ -566,7 +569,11 @@ export async function instantiateMetroAsync(
         const moduleIdContext = {
           // TODO(@kitten): Increase type-safety here
           platform: revision.graph.transformOptions.platform!,
-          environment: revision.graph.transformOptions.customTransformOptions?.environment,
+          environment: (
+            revision.graph.transformOptions.customTransformOptions as
+              | ExpoCustomTransformOptions
+              | undefined
+          )?.environment,
         };
         const hmrUpdate = hmrJSBundle(delta, revision.graph, {
           clientUrl: group.clientUrl,

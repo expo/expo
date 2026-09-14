@@ -6,12 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import countLines from '@expo/metro/metro/lib/countLines';
-import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
+import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { relative, dirname } from 'node:path';
 
 import { getBrowserslistTargets } from './browserslist';
+import type { Dependency } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
 import {
   collectCssImports,
@@ -24,11 +24,12 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { transformShim } from './transformShim';
+import type { ExpoJsTransformerConfig } from './types';
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
 
 export interface TransformResponse {
-  readonly dependencies: readonly TransformResultDependency[];
+  readonly dependencies: readonly Dependency[];
   // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
   // MetroSourceMapSegmentTuple[]`. Metro readers still see plain tuples
   // because the `Bundler.transformFile` wrapper swaps the
@@ -54,7 +55,7 @@ function getStringArray(value: any): string[] | undefined {
 }
 
 export async function transform(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
@@ -211,7 +212,7 @@ function isReactServerEnvironment(options: JsTransformOptions): boolean {
 }
 
 async function transformCss(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,

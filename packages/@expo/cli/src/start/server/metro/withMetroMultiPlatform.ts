@@ -41,6 +41,7 @@ import { isPathInside } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
 import { createTypescriptResolver } from './createTypescriptResolver';
 
 export type StrictResolver = (moduleName: string) => Resolution;
@@ -151,7 +152,7 @@ function withWebPolyfills(
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
+  const getPolyfills: typeof originalGetPolyfills = (ctx) => {
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -582,7 +583,10 @@ export function withExtendedResolver(
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
             const opaqueId = idFactory(realPath, {
               platform: platform!,
-              environment: context.customResolverOptions?.environment,
+              environment:
+                typeof context.customResolverOptions?.environment === 'string'
+                  ? context.customResolverOptions.environment
+                  : undefined,
             });
             const contents =
               typeof opaqueId === 'number'
@@ -1016,7 +1020,7 @@ export async function withMetroMultiPlatformAsync(
 
     getMetroBundler,
   }: {
-    config: ConfigT;
+    config: ExpoMetroConfig;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;

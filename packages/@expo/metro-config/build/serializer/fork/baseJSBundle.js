@@ -90,6 +90,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         asyncRequireModulePath: options.asyncRequireModulePath,
         createModuleId: options.createModuleId,
         getRunModuleStatement: options.getRunModuleStatement,
+        getSourceUrl: options.getSourceUrl,
         globalPrefix: options.globalPrefix,
         inlineSourceMap: options.inlineSourceMap,
         runBeforeMainModule: options.runBeforeMainModule,

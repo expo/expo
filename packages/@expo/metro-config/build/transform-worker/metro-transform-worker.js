@@ -498,6 +498,7 @@ async function transformJSWithBabel(file, context) {
         // importLocationsPlugin populates metadata.metro.unstable_importDeclarationLocs
         importLocationsPlugin_1.importLocationsPlugin,
     ]));
+    const metadata = transformResult.metadata;
     const jsFile = {
         ...file,
         ast: transformResult.ast,
@@ -506,12 +507,12 @@ async function transformJSWithBabel(file, context) {
             transformResult.functionMap ??
             null,
         unstable_importDeclarationLocs: transformResult?.metadata?.metro?.unstable_importDeclarationLocs,
-        hasCjsExports: transformResult.metadata?.hasCjsExports,
-        reactServerReference: transformResult.metadata?.reactServerReference,
-        reactClientReference: transformResult.metadata?.reactClientReference,
-        expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
-        loaderReference: transformResult.metadata?.loaderReference,
-        performConstantFolding: transformResult.metadata?.performConstantFolding,
+        hasCjsExports: metadata?.hasCjsExports,
+        reactServerReference: metadata?.reactServerReference,
+        reactClientReference: metadata?.reactClientReference,
+        expoDomComponentReference: metadata?.expoDomComponentReference,
+        loaderReference: metadata?.loaderReference,
+        performConstantFolding: metadata?.performConstantFolding,
     };
     return await transformJS(jsFile, context);
 }

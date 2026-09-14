@@ -1,4 +1,5 @@
 import type { Terminal } from '@expo/metro/metro-core';
+import type { ExpoCustomTransformOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
@@ -253,8 +254,8 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
   }
 
-  shouldFilterClientLog(event: { type: 'client_log'; data: unknown[] }): boolean {
-    return isAppRegistryStartupMessage(event.data);
+  shouldFilterClientLog(event: TerminalReportableEvent): boolean {
+    return event.type === 'client_log' && isAppRegistryStartupMessage(event.data);
   }
 
   shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
@@ -426,15 +427,18 @@ export class MetroTerminalReporter extends TerminalReporter {
   #captureLog(evt: TerminalReportableEvent) {
     switch (evt.type) {
       case 'bundle_build_started': {
+        const customTransformOptions = evt.bundleDetails?.customTransformOptions as
+          | ExpoCustomTransformOptions
+          | undefined;
         const entry =
-          typeof evt.bundleDetails?.customTransformOptions?.dom === 'string' &&
-          evt.bundleDetails.customTransformOptions.dom.includes(path.sep)
-            ? evt.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
+          typeof customTransformOptions?.dom === 'string' &&
+          customTransformOptions.dom.includes(path.sep)
+            ? customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
             : this.#normalizePath(evt.bundleDetails.entryFile);
         return event('bundling:started', {
           id: evt.buildID,
           platform: evt.bundleDetails.platform ?? null,
-          environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
+          environment: customTransformOptions?.environment ?? null,
           entry,
         });
       }
@@ -618,17 +622,17 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): st
 /** @returns platform specific tag for a `BundleDetails` object */
 function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): string {
   // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
-  const env = bundleDetails?.customTransformOptions?.environment ?? null;
+  const customTransformOptions = bundleDetails?.customTransformOptions as
+    | ExpoCustomTransformOptions
+    | undefined;
+  const env = customTransformOptions?.environment ?? null;
   if (env === 'node') {
     return chalk.bold('λ') + ' ';
   } else if (env === 'react-server') {
     return chalk.bold(`RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
   }
 
-  if (
-    bundleDetails?.customTransformOptions?.dom &&
-    typeof bundleDetails?.customTransformOptions?.dom === 'string'
-  ) {
+  if (customTransformOptions?.dom && typeof customTransformOptions.dom === 'string') {
     return chalk.bold(`DOM`) + ' ';
   }
 

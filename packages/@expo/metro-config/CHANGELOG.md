@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- [Internal] Declare Expo's Metro type extensions explicitly instead of augmenting Metro's modules. ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+
 ## 56.0.19 — 2026-08-28
 
 ### 🐛 Bug fixes
