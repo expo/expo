@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSInteger publishedContentOriginTag;
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
+- (void)requestSynchronousEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props NS_SWIFT_UI_ACTOR;
 

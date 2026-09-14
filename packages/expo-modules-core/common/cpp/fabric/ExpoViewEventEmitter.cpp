@@ -12,4 +12,10 @@ void ExpoViewEventEmitter::dispatch(const std::string &eventName, const react::V
   dispatchEvent(eventName, payloadFactory);
 }
 
+void ExpoViewEventEmitter::experimental_requestSynchronous(const std::string &eventName, const react::ValueFactory& payloadFactory) const {
+  experimental_flushSync([&] {
+    dispatchEvent(eventName, payloadFactory, react::RawEvent::Category::Discrete);
+  });
+}
+
 } // namespace expo

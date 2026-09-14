@@ -211,6 +211,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'List — windowed rendering',
+    route: 'ui/list-windowed',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ListWindowedScreen'));
+    },
+  },
+  {
     name: 'List component',
     route: 'ui/list',
     options: {},

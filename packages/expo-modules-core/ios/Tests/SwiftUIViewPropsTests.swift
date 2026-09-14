@@ -20,6 +20,11 @@ private final class TestViewProps: ExpoSwiftUI.ViewProps {
   @Field var title: String?
 }
 
+private final class EventTestViewProps: ExpoSwiftUI.ViewProps {
+  let onRequestItems = EventDispatcher()
+  let renamedEvent = EventDispatcher("onRenamed")
+}
+
 // swiftlint:disable legacy_objc_type
 private func makeRawProps(markerText: String = "marker", title: String = "hello") -> [String: Any] {
   return [
@@ -32,6 +37,47 @@ private func makeRawProps(markerText: String = "marker", title: String = "hello"
 @Suite("ExpoSwiftUI.ViewProps")
 struct SwiftUIViewPropsTests {
   let appContext = AppContext.create()
+
+  @Test @MainActor
+  func `routes ordinary and urgent events separately without changing their payload`() {
+    let props = EventTestViewProps()
+    var ordinaryEvents: [String] = []
+    var urgentEvents: [String] = []
+    var requestedKey: String?
+    var observerCalls = 0
+    props.setUpEvents({ name, _ in
+      ordinaryEvents.append(name)
+    }, synchronous: { name, payload in
+      urgentEvents.append(name)
+      requestedKey = (payload as? [String: Any])?["key"] as? String
+    })
+    props.onRequestItems.onEventSent = { _ in observerCalls += 1 }
+
+    props.onRequestItems(["key": "prefetch"])
+    #expect(ordinaryEvents == ["onRequestItems"])
+    #expect(urgentEvents.isEmpty)
+
+    props.onRequestItems.experimentalRequestSynchronous(["key": "visible"])
+    #expect(ordinaryEvents == ["onRequestItems"])
+    #expect(urgentEvents == ["onRequestItems"])
+    #expect(requestedKey == "visible")
+    #expect(observerCalls == 2)
+  }
+
+  @Test @MainActor
+  func `preserves custom and inherited global event names on the urgent path`() {
+    let props = EventTestViewProps()
+    var events: [String] = []
+    props.setUpEvents({ _, _ in
+      Issue.record("An urgent event must not fall back to ordinary dispatch")
+    }, synchronous: { name, _ in
+      events.append(name)
+    })
+
+    props.renamedEvent.experimentalRequestSynchronous([:])
+    props.globalEventDispatcher.experimentalRequestSynchronous([:])
+    #expect(events == ["onRenamed", GLOBAL_EVENT_NAME])
+  }
 
   @Test
   func `keeps the decoded value when its raw value is unchanged`() throws {
