@@ -5,13 +5,10 @@ export function node(
   children: RouteNode[] = [],
   initialRouteName?: string
 ): RouteNode {
-  return {
-    type: 'route',
-    route,
-    children,
-    initialRouteName,
-    dynamic: null,
-    contextKey: route,
-    loadRoute: () => ({}),
-  };
+  const base = { route, dynamic: null, contextKey: route, loadRoute: () => ({}) };
+
+  // Only layouts hold children or an anchor.
+  return children.length || initialRouteName !== undefined
+    ? { ...base, type: 'layout', children, initialRouteName }
+    : { ...base, type: 'route' };
 }

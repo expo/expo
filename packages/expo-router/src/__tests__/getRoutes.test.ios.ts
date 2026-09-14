@@ -21,7 +21,6 @@ describe('getRoutes', () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
           entryPoints: [
@@ -34,7 +33,6 @@ describe('getRoutes', () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: 'expo-router/build/views/Unmatched.js',
           dynamic: [
             {
@@ -53,7 +51,6 @@ describe('getRoutes', () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -81,7 +78,6 @@ describe('getRoutes', () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
           entryPoints: ['./_layout.js', 'expo-router/build/views/Sitemap.js'],
@@ -91,7 +87,6 @@ describe('getRoutes', () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: 'expo-router/build/views/Unmatched.js',
           dynamic: [
             {
@@ -107,7 +102,6 @@ describe('getRoutes', () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['./_layout.js', './(app)/index.js'],
@@ -133,7 +127,6 @@ describe('getRoutes', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './[a].tsx',
           dynamic: [
             {
@@ -146,7 +139,6 @@ describe('getRoutes', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './[a]/[b].tsx',
           dynamic: [
             {
@@ -229,7 +221,6 @@ describe('getRoutes', () => {
                 './(a,b)/page.js',
               ],
               route: 'page',
-              children: [],
             },
           ],
         },
@@ -239,7 +230,6 @@ describe('getRoutes', () => {
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/page.js'],
           route: '(a)/page',
-          children: [],
         },
       ],
       contextKey: 'expo-router/build/views/Navigator.js',
@@ -382,7 +372,6 @@ describe('+not-found', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           type: 'route',
           contextKey: './+not-found.js',
           dynamic: [
@@ -396,7 +385,6 @@ describe('+not-found', () => {
           route: '+not-found',
         },
         {
-          children: [],
           type: 'route',
           contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
@@ -409,7 +397,6 @@ describe('+not-found', () => {
           route: '_sitemap',
         },
         {
-          children: [],
           type: 'route',
           contextKey: './(app)/index.js',
           dynamic: null,
@@ -442,6 +429,9 @@ describe('+not-found', () => {
 
     const notFound = routes.children.find((route) => route.route === '+not-found')!;
 
+    // Narrows type for TypeScript
+    if (notFound.type !== 'route') throw new Error('Expected +not-found to be a screen');
+
     // Ensure this is the generated +not-found
     expect(notFound.generated).toBeTruthy();
     expect(notFound.internal).toBeTruthy();
@@ -461,7 +451,6 @@ describe('entry points', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           type: 'route',
           contextKey: 'expo-router/build/views/Sitemap.js',
           dynamic: null,
@@ -470,7 +459,6 @@ describe('entry points', () => {
           route: '_sitemap',
         },
         {
-          children: [],
           type: 'route',
           contextKey: 'expo-router/build/views/Unmatched.js',
           dynamic: [
@@ -485,7 +473,6 @@ describe('entry points', () => {
           route: '+not-found',
         },
         {
-          children: [],
           type: 'route',
           contextKey: './(app)/index.js',
           dynamic: null,
@@ -537,7 +524,6 @@ describe('entry points', () => {
                   route: '(c)',
                   children: [
                     {
-                      children: [],
                       type: 'route',
                       contextKey: './a/b/(c,d)/e.js',
                       dynamic: null,
@@ -559,7 +545,6 @@ describe('entry points', () => {
                   route: '(d)',
                   children: [
                     {
-                      children: [],
                       type: 'route',
                       contextKey: './a/b/(c,d)/e.js',
                       dynamic: null,
@@ -625,7 +610,6 @@ describe('anchor', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './a.js',
           dynamic: null,
           entryPoints: ['./_layout.js', './a.js'],
@@ -634,7 +618,6 @@ describe('anchor', () => {
           loadRoute: expect.any(Function),
         },
         {
-          children: [],
           contextKey: './b.js',
           dynamic: null,
           entryPoints: ['./_layout.js', './a.js', './b.js'],
@@ -725,7 +708,11 @@ describe('anchor', () => {
     );
 
     expect(routes?.initialRouteName).toBe('a/index');
-    expect(routes?.children[0]?.entryPoints).toContain('./a/index.js');
+
+    const anchor = routes?.children[0];
+    // Narrows type for TypeScript
+    if (anchor?.type !== 'route') throw new Error('Expected the anchor to be a screen');
+    expect(anchor.entryPoints).toContain('./a/index.js');
   });
 });
 
@@ -743,7 +730,6 @@ describe('dynamic routes', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           type: 'route',
           contextKey: './[single].js',
           dynamic: [
@@ -756,7 +742,6 @@ describe('dynamic routes', () => {
           route: '[single]',
         },
         {
-          children: [],
           type: 'route',
           contextKey: './[...catchAll].js',
           dynamic: [
@@ -769,7 +754,6 @@ describe('dynamic routes', () => {
           route: '[...catchAll]',
         },
         {
-          children: [],
           type: 'route',
           contextKey: './a/b/c/[single].js',
           dynamic: [
@@ -805,7 +789,6 @@ describe('api routes', () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './(app)/page.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.js'],
@@ -833,7 +816,6 @@ describe('api routes', () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: './(app)/page.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.js'],
@@ -841,7 +823,6 @@ describe('api routes', () => {
         },
         {
           type: 'api',
-          children: [],
           contextKey: './(app)/page+api.js',
           dynamic: null,
           route: '(app)/page',
@@ -887,7 +868,6 @@ describe('group expansion', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './(single)/directory/(a,b)/mixed.js',
           dynamic: null,
           entryPoints: [
@@ -898,7 +878,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(single)/directory/(a,b)/mixed.js',
           dynamic: null,
           entryPoints: [
@@ -928,7 +907,6 @@ describe('group expansion', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
@@ -936,7 +914,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
@@ -944,7 +921,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
@@ -952,7 +928,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
@@ -979,7 +954,6 @@ describe('group expansion', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
@@ -990,7 +964,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
@@ -1001,7 +974,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
@@ -1012,7 +984,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
@@ -1023,7 +994,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
@@ -1034,7 +1004,6 @@ describe('group expansion', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
@@ -1065,7 +1034,6 @@ describe('group expansion', () => {
       children: [
         {
           type: 'route',
-          children: [],
           contextKey: 'expo-router/build/views/Unmatched.js',
           dynamic: [
             {
@@ -1084,7 +1052,6 @@ describe('group expansion', () => {
         },
         {
           type: 'route',
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -1117,7 +1084,6 @@ describe('redirects', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './old.js',
           destinationContextKey: './(app)/index.js',
           dynamic: null,
@@ -1128,7 +1094,6 @@ describe('redirects', () => {
           permanent: false,
         },
         {
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -1161,7 +1126,6 @@ describe('redirects', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -1169,7 +1133,6 @@ describe('redirects', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(app)/[slug].js',
           dynamic: [
             {
@@ -1182,7 +1145,6 @@ describe('redirects', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './old/[slug].js',
           destinationContextKey: './(app)/[slug].js',
           dynamic: [
@@ -1224,7 +1186,6 @@ describe('redirects', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -1232,7 +1193,6 @@ describe('redirects', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(app)/[slug].js',
           dynamic: [
             {
@@ -1245,7 +1205,6 @@ describe('redirects', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './old/[slug].js',
           destinationContextKey: './(app)/[slug].js',
           dynamic: [

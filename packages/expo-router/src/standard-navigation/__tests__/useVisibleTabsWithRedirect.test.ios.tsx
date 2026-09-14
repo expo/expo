@@ -49,6 +49,7 @@ const routeNames = routes.map((route) => route.name);
 function routeNode(initialRouteName: string) {
   // Only route names are relevant to this hook test fixture.
   return {
+    type: 'layout',
     initialRouteName,
     contextKey: './_layout.js',
     children: routes.map(({ name }) => ({ route: name })),

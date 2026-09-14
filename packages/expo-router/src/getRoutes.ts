@@ -1,4 +1,4 @@
-import type { RouteNode } from './Route';
+import type { LayoutRouteNode } from './Route';
 import { getRoutes as getRoutesCore, type Options as OptionsCore } from './getRoutesCore';
 import type { RequireContext } from './types';
 
@@ -15,7 +15,10 @@ export type Options = Omit<OptionsCore, 'getSystemRoute'>;
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
+export function getRoutes(
+  contextModule: RequireContext,
+  options: Options = {}
+): LayoutRouteNode | null {
   return getRoutesCore(contextModule, {
     getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
       if (route === '' && type === 'layout') {
@@ -45,7 +48,6 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           generated: true,
           internal: true,
           dynamic: null,
-          children: [],
         };
       } else if (route === '+not-found' && type === 'route') {
         return {
@@ -58,7 +60,6 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           generated: true,
           internal: true,
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
-          children: [],
         };
       } else if (type === 'redirect' && redirectConfig && defaults) {
         return {
@@ -90,7 +91,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
 export function getExactRoutes(
   contextModule: RequireContext,
   options: Options = {}
-): RouteNode | null {
+): LayoutRouteNode | null {
   return getRoutes(contextModule, {
     ...options,
     skipGenerated: true,

@@ -1,4 +1,4 @@
-import type { RouteNode } from '../Route';
+import type { LayoutRouteNode, ScreenRouteNode } from '../Route';
 import {
   findRouteNodeAndParamsForState,
   getValidInitialRouteName,
@@ -7,10 +7,9 @@ import {
 } from '../Route';
 import { generateDynamic } from '../getRoutes';
 
-const asRouteNode = (route: string): RouteNode => {
+const asRouteNode = (route: string): ScreenRouteNode => {
   return {
     type: 'route',
-    children: [],
     dynamic: generateDynamic(route),
     loadRoute(): any {
       return {
@@ -22,6 +21,10 @@ const asRouteNode = (route: string): RouteNode => {
     route,
     contextKey: 'INVALID_TEST_VALUE',
   };
+};
+
+const asLayoutNode = (route: string): LayoutRouteNode => {
+  return { ...asRouteNode(route), type: 'layout', children: [] };
 };
 
 function getSortedRoutes(...routes: string[]) {
@@ -96,7 +99,7 @@ describe(sortRoutes, () => {
 
 describe(getValidInitialRouteName, () => {
   it('returns the registered route name for a valid setting', () => {
-    const node = asRouteNode('_layout');
+    const node = asLayoutNode('_layout');
     node.initialRouteName = 'a';
     node.children = [asRouteNode('a')];
 
@@ -104,7 +107,7 @@ describe(getValidInitialRouteName, () => {
   });
 
   it('resolves a directory setting to its registered index route', () => {
-    const node = asRouteNode('_layout');
+    const node = asLayoutNode('_layout');
     node.initialRouteName = 'a';
     node.children = [asRouteNode('a/index')];
 
@@ -112,7 +115,7 @@ describe(getValidInitialRouteName, () => {
   });
 
   it('sorts a resolved directory setting before other routes', () => {
-    const node = asRouteNode('_layout');
+    const node = asLayoutNode('_layout');
     node.initialRouteName = 'a';
     node.children = [asRouteNode('b'), asRouteNode('a/index')];
 
@@ -124,7 +127,7 @@ describe(getValidInitialRouteName, () => {
   });
 
   it('throws for a missing route', () => {
-    const node = asRouteNode('_layout');
+    const node = asLayoutNode('_layout');
     node.initialRouteName = 'missing';
     node.contextKey = './app/(tabs)/_layout.tsx';
     node.children = [asRouteNode('index'), asRouteNode('settings/index')];
@@ -141,7 +144,7 @@ describe(getValidInitialRouteName, () => {
 
 describe(findRouteNodeAndParamsForState, () => {
   it('returns no route node without nested state', () => {
-    expect(findRouteNodeAndParamsForState(asRouteNode('_layout'), undefined)).toEqual({
+    expect(findRouteNodeAndParamsForState(asLayoutNode('_layout'), undefined)).toEqual({
       routeNode: undefined,
       params: {},
     });

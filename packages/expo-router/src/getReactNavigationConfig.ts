@@ -1,4 +1,4 @@
-import type { RouteNode } from './Route';
+import { getChildren, getInitialRouteName, type RouteNode } from './Route';
 import { matchDynamicName } from './matchers';
 
 export type Screen =
@@ -48,7 +48,8 @@ export function parseRouteSegments(segments: string): string {
 
 function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
   const path = parseRouteSegments(node.route);
-  if (!node.children.length) {
+  const children = getChildren(node);
+  if (!children.length) {
     if (!metaOnly) {
       return {
         path,
@@ -58,19 +59,20 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     }
     return path;
   }
-  const screens = getReactNavigationScreensConfig(node.children, metaOnly);
+  const screens = getReactNavigationScreensConfig(children, metaOnly);
 
   const screen: Screen = {
     path,
     screens,
   };
 
-  if (node.initialRouteName) {
+  const initialRouteName = getInitialRouteName(node);
+  if (initialRouteName) {
     // NOTE(EvanBacon): This is bad because it forces all Layout Routes
     // to be loaded into memory. We should move towards a system where
     // the initial route name is either loaded asynchronously in the Layout Route
     // or defined via a file system convention.
-    screen.initialRouteName = node.initialRouteName;
+    screen.initialRouteName = initialRouteName;
   }
 
   if (!metaOnly) {
@@ -92,13 +94,14 @@ export function getReactNavigationScreensConfig(
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
   const config = {
     initialRouteName: undefined,
-    screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
+    screens: routeTree ? getReactNavigationScreensConfig(getChildren(routeTree), metaOnly) : {},
   };
 
-  if (routeTree?.initialRouteName) {
+  const initialRouteName = getInitialRouteName(routeTree);
+  if (initialRouteName) {
     // We're using LinkingOptions the generic type is `object` instead of a proper ParamList.
     // So we need to cast the initialRouteName to `any` to avoid type errors.
-    config.initialRouteName = routeTree.initialRouteName as any;
+    config.initialRouteName = initialRouteName as any;
   }
 
   return config;
