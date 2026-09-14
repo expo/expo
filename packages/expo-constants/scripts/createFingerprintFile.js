@@ -50,20 +50,11 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
     return null;
   }
 
-  // JSON rather than a bare hash so the reader can tell which `@expo/fingerprint` produced it.
-  // Reason tags and hashing change between versions, so two hashes from different ones are not
-  // comparable, and a reader that assumes they are reports a rebuild that is not needed.
   const contents = { hash, fingerprintVersion: readFingerprintVersion(fingerprintPath) };
   await fs.promises.writeFile(filePath, JSON.stringify(contents));
   return filePath;
 }
 
-/**
- * Version of the `@expo/fingerprint` that computed the hash, or null when it cannot be read.
- *
- * @param {string} fingerprintPath resolved path of the `expo/fingerprint` module
- * @returns {string | null}
- */
 function readFingerprintVersion(fingerprintPath) {
   const packagePath = resolveFrom(path.dirname(fingerprintPath), '@expo/fingerprint/package.json');
   if (!packagePath) {
