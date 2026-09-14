@@ -446,21 +446,30 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       }
 
       const redirect = redirects[meta.route]!;
-      node.destinationContextKey = redirect.destinationContextKey;
-      node.permanent = redirect.permanent;
-      node.generated = true;
-      if (node.type === 'route') {
-        node = options.getSystemRoute({
-          type: 'redirect',
-          route: redirect.destination,
-          defaults: node,
-          redirectConfig: redirect,
-        });
-      }
-      if (redirect!.methods) {
-        node.methods = redirect.methods;
-      }
-      node.type = 'redirect';
+      const defaults: RouteNode = {
+        ...node,
+        destinationContextKey: redirect.destinationContextKey,
+        permanent: redirect.permanent,
+        generated: true,
+      };
+
+      // A real file at the redirect source keeps its own `loadRoute`. Only a
+      // source with no file behind it gets the generated redirect module.
+      const resolved =
+        node.type === 'route'
+          ? options.getSystemRoute({
+              type: 'redirect',
+              route: redirect.destination,
+              defaults,
+              redirectConfig: redirect,
+            })
+          : defaults;
+
+      node = {
+        ...resolved,
+        type: 'redirect',
+        ...(redirect.methods ? { methods: redirect.methods } : {}),
+      };
       processedRedirectsRewrites.add(meta.route);
     }
 
@@ -470,20 +479,29 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       }
 
       const rewrite = rewrites[meta.route]!;
-      node.destinationContextKey = rewrite.destinationContextKey;
-      node.generated = true;
-      if (node.type === 'route') {
-        node = options.getSystemRoute({
-          type: 'rewrite',
-          route: rewrite.destination,
-          defaults: node,
-          rewriteConfig: rewrite,
-        });
-      }
-      if (rewrite.methods) {
-        node.methods = rewrite.methods;
-      }
-      node.type = 'rewrite';
+      const defaults: RouteNode = {
+        ...node,
+        destinationContextKey: rewrite.destinationContextKey,
+        generated: true,
+      };
+
+      // A real file at the rewrite source keeps its own `loadRoute`. Only a
+      // source with no file behind it gets the generated rewrite module.
+      const resolved =
+        node.type === 'route'
+          ? options.getSystemRoute({
+              type: 'rewrite',
+              route: rewrite.destination,
+              defaults,
+              rewriteConfig: rewrite,
+            })
+          : defaults;
+
+      node = {
+        ...resolved,
+        type: 'rewrite',
+        ...(rewrite.methods ? { methods: rewrite.methods } : {}),
+      };
       processedRedirectsRewrites.add(meta.route);
     }
 
