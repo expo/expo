@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Mark source-only products with `sourceOnly` in the `prebuilt-metadata` document, so consumers can tell a product that never produces an XCFramework from one the prebuild pipeline can build.
+- [iOS] Mark source-only products with `sourceOnly` in the `prebuilt-metadata` document, so consumers can tell a product that never produces an XCFramework from one the prebuild pipeline can build. ([#50095](https://github.com/expo/expo/pull/50095) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.0 — 2026-09-10
 
