@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix crash at launch (`Library not loaded: @rpath/Testing.framework/Testing`) caused by unit test sources being compiled into the prebuilt XCFramework.
+
 ### 💡 Others
 
 ## 57.0.5 — 2026-09-11
