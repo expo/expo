@@ -33,6 +33,7 @@ test.describe(baseDir, () => {
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
           NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'compiler',
           E2E_ROUTER_COMPILER: 'true',
         },
@@ -48,7 +49,7 @@ test.describe(baseDir, () => {
     });
 
     test('bundle contains live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, 'client/_expo/static/js'), {
+      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
       });
       const bundleFile = jsFiles[0]?.path;
@@ -95,6 +96,7 @@ test.describe(baseDir, () => {
         {
           env: {
             NODE_ENV: 'production',
+            EXPO_USE_STATIC: 'static',
             E2E_ROUTER_SRC: 'compiler',
             E2E_ROUTER_COMPILER: 'true',
             EXPO_UNSTABLE_LIVE_BINDINGS: 'false',
@@ -114,7 +116,7 @@ test.describe(baseDir, () => {
     });
 
     test('bundle does not have live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, 'client/_expo/static/js'), {
+      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
       });
       const bundleFile = jsFiles[0]?.path;

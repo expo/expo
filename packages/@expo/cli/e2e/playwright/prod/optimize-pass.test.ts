@@ -30,6 +30,7 @@ test.describe(inputDir, () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
       env: {
         NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'tree-shaking',
         EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH: 'true',
       },
@@ -47,7 +48,7 @@ test.describe(inputDir, () => {
   // This test generally ensures no errors are thrown during an export loading.
   test('loads without hydration errors', async ({ page }) => {
     // Ensure the JS code has string module IDs
-    const jsFile = klawSync(path.join(projectRoot, inputDir, 'client/_expo/static/js'), {
+    const jsFile = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
       nodir: true,
     });
 

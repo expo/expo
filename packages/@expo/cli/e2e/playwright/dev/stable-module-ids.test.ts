@@ -26,6 +26,7 @@ test.describe(inputDir, () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
       env: {
         NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'compiler',
         E2E_ROUTER_COMPILER: 'true',
 
@@ -46,8 +47,8 @@ test.describe(inputDir, () => {
   // This test generally ensures no errors are thrown during an export loading.
   test('loads compiler', async ({ page }) => {
     // Ensure the JS code has string module IDs
-    const jsFile = findProjectFiles(path.join(projectRoot, inputDir, 'client/_expo/static/js'))
-      .map((file) => path.join(projectRoot, inputDir, 'client/_expo/static/js', file))
+    const jsFile = findProjectFiles(path.join(projectRoot, inputDir, '_expo/static/js'))
+      .map((file) => path.join(projectRoot, inputDir, '_expo/static/js', file))
       .find((file) => file.endsWith('.js'));
     expect(fs.readFileSync(jsFile!, 'utf8')).toMatch(/__r\("packages\/expo-router\/entry.js"\);/);
 

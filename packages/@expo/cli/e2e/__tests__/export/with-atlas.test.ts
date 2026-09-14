@@ -9,14 +9,15 @@ import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
-describe('exports all platforms with server output', () => {
+describe('exports all platforms with static export', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-server-atlas-file';
+  const outputName = 'dist-static-atlas-file';
 
   beforeAll(async () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'all', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'url-polyfill',
         E2E_ROUTER_ASYNC: 'development',
         EXPO_ATLAS: 'true',
