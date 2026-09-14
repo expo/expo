@@ -62,10 +62,7 @@ export type RouterExtension<
 
 /**
  * Creates a router factory that merges the members returned by `extension` over the router
- * created by `base`. The effective `normalizeState` (from the extension, else from the base
- * router) runs on every state the resulting router returns. The router's `type` is stamped on the
- * states `getStateForRouteFocus` and `getStateForAction` receive and return. States the extension
- * routes through `context.baseRouter` are already normalized by the base router before that.
+ * created by `base`.
  *
  * Annotate the extension's context or return type to change the state, action, or options types.
  *
@@ -114,8 +111,10 @@ export function extendRouter<
       state.routeKeySeq < current.routeKeySeq
         ? { ...state, routeKeySeq: current.routeKeySeq }
         : state;
-    // A returned state keeps the type of the state it was derived from, which an outer router in
-    // the chain may have stamped before delegating.
+    // Every returned state gets the shared sequence, the type of the state it was derived from
+    // (an outer router in the chain may have stamped it before delegating), and the effective
+    // `normalizeState` (the extension's, else the base router's). States routed through
+    // `context.baseRouter` were already normalized by the base router.
     const finish = (state: State, stateType: State['type']) => {
       const stamped = stamp(state);
       const typed = stateType === undefined ? stamped : ensureStateType(stamped, stateType);
@@ -124,8 +123,12 @@ export function extendRouter<
 
     const delegate: RouterExtensionContext<State, Action, Options>['baseRouter'] = {
       ...baseRouter,
-      // `config` is only absent while an action is being reduced, when `current.config` is set.
-      getStateForAction(state, action, config = current.config!) {
+      getStateForAction(state, action, config = current.config) {
+        if (config === undefined) {
+          throw new Error(
+            '`baseRouter.getStateForAction` needs the `config` argument when it is called outside of `getStateForAction`, because only that method receives one from the navigator. Pass the config explicitly.'
+          );
+        }
         const result = baseRouter.getStateForAction(stamp(state), action, config);
         if (result !== null) {
           current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);

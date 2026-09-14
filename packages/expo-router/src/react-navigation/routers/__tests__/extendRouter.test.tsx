@@ -133,6 +133,41 @@ describe('extendRouter', () => {
     ).toBe('INDEX');
   });
 
+  test('lets the extension replace the base router normalizeState', () => {
+    const NormalizedRouter = extendRouter(TestRouter, () => ({ normalizeState: uppercaseNames }));
+    const router = extendRouter(NormalizedRouter, () => ({
+      normalizeState: (state) => ({ ...state, index: 0 }),
+      getStateForRouteFocus: (state) => state,
+    }))({});
+
+    const result = router.getStateForRouteFocus(state, 'index:0');
+
+    expect(result.index).toBe(0);
+    expect(result.routes[0]?.name).toBe('index');
+  });
+
+  test('merges added action creators with the base router ones', () => {
+    const first = () => ({ type: 'GO_BACK' }) as const;
+    const second = () => ({ type: 'GO_BACK' }) as const;
+    const FirstRouter = extendRouter(TestRouter, () => ({ actionCreators: { first } }));
+    const router = extendRouter(FirstRouter, ({ baseRouter }) => ({
+      actionCreators: { ...baseRouter.actionCreators, second },
+    }))({});
+
+    expect(router.actionCreators).toEqual({ first, second });
+  });
+
+  test('requires config when delegating outside of getStateForAction', () => {
+    const router = extendRouter(TestRouter, ({ baseRouter }) => ({
+      getStateForRouteFocus: (state) =>
+        baseRouter.getStateForAction(state, { type: 'GO_BACK' })?.state ?? state,
+    }))({});
+
+    expect(() => router.getStateForRouteFocus(state, 'index:0')).toThrow(
+      'needs the `config` argument'
+    );
+  });
+
   test('inherits normalizeState from the base router', () => {
     const NormalizedRouter = extendRouter(TestRouter, () => ({
       normalizeState: uppercaseNames,
