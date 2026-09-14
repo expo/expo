@@ -11,7 +11,7 @@ export function node(
     children,
     initialRouteName,
     dynamic: null,
-    contextKey: route,
+    contextKey: `./${route}`,
     loadRoute: () => ({}),
   };
 }

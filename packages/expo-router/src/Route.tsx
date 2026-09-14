@@ -6,6 +6,7 @@ import { createContext, use, type ComponentType, type PropsWithChildren } from '
 import { getRoutePathname } from './matchers';
 import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import type { ContextKey } from './types/paths';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
 
@@ -28,7 +29,7 @@ export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'
 
 export type MiddlewareNode = {
   /** Context Module ID. Used to resolve the middleware module */
-  contextKey: string;
+  contextKey: ContextKey;
   /** Loads middleware into memory. Returns the exports from +middleware.ts */
   loadRoute: () => Partial<LoadedMiddleware>;
 };
@@ -44,14 +45,20 @@ export type RouteNode = {
   children: RouteNode[];
   /** Is the route a dynamic path */
   dynamic: null | DynamicConvention[];
-  /** `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx` */
+  /**
+   * `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx`.
+   *
+   * Stays `string`: while the tree is being built this holds the path from the
+   * tree root, and hoisting rewrites it to be layout-relative, so no single
+   * type describes it.
+   */
   route: string;
   /** Context Module ID, used for matching children. */
-  contextKey: string;
+  contextKey: ContextKey;
   /** Redirect Context Module ID, used for matching children. */
   destinationContextKey?: string;
   /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
-  parentContextKey?: string;
+  parentContextKey?: ContextKey;
   /** Is the redirect permanent. */
   permanent?: boolean;
   /** Added in-memory */

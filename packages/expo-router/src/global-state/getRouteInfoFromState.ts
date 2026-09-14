@@ -5,16 +5,17 @@ import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { warnIfNestedParams } from '../navigationParams';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
 import type { NavigationState, PartialState } from '../react-navigation/native';
+import type { AbsoluteHref, AbsolutePath } from '../types/paths';
 import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
-  unstable_globalHref: string;
-  pathname: string;
+  unstable_globalHref: AbsoluteHref;
+  pathname: AbsolutePath;
   readonly params: Record<string, string | string[]>;
   searchParams: URLSearchParams;
   segments: string[];
-  pathnameWithParams: string;
+  pathnameWithParams: AbsoluteHref;
   isIndex: boolean;
 };
 
@@ -61,10 +62,13 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   warnIfNestedParams(route.params);
 
   if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
-    const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
+    // `route.path` comes from the matched URL, so it already starts with `/`.
+    const path = (route.path ||
+      (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`)) as AbsolutePath;
     return {
       ...defaultRouteInfo,
-      unstable_globalHref: appendBaseUrl(path),
+      // `appendBaseUrl` either prefixes a base URL or returns the path unchanged, so the shape holds.
+      unstable_globalHref: appendBaseUrl(path) as AbsoluteHref,
       pathname: path,
       pathnameWithParams: path,
       segments: [route.name],
@@ -113,55 +117,53 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
 
   const pathParams = new Set<string>();
 
-  const pathname =
-    '/' +
-    segments
-      .filter((segment) => {
-        return !(segment.startsWith('(') && segment.endsWith(')'));
-      })
-      .flatMap((segment) => {
-        if (segment === '+not-found') {
-          const notFoundPath = params['not-found'];
+  const pathname: AbsolutePath = `/${segments
+    .filter((segment) => {
+      return !(segment.startsWith('(') && segment.endsWith(')'));
+    })
+    .flatMap((segment) => {
+      if (segment === '+not-found') {
+        const notFoundPath = params['not-found'];
 
-          pathParams.add('not-found');
+        pathParams.add('not-found');
 
-          if (typeof notFoundPath === 'undefined') {
-            // Not founds are optional, do nothing if its not present
-            return [];
-          } else if (Array.isArray(notFoundPath)) {
-            return notFoundPath.map(String);
-          } else {
-            return [String(notFoundPath)];
-          }
-        } else if (segment.startsWith('[...') && segment.endsWith(']')) {
-          let paramName = segment.slice(4, -1);
-
-          // Legacy for React Navigation optional params
-          if (paramName.endsWith('?')) {
-            paramName = paramName.slice(0, -1);
-          }
-
-          const values = params[paramName];
-          pathParams.add(paramName);
-
-          // Catchall params are optional
-          return Array.isArray(values)
-            ? values.filter(isSerializableParam).map(String)
-            : isSerializableParam(values) && values
-              ? [String(values)]
-              : [];
-        } else if (segment.startsWith('[') && segment.endsWith(']')) {
-          const paramName = segment.slice(1, -1);
-          const value = params[paramName];
-          pathParams.add(paramName);
-
-          // Optional params are optional
-          return isSerializableParam(value) && value ? [String(value)] : [];
+        if (typeof notFoundPath === 'undefined') {
+          // Not founds are optional, do nothing if its not present
+          return [];
+        } else if (Array.isArray(notFoundPath)) {
+          return notFoundPath.map(String);
         } else {
-          return [segment];
+          return [String(notFoundPath)];
         }
-      })
-      .join('/');
+      } else if (segment.startsWith('[...') && segment.endsWith(']')) {
+        let paramName = segment.slice(4, -1);
+
+        // Legacy for React Navigation optional params
+        if (paramName.endsWith('?')) {
+          paramName = paramName.slice(0, -1);
+        }
+
+        const values = params[paramName];
+        pathParams.add(paramName);
+
+        // Catchall params are optional
+        return Array.isArray(values)
+          ? values.filter(isSerializableParam).map(String)
+          : isSerializableParam(values) && values
+            ? [String(values)]
+            : [];
+      } else if (segment.startsWith('[') && segment.endsWith(']')) {
+        const paramName = segment.slice(1, -1);
+        const value = params[paramName];
+        pathParams.add(paramName);
+
+        // Optional params are optional
+        return isSerializableParam(value) && value ? [String(value)] : [];
+      } else {
+        return [segment];
+      }
+    })
+    .join('/')}`;
 
   const searchParams = new URLSearchParams(
     Object.entries(params).flatMap(([key, value]) => {
@@ -185,8 +187,10 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
 
   // We cannot use searchParams.size because it is not included in the React Native polyfill
   const searchParamString = searchParams.toString();
-  let pathnameWithParams = searchParamString ? pathname + '?' + searchParamString : pathname;
-  pathnameWithParams = hash ? pathnameWithParams + '#' + hash : pathnameWithParams;
+  let pathnameWithParams: AbsoluteHref = searchParamString
+    ? `${pathname}?${searchParamString}`
+    : pathname;
+  pathnameWithParams = hash ? `${pathnameWithParams}#${hash}` : pathnameWithParams;
 
   return {
     segments,
@@ -194,7 +198,8 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     // Navigation params can contain ordinary object values at runtime despite the public search-param type.
     // TODO: address this together with other params serialization issues
     params: params as UrlObject['params'],
-    unstable_globalHref: appendBaseUrl(pathnameWithParams),
+    // `appendBaseUrl` either prefixes a base URL or returns the path unchanged, so the shape holds.
+    unstable_globalHref: appendBaseUrl(pathnameWithParams) as AbsoluteHref,
     searchParams,
     pathnameWithParams,
     // TODO: Remove this, it is not used anywhere

@@ -32,7 +32,7 @@ const config: NavigateActionConfig = {
   routeNode: {
     type: 'route' as const,
     route: 'root',
-    contextKey: 'root',
+    contextKey: './root',
     children: [],
     dynamic: null,
     loadRoute: () => ({}),

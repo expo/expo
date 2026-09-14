@@ -20,7 +20,7 @@ const asRouteNode = (route: string): RouteNode => {
       };
     },
     route,
-    contextKey: 'INVALID_TEST_VALUE',
+    contextKey: './INVALID_TEST_VALUE',
   };
 };
 
