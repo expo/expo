@@ -79,7 +79,7 @@ export type RedirectRouteNode = RouteNodeBase & {
   /** Redirect Context Module ID, used for matching children. */
   destinationContextKey: string;
   /** Is the redirect permanent. */
-  permanent?: boolean;
+  permanent: boolean;
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
   methods?: string[];
   /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
@@ -102,7 +102,10 @@ export type RouteNode =
   | RedirectRouteNode
   | RewriteRouteNode;
 
-/** The children of `node`, or an empty list for nodes that cannot have any. */
+/**
+ * The children of `node`, or an empty list for nodes that cannot have any.
+ * Returns the live array, so callers that sort it mutate the route tree.
+ */
 export function getChildren(node: RouteNode): RouteNode[] {
   return node.type === 'layout' ? node.children : [];
 }

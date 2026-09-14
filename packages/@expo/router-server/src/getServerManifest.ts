@@ -2,6 +2,7 @@ import {
   getChildren,
   getContextKey,
   sortRoutes,
+  type LayoutRouteNode,
   type RedirectRouteNode,
   type RewriteRouteNode,
   type RouteNode,
@@ -53,7 +54,7 @@ type GetServerManifestOptions = Pick<Options, 'headers' | 'pageHeaders'>;
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(
-  route: RouteNode | null,
+  route: LayoutRouteNode | null,
   options?: GetServerManifestOptions
 ): RoutesManifest<string> {
   function getFlatNodes(route: RouteNode, parentRoute: string = ''): FlatNode[] {
@@ -148,7 +149,7 @@ export function getServerManifest(
     rewrites: getMatchableManifestForPaths(rewrites),
   };
 
-  if (route?.type === 'layout' && route.middleware) {
+  if (route?.middleware) {
     manifest.middleware = {
       file: route.middleware.contextKey,
     };
