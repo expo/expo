@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Mark statements as finalized even when SQLite returns an earlier execution error, preventing access to freed statements.
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))

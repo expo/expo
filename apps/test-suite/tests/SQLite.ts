@@ -467,6 +467,73 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       await db.closeAsync();
     });
 
+    nativeIt(
+      'rejects a statement after finalization reports its earlier execution error',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', {
+          useNewConnection: true,
+        });
+        try {
+          await db.execAsync(
+            'CREATE TABLE finalize_test (id INTEGER PRIMARY KEY); INSERT INTO finalize_test VALUES (1)'
+          );
+          const statement = await db.prepareAsync('INSERT INTO finalize_test VALUES (1)');
+          let executionError = null;
+          try {
+            await statement.executeAsync();
+          } catch (error) {
+            executionError = error;
+          }
+          expect(String(executionError)).toMatch(/UNIQUE constraint failed/);
+
+          // Finalize frees the native statement but returns the preceding constraint error.
+          let finalizeError = null;
+          try {
+            await statement.finalizeAsync();
+          } catch (error) {
+            finalizeError = error;
+          }
+          expect(String(finalizeError)).toMatch(/UNIQUE constraint failed/);
+
+          // Calling execute or finalize again must reject before touching the freed pointer.
+          let reuseError = null;
+          try {
+            await statement.executeAsync();
+          } catch (error) {
+            reuseError = error;
+          }
+          expect(String(reuseError)).toMatch(/Access to closed resource/);
+          expect(() => statement.finalizeSync()).toThrow();
+          expect(await db.getFirstAsync('SELECT count(*) AS count FROM finalize_test')).toEqual({
+            count: 1,
+          });
+        } finally {
+          await db.closeAsync();
+        }
+      }
+    );
+
+    nativeIt('rejects a statement after synchronous finalization reports an error', () => {
+      const db = SQLite.openDatabaseSync(':memory:', {
+        useNewConnection: true,
+      });
+      try {
+        db.execSync(
+          'CREATE TABLE finalize_test (id INTEGER PRIMARY KEY); INSERT INTO finalize_test VALUES (1)'
+        );
+        const statement = db.prepareSync('INSERT INTO finalize_test VALUES (1)');
+        expect(() => statement.executeSync()).toThrow();
+        expect(() => statement.finalizeSync()).toThrow();
+        expect(() => statement.executeSync()).toThrowError(/Access to closed resource/);
+        expect(() => statement.finalizeSync()).toThrowError(/Access to closed resource/);
+        expect(db.getFirstSync('SELECT count(*) AS count FROM finalize_test')).toEqual({
+          count: 1,
+        });
+      } finally {
+        db.closeSync();
+      }
+    });
+
     it('should throw from getFirstAsync()/getAllAsync() if the cursor is not at the beginning', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`

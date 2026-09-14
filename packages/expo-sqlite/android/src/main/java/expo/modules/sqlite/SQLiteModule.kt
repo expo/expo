@@ -474,10 +474,12 @@ class SQLiteModule : Module() {
 
     // Guard the stateful statement, see `run` above.
     synchronized(statement) {
-      if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
+      val ret = statement.ref.sqlite3_finalize()
+      // SQLite destroys the statement even when returning an earlier execution error.
+      statement.isFinalized = true
+      if (ret != NativeDatabaseBinding.SQLITE_OK) {
         throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
       }
-      statement.isFinalized = true
     }
   }
 
