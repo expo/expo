@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add the stable `expo-router/native-tabs` entry point and deprecate `expo-router/unstable-native-tabs`. (by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Mock `react-native-worklets` in `expo-router/testing-library` so `react-native-gesture-handler` and `react-native-reanimated` load in Jest. ([#50013](https://github.com/expo/expo/pull/50013) by [@brentvatne](https://github.com/brentvatne))
