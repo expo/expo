@@ -156,8 +156,7 @@ function linkToImpl(
   originalHref: Href | string,
   options: LinkToOptions = {}
 ) {
-  let href: string | undefined | null =
-    typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
+  let href = typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
 
   if (emitDomLinkEvent(href, options)) {
     return;
