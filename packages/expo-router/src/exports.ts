@@ -78,6 +78,8 @@ export {
   IsWithinNativeNavigator,
   createStandardRouterNavigator,
   integrateWithRouter,
+  unstable_createStandardRouterNavigator,
+  unstable_integrateWithRouter,
 } from './standard-navigation';
 export type {
   IntegrateWithRouterOptions,

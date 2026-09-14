@@ -32,7 +32,12 @@ import {
 } from '../../react-navigation/routers';
 import type { GoBackAction, NavigateAction } from '../../react-navigation/routers/CommonActions';
 import type { StackNavigatorCreateProps } from '../../react-navigation/stack/navigators/createStackNavigator';
-import { createStandardRouterNavigator, integrateWithRouter } from '../index';
+import {
+  createStandardRouterNavigator,
+  integrateWithRouter,
+  unstable_createStandardRouterNavigator,
+  unstable_integrateWithRouter,
+} from '../index';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
@@ -450,5 +455,7 @@ integratePublicNav(publicStandardNavigator, TabRouter);
 describe('standard-navigation types', () => {
   it('is type-checked by tsc via pnpm typecheck or et check-packages', () => {
     expect(typeof createStandardRouterNavigator).toBe('function');
+    expect(unstable_createStandardRouterNavigator).toBe(createStandardRouterNavigator);
+    expect(unstable_integrateWithRouter).toBe(integrateWithRouter);
   });
 });

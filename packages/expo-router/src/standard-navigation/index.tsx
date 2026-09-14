@@ -262,6 +262,12 @@ export function integrateWithRouter<
   );
 }
 
+/** @deprecated Use `createStandardRouterNavigator` instead. */
+export const unstable_createStandardRouterNavigator = createStandardRouterNavigator;
+
+/** @deprecated Use `integrateWithRouter` instead. */
+export const unstable_integrateWithRouter = integrateWithRouter;
+
 /**
  * Partitions a navigator's props into the subset consumed by `useNavigationBuilder`
  * (`useNavigationBuilderProps`) and everything else (`extraProps`, forwarded to `NavigatorContent`).
