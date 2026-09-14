@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- [iOS] The SwiftPM autolinking plugin no longer reads the iOS deployment floor out of a module's podspec. The floor comes from `expo-modules-autolinking prebuilt-metadata` alone, so a podspec that states it in a form the reader refused no longer fails the sync.
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.0-preview.0 — 2026-09-10

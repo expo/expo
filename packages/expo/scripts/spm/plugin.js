@@ -51,7 +51,7 @@ const {
   emitPureSwiftSourcePackage,
   raiseFloor,
 } = require('./manifests');
-const { PodspecSyntaxError, readPodspecs } = require('./podspec');
+const { readPodspecs } = require('./podspec');
 const { scriptPhasesForModules } = require('./script-phases');
 
 /**
@@ -111,7 +111,6 @@ module.exports = function expoSpmPlugin(context) {
   const unmappedDeps = []; // emitted pods depending on pods with no SwiftPM counterpart
   const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
   const unresolvedTargets = new Map(); // module root → manifest targets with no sources on disk
-  const podspecErrors = new Map(); // module root → podspec line the reader refused
   const podspecLinkage = new Map(); // module root → podspec line declaring native linkage
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
@@ -177,28 +176,21 @@ module.exports = function expoSpmPlugin(context) {
           if (react != null) reactWired.push(pod.podName);
         }
       } else if (isPureSwift(moduleRoot)) {
-        // Pure-Swift module → single Swift target over its ios sources. Its podspec
-        // supplies nothing but a fallback deployment floor, for a module the metadata
-        // document does not cover: a module whose linkage only the podspec declares is
-        // skipped and diagnosed, never emitted half-linked.
-        let podspecs = null;
-        try {
-          podspecs = readPodspecs(
-            pod.podName,
-            [
-              pod.podspecDir,
-              path.join(moduleRoot, 'ios'),
-              path.join(moduleRoot, 'apple'),
-              moduleRoot,
-            ].filter(Boolean)
-          );
-        } catch (error) {
-          if (!(error instanceof PodspecSyntaxError)) throw error;
-          podspecErrors.set(moduleRoot, error);
-        }
-        if (podspecs?.linkage != null) podspecLinkage.set(moduleRoot, podspecs.linkage);
+        // Pure-Swift module → single Swift target over its ios sources. Its podspec is
+        // only read for what would make the emission wrong: a module whose linkage only
+        // the podspec declares is skipped and diagnosed, never emitted half-linked.
+        const podspecs = readPodspecs(
+          pod.podName,
+          [
+            pod.podspecDir,
+            path.join(moduleRoot, 'ios'),
+            path.join(moduleRoot, 'apple'),
+            moduleRoot,
+          ].filter(Boolean)
+        );
+        if (podspecs.linkage != null) podspecLinkage.set(moduleRoot, podspecs.linkage);
         const e =
-          podspecs == null || podspecs.linkage != null
+          podspecs.linkage != null
             ? null
             : emitPureSwiftSourcePackage(
                 moduleRoot,
@@ -207,10 +199,7 @@ module.exports = function expoSpmPlugin(context) {
                 frameworkSearchPath,
                 outDir,
                 codegenPkgPath,
-                raiseFloor(
-                  metadata[pod.podName]?.iosDeploymentTarget ?? podspecs.iosDeploymentTarget,
-                  coreDeploymentTarget
-                )
+                raiseFloor(metadata[pod.podName]?.iosDeploymentTarget, coreDeploymentTarget)
               );
         if (e != null) {
           packageDependencies.push(e.packageDep);
@@ -257,7 +246,6 @@ module.exports = function expoSpmPlugin(context) {
         pureSwift: isPureSwift(moduleRoot),
         hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
-        podspecError: podspecErrors.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
         prebuildProduct,
       });

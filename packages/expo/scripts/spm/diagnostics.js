@@ -87,19 +87,6 @@ function classifyUnsupported({ pending, coreAvailable }) {
         productName: p.prebuildProduct.name,
       };
     }
-    if (p.podspecError != null) {
-      const { file, line, snippet, reason } = p.podspecError;
-      return {
-        reason: 'unsupported-podspec-syntax',
-        podName: p.podName,
-        packageName: p.packageName,
-        moduleRoot: p.moduleRoot,
-        file,
-        line,
-        snippet,
-        problem: reason,
-      };
-    }
     if (p.podspecLinkage != null) {
       const { file, line, snippet } = p.podspecLinkage;
       return {
@@ -220,31 +207,6 @@ function renderUnresolvableTargetPath({ podName, packageName, moduleRoot, target
   ].join('\n');
 }
 
-/**
- * The floor the podspec states is not an exact literal. Reading a computed one means
- * running Ruby, and a guessed floor builds the module against APIs the deployment
- * target may not have — so the module is skipped and the line is quoted back.
- */
-function renderUnsupportedPodspecSyntax({
-  podName,
-  packageName,
-  moduleRoot,
-  file,
-  line,
-  snippet,
-  problem,
-}) {
-  return [
-    `error: Expo module "${packageName}" (pod ${podName}) states its iOS deployment floor in a form the Swift Package Manager plugin cannot read, so it was skipped.`,
-    `  ${file}:${line} states it as ${problem}:`,
-    `      ${snippet}`,
-    `  The plugin reads the floor as text, and only as an exact literal: \`s.platforms = { :ios => '16.4' }\` or \`s.ios.deployment_target = '16.4'\`. Anything computed would need the podspec to be run, and a guessed floor compiles the module against APIs the deployment target may not have.`,
-    `  Write the floor as a literal, or declare it in a Package.swift for the module — \`platforms: [.iOS("16.4")]\` — which the plugin mirrors.`,
-    `  If you do not own ${packageName}, persist the edit with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
-    `  Module path: ${moduleRoot}`,
-  ].join('\n');
-}
-
 function renderNeedsManifestForLinkage({ podName, packageName, moduleRoot, file, line, snippet }) {
   return [
     `error: Expo module "${packageName}" (pod ${podName}) declares native linkage in its podspec, which the Swift Package Manager plugin does not read, so it was skipped.`,
@@ -273,7 +235,6 @@ const RENDERERS = {
   'prebuild-available': renderPrebuildAvailable,
   'no-apple-sources': renderNoAppleSources,
   'unresolvable-target-path': renderUnresolvableTargetPath,
-  'unsupported-podspec-syntax': renderUnsupportedPodspecSyntax,
   'needs-manifest-for-linkage': renderNeedsManifestForLinkage,
   'core-unavailable': renderCoreUnavailable,
 };

@@ -90,62 +90,6 @@ describe('classifyUnsupported', () => {
   });
 });
 
-describe('unsupported podspec syntax', () => {
-  const podspecError = {
-    file: '/m/expo-bad/ios/ExpoBad.podspec',
-    line: 12,
-    snippet: 's.platforms = { :ios => MIN_IOS }',
-    reason: "`MIN_IOS` where a version literal like '16.4' belongs",
-  };
-
-  it('classifies a module whose podspec the reader refused', () => {
-    expect(
-      classifyUnsupported({
-        pending: [
-          {
-            podName: 'ExpoBad',
-            packageName: 'expo-bad',
-            moduleRoot: '/m/expo-bad',
-            podspecError,
-          },
-        ],
-        coreAvailable: true,
-      })
-    ).toEqual([
-      {
-        reason: 'unsupported-podspec-syntax',
-        podName: 'ExpoBad',
-        packageName: 'expo-bad',
-        moduleRoot: '/m/expo-bad',
-        file: podspecError.file,
-        line: podspecError.line,
-        snippet: podspecError.snippet,
-        problem: podspecError.reason,
-      },
-    ]);
-  });
-
-  it('reports the file, line and snippet, and how to fix it', () => {
-    const report = renderUnsupportedReport(
-      classifyUnsupported({
-        pending: [
-          { podName: 'ExpoBad', packageName: 'expo-bad', moduleRoot: '/m/expo-bad', podspecError },
-        ],
-        coreAvailable: true,
-      })
-    );
-    expect(report).toContain('error: Expo module "expo-bad" (pod ExpoBad)');
-    expect(report).toContain('iOS deployment floor');
-    expect(report).toContain('/m/expo-bad/ios/ExpoBad.podspec:12');
-    expect(report).toContain('s.platforms = { :ios => MIN_IOS }');
-    expect(report).toContain("{ :ios => '16.4' }");
-    expect(report).toContain("s.ios.deployment_target = '16.4'");
-    expect(report).toContain('platforms: [.iOS("16.4")]');
-    expect(report).toContain('patch-package expo-bad');
-    expect(report).not.toContain('linkage');
-  });
-});
-
 describe('diagnostic priority', () => {
   it('asks for the prebuild first, even when the podspec also needs attention', () => {
     expect(
@@ -162,7 +106,6 @@ describe('diagnostic priority', () => {
               line: 19,
               snippet: "s.frameworks = 'Photos'",
             },
-            podspecError: null,
           },
         ],
         coreAvailable: true,
@@ -189,21 +132,11 @@ describe('diagnostic priority order', () => {
   });
   const reasonFor = (extra) =>
     classifyUnsupported({ pending: [pending(extra)], coreAvailable: true })[0].reason;
-  const podspecError = {
-    file: '/m/expo-bad/ios/ExpoBad.podspec',
-    line: 12,
-    snippet: 's.platforms = { :ios => MIN_IOS }',
-    reason: 'a computed floor',
-  };
   const podspecLinkage = {
     file: '/m/expo-bad/ios/ExpoBad.podspec',
     line: 19,
     snippet: "s.frameworks = 'Photos'",
   };
-
-  it('reports the unreadable floor before the linkage the same podspec declares', () => {
-    expect(reasonFor({ podspecError, podspecLinkage })).toBe('unsupported-podspec-syntax');
-  });
 
   it('reports the linkage before targets whose sources it could not find', () => {
     expect(reasonFor({ podspecLinkage, unresolvedTargets: ['Main'] })).toBe(
