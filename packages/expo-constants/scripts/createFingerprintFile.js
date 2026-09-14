@@ -50,8 +50,6 @@ async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, 
   }
   const Fingerprint = require(fingerprintPath);
 
-  // The whole fingerprint, not just the hash: with the sources embedded, two fingerprints can be
-  // diffed to name the input that changed instead of only reporting that they differ.
   const fingerprint = await Fingerprint.createFingerprintAsync(projectRoot, {
     platforms: [platform],
     silent: true,
