@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Restore the `window`, the `factory.startReactNative(...)` call, and the Linking overrides in the generated `AppDelegate`, so config plugins that codemod those lines keep matching.
+- [iOS] Restore the `window`, the `factory.startReactNative(...)` call, and the Linking overrides in the generated `AppDelegate`, so config plugins that codemod those lines keep matching. ([#50154](https://github.com/expo/expo/pull/50154) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
