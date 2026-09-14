@@ -155,19 +155,19 @@ describe('resolvePrebuiltMetadataAsync', () => {
   // xcframeworks. Consumers cannot read the config that names them, so the
   // document has to carry them. Mirrors Ruby's `spm_dependency_frameworks`.
   it('publishes the SPM dependency products of an internal product', async () => {
-    const document = await resolvePrebuiltMetadataAsync(optionsLoader);
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
 
     expect(document.ExpoWithDeps).toMatchObject({ spmDependencies: ['SDWebImage', 'libavif'] });
   });
 
   it('publishes the SPM dependency products of an external product too', async () => {
-    const document = await resolvePrebuiltMetadataAsync(optionsLoader);
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
 
     expect(document.RNWorklets).toMatchObject({ spmDependencies: ['RNWorkletsDep'] });
   });
 
   it('omits the dependencies of a product that declares none', async () => {
-    const document = await resolvePrebuiltMetadataAsync(optionsLoader);
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
 
     expect(document.ExpoModulesCore).not.toHaveProperty('spmDependencies');
   });

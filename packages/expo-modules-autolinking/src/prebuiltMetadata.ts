@@ -149,7 +149,9 @@ function readSpmDependencies(spmPackages: unknown): string[] {
     return [];
   }
   return spmPackages
-    .map((pkg: { productName?: unknown } | null) => pkg?.productName)
+    .map((pkg: unknown) =>
+      typeof pkg === 'object' && pkg !== null && 'productName' in pkg ? pkg.productName : undefined
+    )
     .filter((name): name is string => typeof name === 'string');
 }
 
