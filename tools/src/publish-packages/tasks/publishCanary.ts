@@ -128,11 +128,11 @@ export const cleanWorkingTree = new Task<TaskArgs>(
         });
 
         await Promise.all(
-          parcels.flatMap(({ pkg }) =>
-            ['prebuilds', 'local-maven-repo'].map((directory) =>
-              fs.remove(path.join(pkg.path, directory))
-            )
-          )
+          parcels.flatMap(({ pkg }) => [
+            fs.remove(path.join(pkg.path, 'prebuilds')),
+            fs.remove(path.join(pkg.path, 'local-maven-repo')),
+            ...(pkg.packageName === 'expo' ? [fs.remove(path.join(pkg.path, 'template.tgz'))] : []),
+          ])
         );
 
         // Remove tarballs created by `npm pack`.
