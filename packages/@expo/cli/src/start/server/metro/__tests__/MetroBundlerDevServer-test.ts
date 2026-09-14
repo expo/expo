@@ -474,9 +474,6 @@ describe('executeServerDataLoaderAsync', () => {
         web: {
           output: 'static',
         },
-        extra: {
-          router: {},
-        },
       },
     } as unknown as ReturnType<typeof getConfig>);
 
