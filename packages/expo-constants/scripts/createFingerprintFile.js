@@ -100,8 +100,6 @@ module.exports = {
 // Direct invocation from the Android build. The gradle task is registered for debuggable variants
 // only, so `enabled` is always true here.
 if (require.main === module) {
-  // Awaited in an IIFE so the write finishes before the script's process exits, rather than
-  // relying on Node keeping it alive for a floating promise.
   (async () => {
     const projectRoot = resolveProjectRoot(process.argv[2] ?? process.cwd());
     await createFingerprintFileAsync(projectRoot, process.argv[3], process.argv[4], true);
