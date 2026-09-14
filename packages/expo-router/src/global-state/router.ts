@@ -171,8 +171,7 @@ function linkToImpl(
   options: LinkToOptions = {}
 ) {
   const { inTransition, ...navigationOptions } = options;
-  let href: string | undefined | null =
-    typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
+  let href = typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
 
   if (emitDomLinkEvent(href, options)) {
     return;
