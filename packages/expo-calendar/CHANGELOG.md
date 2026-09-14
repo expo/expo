@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- The `params` argument of `openInCalendar()` and `editInCalendar()` no longer accepts `null`. Call the methods with no arguments instead.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
