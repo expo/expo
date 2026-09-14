@@ -22,16 +22,12 @@ import { vol } from 'memfs';
 import * as path from 'path';
 
 import type { ExpoJsOutput } from '../../serializer/jsOutput';
-import { materializeMap } from '../../serializer/packedMap';
 
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
 const toTraceMap = (output: ExpoJsOutput, contents: string) => {
-  // `fromRawMappings` needs plain tuples; the worker emits the packed
-  // wire shape, so materialize at the boundary.
   const map = fromRawMappings([
     {
       ...output.data,
-      map: materializeMap(output.data.map),
       path: '',
       source: contents,
       isIgnored: false,

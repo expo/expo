@@ -14,12 +14,7 @@ it(`wraps an empty body as an empty Metro module factory`, () => {
   expect(result.output).toHaveLength(1);
   expect(result.output[0]!.type).toBe('js/module');
   expect(result.output[0]!.data.functionMap).toBeNull();
-  expect(result.output[0]!.data.map).toEqual({
-    __version: 1,
-    __count: 0,
-    __names: [],
-    __packed: [],
-  });
+  expect(result.output[0]!.data.map).toEqual({ mappings: expect.any(String), names: [] });
   // The body is empty, so the factory body is empty too.
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(
     `"__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {});"`

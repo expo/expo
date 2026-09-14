@@ -12,7 +12,6 @@ import * as path from 'path';
 import type { Dependency as ExpoTransformDependency } from '../../../transform-worker/collect-dependencies';
 import type { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
-import { wrapTransformResultMaps } from '../../packedMap';
 
 export const projectRoot = '/app';
 
@@ -317,29 +316,25 @@ export async function parseModule(
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const codeBuffer = Buffer.from(code);
 
-  // Mirror the production `Bundler.transformFile` wrapper so test
-  // fixtures see the same `data.map` shape readers do.
-  const { output, dependencies } = wrapTransformResultMaps(
-    await expoMetroTransformWorker.transform(
-      // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
-      {
-        ...METRO_CONFIG_DEFAULTS.transformer,
-        asyncRequireModulePath: 'expo-mock/async-require',
-        unstable_allowRequireContext: true,
-        allowOptionalDependencies: true,
-        assetPlugins: [],
-        babelTransformerPath: '@expo/metro-config/build/babel-transformer',
-        ...transformConfig,
-      },
-      projectRoot,
-      absoluteFilePath,
-      codeBuffer,
-      {
-        inlineRequires: false,
-        ...transformOptions,
-        inlinePlatform: true,
-      }
-    )
+  const { output, dependencies } = await expoMetroTransformWorker.transform(
+    // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
+    {
+      ...METRO_CONFIG_DEFAULTS.transformer,
+      asyncRequireModulePath: 'expo-mock/async-require',
+      unstable_allowRequireContext: true,
+      allowOptionalDependencies: true,
+      assetPlugins: [],
+      babelTransformerPath: '@expo/metro-config/build/babel-transformer',
+      ...transformConfig,
+    },
+    projectRoot,
+    absoluteFilePath,
+    codeBuffer,
+    {
+      inlineRequires: false,
+      ...transformOptions,
+      inlinePlatform: true,
+    }
   );
 
   return {

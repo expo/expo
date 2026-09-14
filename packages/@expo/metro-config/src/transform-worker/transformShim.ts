@@ -4,7 +4,7 @@ import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';
-import { countLinesAndTerminateSourceMap, emptySourceMap } from '../serializer/packedMap';
+import { vlqMapFromDecodedMap } from '../serializer/sourceMap';
 import type { TransformResponse } from './transform-worker';
 
 /** Synthesizes the `metro-transform-worker` output for a hand-crafted JS shim
@@ -55,8 +55,7 @@ export function transformShim(
     sourceMaps: false,
   });
 
-  const map = emptySourceMap();
-  const { lineCount } = countLinesAndTerminateSourceMap(code, map);
+  const { lineCount, map } = vlqMapFromDecodedMap(null, code);
   const output: ExpoJsOutput[] = [
     {
       type: 'js/module',

@@ -33,17 +33,15 @@ import assert from 'node:assert';
 import type { ExpoBabelTransformer as ExpoBabelTransformerWithCacheKey } from '../babel-transformer';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
-  countLinesAndTerminateSourceMap,
-  emptySourceMap,
-  packDecodedMappings,
-  packRawMappings,
-  type SerializableSourceMap,
-} from '../serializer/packedMap';
-import {
   composeSourceMaps,
   rawMappingsToEncodedMap,
+  vlqMapFromDecodedMap,
+  vlqMapFromEncodedMap,
+  type BabelDecodedMap,
   type BabelSourceMapSegment,
+  type EncodedMappings,
   type EncodedTransformerSourceMap,
+  type VlqMap,
 } from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import * as assetTransformer from './asset-transformer';
@@ -184,7 +182,7 @@ export const minifyCode = async (
   inputSourceMap?: EncodedTransformerSourceMap
 ): Promise<{
   code: string;
-  sourceMap: SerializableSourceMap;
+  map: EncodedMappings;
 }> => {
   const sourceMap = inputSourceMap ?? rawMappingsToEncodedMap({ filename, source, rawMappings });
 
@@ -203,12 +201,7 @@ export const minifyCode = async (
     done('minify', { file: debugEvent.path(filename) });
     return {
       code: minified.code,
-      sourceMap: minified.map
-        ? packDecodedMappings({
-            mappings: minified.map.mappings,
-            names: minified.map.names,
-          })
-        : emptySourceMap(),
+      map: minified.map ?? { mappings: '', names: [] },
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
@@ -587,11 +580,13 @@ async function transformJS(
       ])
     : null;
   let code = result.code;
-  let sourceMap: SerializableSourceMap;
+  let lineCount: number;
+  let map: VlqMap;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
-    ({ sourceMap, code } = await minifyCode(
+    let minifiedMap: EncodedMappings;
+    ({ map: minifiedMap, code } = await minifyCode(
       config,
       file.filename,
       result.code,
@@ -606,13 +601,14 @@ async function transformJS(
           }
         : undefined
     ));
+    ({ lineCount, map } = vlqMapFromEncodedMap(minifiedMap, code));
+  } else if (generatedSourceMap) {
+    ({ lineCount, map } = vlqMapFromEncodedMap(generatedSourceMap, code));
   } else {
-    sourceMap = generatedSourceMap
-      ? packDecodedMappings({
-          mappings: generatedSourceMap.mappings,
-          names: generatedSourceMap.names,
-        })
-      : packRawMappings(rawMappings);
+    ({ lineCount, map } = vlqMapFromDecodedMap(
+      (result as { decodedMap?: BabelDecodedMap } | null)?.decodedMap,
+      code
+    ));
   }
 
   const possibleReconcile: ReconcileTransformSettings | undefined =
@@ -638,9 +634,6 @@ async function transformJS(
         }
       : undefined;
 
-  let lineCount;
-  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
-
   // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
   // that React Compiler and other Babel plugins may add.
   const output: ExpoJsOutput[] = [
@@ -648,11 +641,8 @@ async function transformJS(
       data: {
         code,
         lineCount,
-        // Reconcile re-runs Babel codegen and replaces `data.map` via
-        // `installPackedMap` before any reader sees it, so the sourceMap emitted
-        // here would be discarded — short-circuit to an empty Array to skip
-        // the work and avoid GC pressure on optimize builds.
-        map: possibleReconcile ? [] : sourceMap,
+        // Reconcile re-runs Babel codegen and replaces `data.map` before any reader sees it.
+        map: possibleReconcile ? { mappings: '', names: [] } : map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactServerReference: file.reactServerReference,
@@ -830,13 +820,15 @@ async function completeFullNoxcturnalTransform(
   }
 
   let code = fullNoxcturnal.result.code;
-  let sourceMap: SerializableSourceMap;
+  let lineCount: number;
+  let map: VlqMap;
   if (shouldMinify(context.options)) {
     const reserved =
       context.config.unstable_dependencyMapReservedName == null
         ? []
         : [context.config.unstable_dependencyMapReservedName];
-    ({ code, sourceMap } = await minifyCode(
+    let minifiedMap: EncodedMappings;
+    ({ code, map: minifiedMap } = await minifyCode(
       context.config,
       file.filename,
       code,
@@ -851,14 +843,10 @@ async function completeFullNoxcturnalTransform(
         mappings: fullNoxcturnal.result.map.mappings,
       }
     ));
+    ({ lineCount, map } = vlqMapFromEncodedMap(minifiedMap, code));
   } else {
-    sourceMap = packDecodedMappings({
-      mappings: fullNoxcturnal.result.map.mappings,
-      names: fullNoxcturnal.result.map.names,
-    });
+    ({ lineCount, map } = vlqMapFromEncodedMap(fullNoxcturnal.result.map, code));
   }
-  let lineCount: number;
-  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
   return {
     dependencies: fullNoxcturnal.dependencies,
@@ -868,7 +856,7 @@ async function completeFullNoxcturnalTransform(
         data: {
           code,
           lineCount,
-          map: sourceMap,
+          map,
           functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
           hasCjsExports:
             typeof fullNoxcturnal.result.metadata.hasCjsExports === 'boolean'
@@ -941,12 +929,12 @@ async function transformJSON(
     config.unstable_disableModuleWrapping === true
       ? JsFileWrapping.jsonToCommonJS(file.code)
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
-  let sourceMap: SerializableSourceMap = emptySourceMap();
+  let encodedMap: EncodedMappings = { mappings: '', names: [] };
 
   const minify = shouldMinify(options);
 
   if (minify) {
-    ({ sourceMap, code } = await minifyCode(config, file.filename, code, file.code, []));
+    ({ map: encodedMap, code } = await minifyCode(config, file.filename, code, file.code, []));
   }
 
   let jsType: JSFileType;
@@ -959,12 +947,11 @@ async function transformJSON(
     jsType = 'js/module';
   }
 
-  let lineCount;
-  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
+  const { lineCount, map } = vlqMapFromEncodedMap(encodedMap, code);
 
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount, map: sourceMap, functionMap: null },
+      data: { code, lineCount, map, functionMap: null },
       type: jsType,
     },
   ];
@@ -1065,7 +1052,8 @@ export async function transform(
 
 // NOTE: Increment if cache becomes incompatible (original value would be '')
 // 1. Added new packed source map format
-const CACHE_VERSION = '2';
+// 3. Replaced the packed source map format with Metro's compact `VlqMap`
+const CACHE_VERSION = '3';
 
 export function getCacheKey(
   config: ExpoJsTransformerConfig,
