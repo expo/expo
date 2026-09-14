@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Hermes v1 async arrow transform crashing with `Property id of VariableDeclarator expected node to be of a type ["LVal","VoidPattern"] ...` on async arrows with rest, destructured, or default params and a block body in a conditional expression ([#50136](https://github.com/expo/expo/pull/50136) by [@robhogan](https://github.com/robhogan))
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))

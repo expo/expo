@@ -1,4 +1,4 @@
-import { transformSync } from '@babel/core';
+import { transformSync, types as t } from '@babel/core';
 
 import { fixHermesV1AsyncArrowNonSimpleParams } from '../fix-hermes-v1-async-arrow-non-simple-params';
 
@@ -10,6 +10,24 @@ function transform(code: string) {
     compact: false,
   });
   return result!.code!;
+}
+
+function transformWithFlowParser(code: string) {
+  const result = transformSync(code, {
+    plugins: [fixHermesV1AsyncArrowNonSimpleParams],
+    parserOpts: { plugins: ['flow'] },
+    configFile: false,
+    babelrc: false,
+    compact: false,
+    ast: true,
+  });
+  const paramTypes: string[] = [];
+  t.traverseFast(result!.ast!, (node) => {
+    if (t.isArrowFunctionExpression(node)) {
+      paramTypes.push(...node.params.map((param) => param.type));
+    }
+  });
+  return { code: result!.code!, paramTypes };
 }
 
 describe('non-simple async arrows', () => {
@@ -120,6 +138,93 @@ describe('non-simple async arrows', () => {
         return c;
       };"
     `);
+  });
+});
+
+describe('params left as expressions by the flow parser', () => {
+  // With the `flow` parser plugin, @babel/parser doesn't convert the params of an arrow with a
+  // block body in a conditional consequent to patterns, e.g. `...r` is left as a `SpreadElement`
+  // and `{ a }` as an `ObjectExpression`
+  const cases = {
+    rest: `const g = e => (e ? async (...r) => { return r } : 0);`,
+    object: `const g = e => (e ? async ({ a, b: [c = 1, ...d] }) => { return a } : 0);`,
+    array: `const g = e => (e ? async ([a, b]) => { return a } : 0);`,
+    default: `const g = e => (e ? async (a = 1) => { return a } : 0);`,
+    annotated: `const g = e => (e ? async ({ a }: Props) => { return a } : 0);`,
+    mixed: `const g = e => (e ? async (a, { b }, c = 1, ...rest) => { return rest } : 0);`,
+  };
+
+  it('rewrites rest param', () => {
+    expect(transformWithFlowParser(cases.rest).code).toMatchInlineSnapshot(`
+      "const g = e => e ? (...r) => (async () => {
+        return r;
+      })() : 0;"
+    `);
+  });
+
+  it('rewrites object destructure', () => {
+    expect(transformWithFlowParser(cases.object).code).toMatchInlineSnapshot(`
+      "const g = e => e ? async _p => {
+        var {
+          a,
+          b: [c = 1, ...d]
+        } = _p;
+        return a;
+      } : 0;"
+    `);
+  });
+
+  it('rewrites array destructure', () => {
+    expect(transformWithFlowParser(cases.array).code).toMatchInlineSnapshot(`
+      "const g = e => e ? async _p => {
+        var [a, b] = _p;
+        return a;
+      } : 0;"
+    `);
+  });
+
+  it('rewrites default value param', () => {
+    expect(transformWithFlowParser(cases.default).code).toMatchInlineSnapshot(`
+      "const g = e => e ? async _p => {
+        var a = _p === undefined ? 1 : _p;
+        return a;
+      } : 0;"
+    `);
+  });
+
+  it('rewrites type-annotated destructure', () => {
+    expect(transformWithFlowParser(cases.annotated).code).toMatchInlineSnapshot(`
+      "const g = e => e ? async _p => {
+        var {
+          a
+        }: Props = _p;
+        return a;
+      } : 0;"
+    `);
+  });
+
+  it('rewrites mixed simple, destructure, default, and rest params', () => {
+    expect(transformWithFlowParser(cases.mixed).code).toMatchInlineSnapshot(`
+      "const g = e => e ? (a, {
+        b
+      }, c = 1, ...rest) => (async () => {
+        return rest;
+      })() : 0;"
+    `);
+  });
+
+  it('emits params as patterns', () => {
+    for (const code of Object.values(cases)) {
+      for (const type of transformWithFlowParser(code).paramTypes) {
+        expect([
+          'Identifier',
+          'ObjectPattern',
+          'ArrayPattern',
+          'AssignmentPattern',
+          'RestElement',
+        ]).toContain(type);
+      }
+    }
   });
 });
 
