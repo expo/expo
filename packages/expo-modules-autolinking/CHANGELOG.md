@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [iOS] Add a single pure description of the precompiled xcframework artifact layout, so the producer, the CocoaPods integrator and the artifact cache can stop each encoding their own copy. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Describe where each product's precompiled xcframeworks may live in the `prebuilt-metadata` document, so its consumers read the layout instead of deriving it.
 
 ## 58.0.0 — 2026-09-10
 

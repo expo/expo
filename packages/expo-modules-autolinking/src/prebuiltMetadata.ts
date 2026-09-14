@@ -5,9 +5,32 @@ import { findModulesAsync } from './autolinking/findModules';
 import type { LinkingOptionsLoader } from './commands/autolinkingOptions';
 import { scanDependenciesInSearchPath } from './dependencies';
 import { createMemoizer } from './memoize';
+import {
+  getArtifactBases,
+  getArtifactSuffixes,
+  getRemoteArtifactKey,
+  getSharedSpmDepBases,
+  getSharedSpmDepSuffix,
+  PREBUILT_FLAVORS,
+  type ArtifactSuffixes,
+  type PrebuiltFlavor,
+} from './prebuiltArtifactPaths';
 import { createReactNativeConfigAsync } from './reactNativeConfig';
 import type { RNConfigDependency } from './reactNativeConfig/reactNativeConfig.types';
 import { scanFilesRecursively } from './utils';
+
+/** `remoteKey` is external-only: the artifact store is never written for internal
+ * products, so a key for one would address something that cannot exist. */
+export type PrebuiltArtifactFlavorPaths = ArtifactSuffixes & { remoteKey?: string };
+
+export type PrebuiltSharedSpmDepLocator = Record<PrebuiltFlavor, string> & { bases: string[] };
+
+/** Where a product's xcframeworks may live. Both flavors are always described,
+ * because the CocoaPods integrator stages both and picks one inside Xcode. */
+export type PrebuiltArtifactLocator = Record<PrebuiltFlavor, PrebuiltArtifactFlavorPaths> & {
+  bases: string[];
+  sharedSpmDeps: Record<string, PrebuiltSharedSpmDepLocator>;
+};
 
 export interface PrebuiltMetadataEntry {
   type: 'internal' | 'external';
@@ -15,6 +38,7 @@ export interface PrebuiltMetadataEntry {
   packageRoot: string;
   podspecDir: string;
   productName: string;
+  artifact: PrebuiltArtifactLocator;
 }
 
 export type PrebuiltMetadataDocument = Record<string, PrebuiltMetadataEntry>;
@@ -24,6 +48,20 @@ export interface ResolvePrebuiltMetadataOptions {
    * 'app-plan' locates configs through the app's module resolution.
    * Defaults to 'catalog' inside an expo repository checkout, 'app-plan' elsewhere. */
   mode?: 'catalog' | 'app-plan';
+  /** `<packageVersion>/<reactNativeVersion>/<hermesVersion>` for external products.
+   * Resolving those three versions stays with the caller until ENG-26089 single-sources
+   * it; without a prefix the external candidates degrade to the unversioned ones. */
+  versionPrefix?: string | null;
+  /** Overrides the monorepo build directory. Omit it to read `EXPO_PRECOMPILED_MODULES_PATH`,
+   * the same variable the CocoaPods integrator reads; pass null to ignore that variable. */
+  customModulesPath?: string | null;
+}
+
+/** The parts of the artifact grammar that are the same for every product in one run. */
+interface ArtifactContext {
+  repoRoot: string | null;
+  customModulesPath: string | null;
+  versionPrefix: string | null;
 }
 
 /** Package identity as both discovery modes already report it. */
@@ -34,21 +72,31 @@ type DiscoveredPackages = Record<string, { path: string } | undefined>;
  * products. */
 export async function resolvePrebuiltMetadataAsync(
   optionsLoader: LinkingOptionsLoader,
-  { mode }: ResolvePrebuiltMetadataOptions = {}
+  { mode, versionPrefix, customModulesPath }: ResolvePrebuiltMetadataOptions = {}
 ): Promise<PrebuiltMetadataDocument> {
   return createMemoizer().withMemoizer(async () => {
     const appRoot = await optionsLoader.getAppRoot();
-    const resolvedMode = mode ?? (findExpoRepoRoot() ? 'catalog' : 'app-plan');
+    const repoRoot = findExpoRepoRoot();
+    const resolvedMode = mode ?? (repoRoot ? 'catalog' : 'app-plan');
     const packages =
       resolvedMode === 'catalog'
         ? await scanRepoPackagesAsync()
         : await findAppPackagesAsync(appRoot, optionsLoader);
 
+    const artifactContext: ArtifactContext = {
+      repoRoot,
+      customModulesPath:
+        customModulesPath !== undefined
+          ? customModulesPath
+          : (process.env.EXPO_PRECOMPILED_MODULES_PATH ?? null),
+      versionPrefix: versionPrefix ?? null,
+    };
+
     const entries: PrebuiltMetadataDocument = {};
     for (const name of Object.keys(packages).sort()) {
       const packageRoot = packages[name]?.path;
       if (packageRoot) {
-        addInternalProducts(entries, packageRoot);
+        addInternalProducts(entries, packageRoot, artifactContext);
       }
     }
 
@@ -57,7 +105,7 @@ export async function resolvePrebuiltMetadataAsync(
       appRoot,
       sourceDir: undefined,
     });
-    await scanExternalConfigsAsync(reactNativeConfig.dependencies ?? {}, entries);
+    await scanExternalConfigsAsync(reactNativeConfig.dependencies ?? {}, entries, artifactContext);
 
     return Object.fromEntries(
       Object.keys(entries)
@@ -68,7 +116,10 @@ export async function resolvePrebuiltMetadataAsync(
 }
 
 /** The expo repository root when this package runs from its packages/ checkout
- * (its own location is the same anchor used for external-configs below). */
+ * (its own location is the same anchor used for external-configs below).
+ * precompiled_modules.rb:1821 instead walks up from the app, so a checkout that
+ * resolves this package outside packages/ (a pnpm store path) yields null here
+ * while Ruby still finds the root. */
 function findExpoRepoRoot(): string | null {
   const repoRoot = path.resolve(__dirname, '..', '..', '..');
   return fs.existsSync(path.join(repoRoot, 'packages', 'expo-modules-core', 'spm.config.json'))
@@ -110,7 +161,11 @@ function readJsonFile(filePath: string): any | null {
   }
 }
 
-function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: string) {
+function addInternalProducts(
+  entries: PrebuiltMetadataDocument,
+  packageRoot: string,
+  artifactContext: ArtifactContext
+) {
   const configPath = path.join(packageRoot, 'spm.config.json');
   const config = readJsonFile(configPath);
   if (!config) {
@@ -130,12 +185,17 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
       if (podName == null) {
         continue;
       }
+      const productName = product.name || podName;
       entries[podName] = {
         type: 'internal',
         npmPackage,
         packageRoot,
         podspecDir: resolvePodspecDir(packageRoot, podName),
-        productName: product.name || podName,
+        productName,
+        artifact: buildArtifactLocator(
+          { type: 'internal', npmPackage, packageRoot, productName, product },
+          artifactContext
+        ),
       };
     }
   } catch (error) {
@@ -153,7 +213,8 @@ function resolvePodspecDir(packageRoot: string, podName: string): string {
 
 async function scanExternalConfigsAsync(
   dependencies: Record<string, RNConfigDependency>,
-  entries: PrebuiltMetadataDocument
+  entries: PrebuiltMetadataDocument,
+  artifactContext: ArtifactContext
 ) {
   const externalConfigsDir = path.join(__dirname, '..', 'external-configs', 'ios');
   for await (const file of scanFilesRecursively(externalConfigsDir, undefined, true)) {
@@ -172,16 +233,80 @@ async function scanExternalConfigsAsync(
         if (podName == null) {
           continue;
         }
+        const productName = product.name || podName;
         entries[podName] = {
           type: 'external',
           npmPackage,
           packageRoot,
           podspecDir: packageRoot,
-          productName: product.name || podName,
+          productName,
+          artifact: buildArtifactLocator(
+            { type: 'external', npmPackage, packageRoot, productName, product },
+            artifactContext
+          ),
         };
       }
     } catch (error) {
       console.warn(`[prebuilt-metadata] Failed to process ${file.path}: ${error}`);
     }
   }
+}
+
+/** The product fields the artifact grammar needs, as spm.config.json declares them. */
+interface SpmConfigProduct {
+  spmPackages?: { productName?: string }[];
+}
+
+interface ProductIdentity {
+  type: 'internal' | 'external';
+  npmPackage: string;
+  packageRoot: string;
+  productName: string;
+  product: SpmConfigProduct;
+}
+
+function byFlavor<T>(build: (flavor: PrebuiltFlavor) => T): Record<PrebuiltFlavor, T> {
+  return Object.fromEntries(PREBUILT_FLAVORS.map((flavor) => [flavor, build(flavor)])) as Record<
+    PrebuiltFlavor,
+    T
+  >;
+}
+
+function buildArtifactLocator(
+  { type, npmPackage, packageRoot, productName, product }: ProductIdentity,
+  { repoRoot, customModulesPath, versionPrefix }: ArtifactContext
+): PrebuiltArtifactLocator {
+  // Only external products are published under a version prefix.
+  const versioned = type === 'external' ? versionPrefix : null;
+  const common = { npmPackage, packageRoot, customModulesPath, repoRoot };
+  return {
+    bases: getArtifactBases(
+      type === 'external'
+        ? { ...common, type, versionPrefix: versioned }
+        : { ...common, type: 'internal' }
+    ),
+    ...byFlavor((flavor) => ({
+      ...getArtifactSuffixes(productName, flavor),
+      ...(type === 'external' && {
+        remoteKey: getRemoteArtifactKey(npmPackage, versioned, productName, flavor),
+      }),
+    })),
+    sharedSpmDeps: Object.fromEntries(
+      sharedSpmDepNames(product).map((depName) => [
+        depName,
+        {
+          bases: getSharedSpmDepBases(depName, { packageRoot, customModulesPath, repoRoot }),
+          ...byFlavor((flavor) => getSharedSpmDepSuffix(depName, flavor)),
+        },
+      ])
+    ),
+  };
+}
+
+/** Mirrors precompiled_modules.rb: the shared xcframeworks a product bundles are the
+ * product names of its SPM packages. */
+function sharedSpmDepNames(product: SpmConfigProduct): string[] {
+  return (product?.spmPackages ?? [])
+    .map((spmPackage) => spmPackage?.productName)
+    .filter((name): name is string => !!name);
 }
