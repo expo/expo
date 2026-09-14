@@ -492,11 +492,26 @@ function ensureConfigHasDefaultValues({
 
   const expWithDefaults = { ...exp, name, slug, version, description };
 
+  // Use the project's declared dependencies so hoisted Router installations do not
+  // change the output of unrelated apps in a workspace.
+  const usesRouter = [pkg.dependencies, pkg.devDependencies].some(
+    (dependencies) =>
+      dependencies &&
+      typeof dependencies === 'object' &&
+      !Array.isArray(dependencies) &&
+      typeof dependencies['expo-router'] === 'string'
+  );
   let sdkVersion;
   try {
     sdkVersion = getExpoSDKVersion(projectRoot, expWithDefaults);
   } catch (error) {
     if (!skipSDKVersionRequirement) throw error;
+  }
+
+  // Shared tools can read older SDK projects with this version of @expo/config.
+  const sdkMajor = sdkVersion ? semver.parse(sdkVersion)?.major : undefined;
+  if (usesRouter && (sdkMajor == null || sdkMajor >= 58) && expWithDefaults.web?.output == null) {
+    expWithDefaults.web = { ...expWithDefaults.web, output: 'server' };
   }
 
   // TODO(@kitten): Remove once platforms are updated in XDL schema

@@ -22,6 +22,8 @@ describe('server-output', () => {
       fixtureName: 'server',
       export: {
         env: {
+          // Exercise server rendering without an explicit web.output setting.
+          EXPO_USE_STATIC: undefined,
           E2E_ROUTER_ASYNC: 'development',
         },
       },

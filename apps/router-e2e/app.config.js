@@ -39,7 +39,8 @@ module.exports = {
     reactServerFunctions: process.env.E2E_SERVER_FUNCTIONS,
   },
   web: {
-    output: process.env.EXPO_USE_STATIC ?? 'static',
+    // Exercise the implicit Router default unless a test requires another output mode.
+    output: process.env.EXPO_USE_STATIC,
     bundler: 'metro',
     favicon: process.env.E2E_FAVICON || undefined,
   },

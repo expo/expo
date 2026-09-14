@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Default web output to `server` for SDK 58 and later Expo Router projects when `web.output` is omitted ([#50129](https://github.com/expo/expo/pull/50129) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
