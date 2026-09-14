@@ -495,6 +495,14 @@ public final class ImageView: ExpoView {
    */
   private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
     let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
+
+    // Core Animation raises `CALayerInvalidGeometry` and aborts the app when the position is not
+    // a number, so never pass such an offset to the layer. Keep the previous offset instead.
+    guard offset.x.isFinite, offset.y.isFinite else {
+      log.warn("Skipping the content position update because the offset is not finite: \(offset)")
+      return
+    }
+
     if sdImageView.layer.mask != nil {
       // In New Architecture mode, React Native adds a mask layer to image subviews.
       // When moving the layer frame, we must move the mask layer with a compensation value.
