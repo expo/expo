@@ -137,13 +137,14 @@ export type CameraPictureOptions = {
   /**
    * Additional EXIF data to be included for the image. Only useful when `exif` option is set to `true`.
    *
-   * Keys must be standard EXIF tag names (for example `UserComment`, `ImageDescription`, `GPSLatitude`).
-   * Keys that are not standard EXIF tags are silently dropped: on Android only tags known to
-   * `ExifInterface` are written, and on iOS the values are merged into the image's EXIF dictionary,
-   * which ImageIO serializes only for tags it recognizes. Custom keys such as `Address` never reach the file.
+   * Keys are standard EXIF tag names, for example `UserComment`, `ImageDescription`, or
+   * `GPSLatitude`. The native writers ignore any other key without an error. Android writes only
+   * the tags that `ExifInterface` knows. iOS merges the values into the image's EXIF dictionary,
+   * and ImageIO writes only the tags it recognizes. A custom key such as `Address` never reaches
+   * the file.
    *
-   * GPS coordinates can be passed as signed decimal degrees under `GPSLatitude` and `GPSLongitude`;
-   * both platforms convert them to the EXIF GPS format and set `GPSLatitudeRef` / `GPSLongitudeRef`.
+   * `GPSLatitude` and `GPSLongitude` accept signed decimal degrees. Both platforms convert them
+   * to the EXIF GPS format and set the hemisphere reference tags.
    * @platform android
    * @platform ios
    */
