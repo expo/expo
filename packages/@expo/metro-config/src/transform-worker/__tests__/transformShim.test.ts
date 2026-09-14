@@ -6,7 +6,6 @@ const baseConfig: JsTransformerConfig = {
   globalPrefix: '',
   unstable_compactOutput: false,
   unstable_disableModuleWrapping: false,
-  unstable_renameRequire: false,
 } as unknown as JsTransformerConfig;
 
 it(`wraps an empty body as an empty Metro module factory`, () => {

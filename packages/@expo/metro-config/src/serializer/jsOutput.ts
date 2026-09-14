@@ -78,7 +78,7 @@ export type ReconcileTransformSettings = {
   importDefault: string;
   importAll: string;
   globalPrefix: string;
-  unstable_renameRequire?: boolean;
+  unstable_useStaticHermesModuleFactory?: boolean;
   unstable_compactOutput?: boolean;
   minify?: {
     minifierPath: string;

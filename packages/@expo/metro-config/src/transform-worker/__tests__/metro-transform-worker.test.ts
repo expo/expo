@@ -107,7 +107,6 @@ const baseConfig = {
   unstable_disableModuleWrapping: false,
   unstable_disableNormalizePseudoGlobals: false,
   unstable_allowRequireContext: false,
-  unstable_renameRequire: false,
   unstable_noxcturnalTransformWorker: true,
 } as JsTransformerConfig & { unstable_noxcturnalTransformWorker: boolean };
 

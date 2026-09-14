@@ -424,7 +424,9 @@ async function transformJS(
   // not exist yet.
   applyUseStrictDirective(ast);
 
-  const unstable_renameRequire = config.unstable_renameRequire;
+  const unstable_useStaticHermesModuleFactory = Boolean(
+    options.customTransformOptions?.unstable_staticHermesOptimizedRequire
+  );
 
   // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
   // production builds, or files that have specifically seen a change in their exports
@@ -520,10 +522,7 @@ async function transformJS(
         importAll,
         dependencyMapName,
         config.globalPrefix,
-        // TODO: This config is optional to allow its introduction in a minor
-        // release. It should be made non-optional in ConfigT or removed in
-        // future.
-        unstable_renameRequire === false
+        { unstable_useStaticHermesModuleFactory }
       ));
     }
   }
@@ -635,7 +634,7 @@ async function transformJS(
           unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
           optimizationSizeLimit: config.optimizationSizeLimit,
           unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
-          unstable_renameRequire,
+          unstable_useStaticHermesModuleFactory,
         }
       : undefined;
 

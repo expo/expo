@@ -259,7 +259,7 @@ export async function reconcileTransformSerializerPlugin(
       reconcile.importAll,
       dependencyMapName,
       reconcile.globalPrefix,
-      reconcile.unstable_renameRequire === false
+      { unstable_useStaticHermesModuleFactory: reconcile.unstable_useStaticHermesModuleFactory }
     );
 
     const reserved: string[] = [];

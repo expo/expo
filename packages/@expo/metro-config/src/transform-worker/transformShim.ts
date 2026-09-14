@@ -44,8 +44,7 @@ export function transformShim(
           '_$$_IMPORT_DEFAULT',
           '_$$_IMPORT_ALL',
           config.unstable_dependencyMapReservedName ?? 'dependencyMap',
-          config.globalPrefix,
-          config.unstable_renameRequire === false
+          config.globalPrefix
         ).ast;
 
   const { code } = generate(wrappedAst, {

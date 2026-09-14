@@ -1,6 +1,6 @@
 import { GenMapping, addMapping, toEncodedMap } from '@jridgewell/gen-mapping';
 import { encode } from '@jridgewell/sourcemap-codec';
-import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
+import { FlattenMap, TraceMap, encodedMap, originalPositionFor } from '@jridgewell/trace-mapping';
 
 import { installPackedMap } from '../packedMap';
 import {
@@ -638,11 +638,11 @@ describe('sourceMapString', () => {
     expect(getCount).toBe(0);
   });
 
-  it('produces a sourcemap byte-equivalent to Metros for the same input', () => {
-    // We feed Metro's `Generator` the same segments in the same order,
-    // so the serialized output should match byte-for-byte. Tests cover
-    // adjacents on the same line, sourceless mappings, named mappings,
-    // and module-boundary transitions.
+  it('produces the same mappings as Metro for the same input', () => {
+    // We feed Metro's `Generator` the same segments in the same order. Metro
+    // emits an indexed map with a section per module, which flattens to the
+    // same mappings as our single flat map. Tests cover adjacents on the same
+    // line, sourceless mappings, named mappings, and module-boundary transitions.
     const metroSourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString =
       require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString;
 
@@ -666,8 +666,14 @@ describe('sourceMapString', () => {
     ];
 
     const ours = JSON.parse(sourceMapString(modules, defaultOptions()));
-    const theirs = JSON.parse(metroSourceMapString(modules, defaultOptions()));
-    expect(ours).toEqual(theirs);
+    const theirs = encodedMap(
+      new FlattenMap(JSON.parse(metroSourceMapString(modules, defaultOptions())))
+    );
+    expect({ mappings: ours.mappings, names: ours.names, sources: ours.sources }).toEqual({
+      mappings: theirs.mappings,
+      names: theirs.names,
+      sources: theirs.sources,
+    });
   });
 
   it('sourceMapStringNonBlocking returns the same output as sourceMapString', async () => {
