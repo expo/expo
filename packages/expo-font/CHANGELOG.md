@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync`, and generate correct `font-weight`/`font-style` `@font-face` rules on web. ([#49485](https://github.com/expo/expo/pull/49485) by [@bryanmylee](https://github.com/bryanmylee))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

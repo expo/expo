@@ -17,12 +17,12 @@ it(`returns sync results`, () => {
 
     expect(Font.isLoaded(name)).toBe(true);
     expect(Server.getServerResources()).toEqual([
-      '<style id="expo-generated-fonts">@font-face{font-family:"foo bar";src:url("font.ttf");font-display:auto}</style>',
+      '<style id="expo-generated-fonts">@font-face{font-family:"foo bar";src:url("font.ttf")}</style>',
       '<link rel="preload" href="font.ttf" as="font" crossorigin="" />',
     ]);
     expect(Server.getServerResourceDescriptors()).toEqual([
       {
-        css: '@font-face{font-family:"foo bar";src:url("font.ttf");font-display:auto}',
+        css: '@font-face{font-family:"foo bar";src:url("font.ttf")}',
         id: 'expo-generated-fonts',
         type: 'style',
       },
