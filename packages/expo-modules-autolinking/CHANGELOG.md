@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Compile the autolinking Gradle plugins against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

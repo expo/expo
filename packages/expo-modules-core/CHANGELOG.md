@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Compile `expo-module-gradle-plugin` against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code.
+
 ### 🎉 New features
 
 - [iOS] Added the `@Union` macro that turns an enum whose cases each carry one associated value into a typed union (`A | B` in TypeScript), usable as a `@JS` argument or return value. ([#50037](https://github.com/expo/expo/pull/50037) by [@tsapeta](https://github.com/tsapeta))
