@@ -87,7 +87,8 @@ export enum SourceSkips {
    * Path fields in the resolved autolinking config from `expo-modules-autolinking` and
    * `react-native-config`.
    * The config itself is still hashed. Filesystem paths, and values that sit under the project
-   * root, are omitted. Linked module names, `scriptPhases`, and similar non-path overrides remain.
+   * root, are omitted, including `scriptPhases[].path`. Linked module names and `scriptPhases`
+   * names remain.
    */
   AutolinkingConfigPaths = 1 << 15,
 }

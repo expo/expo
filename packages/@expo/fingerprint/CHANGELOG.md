@@ -5,11 +5,11 @@
 ### 🛠 Breaking changes
 
 - Hash autolinked packages that live in a virtual store, such as pnpm's `node_modules/.pnpm`. Nested `node_modules` folders inside a package are still skipped. Fingerprints change once on upgrade for isolated installs. ([#48704](https://github.com/expo/expo/pull/48704) by [@kudo](https://github.com/kudo))
-- Stripped path fields from the resolved autolinking config in the `balanced` and `relaxed` presets, which changes the default fingerprint once on upgrade. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
+- Normalized the resolved autolinking config before hashing (dependency maps become sorted arrays). Fingerprints change once on upgrade for every preset, including `strict`. `balanced` and `relaxed` also strip path fields, including `scriptPhases[].path`. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
-- Added `SourceSkips.AutolinkingConfigPaths` to omit filesystem path fields from the resolved `expo-modules-autolinking` and `react-native-config` configs. Linked module names and non-path overrides such as `scriptPhases` still hash. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
+- Added `SourceSkips.AutolinkingConfigPaths` to omit filesystem path fields from the resolved `expo-modules-autolinking` and `react-native-config` configs. Linked module names and `scriptPhases` names still hash. `scriptPhases[].path` is omitted. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

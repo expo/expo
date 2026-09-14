@@ -20,7 +20,8 @@ export const DEFAULT_PRESET: FingerprintPreset = 'balanced';
  * Resolve a preset name to the settings it stands for.
  *
  * - `strict`: highest fidelity - the historical default. Only skips prebuild-mutated package.json
- *   scripts so a fingerprint stays consistent before and after prebuild.
+ *   scripts so a fingerprint stays consistent before and after prebuild. Autolinking config is
+ *   still sorted before hashing, so the fingerprint changes once on upgrade.
  * - `balanced`: the default. Also ignores app version and string runtime version churn, the EAS
  *   Build files (`eas.json` and `.easignore`), and path fields in the resolved autolinking config,
  *   and hashes autolinked packages and node_modules config-plugin modules by their `package.json`

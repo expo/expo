@@ -14,8 +14,8 @@ const RELATIVE_OR_NODE_MODULES_PATH_REGEX = /^(?:\.\.?\/|node_modules\/)/;
  * Converts react-native-config dependency maps to a sorted array of objects and sorts known
  * arrays by their identifying field. `scriptPhases` is left in order.
  *
- * When `stripPaths` is true, filesystem path fields are omitted. Linked names, `scriptPhases`,
- * and similar non-path overrides remain.
+ * When `stripPaths` is true, filesystem path fields are omitted, including `scriptPhases[].path`.
+ * Linked names and `scriptPhases` names remain.
  */
 export function normalizeAutolinkingConfig(
   config: unknown,
