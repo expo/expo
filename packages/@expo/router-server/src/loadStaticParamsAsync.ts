@@ -56,7 +56,7 @@ async function loadStaticParamsRecursive(
 
   const traverseForNode = async (nextParams: Record<string, string | string[]>) => {
     const nextChildren: RouteNode[] = [];
-    for (const child of children) {
+    for (const child of getChildren(route)) {
       const children = await loadStaticParamsRecursive(child, {
         ...props,
         parentParams: nextParams,

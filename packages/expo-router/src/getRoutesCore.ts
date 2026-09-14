@@ -237,7 +237,8 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let isValid = false;
 
   const contextKeys = contextModule.keys();
-  const redirects: Record<string, RedirectConfig> = {};
+  // Normalized from the plugin config, so `permanent` is always resolved.
+  const redirects: Record<string, RedirectConfig & { permanent: boolean }> = {};
   const rewrites: Record<string, RewriteConfig> = {};
 
   let validRedirectDestinations: { contextKey: string; nameWithoutInvisible: string }[] | undefined;
@@ -962,10 +963,6 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
   } else if (node.type === 'redirect') {
     node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey])];
   } else if (node.type === 'layout') {
-    if (!node.children) {
-      throw new Error(`Layout "${node.contextKey}" does not contain any child routes`);
-    }
-
     // Every node below this layout will have it as an entryPoint
     entryPoints = [...entryPoints, node.contextKey];
 
