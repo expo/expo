@@ -12,10 +12,10 @@ Expo Router no longer provides an experimental web modal implementation. On web,
 For most apps, use the built-in `Stack` and set the modal route to `transparentModal` on web. Expo Router keeps the previous route visible behind a transparent modal, so the route component only needs to render the backdrop and dialog.
 
 ```tsx src/app/_layout.tsx
-import { Stack } from "expo-router";
-import { Platform } from "react-native";
+import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 
-export const unstable_settings = { anchor: "index" };
+export const unstable_settings = { anchor: 'index' };
 
 export default function Layout() {
   return (
@@ -24,12 +24,9 @@ export default function Layout() {
       <Stack.Screen
         name="modal"
         options={{
-          presentation: Platform.select({
-            web: "transparentModal",
-            default: "modal",
-          }),
+          presentation: Platform.select({ web: 'transparentModal', default: 'modal' }),
           headerShown: false,
-          animation: Platform.select({ web: "none", default: undefined }),
+          animation: Platform.select({ web: 'none', default: undefined }),
         }}
       />
     </Stack>
@@ -40,21 +37,20 @@ export default function Layout() {
 Use a [platform-specific component](/router/advanced/platform-specific-modules/) for the visual treatment. The web implementation handles the backdrop, the Escape key, and dismissal. The native implementation returns `children` unchanged, so **modal.tsx** can wrap its content in `WebModal` on every platform.
 
 ```tsx src/components/WebModal.web.tsx
-import { router } from "expo-router";
-import { useEffect, type ReactNode } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { router } from 'expo-router';
+import { useEffect, type ReactNode } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 export function WebModal({ children }: { children: ReactNode }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && router.canGoBack()) router.back();
+      if (event.key === 'Escape' && router.canGoBack()) router.back();
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const dismiss = () =>
-    router.canGoBack() ? router.back() : router.replace("/");
+  const dismiss = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
   return (
     <View style={styles.overlay}>
@@ -73,23 +69,17 @@ export function WebModal({ children }: { children: ReactNode }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     padding: 24,
   },
-  dialog: {
-    width: "100%",
-    maxWidth: 640,
-    borderRadius: 16,
-    backgroundColor: "white",
-    padding: 24,
-  },
+  dialog: { width: '100%', maxWidth: 640, borderRadius: 16, backgroundColor: 'white', padding: 24 },
 });
 ```
 
 ```tsx src/components/WebModal.native.tsx
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 export function WebModal({ children }: { children: ReactNode }) {
   return children;
@@ -111,19 +101,13 @@ import {
   StackRouter,
   createStandardRouterNavigator,
   type NavigatorContentProps,
-} from "expo-router";
-import type { ReactNode } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+} from 'expo-router';
+import type { ReactNode } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 type Options = NativeStackNavigationOptions & { modal?: boolean };
 
-function YourModal({
-  children,
-  onDismiss,
-}: {
-  children: ReactNode;
-  onDismiss: () => void;
-}) {
+function YourModal({ children, onDismiss }: { children: ReactNode; onDismiss: () => void }) {
   return (
     <View style={styles.overlay}>
       <Pressable onPress={onDismiss} style={StyleSheet.absoluteFill} />
@@ -132,28 +116,20 @@ function YourModal({
   );
 }
 
-function ModalStackContent({
-  state,
-  descriptors,
-  actions,
-}: NavigatorContentProps<Options>) {
+function ModalStackContent({ state, descriptors, actions }: NavigatorContentProps<Options>) {
   // Filter preloaded routes.
   const activeRoutes = state.routes.slice(0, state.index + 1);
   const lastNonModalRouteIndex = activeRoutes.findLastIndex(
-    (route) => !descriptors[route.key].options.modal,
+    route => !descriptors[route.key].options.modal
   );
   const hasModals = lastNonModalRouteIndex < state.index;
 
   // Standard navigation descriptors use the same runtime shape as NativeStackView descriptors.
-  const nativeStackDescriptors =
-    descriptors as unknown as NativeStackDescriptorMap;
+  const nativeStackDescriptors = descriptors as unknown as NativeStackDescriptorMap;
 
   if (!hasModals) {
     return (
-      <NativeStackView
-        state={state as NativeStackViewState}
-        descriptors={nativeStackDescriptors}
-      />
+      <NativeStackView state={state as NativeStackViewState} descriptors={nativeStackDescriptors} />
     );
   }
 
@@ -168,11 +144,8 @@ function ModalStackContent({
 
   return (
     <View style={{ flex: 1 }}>
-      <NativeStackView
-        state={baseStackState}
-        descriptors={nativeStackDescriptors}
-      />
-      {modalRoutes.map((route) => (
+      <NativeStackView state={baseStackState} descriptors={nativeStackDescriptors} />
+      {modalRoutes.map(route => (
         <YourModal key={route.key} onDismiss={actions.back}>
           {descriptors[route.key].render()}
         </YourModal>
@@ -181,32 +154,24 @@ function ModalStackContent({
   );
 }
 
-export const ModalStack = createStandardRouterNavigator(
-  ModalStackContent,
-  StackRouter,
-);
+export const ModalStack = createStandardRouterNavigator(ModalStackContent, StackRouter);
 
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     padding: 24,
   },
-  dialog: {
-    width: "100%",
-    maxWidth: 640,
-    backgroundColor: "white",
-    padding: 24,
-  },
+  dialog: { width: '100%', maxWidth: 640, backgroundColor: 'white', padding: 24 },
 });
 ```
 
 ```tsx src/app/_layout.web.tsx
-import { ModalStack } from "../components/ModalStack.web";
+import { ModalStack } from '../components/ModalStack.web';
 
-export const unstable_settings = { anchor: "index" };
+export const unstable_settings = { anchor: 'index' };
 
 export default function Layout() {
   return (
