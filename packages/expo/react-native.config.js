@@ -47,4 +47,11 @@ module.exports = {
       windows: null,
     },
   },
+  // React Native SwiftPM autolinking plugin (preview). Discovered transitively by
+  // `react-native spm` when `expo` is an autolinked dependency; contributes Expo's
+  // native modules (precompiled xcframeworks + source packages) and the generated
+  // ExpoModulesProvider into the SwiftPM autolinking graph.
+  spm: {
+    autolinkingPlugin: './scripts/spm/plugin.js',
+  },
 };

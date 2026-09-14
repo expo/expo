@@ -21,7 +21,11 @@ let package = Package(
     .target(
       name: "EXConstants",
       dependencies: [],
-      path: "ios/EXConstants"
+      path: "ios/EXConstants",
+      // `.copy`, not `.process`: Apple reads a privacy manifest by its exact name, and
+      // .process may rename or transform what it puts in the bundle. The file stays in
+      // ios/ so the podspec keeps shipping it as the ExpoConstants_privacy bundle.
+      resources: [.copy("../PrivacyInfo.xcprivacy")]
     ),
     .target(
       name: "EXConstantsObjC",
