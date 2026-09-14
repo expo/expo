@@ -6,7 +6,7 @@ import { createContext, use, type ComponentType, type PropsWithChildren } from '
 import { getRoutePathname } from './matchers';
 import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import type { ContextKey } from './types/paths';
+import type { ContextKey, EntryPoint } from './types/paths';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
 
@@ -72,7 +72,13 @@ export type ScreenRouteNode = RouteNodeBase & {
   parentContextKey?: ContextKey;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
   internal?: boolean;
-  /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
+  /**
+   * File paths for async entry modules that should be included in the initial chunk request to
+   * ensure the runtime JavaScript matches the statically rendered HTML representation.
+   *
+   * Stays `string`: the router fills these with context keys (or a destination URL for an
+   * external redirect), and static export later rewrites them to absolute module paths.
+   */
   entryPoints?: string[];
 };
 
@@ -85,7 +91,7 @@ export type ApiRouteNode = RouteNodeBase & {
 export type RedirectRouteNode = RouteNodeBase & {
   type: 'redirect';
   /** Redirect Context Module ID, used for matching children. */
-  destinationContextKey: string;
+  destinationContextKey: EntryPoint;
   /** Is the redirect permanent. */
   permanent: boolean;
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
