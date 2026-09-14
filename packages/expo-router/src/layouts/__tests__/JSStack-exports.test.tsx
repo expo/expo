@@ -16,9 +16,13 @@ describe('expo-router/js-stack re-exports', () => {
     expect(JSStackEntry.Stack.Protected).toBeDefined();
   });
 
-  it('exports a single factory for the JS stack integration props', () => {
-    expect(JSStackEntry.unstable_createPropsForJSStack).toBeDefined();
+  it('exports navigator props helpers', () => {
+    expect(RouterEntry.createBaseStackProps).toBeDefined();
+    expect(RouterEntry.createBaseTabProps).toBeDefined();
+    expect(RouterEntry.createNativeStackProps).toBeDefined();
+    expect(JSStackEntry.createJSStackProps).toBeDefined();
     expect(JSStackEntry.unstable_createStandardStackNavigator).toBeDefined();
+    expect('unstable_createPropsForJSStack' in JSStackEntry).toBe(false);
     expect('createPropsForJSStack' in JSStackEntry).toBe(false);
     expect('createStandardStackNavigator' in JSStackEntry).toBe(false);
     expect('makeRestoreRouteAction' in JSStackEntry).toBe(false);
@@ -28,7 +32,7 @@ describe('expo-router/js-stack re-exports', () => {
 
   it('forwards the canonical removal-prevention callback', () => {
     const isRemovalPrevented = jest.fn(() => false);
-    const props = JSStackEntry.unstable_createPropsForJSStack({
+    const props = JSStackEntry.createJSStackProps({
       dispatch: jest.fn(),
       dispatchSync: jest.fn(),
       isPreloaded: jest.fn(() => false),

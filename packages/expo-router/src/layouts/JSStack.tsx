@@ -21,9 +21,24 @@ import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 export * from '../react-navigation/stack';
 
 /**
- * Creates the adapter props required to integrate the JavaScript stack with Expo Router.
+ * Creates the props required to integrate Expo Router's JavaScript stack navigator.
+ *
+ * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The JavaScript stack navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { StackRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { createJSStackProps } from 'expo-router/js-stack';
+ * import { navigator } from './navigator';
+ *
+ * export const Stack = unstable_integrateWithRouter(navigator, StackRouter, {
+ *   createProps: createJSStackProps,
+ * });
+ * ```
  */
-export function unstable_createPropsForJSStack(
+export function createJSStackProps(
   args: StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>
 ): StackNavigatorCreateProps {
   return {
@@ -43,7 +58,7 @@ const JSStack = unstable_integrateWithRouter<
   StackNavigatorCreateProps
 >(unstable_createStandardStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
-  createProps: unstable_createPropsForJSStack,
+  createProps: createJSStackProps,
 });
 
 /**
