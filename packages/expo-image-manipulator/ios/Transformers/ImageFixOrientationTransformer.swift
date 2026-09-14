@@ -44,15 +44,28 @@ internal struct ImageFixOrientationTransformer: ImageTransformer {
       break
     }
 
-    let context = CGContext(
-      data: nil,
-      width: Int(image.size.width),
-      height: Int(image.size.height),
-      bitsPerComponent: cgImage.bitsPerComponent,
-      bytesPerRow: 0,
-      space: colorSpace,
-      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-    )
+    func makeContext(bitsPerComponent: Int, colorSpace: CGColorSpace) -> CGContext? {
+      return CGContext(
+        data: nil,
+        width: Int(image.size.width),
+        height: Int(image.size.height),
+        bitsPerComponent: bitsPerComponent,
+        bytesPerRow: 0,
+        space: colorSpace,
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+      )
+    }
+
+    // A `CGContext` accepts only a fixed set of pixel formats, and a decoded image's own
+    // format is not always among them: a 10-bit HDR HEIC decodes to `bitsPerComponent == 10`,
+    // which has no context equivalent, so a file that decoded perfectly well yields no
+    // context at all. Widening to 16 keeps the image's colour space and every bit of its
+    // precision; the 8-bit device RGB last resort covers a colour space that is rejected as
+    // a drawing destination even though it reports `supportsOutput`, as the extended-range
+    // ones do.
+    let context = makeContext(bitsPerComponent: cgImage.bitsPerComponent, colorSpace: colorSpace)
+      ?? makeContext(bitsPerComponent: 16, colorSpace: colorSpace)
+      ?? makeContext(bitsPerComponent: 8, colorSpace: CGColorSpaceCreateDeviceRGB())
 
     guard let context = context else {
       throw ImageContextLostException()
