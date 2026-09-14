@@ -1,9 +1,5 @@
 'use strict';
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-
 const {
   UnsupportedModulesError,
   UNMAPPED_POD_ALLOWLIST,
@@ -13,20 +9,7 @@ const {
   renderUnsupportedReport,
   reportUnsupported,
   renderUnmappedDependencyWarning,
-  spmConfigProduct,
 } = require('../diagnostics');
-
-function withModuleDir(files, run) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-diag-'));
-  try {
-    for (const [name, contents] of Object.entries(files)) {
-      fs.writeFileSync(path.join(dir, name), contents);
-    }
-    return run(dir);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-}
 
 describe('classifyUnsupported', () => {
   it('reports a missing interface tree once, not per module', () => {
@@ -104,57 +87,6 @@ describe('classifyUnsupported', () => {
       coreAvailable: true,
     });
     expect(entry).toMatchObject({ reason: 'no-apple-sources', podName: 'ExpoWeird' });
-  });
-});
-
-describe('spmConfigProduct', () => {
-  const config = JSON.stringify({
-    products: [
-      { name: 'ExpoModulesCore', podName: 'ExpoModulesCore' },
-      { name: 'ExpoModulesWorklets', podName: 'ExpoModulesWorklets' },
-      {
-        name: 'ExpoModulesWorkletsAdapter',
-        podName: 'ExpoModulesWorkletsAdapter',
-        sourceOnly: true,
-      },
-    ],
-  });
-
-  it('finds the product declaring a pod', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoModulesWorklets')).toEqual({
-        name: 'ExpoModulesWorklets',
-        sourceOnly: false,
-      });
-    });
-  });
-
-  it('reports a source-only product as such', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoModulesWorkletsAdapter')).toEqual({
-        name: 'ExpoModulesWorkletsAdapter',
-        sourceOnly: true,
-      });
-    });
-  });
-
-  it('falls back to the product name when podName is absent', () => {
-    withModuleDir(
-      { 'spm.config.json': JSON.stringify({ products: [{ name: 'ExpoFoo' }] }) },
-      (dir) => {
-        expect(spmConfigProduct(dir, 'ExpoFoo')).toEqual({ name: 'ExpoFoo', sourceOnly: false });
-      }
-    );
-  });
-
-  it('returns null for an undeclared pod, a missing file, and malformed JSON', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull();
-    });
-    withModuleDir({}, (dir) => expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull());
-    withModuleDir({ 'spm.config.json': '{ not json' }, (dir) =>
-      expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull()
-    );
   });
 });
 

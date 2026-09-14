@@ -32,6 +32,22 @@ function resolveExpoModules(appRoot) {
 }
 
 /**
+ * `expo-modules-autolinking prebuilt-metadata --json` from the app root: the
+ * published pod → npm package → product identity join, keyed by pod name. It is
+ * the same document `pod install` derives its prebuilt modules from, so reading
+ * it keeps both integrations on one source of truth.
+ */
+function prebuiltMetadata(appRoot) {
+  const bin = resolveAutolinkingBin();
+  const stdout = execFileSync(process.execPath, [bin, 'prebuilt-metadata', '--json'], {
+    cwd: appRoot,
+    encoding: 'utf8',
+    maxBuffer: MAX_BUFFER,
+  });
+  return JSON.parse(stdout);
+}
+
+/**
  * Generate ExpoModulesProvider.swift (the module registry) via the autolinking CLI.
  * Returns its absolute path for `generatedSources`, or null if generation produced nothing.
  * `generate-modules-provider` filters to an explicit allowlist (`--packages`); without it the
@@ -96,6 +112,7 @@ function runDumpPackage(moduleRoot) {
 module.exports = {
   resolveAutolinkingBin,
   resolveExpoModules,
+  prebuiltMetadata,
   generateModulesProvider,
   runDumpPackage,
 };
