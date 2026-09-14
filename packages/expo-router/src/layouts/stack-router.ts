@@ -7,6 +7,7 @@ import {
 } from '../navigationParams';
 import {
   type CommonNavigationAction,
+  extendRouter,
   type NavigationAction,
   type ParamListBase,
   type PartialRoute,
@@ -344,10 +345,6 @@ function filterSingular<
   };
 }
 
-export const StackRouter: typeof RNStackRouter = (options) => {
-  const router = RNStackRouter(options);
-  return {
-    ...router,
-    ...stackRouterOverride(router),
-  };
-};
+export const StackRouter = extendRouter(RNStackRouter, ({ baseRouter }) =>
+  stackRouterOverride(baseRouter)
+);
