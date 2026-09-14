@@ -17,6 +17,7 @@ import { DrawerView } from '../views/DrawerView';
 
 export interface DrawerNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   drawerState: DrawerNavigationState<ParamListBase>;
   navigation: DrawerNavigationHelpers;
   preload: (name: string) => void;
@@ -45,6 +46,7 @@ function DrawerNavigatorContent({
   drawerState,
   navigation,
   isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   preload,
   defaultStatus = 'closed',
   drawerContent,

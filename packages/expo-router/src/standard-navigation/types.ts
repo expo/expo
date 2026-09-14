@@ -78,6 +78,8 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
   navigation: NavigationHelpers<ParamListBase>;
   /** Returns whether the route with the given key is preloaded. */
   isPreloaded: (key: string) => boolean;
+  /** Returns whether removal is prevented for the route with the given key. */
+  isRemovalPrevented: (key: string) => boolean;
 }
 
 /**

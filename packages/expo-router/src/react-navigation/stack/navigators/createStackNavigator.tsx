@@ -14,6 +14,7 @@ import { StackView } from '../views/Stack/StackView';
 
 export interface StackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   removeRoutes: (routeNames: string[]) => void;
   restoreRoute: (route: Route<string>) => boolean;
@@ -38,6 +39,7 @@ function StackNavigatorContent({
   descriptors,
   emitter,
   isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   pop,
   removeRoutes,
   restoreRoute,
