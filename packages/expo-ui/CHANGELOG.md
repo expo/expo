@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `README.md` with the package overview, entry points, available components and installation instructions. ([#50024](https://github.com/expo/expo/pull/50024) by [@Kudo](https://github.com/Kudo))
+
 ## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
