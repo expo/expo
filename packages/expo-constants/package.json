@@ -59,7 +59,8 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/env": "workspace:~"
+    "@expo/env": "workspace:~",
+    "@expo/require-utils": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
