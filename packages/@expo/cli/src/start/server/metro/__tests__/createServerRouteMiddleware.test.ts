@@ -113,7 +113,7 @@ describe(createRouteHandlerMiddleware, () => {
       const hooks = jest.mocked(createRequestHandler).mock.calls[0]![1]!;
       const manifest = await hooks.getRoutesManifest!();
       expect(manifest?.htmlRoutes[0]?.loader).toBe(
-        output === 'static' || output === 'server' ? '_expo/loaders/index.js' : undefined
+        ['static', 'server'].includes(output ?? '') ? '_expo/loaders/index.js' : undefined
       );
     }
   );
