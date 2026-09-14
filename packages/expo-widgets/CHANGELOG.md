@@ -12,6 +12,7 @@
 
 - [iOS] Preserve SwiftUI view identity across widget and Live Activity updates so system update animations can run. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
 - [Android] Fix Gradle build failure when no Android widget is configured. ([#50038](https://github.com/expo/expo/pull/50038) by [@keith-kurak](https://github.com/keith-kurak))
+- [Android] Fix a release build failing `checkReleaseDuplicateClasses` when another dependency brings WorkManager 2.8 or newer, by pinning `work-runtime-ktx` forward from the 2.7.1 that Glance requests. ([#50010](https://github.com/expo/expo/pull/50010) by [@LizunovSergey](https://github.com/LizunovSergey))
 
 ### 💡 Others
 
