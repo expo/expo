@@ -8,6 +8,7 @@ public final class ExpoUIModule: Module {
     Name("ExpoUI")
 
     View(RNHostView.self)
+    View(SynchronousListView.self)
 
     OnDestroy {
       // Clear all registered content origins when the module is destroyed

@@ -294,6 +294,11 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     return hostWrapper?.bundleURL()
   }
 
+  /// Internal native interop for experiments that create independent Fabric surfaces.
+  public var reactSurfacePresenter: NSObject? {
+    return hostWrapper?.surfacePresenter()
+  }
+
   /**
    Provides access to the utilities (such as looking up for the current view controller).
    */

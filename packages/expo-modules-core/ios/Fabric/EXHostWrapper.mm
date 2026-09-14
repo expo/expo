@@ -37,4 +37,9 @@
   return [_host.bundleManager bundleURL];
 }
 
+- (nullable NSObject *)surfacePresenter
+{
+  return _host.surfacePresenter;
+}
+
 @end

@@ -39,6 +39,7 @@ export * from './SwipeActions';
 export * from './Text';
 export { useNativeState } from '../State';
 export { withAnimation, type WithAnimationCompletionCriteria } from './withAnimation';
+export * from './SynchronousList';
 export * from './SyncToggle';
 export * from './TabView';
 export * from './Toolbar';

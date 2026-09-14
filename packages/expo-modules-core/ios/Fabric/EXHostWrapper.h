@@ -22,5 +22,8 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 
 - (nullable NSURL *)bundleURL;
 
+// Opaque in Swift because RCTSurfacePresenter exposes C++ types.
+- (nullable NSObject *)surfacePresenter;
+
 @end
 
