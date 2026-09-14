@@ -1,6 +1,9 @@
 import type { ComponentProps } from 'react';
 
+import type { MiddlewareNode, RouteNode } from '../Route';
+import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { Stack as JSStack } from '../layouts/JSStack';
+import type { AbsoluteHref, AbsolutePath, ContextKey } from '../types/paths';
 import type { ScreenProps } from '../useScreens';
 import type { Navigator, Slot } from '../views/Navigator';
 
@@ -21,6 +24,28 @@ export type _SlotLacksInitialRouteName = Expect<
 >;
 export type _JSStackLacksInitialRouteName = Expect<
   Equal<'initialRouteName' extends keyof ComponentProps<typeof JSStack> ? true : false, false>
+>;
+
+export type _RouteNodeContextKeyIsContextKey = Expect<Equal<RouteNode['contextKey'], ContextKey>>;
+export type _RouteNodeParentContextKeyIsContextKey = Expect<
+  Equal<RouteNode['parentContextKey'], ContextKey | undefined>
+>;
+export type _MiddlewareContextKeyIsContextKey = Expect<
+  Equal<MiddlewareNode['contextKey'], ContextKey>
+>;
+export type _SyntheticContextKeyIsAContextKey = Expect<
+  Equal<'expo-router/build/views/Sitemap.js' extends ContextKey ? true : false, true>
+>;
+export type _PlainNameIsNotAContextKey = Expect<
+  Equal<'app/index.tsx' extends ContextKey ? true : false, false>
+>;
+
+export type _UrlObjectPathnameIsAbsolutePath = Expect<Equal<UrlObject['pathname'], AbsolutePath>>;
+export type _UrlObjectPathnameWithParamsIsHref = Expect<
+  Equal<UrlObject['pathnameWithParams'], AbsoluteHref>
+>;
+export type _UrlObjectGlobalHrefIsHref = Expect<
+  Equal<UrlObject['unstable_globalHref'], AbsoluteHref>
 >;
 
 describe('public types', () => {

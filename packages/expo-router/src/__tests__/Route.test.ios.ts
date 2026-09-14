@@ -19,7 +19,7 @@ const asScreenRouteNode = (route: string): ScreenRouteNode => {
       };
     },
     route,
-    contextKey: 'INVALID_TEST_VALUE',
+    contextKey: './INVALID_TEST_VALUE',
   };
 };
 

@@ -23,6 +23,7 @@ import {
   stripInvisibleSegmentsFromPath,
 } from './matchers';
 import type { RequireContext } from './types';
+import type { ContextKey } from './types/paths';
 import { shouldLinkExternally } from './utils/url';
 
 export type Options = {
@@ -164,7 +165,10 @@ export function getRoutes(contextModule: RequireContext, options: Options): Layo
  * Given a RequireContext, return the middleware node if one is found. If more than one middleware file is found, an error is thrown.
  */
 function getMiddleware(contextModule: RequireContext, options: Options): MiddlewareNode | null {
-  const allMiddlewareFiles = contextModule.keys().filter((key) => key.includes('+middleware'));
+  // Metro types context keys as plain strings; they are always `./`-prefixed.
+  const allMiddlewareFiles = (contextModule.keys() as ContextKey[]).filter((key) =>
+    key.includes('+middleware')
+  );
 
   const isValidMiddleware = (key: string) => /^\.\/\+middleware\.[tj]sx?$/.test(key);
 
@@ -242,7 +246,8 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let hasRoutes = false;
   let isValid = false;
 
-  const contextKeys = contextModule.keys();
+  // Metro types context keys as plain strings; they are always `./`-prefixed.
+  const contextKeys = contextModule.keys() as ContextKey[];
   // Normalized from the plugin config, so `permanent` is always resolved.
   const redirects: Record<string, RedirectConfig & { permanent: boolean }> = {};
   const rewrites: Record<string, RewriteConfig> = {};
@@ -665,7 +670,7 @@ function getNameWithoutInvisibleSegmentsFromRedirectPath(path: string): string {
 }
 
 // Creates fake context key for redirects and rewrites
-function getSourceContextKeyFromRedirectSource(source: string): string {
+function getSourceContextKeyFromRedirectSource(source: string): ContextKey {
   const name = getNameFromRedirectPath(source);
   const prefix = './';
   const suffix = /\.[tj]sx?$/.test(name) ? '' : '.js'; // Ensure it has a file extension
