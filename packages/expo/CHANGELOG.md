@@ -10,13 +10,13 @@
 
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
-- [iOS] The SwiftPM autolinking plugin now takes module identity from `expo-modules-autolinking prebuilt-metadata` instead of re-deriving it from the filesystem, so a module whose product name differs from its pod name resolves its XCFramework (`react-native-skia` ships `RNSkia.xcframework`).
-- [iOS] The SwiftPM autolinking plugin now takes each module's iOS deployment floor from `expo-modules-autolinking prebuilt-metadata` and raises it to ExpoModulesCore's, matching `use_expo_modules!`. A module declaring a lower floor than the core it links against no longer builds below it.
-- [iOS] The SwiftPM autolinking plugin now loads the Expo Swift macro plugin when it compiles a module from source, the way `pod install` does. A module using `@Field`, `@Record` or `@OptimizedFunction` no longer fails to build with "external macro implementation could not be found".
+- [iOS] The SwiftPM autolinking plugin now takes module identity from `expo-modules-autolinking prebuilt-metadata` instead of re-deriving it from the filesystem, so a module whose product name differs from its pod name resolves its XCFramework (`react-native-skia` ships `RNSkia.xcframework`). ([#50095](https://github.com/expo/expo/pull/50095) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] The SwiftPM autolinking plugin now takes each module's iOS deployment floor from `expo-modules-autolinking prebuilt-metadata` and raises it to ExpoModulesCore's, matching `use_expo_modules!`. A module declaring a lower floor than the core it links against no longer builds below it. ([#50096](https://github.com/expo/expo/pull/50096) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] The SwiftPM autolinking plugin now loads the Expo Swift macro plugin when it compiles a module from source, the way `pod install` does. A module using `@Field`, `@Record` or `@OptimizedFunction` no longer fails to build with "external macro implementation could not be found". ([#50144](https://github.com/expo/expo/pull/50144) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
-- [iOS] The SwiftPM autolinking plugin no longer reads the iOS deployment floor out of a module's podspec. The floor comes from `expo-modules-autolinking prebuilt-metadata` alone, so a podspec that states it in a form the reader refused no longer fails the sync.
+- [iOS] The SwiftPM autolinking plugin no longer reads the iOS deployment floor out of a module's podspec. The floor comes from `expo-modules-autolinking prebuilt-metadata` alone, so a podspec that states it in a form the reader refused no longer fails the sync. ([#50112](https://github.com/expo/expo/pull/50112) by [@chrfalch](https://github.com/chrfalch))
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.0-preview.0 — 2026-09-10
@@ -51,7 +51,7 @@
 - Fix platform resolution of the `expo/dom` and `expo/dom/internal` subpath exports ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Remove a duplicated `ExpoModulesCore-Swift.h` import block in `ExpoReactNativeFactory.mm` whose `#else` branch imported the header unconditionally, breaking builds where neither form is on the header search path. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Forward URL, user activity, life cycle and quick action events to `AppDelegate` overrides under the UIScene life cycle. ([#49925](https://github.com/expo/expo/pull/49925) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules.
+- [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
