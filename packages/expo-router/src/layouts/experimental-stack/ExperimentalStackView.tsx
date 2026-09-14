@@ -22,20 +22,21 @@ const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>(
 type Props = {
   state: ExperimentalStackViewState;
   emit: ExperimentalStackViewEmit;
+  isPreloaded: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   descriptors: Record<string, NavigatorDescriptor<ExperimentalStackNavigationOptions>>;
 };
 
-export function ExperimentalStackView({ state, emit, pop, descriptors }: Props) {
-  const { setNextDismissedKey } = useDismissedRouteError(state);
+export function ExperimentalStackView({ state, emit, pop, descriptors, isPreloaded }: Props) {
+  const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
   const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
   return (
     <View style={styles.container}>
       <ScreensStackV5.Host>
-        {state.routes.map((route, index) => {
+        {state.routes.map((route) => {
           const descriptor = descriptors[route.key]!;
-          const isPreloaded = index > state.index;
+          const routeIsPreloaded = isPreloaded(route.key);
           const options = descriptor.options;
 
           return (
@@ -45,7 +46,7 @@ export function ExperimentalStackView({ state, emit, pop, descriptors }: Props) 
               routeName={route.name}
               descriptor={descriptor}
               options={options}
-              isPreloaded={isPreloaded}
+              isPreloaded={routeIsPreloaded}
               preventNativeDismiss={routesWithRemovalPrevented.has(route.key)}
               onWillAppear={() => {
                 emit({

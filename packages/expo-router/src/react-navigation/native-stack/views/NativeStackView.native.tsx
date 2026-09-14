@@ -446,12 +446,20 @@ type Props = {
   state: NativeStackViewState;
   descriptors: NativeStackDescriptorMap;
   emit: NativeStackViewEmit;
+  isPreloaded: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
 } & NativeStackNavigationConfig;
 
-export function NativeStackView({ state, descriptors, emit, pop, unstable_nativeProps }: Props) {
+export function NativeStackView({
+  state,
+  descriptors,
+  emit,
+  pop,
+  isPreloaded,
+  unstable_nativeProps,
+}: Props) {
   const { colors } = useTheme();
-  const { setNextDismissedKey } = useDismissedRouteError(state);
+  const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
 
   const parentPresentation = use(ScreenPresentationContext);
   const isInTransparentPresentation =
@@ -461,9 +469,8 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
 
   useInvalidPreventRemoveError(descriptors);
 
-  // Routes after `index` are preloaded and rendered natively-detached. Only the routes up to the
-  // focused one participate in back-affordance and modal-grouping computations.
-  const activeRoutes = state.routes.slice(0, state.index + 1);
+  // Preloaded routes are detached and don't participate in back-affordance or modal grouping.
+  const activeRoutes = state.routes.filter((route) => !isPreloaded(route.key));
   const modalRouteKeys = getModalRouteKeys(activeRoutes, descriptors);
 
   return (
@@ -477,9 +484,12 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const isFocused = state.index === index;
-          const isPreloaded = index > state.index;
-          const previousKey = activeRoutes[index - 1]?.key;
-          const nextKey = activeRoutes[index + 1]?.key;
+          const routeIsPreloaded = isPreloaded(route.key);
+          const activeIndex = activeRoutes.findIndex(
+            (activeRoute) => activeRoute.key === route.key
+          );
+          const previousKey = activeIndex > 0 ? activeRoutes[activeIndex - 1]?.key : undefined;
+          const nextKey = activeIndex >= 0 ? activeRoutes[activeIndex + 1]?.key : undefined;
           const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
           const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
 
@@ -495,7 +505,7 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
               previousDescriptor={previousDescriptor}
               nextDescriptor={nextDescriptor}
               isPresentationModal={isModal}
-              isPreloaded={isPreloaded}
+              isPreloaded={routeIsPreloaded}
               onWillDisappear={() => {
                 emit({
                   type: 'transitionStart',

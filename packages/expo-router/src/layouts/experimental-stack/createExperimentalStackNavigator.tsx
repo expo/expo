@@ -17,6 +17,7 @@ import type {
 } from './types';
 
 export interface ExperimentalStackNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   removeRoutes: (routeNames: string[]) => void;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
@@ -39,6 +40,7 @@ function ExperimentalStackNavigatorContent({
   state,
   descriptors,
   emitter,
+  isPreloaded,
   pop,
   removeRoutes,
   subscribePopToTopOnParentTabPress,
@@ -58,6 +60,7 @@ function ExperimentalStackNavigatorContent({
       <ExperimentalStackView
         state={state}
         emit={emitter.emit}
+        isPreloaded={isPreloaded}
         pop={pop}
         descriptors={mergedDescriptors}
       />

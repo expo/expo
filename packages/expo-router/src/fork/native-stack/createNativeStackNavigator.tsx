@@ -25,6 +25,7 @@ type NativeStackNavigationOptionsWithInternal = NativeStackNavigationOptions &
   InternalNavigationOptions;
 
 export interface NativeStackNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   removeRoutes: (routeNames: string[]) => void;
   /** Registers pop-to-top on parent tab press, or returns undefined without a tab parent. */
@@ -48,6 +49,7 @@ function NativeStackNavigatorContent({
   state,
   descriptors,
   emitter,
+  isPreloaded,
   pop,
   removeRoutes,
   subscribePopToTopOnParentTabPress,
@@ -55,7 +57,11 @@ function NativeStackNavigatorContent({
 }: ContentArgs) {
   const fullDescriptors = descriptors as unknown as NativeStackDescriptorMap;
 
-  const { computedState, emit } = usePreviewTransition(state, emitter.emit);
+  const {
+    computedState,
+    emit,
+    isPreloaded: isComputedRoutePreloaded,
+  } = usePreviewTransition(state, emitter.emit, isPreloaded);
 
   useClearGuardedRoutes(removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
@@ -105,6 +111,7 @@ function NativeStackNavigatorContent({
           state={computedState}
           descriptors={mergedDescriptors}
           emit={emit}
+          isPreloaded={isComputedRoutePreloaded}
           pop={pop}
           unstable_nativeProps={unstable_nativeProps}
         />

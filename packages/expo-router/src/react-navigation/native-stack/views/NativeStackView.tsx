@@ -26,25 +26,26 @@ type Props = {
   descriptors: NativeStackDescriptorMap;
   // These are used for the native implementation of the stack.
   emit: NativeStackViewEmit;
+  isPreloaded: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
 } & NativeStackNavigationConfig;
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
-export function NativeStackView({ state, descriptors }: Props) {
+export function NativeStackView({ state, descriptors, isPreloaded }: Props) {
   const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 
-  // Routes after `index` are preloaded and rendered hidden. Only the routes up to the focused one
-  // participate in the back-affordance computations.
-  const activeRoutes = state.routes.slice(0, state.index + 1);
+  // Preloaded routes are rendered hidden and don't participate in back-affordance computations.
+  const activeRoutes = state.routes.filter((route) => !isPreloaded(route.key));
 
   return (
     <SafeAreaProviderCompat>
       {state.routes.map((route, i) => {
         const isFocused = state.index === i;
-        const previousKey = activeRoutes[i - 1]?.key;
-        const nextKey = activeRoutes[i + 1]?.key;
+        const activeIndex = activeRoutes.findIndex((activeRoute) => activeRoute.key === route.key);
+        const previousKey = activeIndex > 0 ? activeRoutes[activeIndex - 1]?.key : undefined;
+        const nextKey = activeIndex >= 0 ? activeRoutes[activeIndex + 1]?.key : undefined;
         const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
         const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
         const { options, navigation, render } = descriptors[route.key]!;
@@ -73,7 +74,7 @@ export function NativeStackView({ state, descriptors }: Props) {
 
         const nextPresentation = nextDescriptor?.options.presentation;
 
-        const isPreloaded = i > state.index;
+        const routeIsPreloaded = isPreloaded(route.key);
 
         return (
           <Screen
@@ -137,7 +138,7 @@ export function NativeStackView({ state, descriptors }: Props) {
                   (isFocused ||
                     (nextPresentation != null &&
                       TRANSPARENT_PRESENTATIONS.includes(nextPresentation))) &&
-                  !isPreloaded
+                  !routeIsPreloaded
                     ? 'flex'
                     : 'none',
               },
