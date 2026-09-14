@@ -40,18 +40,14 @@ describe('server-output', () => {
       });
     });
 
-    it(`can serve build-time static dynamic route`, async () => {
+    it(`renders dynamic routes at request time even when generateStaticParams is exported`, async () => {
       const res = await server.fetchAsync('/blog-ssg/abc');
       expect(res.status).toEqual(200);
       expect(await res.text()).toMatch(/Post: <!-- -->abc/);
 
-      if (!server.isExpoStart) {
-        // Behaves like a dynamic route in development, but is pre-rendered in production.
-        // This route is not pre-rendered and should show the default value for the dynamic parameter.
-        const res2 = await server.fetchAsync('/blog-ssg/123');
-        expect(res2.status).toEqual(200);
-        expect(await res2.text()).toMatch(/Post: <!-- -->\[post\]/);
-      }
+      const res2 = await server.fetchAsync('/blog-ssg/123');
+      expect(res2.status).toEqual(200);
+      expect(await res2.text()).toMatch(/Post: <!-- -->123/);
     });
 
     it(`can serve up custom not-found`, async () => {
@@ -88,13 +84,9 @@ describe('server-output', () => {
       );
     });
 
-    // Behaves like a dynamic route in development, but is pre-rendered in production.
-    (server.isExpoStart ? it.skip : it)(
-      `can serve up built time generated dynamic html routes`,
-      async () => {
-        expect(await server.fetchAsync('/blog/123').then((res) => res.text())).toMatch(/\[post\]/);
-      }
-    );
+    it('renders dynamic parameters in every runtime', async () => {
+      expect(await server.fetchAsync('/blog/123').then((res) => res.text())).toMatch(/123/);
+    });
 
     it(`can hit the 404 route`, async () => {
       expect(await server.fetchAsync('/clearly-missing').then((res) => res.text())).toMatch(
@@ -102,7 +94,7 @@ describe('server-output', () => {
       );
     });
 
-    it(`can serve up static html in array group`, async () => {
+    it(`can render array group routes`, async () => {
       expect(await server.fetchAsync('/multi-group').then((res) => res.text())).toMatch(
         /<div data-testid="multi-group">/
       );
@@ -355,12 +347,12 @@ describe('server-output', () => {
 
     // Tests that require exported files (not available for dev server)
     (server.isExpoStart ? describe.skip : describe)('exported files', () => {
-      it(`has expected static html from array group`, async () => {
+      it(`keeps array group routes dynamic`, async () => {
         const files = findProjectFiles(server.outputDir);
         expect(files).not.toContain('server/multi-group.html');
         expect(files).not.toContain('server/(a,b)/multi-group.html');
-        expect(files).toContain('server/(a)/multi-group.html');
-        expect(files).toContain('server/(b)/multi-group.html');
+        expect(files).not.toContain('server/(a)/multi-group.html');
+        expect(files).not.toContain('server/(b)/multi-group.html');
       });
 
       it(`has expected API route from array group`, async () => {
@@ -390,6 +382,7 @@ describe('server-output', () => {
 
         // Has routes.json
         expect(files).toContain('server/_expo/routes.json');
+        expect(files).toContain('server/_expo/server/render.js');
 
         // Has functions
         expect(files).toContain('server/_expo/functions/methods+api.js');
@@ -403,25 +396,29 @@ describe('server-output', () => {
         expect(files).toContain('server/_expo/functions/api/empty+api.js');
         expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
 
-        // Has single variation of group file
-        expect(files).toContain('server/(alpha)/index.html');
-        expect(files).toContain('server/(alpha)/beta.html');
+        // Group routes render at request time
+        expect(files).not.toContain('server/(alpha)/index.html');
+        expect(files).not.toContain('server/(alpha)/beta.html');
         expect(files).not.toContain('server/beta.html');
 
-        // Injected by framework
-        expect(files).toContain('server/_sitemap.html');
-        expect(files).toContain('server/+not-found.html');
+        // Framework routes render at request time
+        expect(files).not.toContain('server/_sitemap.html');
+        expect(files).not.toContain('server/+not-found.html');
 
-        // Normal routes
-        expect(files).toContain('server/index.html');
-        expect(files).toContain('server/blog/[post].html');
+        // Regular routes render at request time
+        expect(files).not.toContain('server/index.html');
+        expect(files).not.toContain('server/blog/[post].html');
       });
 
       // Ensure the `/server/_expo/routes.json` contains the right file paths and named regexes.
       // This test is created to avoid and detect regressions on Windows
       it('has expected routes manifest entries', async () => {
+        const manifest = await JsonFile.readAsync(
+          path.join(server.outputDir, 'server/_expo/routes.json')
+        );
+        // Asset hashes depend on the bundled source and should not affect route snapshots.
         expect(
-          await JsonFile.readAsync(path.join(server.outputDir, 'server/_expo/routes.json'))
+          JSON.parse(JSON.stringify(manifest).replace(/[a-f0-9]{32}/g, '[hash]'))
         ).toMatchSnapshot();
       });
     });

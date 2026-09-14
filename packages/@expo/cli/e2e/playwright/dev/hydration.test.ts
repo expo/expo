@@ -24,6 +24,7 @@ test.describe(inputDir, () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
       env: {
         NODE_ENV: 'production',
+        // Verify hydration of HTML prerendered at build time.
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'hydration',
       },

@@ -104,8 +104,6 @@ export type Props = {
    * @deprecated
    */
   unstable_useServerDataLoaders?: boolean;
-  /** Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time. */
-  unstable_useServerRendering?: boolean;
   /** Disable synchronous layout updates for native screens. */
   disableSynchronousScreensUpdates?: boolean;
   /** Rerender the app on color scheme changes. When enabled, the app tree will rerender when the system theme changes (light/dark mode). Defaults to `true`. */
