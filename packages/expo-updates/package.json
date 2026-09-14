@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "58.0.2",
+  "version": "58.0.3",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "keywords": [
     "expo",
