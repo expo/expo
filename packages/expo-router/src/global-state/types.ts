@@ -10,10 +10,10 @@ export type LinkToOptions = {
   event?: string;
 
   /**
-   * Whether to skip the React transition for this navigation operation. Because queued operations
-   * are drained together, this disables transitions for the entire batch.
+   * Whether this navigation operation should use a React transition. Because queued operations
+   * are drained together, every operation in the batch must support transitions for one to be used.
    */
-  noTransitions?: boolean;
+  inTransition?: boolean;
 
   /**
    * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.

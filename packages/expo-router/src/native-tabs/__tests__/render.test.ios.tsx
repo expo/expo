@@ -443,6 +443,7 @@ describe('First focused tab', () => {
     expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
 
+    act(() => router.setTransitionMode('always'));
     TabsScreen.mockClear();
     TabsHost.mockClear();
     act(() => router.navigate('/second'));

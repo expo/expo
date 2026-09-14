@@ -268,14 +268,14 @@ describe('router action functions', () => {
     );
   });
 
-  it('push forwards the noTransitions option', () => {
-    push('/path', { noTransitions: true });
+  it('push forwards the inTransition option', () => {
+    push('/path', { inTransition: true });
 
     expect(mockAdd).toHaveBeenCalledWith({
       type: 'NAVIGATE_TO_HREF',
       payload: {
         href: '/path',
-        options: { event: 'PUSH', noTransitions: true },
+        options: { event: 'PUSH', inTransition: true },
       },
     });
   });

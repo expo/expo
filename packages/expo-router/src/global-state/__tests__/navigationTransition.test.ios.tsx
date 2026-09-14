@@ -50,7 +50,7 @@ it('keeps the current screen visible and reports pending while a navigation susp
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
   expect(screen.getByTestId('index')).toBeVisible();
 
-  const navigationAct = act(() => router.push('/slow'));
+  const navigationAct = act(() => router.push('/slow', { inTransition: true }));
 
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
   expect(screen.getByTestId('index')).toBeVisible();
@@ -79,8 +79,8 @@ it('commits two queued navigations in one transition', async () => {
   });
 
   await act(async () => {
-    router.push('/first');
-    router.push('/second');
+    router.push('/first', { inTransition: true });
+    router.push('/second', { inTransition: true });
   });
 
   expect(screen).toHavePathname('/second');
@@ -107,7 +107,7 @@ it('processes each intent once when one is queued during a pending transition', 
   );
 
   try {
-    const navigationAct = act(() => router.push('/slow'));
+    const navigationAct = act(() => router.push('/slow', { inTransition: true }));
     expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -141,7 +141,7 @@ it('preserves action order when a synchronous dispatch interrupts a transition',
     slow: SlowScreen,
   });
 
-  const navigationAct = act(() => router.push('/slow'));
+  const navigationAct = act(() => router.push('/slow', { inTransition: true }));
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
 
   act(() => navigationRef.current?.dispatchSync(CommonActions.navigate('sync')));

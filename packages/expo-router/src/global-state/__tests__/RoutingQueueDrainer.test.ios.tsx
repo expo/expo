@@ -9,10 +9,10 @@ function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
 }
 
-function navigate(event: string, noTransitions?: boolean): RoutingIntent {
+function navigate(event: string, inTransition?: boolean): RoutingIntent {
   return {
     type: 'NAVIGATE_TO_HREF',
-    payload: { href: '/test', options: { event, noTransitions } },
+    payload: { href: '/test', options: { event, inTransition } },
   };
 }
 
@@ -153,7 +153,7 @@ describe(shouldUseTransition, () => {
   });
 
   it('disables transitions globally', () => {
-    expect(shouldUseTransition([navigate('PRELOAD')], 'never')).toBe(false);
+    expect(shouldUseTransition([navigate('PRELOAD', true)], 'never')).toBe(false);
   });
 
   it('uses transitions only when the entire batch consists of preloads', () => {
@@ -165,7 +165,16 @@ describe(shouldUseTransition, () => {
     );
   });
 
-  it('disables the transition for a batch containing an opted-out operation', () => {
-    expect(shouldUseTransition([navigate('PUSH'), navigate('PUSH', true)], 'always')).toBe(false);
+  it('allows operations to opt into transitions in preload-only mode', () => {
+    expect(shouldUseTransition([navigate('PRELOAD'), navigate('PUSH', true)], 'preload-only')).toBe(
+      true
+    );
+    expect(shouldUseTransition([navigate('PUSH', true), navigate('PUSH')], 'preload-only')).toBe(
+      false
+    );
+  });
+
+  it('allows operations to opt out of transitions', () => {
+    expect(shouldUseTransition([navigate('PUSH'), navigate('PUSH', false)], 'always')).toBe(false);
   });
 });

@@ -80,6 +80,7 @@ describe('Native Bottom Tabs Navigation', () => {
     });
     expect(TabsScreen).toHaveBeenCalledTimes(4);
     expectIndexTabFocused();
+    act(() => router.setTransitionMode('always'));
     TabsScreen.mockClear();
   });
 

@@ -132,6 +132,8 @@ it('keeps the current tab visible while a queued tab switch suspends', async () 
     },
   });
 
+  act(() => router.setTransitionMode('always'));
+
   const navigationAct = act(() => fireEvent.press(screen.getByTestId('goto-slow')));
 
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');

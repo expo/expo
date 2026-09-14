@@ -38,7 +38,7 @@ export const NavigationPendingContext = createContext(false);
 export function RoutingQueueProvider({ children }: PropsWithChildren) {
   const [queue, setQueue] = useState(EMPTY);
   const [isPending, startTransition] = useTransition();
-  const [transitionMode, setTransitionMode] = useState<NavigationTransitionMode>('always');
+  const [transitionMode, setTransitionMode] = useState<NavigationTransitionMode>('preload-only');
   const api = useMemo<RoutingQueueApi>(
     () => ({
       enqueue: (intent) => setQueue((previous) => [...previous, intent]),

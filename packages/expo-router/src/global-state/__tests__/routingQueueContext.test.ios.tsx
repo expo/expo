@@ -69,7 +69,7 @@ it('updates the global transition mode from the module-level router', () => {
       <RouterBridge />
     </RoutingQueueProvider>
   );
-  expect(mode).toBe('always');
+  expect(mode).toBe('preload-only');
 
   act(() => router.setTransitionMode('never'));
 
