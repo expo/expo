@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- The `params` argument of `openInCalendar()` and `editInCalendar()` no longer accepts `null`. Call the methods with no arguments instead.
+- The `params` argument of `openInCalendar()` and `editInCalendar()` no longer accepts `null`. Call the methods with no arguments instead. ([#50158](https://github.com/expo/expo/pull/50158) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🎉 New features
 
