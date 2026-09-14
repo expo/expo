@@ -1,4 +1,4 @@
-import { sortRoutesWithInitial, type RouteNode } from '../Route';
+import { isLayoutRouteNode, sortRoutesWithInitial, type RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
@@ -261,7 +261,8 @@ function hasDeepDestination(
   while (state) {
     const childRoute = state.routes[state.index ?? state.routes.length - 1];
     const initialRouteName =
-      getValidInitialRouteName(node) ?? [...node.children].sort(sortRoutesWithInitial())[0]?.route;
+      getValidInitialRouteName(node) ??
+      [...getChildren(node)].sort(sortRoutesWithInitial())[0]?.route;
     if (
       !childRoute ||
       childRoute.name !== initialRouteName ||

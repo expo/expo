@@ -1,4 +1,4 @@
-import type { RouteNode } from './Route';
+import { getChildren, getInitialRouteName, type RouteNode } from './Route';
 import { matchDynamicName } from './matchers';
 
 export type Screen =
@@ -47,7 +47,8 @@ export function parseRouteSegments(segments: string): string {
 
 function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
   const path = parseRouteSegments(node.route);
-  if (!node.children.length) {
+  const children = getChildren(node);
+  if (!children.length) {
     if (!metaOnly) {
       return {
         path,
@@ -57,7 +58,7 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     }
     return path;
   }
-  const screens = getReactNavigationScreensConfig(node.children, metaOnly);
+  const screens = getReactNavigationScreensConfig(children, metaOnly);
 
   const screen: Screen = {
     path,
@@ -83,6 +84,6 @@ export function getReactNavigationScreensConfig(
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
   return {
     initialRouteName: undefined,
-    screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
+    screens: routeTree ? getReactNavigationScreensConfig(getChildren(routeTree), metaOnly) : {},
   };
 }

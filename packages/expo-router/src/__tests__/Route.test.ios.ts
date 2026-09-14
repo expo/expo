@@ -1,12 +1,11 @@
-import type { RouteNode } from '../Route';
+import type { LayoutRouteNode, RouteNode, ScreenRouteNode } from '../Route';
 import { sortRoutes, sortRoutesWithInitial } from '../Route';
 import { generateDynamic } from '../getRoutes';
 import { findRouteNodeAndParamsForState, getValidInitialRouteName } from '../routeNode';
 
-const asRouteNode = (route: string): RouteNode => {
+const asRouteNode = (route: string): ScreenRouteNode => {
   return {
     type: 'route',
-    children: [],
     dynamic: generateDynamic(route),
     loadRoute(): any {
       return {
@@ -90,8 +89,8 @@ describe(sortRoutes, () => {
   });
 });
 
-const asLayoutNode = (anchor: string, children: RouteNode[]): RouteNode => ({
-  ...asRouteNode('_layout'),
+const asLayoutNode = (anchor: string, children: RouteNode[] = []): LayoutRouteNode => ({
+  ...asScreenRouteNode('_layout'),
   type: 'layout',
   loadRoute: () => ({ unstable_settings: { anchor } }),
   children,
@@ -99,19 +98,19 @@ const asLayoutNode = (anchor: string, children: RouteNode[]): RouteNode => ({
 
 describe(getValidInitialRouteName, () => {
   it('returns the registered route name for a valid setting', () => {
-    const node = asLayoutNode('a', [asRouteNode('a')]);
+    const node = asLayoutNode('a', [asScreenRouteNode('a')]);
 
     expect(getValidInitialRouteName(node)).toBe('a');
   });
 
   it('resolves a directory setting to its registered index route', () => {
-    const node = asLayoutNode('a', [asRouteNode('a/index')]);
+    const node = asLayoutNode('a', [asScreenRouteNode('a/index')]);
 
     expect(getValidInitialRouteName(node)).toBe('a/index');
   });
 
   it('sorts a resolved directory setting before other routes', () => {
-    const node = asLayoutNode('a', [asRouteNode('b'), asRouteNode('a/index')]);
+    const node = asLayoutNode('a', [asScreenRouteNode('b'), asScreenRouteNode('a/index')]);
 
     expect(
       node.children
@@ -121,7 +120,10 @@ describe(getValidInitialRouteName, () => {
   });
 
   it('throws for a missing route', () => {
-    const node = asLayoutNode('missing', [asRouteNode('index'), asRouteNode('settings/index')]);
+    const node = asLayoutNode('missing', [
+      asScreenRouteNode('index'),
+      asScreenRouteNode('settings/index'),
+    ]);
     node.contextKey = './app/(tabs)/_layout.tsx';
 
     expect(() => getValidInitialRouteName(node)).toThrow(
@@ -136,7 +138,7 @@ describe(getValidInitialRouteName, () => {
 
 describe(findRouteNodeAndParamsForState, () => {
   it('returns no route node without nested state', () => {
-    expect(findRouteNodeAndParamsForState(asRouteNode('_layout'), undefined)).toEqual({
+    expect(findRouteNodeAndParamsForState(asLayoutNode('_layout'), undefined)).toEqual({
       routeNode: undefined,
       params: {},
     });

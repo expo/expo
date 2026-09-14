@@ -1,4 +1,4 @@
-import type { RouteNode } from './Route';
+import { isLayoutRouteNode, type RouteNode } from './Route';
 import { getLayoutAnchor } from './layoutAnchor';
 import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 
@@ -6,7 +6,7 @@ export function findRouteNodeByName(
   node: RouteNode | null | undefined,
   name: string | undefined
 ): RouteNode | undefined {
-  return node?.children.find((child) => child.route === name);
+  return isLayoutRouteNode(node) ? node.children.find((child) => child.route === name) : undefined;
 }
 
 export function findRouteNodeAndParamsForState(

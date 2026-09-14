@@ -1,4 +1,4 @@
-import type { LoadedRoute, RouteNode } from './Route';
+import type { LayoutRouteNode, LoadedRoute, RouteNode } from './Route';
 
 // The caches are keyed by `RouteNode`, so they reset when Fast Refresh builds a new route tree.
 // Only read anchors are cached, so a layout that is still loading can be read again later.
@@ -121,7 +121,7 @@ export function withLoadedLayouts<T>(
       );
 }
 
-function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) {
+function readAnchor(node: LayoutRouteNode, settings: Record<string, any> | undefined) {
   const groupName = node.groupName;
   const layoutAnchor = readLayoutAnchorSetting(settings);
   const groupAnchor = groupName ? readLayoutAnchorSetting(settings?.[groupName]) : undefined;

@@ -1,6 +1,6 @@
 import isEqual from 'react-fast-compare';
 
-import type { RouteNode } from '../Route';
+import { isLayoutRouteNode, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
@@ -261,7 +261,7 @@ function createDestinationState(
   const initialRouteName = getValidInitialRouteName(routeNode);
   // Sort like a mounted navigator does, so the route names match on mount and no
   // ROUTE_NAMES_CHANGED action is queued.
-  const routeNames = [...routeNode.children]
+  const routeNames = [...getChildren(routeNode)]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
   if (!targetRoute) {
@@ -372,7 +372,9 @@ function shouldPopTo({
 }) {
   const isRootLayoutNavigator =
     routeNode === rootRouteNode && targetRoute.name !== INTERNAL_SLOT_NAME;
-  const holdsNavigator = targetRoute.state !== undefined || (childNode?.children.length ?? 0) > 0;
+  const holdsNavigator =
+    targetRoute.state !== undefined ||
+    (isLayoutRouteNode(childNode) && childNode.children.length > 0);
   if (isRootLayoutNavigator && !holdsNavigator) {
     return false;
   }
