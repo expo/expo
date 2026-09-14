@@ -29,6 +29,7 @@
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "prepublishOnly": "expo-module prepublishOnly",
+    "test": "jest",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
@@ -38,13 +39,17 @@
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-asset": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "jest-expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
     "expo-asset": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "title": "Expo Audio"
 }

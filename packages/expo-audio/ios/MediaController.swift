@@ -279,6 +279,14 @@ class MediaController {
     .resume()
   }
 
+  /**
+   Converts seconds to a `CMTime` without losing sub-second precision. A timescale of 1 would
+   truncate fractional skip intervals such as `0.1` or `15.5` down to whole seconds.
+   */
+  static func cmTime(seconds: Double) -> CMTime {
+    return CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+  }
+
   private func enableRemoteCommands(options: LockScreenOptions?) {
     removeRemoteCommandTargets()
 
@@ -322,14 +330,15 @@ class MediaController {
         return .commandFailed
       }
 
-      let seekTime = CMTime(seconds: event.positionTime, preferredTimescale: 1)
+      let seekTime = MediaController.cmTime(seconds: event.positionTime)
       playable.lockScreenPlayer.seek(to: seekTime)
 
       return .success
     }
     remoteCommandTargets.append((remoteCommandCenter.changePlaybackPositionCommand, changePlaybackPositionTarget))
 
-    remoteCommandCenter.skipForwardCommand.preferredIntervals = [10.0]
+    let forwardInterval = options?.seekForwardIntervalSeconds ?? 10.0
+    remoteCommandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: max(forwardInterval, 0.1))]
     let skipForwardTarget = remoteCommandCenter.skipForwardCommand.addTarget { [weak self] event in
       guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {
@@ -337,14 +346,15 @@ class MediaController {
       }
 
       let currentTime = playable.lockScreenPlayer.currentTime()
-      let seekTime = currentTime + CMTime(seconds: event.interval, preferredTimescale: 1)
+      let seekTime = currentTime + MediaController.cmTime(seconds: event.interval)
       playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
 
       return .success
     }
     remoteCommandTargets.append((remoteCommandCenter.skipForwardCommand, skipForwardTarget))
 
-    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [10.0]
+    let backwardInterval = options?.seekBackwardIntervalSeconds ?? 10.0
+    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: max(backwardInterval, 0.1))]
     let skipBackwardTarget = remoteCommandCenter.skipBackwardCommand.addTarget { [weak self] event in
       guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {
@@ -352,7 +362,7 @@ class MediaController {
       }
 
       let currentTime = playable.lockScreenPlayer.currentTime()
-      let seekTime = currentTime - CMTime(seconds: event.interval, preferredTimescale: 1)
+      let seekTime = currentTime - MediaController.cmTime(seconds: event.interval)
       playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
 
       return .success
