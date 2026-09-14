@@ -2,7 +2,6 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { ensureStateType } from './ensureStateType';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import type {
   CommonNavigationAction,
@@ -219,8 +218,6 @@ function stackRouterExtension({
     Router<StackNavigationState<ParamListBase>, CommonNavigationAction | StackActionType>,
     'shouldActionChangeFocus'
   > = {
-    // TODO: Keep this value in sync with the `ensureStateType` calls below.
-    type: 'stack',
     normalizeState: markPreloadedRoutes,
 
     getStateForDeclaredRoutes(state, routeNames) {
@@ -240,8 +237,7 @@ function stackRouterExtension({
       return { ...filteredState, index: Math.max(0, survivingActiveCount - 1) };
     },
 
-    getStateForRouteFocus(inputState, key) {
-      const state = ensureStateType(inputState, 'stack');
+    getStateForRouteFocus(state, key) {
       const { activeRoutes } = getStackRoutes(state);
       const index = activeRoutes.findIndex((r) => r.key === key);
 
@@ -256,8 +252,7 @@ function stackRouterExtension({
       };
     },
 
-    getStateForAction(inputState, action, options) {
-      const state = ensureStateType(inputState, 'stack');
+    getStateForAction(state, action, options) {
       const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
 
       switch (action.type) {
@@ -669,15 +664,8 @@ function stackRouterExtension({
           }
         }
 
-        default: {
-          const result = baseRouter.getStateForAction(state, action, options);
-
-          if (result === null) {
-            return result;
-          }
-
-          return { ...result, state: ensureStateType(result.state, 'stack') };
-        }
+        default:
+          return baseRouter.getStateForAction(state, action, options);
       }
     },
 
@@ -690,4 +678,4 @@ function stackRouterExtension({
 /**
  * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
-export const StackRouter = extendRouter(BaseRouter, stackRouterExtension);
+export const StackRouter = extendRouter(BaseRouter, stackRouterExtension, { type: 'stack' });

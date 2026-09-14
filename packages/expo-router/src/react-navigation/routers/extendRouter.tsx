@@ -1,3 +1,4 @@
+import { ensureStateType } from './ensureStateType';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   DefaultRouterOptions,
@@ -39,6 +40,14 @@ export type RouterExtensionContext<
   nextKey(name: string): string;
 };
 
+export type RouterExtensionOptions<State extends NavigationState> = {
+  /**
+   * The router's `type`, also stamped onto the states it focuses or reduces. Defaults to the base
+   * router's type.
+   */
+  type?: NonNullable<State['type']>;
+};
+
 /**
  * Returns the router members to merge over the base router. Members that are left out are
  * inherited from the base router, including `actionCreators`: return a merged object to add
@@ -54,8 +63,9 @@ export type RouterExtension<
 /**
  * Creates a router factory that merges the members returned by `extension` over the router
  * created by `base`. The effective `normalizeState` (from the extension, else from the base
- * router) runs on every state the resulting router returns. States the extension routes through
- * `context.baseRouter` are already normalized by the base router before that.
+ * router) runs on every state the resulting router returns. The router's `type` is stamped on the
+ * states `getStateForRouteFocus` and `getStateForAction` receive and return. States the extension
+ * routes through `context.baseRouter` are already normalized by the base router before that.
  *
  * Annotate the extension's context or return type to change the state, action, or options types.
  *
@@ -75,7 +85,8 @@ export function extendRouter<
   Options extends BaseOptions = BaseOptions,
 >(
   base: RouterFactory<BaseState, BaseAction, BaseOptions>,
-  extension: RouterExtension<State, Action, Options>
+  extension: RouterExtension<State, Action, Options>,
+  { type: extendedType }: RouterExtensionOptions<State> = {}
   // Not `RouterFactory`: TypeScript compares two instantiations of that alias by measured variance,
   // and `Router`'s conditional `type` requirement makes `State` measure as invariant. `typeof
   // StackRouter` then fails constraints such as `RouterFactory<NavigationState, NavigationAction,
@@ -85,6 +96,9 @@ export function extendRouter<
     // The extension owns the state and action types of the router it produces. The base router
     // is created for the base types and the extension decides which of its members still apply.
     const baseRouter = base(options) as unknown as Router<State, Action>;
+    const type = extendedType ?? baseRouter.type;
+    const ensureType = (state: State) =>
+      type === undefined ? state : ensureStateType(state, type);
 
     // The call in progress. One counter is shared by `nextKey` and delegation to the base router,
     // so keys minted on either side never collide regardless of the order they are used in.
@@ -92,16 +106,20 @@ export function extendRouter<
       key: '',
       routeKeySeq: 0,
     };
-    const begin = (state: State, config?: RouterConfigOptions) => {
+    const start = (state: State, config?: RouterConfigOptions) => {
       current = { key: state.key, routeKeySeq: state.routeKeySeq, config };
+      return state;
     };
     const stamp = (state: State): State =>
       state.routeKeySeq < current.routeKeySeq
         ? { ...state, routeKeySeq: current.routeKeySeq }
         : state;
-    const finish = (state: State) => {
+    // A returned state keeps the type of the state it was derived from, which an outer router in
+    // the chain may have stamped before delegating.
+    const finish = (state: State, stateType: State['type']) => {
       const stamped = stamp(state);
-      return normalizeState ? normalizeState(stamped) : stamped;
+      const typed = stateType === undefined ? stamped : ensureStateType(stamped, stateType);
+      return normalizeState ? normalizeState(typed) : typed;
     };
 
     const delegate: RouterExtensionContext<State, Action, Options>['baseRouter'] = {
@@ -125,28 +143,29 @@ export function extendRouter<
     const router: Router<State, Action> = {
       ...baseRouter,
       ...extension({ baseRouter: delegate, options, nextKey }),
+      type,
     };
     const { normalizeState } = router;
 
     return {
       ...router,
       getStateForDeclaredRoutes(state, routeNames) {
-        begin(state);
-        return finish(router.getStateForDeclaredRoutes(state, routeNames));
+        // Render-phase fallback: the seeded state keeps its own `type` until an action stamps it.
+        return finish(router.getStateForDeclaredRoutes(start(state), routeNames), state.type);
       },
       getStateForRouteFocus(state, key) {
-        begin(state);
-        return finish(router.getStateForRouteFocus(state, key));
+        const typedState = ensureType(start(state));
+        return finish(router.getStateForRouteFocus(typedState, key), typedState.type);
       },
       getStateForAction(state, action, config) {
-        begin(state, config);
-        const result = router.getStateForAction(state, action, config);
+        const typedState = ensureType(start(state, config));
+        const result = router.getStateForAction(typedState, action, config);
 
         if (result === null) {
           return null;
         }
 
-        const finishedState = finish(result.state);
+        const finishedState = finish(result.state, typedState.type);
         return finishedState === result.state ? result : { ...result, state: finishedState };
       },
     };

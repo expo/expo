@@ -120,6 +120,7 @@ export type {
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
+  RouterExtensionOptions,
   RouterFactory,
   StackActionType,
   StackNavigationState,

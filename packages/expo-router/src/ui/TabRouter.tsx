@@ -10,7 +10,6 @@ import {
 } from '../react-navigation/native';
 import { ensureStateHistory } from '../react-navigation/routers/TabRouter';
 import { attachRouteState, type RouteState } from '../react-navigation/routers/attachRouteState';
-import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { getTabRoute, type TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
@@ -74,9 +73,10 @@ export const ExpoTabRouter = extendRouterActions(
     if (!isSwitching && route.state !== undefined) {
       const selectedRoute = attachRouteState(route, action);
       if (selectedRoute === route) {
-        state = ensureStateType(
-          ensureStateHistory(state, options.backBehavior ?? 'firstRoute', options.initialRouteName),
-          'tab'
+        state = ensureStateHistory(
+          state,
+          options.backBehavior ?? 'firstRoute',
+          options.initialRouteName
         );
         return { state, affectedRouteKey: route.key };
       }

@@ -7,7 +7,6 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { ensureStateType } from './ensureStateType';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import type { CommonNavigationAction, ParamListBase, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
@@ -80,9 +79,9 @@ function drawerRouterExtension({
 > {
   // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
   // drawer entries in `history`, which reconstruction never produces.
-  const ensureDrawerStateOptionalProperties = (state: DrawerNavigationState<ParamListBase>) =>
+  const ensureDrawerStateHistory = (state: DrawerNavigationState<ParamListBase>) =>
     ensureStateHistory(
-      ensureStateType(state, 'drawer') as unknown as TabNavigationState<ParamListBase>,
+      state as unknown as TabNavigationState<ParamListBase>,
       backBehavior,
       initialRouteName
     ) as unknown as DrawerNavigationState<ParamListBase>;
@@ -143,17 +142,15 @@ function drawerRouterExtension({
   };
 
   return {
-    type: 'drawer',
-
     getStateForRouteFocus(state, key) {
-      const result = router.getStateForRouteFocus(ensureDrawerStateOptionalProperties(state), key);
+      const result = router.getStateForRouteFocus(ensureDrawerStateHistory(state), key);
 
       return closeDrawer(result);
     },
 
     getStateForAction(inputState, action, options) {
       // Restore route history before drawer actions can add drawer-only history.
-      const state = ensureDrawerStateOptionalProperties(inputState);
+      const state = ensureDrawerStateHistory(inputState);
       const focusedRouteKey = state.routes[state.index]?.key;
 
       switch (action.type) {
@@ -219,4 +216,4 @@ function drawerRouterExtension({
 /**
  * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
  */
-export const DrawerRouter = extendRouter(TabRouter, drawerRouterExtension);
+export const DrawerRouter = extendRouter(TabRouter, drawerRouterExtension, { type: 'drawer' });

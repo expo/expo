@@ -17,6 +17,7 @@ export type {
   RouterActionReducer,
   RouterExtension,
   RouterExtensionContext,
+  RouterExtensionOptions,
 } from './extendRouter';
 export type {
   StackActionHelpers,

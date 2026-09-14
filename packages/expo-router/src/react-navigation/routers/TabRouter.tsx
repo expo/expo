@@ -3,7 +3,6 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { ensureStateType } from './ensureStateType';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import type {
   CommonNavigationAction,
@@ -316,14 +315,10 @@ function tabRouterExtension({
     Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>,
     'shouldActionChangeFocus' | 'getStateForDeclaredRoutes'
   > = {
-    type: 'tab',
     normalizeState: clearFocusedPreloadedRoute,
 
     getStateForRouteFocus(inputState, key) {
-      const state = ensureStateType(
-        ensureStateHistory(inputState, backBehavior, initialRouteName),
-        'tab'
-      );
+      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
       const index = state.routes.findIndex((r) => r.key === key);
 
       if (index === -1 || index === state.index) {
@@ -335,10 +330,7 @@ function tabRouterExtension({
 
     getStateForAction(inputState, action, options) {
       const { routeGetIdList } = options;
-      const state = ensureStateType(
-        ensureStateHistory(inputState, backBehavior, initialRouteName),
-        'tab'
-      );
+      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
 
       if (action.target && action.target !== state.key) {
         return null;
@@ -723,15 +715,7 @@ function tabRouterExtension({
 
           return {
             ...result,
-            state: ensureStateType(
-              ensureStateHistory(
-                // BaseRouter throws instead of returning partial RESET payloads.
-                result.state as TabNavigationState<ParamListBase>,
-                backBehavior,
-                initialRouteName
-              ),
-              state.type
-            ),
+            state: ensureStateHistory(result.state, backBehavior, initialRouteName),
           };
         }
       }
@@ -746,7 +730,7 @@ function tabRouterExtension({
 /**
  * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
-export const TabRouter = extendRouter(BaseRouter, tabRouterExtension);
+export const TabRouter = extendRouter(BaseRouter, tabRouterExtension, { type: 'tab' });
 
 function removeReplacedRouteFromHistory(
   previousState: TabNavigationStateWithHistory,

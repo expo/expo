@@ -28,6 +28,7 @@ type CustomAction = {
 const config = { routeNames: ['index', 'second'], routeGetIdList: {} };
 const state: NavigationState = {
   stale: false,
+  type: 'test',
   key: 'navigator:root',
   routeKeySeq: 2,
   index: 1,
@@ -84,6 +85,38 @@ describe('extendRouter', () => {
     expect(router.getStateForRouteFocus(state, 'index:0').index).toBe(0);
     expect(router.getStateForAction(state, { type: 'GO_BACK' }, config)?.state).toBe(state);
     expect(router.actionCreators?.noop).toBeDefined();
+  });
+
+  test('stamps the type from the options on the router and on focused and reduced states', () => {
+    const untyped = { ...state, type: undefined };
+    let seenType: string | undefined;
+    const router = extendRouter(
+      TestRouter,
+      () => ({
+        getStateForRouteFocus: (state) => {
+          seenType = state.type;
+          return state;
+        },
+      }),
+      { type: 'custom' }
+    )({});
+
+    expect(router.type).toBe('custom');
+    expect(router.getStateForDeclaredRoutes(untyped, config.routeNames).type).toBeUndefined();
+    expect(router.getStateForRouteFocus(untyped, 'index:0').type).toBe('custom');
+    expect(seenType).toBe('custom');
+    expect(router.getStateForAction(untyped, { type: 'GO_BACK' }, config)?.state.type).toBe(
+      'custom'
+    );
+  });
+
+  test('uses the base router type when the options give none', () => {
+    const router = extendRouter(TestRouter, () => ({}))({});
+
+    expect(router.type).toBe('test');
+    expect(router.getStateForRouteFocus({ ...state, type: undefined }, 'index:0').type).toBe(
+      'test'
+    );
   });
 
   test('applies normalizeState to every state the router returns', () => {
