@@ -14,3 +14,8 @@ __rsc_tests__
 /oxlint.config.mjs
 /android/src/androidTest/
 /android/src/test/
+
+# Exclude native build output (pnpm pack ignores nested .gitignore files)
+.cxx/
+.gradle/
+/android/build/
