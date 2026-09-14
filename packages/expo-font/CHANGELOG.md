@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [web] Removed `FontResource.testString`. The CSS Font Loading API detects font loading without a test string. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 - [android][ios] Select a face of a multi-face font family with the `fontWeight` and `fontStyle` style props. ([#49486](https://github.com/expo/expo/pull/49486) by [@vonovak](https://github.com/vonovak))
@@ -13,6 +15,8 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [web] Replaced the `fontfaceobserver` dependency with the CSS Font Loading API, so `loadAsync` also waits for the font on Safari and iOS browsers. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.0 — 2026-09-10
 

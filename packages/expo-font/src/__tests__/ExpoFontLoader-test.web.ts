@@ -308,3 +308,41 @@ describe('_fontFaceRuleSrcMatches', () => {
     ).toBe(true);
   });
 });
+
+if (typeof window !== 'undefined') {
+  describe('loadAsync wait for the font file', () => {
+    afterEach(() => {
+      delete (document as any).fonts;
+      jest.useRealTimers();
+      document.getElementById(STYLE_ID)?.remove();
+    });
+
+    it('rejects when the browser never finishes fetching the file', async () => {
+      jest.useFakeTimers();
+      (document as any).fonts = { load: () => new Promise(() => {}) };
+
+      const assertion = expect(
+        ExpoFontLoader.loadAsync('Stalled', { uri: 'stalled.woff2' })
+      ).rejects.toThrow(
+        expect.objectContaining({
+          code: 'ERR_DOWNLOAD',
+          message: expect.stringContaining(`Fetching the font family "Stalled" timed out`),
+        })
+      );
+
+      await Promise.resolve();
+      jest.advanceTimersByTime(12000);
+      await assertion;
+    });
+
+    it('resolves as soon as the file loads, and clears the timeout', async () => {
+      jest.useFakeTimers();
+      (document as any).fonts = { load: () => Promise.resolve([]) };
+
+      await expect(
+        ExpoFontLoader.loadAsync('Fast', { uri: 'fast.woff2' })
+      ).resolves.toBeUndefined();
+      expect(jest.getTimerCount()).toBe(0);
+    });
+  });
+}

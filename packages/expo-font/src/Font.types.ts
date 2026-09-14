@@ -21,11 +21,6 @@ export type FontResource = {
   display?: FontDisplay;
   default?: string;
   /**
-   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver).
-   * @platform web
-   */
-  testString?: string;
-  /**
    * Sets the face's `weight` when the resource is the `path` of a
    * [`FontFaceDefinition`](#fontfacedefinition) and the face doesn't declare its own. Outside of
    * a font family definition, only the browser uses this value, as the CSS `font-weight` property.
@@ -85,11 +80,6 @@ export type FontFaceDefinition = {
    * @platform web
    */
   display?: FontDisplay;
-  /**
-   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver) for this face.
-   * @platform web
-   */
-  testString?: string;
 };
 
 // @needsAudit

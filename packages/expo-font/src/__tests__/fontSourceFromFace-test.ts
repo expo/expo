@@ -4,25 +4,23 @@ import { FontDisplay } from '../Font.types';
 import { fontSourceFromFace } from '../fontSourceFromFace';
 
 describe('fontSourceFromFace', () => {
-  it('merges weight/style/display/testString onto a string path', () => {
+  it('merges weight/style/display onto a string path', () => {
     expect(
       fontSourceFromFace({
         path: 'font.ttf',
         weight: 700,
         style: 'italic',
         display: FontDisplay.SWAP,
-        testString: 'Ag',
       })
     ).toEqual({
       uri: 'font.ttf',
       weight: 700,
       style: 'italic',
       display: FontDisplay.SWAP,
-      testString: 'Ag',
     });
   });
 
-  it('carries weight/style/display/testString onto an Asset path', () => {
+  it('carries weight/style/display onto an Asset path', () => {
     const asset = Asset.fromURI('http://localhost:8081/bold.ttf');
 
     const result = fontSourceFromFace({
@@ -30,14 +28,12 @@ describe('fontSourceFromFace', () => {
       weight: 700,
       style: 'italic',
       display: FontDisplay.SWAP,
-      testString: 'Ag',
     }) as any;
 
     expect(result.uri).toBe(asset.uri);
     expect(result.weight).toBe(700);
     expect(result.style).toBe('italic');
     expect(result.display).toBe(FontDisplay.SWAP);
-    expect(result.testString).toBe('Ag');
   });
 
   it('does not set descriptor keys that were not specified for an Asset path', () => {
@@ -49,7 +45,6 @@ describe('fontSourceFromFace', () => {
     expect('weight' in result).toBe(false);
     expect('style' in result).toBe(false);
     expect('display' in result).toBe(false);
-    expect('testString' in result).toBe(false);
   });
 
   it("falls back to the path FontResource's weight/style when the face leaves them unset", () => {
@@ -58,7 +53,6 @@ describe('fontSourceFromFace', () => {
       weight: 300,
       style: 'italic',
       display: undefined,
-      testString: undefined,
     });
   });
 });
