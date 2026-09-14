@@ -1,3 +1,7 @@
+console.warn(
+  '`expo-router/unstable-native-tabs` is deprecated. Use `expo-router/native-tabs` instead.'
+);
+
 /** @deprecated Use `expo-router/native-tabs` instead. */
 export type {
   NativeTabsTriggerLabelProps,
