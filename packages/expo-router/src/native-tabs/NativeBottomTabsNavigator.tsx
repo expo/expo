@@ -9,10 +9,7 @@ import {
   type TabNavigationState,
   type TabRouterOptions,
 } from '../react-navigation/native';
-import {
-  IsWithinNativeNavigator,
-  unstable_createStandardRouterNavigator,
-} from '../standard-navigation';
+import { IsWithinNativeNavigator, createStandardRouterNavigator } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
@@ -59,11 +56,11 @@ export interface NativeTabsNavigatorCreateProps {
  *
  * @example
  * ```tsx
- * import { TabRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { TabRouter, integrateWithRouter } from 'expo-router';
  * import { createNativeTabsProps } from 'expo-router/unstable-native-tabs';
  * import { navigator } from './navigator';
  *
- * export const NativeTabs = unstable_integrateWithRouter(navigator, TabRouter, {
+ * export const NativeTabs = integrateWithRouter(navigator, TabRouter, {
  *   createProps: createNativeTabsProps,
  * });
  * ```
@@ -218,7 +215,7 @@ function NativeTabsContent({
   );
 }
 
-const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
+const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
   NativeTabOptions,
   TabNavigationState<ParamListBase>,
   NativeTabNavigationEventMap,

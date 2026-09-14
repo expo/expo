@@ -20,7 +20,7 @@ import {
 } from '../react-navigation/native';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../react-navigation/native-stack/types';
-import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../standard-navigation';
+import { IsWithinNativeNavigator, integrateWithRouter } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 import { createNativeStackProps } from './createNativeStackProps';
@@ -37,7 +37,7 @@ import {
   validateStackPresentation,
 } from './stack-utils';
 
-const RNStack = unstable_integrateWithRouter<
+const RNStack = integrateWithRouter<
   NativeStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardNativeStackEventMap,

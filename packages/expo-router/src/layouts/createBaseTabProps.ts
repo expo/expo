@@ -10,10 +10,10 @@ import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-naviga
  *
  * @example
  * ```tsx
- * import { createBaseTabProps, TabRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { createBaseTabProps, TabRouter, integrateWithRouter } from 'expo-router';
  * import { navigator } from './navigator';
  *
- * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter, {
+ * export const Tabs = integrateWithRouter(navigator, TabRouter, {
  *   createProps: createBaseTabProps,
  * });
  * ```

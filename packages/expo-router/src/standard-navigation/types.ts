@@ -208,7 +208,7 @@ type NavigatorContentInferenceCarrier<
 
 /**
  * Props for a standard navigator's `NavigatorContent` component. Annotate your content component
- * with this type to declare the events it emits, so `unstable_createStandardRouterNavigator` can
+ * with this type to declare the events it emits, so `createStandardRouterNavigator` can
  * type `emitter.emit` for you.
  *
  * @example

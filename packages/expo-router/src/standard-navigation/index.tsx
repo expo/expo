@@ -68,10 +68,8 @@ type StandardRouterNavigatorComponent<
 >;
 
 /**
- * > **warning** This API is unstable and may change between minor releases.
- *
  * Creates a [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) navigator and
- * wires it into Expo Router in one step. Use `unstable_integrateWithRouter` instead if you already
+ * wires it into Expo Router in one step. Use `integrateWithRouter` instead if you already
  * have a navigator from `createStandardNavigator`.
  * Props declared in both `NavigatorProps` and `CreateProps` are intersected, so incompatible types
  * produce `never` rather than a type error at this call.
@@ -83,12 +81,12 @@ type StandardRouterNavigatorComponent<
  *
  * @example
  * ```tsx
- * import { unstable_createStandardRouterNavigator, TabRouter } from 'expo-router';
+ * import { createStandardRouterNavigator, TabRouter } from 'expo-router';
  *
- * export const Tabs = unstable_createStandardRouterNavigator(MyTabsContent, TabRouter);
+ * export const Tabs = createStandardRouterNavigator(MyTabsContent, TabRouter);
  * ```
  */
-export function unstable_createStandardRouterNavigator<
+export function createStandardRouterNavigator<
   NavigatorOptions extends object,
   State extends NavigationState,
   EventMap extends StandardNavigatorEventMapBase,
@@ -118,7 +116,7 @@ export function unstable_createStandardRouterNavigator<
     EventMap,
     NavigatorProps & CreateProps
   >(NavigatorContent);
-  return unstable_integrateWithRouter<
+  return integrateWithRouter<
     NavigatorOptions,
     State,
     EventMap,
@@ -129,11 +127,9 @@ export function unstable_createStandardRouterNavigator<
 }
 
 /**
- * > **warning** This API is unstable and may change between minor releases.
- *
  * Wires an existing [`standard-navigation`](https://www.npmjs.com/package/standard-navigation)
  * navigator into Expo Router, returning a navigator component (with a `.Screen` child) usable as a
- * layout. Use `unstable_createStandardRouterNavigator` to create and integrate in one step.
+ * layout. Use `createStandardRouterNavigator` to create and integrate in one step.
  *
  * @param navigator The object returned by `createStandardNavigator(...)`.
  * @param router The router factory to use. For example, `StackRouter` or `TabRouter`.
@@ -142,13 +138,13 @@ export function unstable_createStandardRouterNavigator<
  * @example
  * ```tsx
  * import { createStandardNavigator } from 'standard-navigation';
- * import { unstable_integrateWithRouter, TabRouter } from 'expo-router';
+ * import { integrateWithRouter, TabRouter } from 'expo-router';
  *
  * const navigator = createStandardNavigator(MyTabsContent);
- * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter);
+ * export const Tabs = integrateWithRouter(navigator, TabRouter);
  * ```
  */
-export function unstable_integrateWithRouter<
+export function integrateWithRouter<
   NavigatorOptions extends object,
   State extends NavigationState,
   EventMap extends StandardNavigatorEventMapBase,
@@ -266,6 +262,12 @@ export function unstable_integrateWithRouter<
   );
 }
 
+/** @deprecated Use `createStandardRouterNavigator` instead. */
+export const unstable_createStandardRouterNavigator = createStandardRouterNavigator;
+
+/** @deprecated Use `integrateWithRouter` instead. */
+export const unstable_integrateWithRouter = integrateWithRouter;
+
 /**
  * Partitions a navigator's props into the subset consumed by `useNavigationBuilder`
  * (`useNavigationBuilderProps`) and everything else (`extraProps`, forwarded to `NavigatorContent`).
@@ -342,7 +344,7 @@ function assertStandardNavigator(navigator: unknown): asserts navigator is {
     throw new Error(
       'Could not integrate a standard navigator because no navigator was provided. ' +
         'Pass the object returned by `createStandardNavigator(...)` from the `standard-navigation` package, ' +
-        'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)` which creates it for you.'
+        'or use `createStandardRouterNavigator(NavigatorContent, router)` which creates it for you.'
     );
   }
 
@@ -353,7 +355,7 @@ function assertStandardNavigator(navigator: unknown): asserts navigator is {
       `Could not integrate a standard navigator because its \`type\` is ${JSON.stringify(type)}, not "standard". ` +
         'This value is likely not a standard-navigation navigator. ' +
         'Create it with `createStandardNavigator(...)` from the `standard-navigation` package, ' +
-        'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)`.'
+        'or use `createStandardRouterNavigator(NavigatorContent, router)`.'
     );
   }
 
