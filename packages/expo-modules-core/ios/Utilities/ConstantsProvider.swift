@@ -141,8 +141,6 @@ private func getFingerprint() -> String? {
         let fingerprint = try? String(contentsOf: url, encoding: .utf8) else {
     return nil
   }
-  // The file is `{"hash": ..., "fingerprintVersion": ...}`. Only the hash is exposed: the version
-  // is there for tools comparing two fingerprints, not for app code.
   guard let data = fingerprint.data(using: .utf8),
         let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
         let hash = parsed["hash"] as? String,

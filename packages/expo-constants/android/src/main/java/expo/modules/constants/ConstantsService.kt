@@ -76,8 +76,6 @@ open class ConstantsService(private val context: Context) : ConstantsInterface {
   private val appConfig: String?
     get() = readAssetOrNull(CONFIG_FILE_NAME)
 
-  // The file is `{"hash": ..., "fingerprintVersion": ...}`. Only the hash is exposed: the version
-  // is there for tools comparing two fingerprints, not for app code.
   private val embeddedFingerprint: String?
     get() = readAssetOrNull(FINGERPRINT_FILE_NAME)?.let { contents ->
       try {
