@@ -27,7 +27,7 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
   try {
     return await writeFingerprintFileAsync(projectRoot, destinationDir, platform, enabled);
   } catch (error) {
-    warnFingerprintEmbedFailed(/** @type {Error} */ (error));
+    warnFingerprintEmbedFailed(error);
     return null;
   }
 }
@@ -90,9 +90,6 @@ function isFingerprintEmbeddingDisabled() {
   return value != null && !['0', 'false', ''].includes(value.toLowerCase());
 }
 
-/**
- * @param {Error} error
- */
 function warnFingerprintEmbedFailed(error) {
   // The fingerprint is optional metadata: never fail the build over it.
   console.warn(
