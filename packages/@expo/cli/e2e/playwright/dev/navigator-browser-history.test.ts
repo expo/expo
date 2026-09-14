@@ -102,6 +102,81 @@ test.describe(inputDir, () => {
     expect(pageErrors.all).toEqual([]);
   });
 
+  test('creates one browser entry per push in a batch', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-explore"]').click();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+
+    await page.locator('[data-testid="push-details-and-final"]').click();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await expect(page).toHaveURL(/\/explore\/details$/);
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+    await expect(page).toHaveURL(/\/explore$/);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('deep links into an anchored stack and goes back to the anchor', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(new URL('/anchored/details', expoStart.url).href);
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    // The anchor sits below the deep-linked screen, so in-app back reaches it.
+    await page.locator('[data-testid="anchored-back"]').click();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    await page.locator('[data-testid="go-anchored-details"]').click();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('keeps the anchor below the screen after a reload', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-anchored-details"]').click();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    await page.reload();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    await page.locator('[data-testid="anchored-back"]').click();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    // The entry from before the reload is still the previous browser entry.
+    await page.goBack();
+    await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
+
+    await page.goForward();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
   test('restores a nested tab stack without remounting', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
 

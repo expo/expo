@@ -720,6 +720,7 @@ describe('NAVIGATE_TO_HREF', () => {
         linking: undefined,
         redirects: undefined,
         routesWithRemovalPrevented: new Set(),
+        browserHistoryIdPrefix: expect.any(String),
       },
       'PUSH',
       true,

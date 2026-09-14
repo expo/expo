@@ -5,6 +5,7 @@ import * as React from 'react';
 import { unstable_navigationEvents } from '../navigationEvents';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { NavigationAction } from '../react-navigation/routers';
+import type { BrowserHistoryAdapter } from './browserHistoryTypes';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 
@@ -52,7 +53,8 @@ function warnUnhandledAction(action: NavigationAction) {
 
 export function useNavigationTreeReportEvents(
   report: NavigationTreeReport | undefined,
-  consumeReportEvents: (eventIds: readonly number[]) => void
+  consumeReportEvents: (eventIds: readonly number[]) => void,
+  browserHistory: BrowserHistoryAdapter
 ) {
   const emitterRegistry = React.use(GlobalRemovalEventEmitterRegistryContext)!;
   const consumedIds = React.useRef(new Set<number>());
@@ -99,6 +101,9 @@ export function useNavigationTreeReportEvents(
               state: event.state,
             });
             break;
+          case 'browser-history':
+            browserHistory.apply(event);
+            break;
         }
       } catch (error) {
         const message =
@@ -111,5 +116,5 @@ export function useNavigationTreeReportEvents(
     if (ids.length > 0) {
       consumeReportEvents(ids);
     }
-  }, [consumeReportEvents, emitterRegistry, report]);
+  }, [browserHistory, consumeReportEvents, emitterRegistry, report]);
 }

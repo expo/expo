@@ -17,6 +17,8 @@ const state: NavigationState = {
   routes: [{ key: 'index', name: 'index' }],
 };
 
+const browserHistory = { apply: jest.fn(), listen: jest.fn(() => () => {}) };
+
 function wrapper({ children }: PropsWithChildren) {
   return <RemovalPreventionProvider>{children}</RemovalPreventionProvider>;
 }
@@ -36,7 +38,7 @@ test('emits and consumes only new report events', () => {
   const report: NavigationTreeReport = { events: [firstEvent] };
   const result = renderHook(
     ({ report }: { report: NavigationTreeReport }) =>
-      useNavigationTreeReportEvents(report, consumeReportEvents),
+      useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
     { wrapper, initialProps: { report } }
   );
 
@@ -65,7 +67,7 @@ test('emits removePrevented and removed to the registered route emitters', () =>
 
   const result = renderHook(
     ({ report }: { report: NavigationTreeReport | undefined }) =>
-      useNavigationTreeReportEvents(report, consumeReportEvents),
+      useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
     {
       initialProps: { report: undefined },
       wrapper: ({ children }: PropsWithChildren) => (
@@ -105,7 +107,9 @@ describe('unhandled action warnings', () => {
       ],
     };
 
-    renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
+    renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
+      wrapper,
+    });
 
     expect(error).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledWith(
@@ -127,7 +131,7 @@ test('does not emit twice in StrictMode', () => {
     events: [{ id: 0, type: 'action-dispatched', action: { type: 'FIRST' }, state }],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), {
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
     wrapper: ({ children }: PropsWithChildren) => (
       <React.StrictMode>
         <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
@@ -157,11 +161,30 @@ test('keeps emitting the remaining events when a listener throws', () => {
     ],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents), { wrapper });
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
+    wrapper,
+  });
 
   expect(actions).toEqual(['FIRST', 'SECOND']);
   expect(warn).toHaveBeenCalledTimes(1);
   expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
   unsubscribe();
   warn.mockRestore();
+});
+
+test('runs browser history events through the adapter', () => {
+  const consumeReportEvents = jest.fn();
+  const report: NavigationTreeReport = {
+    events: [
+      { id: 0, type: 'browser-history', op: 'push', entryId: 'a', path: '/a' },
+      { id: 1, type: 'browser-history', op: 'go', delta: -1 },
+    ],
+  };
+
+  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
+    wrapper,
+  });
+
+  expect(browserHistory.apply.mock.calls).toEqual([[report.events[0]], [report.events[1]]]);
+  expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
 });
