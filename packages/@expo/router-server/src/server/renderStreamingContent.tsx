@@ -165,7 +165,7 @@ export async function getStreamingContent(
 
     return ReactDOMServer.renderToReadableStream(
       <ServerDocument data={serverDocumentData}>
-        {/* Keep the provider for routes that share legacy Head components with static rendering. */}
+        {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
         <Head.Provider context={headContext}>
           <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
         </Head.Provider>

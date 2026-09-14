@@ -108,6 +108,7 @@ it('runs `npx expo export:embed`', async () => {
     {
       env: {
         NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
       },
@@ -182,6 +183,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     {
       env: {
         NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
       },
@@ -258,6 +260,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     {
       env: {
         NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
       },
@@ -346,6 +349,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
     {
       env: {
         NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
       },
