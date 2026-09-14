@@ -1039,6 +1039,54 @@ describe('group expansion', () => {
 });
 
 describe('redirects', () => {
+  it('keeps a layout a layout when a redirect names it as the source', () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        './(app)/_layout': () => null,
+        './(app)/index': () => null,
+      }),
+      {
+        internal_stripLoadRoute: true,
+        skipGenerated: true,
+        redirects: [{ source: '/(app)/_layout', destination: '/(app)/index' } as RedirectConfig],
+        preserveRedirectAndRewrites: true,
+      }
+    );
+
+    const layout = routes?.children[0];
+    expect(layout?.type).toBe('layout');
+    expect(layout).not.toHaveProperty('destinationContextKey');
+    expect(layout).not.toHaveProperty('permanent');
+  });
+
+  it('redirects from an api route without replacing its module', () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        './foo+api': () => null,
+        './(app)/index': () => null,
+      }),
+      {
+        internal_stripLoadRoute: true,
+        skipGenerated: true,
+        preserveApiRoutes: true,
+        redirects: [{ source: '/foo', destination: '/(app)/index' } as RedirectConfig],
+        preserveRedirectAndRewrites: true,
+      }
+    );
+
+    const redirect = routes?.children.find((child) => child.route === 'foo');
+    expect(redirect).toEqual({
+      contextKey: './foo+api.js',
+      route: 'foo',
+      dynamic: null,
+      type: 'redirect',
+      destinationContextKey: './(app)/index.js',
+      permanent: false,
+      generated: true,
+      entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+    });
+  });
+
   it('can add redirects', () => {
     expect(
       getRoutes(

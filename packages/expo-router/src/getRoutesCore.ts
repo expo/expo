@@ -455,65 +455,73 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
       }
-
-      const redirect = redirects[meta.route]!;
-      const defaults: RedirectRouteNode = {
-        ...base,
-        type: 'redirect',
-        destinationContextKey: redirect.destinationContextKey,
-        permanent: redirect.permanent,
-        generated: true,
-      };
-
-      // A real file at the redirect source keeps its own `loadRoute`. Only a
-      // source with no file behind it gets the generated redirect module.
-      const resolved =
-        node.type === 'route'
-          ? asSystemRouteType(
-              options.getSystemRoute({
-                type: 'redirect',
-                route: redirect.destination,
-                defaults,
-                redirectConfig: redirect,
-              }),
-              'redirect'
-            )
-          : defaults;
-
-      node = redirect.methods ? { ...resolved, methods: redirect.methods } : resolved;
       processedRedirectsRewrites.add(meta.route);
+
+      // A `_layout` is a container, not a destination, so it cannot be a redirect
+      // source. Keep it a layout and ignore the rule.
+      if (!meta.isLayout) {
+        const redirect = redirects[meta.route]!;
+        const defaults: RedirectRouteNode = {
+          ...base,
+          type: 'redirect',
+          destinationContextKey: redirect.destinationContextKey,
+          permanent: redirect.permanent,
+          generated: true,
+        };
+
+        // A real file at the redirect source keeps its own `loadRoute`. Only a
+        // source with no file behind it gets the generated redirect module.
+        const resolved =
+          node.type === 'route'
+            ? asSystemRouteType(
+                options.getSystemRoute({
+                  type: 'redirect',
+                  route: redirect.destination,
+                  defaults,
+                  redirectConfig: redirect,
+                }),
+                'redirect'
+              )
+            : defaults;
+
+        node = redirect.methods ? { ...resolved, methods: redirect.methods } : resolved;
+      }
     }
 
     if (meta.isRewrite) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
       }
-
-      const rewrite = rewrites[meta.route]!;
-      const defaults: RewriteRouteNode = {
-        ...base,
-        type: 'rewrite',
-        destinationContextKey: rewrite.destinationContextKey,
-        generated: true,
-      };
-
-      // A real file at the rewrite source keeps its own `loadRoute`. Only a
-      // source with no file behind it gets the generated rewrite module.
-      const resolved =
-        node.type === 'route'
-          ? asSystemRouteType(
-              options.getSystemRoute({
-                type: 'rewrite',
-                route: rewrite.destination,
-                defaults,
-                rewriteConfig: rewrite,
-              }),
-              'rewrite'
-            )
-          : defaults;
-
-      node = rewrite.methods ? { ...resolved, methods: rewrite.methods } : resolved;
       processedRedirectsRewrites.add(meta.route);
+
+      // A `_layout` is a container, not a destination, so it cannot be a rewrite
+      // source. Keep it a layout and ignore the rule.
+      if (!meta.isLayout) {
+        const rewrite = rewrites[meta.route]!;
+        const defaults: RewriteRouteNode = {
+          ...base,
+          type: 'rewrite',
+          destinationContextKey: rewrite.destinationContextKey,
+          generated: true,
+        };
+
+        // A real file at the rewrite source keeps its own `loadRoute`. Only a
+        // source with no file behind it gets the generated rewrite module.
+        const resolved =
+          node.type === 'route'
+            ? asSystemRouteType(
+                options.getSystemRoute({
+                  type: 'rewrite',
+                  route: rewrite.destination,
+                  defaults,
+                  rewriteConfig: rewrite,
+                }),
+                'rewrite'
+              )
+            : defaults;
+
+        node = rewrite.methods ? { ...resolved, methods: rewrite.methods } : resolved;
+      }
     }
 
     /**
