@@ -5,10 +5,7 @@ const { getConfig } = require('expo/config');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const {
-  createFingerprintFileAsync,
-  warnFingerprintEmbedFailed,
-} = require('./createFingerprintFile');
+const { createFingerprintFileAsync } = require('./createFingerprintFile');
 const { resolveProjectRoot } = require('./resolveProjectRoot');
 
 const cwd = process.cwd();
@@ -32,7 +29,5 @@ const embedFingerprint = process.argv[5] === 'true';
   fs.writeFileSync(path.join(destinationDir, 'app.config'), JSON.stringify(exp));
 
   // Only the fingerprint is optional. A failure above this line must still fail the build.
-  await createFingerprintFileAsync(projectRoot, destinationDir, platform, embedFingerprint).catch(
-    warnFingerprintEmbedFailed
-  );
+  await createFingerprintFileAsync(projectRoot, destinationDir, platform, embedFingerprint);
 })();

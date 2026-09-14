@@ -2,12 +2,18 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const mockCreateProjectHashAsync = jest.fn();
+const mockCreateFingerprintAsync = jest.fn();
+
+/** Shape of what `createFingerprintAsync` returns, trimmed to two entries. */
+const SOURCES = [
+  { type: 'file', filePath: 'app.json', reasons: ['expoConfig'], hash: 'aaa' },
+  { type: 'dir', filePath: 'android', reasons: ['bareNativeDir'], hash: 'bbb' },
+];
 
 function loadModule({ fingerprintResolvable = true, fingerprintVersionResolvable = true } = {}) {
   jest.resetModules();
   jest.doMock('expo/fingerprint', () => ({
-    createProjectHashAsync: mockCreateProjectHashAsync,
+    createFingerprintAsync: mockCreateFingerprintAsync,
   }));
   // Registered in both directions: `doMock` outlives `resetModules`, so omitting it here would
   // leak the null resolver into every later case.
@@ -34,7 +40,7 @@ describe(`createFingerprintFileAsync`, () => {
   let destinationDir;
 
   beforeEach(() => {
-    mockCreateProjectHashAsync.mockReset();
+    mockCreateFingerprintAsync.mockReset();
     destinationDir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-constants-test-'));
     delete process.env.EXPO_SKIP_FINGERPRINT_EMBED;
   });
@@ -47,12 +53,15 @@ describe(`createFingerprintFileAsync`, () => {
   it.each(['ios', 'android'])(
     `writes app.fingerprint with the %s project hash`,
     async (platform) => {
-      mockCreateProjectHashAsync.mockResolvedValue('fakehash123');
+      mockCreateFingerprintAsync.mockResolvedValue({
+        hash: 'fakehash123',
+        sources: SOURCES,
+      });
       const { createFingerprintFileAsync, FINGERPRINT_FILE_NAME } = loadModule();
 
       const result = await createFingerprintFileAsync(projectRoot, destinationDir, platform, true);
 
-      expect(mockCreateProjectHashAsync).toHaveBeenCalledWith(projectRoot, {
+      expect(mockCreateFingerprintAsync).toHaveBeenCalledWith(projectRoot, {
         platforms: [platform],
         silent: true,
       });
@@ -60,6 +69,7 @@ describe(`createFingerprintFileAsync`, () => {
       expect(result).toBe(filePath);
       expect(JSON.parse(fs.readFileSync(filePath, 'utf8'))).toEqual({
         hash: 'fakehash123',
+        sources: SOURCES,
         fingerprintVersion: expect.stringMatching(/^\d+\.\d+\.\d+/),
       });
     }
@@ -95,12 +105,15 @@ describe(`createFingerprintFileAsync`, () => {
     const result = await createFingerprintFileAsync(projectRoot, destinationDir, platform, enabled);
 
     expect(result).toBeNull();
-    expect(mockCreateProjectHashAsync).not.toHaveBeenCalled();
+    expect(mockCreateFingerprintAsync).not.toHaveBeenCalled();
     expect(fs.existsSync(filePath)).toBe(false);
   });
 
   it(`writes a null version when @expo/fingerprint's package.json cannot be resolved`, async () => {
-    mockCreateProjectHashAsync.mockResolvedValue('fakehash123');
+    mockCreateFingerprintAsync.mockResolvedValue({
+      hash: 'fakehash123',
+      sources: SOURCES,
+    });
     const { createFingerprintFileAsync, FINGERPRINT_FILE_NAME } = loadModule({
       fingerprintVersionResolvable: false,
     });
@@ -110,27 +123,38 @@ describe(`createFingerprintFileAsync`, () => {
     const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
     expect(JSON.parse(fs.readFileSync(filePath, 'utf8'))).toEqual({
       hash: 'fakehash123',
+      sources: SOURCES,
       fingerprintVersion: null,
     });
   });
 
   it(`still embeds when EXPO_SKIP_FINGERPRINT_EMBED=0 — "0" must not enable the skip`, async () => {
     process.env.EXPO_SKIP_FINGERPRINT_EMBED = '0';
-    mockCreateProjectHashAsync.mockResolvedValue('somehash');
+    mockCreateFingerprintAsync.mockResolvedValue({
+      hash: 'somehash',
+      sources: SOURCES,
+    });
     const { createFingerprintFileAsync } = loadModule();
 
     const result = await createFingerprintFileAsync(projectRoot, destinationDir, 'ios', true);
 
     expect(result).not.toBeNull();
-    expect(mockCreateProjectHashAsync).toHaveBeenCalled();
+    expect(mockCreateFingerprintAsync).toHaveBeenCalled();
   });
 
-  it(`rejects when fingerprint computation fails`, async () => {
-    mockCreateProjectHashAsync.mockRejectedValue(new Error('boom'));
-    const { createFingerprintFileAsync } = loadModule();
+  // The fingerprint is optional metadata, so the function owns that policy: every caller would
+  // otherwise have to remember to catch, and one that forgot would fail the build over it.
+  it(`warns instead of rejecting when fingerprint computation fails`, async () => {
+    mockCreateFingerprintAsync.mockRejectedValue(new Error('boom'));
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const { createFingerprintFileAsync, FINGERPRINT_FILE_NAME } = loadModule();
 
     await expect(
       createFingerprintFileAsync(projectRoot, destinationDir, 'ios', true)
-    ).rejects.toThrow('boom');
+    ).resolves.toBeNull();
+
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('boom'));
+    expect(fs.existsSync(path.join(destinationDir, FINGERPRINT_FILE_NAME))).toBe(false);
+    warn.mockRestore();
   });
 });

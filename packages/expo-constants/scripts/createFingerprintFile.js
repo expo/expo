@@ -15,13 +15,25 @@ const FINGERPRINT_FILE_NAME = 'app.fingerprint';
  * Deletes any previous one first: the iOS destination directory persists across builds. The
  * options must match the reader's (`src/project/fingerprint.ts` in expo/expo-agent-cli).
  *
+ * Never rejects: the fingerprint is optional metadata, so a failure is warned and the build goes on.
+ *
  * @param {string} projectRoot
  * @param {string} destinationDir
  * @param {string | undefined} platform
  * @param {boolean} enabled false for non-debug builds; the stale file is still removed
- * @returns {Promise<string | null>} path of the written file, or null when skipped
+ * @returns {Promise<string | null>} path of the written file, or null when skipped or failed
  */
 async function createFingerprintFileAsync(projectRoot, destinationDir, platform, enabled) {
+  try {
+    return await writeFingerprintFileAsync(projectRoot, destinationDir, platform, enabled);
+  } catch (error) {
+    warnFingerprintEmbedFailed(/** @type {Error} */ (error));
+    return null;
+  }
+}
+
+/** @type {typeof createFingerprintFileAsync} */
+async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, enabled) {
   const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
   await fs.promises.rm(filePath, { force: true });
 
@@ -42,15 +54,21 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
   }
   const Fingerprint = require(fingerprintPath);
 
-  const hash = await Fingerprint.createProjectHashAsync(projectRoot, {
+  // The whole fingerprint, not just the hash: with the sources embedded, two fingerprints can be
+  // diffed to name the input that changed instead of only reporting that they differ.
+  const fingerprint = await Fingerprint.createFingerprintAsync(projectRoot, {
     platforms: [platform],
     silent: true,
   });
-  if (!hash) {
+  if (!fingerprint?.hash) {
     return null;
   }
 
-  const contents = { hash, fingerprintVersion: readFingerprintVersion(fingerprintPath) };
+  const contents = {
+    hash: fingerprint.hash,
+    sources: fingerprint.sources,
+    fingerprintVersion: readFingerprintVersion(fingerprintPath),
+  };
   await fs.promises.writeFile(filePath, JSON.stringify(contents));
   return filePath;
 }
@@ -85,15 +103,16 @@ function warnFingerprintEmbedFailed(error) {
 
 module.exports = {
   createFingerprintFileAsync,
-  warnFingerprintEmbedFailed,
   FINGERPRINT_FILE_NAME,
 };
 
 // Direct invocation from the Android build. The gradle task is registered for debuggable variants
 // only, so `enabled` is always true here.
 if (require.main === module) {
-  const projectRoot = resolveProjectRoot(process.argv[2] ?? process.cwd());
-  createFingerprintFileAsync(projectRoot, process.argv[3], process.argv[4], true).catch(
-    warnFingerprintEmbedFailed
-  );
+  // Awaited in an IIFE so the write finishes before the script's process exits, rather than
+  // relying on Node keeping it alive for a floating promise.
+  (async () => {
+    const projectRoot = resolveProjectRoot(process.argv[2] ?? process.cwd());
+    await createFingerprintFileAsync(projectRoot, process.argv[3], process.argv[4], true);
+  })();
 }
