@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Derive the browser history on web from the navigation reducer instead of a dispatch-time buffer, so the address bar stays in sync across transitions, blocked back navigation and hash links. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ubax](https://github.com/Ubax))
+- Derive the browser history on web from the navigation reducer instead of a dispatch-time buffer, so the address bar stays in sync across transitions, blocked back navigation and hash links. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
 - Mock `react-native-worklets` in `expo-router/testing-library` so `react-native-gesture-handler` and `react-native-reanimated` load in Jest. ([#50013](https://github.com/expo/expo/pull/50013) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
