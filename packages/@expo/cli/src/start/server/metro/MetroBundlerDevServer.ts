@@ -101,6 +101,7 @@ import {
   getRouterDirectoryModuleIdWithManifest,
   hasWarnedAboutApiRoutes,
   isApiRouteConvention,
+  isApiRoutesEnabled,
   isExpoRouterApp,
   warnInvalidWebOutput,
 } from './router';
@@ -459,6 +460,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'EXPO_ROUTER_SERVER_MANIFEST',
         'Unexpected error: server manifest could not be fetched.'
       );
+    }
+
+    if (!isApiRoutesEnabled(exp)) {
+      manifest.apiRoutes = [];
     }
 
     return manifest;
@@ -1261,7 +1266,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const useServerRendering =
       isExpoRouterApp(config.pkg) && ['static', 'server'].includes(exp.web?.output ?? '');
-    const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
+    const hasApiRoutes = isReactServerComponentsEnabled || isApiRoutesEnabled(exp);
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);

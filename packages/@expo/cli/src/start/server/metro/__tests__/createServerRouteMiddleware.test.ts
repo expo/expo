@@ -120,4 +120,44 @@ describe(createRouteHandlerMiddleware, () => {
       expect(manifest?.htmlRoutes[0]?.loader).toBe(expectedLoader);
     }
   );
+
+  it('keeps the RSC endpoint when API routes are disabled', async () => {
+    jest.mocked(fetchManifest).mockResolvedValue({
+      htmlRoutes: [],
+      apiRoutes: [{ file: 'hello+api.ts', page: '/hello', namedRegex: /^\/hello$/, routeKeys: {} }],
+      notFoundRoutes: [],
+      redirects: [],
+      rewrites: [],
+    });
+    const rscHandler = { GET: async () => new Response(), POST: async () => new Response() };
+    createRouteHandlerMiddleware('/', {
+      appDir: '/app',
+      routerRoot: 'app',
+      config: {
+        exp: {
+          name: 'test',
+          slug: 'test',
+          web: { output: 'server' },
+          extra: { router: { apiRoutes: false } },
+          experiments: { reactServerFunctions: true },
+        },
+        pkg: {},
+        rootConfig: { expo: { name: 'test', slug: 'test' } },
+        staticConfigPath: null,
+        dynamicConfigPath: null,
+        dynamicConfigObjectType: null,
+        hasUnusedStaticConfig: false,
+      },
+      headers: {},
+      getStaticPageAsync: async () => ({ content: '' }),
+      bundleApiRoute: async () => null,
+      executeLoaderAsync: async () => undefined,
+      rsc: { path: '/_flight', handler: rscHandler },
+    });
+
+    const hooks = jest.mocked(createRequestHandler).mock.calls[0]![1]!;
+    const manifest = await hooks.getRoutesManifest!();
+    expect(manifest?.apiRoutes.map((route) => route.page)).toEqual(['/_flight/[...rsc]']);
+    expect(await hooks.getApiRoute!(manifest!.apiRoutes[0]!)).toBe(rscHandler);
+  });
 });

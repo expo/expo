@@ -2,6 +2,12 @@
 import path from 'node:path';
 
 import { executeExpoAsync } from '../../utils/expo';
+import {
+  prepareServers,
+  setupServer,
+  RUNTIME_EXPO_SERVE,
+  RUNTIME_EXPO_START,
+} from '../../utils/runtime';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
@@ -32,6 +38,34 @@ describe('static export with middleware', () => {
 
       const files = findProjectFiles(outputDir);
       expect(files).not.toContain('server/_expo/functions/+middleware.js');
+    });
+  });
+});
+
+describe('static output with API routes and middleware', () => {
+  describe.each(
+    prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
+      fixtureName: 'server-middleware-async',
+      uniqueOutputKey: 'static-api-routes',
+      export: {
+        env: {
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_API_ROUTES: 'true',
+        },
+      },
+    })
+  )('$name requests', (config) => {
+    const server = setupServer(config);
+
+    it('runs middleware before prerendered pages', async () => {
+      const response = await server.fetchAsync('/?e2e=custom-response');
+      expect(response.status).toBe(200);
+      expect(await response.text()).toContain('Custom response from middleware');
+    });
+
+    it('runs middleware before API routes', async () => {
+      const response = await server.fetchAsync('/api?e2e=error');
+      expect(response.status).toBe(500);
     });
   });
 });

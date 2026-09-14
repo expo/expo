@@ -7,6 +7,7 @@ import {
   setupServer,
   RUNTIME_EXPRESS_SERVER,
   RUNTIME_EXPO_START,
+  RUNTIME_EXPO_SERVE,
   RUNTIME_WORKERD,
 } from '../../utils/runtime';
 import { findProjectFiles } from '../utils';
@@ -425,5 +426,61 @@ describe('server-output', () => {
         }).toMatchSnapshot();
       });
     });
+  });
+});
+
+describe.each([
+  { output: 'static', apiRoutes: true },
+  { output: 'static', apiRoutes: false },
+  { output: 'server', apiRoutes: false },
+])('apiRoutes setting (output: $output, apiRoutes: $apiRoutes)', ({ output, apiRoutes }) => {
+  describe.each(
+    prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
+      fixtureName: 'server',
+      uniqueOutputKey: `api-routes-${output}-${apiRoutes}`,
+      export: {
+        env: {
+          EXPO_USE_STATIC: output,
+          E2E_ROUTER_API_ROUTES: String(apiRoutes),
+        },
+      },
+    })
+  )('$name requests', (config) => {
+    const server = setupServer(config);
+
+    it('serves API routes only when enabled', async () => {
+      const response = await server.fetchAsync('/methods');
+      expect(response.status).toBe(apiRoutes ? 200 : 404);
+      if (apiRoutes) {
+        expect(await response.json()).toEqual({ method: 'get' });
+      }
+    });
+
+    it('serves HTML independently of API routes', async () => {
+      const response = await server.fetchAsync('/blog-ssg/abc');
+      expect(response.status).toBe(200);
+      expect(await response.text()).toMatch(/Post: <!-- -->abc/);
+    });
+
+    if (config.name !== RUNTIME_EXPO_START) {
+      it('exports the selected rendering mode and API routes', async () => {
+        const files = findProjectFiles(server.outputDir);
+        const hasServerOutput = output === 'server' || apiRoutes;
+        if (output === 'static') {
+          expect(files).toContain(`${hasServerOutput ? 'server/' : ''}blog-ssg/abc.html`);
+          expect(files).not.toContain('server/_expo/server/render.js');
+        } else {
+          expect(files).toContain('server/_expo/server/render.js');
+          expect(files).not.toContain('server/blog-ssg/abc.html');
+        }
+        expect(files.includes('server/_expo/functions/methods+api.js')).toBe(apiRoutes);
+        if (hasServerOutput) {
+          const manifest = await JsonFile.readAsync<{ apiRoutes: { page: string }[] }>(
+            path.join(server.outputDir, 'server/_expo/routes.json')
+          );
+          expect(manifest.apiRoutes.some((route) => route.page === '/methods')).toBe(apiRoutes);
+        }
+      });
+    }
   });
 });

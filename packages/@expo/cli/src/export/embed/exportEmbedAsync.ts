@@ -21,6 +21,7 @@ import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import { isApiRoutesEnabled } from '../../start/server/metro/router';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
@@ -220,8 +221,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     // We optimistically build the server-side API routes code here, to ensure they're
     // valid or to enable parallel deployment in the future (TBD). This is disabled using
     // the explicit `--skip-server` flag.
-    const apiRoutesEnabled =
-      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
+    const apiRoutesEnabled = devServer.isReactServerComponentsEnabled || isApiRoutesEnabled(exp);
     if (!options.skipServer && apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,

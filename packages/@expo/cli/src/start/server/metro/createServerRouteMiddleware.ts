@@ -17,6 +17,7 @@ import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
+  isApiRoutesEnabled,
   warnInvalidMiddlewareOutput,
   warnInvalidMiddlewareMatcherSettings,
 } from './router';
@@ -62,6 +63,10 @@ export function createRouteHandlerMiddleware(
       async getRoutesManifest() {
         const manifest = await fetchManifest(projectRoot, options);
         event('manifest_fetched', {});
+
+        if (manifest && !isApiRoutesEnabled(options.config.exp)) {
+          manifest.apiRoutes = [];
+        }
 
         // TODO(@hassankhan): Invert the conditionals for an early return if no manifest if found
 
@@ -187,7 +192,7 @@ export function createRouteHandlerMiddleware(
         }
 
         const { exp } = options.config;
-        if (exp.web?.output !== 'server') {
+        if (!isApiRoutesEnabled(exp)) {
           warnInvalidWebOutput();
         }
 
@@ -213,12 +218,12 @@ export function createRouteHandlerMiddleware(
       async getMiddleware(route) {
         const { exp } = options.config;
 
-        if (exp.web?.output !== 'server') {
+        if (exp.web?.output !== 'server' && exp.extra?.router?.apiRoutes !== true) {
           warnInvalidMiddlewareOutput();
           return {
             default: () => {
               console.warn(
-                'Server middleware is only supported when web.output is set to "server" in your app config'
+                'Server middleware requires server output or apiRoutes: true in the expo-router config plugin'
               );
             },
           };
