@@ -5,14 +5,15 @@ import { RoutingQueueDrainer, shouldUseTransition } from '../RoutingQueueDrainer
 import type { RoutingIntent } from '../routingQueue';
 import { RoutingQueueProvider, useEnqueueRoutingIntent } from '../routingQueueContext';
 
-function actionIntent(type: string): RoutingIntent {
-  return { type: 'ACTION', payload: { action: { type } } };
+function actionIntent(type: string, inTransition?: boolean): RoutingIntent {
+  return { type: 'ACTION', payload: { action: { type } }, inTransition };
 }
 
 function navigate(event: string, inTransition?: boolean): RoutingIntent {
   return {
     type: 'NAVIGATE_TO_HREF',
-    payload: { href: '/test', options: { event, inTransition } },
+    payload: { href: '/test', options: { event } },
+    inTransition,
   };
 }
 
@@ -148,33 +149,45 @@ it('continues after processIntent throws synchronously', () => {
 });
 
 describe(shouldUseTransition, () => {
-  it('uses transitions by default', () => {
-    expect(shouldUseTransition([actionIntent('GO_BACK')], 'always')).toBe(true);
+  describe('always', () => {
+    it('uses a transition by default', () => {
+      expect(shouldUseTransition([actionIntent('GO_BACK')], 'always')).toBe(true);
+    });
+
+    it('does not use a transition when an operation opts out', () => {
+      expect(
+        shouldUseTransition([navigate('PUSH'), actionIntent('GO_BACK', false)], 'always')
+      ).toBe(false);
+    });
   });
 
-  it('disables transitions globally', () => {
-    expect(shouldUseTransition([navigate('PRELOAD', true)], 'never')).toBe(false);
+  describe('preload-only', () => {
+    it('uses a transition when the entire batch consists of preloads', () => {
+      expect(shouldUseTransition([navigate('PRELOAD'), navigate('PRELOAD')], 'preload-only')).toBe(
+        true
+      );
+    });
+
+    it('does not use a transition when a non-preload operation has not opted in', () => {
+      expect(shouldUseTransition([navigate('PRELOAD'), navigate('PUSH')], 'preload-only')).toBe(
+        false
+      );
+    });
+
+    it('allows href and action operations to opt in', () => {
+      expect(
+        shouldUseTransition([navigate('PUSH', true), actionIntent('GO_BACK', true)], 'preload-only')
+      ).toBe(true);
+    });
   });
 
-  it('uses transitions only when the entire batch consists of preloads', () => {
-    expect(shouldUseTransition([navigate('PRELOAD'), navigate('PRELOAD')], 'preload-only')).toBe(
-      true
-    );
-    expect(shouldUseTransition([navigate('PRELOAD'), navigate('PUSH')], 'preload-only')).toBe(
-      false
-    );
-  });
-
-  it('allows operations to opt into transitions in preload-only mode', () => {
-    expect(shouldUseTransition([navigate('PRELOAD'), navigate('PUSH', true)], 'preload-only')).toBe(
-      true
-    );
-    expect(shouldUseTransition([navigate('PUSH', true), navigate('PUSH')], 'preload-only')).toBe(
-      false
-    );
-  });
-
-  it('allows operations to opt out of transitions', () => {
-    expect(shouldUseTransition([navigate('PUSH'), navigate('PUSH', false)], 'always')).toBe(false);
+  describe('never', () => {
+    it.each([
+      ['preload', navigate('PRELOAD')],
+      ['opted-in href', navigate('PUSH', true)],
+      ['opted-in action', actionIntent('GO_BACK', true)],
+    ])('does not use a transition for %s', (_, intent) => {
+      expect(shouldUseTransition([intent], 'never')).toBe(false);
+    });
   });
 });

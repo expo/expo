@@ -14,13 +14,7 @@ export function shouldUseTransition(
   intents: RoutingIntent[],
   mode: NavigationTransitionMode
 ): boolean {
-  if (
-    mode === 'never' ||
-    intents.some(
-      (intent) =>
-        intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.inTransition === false
-    )
-  ) {
+  if (mode === 'never' || intents.some((intent) => intent.inTransition === false)) {
     return false;
   }
 
@@ -28,8 +22,8 @@ export function shouldUseTransition(
     mode === 'always' ||
     intents.every(
       (intent) =>
-        intent.type === 'NAVIGATE_TO_HREF' &&
-        (intent.payload.options.event === 'PRELOAD' || intent.payload.options.inTransition === true)
+        intent.inTransition === true ||
+        (intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.event === 'PRELOAD')
     )
   );
 }

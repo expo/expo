@@ -10,8 +10,8 @@ export type LinkToOptions = {
   event?: string;
 
   /**
-   * Whether this navigation operation should use a React transition. Because queued operations
-   * are drained together, every operation in the batch must support transitions for one to be used.
+   * Opts this operation into or out of React transitions. Every operation in a queued batch must
+   * allow transitions for the batch to use one.
    */
   inTransition?: boolean;
 
@@ -37,5 +37,7 @@ export type LinkToOptions = {
 };
 
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
+
+export type TransitionOptions = Pick<LinkToOptions, 'inTransition'>;
 
 export type NavigationTransitionMode = 'always' | 'never' | 'preload-only';

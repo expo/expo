@@ -1,5 +1,5 @@
-import { act, render } from '@testing-library/react-native';
-import { use, type ContextType } from 'react';
+import { act, render, renderHook } from '@testing-library/react-native';
+import { use, type ContextType, type PropsWithChildren } from 'react';
 
 import { router } from '../router';
 import type { RoutingIntent } from '../routingQueue';
@@ -11,6 +11,7 @@ import {
   RoutingQueueProvider,
   useEnqueueRoutingIntent,
 } from '../routingQueueContext';
+import { useRouterActions } from '../useRouterActions';
 
 function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
@@ -55,25 +56,19 @@ it('installs the module-level router after the bridge commits', () => {
   ]);
 });
 
-it('updates the global transition mode from the module-level router', () => {
-  let mode: NonNullable<ContextType<typeof RoutingQueueApiContext>>['transitionMode'] | undefined;
-
-  function Consumer() {
-    mode = use(RoutingQueueApiContext)!.transitionMode;
-    return null;
-  }
-
-  render(
-    <RoutingQueueProvider>
-      <Consumer />
-      <RouterBridge />
-    </RoutingQueueProvider>
+it('updates the global transition mode from useRouterActions', () => {
+  const wrapper = ({ children }: PropsWithChildren) => (
+    <RoutingQueueProvider>{children}</RoutingQueueProvider>
   );
-  expect(mode).toBe('preload-only');
+  const { result } = renderHook(
+    () => ({ api: use(RoutingQueueApiContext)!, router: useRouterActions() }),
+    { wrapper }
+  );
+  expect(result.current.api.transitionMode).toBe('preload-only');
 
-  act(() => router.setTransitionMode('never'));
+  act(() => result.current.router.setTransitionMode('never'));
 
-  expect(mode).toBe('never');
+  expect(result.current.api.transitionMode).toBe('never');
 });
 
 it('restores the throwing router after the provider unmounts', () => {

@@ -3,9 +3,13 @@
 import { useMemo } from 'react';
 
 import { createImperativeRouter } from './router';
-import { useEnqueueRoutingIntent } from './routingQueueContext';
+import { useEnqueueRoutingIntent, useSetRoutingTransitionMode } from './routingQueueContext';
 
 export function useRouterActions(): ReturnType<typeof createImperativeRouter> {
   const enqueue = useEnqueueRoutingIntent();
-  return useMemo(() => createImperativeRouter(enqueue), [enqueue]);
+  const setTransitionMode = useSetRoutingTransitionMode();
+  return useMemo(
+    () => createImperativeRouter(enqueue, setTransitionMode),
+    [enqueue, setTransitionMode]
+  );
 }

@@ -69,6 +69,14 @@ export function useEnqueueRoutingIntent() {
   return api.enqueue;
 }
 
+export function useSetRoutingTransitionMode() {
+  const api = use(RoutingQueueApiContext);
+  if (api === undefined) {
+    return throwMissingRoutingQueue;
+  }
+  return api.setTransitionMode;
+}
+
 export function ImperativeRoutingQueueBridge({
   enqueue,
   setTransitionMode,

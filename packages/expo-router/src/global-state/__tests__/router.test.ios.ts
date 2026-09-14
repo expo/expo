@@ -273,10 +273,51 @@ describe('router action functions', () => {
 
     expect(mockAdd).toHaveBeenCalledWith({
       type: 'NAVIGATE_TO_HREF',
+      inTransition: true,
       payload: {
         href: '/path',
-        options: { event: 'PUSH', inTransition: true },
+        options: { event: 'PUSH' },
       },
+    });
+  });
+
+  it('back forwards the inTransition option', () => {
+    router.back({ inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+      inTransition: true,
+    });
+  });
+
+  it('dismiss forwards the inTransition option', () => {
+    router.dismiss(2, { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP', payload: { count: 2 } } },
+      inTransition: true,
+    });
+  });
+
+  it('dismissAll forwards the inTransition option', () => {
+    router.dismissAll({ inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP_TO_TOP' } },
+      inTransition: true,
+    });
+  });
+
+  it('preserves inTransition when a relative href becomes GO_BACK', () => {
+    push('..', { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+      inTransition: true,
     });
   });
 
