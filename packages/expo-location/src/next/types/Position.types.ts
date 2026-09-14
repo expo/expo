@@ -34,6 +34,16 @@ export type GetPositionOptions = {
 
 export type PositionUpdate = { data: Position; error: null } | { data: null; error: string };
 
+export type PositionWatchStatus = {
+  /** Whether the provider is feeding positions right now. */
+  isSubscribed: boolean;
+  /** Whether the handle can still be brought back to sending. False only once released. */
+  isHandleAlive: boolean;
+  isStarted: boolean;
+  isPaused: boolean;
+  isInForeground: boolean;
+};
+
 export type WatchPositionParams = {
   profile?: LocationProfile;
   onPosition: (position: Position) => void;

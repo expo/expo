@@ -19,11 +19,6 @@ export class LocationUpdatesHandle {
     return this;
   }
 
-  withDistanceInterval(meters: number): this {
-    this.nativeHandle.withDistanceInterval(meters);
-    return this;
-  }
-
   start(): Promise<void> {
     return this.nativeHandle.start();
   }

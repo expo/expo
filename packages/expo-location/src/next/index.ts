@@ -29,6 +29,7 @@ export {
   type Coordinates,
   type Position,
   type PositionUpdate,
+  type PositionWatchStatus,
   type WatchPositionParams,
   type GetPositionOptions,
   type LocationPermissionResponse,

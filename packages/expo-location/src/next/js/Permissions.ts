@@ -20,12 +20,8 @@ export async function getBackgroundPermissionsAsync(): Promise<LocationPermissio
   return NativeLocationModuleNext.getBackgroundPermissions();
 }
 
-export async function requestBackgroundPermissionsAsync(
-  options: RequestPermissionsOptions = {
-    accuracy: RequestPermissionsAccuracyOption.FULL,
-  }
-): Promise<LocationPermissionResponse> {
-  return NativeLocationModuleNext.requestBackgroundPermissions(options);
+export async function requestBackgroundPermissionsAsync(): Promise<LocationPermissionResponse> {
+  return NativeLocationModuleNext.requestBackgroundPermissions();
 }
 
 export const useForegroundPermissions = createPermissionHook({
