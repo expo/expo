@@ -34,6 +34,14 @@
       "expo-source": "./src/universal/index.ts",
       "default": "./build/universal/index.js"
     },
+    "./uikit": {
+      "types": {
+        "expo-source": "./src/uikit/index.ts",
+        "default": "./build/uikit/index.d.ts"
+      },
+      "expo-source": "./src/uikit/index.ts",
+      "default": "./build/uikit/index.js"
+    },
     "./swift-ui": {
       "types": {
         "expo-source": "./src/swift-ui/index.tsx",

@@ -8,6 +8,20 @@ public final class ExpoUIModule: Module {
     Name("ExpoUI")
 
     View(RNHostView.self)
+    View(SynchronousCollectionListView.self) {
+      Prop("rendererId") { (view: SynchronousCollectionListView, value: String) in
+        view.rendererId = value
+      }
+      Prop("itemCount") { (view: SynchronousCollectionListView, value: Int) in
+        view.itemCount = value
+      }
+      Prop("revision") { (view: SynchronousCollectionListView, value: Int) in
+        view.revision = value
+      }
+      OnViewDidUpdateProps { (view: SynchronousCollectionListView) in
+        view.updateProps()
+      }
+    }
 
     OnDestroy {
       // Clear all registered content origins when the module is destroyed

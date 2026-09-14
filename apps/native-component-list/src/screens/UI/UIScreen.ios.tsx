@@ -219,6 +219,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Synchronous Collection List (experimental)',
+    route: 'ui/synchronous-collection-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SynchronousCollectionListScreen'));
+    },
+  },
+  {
     name: 'Section component',
     route: 'ui/section',
     options: {},
