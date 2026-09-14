@@ -8,7 +8,6 @@ import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
-import { addTemplateTarball } from './addTemplateTarball';
 import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
@@ -96,7 +95,6 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateWorkspaceProjects,
       updateAndroidProjects,
       updateIosProjects,
-      addTemplateTarball,
       cutOffChangelogs,
       refreshPnpmLockfile,
       commitStagedChanges,

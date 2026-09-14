@@ -136,6 +136,7 @@ docs/pages/versions/*/react-native/*.diff
 /apps/expo-go/src/dist
 
 # Prebuilds
+/packages/expo/template.tgz
 /packages/**/prebuilds/
 /packages/**/local-maven-repo/
 /packages/**/xcframeworks/

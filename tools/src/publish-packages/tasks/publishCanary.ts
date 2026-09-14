@@ -11,7 +11,6 @@ import { runTurboTasksAsync } from '../../Turbo';
 import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { addTemplateTarball } from './addTemplateTarball';
 import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackageAccess } from './checkPackageAccess';
@@ -166,7 +165,6 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateWorkspaceProjects,
       updateAndroidProjects,
       publishAndroidArtifacts,
-      addTemplateTarball,
       bundleIOSPrebuilds,
       publishPackages,
       cleanWorkingTree,

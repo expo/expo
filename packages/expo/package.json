@@ -206,6 +206,7 @@
     "format": "expo-module format",
     "test": "jest && jest --config scripts/spm/jest.config.js",
     "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
+    "prepack": "et create-expo-template-tarball",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
