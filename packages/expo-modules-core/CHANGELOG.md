@@ -16,6 +16,7 @@
 
 - [iOS] Added the `@Union` macro that turns an enum whose cases each carry one associated value into a typed union (`A | B` in TypeScript), usable as a `@JS` argument or return value. ([#50037](https://github.com/expo/expo/pull/50037) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added the `.concurrent` option to `@JS` (`@JS(.concurrent)`), which runs the body of an async function off the JavaScript thread. ([#50037](https://github.com/expo/expo/pull/50037) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Decode Fabric view props from their JavaScript values on the JavaScript thread (via a dedicated `ExpoViewJSIComponentDescriptor`), instead of lowering to `folly::dynamic` / `NSDictionary` and decoding on the main thread. Moves per-prop decode off the main thread for UIKit `ExpoView`s. ([#46872](https://github.com/expo/expo/pull/46872) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

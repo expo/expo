@@ -17,6 +17,12 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
   public var name: String
 
   /**
+   Whether the view is backed by SwiftUI. `false` for the base (UIKit) view definition;
+   `SwiftUIViewDefinition` overrides it.
+   */
+  public var isSwiftUI: Bool { false }
+
+  /**
    Names of the events that the view can send to JavaScript.
    */
   public let eventNames: [String]
