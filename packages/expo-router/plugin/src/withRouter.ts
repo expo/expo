@@ -1,5 +1,5 @@
 import { validate } from '@expo/schema-utils';
-import { ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
+import { type ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
 import { styleText } from 'node:util';
 
 const schema = require('../options.json');
@@ -75,7 +75,7 @@ export type Props = {
   platformRoutes?: boolean;
   /** Enable or disable automatically generated routes. Defaults to `true`. */
   sitemap?: boolean;
-  /** Should Async Routes be enabled. `production` is currently web-only and will be disabled on native. */
+  /** Enable experimental async routes. In SDK 58 and later, web defaults to true and native defaults to false. Production async routes are web-only. */
   asyncRoutes?:
     | AsyncRouteOption
     | {
@@ -149,17 +149,39 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   withExpoHeadIos(config);
   withGammaScreens(config);
 
+  const router = normalizeAsyncRoutesProp({
+    ...config.extra?.router,
+    ...props,
+  });
+
   return {
     ...config,
     extra: {
       ...config.extra,
-      router: {
-        ...config.extra?.router,
-        ...props,
-      },
+      router,
     },
   };
 };
+
+function normalizeAsyncRoutesProp(props: Props) {
+  const asyncRoutes = props.asyncRoutes;
+
+  if (asyncRoutes == null) {
+    return {
+      ...props,
+      asyncRoutes: { web: true },
+    };
+  }
+
+  if (typeof asyncRoutes === 'object' && asyncRoutes.web == null && asyncRoutes.default == null) {
+    return {
+      ...props,
+      asyncRoutes: { ...asyncRoutes, web: true },
+    };
+  }
+
+  return props;
+}
 
 const warnMap: Record<string, boolean> = {};
 function warnOnce(message: string) {
