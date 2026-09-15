@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import { usesCompose, usesExpoUI, usesSwiftUI } from './features';
 import type { Platform } from './prompts';
+import { getSdkCompat } from './sdkCompat';
 import {
   buildAppSnippets,
   buildModuleSnippets,
@@ -165,15 +166,30 @@ export function normalizeNpmPackResult(result: unknown): unknown[] | null {
 }
 
 /**
- * Gets expo SDK version major from the local package.json.
+ * Gets the installed Expo SDK from the project or a parent workspace.
+ * Only searches node_modules in that tree, ignoring global dependencies from NODE_PATH.
  */
-async function getLocalSdkMajorVersion(): Promise<string | null> {
-  const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
-  if (!path) {
-    return null;
+export async function getLocalSdkMajorVersion(projectRoot: string): Promise<number | null> {
+  let directory = path.resolve(projectRoot);
+  while (true) {
+    const packagePath = path.join(directory, 'node_modules', 'expo', 'package.json');
+    const contents = await fs.promises
+      .readFile(packagePath, 'utf8')
+      .catch((error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return null;
+        throw error;
+      });
+    if (contents !== null) {
+      const { version } = JSON.parse(contents);
+      const major = typeof version === 'string' ? Number(version.split('.')[0]) : NaN;
+      return Number.isInteger(major) && major > 0 ? major : null;
+    }
+    const parent = path.dirname(directory);
+    if (parent === directory) {
+      throw new Error(`Could not find expo/package.json in node_modules for ${projectRoot}`);
+    }
+    directory = parent;
   }
-  const { version } = require(path) ?? {};
-  return version?.split('.')[0] ?? null;
 }
 
 // The first SDK the CLI is versioned in lockstep with (CLI major == SDK major). Earlier releases
@@ -192,26 +208,28 @@ export function getTemplateDistTag(version: string | undefined): string {
   return Number.isInteger(major) && major >= FIRST_SDK_ALIGNED_MAJOR ? `sdk-${major}` : 'latest';
 }
 
+// SDK whose `expo-module-template@sdk-55` tag predates the current template format. Local modules
+// in that SDK use this CLI's own template, which renders SDK 55-compatible output via `getSdkCompat`.
+const LEGACY_TEMPLATE_SDK = 55;
+
 /**
  * Selects correct version of the template based on the SDK version and EXPO_BETA flag.
  *
- * - For local modules, the SDK is derived from the host project's `expo` dependency.
+ * - For local modules, `sdkVersion` is the host project's `expo` major. SDK 55 uses the CLI's own
+ *   template with SDK 55 compatibility, since the `sdk-55` template tag uses the legacy format.
  * - For standalone modules, the SDK is derived from the CLI's own version, so that
  *   `create-expo-module@sdk-XX` scaffolds an SDK XX module rather than always using `latest`.
  *
  * In both cases we fall back to `latest` when the SDK can't be determined.
  */
-async function getTemplateVersion(isLocal: boolean) {
+function getTemplateVersion(isLocal: boolean, sdkVersion: number | null) {
   if (env.EXPO_BETA) {
     return 'next';
   }
-  if (!isLocal) {
+  if (!isLocal || sdkVersion === LEGACY_TEMPLATE_SDK) {
     return getTemplateDistTag(require('../package.json').version);
   }
-  try {
-    const sdkVersionMajor = await getLocalSdkMajorVersion();
-    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
-  } catch {
+  if (sdkVersion == null) {
     console.log();
     console.warn(
       chalk.yellow(
@@ -220,42 +238,61 @@ async function getTemplateVersion(isLocal: boolean) {
     );
     return 'latest';
   }
+  return `sdk-${sdkVersion}`;
 }
 
 /**
  * Downloads the template from NPM registry.
  */
-export async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
+export async function downloadPackageAsync(
+  targetDir: string,
+  isLocal = false,
+  sdkVersion: number | null = null
+): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const templateVersion = await getTemplateVersion(isLocal);
+    const templateVersion = getTemplateVersion(isLocal, sdkVersion);
     const packageName = 'expo-module-template';
-    const tmpDir = path.join(os.tmpdir(), '.create-expo-module');
+    const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), '.create-expo-module-'));
 
-    await fs.promises.mkdir(tmpDir, { recursive: true });
-
-    let filename: string;
     try {
-      filename = await npmPackAsync(`${packageName}@${templateVersion}`, tmpDir);
-    } catch {
-      console.log();
-      console.warn(
-        chalk.yellow(
-          "Couldn't download the versioned template from npm, falling back to the latest version."
-        )
-      );
-      filename = await npmPackAsync(`${packageName}@latest`, tmpDir);
+      let downloadedVersion = templateVersion;
+      let filename: string;
+      try {
+        filename = await npmPackAsync(`${packageName}@${downloadedVersion}`, tmpDir);
+      } catch {
+        console.log();
+        console.warn(
+          chalk.yellow(
+            "Couldn't download the versioned template from npm, falling back to the latest version."
+          )
+        );
+        downloadedVersion = 'latest';
+        filename = await npmPackAsync(`${packageName}@${downloadedVersion}`, tmpDir);
+      }
+
+      const filePath = path.join(tmpDir, filename);
+      if (isLocal && sdkVersion === LEGACY_TEMPLATE_SDK) {
+        // Check compatibility before writing any downloaded files into the module directory.
+        await extractLocalTarball({ filePath, dir: tmpDir });
+        const compat = getSdkCompat(path.join(tmpDir, 'package', 'snippets'), sdkVersion);
+        if (Object.keys(compat).length === 0) {
+          throw new Error(
+            `The downloaded ${packageName}@${downloadedVersion} template does not provide compatibility data for Expo SDK ${sdkVersion}. ` +
+              'Cannot safely create a local module with this template.\n\n' +
+              'Use the SDK 55 version of create-expo-module instead:\n\n' +
+              '  npx create-expo-module@sdk-55 --local\n'
+          );
+        }
+      }
+
+      await extractLocalTarball({ filePath, dir: targetDir });
+
+      step.succeed('Downloaded module template from npm registry.');
+
+      return path.join(targetDir, 'package');
+    } finally {
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
     }
-
-    await extractLocalTarball({
-      filePath: path.join(tmpDir, filename),
-      dir: targetDir,
-    });
-
-    await fs.promises.rm(tmpDir, { recursive: true, force: true });
-
-    step.succeed('Downloaded module template from npm registry.');
-
-    return path.join(targetDir, 'package');
   });
 }
 
@@ -268,17 +305,21 @@ export async function buildAugmentedData(
   data: SubstitutionData | LocalSubstitutionData
 ) {
   const features = data.project.features;
+  const templateData = {
+    ...data,
+    compat: getSdkCompat(snippetsDir, data.type === 'local' ? (data.sdkVersion ?? null) : null),
+  };
 
   // Build view-level snippets first (used inside the View() block)
   const [viewSnippetsSwift, viewSnippetsKt] = await Promise.all([
-    buildViewSnippets(snippetsDir, features, data, 'swift'),
-    buildViewSnippets(snippetsDir, features, data, 'kt'),
+    buildViewSnippets(snippetsDir, features, templateData, 'swift'),
+    buildViewSnippets(snippetsDir, features, templateData, 'kt'),
   ]);
 
   // Build module-level snippets, passing the view snippets for injection
   const [moduleSnippetsSwift, moduleSnippetsKt] = await Promise.all([
-    buildModuleSnippets(snippetsDir, features, data, 'swift', viewSnippetsSwift),
-    buildModuleSnippets(snippetsDir, features, data, 'kt', viewSnippetsKt),
+    buildModuleSnippets(snippetsDir, features, templateData, 'swift', viewSnippetsSwift),
+    buildModuleSnippets(snippetsDir, features, templateData, 'kt', viewSnippetsKt),
   ]);
 
   // Build web module snippets and helpers
@@ -286,7 +327,7 @@ export async function buildAugmentedData(
     ? `\nimport { ${data.project.moduleName}Events } from './${data.project.name}.types';\n`
     : '';
   const webEventType = features.includes('Event') ? `${data.project.moduleName}Events` : '{}';
-  const webModuleSnippets = await buildWebModuleSnippets(snippetsDir, features, data);
+  const webModuleSnippets = await buildWebModuleSnippets(snippetsDir, features, templateData);
 
   // Build combined module import line for App.tsx
   const needsDefaultImport = features.some((f) =>
@@ -317,14 +358,14 @@ export async function buildAugmentedData(
 
   const [appReactImportSnippets, appExternalImportSnippets, appHookSnippets, appJSXSnippets] =
     await Promise.all([
-      buildAppSnippets(snippetsDir, features, data, 'react-imports'),
-      buildAppSnippets(snippetsDir, features, data, 'external-imports'),
-      buildAppSnippets(snippetsDir, features, data, 'hooks'),
-      buildAppSnippets(snippetsDir, features, data, 'jsx'),
+      buildAppSnippets(snippetsDir, features, templateData, 'react-imports'),
+      buildAppSnippets(snippetsDir, features, templateData, 'external-imports'),
+      buildAppSnippets(snippetsDir, features, templateData, 'hooks'),
+      buildAppSnippets(snippetsDir, features, templateData, 'jsx'),
     ]);
 
   return {
-    ...data,
+    ...templateData,
     moduleSnippetsSwift,
     moduleSnippetsKt,
     viewSnippetsSwift,
@@ -398,7 +439,7 @@ export async function updateWebStub(
   templatePath: string,
   targetDir: string,
   data: SubstitutionData | LocalSubstitutionData
-): Promise<void> {
+): Promise<Awaited<ReturnType<typeof buildAugmentedData>>> {
   const snippetsDir = path.join(templatePath, 'snippets');
   const augmentedData = await buildAugmentedData(snippetsDir, data);
 
@@ -430,4 +471,5 @@ export async function updateWebStub(
     await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
   }
   await fs.promises.writeFile(toPath, renderedContent, 'utf8');
+  return augmentedData;
 }

@@ -1,3 +1,4 @@
+import spawnAsync, { type SpawnResult } from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
@@ -7,6 +8,7 @@ import {
   ensureFolderExists,
   execute,
   executePassing,
+  expectExecutePassing,
   expectFileExists,
   expectFileNotExists,
   getTemporaryPath,
@@ -655,6 +657,41 @@ describe('add-platform-support', () => {
     expect(ktContent).toContain('AsyncFunction(');
   });
 
+  it.each(['inside', 'outside'])(
+    'uses SDK 55 compatibility when run %s the host project',
+    async (location) => {
+      const project = createFakeProject(`aps-sdk55-${location}`);
+      const expoDir = path.join(project, 'node_modules', 'expo');
+      fs.mkdirSync(expoDir, { recursive: true });
+      fs.writeFileSync(path.join(expoDir, 'package.json'), JSON.stringify({ version: '55.0.3' }));
+      const modulePath = await createLocalModule(project, 'sdk-compat', ['apple']);
+
+      await executePassing(
+        [
+          'add-platform-support',
+          modulePath,
+          '--platform',
+          'android',
+          '--features',
+          'ComposeView',
+          '--source',
+          localTemplatePath,
+        ],
+        { cwd: location === 'inside' ? project : projectRoot }
+      );
+
+      const gradle = fs.readFileSync(path.join(modulePath, 'android', 'build.gradle'), 'utf8');
+      expect(gradle).toContain('foundation-android:1.10.2');
+      expect(gradle).toContain('material3-android:1.5.0-alpha13');
+      const moduleKt = fs.readFileSync(
+        path.join(modulePath, 'android/src/main/java/expo/modules/sdkcompat/SdkCompatModule.kt'),
+        'utf8'
+      );
+      expect(moduleKt).toContain('ExpoUIView<SdkCompatComposeViewProps>');
+      expect(moduleKt).not.toContain('Content {');
+    }
+  );
+
   it('adds apple support to an android-only module with View and ViewEvent', async () => {
     const project = createFakeProject('aps-view-project');
     const modulePath = await createLocalModule(
@@ -905,5 +942,48 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
     const ktContent = fs.readFileSync(path.join(pkgDir, moduleKt), 'utf-8');
     expect(ktContent).toContain('View(');
     expect(ktContent).not.toContain('AsyncFunction(');
+  });
+});
+
+describe('template compatibility with older published CLIs', () => {
+  // Older CLIs download newer template tags for `--local` modules (they pick the tag from the host
+  // project's SDK), so the template must render without the data a newer CLI adds.
+  const OLDER_CLI = 'create-expo-module@57.0.1';
+
+  it(`renders the local template with ${OLDER_CLI}`, async () => {
+    const fakeProject = createFakeProject('older-cli-project');
+
+    let result: SpawnResult;
+    try {
+      result = await spawnAsync(
+        'npx',
+        [
+          '-y',
+          OLDER_CLI,
+          'my-module',
+          '--local',
+          '--platform',
+          'apple',
+          'android',
+          '--features',
+          'Function',
+          '--source',
+          localTemplatePath,
+        ],
+        {
+          cwd: fakeProject,
+          env: { ...process.env, CI: '1', EXPO_NO_TELEMETRY: '1', INIT_CWD: fakeProject },
+        }
+      );
+    } catch (error: any) {
+      result = error;
+    }
+    expectExecutePassing(result);
+
+    const podspec = fs.readFileSync(
+      getTestPath('older-cli-project/modules/my-module', 'ios/MyModule.podspec'),
+      'utf8'
+    );
+    expect(podspec).toContain(":ios => '16.4'");
   });
 });
