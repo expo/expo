@@ -35,7 +35,7 @@ internal enum PickerStyleType: String, Enumerable {
 #endif
     case .palette:
 #if !os(tvOS)
-      if #available(iOS 17.0, *) {
+      if #available(iOS 17.0, macOS 14.0, *) {
         content.pickerStyle(.palette)
       } else {
         content.pickerStyle(.automatic)
