@@ -14,18 +14,19 @@ export function shouldUseTransition(
   intents: RoutingIntent[],
   mode: NavigationTransitionMode
 ): boolean {
-  if (mode === 'never' || intents.some((intent) => intent.inTransition === false)) {
-    return false;
-  }
+  if (mode === 'never') return false;
+  if (intents.some((intent) => intent.inTransition === false)) return false;
 
-  return (
-    mode === 'always' ||
-    intents.every(
-      (intent) =>
-        intent.inTransition === true ||
-        (intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.event === 'PRELOAD')
-    )
-  );
+  if (mode === 'always') return true;
+
+  mode satisfies 'preload-only';
+
+  if (intents.every((intent) => intent.inTransition === true)) return true;
+  return intents.every(isPreloadIntent);
+}
+
+function isPreloadIntent(intent: RoutingIntent): boolean {
+  return intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.event === 'PRELOAD';
 }
 
 export function RoutingQueueDrainer({ processIntent }: Props) {

@@ -436,27 +436,27 @@ describe('DOM short-circuit paths', () => {
   it('dismiss short-circuits when emitDomDismiss returns true', () => {
     mockEmitDomDismiss.mockReturnValueOnce(true);
 
-    dismiss(1);
+    dismiss(1, { inTransition: true });
 
-    expect(mockEmitDomDismiss).toHaveBeenCalledWith(1);
+    expect(mockEmitDomDismiss).toHaveBeenCalledWith(1, { inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 
   it('dismissAll short-circuits when emitDomDismissAll returns true', () => {
     mockEmitDomDismissAll.mockReturnValueOnce(true);
 
-    dismissAll();
+    dismissAll({ inTransition: true });
 
-    expect(mockEmitDomDismissAll).toHaveBeenCalled();
+    expect(mockEmitDomDismissAll).toHaveBeenCalledWith({ inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 
   it('goBack short-circuits when emitDomGoBack returns true', () => {
     mockEmitDomGoBack.mockReturnValueOnce(true);
 
-    goBack();
+    goBack({ inTransition: true });
 
-    expect(mockEmitDomGoBack).toHaveBeenCalled();
+    expect(mockEmitDomGoBack).toHaveBeenCalledWith({ inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 });

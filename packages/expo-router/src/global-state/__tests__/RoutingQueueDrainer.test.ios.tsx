@@ -149,15 +149,24 @@ it('continues after processIntent throws synchronously', () => {
 });
 
 describe(shouldUseTransition, () => {
+  const operations = [
+    ['push', navigate('PUSH')],
+    ['navigate', navigate('NAVIGATE')],
+    ['replace', navigate('REPLACE')],
+    ['dismissTo', navigate('POP_TO')],
+    ['back', actionIntent('GO_BACK')],
+    ['dismiss', actionIntent('POP')],
+    ['dismissAll', actionIntent('POP_TO_TOP')],
+    ['preload', navigate('PRELOAD')],
+  ] as const;
+
   describe('always', () => {
-    it('uses a transition by default', () => {
-      expect(shouldUseTransition([actionIntent('GO_BACK')], 'always')).toBe(true);
+    it.each(operations)('uses a transition for %s by default', (_, intent) => {
+      expect(shouldUseTransition([intent], 'always')).toBe(true);
     });
 
-    it('does not use a transition when an operation opts out', () => {
-      expect(
-        shouldUseTransition([navigate('PUSH'), actionIntent('GO_BACK', false)], 'always')
-      ).toBe(false);
+    it.each(operations)('does not use a transition when %s opts out', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: false }], 'always')).toBe(false);
     });
   });
 
@@ -168,26 +177,28 @@ describe(shouldUseTransition, () => {
       );
     });
 
-    it('does not use a transition when a non-preload operation has not opted in', () => {
-      expect(shouldUseTransition([navigate('PRELOAD'), navigate('PUSH')], 'preload-only')).toBe(
-        false
-      );
+    it.each(operations.slice(0, -1))('does not use a transition for %s by default', (_, intent) => {
+      expect(shouldUseTransition([intent], 'preload-only')).toBe(false);
     });
 
-    it('allows href and action operations to opt in', () => {
+    it.each(operations)('allows %s to opt in', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: true }], 'preload-only')).toBe(true);
+    });
+
+    it.each(operations)('does not use a transition when %s opts out', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: false }], 'preload-only')).toBe(false);
+    });
+
+    it('does not mix preloads and opted-in operations in one transition', () => {
       expect(
-        shouldUseTransition([navigate('PUSH', true), actionIntent('GO_BACK', true)], 'preload-only')
-      ).toBe(true);
+        shouldUseTransition([navigate('PRELOAD'), navigate('PUSH', true)], 'preload-only')
+      ).toBe(false);
     });
   });
 
   describe('never', () => {
-    it.each([
-      ['preload', navigate('PRELOAD')],
-      ['opted-in href', navigate('PUSH', true)],
-      ['opted-in action', actionIntent('GO_BACK', true)],
-    ])('does not use a transition for %s', (_, intent) => {
-      expect(shouldUseTransition([intent], 'never')).toBe(false);
+    it.each(operations)('does not use a transition for %s', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: true }], 'never')).toBe(false);
     });
   });
 });

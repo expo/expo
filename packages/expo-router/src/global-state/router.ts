@@ -59,21 +59,25 @@ function pushImpl(
   return linkToImpl(enqueue, resolveHref(url), { ...options, event: 'PUSH' });
 }
 
+function enqueueAction(
+  enqueue: (intent: RoutingIntent) => void,
+  action: Extract<RoutingIntent, { type: 'ACTION' }>['payload']['action'],
+  inTransition?: boolean
+) {
+  enqueue({ type: 'ACTION', payload: { action }, inTransition });
+}
+
 // `GO_BACK` follows focused back handling; `POP` explicitly removes stack routes.
 function dismissImpl(
   enqueue: (intent: RoutingIntent) => void,
   count: number = 1,
   options?: TransitionOptions
 ) {
-  if (emitDomDismiss(count)) {
+  if (emitDomDismiss(count, options)) {
     return;
   }
 
-  enqueue({
-    type: 'ACTION',
-    payload: { action: { type: 'POP', payload: { count } } },
-    ...(options?.inTransition === undefined ? {} : { inTransition: options.inTransition }),
-  });
+  enqueueAction(enqueue, { type: 'POP', payload: { count } }, options?.inTransition);
 }
 
 function dismissToImpl(
@@ -93,26 +97,18 @@ function replaceImpl(
 }
 
 function dismissAllImpl(enqueue: (intent: RoutingIntent) => void, options?: TransitionOptions) {
-  if (emitDomDismissAll()) {
+  if (emitDomDismissAll(options)) {
     return;
   }
-  enqueue({
-    type: 'ACTION',
-    payload: { action: { type: 'POP_TO_TOP' } },
-    ...(options?.inTransition === undefined ? {} : { inTransition: options.inTransition }),
-  });
+  enqueueAction(enqueue, { type: 'POP_TO_TOP' }, options?.inTransition);
 }
 
 // `GO_BACK` follows focused back handling; `POP` (used by `dismiss`) explicitly removes stack routes.
 function goBackImpl(enqueue: (intent: RoutingIntent) => void, options?: TransitionOptions) {
-  if (emitDomGoBack()) {
+  if (emitDomGoBack(options)) {
     return;
   }
-  enqueue({
-    type: 'ACTION',
-    payload: { action: { type: 'GO_BACK' } },
-    ...(options?.inTransition === undefined ? {} : { inTransition: options.inTransition }),
-  });
+  enqueueAction(enqueue, { type: 'GO_BACK' }, options?.inTransition);
 }
 
 export function canGoBack(): boolean {
