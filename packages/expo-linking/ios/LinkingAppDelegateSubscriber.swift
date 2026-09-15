@@ -6,7 +6,8 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
   {
-    // Code below never sees a trigger URL, so anything that must see every URL goes above.
+    // Code below does not run for the trigger URL.
+    // Put anything that must run for every URL above this return.
     if isFingerprintCheckURL(url) {
       return false
     }
@@ -19,7 +20,8 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     guard let url = urls.first else {
       return
     }
-    // Code below never sees a trigger URL, so anything that must see every URL goes above.
+    // Code below does not run for the trigger URL.
+    // Put anything that must run for every URL above this return.
     if isFingerprintCheckURL(url) {
       return
     }
