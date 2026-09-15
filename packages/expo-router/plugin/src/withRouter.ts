@@ -75,7 +75,7 @@ export type Props = {
   platformRoutes?: boolean;
   /** Enable or disable automatically generated routes. Defaults to `true`. */
   sitemap?: boolean;
-  /** Should Async Routes be enabled. Web defaults to true, other platforms default to false. */
+  /** Enable experimental async routes. In SDK 58 and later, web defaults to true and native defaults to false. Production async routes are web-only. */
   asyncRoutes?:
     | AsyncRouteOption
     | {
@@ -149,7 +149,7 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   withExpoHeadIos(config);
   withGammaScreens(config);
 
-  const router = normalizeProps({
+  const router = normalizeAsyncRoutesProp({
     ...config.extra?.router,
     ...props,
   });
@@ -169,10 +169,6 @@ function warnOnce(message: string) {
     warnMap[message] = true;
     console.warn(styleText('red', message, { stream: process.stderr }));
   }
-}
-
-function normalizeProps(props: Props) {
-  return normalizeAsyncRoutesProp(props);
 }
 
 function normalizeAsyncRoutesProp(props: Props) {
