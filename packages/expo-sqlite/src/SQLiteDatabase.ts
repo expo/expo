@@ -203,6 +203,22 @@ export class SQLiteDatabase {
   }
 
   /**
+   * Interrupt running async operations on this connection. Returns immediately; await the operations
+   * to observe their errors before closing or reusing the connection.
+   *
+   * Affects all running statements on the connection, including shared cached handles. Interrupting
+   * a write rolls back its entire explicit transaction. Has no effect when idle; an operation that
+   * is nearly finished may still complete successfully.
+   *
+   * @see https://www.sqlite.org/c3ref/interrupt.html
+   * @platform android
+   * @platform ios
+   */
+  public interruptSync(): void {
+    return this.nativeDatabase.interruptSync();
+  }
+
+  /**
    * Close the database.
    */
   public closeSync(): void {

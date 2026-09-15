@@ -147,6 +147,19 @@ class SQLiteModule : Module() {
           closeDatabase(db)
         }
       }.runOnQueue(moduleCoroutineScope)
+      // Interrupt must reach SQLite immediately, without waiting for the running query's queue.
+      Function("interruptSync") { database: NativeDatabase ->
+        // Do not block the JS thread or touch a connection being closed on another thread.
+        if (!database.closeLock.tryLock()) {
+          throw AccessClosedResourceException()
+        }
+        try {
+          maybeThrowForClosedDatabase(database)
+          database.ref.sqlite3_interrupt()
+        } finally {
+          database.closeLock.unlock()
+        }
+      }
       Function("closeSync") { database: NativeDatabase ->
         maybeThrowForClosedDatabase(database)
         val db = removeCachedDatabase(database)
@@ -512,12 +525,18 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
-    maybeFinalizeAllStatements(database)
-    val ret = database.ref.sqlite3_close()
-    if (ret != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    database.closeLock.lock()
+    try {
+      maybeThrowForClosedDatabase(database)
+      maybeFinalizeAllStatements(database)
+      val ret = database.ref.sqlite3_close()
+      if (ret != NativeDatabaseBinding.SQLITE_OK) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      database.isClosed = true
+    } finally {
+      database.closeLock.unlock()
     }
-    database.isClosed = true
   }
 
   private fun deleteDatabase(databasePath: String) {

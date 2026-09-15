@@ -7,6 +7,7 @@ final class NativeDatabase: SharedObject, Equatable, Hashable {
   let databasePath: String
   let openOptions: OpenDatabaseOptions
   var isClosed = false
+  let closeLock = NSLock()
   var extraPointer: OpaquePointer?
   private var refCount = AtomicInteger(1)
 
