@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the `tint` modifier not applying in widgets when given a plain color. ([#50187](https://github.com/expo/expo/pull/50187) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-14

@@ -234,7 +234,9 @@ internal struct TintModifier: ViewModifier, Record {
   @Field var tint: ShapeStyleValue?
 
   func body(content: Content) -> some View {
-    if let shapeStyle = tint?.toAnyShapeStyle() {
+    if let color = tint?.toColor() {
+      content.tint(color)
+    } else if let shapeStyle = tint?.toAnyShapeStyle() {
       content.tint(shapeStyle)
     } else {
       content

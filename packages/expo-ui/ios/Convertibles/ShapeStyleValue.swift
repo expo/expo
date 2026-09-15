@@ -92,6 +92,13 @@ internal struct ShapeStyleValue: Record {
   @Field var startRadius: CGFloat?
   @Field var endRadius: CGFloat?
 
+  func toColor() -> Color? {
+    guard type == .color else {
+      return nil
+    }
+    return color
+  }
+
   /**
    Resolves the style, or returns `nil` when the fields it needs are missing or the style is not
    available on the running platform. Callers leave the view untouched in that case.
