@@ -128,6 +128,18 @@ describe(`createFingerprintFileAsync`, () => {
     });
   });
 
+  // `@expo/cli`'s rebundle path calls `getAppConfig.js` for the app config alone, with no platform
+  // and no embed flag. It is not managing fingerprints, so it must not remove what a build embedded.
+  it(`leaves an existing fingerprint alone when the caller names no platform`, async () => {
+    const { createFingerprintFileAsync, FINGERPRINT_FILE_NAME } = loadModule();
+    const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
+    fs.writeFileSync(filePath, JSON.stringify({ hash: 'embedded-by-the-build' }));
+
+    await createFingerprintFileAsync(projectRoot, destinationDir, undefined, false);
+
+    expect(JSON.parse(fs.readFileSync(filePath, 'utf8')).hash).toBe('embedded-by-the-build');
+  });
+
   it(`still embeds when EXPO_SKIP_FINGERPRINT_EMBED=0 — "0" must not enable the skip`, async () => {
     process.env.EXPO_SKIP_FINGERPRINT_EMBED = '0';
     mockCreateFingerprintAsync.mockResolvedValue({

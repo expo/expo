@@ -34,6 +34,16 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
 
 /** @type {typeof createFingerprintFileAsync} */
 async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, enabled) {
+  // A caller that names no platform is not managing fingerprints: `@expo/cli`'s rebundle path runs
+  // this script for the app config alone, and removing the file there would strip the fingerprint
+  // out of an app a build already embedded it into. A caller that names one still gets the stale
+  // file cleared, even when the platform is not one this embeds for.
+  if (platform === undefined) {
+    return null;
+  }
+
+  // Cleared before the opt-out tests, not after: the iOS destination directory persists across
+  // builds, so a release build or an opted-out one has to remove what a debug build left.
   const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
   await fs.promises.rm(filePath, { force: true });
 
