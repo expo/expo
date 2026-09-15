@@ -5,7 +5,6 @@ import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { warnIfNestedParams } from '../navigationParams';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
 import type { NavigationState, PartialState } from '../react-navigation/native';
-import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
@@ -78,7 +77,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   state = route.state;
 
   const segments: string[] = [];
-  let params: Record<string, unknown> = Object.create(null);
+  const params: Record<string, unknown> = Object.create(null);
 
   while (state) {
     route = state.routes['index' in state && state.index ? state.index : 0]!;
@@ -94,18 +93,6 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     segments.push(...routeName.split('/'));
     state = route.state;
   }
-
-  params = Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      if (typeof value === 'string') {
-        return [key, safeDecodeURIComponent(value)];
-      } else if (Array.isArray(value)) {
-        return [key, value.map((v) => (typeof v === 'string' ? safeDecodeURIComponent(v) : v))];
-      } else {
-        return [key, value];
-      }
-    })
-  );
 
   if (segments[segments.length - 1] === 'index') {
     segments.pop();
@@ -193,7 +180,9 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     pathname,
     // Navigation params can contain ordinary object values at runtime despite the public search-param type.
     // TODO: address this together with other params serialization issues
-    params: params as UrlObject['params'],
+    // Copied into an ordinary object: `params` is prototype-less, and `areUrlObjectsEqual()`
+    // compares it with `fast-deep-equal`, which calls `valueOf()` on the values it walks.
+    params: { ...params } as UrlObject['params'],
     unstable_globalHref: appendBaseUrl(pathnameWithParams),
     searchParams,
     pathnameWithParams,
