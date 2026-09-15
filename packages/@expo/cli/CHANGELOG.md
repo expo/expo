@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Remove Expo Router compatibility checks for `@react-navigation` packages. ([#50176](https://github.com/expo/expo/pull/50176) by [@Ubax](https://github.com/Ubax))
+- Default the file map to watching unless `CI` is set, matching Metro, so `CI=0` no longer turns watching off. ([#50196](https://github.com/expo/expo/pull/50196) by [@robhogan](https://github.com/robhogan))
 
 ### 💡 Others
 
