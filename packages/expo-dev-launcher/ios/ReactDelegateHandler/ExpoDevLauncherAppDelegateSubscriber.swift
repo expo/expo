@@ -9,6 +9,11 @@ public class ExpoDevLauncherAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     EXDevLauncherController.disablePackagerServerAccess()
+    // iOS also delivers a cold-launch URL to `application(_:open:)`, so this can run twice.
+    // `handle` answers a nonce once, so the second call posts nothing.
+    if let url = launchOptions?[.url] as? URL {
+      _ = EXDevLauncherFingerprintCheck.handle(url)
+    }
     return true
   }
 
