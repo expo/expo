@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `startGeofencingAsync` rejecting with `ERR_LOCATION_UPDATES_UNAVAILABLE` unless `location` is listed in `UIBackgroundModes`. ([#50199](https://github.com/expo/expo/pull/50199) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-14
