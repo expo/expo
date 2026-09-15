@@ -1,10 +1,10 @@
 import * as SQLite from 'expo-sqlite';
 import { useCallback, useMemo, useState } from 'react';
 
-import * as shared from './useSQLiteDatabase.shared';
-
 import { dumpDatabase, importDatabase } from '@/lib/sqliteDump';
 import type { ColumnInfo, QueryResult } from '@/types';
+
+import * as shared from './useSQLiteDatabase.shared';
 
 export function useSQLiteDatabase() {
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);

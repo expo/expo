@@ -19,7 +19,6 @@ describe('export server with magic import comments', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: inputDir,
-        E2E_ROUTER_JS_ENGINE: 'hermes',
       },
     });
   });
@@ -27,7 +26,7 @@ describe('export server with magic import comments', () => {
   it('has expected syntax', async () => {
     expect(
       fs.readFileSync(path.resolve(outputDir, 'server/_expo/functions/methods+api.js'), 'utf8')
-    ).toMatch(/=await import\('path'\);/);
+    ).toMatch(/=await import\(["']path["']\);/);
   });
 
   describe('server', () => {

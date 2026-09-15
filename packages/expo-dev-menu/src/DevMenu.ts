@@ -24,6 +24,13 @@ export function closeMenu(): void {
   ExpoDevMenu.closeMenu();
 }
 
+/**
+ * Sets whether the floating tools button is visible.
+ */
+export function setToolsButtonVisible(visible: boolean): void {
+  ExpoDevMenu.setToolsButtonVisible(visible);
+}
+
 let hasRegisteredCallbackListener = false;
 
 function registerCallbackListener() {

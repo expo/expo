@@ -13,6 +13,7 @@ import type { NavigatorArgs } from 'standard-navigation';
 import type { HeaderOptions, PlatformPressable } from '../elements';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   NavigationProp,
   ParamListBase,
   RouteProp,
@@ -92,7 +93,8 @@ export type BottomTabOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = BottomTabScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<BottomTabScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -288,12 +290,9 @@ export type BottomTabNavigationOptions = HeaderOptions & {
    */
   popToTopOnBlur?: boolean;
 
+  // TODO(@ubax): Remove this prop
   /**
-   * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-   * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-   * Requires `react-native-screens` version >=3.16.0.
-   *
-   * Only supported on iOS and Android.
+   * @deprecated This option has no effect in Expo Router.
    */
   freezeOnBlur?: boolean;
 

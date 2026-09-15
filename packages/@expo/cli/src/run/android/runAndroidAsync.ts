@@ -7,7 +7,7 @@ import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
+import { loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
@@ -19,10 +19,12 @@ import type { Options, ResolvedOptions } from './resolveOptions';
 import { resolveOptionsAsync } from './resolveOptions';
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
-  // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
+  // Guess the mode from the selected native build variant.
   const isProduction = options.variant?.toLowerCase().endsWith('release');
-  setNodeEnv(isProduction ? 'production' : 'development');
-  loadEnvFiles(projectRoot);
+  const mode = isProduction ? 'production' : 'development';
+  loadEnvFiles(projectRoot, {
+    mode,
+  });
 
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
 
@@ -96,6 +98,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
+    mode,
     // If a scheme is specified then use that instead of the package name.
     scheme: (await getSchemesForAndroidAsync(projectRoot))?.[0],
     headless: !props.shouldStartBundler,

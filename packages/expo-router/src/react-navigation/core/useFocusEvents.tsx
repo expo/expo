@@ -18,37 +18,54 @@ type Options<State extends NavigationState> = {
 export function useFocusEvents<State extends NavigationState>({ state, emitter }: Options<State>) {
   const navigation = use(NavigationContext);
   const lastFocusedKeyRef = React.useRef<string | undefined>(undefined);
+  // TODO(@ubax): investigate if we can remove this ref, by for example moving this to global scope
+  // Or reacting to state changes
+  const isFocusedRef = React.useRef(false);
 
-  const currentFocusedKey = state.routes[state.index]!.key;
+  const currentFocusedKey = state.routes[state.index]?.key;
 
   // When the parent screen changes its focus state, we also need to change child's focus
   // Coz the child screen can't be focused if the parent screen is out of focus
-  React.useEffect(
-    () =>
-      navigation?.addListener('focus', () => {
-        lastFocusedKeyRef.current = currentFocusedKey;
-        emitter.emit({ type: 'focus', target: currentFocusedKey });
-      }),
-    [currentFocusedKey, emitter, navigation]
-  );
+  React.useEffect(() => {
+    if (currentFocusedKey === undefined) {
+      return;
+    }
 
-  React.useEffect(
-    () =>
-      navigation?.addListener('blur', () => {
-        lastFocusedKeyRef.current = undefined;
-        emitter.emit({ type: 'blur', target: currentFocusedKey });
-      }),
-    [currentFocusedKey, emitter, navigation]
-  );
+    return navigation?.addListener('focus', () => {
+      if (isFocusedRef.current && lastFocusedKeyRef.current === currentFocusedKey) {
+        return;
+      }
+      lastFocusedKeyRef.current = currentFocusedKey;
+      isFocusedRef.current = true;
+      emitter.emit({ type: 'focus', target: currentFocusedKey });
+    });
+  }, [currentFocusedKey, emitter, navigation]);
+
+  React.useEffect(() => {
+    if (currentFocusedKey === undefined) {
+      return;
+    }
+
+    return navigation?.addListener('blur', () => {
+      lastFocusedKeyRef.current = undefined;
+      isFocusedRef.current = false;
+      emitter.emit({ type: 'blur', target: currentFocusedKey });
+    });
+  }, [currentFocusedKey, emitter, navigation]);
 
   React.useEffect(() => {
     const lastFocusedKey = lastFocusedKeyRef.current;
 
+    if (currentFocusedKey === undefined) {
+      return;
+    }
+
     lastFocusedKeyRef.current = currentFocusedKey;
 
-    // We wouldn't have `lastFocusedKey` on initial mount
-    // Fire focus event for the current route on mount if there's no parent navigator
-    if (lastFocusedKey === undefined && !navigation) {
+    // A nested navigator can mount while its parent is already focused, such as after HMR.
+    // Screen effects run first and ignore this event if they already observed focus.
+    if (lastFocusedKey === undefined && (!navigation || navigation.isFocused())) {
+      isFocusedRef.current = true;
       emitter.emit({ type: 'focus', target: currentFocusedKey });
     }
 
@@ -64,6 +81,7 @@ export function useFocusEvents<State extends NavigationState>({ state, emitter }
     }
 
     emitter.emit({ type: 'blur', target: lastFocusedKey });
+    isFocusedRef.current = true;
     emitter.emit({ type: 'focus', target: currentFocusedKey });
   }, [currentFocusedKey, emitter, navigation]);
 }

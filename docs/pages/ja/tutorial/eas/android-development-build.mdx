@@ -1,0 +1,198 @@
+---
+title: Android 向けのクラウドビルドを作成して実行する
+sidebar_title: Android 開発ビルド
+description: EAS Build を使って Android の実機とエミュレーター向けに開発ビルドを設定する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、EAS Build を使って Android で動作する開発ビルドを作成します。
+
+実機でもエミュレーターでも、ビルドを作成して実行する手順は同じで、違いは開発ビルドのインストール方法だけです。
+
+<VideoBoxLink
+  videoId="D612BUtvvl8"
+  title="視聴：Android 向けのクラウドビルドを作成して実行する方法"
+  description="EAS Build で Android の開発ビルドを作成し、実機やエミュレーターにインストールする方法を学びます。"
+/>
+
+---
+
+## Development プロファイルでビルドを作成する
+
+Android では、開発ビルドは **.apk** である必要があります。Android のデフォルト形式は **.aab** で、Google Play ストアでの配布には理想的ですが、実機やエミュレーターにはインストールできません。
+
+**.apk** を作成するには次のようにします。
+
+- **eas.json** の `build.development` プロファイルで `developmentClient` が `true` になっていることを確認します。
+- 次に、プラットフォームに `android`、ビルドプロファイルに `development` を指定して `eas build` コマンドを実行します。
+
+  <Terminal cmd={['$ eas build --platform android --profile development']} />
+
+  > **info** **ヒント**: 次に `eas build` コマンドを実行するときは、プラットフォームの指定に `-p` も使えます。`--platform` の短縮形です。
+
+このコマンドは次の質問を表示します。
+
+- **What would you like your Android application id to be?**（Android のアプリケーション ID を何にしますか？）<kbd>Return</kbd> を押して、表示されるデフォルト値を選びます。これにより **app.json** に [`android.package`](/versions/latest/config/app/#package) が追加されます。
+- **Generate a new Android Keystore**?（新しい Android Keystore を生成しますか？）<kbd>Y</kbd> を押します。
+
+回答するとビルドがキューに入り、EAS CLI が表示するリンクから EAS ダッシュボードで進捗を確認できます。
+
+<ContentSpotlight
+  alt="Android development build details and progress in EAS dashboard"
+  src="/static/images/tutorial/eas/android-build-details.png"
+  className="max-w-[800px]"
+/>
+
+<Collapsible summary="ビルド詳細ページにはどんな情報が載っている？">
+
+ビルド詳細ページには、ビルドの種類、プロファイル、Expo SDK バージョン、アプリバージョン、バージョンコード、最後のコミットハッシュ、そしてビルドを開始した開発者またはアカウント所有者が表示されます。
+
+上の画像では、**Build artifact** の現在のステータスがビルド進行中であることを示しています。完了すると、このセクションからビルドをダウンロードできるようになります。**Logs** には、EAS Build 上での Android ビルドプロセスの各ステップが並びます。ここでは簡潔にするため、各ステップの詳細には触れません。詳しくは [Android のビルドプロセス](/build-reference/android-builds/) を参照してください。
+
+</Collapsible>
+
+<Collapsible summary="Android application ID とは？">
+
+Android アプリのパッケージ名とも呼ばれ、DNS の逆順表記 (`com.owner.appname`) で値を保持します。この表記の各要素は小文字で始める必要があります。
+
+たとえばサンプルアプリでは `com.owner.stickersmash` となり、`com.owner` がドメイン、`stickersmash` がアプリ名です。
+
+</Collapsible>
+
+## Android の実機
+
+<Step label="1">
+
+### 開発ビルドをインストールする
+
+ビルドが完了すると **Build artifact** セクションが更新され、ビルドの完了が示されます。
+
+<ContentSpotlight
+  alt="Build artifact gives the option to download development build for Android devices and emulators"
+  src="/static/images/tutorial/eas/android-build-artifact.png"
+/>
+
+このセクションには、Android の実機で開発ビルドを実行するための手段として、Expo Orbit と Install ボタンが用意されています。
+
+[Expo Orbit](https://expo.dev/orbit) を使うと、Android 実機に開発ビルドをスムーズにインストールできます。この方法を使うには次のようにします。
+
+- Android 実機を USB でローカルマシンに接続します。
+- Orbit アプリを開きます。
+- Orbit アプリで **Device** を選択します。
+
+<ContentSpotlight
+  alt="Expo Orbit app interface when connected to an Android device"
+  src="/static/images/tutorial/eas/android-orbit.png"
+  className="max-w-[300px]"
+/>
+
+- EAS ダッシュボードの **Build artifact** で **Open with Orbit** をクリックします。
+
+ビルドがインストールされると、Orbit アプリが実機上で開発ビルドを起動します。
+
+<Collapsible summary="別の方法：Install ボタンと QR コードを使う">
+
+**Build artifact** の **Install** ボタンは、インストール用の QR コードを生成します。
+
+- **Install** をクリックすると、QR コードを含むポップアップが表示されます。
+
+<ContentSpotlight
+  alt="Install button generates a QR code for easy installation on Android devices and emulators"
+  src="/static/images/tutorial/eas/android-qr-code.png"
+  className="max-w-[480px]"
+/>
+
+- Android 実機のカメラで QR コードをスキャンし、デフォルトの web ブラウザーでビルドのリンクを開きます。
+- ページ内の **Install** ボタンをタップして **.apk** ファイルをダウンロードします。
+- ダウンロードが終わったら **.apk** を開いてインストールを開始します。
+- **Unsafe app blocked** というメッセージが表示されたら **Install anyway** を選びます。**.apk** の提供元（自分で生成したもの）は信頼できるため、この警告は無視して問題ありません。
+
+<ContentSpotlight
+  alt="Unsafe app message dialog on Android device when installing development build"
+  src="/static/images/tutorial/eas/android-unsafe-dialog.webp"
+  className="max-w-[300px]"
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### 開発ビルドを実行する
+
+プロジェクトディレクトリで `npx expo start` を実行して開発サーバーを起動します。サーバーが起動したら、ターミナルウィンドウで <kbd>A</kbd> を押してプロジェクトを開きます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+</Step>
+
+## Android Emulator
+
+<Step label="1">
+
+### 開発ビルドをインストールする
+
+ビルドが完了すると、ターミナル上で EAS CLI が Android Emulator でビルドを実行するか尋ねてきます。<kbd>Y</kbd> を押します。
+
+<ContentSpotlight
+  alt="EAS CLI automatically gives to run build on Android Emulator"
+  src="/static/images/tutorial/eas/android-emulator-cli.png"
+  className="max-w-[600px]"
+/>
+
+<Collapsible summary="別の方法：Expo Orbit を使う">
+
+[Expo Orbit](/build/orbit/) を使ってインストールすることもできます。EAS ダッシュボードの **Build artifact** から **Open with Expo Orbit** をクリックすると、Android Emulator に開発ビルドがインストールされます。
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### 開発ビルドを実行する
+
+プロジェクトディレクトリで `npx expo start` を実行して開発サーバーを起動します。サーバーが起動したら、ターミナルウィンドウで <kbd>A</kbd> を押してプロジェクトを開きます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/android-development-build"
+  chapterTitle="第 2 章：Android 向けのクラウドビルドを作成して実行する"
+  summary={
+    <>
+      EAS Build を使って Android の実機とエミュレーターで開発ビルドを作成・実行し、
+      <strong>.apk</strong> と <strong>.aab</strong> のファイル形式について学びました。
+    </>
+  }
+  nextChapterDescription="次の章では、EAS Build を使って iOS Simulator 向けの開発ビルドを設定し、実行する方法を学びます。"
+  nextChapterTitle="iOS Simulator 向けのクラウドビルドを作成して実行する"
+  nextChapterLink="/ja/tutorial/eas/ios-development-build-for-simulators/"
+/>

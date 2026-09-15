@@ -15,6 +15,7 @@ import type {
   VideoCodec,
   AvailableLenses,
   LensInfo,
+  RecordingProgress,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
@@ -355,6 +356,11 @@ export default class CameraView extends Component<CameraViewProps> {
     this.props.onResponsiveOrientationChanged?.(nativeEvent);
   };
 
+  _onRecordingProgress = ({ nativeEvent }: { nativeEvent: RecordingProgress }) => {
+    const { duration, fileSize, maxDuration } = nativeEvent;
+    this.props.onRecordingProgress?.({ duration, fileSize, maxDuration: maxDuration ?? undefined });
+  };
+
   _onObjectDetected =
     (callback?: Function) =>
     ({ nativeEvent }: { nativeEvent: any }) => {
@@ -399,6 +405,7 @@ export default class CameraView extends Component<CameraViewProps> {
         onAvailableLensesChanged={this._onAvailableLensesChanged}
         onPictureSaved={_onPictureSaved}
         onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}
+        onRecordingProgress={this._onRecordingProgress}
       />
     );
   }

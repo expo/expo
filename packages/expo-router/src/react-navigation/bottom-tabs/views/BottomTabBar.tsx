@@ -167,18 +167,14 @@ export function BottomTabBar({ state, descriptors, emitter, navigateToTab, inset
 
   const shouldShowTabBar = !(tabBarHideOnKeyboard && isKeyboardShown);
 
-  const visibilityAnimationConfigRef = React.useRef(tabBarVisibilityAnimationConfig);
-
-  React.useEffect(() => {
-    visibilityAnimationConfigRef.current = tabBarVisibilityAnimationConfig;
-  });
+  const getVisibilityAnimationConfig = React.useEffectEvent(() => tabBarVisibilityAnimationConfig);
 
   const [isTabBarHidden, setIsTabBarHidden] = React.useState(!shouldShowTabBar);
 
   const [visible] = React.useState(() => new Animated.Value(shouldShowTabBar ? 1 : 0));
 
   React.useEffect(() => {
-    const visibilityAnimationConfig = visibilityAnimationConfigRef.current;
+    const visibilityAnimationConfig = getVisibilityAnimationConfig();
 
     if (shouldShowTabBar) {
       const animation =
@@ -333,7 +329,8 @@ export function BottomTabBar({ state, descriptors, emitter, navigateToTab, inset
       <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
           const focused = index === state.index;
-          const { options } = descriptors[route.key]!;
+          const descriptor = descriptors[route.key]!;
+          const { options } = descriptor;
 
           const onPress = () => {
             const event = emitter.emit({
@@ -367,14 +364,11 @@ export function BottomTabBar({ state, descriptors, emitter, navigateToTab, inset
                 : undefined;
 
           return (
-            <NavigationProvider
-              key={route.key}
-              route={route}
-              navigation={descriptors[route.key]!.navigation}>
+            <NavigationProvider key={route.name} route={route} navigation={descriptor.navigation}>
               <BottomTabItem
                 href={buildHref(route.name, route.params)}
                 route={route}
-                descriptor={descriptors[route.key]!}
+                descriptor={descriptor}
                 focused={focused}
                 horizontal={hasHorizontalLabels}
                 compact={compact}

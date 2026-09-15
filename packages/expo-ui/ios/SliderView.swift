@@ -6,8 +6,8 @@ import ExpoModulesCore
 struct SliderView: ExpoSwiftUI.View {
   @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
-  @State var isEditing: Bool = false
-  
+  @State private var eventCount: Int = 0
+
   init(props: SliderProps) {
     self.props = props
   }
@@ -19,13 +19,19 @@ struct SliderView: ExpoSwiftUI.View {
         value = clamp(props.value ?? 0.0)
       }
       .onChange(of: props.value) { newValue in
-        guard !isEditing else { return }
+        // A prop JS produced before our newest change is a stale echo of a drag that has
+        // since moved on, so applying it would pull the thumb back from under the finger.
+        if let seenCount = props.mostRecentEventCount, seenCount < eventCount {
+          return
+        }
         value = clamp(newValue ?? 0.0)
       }
       .onChange(of: value) { newValue in
         if props.value != newValue {
+          eventCount += 1
           props.onValueChanged([
-            "value": newValue
+            "value": newValue,
+            "eventCount": eventCount
           ])
         }
       }
@@ -56,7 +62,6 @@ struct SliderView: ExpoSwiftUI.View {
     let hasAnyLabel = label != nil || minimumValueLabel != nil || maximumValueLabel != nil
 
     let handleEditingChanged: (Bool) -> Void = { isEditing in
-      self.isEditing = isEditing
       props.onEditingChanged(["isEditing": isEditing])
     }
 
@@ -142,6 +147,7 @@ final class SliderProps: UIBaseViewProps {
   @Field var max: Float?
   @Field var lowerLimit: Float?
   @Field var upperLimit: Float?
+  @Field var mostRecentEventCount: Int?
   var onValueChanged = EventDispatcher()
   var onEditingChanged = EventDispatcher()
 }

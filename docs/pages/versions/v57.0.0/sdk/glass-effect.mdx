@@ -343,6 +343,7 @@ The `isLiquidGlassAvailable` function let's you check, if the Liquid Glass effec
 It validates the system and compiler versions, as well as the [**Info.plist**](https://developer.apple.com/documentation/BundleResources/Information-Property-List/UIDesignRequiresCompatibility) settings.
 
 ```tsx
+import { Text } from 'react-native';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 
 export default function CheckLiquidGlass() {
@@ -363,6 +364,7 @@ The `isGlassEffectAPIAvailable` function checks whether the Liquid Glass API is 
 > **Warning** This API was added because some iOS 26 beta versions do not have the Liquid Glass API available, which can lead to crashes. You should check this before using `GlassView` in your app to ensure compatibility. See [GitHub issue #40911](https://github.com/expo/expo/issues/40911) for more information.
 
 ```tsx
+import { Text } from 'react-native';
 import { isGlassEffectAPIAvailable } from 'expo-glass-effect';
 
 export default function CheckGlassEffectAPI() {

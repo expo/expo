@@ -135,14 +135,32 @@ async function npmPackAsync(packageName: string, cwd: string): Promise<string> {
 
   try {
     const json = JSON.parse(results);
-    if (!Array.isArray(json) || !json[0]?.filename) {
+    const packages = normalizeNpmPackResult(json);
+    const packageInfo = packages?.[0];
+    if (
+      !packageInfo ||
+      typeof packageInfo !== 'object' ||
+      !('filename' in packageInfo) ||
+      typeof packageInfo.filename !== 'string'
+    ) {
       throw new Error(`Invalid response from npm: ${results}`);
     }
-    return json[0].filename;
+    return packageInfo.filename;
   } catch (error: any) {
     throw new Error(
       `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
     );
+  }
+}
+
+/** Normalize the npm pack JSON formats used before and after npm 12 */
+export function normalizeNpmPackResult(result: unknown): unknown[] | null {
+  if (Array.isArray(result)) {
+    return result;
+  } else if (result && typeof result === 'object') {
+    return Object.values(result);
+  } else {
+    return null;
   }
 }
 

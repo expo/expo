@@ -1,6 +1,65 @@
 import ExpoSecureStore from '../ExpoSecureStore';
 import * as SecureStore from '../SecureStore';
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+const confirmationCases: {
+  name: string;
+  options: SecureStore.SecureStoreOptions | undefined;
+  expectedOptions: SecureStore.SecureStoreOptions;
+}[] = [
+  { name: 'when omitted', options: undefined, expectedOptions: {} },
+  {
+    name: 'when confirmation is required',
+    options: { requireConfirmation: true },
+    expectedOptions: { requireConfirmation: true },
+  },
+  {
+    name: 'when confirmation is not required',
+    options: { requireConfirmation: false },
+    expectedOptions: { requireConfirmation: false },
+  },
+];
+
+describe.each(confirmationCases)(
+  'forwards confirmation options $name',
+  ({ options, expectedOptions }) => {
+    it('when setting a value asynchronously', async () => {
+      await SecureStore.setItemAsync('key', 'value', options);
+
+      expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith(
+        'value',
+        'key',
+        expectedOptions
+      );
+    });
+
+    it('when getting a value asynchronously', async () => {
+      await SecureStore.getItemAsync('key', options);
+
+      expect(ExpoSecureStore.getValueWithKeyAsync).toHaveBeenLastCalledWith('key', expectedOptions);
+    });
+
+    it('when setting a value synchronously', () => {
+      SecureStore.setItem('key', 'value', options);
+
+      expect(ExpoSecureStore.setValueWithKeySync).toHaveBeenLastCalledWith(
+        'value',
+        'key',
+        expectedOptions
+      );
+    });
+
+    it('when getting a value synchronously', () => {
+      SecureStore.getItem('key', options);
+
+      expect(ExpoSecureStore.getValueWithKeySync).toHaveBeenLastCalledWith('key', expectedOptions);
+    });
+  }
+);
+
 it(`sets values`, async () => {
   const testKey = 'key-test_0.0';
   const testValue = 'value `~!@#$%^&*();:\'"-_.,<>';

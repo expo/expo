@@ -1,6 +1,6 @@
 import { screen, act } from '@testing-library/react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import { renderRouter, testRouter } from '../testing-library';
 
@@ -25,7 +25,7 @@ describe('push', () => {
     testRouter.push('/page'); // Duplicate pushes are allowed pushes the new '/page'
     testRouter.push('/page?c=true');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -33,7 +33,6 @@ describe('push', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 5,
             key: expect.any(String),
@@ -42,7 +41,6 @@ describe('push', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                params: undefined,
                 path: '/page',
               },
               {
@@ -83,11 +81,13 @@ describe('push', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -97,7 +97,7 @@ describe('push', () => {
     testRouter.back();
     testRouter.back();
 
-    expect(store.state).toEqual({
+    expect(navigationRef.getRootState()).toEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -105,7 +105,6 @@ describe('push', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -119,11 +118,13 @@ describe('push', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -152,7 +153,7 @@ describe('navigate', () => {
     testRouter.navigate('/page'); // Will not create new screen are we are already on page
     testRouter.navigate('/page?c=true');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -160,7 +161,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -172,15 +172,17 @@ describe('navigate', () => {
                 params: {
                   c: 'true',
                 },
-                path: '/page',
+                path: '/page?c=true',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -199,7 +201,7 @@ describe('navigate', () => {
     testRouter.navigate('/b');
     testRouter.navigate('/c');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -207,7 +209,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 3,
             key: expect.any(String),
@@ -216,7 +217,6 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                params: undefined,
                 path: '/',
               },
               {
@@ -225,7 +225,7 @@ describe('navigate', () => {
                 params: {
                   page: 'a',
                 },
-                path: undefined,
+                path: '/a',
               },
               {
                 key: expect.any(String),
@@ -233,7 +233,7 @@ describe('navigate', () => {
                 params: {
                   page: 'b',
                 },
-                path: undefined,
+                path: '/b',
               },
               {
                 key: expect.any(String),
@@ -241,21 +241,23 @@ describe('navigate', () => {
                 params: {
                   page: 'c',
                 },
-                path: undefined,
+                path: '/c',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
     testRouter.dismissAll();
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -263,7 +265,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -272,16 +273,17 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                params: undefined,
                 path: '/',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -305,7 +307,7 @@ describe('replace', () => {
     testRouter.replace('/page?a=true'); // This will clear the previous route
     testRouter.push('/page?c=true');
 
-    expect(store.state).toStrictEqual({
+    expect(navigationRef.getRootState()).toStrictEqual({
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -313,7 +315,6 @@ describe('replace', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 3,
             key: expect.any(String),
@@ -322,7 +323,6 @@ describe('replace', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                params: undefined,
                 path: '/page',
               },
               {
@@ -350,11 +350,13 @@ describe('replace', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 

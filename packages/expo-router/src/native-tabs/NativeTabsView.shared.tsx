@@ -26,7 +26,7 @@ export function useSelectedScreenKey({
     deferredFocusedIndex < tabs.length ? deferredFocusedIndex : focusedIndex;
 
   return {
-    selectedScreenKey: tabs[inBoundsDeferredFocusedIndex]!.routeKey,
+    selectedScreenKey: tabs[inBoundsDeferredFocusedIndex]!.name,
     provenance: deferredProvenance,
   };
 }
@@ -70,7 +70,6 @@ export function useOnTabSelectionPreventedHandler(
  * extends this with its own appearance fields.
  */
 export interface InternalTabScreenProps {
-  routeKey: string;
   name: string;
   // TODO(@ubax): https://linear.app/expo/issue/ENG-20736/remove-pointerevents-from-nativetabsview
   isFocused: boolean;
@@ -79,7 +78,7 @@ export interface InternalTabScreenProps {
 }
 
 export function useSharedScreenProps(props: InternalTabScreenProps) {
-  const { options, isFocused, name, routeKey } = props;
+  const { options, isFocused, name } = props;
   const title = options.title ?? name;
   const {
     ios: nativeIosOverrides,
@@ -99,7 +98,7 @@ export function useSharedScreenProps(props: InternalTabScreenProps) {
     nativeIosOverrides,
     nativeAndroidOverrides,
     nativeRestOverrides,
-    screenKey: routeKey,
+    screenKey: name,
     icon,
     selectedIcon,
   };

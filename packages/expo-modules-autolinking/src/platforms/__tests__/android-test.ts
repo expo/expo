@@ -48,6 +48,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -75,6 +76,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -99,10 +101,92 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          modulesV2: [],
           services: [],
           packages: [],
         },
       ],
+    });
+  });
+
+  describe('symlinked package path', () => {
+    const storeDir =
+      '/app/node_modules/.pnpm/react-native-third-party@1.0.0_patch_hash=abc/node_modules/react-native-third-party';
+    const linkDir = '/app/lib/node_modules/react-native-third-party';
+
+    beforeEach(() => {
+      vol.fromJSON({
+        [path.join(storeDir, 'third-party-gradle-plugin', 'build.gradle.kts')]: '',
+        [path.join(storeDir, 'android', 'build.gradle')]: '',
+      });
+      vol.mkdirSync(path.dirname(linkDir), { recursive: true });
+      vol.symlinkSync(storeDir, linkDir);
+    });
+
+    it('should resolve symlinks in the gradle plugin sourceDir', async () => {
+      const name = 'react-native-third-party';
+      const result = await resolveModuleAsync(name, {
+        name,
+        path: linkDir,
+        version: '1.0.0',
+        config: new ExpoModuleConfig({
+          platforms: ['android'],
+          android: {
+            gradlePlugins: [
+              {
+                id: 'third-party-gradle-plugin',
+                group: 'com.thirdparty',
+                sourceDir: 'third-party-gradle-plugin',
+                applyToRootProject: true,
+              },
+            ],
+          },
+        }),
+      });
+      expect(result?.plugins).toEqual([
+        {
+          id: 'third-party-gradle-plugin',
+          group: 'com.thirdparty',
+          sourceDir: path.join(storeDir, 'third-party-gradle-plugin'),
+          applyToRootProject: true,
+        },
+      ]);
+    });
+
+    it('should keep the symlinked project sourceDir', async () => {
+      const name = 'react-native-third-party';
+      const result = await resolveModuleAsync(name, {
+        name,
+        path: linkDir,
+        version: '1.0.0',
+        config: new ExpoModuleConfig({
+          platforms: ['android'],
+          android: { path: 'android' },
+        }),
+      });
+      expect(result?.projects?.[0]?.sourceDir).toBe(path.join(linkDir, 'android'));
+    });
+
+    it('should fall back to the unresolved path when the gradle plugin sourceDir is missing', async () => {
+      const name = 'react-native-third-party';
+      const result = await resolveModuleAsync(name, {
+        name,
+        path: linkDir,
+        version: '1.0.0',
+        config: new ExpoModuleConfig({
+          platforms: ['android'],
+          android: {
+            gradlePlugins: [
+              {
+                id: 'missing-gradle-plugin',
+                group: 'com.thirdparty',
+                sourceDir: 'missing-gradle-plugin',
+              },
+            ],
+          },
+        }),
+      });
+      expect(result?.plugins?.[0]?.sourceDir).toBe(path.join(linkDir, 'missing-gradle-plugin'));
     });
   });
 
@@ -137,6 +221,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -144,6 +229,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party$subproject',
           sourceDir: 'node_modules/react-native-third-party/subproject',
           modules: [],
+          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -151,6 +237,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party$kotlinSubProject',
           sourceDir: 'node_modules/react-native-third-party/kotlinSubProject',
           modules: [],
+          modulesV2: [],
           services: [],
           packages: [],
         },

@@ -3,7 +3,6 @@
 package expo.modules.plugin
 
 import com.android.build.api.dsl.LibraryExtension
-import com.android.build.api.variant.AndroidComponentsExtension
 import expo.modules.plugin.android.PublicationInfo
 import expo.modules.plugin.android.applyLinterOptions
 import expo.modules.plugin.android.applyPublishingVariant
@@ -38,6 +37,10 @@ internal fun Project.applyPikaPlugin() {
   val pika = extensions.getByType(PikaGradleExtension::class.java)
   pika.introspectableAnnotation("expo.modules.kotlin.types.OptimizedRecord")
   pika.introspectableAnnotation("expo.modules.kotlin.views.OptimizedComposeProps")
+}
+
+internal fun Project.applyExpoModulesV2Plugin() {
+  applyPluginIfNeeded("io.github.expo.modules.v2")
 }
 
 private fun Project.applyPluginIfNeeded(id: String) {
@@ -128,18 +131,11 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
   }
 }
 
-private const val AGP_BUILT_IN_KOTLIN_MAJOR = 9
-
 /**
  * Whether AGP's built-in Kotlin support is active, meaning the `kotlin-android` plugin must not be
- * applied. True on AGP 9+ unless the project explicitly opts out with `android.builtInKotlin=false`.
+ * applied. AGP 9 enables it by default unless the project explicitly opts out with `android.builtInKotlin=false`.
  */
 internal fun Project.hasBuiltInKotlinSupport(): Boolean {
-  val androidComponents = extensions.findByType(AndroidComponentsExtension::class.java)
-    ?: return false
-  if (androidComponents.pluginVersion.major < AGP_BUILT_IN_KOTLIN_MAJOR) {
-    return false
-  }
   return findProperty("android.builtInKotlin")?.toString()?.toBoolean() ?: true
 }
 

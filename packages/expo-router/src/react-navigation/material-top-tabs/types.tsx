@@ -12,6 +12,7 @@ import type { NavigatorArgs } from 'standard-navigation';
 
 import type {
   Descriptor,
+  DescriptorRouteProp,
   NavigationProp,
   ParamListBase,
   RouteProp,
@@ -85,7 +86,8 @@ export type MaterialTopTabOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = MaterialTopTabScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<MaterialTopTabScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 

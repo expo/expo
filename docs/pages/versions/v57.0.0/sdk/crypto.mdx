@@ -74,8 +74,8 @@ export default function App() {
       const plaintextBase64 = btoa(plaintext);
 
       const encryptionKey = await AESEncryptionKey.generate();
-      const sealedData = await aesEncryptAsync(plaintextBase64, key);
-      const decryptedBase64 = await aesDecryptAsync(sealedData, key, {
+      const sealedData = await aesEncryptAsync(plaintextBase64, encryptionKey);
+      const decryptedBase64 = await aesDecryptAsync(sealedData, encryptionKey, {
         output: 'base64',
       });
 

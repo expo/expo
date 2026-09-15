@@ -28,7 +28,7 @@ type Props = MaterialTopTabNavigationConfig & {
   descriptors: MaterialTopTabDescriptorMap;
   emitter: MaterialTopTabEmitter;
   navigateToTab: (routeKey: string) => void;
-  preloadedRouteKeys: string[];
+  navigateToTabSync: (routeKey: string) => void;
 };
 
 const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBar {...props} />;
@@ -39,7 +39,7 @@ export function MaterialTopTabView({
   descriptors,
   emitter,
   navigateToTab,
-  preloadedRouteKeys,
+  navigateToTabSync,
   ...rest
 }: Props) {
   const { colors } = useTheme();
@@ -68,7 +68,7 @@ export function MaterialTopTabView({
   return (
     <TabView<Route<string>>
       {...rest}
-      onIndexChange={(index: number) => navigateToTab(state.routes[index]!.key)}
+      onIndexChange={(index: number) => navigateToTabSync(state.routes[index]!.key)}
       renderScene={({ route, position }) => (
         <TabAnimationContext.Provider value={{ position }}>
           {descriptors[route.key]!.render()}
@@ -79,9 +79,7 @@ export function MaterialTopTabView({
       renderLazyPlaceholder={({ route }) =>
         descriptors[route.key]!.options.lazyPlaceholder?.() ?? null
       }
-      lazy={({ route }) =>
-        descriptors[route.key]!.options.lazy === true && !preloadedRouteKeys.includes(route.key)
-      }
+      lazy={({ route }) => descriptors[route.key]!.route.key === undefined}
       lazyPreloadDistance={focusedOptions.lazyPreloadDistance}
       swipeEnabled={focusedOptions.swipeEnabled}
       animationEnabled={focusedOptions.animationEnabled}

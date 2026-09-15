@@ -9,9 +9,10 @@ import {
   type TabRouterOptions,
 } from '../react-navigation/native';
 import {
-  unstable_createStandardRouterNavigator,
+  createStandardRouterNavigator,
   type StandardNavigatorDescriptor,
 } from '../standard-navigation';
+import { appendMissingPlaceholderTabDescriptors } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import { renderRouter, screen } from '../testing-library';
 import { TabList, TabTrigger, useTabsWithChildren } from '../ui';
 
@@ -19,18 +20,20 @@ const probeContent = jest.fn((args: NavigatorArgs<object, Record<string, never>>
   args.descriptors[args.state.routes[args.state.index]!.key]!.render()
 );
 
-const Probe = unstable_createStandardRouterNavigator<
+const Probe = createStandardRouterNavigator<
   object,
   TabNavigationState<ParamListBase>,
   Record<string, never>,
   object,
   TabRouterOptions
->(probeContent, TabRouter);
+>(probeContent, TabRouter, {
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+});
 
 function descriptorByRouteName(name: string): StandardNavigatorDescriptor<object> | undefined {
   const { state, descriptors } = probeContent.mock.calls.at(-1)![0];
   const route = state.routes.find((route) => route.name === name);
-  return route ? (descriptors[route.key] as StandardNavigatorDescriptor<object>) : undefined;
+  return descriptors[route?.key ?? name] as StandardNavigatorDescriptor<object> | undefined;
 }
 
 beforeEach(() => {

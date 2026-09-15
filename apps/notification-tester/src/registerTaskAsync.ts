@@ -133,8 +133,14 @@ export const registerTask = () => {
 
   // then register the task
   Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK).catch(console.error);
+};
 
-  // set the notification handler
+/**
+ * Installs the notification handler of this app. The on-device tests cover the handler that
+ * `expo-notifications` installs by itself, so the crossroad at the app start calls this only on
+ * the way into the app, and never on the way into the tests.
+ */
+export const setAppNotificationHandler = () => {
   setNotificationHandler({
     handleNotification: async (notification) => {
       const categoryIdentifier = notification.request.content.categoryIdentifier;

@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI NavigationBar matches the official Jetpack Compose [`NavigationBar`](https://developer.android.com/develop/ui/compose/components/navigation-bar) API. It displays a row of destinations for switching between top-level app sections.
@@ -30,9 +31,21 @@ Expo UI NavigationBar matches the official Jetpack Compose [`NavigationBar`](htt
 
 Manage the selected item in React state and pass `selected` to each `NavigationBarItem`.
 
-```tsx BasicNavigationBar.tsx
+<ComponentExample
+  title="BasicNavigationBar.tsx"
+  src="/static/images/expo-ui/examples/navigationbar-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/navigationbar-basic-android-dark.webp"
+  alt="A Material 3 navigation bar with Home, Search, and Settings items, Home selected">
+
+```tsx
 import { useState } from 'react';
-import { Host, Icon, NavigationBar, NavigationBarItem, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Icon,
+  NavigationBar,
+  NavigationBarItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 const HOME_ICON = require('./assets/home.xml');
 const SEARCH_ICON = require('./assets/search.xml');
@@ -42,9 +55,13 @@ export default function BasicNavigationBar() {
   const [selectedTab, setSelectedTab] = useState('home');
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <NavigationBar>
-        <NavigationBarItem selected={selectedTab === 'home'} onClick={() => setSelectedTab('home')}>
+        <NavigationBarItem
+          selected={selectedTab === 'home'}
+          onClick={() => setSelectedTab('home')}>
           <NavigationBarItem.Icon>
             <Icon source={HOME_ICON} />
           </NavigationBarItem.Icon>
@@ -80,12 +97,23 @@ export default function BasicNavigationBar() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
-import { NavigationBar, NavigationBarItem } from '@expo/ui/jetpack-compose';
+import {
+  NavigationBar,
+  NavigationBarItem,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/navigationbar" apiName="NavigationBar" />
+<APISection
+  packageName="expo-ui/jetpack-compose/navigationbar"
+  apiName="NavigationBar"
+/>
 
-<APISection packageName="expo-ui/jetpack-compose/navigationbar" apiName="NavigationBarItem" />
+<APISection
+  packageName="expo-ui/jetpack-compose/navigationbar"
+  apiName="NavigationBarItem"
+/>

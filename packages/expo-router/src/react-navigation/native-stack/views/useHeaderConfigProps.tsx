@@ -15,7 +15,7 @@ import {
   SearchBar,
 } from 'react-native-screens';
 
-import { Color } from '../../../utils/color';
+import { isLight } from '../../../utils/color';
 import { getHeaderTitle, HeaderTitle } from '../../elements';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
 import type {
@@ -98,7 +98,7 @@ const processBarButtonItems = (
 
         if (badge) {
           const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
-          const badgeTextColor = Color(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
+          const badgeTextColor = isLight(badgeBackgroundColor) ? 'black' : 'white';
 
           processedItem = {
             ...processedItem,

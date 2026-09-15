@@ -17,3 +17,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/main.cmake)
 if (REACT_NATIVE_WORKLETS_DIR)
   include(${CMAKE_SOURCE_DIR}/cmake/worklets.cmake)
 endif ()
+
+if (EXPO_MODULES_V2_CPP_DIR AND EXISTS "${EXPO_MODULES_V2_CPP_DIR}/CMakeLists.txt")
+  include(${CMAKE_SOURCE_DIR}/cmake/modulesV2.cmake)
+endif ()

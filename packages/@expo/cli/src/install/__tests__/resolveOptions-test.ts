@@ -12,6 +12,52 @@ describe(resolveArgsAsync, () => {
       /Specify at most one of: --npm, --pnpm, --yarn/
     );
   });
+  it('rejects --check with --fix', async () => {
+    await expect(resolveArgsAsync(['--check', '--fix'])).rejects.toMatchObject({
+      code: 'BAD_ARGS',
+      message: 'Specify at most one of: --check, --fix',
+    });
+  });
+  it('rejects --json without --check', async () => {
+    await expect(resolveArgsAsync(['--json'])).rejects.toMatchObject({
+      code: 'BAD_ARGS',
+      message: 'The --json flag can only be used with --check',
+    });
+  });
+  it('allows --json with --check', async () => {
+    await expect(resolveArgsAsync(['--json', '--check'])).resolves.toEqual({
+      variadic: [],
+      options: {
+        npm: false,
+        yarn: false,
+        check: true,
+        json: true,
+        pnpm: false,
+        bun: false,
+        fix: false,
+        dev: false,
+      },
+      extras: [],
+    });
+  });
+  it('keeps arguments after -- separate from install options', async () => {
+    await expect(
+      resolveArgsAsync(['expo-camera', '--pnpm', '--', '--save-exact', '--ignore-scripts'])
+    ).resolves.toEqual({
+      variadic: ['expo-camera'],
+      options: {
+        npm: false,
+        yarn: false,
+        check: false,
+        json: false,
+        pnpm: true,
+        bun: false,
+        fix: false,
+        dev: false,
+      },
+      extras: ['--save-exact', '--ignore-scripts'],
+    });
+  });
   it(`allows known values`, async () => {
     const result = await resolveArgsAsync([
       'bacon',

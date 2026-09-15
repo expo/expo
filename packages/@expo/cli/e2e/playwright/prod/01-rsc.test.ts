@@ -35,7 +35,6 @@ for (const outputMode of outputModes) {
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
           NODE_ENV: 'production',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_RSC_ENABLED: '1',
           E2E_ROUTER_SRC: '01-rsc',
           E2E_BUILD_MARKER: 'static',

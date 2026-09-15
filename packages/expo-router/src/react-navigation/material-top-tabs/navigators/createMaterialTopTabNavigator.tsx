@@ -3,6 +3,7 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type {
   MaterialTopTabDescriptorMap,
@@ -13,8 +14,11 @@ import type {
 import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
 export interface MaterialTopTabNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
-  preloadedRouteKeys: string[];
+  preload: (name: string) => void;
+  navigateToTabSync: (name: string, params: object | undefined) => void;
 }
 
 export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig &
@@ -32,16 +36,22 @@ function MaterialTopTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   routeNames,
-  preloadedRouteKeys,
+  preload,
+  navigateToTabSync,
   ...rest
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
-    focusedRouteKey: state.routes[state.index]!.key,
+    focusedRouteKey: state.routes[state.index]?.key,
     descriptors,
   });
+  // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
+  // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
+  const topTabDescriptors = descriptors as unknown as MaterialTopTabDescriptorMap;
   const navigateToTab = (routeKey: string) => {
     const route = state.routes.find((route) => route.key === routeKey);
     if (route) {
@@ -54,7 +64,14 @@ function MaterialTopTabNavigatorContent({
     }
   };
 
-  if (visibleRoutes.length === 0) {
+  usePreloadPlaceholderRoutes({
+    routes: visibleRoutes,
+    descriptors: topTabDescriptors,
+    preload,
+    lazyByDefault: false,
+  });
+
+  if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;
   }
 
@@ -66,12 +83,15 @@ function MaterialTopTabNavigatorContent({
         routes: visibleRoutes,
         index: focusedIndex,
       }}
-      // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
-      // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
-      descriptors={descriptors as unknown as MaterialTopTabDescriptorMap}
+      descriptors={topTabDescriptors}
       emitter={emitter}
       navigateToTab={navigateToTab}
-      preloadedRouteKeys={preloadedRouteKeys}
+      navigateToTabSync={(routeKey) => {
+        const route = state.routes.find((route) => route.key === routeKey);
+        if (route) {
+          navigateToTabSync(route.name, route.params);
+        }
+      }}
     />
   );
 }

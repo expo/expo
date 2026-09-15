@@ -268,6 +268,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (void)_openJsInspector:(NSURL *)bundleURL
 {
+  // TODO(@kitten): This might be unreachable. If it isn't it shouldn't hardcode `http`, but it looks unused to me
   NSInteger port = [[bundleURL port] integerValue] ?: RCT_METRO_PORT;
   NSString *host = [bundleURL host] ?: @"localhost";
   NSString *url =

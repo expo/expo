@@ -49,7 +49,10 @@ export default function WorkletPhoneMaskExample() {
       if (formatted !== v) {
         maskedPhone.value = formatted;
         // Snaps to end for demo. Real masks need smarter cursor handling.
-        selection.value = { start: formatted.length, end: formatted.length };
+        selection.value = {
+          start: formatted.length,
+          end: formatted.length,
+        };
       }
     },
     [maskedPhone, selection]
@@ -75,4 +78,7 @@ export default function WorkletPhoneMaskExample() {
 import { useNativeState } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/usenativestate" apiName="useNativeState" />
+<APISection
+  packageName="expo-ui/swift-ui/usenativestate"
+  apiName="useNativeState"
+/>

@@ -33,7 +33,7 @@ describe('exports with url-polyfill', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
+          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.hbc$/),
         },
       },
       version: 0,

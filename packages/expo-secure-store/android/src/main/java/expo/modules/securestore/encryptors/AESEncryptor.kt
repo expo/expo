@@ -8,6 +8,7 @@ import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
+import expo.modules.securestore.toAuthenticationPromptOptions
 import org.json.JSONException
 import org.json.JSONObject
 import java.nio.charset.StandardCharsets
@@ -76,8 +77,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
   override suspend fun createEncryptedItem(
     plaintextValue: String,
     keyStoreEntry: KeyStore.SecretKeyEntry,
-    requireAuthentication: Boolean,
-    authenticationPrompt: String,
+    options: SecureStoreOptions,
     authenticationHelper: AuthenticationHelper
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
@@ -85,7 +85,10 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
     val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
-    val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthentication, authenticationPrompt)
+    val authenticatedCipher = authenticationHelper.authenticateCipher(
+      cipher,
+      options.toAuthenticationPromptOptions()
+    )
 
     return createEncryptedItemWithCipher(plaintextValue, authenticatedCipher, gcmSpec)
   }
@@ -128,7 +131,10 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
       throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)
     }
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.secretKey, gcmSpec)
-    val unlockedCipher = authenticationHelper.authenticateCipher(cipher, requiresAuthentication, options.authenticationPrompt)
+    val unlockedCipher = authenticationHelper.authenticateCipher(
+      cipher,
+      options.toAuthenticationPromptOptions(requireAuthentication = requiresAuthentication)
+    )
     return String(unlockedCipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8)
   }
 

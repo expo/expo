@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "with": ["build:webui"]
+    },
+    "build:webui": {
+      "outputs": ["dev-plugin-dist/**"],
+      "outputLogs": "new-only",
+      "dependsOn": ["build"]
+    }
+  }
+}

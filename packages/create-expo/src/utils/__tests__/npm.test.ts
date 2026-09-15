@@ -1,4 +1,26 @@
-import { applyBetaTag, getResolvedTemplateName, splitNpmNameAndTag } from '../npm';
+import {
+  applyBetaTag,
+  getResolvedTemplateName,
+  normalizeNpmPackResult,
+  splitNpmNameAndTag,
+} from '../npm';
+
+describe(normalizeNpmPackResult, () => {
+  const packageInfo = { name: 'expo-template-default', filename: 'template.tgz' };
+
+  it('supports the npm 11 and earlier array format', () => {
+    expect(normalizeNpmPackResult([packageInfo])).toEqual([packageInfo]);
+  });
+
+  it('supports the npm 12 package-keyed object format', () => {
+    expect(normalizeNpmPackResult({ 'expo-template-default': packageInfo })).toEqual([packageInfo]);
+  });
+
+  it('rejects non-container values', () => {
+    expect(normalizeNpmPackResult(null)).toBeNull();
+    expect(normalizeNpmPackResult('template.tgz')).toBeNull();
+  });
+});
 
 describe(applyBetaTag, () => {
   const originalEnv = process.env;

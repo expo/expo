@@ -77,7 +77,7 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
     {
       name: 'barcodeScannerEnabled',
       description:
-        'A boolean that determines whether to enable barcode scanning support. Disabling this reduces app size when barcode scanning is not needed.',
+        'A boolean that determines whether to enable barcode scanning support. Disabling this reduces app size when barcode scanning is not needed. On Android, this option only takes effect when `expo-camera` builds from source. [Prebuilt modules](/guides/prebuilt-expo-modules/) already include the barcode scanning libraries. To make this option apply, add `expo-camera` to `buildFromSource` in **package.json**.',
       default: 'true',
     },
   ]}

@@ -1,9 +1,19 @@
 ---
 title: Release statuses
-description: Learn about experimental, alpha, preview, beta, and stable release statuses and how they affect feature stability when using Expo SDK and Expo Application Services (EAS).
+description: Learn about the experimental, alpha, preview, beta, stable, and deprecated release statuses used across the Expo SDK, Expo Router, EAS, and Expo CLI.
 ---
 
-Expo uses different release statuses to indicate the stability and readiness of its tools and services. Understanding these statuses can help you make informed decisions about which features and versions to use in your projects.
+Expo uses various release statuses to indicate the stability and readiness of its tools and services. Understanding these statuses can help you make informed decisions about which features and versions to use in your projects.
+
+These statuses are not a single pipeline that every feature moves through. Each product area uses the statuses that fit how it ships:
+
+| Product area                         | Statuses you'll mostly see         |
+| ------------------------------------ | ---------------------------------- |
+| Expo SDK libraries and Expo Router   | [Alpha](#alpha), [Beta](#beta)     |
+| EAS services                         | [Preview](#preview), [Beta](#beta) |
+| Expo CLI and other development tools | [Experimental](#experimental)      |
+
+> **info** **Note:** Any feature can become [deprecated](#deprecated) at the end of its life, and individual APIs inside otherwise stable libraries can be [experimental](#experimental).
 
 ## Experimental
 
@@ -12,11 +22,14 @@ Experimental features are early explorations of new ideas. They are shared to va
 **What to expect:**
 
 - May change significantly or be removed entirely in any release
-- APIs and implementation can change without notice or deprecation warnings
-- May have known bugs, missing functionality, or performance issues
+- APIs are subject to change without notice or deprecation warnings
+- Treat the implementation of an experimental feature as a proof of concept rather than final
+- May have known bugs, missing functionality, or performance issues, and fixes are not guaranteed
 - Not recommended for production apps
 
 Experimental features are the earliest opportunity to try new ideas and influence whether they move forward. Test them in development environments and [share your feedback](https://expo.dev/contact) to help us decide what happens next.
+
+> **info** **Note:** This Experimental status is different from the [`experiments`](/versions/latest/config/app/#experiments) field in the [app config](/workflow/configuration/). That field enables opt-in features, which are not necessarily experimental in your Expo project's app config. For example, `experiments.typedRoutes` enables [typed routes](/router/reference/typed-routes/), which is a beta feature.
 
 ## Alpha
 
@@ -24,34 +37,31 @@ Alpha features are available for early testing but may have significant limitati
 
 **What to expect:**
 
-- APIs are subject to breaking changes without major version bumps
+- APIs are subject to breaking changes without a new SDK release
 - Implementation may change substantially based on feedback
-- May have known bugs or performance issues
 - Not recommended for production apps
 
 Alpha features are opportunities to influence the future of Expo. We encourage you to test these features in development environments and [provide feedback](https://expo.dev/contact) to help us refine them before they reach a wider audience.
 
 ## Preview
 
-Preview features provide an early look at a slice of new functionality. Unlike alpha releases, preview features are designed with minimal overhead and limited scope, but they are not yet feature-complete.
+Preview features provide an early look at a focused slice of new functionality. They are designed with minimal overhead and limited scope, but they are not yet feature-complete. You'll mostly see this status on new EAS services.
 
 **What to expect:**
 
 - A focused slice of functionality, not the full feature set
-- Designed with minimal overhead, but not yet fully validated for all production scenarios
-- APIs may evolve as the feature is built out further
-- Can be used in production with thorough testing, though functionality is limited
+- APIs are subject to breaking changes as the feature is built out
+- Can be used in production with thorough testing
 
 The purpose of a preview is to share new functionality early and gather feedback about a specific slice before building it out further. Your input directly helps shape the direction of the feature. [Share your feedback](https://expo.dev/contact) to help us prioritize what to build next.
 
 ## Beta
 
-Beta features are feature-complete and undergoing final validation. These features have core functionality implemented and are being prepared for stable release.
+Beta features are feature-complete and undergoing final validation before a stable release. You'll mostly see this status on EAS services and on SDK libraries that are close to stable.
 
 **What to expect:**
 
-- Core functionality is complete and API shape is mostly settled
-- May have minor bugs or edge cases that are being addressed
+- Core functionality is complete
 - Breaking changes are possible but unlikely unless critical issues are found
 - Can be used in production with thorough testing
 
@@ -59,25 +69,19 @@ Beta features are ready for real-world testing. While we don't expect major chan
 
 ## Stable
 
-Features without any status badge are considered stable and are fully released for production use. These features have been thoroughly tested and follow semantic versioning for any future changes.
+Features without a status badge are stable and fully released for production use.
 
 **What to expect:**
 
 - Production-ready with full support
-- Breaking changes only occur in major version releases
-- Performance and stability have been validated
-- Documentation and examples available
-
-Stable features are ready for use in any application. You can rely on them following semantic versioning principles, meaning breaking changes will only occur in major version updates.
+- Per semantic versioning, breaking changes to stable features only occur in new major versions
 
 ## Deprecated
 
-Deprecated features are those that are no longer recommended for use and will be removed in future releases. We provide deprecation warnings to give developers time to transition away from these features.
+Deprecated features are no longer recommended for use and will be removed in a future release. We provide deprecation warnings to give developers time to transition away from these features.
 
 **What to expect:**
 
-- Warnings in documentation and code when using deprecated features
-- No new features or improvements will be made
-- Removal in future major releases
-
-When you encounter a deprecated feature, we recommend planning to migrate to the suggested alternatives as soon as possible to ensure your projects remain up-to-date and maintainable.
+- Documentation and code show deprecation warnings
+- Expo may not accept feedback or issues for deprecated APIs
+- Removal of deprecated features and APIs happens in a new SDK release

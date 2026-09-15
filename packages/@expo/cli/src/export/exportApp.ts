@@ -18,7 +18,6 @@ import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOption
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
@@ -69,12 +68,6 @@ export async function exportAppAsync(
     | 'hostedNative'
   >
 ): Promise<void> {
-  // Force the environment during export and do not allow overriding it.
-  const environment = dev ? 'development' : 'production';
-  process.env.NODE_ENV = environment;
-  setNodeEnv(environment);
-  loadEnvFiles(projectRoot);
-
   const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
     // Web doesn't require validation.

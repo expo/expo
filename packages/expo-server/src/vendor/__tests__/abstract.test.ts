@@ -178,6 +178,93 @@ describe(createRequestHandler, () => {
       expect(new URL(loaderRequest.url).pathname).toBe('/second');
     });
 
+    describe('Cache-Control resolution', () => {
+      const secondRoute = {
+        file: 'second.js',
+        page: '/second',
+        namedRegex: /^\/second\/?$/,
+        routeKeys: {},
+        loader: '_expo/loaders/second.js',
+      };
+
+      function createLoaderHandler(
+        manifest: Partial<Manifest>,
+        getLoaderData: () => Promise<Response>
+      ) {
+        return createRequestHandler({
+          getRoutesManifest: jest.fn(async () => ({
+            htmlRoutes: [secondRoute],
+            apiRoutes: [],
+            notFoundRoutes: [],
+            redirects: [],
+            rewrites: [],
+            ...manifest,
+          })),
+          getHtml: jest.fn(),
+          getApiRoute: jest.fn(),
+          getMiddleware: jest.fn(),
+          getLoaderData: jest.fn(getLoaderData),
+        });
+      }
+
+      it('applies global Cache-Control headers to a headerless loader response', async () => {
+        const handler = createLoaderHandler(
+          { headers: { 'Cache-Control': 'public, max-age=30' } },
+          async () => Response.json({})
+        );
+
+        const response = await handler(new Request('http://localhost/_expo/loaders/second'));
+
+        expect(response.headers.get('Cache-Control')).toBe('public, max-age=30');
+      });
+
+      it('prefers a loader-path rule over global headers', async () => {
+        const handler = createLoaderHandler(
+          {
+            headers: { 'Cache-Control': 'public, max-age=30' },
+            pageHeaders: [
+              { namedRegex: /^\/_expo\/loaders\/.+$/, headers: { 'Cache-Control': 'no-store' } },
+            ],
+          },
+          async () => Response.json({})
+        );
+
+        const response = await handler(new Request('http://localhost/_expo/loaders/second'));
+
+        expect(response.headers.get('Cache-Control')).toBe('no-store');
+      });
+
+      it('prefers a loader-declared header over a loader-path rule', async () => {
+        const handler = createLoaderHandler(
+          {
+            pageHeaders: [
+              { namedRegex: /^\/_expo\/loaders\/.+$/, headers: { 'Cache-Control': 'no-store' } },
+            ],
+          },
+          async () => Response.json({}, { headers: { 'Cache-Control': 'no-cache, private' } })
+        );
+
+        const response = await handler(new Request('http://localhost/_expo/loaders/second'));
+
+        expect(response.headers.get('Cache-Control')).toBe('no-cache, private');
+      });
+
+      it('does not apply page-path rules to the loader endpoint', async () => {
+        const handler = createLoaderHandler(
+          {
+            pageHeaders: [
+              { namedRegex: /^\/second\/?$/, headers: { 'Cache-Control': 'public, max-age=99' } },
+            ],
+          },
+          async () => Response.json({})
+        );
+
+        const response = await handler(new Request('http://localhost/_expo/loaders/second'));
+
+        expect(response.headers.get('Cache-Control')).toBeNull();
+      });
+    });
+
     it('passes the correctly modified request to `getLoaderData()`', async () => {
       const manifest: Manifest = {
         htmlRoutes: [
@@ -537,7 +624,7 @@ describe(createRequestHandler, () => {
       expect(response.headers.get('Set-Cookie')).toBe('session=1, a=1, b=2');
     });
 
-    it('applies only global headers to API routes and loader requests, and none to redirects', async () => {
+    it('applies only global headers to API routes, page-path rules never reach loaders, and redirects get none', async () => {
       const handler = createHandler(
         {
           htmlRoutes: [

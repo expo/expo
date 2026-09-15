@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { useRef } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 
 import { Slot } from '../SlotView';
@@ -57,7 +58,8 @@ type NativeSliderProps = Omit<
   SliderProps,
   'onValueChange' | 'onEditingChanged' | 'label' | 'minimumValueLabel' | 'maximumValueLabel'
 > & {
-  onValueChanged?: (event: NativeSyntheticEvent<{ value: number }>) => void;
+  mostRecentEventCount?: number;
+  onValueChanged?: (event: NativeSyntheticEvent<{ value: number; eventCount: number }>) => void;
   onEditingChanged?: (event: NativeSyntheticEvent<{ isEditing: boolean }>) => void;
   children?: React.ReactNode;
 };
@@ -67,7 +69,10 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'SliderView'
 );
 
-function transformSliderProps(props: SliderProps): NativeSliderProps {
+function transformSliderProps(
+  props: SliderProps,
+  eventCount: { current: number }
+): NativeSliderProps {
   const {
     label,
     minimumValueLabel,
@@ -78,11 +83,11 @@ function transformSliderProps(props: SliderProps): NativeSliderProps {
   } = props;
   return {
     ...restProps,
-    onValueChanged: onValueChange
-      ? ({ nativeEvent: { value } }) => {
-          onValueChange(value);
-        }
-      : undefined,
+    mostRecentEventCount: eventCount.current,
+    onValueChanged: ({ nativeEvent: { value, eventCount: nativeEventCount } }) => {
+      eventCount.current = nativeEventCount;
+      onValueChange?.(value);
+    },
     onEditingChanged: onEditingChanged
       ? ({ nativeEvent: { isEditing } }) => {
           onEditingChanged(isEditing);
@@ -93,9 +98,10 @@ function transformSliderProps(props: SliderProps): NativeSliderProps {
 
 export function Slider(props: SliderProps) {
   const { label, minimumValueLabel, maximumValueLabel } = props;
+  const eventCount = useRef(0);
 
   return (
-    <SliderNativeView {...transformSliderProps(props)}>
+    <SliderNativeView {...transformSliderProps(props, eventCount)}>
       {label && <Slot name="label">{label}</Slot>}
       {minimumValueLabel && <Slot name="minimum">{minimumValueLabel}</Slot>}
       {maximumValueLabel && <Slot name="maximum">{maximumValueLabel}</Slot>}

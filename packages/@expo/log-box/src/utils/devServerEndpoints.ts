@@ -1,6 +1,7 @@
+import { getBundleOrigin } from 'expo/internal/bundle-origin';
+
 import type { CodeFrame, MetroStackFrame } from '../Data/Types';
 import { fetchTextAsync } from '../fetchHelper';
-import { getDevServer } from './getDevServer';
 
 export type SymbolicatedStackTrace = {
   stack: MetroStackFrame[];
@@ -15,16 +16,12 @@ export function getBaseUrl() {
     return devServerOverride;
   }
 
-  if (process.env.EXPO_OS !== 'web') {
-    const devServer = getDevServer();
-    if (!devServer.bundleLoadedFromServer) {
-      throw new Error('Cannot create devtools websocket connections in embedded environments.');
-    }
-
-    return devServer.url;
+  const bundleOrigin = getBundleOrigin();
+  if (bundleOrigin === null) {
+    throw new Error('Cannot create devtools websocket connections in embedded environments.');
   }
 
-  return window.location.protocol + '//' + window.location.host;
+  return bundleOrigin;
 }
 
 function fetchTextAsyncWithBase(url: string, init?: RequestInit) {

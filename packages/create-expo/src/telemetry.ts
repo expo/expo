@@ -6,13 +6,20 @@ import os from 'os';
 import { dotExpoHomeDirectory, getStateJsonPath } from './paths';
 import { getSession } from './sessionStorage';
 import { env } from './utils/env';
+import { PACKAGE_NAME } from './utils/update-check';
 
-const packageJSON = require('../package.json');
+const getPackageJson = () => {
+  try {
+    return require('create-expo/package.json');
+  } catch {
+    return null;
+  }
+};
 
 const xdlUnifiedWriteKey = '1wabJGd5IiuF9Q8SGlcI90v8WTs';
 const analyticsEndpoint = 'https://cdp.expo.dev/v1/batch';
 const version = '1.0.0';
-const library = packageJSON.name;
+const library = PACKAGE_NAME;
 
 //#region mostly copied from @expo/rudder-sdk-node https://github.com/expo/rudder-sdk-node/blob/main/index.ts
 // some changes include:
@@ -177,7 +184,7 @@ function getAnalyticsContext(): Record<string, any> {
   return {
     os: { name: platform, version: os.release() },
     device: { type: platform, model: platform },
-    app: { name: library, version: packageJSON.version },
+    app: { name: library, version: getPackageJson()?.version ?? undefined },
   };
 }
 //#endregion

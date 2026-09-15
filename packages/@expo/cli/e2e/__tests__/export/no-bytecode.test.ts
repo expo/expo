@@ -22,7 +22,6 @@ describe('exports for hermes with no bytecode', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
         },
@@ -79,7 +78,6 @@ describe('exports for hermes with no bytecode and no minification', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
         },

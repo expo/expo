@@ -3,6 +3,7 @@ package expo.modules.appmetrics.crashreporting
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import expo.modules.appmetrics.utils.JsonAny
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -94,6 +95,87 @@ class CrashReportTest {
     assertTrue(frames!!.isNotEmpty())
     // The crash site (this test) must appear before JUnit infrastructure frames.
     assertTrue(frames.first().symbol!!.contains("CrashReportTest"))
+  }
+
+  @Test
+  fun `builds a fatal exception log for a JVM crash`() {
+    val report = reportFromThrowable(IllegalStateException("boom"))
+
+    val log = report.toLogRecord(
+      "session",
+      CrashLogDetails(exceptionType = "java.lang.IllegalStateException")
+    )
+    val attributes = requireNotNull(JsonAny.decodeJsonStringToMap(requireNotNull(log.attributes)))
+
+    assertEquals("session", log.sessionId)
+    assertEquals("native.exception", log.name)
+    assertEquals("fatal", log.severity)
+    assertEquals(crashTimestamp, log.timestamp)
+    assertEquals("java.lang.IllegalStateException", attributes["exception.type"])
+    assertEquals("java.lang.IllegalStateException: boom", attributes["exception.message"])
+    assertEquals("nativeCrash", attributes["expo.error.source"])
+    assertEquals(true, attributes["expo.error.is_fatal"])
+  }
+
+  @Test
+  fun `builds a fatal exception log for an exit record`() {
+    val report = CrashReport(
+      signal = 11,
+      terminationReason = "Native crash",
+      appVersion = "1.2.3",
+      timestampBegin = crashTimestamp,
+      ingestedAt = ingestedAt
+    )
+
+    val attributes = requireNotNull(
+      JsonAny.decodeJsonStringToMap(requireNotNull(report.toLogRecord("session").attributes))
+    )
+
+    assertEquals("SIGSEGV", attributes["exception.type"])
+    assertEquals("Native crash", attributes["exception.message"])
+    assertNull(attributes["exception.stacktrace"])
+    assertEquals("SIGSEGV", attributes["expo.crash.signal"])
+    assertEquals(11L, attributes["expo.crash.signal_number"])
+    assertEquals("Native crash", attributes["expo.crash.termination_reason"])
+  }
+
+  @Test
+  fun `renders at most twenty-five attributed stack frames and reports the omitted count`() {
+    val report = CrashReport(
+      exceptionReason = "boom",
+      callStackTree = CrashReport.CallStackTree(
+        callStacks = listOf(
+          CrashReport.CallStackTree.CallStack(
+            threadAttributed = true,
+            callStackRootFrames = (0 until 28).map { CrashReport.CallStackTree.Frame("frame$it") }
+          ),
+          CrashReport.CallStackTree.CallStack(
+            threadAttributed = false,
+            callStackRootFrames = listOf(CrashReport.CallStackTree.Frame("unattributed"))
+          )
+        )
+      ),
+      appVersion = "1.2.3",
+      timestampBegin = crashTimestamp,
+      ingestedAt = ingestedAt
+    )
+
+    val attributes = requireNotNull(
+      JsonAny.decodeJsonStringToMap(
+        requireNotNull(
+          report.toLogRecord(
+            "session",
+            CrashLogDetails(exceptionType = "java.lang.IllegalStateException")
+          ).attributes
+        )
+      )
+    )
+    val lines = requireNotNull(attributes["exception.stacktrace"] as? String).lines()
+    assertEquals(26, lines.size)
+    assertEquals("frame0", lines.first())
+    assertEquals("frame24", lines[24])
+    assertEquals("… +3 more frames", lines.last())
+    assertFalse(lines.contains("unattributed"))
   }
 
   // MARK: JSON encoding — the payload is the cross-platform contract with types.ts

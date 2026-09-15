@@ -1,6 +1,7 @@
 import type { DependencyResolution } from 'expo-modules-autolinking/exports';
 import resolveFrom from 'resolve-from';
 
+import { dynamicRequire } from './dynamicRequire';
 import type { VersionedNativeModuleNamesCache } from './versionedNativeModules';
 import { getVersionedNativeModuleNamesAsync } from './versionedNativeModules';
 
@@ -17,7 +18,7 @@ export function importAutolinkingExportsFromProject(
     );
   }
   try {
-    const mod = require(autolinkingExportsResolved);
+    const mod = dynamicRequire(autolinkingExportsResolved);
     if (
       typeof mod.makeCachedDependenciesLinker !== 'function' ||
       typeof mod.scanDependencyResolutionsForPlatform !== 'function'

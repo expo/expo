@@ -96,8 +96,8 @@ public final class MediaLibraryNextModule: Module {
         try await this.getShape()
       }
 
-      AsyncFunction("getUri") { (this: Asset) in
-        try await this.getUri()
+      AsyncFunction("getUri") { (this: Asset, options: AssetUriOptions?) in
+        try await this.getUri(options: options ?? AssetUriOptions())
       }
 
       AsyncFunction("getWidth") { (this: Asset) in

@@ -9,7 +9,7 @@ import * as Log from '../log';
 import { directoryExistsAsync, fileExistsAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
+import { loadEnvFiles } from '../utils/nodeEnv';
 import { resolveMetroPortAsync } from '../utils/port';
 import { applyStaticHeaders, loadStaticManifestAsync, resolveStaticHeaders } from './static';
 
@@ -22,8 +22,7 @@ type Options = {
 export async function serveAsync(inputDir: string, options: Options) {
   const projectRoot = findUpProjectRootOrAssert(inputDir);
 
-  setNodeEnv('production');
-  loadEnvFiles(projectRoot);
+  loadEnvFiles(projectRoot, { mode: 'production' });
 
   const port = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,

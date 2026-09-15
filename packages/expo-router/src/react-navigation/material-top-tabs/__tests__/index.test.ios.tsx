@@ -40,77 +40,73 @@ jest.mock('react-native-pager-view', () => {
   };
 });
 
-jest.mock(
-  'react-native-tab-view',
-  () => {
-    const { Animated, View, Text, Pressable } =
-      require('react-native') as typeof import('react-native');
+jest.mock('react-native-tab-view', () => {
+  const { Animated, View, Text, Pressable } =
+    require('react-native') as typeof import('react-native');
 
-    return {
-      TabView: jest.fn((props: TabViewProps<MaterialTopTabViewRoute>) => {
-        const { navigationState, renderScene, renderTabBar, lazy, onIndexChange } = props;
-        const position = new Animated.Value(0).interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        });
-        const layout = { width: 0, height: 0 };
-        const jumpTo = (routeKey: string) => {
-          onIndexChange(navigationState.routes.findIndex((route) => route.key === routeKey));
-        };
+  return {
+    TabView: jest.fn((props: TabViewProps<MaterialTopTabViewRoute>) => {
+      const { navigationState, renderScene, renderTabBar, lazy, onIndexChange } = props;
+      const position = new Animated.Value(0).interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+      });
+      const layout = { width: 0, height: 0 };
+      const jumpTo = (routeKey: string) => {
+        onIndexChange(navigationState.routes.findIndex((route) => route.key === routeKey));
+      };
 
-        return (
-          <View>
-            {renderTabBar?.({ navigationState, options: {}, jumpTo, layout, position })}
-            {navigationState.routes.map((route, index) => {
-              const isLazy = typeof lazy === 'function' ? lazy({ route }) : lazy;
+      return (
+        <View>
+          {renderTabBar?.({ navigationState, options: {}, jumpTo, layout, position })}
+          {navigationState.routes.map((route, index) => {
+            const isLazy = typeof lazy === 'function' ? lazy({ route }) : lazy;
 
-              return index === navigationState.index || !isLazy ? (
-                <View
-                  key={route.key}
-                  style={index === navigationState.index ? undefined : { display: 'none' }}>
-                  {renderScene({ route, position, layout, jumpTo })}
-                </View>
-              ) : null;
-            })}
-          </View>
-        );
-      }),
-      TabBar: ({
-        navigationState,
-        onTabPress,
-        options,
-        jumpTo,
-      }: TabBarProps<MaterialTopTabViewRoute>) => {
-        return (
-          <View>
-            {navigationState.routes.map((route) => (
-              <Pressable
+            return index === navigationState.index || !isLazy ? (
+              <View
                 key={route.key}
-                accessibilityRole="tab"
-                onPress={() => {
-                  let defaultPrevented = false;
-                  onTabPress?.({
-                    route,
-                    defaultPrevented,
-                    preventDefault: () => {
-                      defaultPrevented = true;
-                    },
-                  });
-                  if (!defaultPrevented) {
-                    jumpTo(route.key);
-                  }
-                }}>
-                <Text>{options?.[route.key]?.labelText ?? route.name}</Text>
-              </Pressable>
-            ))}
-          </View>
-        );
-      },
-      TabBarIndicator: () => null,
-    };
-  },
-  { virtual: true }
-);
+                style={index === navigationState.index ? undefined : { display: 'none' }}>
+                {renderScene({ route, position, layout, jumpTo })}
+              </View>
+            ) : null;
+          })}
+        </View>
+      );
+    }),
+    TabBar: ({
+      navigationState,
+      onTabPress,
+      options,
+      jumpTo,
+    }: TabBarProps<MaterialTopTabViewRoute>) => {
+      return (
+        <View>
+          {navigationState.routes.map((route) => (
+            <Pressable
+              key={route.key}
+              accessibilityRole="tab"
+              onPress={() => {
+                let defaultPrevented = false;
+                onTabPress?.({
+                  route,
+                  defaultPrevented,
+                  preventDefault: () => {
+                    defaultPrevented = true;
+                  },
+                });
+                if (!defaultPrevented) {
+                  jumpTo(route.key);
+                }
+              }}>
+              <Text>{options?.[route.key]?.labelText ?? route.name}</Text>
+            </Pressable>
+          ))}
+        </View>
+      );
+    },
+    TabBarIndicator: () => null,
+  };
+});
 
 afterEach(() => {
   warnSpy.mockRestore();
@@ -303,6 +299,10 @@ test('handles screens preloading', () => {
   });
 
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).toBeNull();
+  expect(getTabViewProps().navigationState.routes[1]).toMatchObject({
+    key: 'second',
+    name: 'second',
+  });
 
   act(() => router.prefetch('/second'));
 
@@ -313,6 +313,36 @@ test('handles screens preloading', () => {
   }
   expect(tabViewProps.lazy({ route: secondRoute })).toBe(false);
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('renders an eager (default) unvisited tab after mount', () => {
+  renderRouter({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="index" />
+        <TopTabs.Screen name="second" />
+      </TopTabs>
+    ),
+    index: () => null,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  expect(screen.queryByText('Screen second', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('does not render an unvisited lazy tab', () => {
+  renderRouter({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="index" />
+        <TopTabs.Screen name="second" options={{ lazy: true }} />
+      </TopTabs>
+    ),
+    index: () => null,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  expect(screen.queryByText('Screen second', { includeHiddenElements: true })).toBeNull();
 });
 
 test('warns when navigateToTab receives an unknown route key', () => {

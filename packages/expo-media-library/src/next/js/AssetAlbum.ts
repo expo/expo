@@ -2,7 +2,14 @@ import { UnavailabilityError } from 'expo';
 import { Platform } from 'react-native';
 
 import { NativeAsset, NativeAlbum } from '../native';
-import type { AssetInfo, Location, MediaSubtype, MediaType, Shape } from '../types';
+import type {
+  AssetInfo,
+  AssetUriOptions,
+  Location,
+  MediaSubtype,
+  MediaType,
+  Shape,
+} from '../types';
 
 // Asset and Album construct each other, so their implementations live together to avoid Metro require-cycle warnings
 
@@ -84,10 +91,16 @@ export class Asset {
 
   /**
    * Gets the asset URI.
+   *
+   * On iOS this resolves to the asset as it currently appears in the Photos app. Pass
+   * `version: AssetUriVersion.ORIGINAL` to get the file the edits were applied to instead.
+   * The option is ignored on Android. Note that resolving the current version of a slow-motion
+   * or trimmed video exports a file, so it takes longer than resolving the original.
+   * @param options - Selects which version of the asset to resolve.
    * @returns A promise resolving to the asset URI.
    */
-  getUri(): Promise<string> {
-    return this.nativeAsset.getUri();
+  getUri(options?: AssetUriOptions): Promise<string> {
+    return this.nativeAsset.getUri(options);
   }
 
   /**

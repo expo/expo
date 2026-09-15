@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
@@ -10,7 +10,7 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-const AnimatedIcon = Animated.createAnimatedComponent(MaterialIcons);
+const AnimatedIcon = Animated.createAnimatedComponent(MaterialCommunityIcons);
 
 function ActionIcon({
   name,

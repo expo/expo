@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { router } from 'expo-router';
 import { FlatList, PixelRatio, StyleSheet, TouchableHighlight, View } from 'react-native';
 

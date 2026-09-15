@@ -1,0 +1,227 @@
+---
+title: 複数のアプリバリアントを設定する
+sidebar_title: 複数のアプリバリアント
+description: 1 台のデバイスに複数のアプリバリアントをインストールできるよう、動的な app config を設定する方法を学びます。
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、複数のビルド種別（development、preview、production）を 1 台のデバイスで同時に実行できるようプロジェクトを設定します。こうしておくと、別のバージョンをアンインストールして入れ直さなくても、アプリ開発のさまざまな段階をテストできます。
+
+<VideoBoxLink
+  videoId="UtJJCAfrjIg"
+  title="視聴：複数のアプリバリアントを設定する方法"
+  description="development、preview、production の各アプリバリアントに固有のバンドル識別子を設定し、1 台のデバイスで並べて実行できるようにします。"
+/>
+
+---
+
+1 台のデバイスに同時にインストールするには、各バリアントに固有の Android Application ID と iOS Bundle Identifier が必要です。**app.json** ファイルでは、これらの ID は次のように設定されています。
+
+```json app.json
+{
+  "ios": {
+    /* @info */
+    "bundleIdentifier": "com.yourname.stickersmash"
+    /* @end */
+    /* @hide ... */ /* @end */
+  },
+  "android": {
+    /* @info */
+    "package": "com.yourname.stickersmash"
+    /* @end */
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+<Step label="1">
+
+## 動的な設定のために app.config.js を追加する
+
+**app.json** はアプリ関連の設定を JSON ファイルに持ちます。これは静的なので、[一部のプロパティに動的な値を使いたい](/workflow/configuration/#dynamic-configuration) 場合には向きません。ここでは [環境変数](/workflow/configuration/#switching-configuration-based-on-the-environment) に基づいて、すべてのビルドプロファイルごとに異なる Android Application ID と iOS Bundle Identifier を設定します。
+
+- プロジェクトのルートに **app.config.js** という新しいファイルを作成します。
+- **app.config.js** で、`config` を引数に取る関数をデフォルトエクスポートします。そして `config` を分割代入して、**app.json** の既存プロパティをすべてコピーします。
+
+```js app.config.js
+export default ({ config }) => ({
+  /* @info `config` オブジェクトは app.json ファイルの既存の設定をすべてコピーします。*/
+  ...config,
+  /* @end */
+});
+```
+
+</Step>
+
+<Step label="2">
+
+## 環境に応じて動的な値を更新する
+
+ビルド種別を判別するため、**app.config.js** に `development` と `preview` のビルドプロファイル用として `IS_DEV` と `IS_PREVIEW` の 2 つの環境変数を追加しましょう。
+
+```js app.config.js
+const IS_DEV = process.env.APP_VARIANT === 'development';
+const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
+```
+
+次に、アプリ名、Android Application ID、iOS Bundle Identifier を動的に切り替える 2 つの関数を追加します。
+
+```js app.config.js
+const getUniqueIdentifier = () => {
+  if (IS_DEV) {
+    return 'com.yourname.stickersmash.dev';
+  }
+
+  if (IS_PREVIEW) {
+    return 'com.yourname.stickersmash.preview';
+  }
+
+  return 'com.yourname.stickersmash';
+};
+
+const getAppName = () => {
+  if (IS_DEV) {
+    return 'StickerSmash (Dev)';
+  }
+
+  if (IS_PREVIEW) {
+    return 'StickerSmash (Preview)';
+  }
+
+  return 'StickerSmash: Emoji Stickers';
+};
+```
+
+アプリの `name` の値には `getAppName()` を使い、development と preview のビルドで `android.package` と `ios.bundleIdentifier` を区別するために `getUniqueIdentifier()` を使います。
+
+{/* prettier-ignore */}
+```js app.config.js
+export default ({ config }) => ({
+  ...config,
+  /* @info "name" プロパティに `getAppName()` を使う */
+  name: getAppName(),
+  /* @end */
+  ios: {
+    /* @info app.json の既存の `ios` 設定を取り込む */
+    ...config.ios,
+    /* @end */
+    /* @info "bundleIdentifier" プロパティに `getUniqueIdentifier()` を使う */
+    bundleIdentifier: getUniqueIdentifier(),
+  },
+  android: {
+    /* @info app.json の既存の `android` 設定を取り込む */
+    ...config.android,
+    /* @end */
+    /* @info "package" プロパティに `getUniqueIdentifier()` を使う */
+    package: getUniqueIdentifier(),
+  },
+});
+```
+
+</Step>
+
+<Step label="3">
+
+## eas.json を設定する
+
+**eas.json** に `APP_VARIANT` 環境変数を追加します。
+
+{/* prettier-ignore */}
+```json eas.json|collapseHeight=440
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      /* @info ビルドプロファイルで環境変数を参照できるよう `env.APP_VARIANT` を追加する*/
+      "env": {
+        "APP_VARIANT": "development"
+      }
+      /* @end */
+    },
+    "preview": {
+      "distribution": "internal",
+      /* @info ビルドプロファイルで環境変数を参照できるよう `env.APP_VARIANT` を追加する*/
+      "env": {
+        "APP_VARIANT": "preview"
+      }
+      /* @end */
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+これで `eas build --profile development` を実行すると、`APP_VARIANT` が `development` に設定されます。
+
+> **Note**: Android Application ID と iOS Bundle Identifier を変更したため、EAS CLI は Android 用の新しい Keystore と iOS 用の新しいプロビジョニングプロファイルの生成を求めてきます。これらのステップの内容については、前の章を参照してください。
+
+`ios-simulator` ビルドプロファイルは `development` を継承しているので、この設定は iOS Simulator にも自動的に適用されます。
+
+</Step>
+
+<Step label="4">
+
+## 開発サーバーを実行する
+
+> ビルドが完了したら、前の章と同じ手順で実機やエミュレーター/シミュレーターにインストールしてください。
+
+開発ビルドを `APP_VARIANT` 環境変数で識別しているため、開発サーバーを起動するコマンドにもこの変数を渡す必要があります。そのために、プロジェクトの **package.json** の [`"scripts"`](https://docs.npmjs.com/cli/v10/using-npm/scripts) フィールドに `dev` スクリプトを追加します。
+
+```json package.json
+{
+  "scripts": {
+    "dev": "APP_VARIANT=development npx expo start"
+  }
+}
+```
+
+`npm run dev` コマンドを実行して開発サーバーを起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm run dev'],
+    yarn: ['$ yarn run dev'],
+    pnpm: ['$ pnpm run dev'],
+    bun: ['$ bun run dev'],
+  }}
+/>
+
+このスクリプトは **app.config.js** をローカルで評価し、`development` プロファイル用の環境変数を読み込みます。
+
+これで開発ビルドは Android と iOS の両方で動き、**app.config.js** で変更したアプリ名が表示されます。たとえば下の開発ビルドは iOS Simulator で動作しています。アプリ名が **StickerSmash (Dev)** になっていることに注目してください。
+
+<ContentSpotlight
+  alt="Development variant running on Android device."
+  src="/static/images/tutorial/eas/ios-dev-variant.webp"
+  className="max-w-[240px]"
+/>
+
+これ以降は、静的な値には **app.json** を、動的な値には **app.config.js** を使い分けられます。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/multiple-app-variants"
+  chapterTitle="第 5 章：複数のアプリバリアントを設定する"
+  summary={
+    <>
+      動的な設定のために <strong>app.config.js</strong> を作成し、<strong>app.json</strong>{' '}
+      の静的な設定はそのまま残しました。特定のビルドプロファイルを設定するために{' '}
+      <strong>eas.json</strong> に環境変数を追加し、カスタムの <strong>package.json</strong>{' '}
+      スクリプトで開発サーバーを起動する方法も学びました。
+    </>
+  }
+  nextChapterDescription="次の章では、内部配布ビルドとは何か、なぜ必要なのか、そしてどう作成するのかを学びます。"
+  nextChapterTitle="内部配布ビルドを作成して共有する"
+  nextChapterLink="/ja/tutorial/eas/internal-distribution-builds/"
+/>

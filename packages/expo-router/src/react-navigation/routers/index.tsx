@@ -11,13 +11,21 @@ export type {
   DrawerStatus,
 } from './DrawerRouter';
 export { DrawerActions, DrawerRouter } from './DrawerRouter';
+export { extendRouter, extendRouterActions } from './extendRouter';
+export type {
+  RouterActionContext,
+  RouterActionReducer,
+  RouterExtension,
+  RouterExtensionContext,
+  RouterExtensionOptions,
+} from './extendRouter';
 export type {
   StackActionHelpers,
   StackActionType,
   StackNavigationState,
   StackRouterOptions,
 } from './StackRouter';
-export { StackActions, StackRouter, getRoutesForRouteNames } from './StackRouter';
+export { StackActions, StackRouter } from './StackRouter';
 export type {
   TabActionHelpers,
   TabActionType,

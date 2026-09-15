@@ -18,6 +18,13 @@ internal func makeWorkletCallbackClass() -> ClassDefinition {
       return callback
     }
 
+    Function("setWorklet") { (callback: WorkletCallback, worklet: Worklet) in
+      // Dispatch on main thread as callback is read on the main thread
+      DispatchQueue.main.async {
+        callback.worklet = worklet
+      }
+    }
+
     Property("__expo_ui_shared_object__") { (_: WorkletCallback) -> Bool in
       true
     }

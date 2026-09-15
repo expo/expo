@@ -1,16 +1,15 @@
 'use client';
 
 import type { LoaderFunction } from 'expo-server';
-import { use, useEffect, useMemo, useSyncExternalStore } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 
 import { useContextKey } from '../Route';
-import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
-import { LoaderCacheContext } from '../loaders/LoaderCache';
+import { LoaderContext } from '../loaders/LoaderContext';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../loaders/readLoaderData';
+import { resolveLoaderPath } from '../loaders/resolveLoaderPath';
 import { fetchLoader } from '../loaders/utils';
-import { useStateForPath } from '../react-navigation/native';
-import { getSingularId } from '../useScreens';
+import { useCurrentRouteInfo } from './useCurrentRouteInfo';
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
@@ -34,45 +33,77 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  * }
  */
 export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T> {
+  const ctx = use(LoaderContext);
   const serverDataLoaderContext = use(ServerDataLoaderContext);
-  const loaderCache = use(LoaderCacheContext);
 
-  // Subscribe before any early returns so a later `loader-invalidate` re-renders this hook even
-  // when the initial render was satisfied by `ServerDataLoaderContext` or `__EXPO_ROUTER_LOADER_DATA__`.
-  // Returning early before subscribing would also change hook order on the next render once
-  // invalidation deletes the injected global.
-  useSyncExternalStore(loaderCache.subscribe, loaderCache.getSnapshot, loaderCache.getSnapshot);
+  const { client, store } = ctx;
 
-  const stateForPath = useStateForPath();
+  const routeInfo = useCurrentRouteInfo();
   const contextKey = useContextKey();
 
-  const resolvedPath = useMemo(() => {
-    const routeInfo = getRouteInfoFromState(stateForPath);
-    const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
-    const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
-    const searchString = routeInfo.searchParams?.toString() || '';
+  const resolvedPath = useMemo(
+    () => resolveLoaderPath(contextKey, routeInfo),
+    [contextKey, routeInfo]
+  );
 
-    return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
-  }, [contextKey, stateForPath]);
+  // Loader data stays in the shared Suspense store; local state only invalidates this reader.
+  const [, setVersion] = useState(0);
+
+  // Seed first so hydration is not mistaken for an update missed before subscription.
+  if (!serverDataLoaderContext) {
+    const hydrationData = globalThis.__EXPO_ROUTER_LOADER_DATA__;
+    if (hydrationData && resolvedPath in hydrationData) {
+      store.seed(resolvedPath, hydrationData[resolvedPath]);
+      delete hydrationData[resolvedPath];
+    }
+  }
+
+  // Keep this render-scoped rather than in a ref: only the committed render's effect should
+  // compare the entry it rendered with the entry present when the subscription attaches.
+  const entryAtRender = store.get(resolvedPath);
 
   useEffect(() => {
-    loaderCache.suspense.retain(resolvedPath);
-    return () => loaderCache.suspense.release(resolvedPath);
-  }, [loaderCache, resolvedPath]);
+    // Seeded routes do not reach a read miss, so register their fetcher explicitly for HMR.
+    client.registerFetcher(resolvedPath, fetchLoader);
+    const unsubscribe = client.subscribeLoader(
+      resolvedPath,
+      (result, isCurrentSource) => {
+        if (isCurrentSource) {
+          store.set(resolvedPath, result);
+          setVersion((version) => version + 1);
+        }
+      },
+      { committed: true }
+    );
+    if (store.get(resolvedPath) !== entryAtRender) {
+      setVersion((version) => version + 1);
+    }
+    return () => {
+      store.dispose(resolvedPath);
+      unsubscribe(() => store.teardown(resolvedPath));
+    };
+    // NOTE(@hassankhan): `entryAtRender` is intentionally omitted: including it would recreate
+    // the persistent subscription whenever the store entry changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client, resolvedPath, store]);
 
-  // First invocation of this hook will happen server-side, so we look up the loaded data from context
+  // Server renders read request-injected loader data directly.
   if (serverDataLoaderContext) {
     return serverDataLoaderContext[resolvedPath];
   }
 
-  // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
-  // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
-  if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
-    }
-  }
+  const result = readLoaderData<LoaderFunctionResult<T>>(ctx, resolvedPath, fetchLoader);
+  // React can replay a suspended render once its promise settles. The store then holds the
+  // settled value, so the replay must still call `use()`, or React throws "Update hook called
+  // on initial render" for every hook after this one. A fulfilled thenable makes React reuse
+  // the original promise without suspending.
+  return use(result instanceof Promise ? result : fulfilled(result));
+}
 
-  const result = readLoaderData<LoaderFunctionResult<T>>(loaderCache, resolvedPath, fetchLoader);
-  return result instanceof Promise ? use(result) : result;
+function fulfilled<T>(value: T): PromiseLike<T> {
+  return {
+    status: 'fulfilled',
+    value,
+    then: (onFulfilled) => Promise.resolve(value).then(onFulfilled),
+  } as PromiseLike<T>; // `status` and `value` are the React thenable extensions, not part of `PromiseLike`.
 }

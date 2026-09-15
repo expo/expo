@@ -1,8 +1,13 @@
-import type { ProxyNativeModule } from 'expo-modules-core';
+import { NativeModule } from 'expo';
 
-import type { NotificationBehavior } from './Notifications.types';
+import type { Notification, NotificationBehavior } from './Notifications.types';
 
-export interface NotificationsHandlerModule extends ProxyNativeModule {
+export type NotificationsHandlerModuleEvents = {
+  onHandleNotification: (event: { id: string; notification: Notification }) => void;
+  onHandleNotificationTimeout: (event: { id: string; notification: Notification }) => void;
+};
+
+export class NotificationsHandlerModule extends NativeModule<NotificationsHandlerModuleEvents> {
   handleNotificationAsync?: (
     notificationId: string,
     notificationBehavior: NotificationBehavior

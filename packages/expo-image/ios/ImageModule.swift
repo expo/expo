@@ -78,6 +78,10 @@ public final class ImageModule: Module {
         view.imageTintColor = tintColor
       }
 
+      Prop("svgVariables") { (view, svgVariables: [String: String]?) in
+        view.svgVariables = svgVariables
+      }
+
       Prop("priority") { (view, priority: ImagePriority?) in
         view.loadingOptions.remove([.lowPriority, .highPriority])
 
@@ -102,6 +106,11 @@ public final class ImageModule: Module {
 
       Prop("accessibilityLabel") { (view, label: String?) in
         view.sdImageView.accessibilityLabel = label
+      }
+
+      Prop("accessibilityElementsHidden") { (view, hidden: Bool?) in
+        view.accessibilityElementsHidden = hidden ?? false
+        view.sdImageView.accessibilityElementsHidden = hidden ?? false
       }
 
       Prop("recyclingKey") { (view, key: String?) in
@@ -211,20 +220,24 @@ public final class ImageModule: Module {
 
     AsyncFunction("generateBlurhashAsync") { (source: Either<Image, URL>, numberOfComponents: CGSize, promise: Promise) in
       let parsedNumberOfComponents = (width: Int(numberOfComponents.width), height: Int(numberOfComponents.height))
-      generatePlaceholder(source: source) { (image: UIImage) in
+      generatePlaceholder(source: source, onFailure: {
+        promise.reject(BlurhashGenerationException())
+      }, generator: { (image: UIImage) in
         if let blurhashString = blurhash(fromImage: image, numberOfComponents: parsedNumberOfComponents) {
           promise.resolve(blurhashString)
         } else {
           promise.reject(BlurhashGenerationException())
         }
-      }
+      })
     }
 
     AsyncFunction("generateThumbhashAsync") { (source: Either<Image, URL>, promise: Promise) in
-      generatePlaceholder(source: source) { (image: UIImage) in
+      generatePlaceholder(source: source, onFailure: {
+        promise.reject(ThumbhashGenerationException())
+      }, generator: { (image: UIImage) in
         let blurhashString = thumbHash(fromImage: image)
         promise.resolve(blurhashString.base64EncodedString())
-      }
+      })
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in
@@ -333,6 +346,7 @@ public final class ImageModule: Module {
 
   func generatePlaceholder(
     source: Either<Image, URL>,
+    onFailure: @escaping () -> Void,
     generator: @escaping (UIImage) -> Void
   ) {
     if let image: Image = source.get() {
@@ -341,11 +355,15 @@ public final class ImageModule: Module {
       let downloader = SDWebImageDownloader()
       downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
         DispatchQueue.global().async {
-          if let downloadedImage = image {
-            generator(downloadedImage)
+          guard let downloadedImage = image else {
+            onFailure()
+            return
           }
+          generator(downloadedImage)
         }
       })
+    } else {
+      onFailure()
     }
   }
 
@@ -353,7 +371,7 @@ public final class ImageModule: Module {
     SDImageCodersManager.shared.addCoder(WebPCoder.shared)
     SDImageCodersManager.shared.addCoder(PSDCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
-    SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
+    SDImageCodersManager.shared.addCoder(SVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
   }
 

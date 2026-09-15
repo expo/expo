@@ -1,7 +1,11 @@
+import { loadProjectEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
+import { vol } from 'memfs';
 
 import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import { InstalledDependencyVersionCheck } from '../InstalledDependencyVersionCheck';
+
+jest.mock('fs');
 
 // required by runAsync
 const additionalProjectProps = {
@@ -46,6 +50,33 @@ describe('runAsync', () => {
     expect(mockSpawnAsync.mock.calls[0]![0]).toBe('npx');
     expect(mockSpawnAsync.mock.calls[0]![1]).toEqual(['expo', 'install', '--check']);
     expect(mockSpawnAsync.mock.calls[0]![2]).toMatchObject({ env: { CI: '1' } });
+  });
+
+  it('does not pass loaded env values to expo install', async () => {
+    const originalEnv = process.env;
+    process.env = { ...originalEnv };
+    delete process.env.EXPO_PUBLIC_DOCTOR_TEST;
+    vol.fromJSON({ '/path/to/project/.env': 'EXPO_PUBLIC_DOCTOR_TEST=from-env' });
+
+    try {
+      loadProjectEnv('/path/to/project', { mode: 'development', silent: true });
+
+      const mockSpawnAsync = jest.mocked(spawnAsync).mockImplementation(() =>
+        mockSpawnPromise(
+          Promise.resolve({
+            stdout: '',
+          })
+        )
+      );
+      const check = new InstalledDependencyVersionCheck();
+      await check.runAsync({ projectRoot: '/path/to/project', ...additionalProjectProps });
+
+      expect(mockSpawnAsync.mock.calls[0]![2]?.env).not.toHaveProperty('EXPO_PUBLIC_DOCTOR_TEST');
+      expect(mockSpawnAsync.mock.calls[0]![2]?.env).not.toHaveProperty('__EXPO_ENV_LOADED');
+    } finally {
+      process.env = originalEnv;
+      vol.reset();
+    }
   });
 
   it('returns result with isSuccessful = false if check fails', async () => {

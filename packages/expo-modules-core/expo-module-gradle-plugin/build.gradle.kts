@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.1.20"
+  kotlin("jvm") version "2.2.21"
   id("java-gradle-plugin")
 }
 
@@ -29,10 +29,11 @@ val isExpoAutolinkingSettingsPluginAvailable = expoAutolinkingSettingsPlugin == 
 
 dependencies {
   implementation(gradleApi())
-  compileOnly("com.android.tools.build:gradle:8.5.0")
+  compileOnly("com.android.tools.build:gradle:9.2.1")
   implementation("com.facebook.react:react-native-gradle-plugin")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
   implementation("io.github.expo.pika:pika-gradle:1.0.0")
+  implementation("io.github.expo:expo-modules-v2-gradle-plugin:0.1.4")
 
   if (isExpoAutolinkingSettingsPluginAvailable) {
     implementation("expo.modules:expo-autolinking-plugin-shared")

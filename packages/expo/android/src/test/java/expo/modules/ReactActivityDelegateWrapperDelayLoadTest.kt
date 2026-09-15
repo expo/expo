@@ -62,7 +62,6 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
     ReactNativeFeatureFlagsForTests.setUp()
     mockkStatic(ReactNativeFeatureFlags::class)
     every { ReactNativeFeatureFlags.enableBridgelessArchitecture() } returns true
-    every { ReactNativeFeatureFlags.enableFabricRenderer() } returns true
     Dispatchers.setMain(UnconfinedTestDispatcher())
 
     MockKAnnotations.init(this)

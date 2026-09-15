@@ -14,17 +14,21 @@ This guide explains how you can change the update URL and request headers at run
 
 > **warning** The feature described in this section is available in Expo SDK 54 with the `expo-updates` version 0.29.0 and later.
 
-The primary use case for this feature is [channel surfing](/eas-update/channel-surfing/), which switches the `expo-channel-name` request header at runtime as part of a complete channel switching workflow.
+For apps using EAS Update, the primary use case for this feature is [channel surfing](/eas-update/channel-surfing/). Channel surfing switches the `expo-channel-name` request header at runtime as part of a complete channel switching workflow.
 
 For example, if you have a `default` channel for production updates and a `preview` channel for preview updates, you can override the `expo-channel-name` request header to point to the `preview` channel. This enables you to test preview updates in your current production builds.
+
+> **warning** Switching channels can cause compatibility issues when updates use different migrations or data shapes. See [Risks and considerations when switching channels](/eas-update/channel-surfing/#risks-and-considerations-when-switching-channels).
 
 Another potential use case is to provide different updates to different users, for example, so that a group of internal users (such as employees) receive updates before end-users.
 
 ### How it works
 
-You can override the `expo-channel-name` request header by calling [`Updates.setUpdateRequestHeadersOverride`](/versions/latest/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders). This will override update requests to fetch updates from the specified channel.
+You can override request headers by calling [`Updates.setUpdateRequestHeadersOverride`](/versions/latest/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders). With EAS Update, overriding the `expo-channel-name` request header makes the app request updates from the specified channel.
 
-Somewhere in your app, you would provide a way for users to trigger the change to request headers. This may be in a hidden menu that only trusted users have access to, or some other mechanism, depending on your use case. After the parameters are changed, you can call [`fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync) to fetch the update, and then [`reloadAsync()`](/versions/latest/sdk/updates/#updatesreloadasyncoptions) to reload the app. Or you can wait for the next launch, which will automatically fetch and install the update.
+To override the `expo-channel-name` header at runtime, the native build must include it. When a build profile in **eas.json** defines `channel`, EAS Build sets this header automatically to that value. Builds created outside EAS Build (for example, with `npx expo run:android`) do not set it automatically. For those builds, declare the header in [`updates.requestHeaders`](/eas-update/getting-started/#configure-update-channels-in-appjson) in your app config, then rebuild the app.
+
+Provide a way for users to trigger the request header change in your app. This may be a hidden menu that only trusted users can access or another mechanism that fits your use case. After changing the request headers, call [`fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync) to fetch the update and [`reloadAsync()`](/versions/latest/sdk/updates/#updatesreloadasyncoptions) to reload the app. You can also wait for the next launch to fetch and install the update automatically.
 
 ```js
 import * as Updates from 'expo-updates';
@@ -39,13 +43,11 @@ await Updates.fetchUpdateAsync();
 await Updates.reloadAsync();
 ```
 
-> **info** Any header you want to override at runtime must be declared in `updates.requestHeaders` in your app config.
+<Collapsible summary="Can I override other request headers?">
 
-### Risks and considerations when switching channels
+Yes. Any other header you want to override at runtime must be declared in [`updates.requestHeaders`](/eas-update/getting-started/#configure-update-channels-in-appjson) in your app config. The object you pass to `setUpdateRequestHeadersOverride()` replaces all custom request headers from the build, so include every header the app still needs while the override is active.
 
-Switching channels changes the JavaScript bundle the app runs. If your app depends on migrations or data shapes that are not compatible across channels, switching back and forth may cause issues.
-
-For example, if a beta update applies a database migration, the production version might not understand the new schema. Developers should ensure their updates remain safe to switch between or restrict switching to one direction when needed.
+</Collapsible>
 
 ## Override both update URL and request headers
 
@@ -59,7 +61,7 @@ It is important to be familiar with the [security considerations](#security-cons
 
 There are two relevant APIs:
 
-1. `Updates.setUpdateURLAndRequestHeadersOverride({ url: string, requestHeaders: Object })` - this method overrides the update URL and the request headers that are specified in **app.json** / **Expo.plist** / **AndroidManifest.xml**, such as the `expo-channel-name` header.
+1. `Updates.setUpdateURLAndRequestHeadersOverride({ updateUrl: string, requestHeaders: Object })` - this method overrides the update URL and the request headers that are specified in **app.json**/**Expo.plist**/**AndroidManifest.xml**, such as the `expo-channel-name` header.
 2. `disableAntiBrickingMeasures` - this field in the app config disables anti-bricking measures built-in to `expo-updates` which ensure subsequent updates can always be published to fix issues in previously-installed update. When you change this value, you will need to create a new build for it to take effect. **Do not enable this in your production builds.** The reason for this name is to clearly indicate that when you override the update URL/headers, we're no longer able to safely rollback to the previous update that was loaded. So, if the new update you have loaded causes the app to crash then `expo-updates`cannot automatically recover, because this field in conjunction with `setUpdateURLAndRequestHeadersOverride` will disable embedded updates and therefore there will not be any update to rollback to. The user would need to uninstall and reinstall the app. You should only use this feature in preview builds.
 
 How to use these APIs:
@@ -89,7 +91,7 @@ import * as Updates from 'expo-updates';
 // pull requests, for example.
 function overrideUpdateURLAndHeaders() {
   Updates.setUpdateURLAndRequestHeadersOverride({
-    url: 'https://u.expo.dev/{updateId}/group/{groupId}',
+    updateUrl: 'https://u.expo.dev/{updateId}/group/{groupId}',
     requestHeaders: {},
   });
 

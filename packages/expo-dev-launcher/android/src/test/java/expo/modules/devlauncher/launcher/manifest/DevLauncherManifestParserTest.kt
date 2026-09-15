@@ -149,6 +149,47 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isManifestUrl opts out of network observation`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/").toString()),
+      null
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    manifestParser.isManifestUrl()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("Expo-AppMetrics-Skip")).isEqualTo("1")
+  }
+
+  @Test
+  fun `parseManifest opts out of network observation`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "http://test.io/bundle.js"
+        }
+        """.trimIndent()
+      )
+    )
+    manifestParser.parseManifest()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("Expo-AppMetrics-Skip")).isEqualTo("1")
+  }
+
+  @Test
   fun `isManifestUrl includes forwarding headers`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
@@ -217,6 +258,35 @@ internal class DevLauncherManifestParserTest {
 
     Truth.assertThat(manifest.getBundleURL())
       .isEqualTo(server.url("/dev/index.bundle?platform=android").toString())
+  }
+
+  @Test
+  fun `parseManifest resolves relative bundle URL against a base URL without a path`() = runBlocking {
+    // A dev server URL typed without a trailing slash, e.g. `http://10.0.2.2:8081`, has an empty
+    // path. Resolving a path-relative bundle URL against it must still insert the `/` separator,
+    // otherwise the first path segment is glued onto the port and the authority becomes unparseable.
+    val baseUrl = "http://${server.hostName}:${server.port}"
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(baseUrl),
+      null
+    )
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "apps/testproject/node_modules/expo-router/entry.bundle?platform=android"
+        }
+        """.trimIndent()
+      )
+    )
+    val manifest = manifestParser.parseManifest()
+    Truth.assertThat(manifest.getBundleURL())
+      .isEqualTo("$baseUrl/apps/testproject/node_modules/expo-router/entry.bundle?platform=android")
+    Truth.assertThat(Uri.parse(manifest.getBundleURL()).port).isEqualTo(server.port)
   }
 
   @Test

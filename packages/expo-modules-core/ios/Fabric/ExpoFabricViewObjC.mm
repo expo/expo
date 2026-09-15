@@ -8,12 +8,85 @@
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 
+#import <React/RCTAssert.h>
 #import <React/RCTComponentViewFactory.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
+
+#include <cmath>
+#include <optional>
 
 using namespace expo;
 
 namespace {
+
+#if REACT_NATIVE_TARGET_VERSION >= 82
+
+/**
+ How many synchronous (`unstable_Immediate`) size commits a single view may issue per
+ main-queue turn. The synchronous mode lets a self-sizing view adopt its measured content
+ size within the current frame, but it is only safe while the measured size and the Yoga
+ layout that results from committing it converge. When they persistently disagree (e.g. the
+ Button Shapes accessibility setting changes how SwiftUI content re-measures under the frame
+ it was granted), every synchronous commit re-triggers a measurement in the same run-loop
+ turn and the feedback becomes an unbounded main-thread loop that freezes the app until the
+ watchdog kills it. Updates over the budget are coalesced locally and committed
+ asynchronously on the next turn, so a non-convergent layout settles across frames instead.
+ */
+constexpr NSUInteger kImmediateSizeUpdateBudgetPerTurn = 2;
+
+/**
+ Size deltas below this threshold (in points) are considered noise (e.g. rounding jitter
+ between the pixel grid and SwiftUI's floating point sizes) and are not re-committed.
+ */
+constexpr float kSizeEpsilon = 0.05f;
+
+struct SizePair {
+  float width;
+  float height;
+};
+
+bool nearlyEqualSize(float a, float b)
+{
+  if (std::isnan(a) || std::isnan(b)) {
+    return std::isnan(a) && std::isnan(b);
+  }
+  if (a == b) {
+    return true;
+  }
+  return std::fabs(a - b) <= kSizeEpsilon;
+}
+
+bool nearlyEqualSize(const SizePair &a, const SizePair &b)
+{
+  return nearlyEqualSize(a.width, b.width) && nearlyEqualSize(a.height, b.height);
+}
+
+/**
+ A pending size update. Each channel maps to the corresponding pair of `ExpoViewState`
+ fields; merging keeps the latest value per channel so deferred updates cannot erase
+ the other channel (unlike replacing the whole state).
+ */
+struct SizeStatePatch {
+  std::optional<SizePair> shadowDimensions;
+  std::optional<SizePair> styleDimensions;
+
+  bool empty() const
+  {
+    return !shadowDimensions && !styleDimensions;
+  }
+
+  void merge(const SizeStatePatch &newer)
+  {
+    if (newer.shadowDimensions) {
+      shadowDimensions = newer.shadowDimensions;
+    }
+    if (newer.styleDimensions) {
+      styleDimensions = newer.styleDimensions;
+    }
+  }
+};
+
+#endif // REACT_NATIVE_TARGET_VERSION >= 82
 
 id convertFollyDynamicToId(const folly::dynamic &dyn)
 {
@@ -79,6 +152,14 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 
 @implementation ExpoFabricViewObjC {
   ExpoViewShadowNode<>::ConcreteState::Shared _state;
+#if REACT_NATIVE_TARGET_VERSION >= 82
+  NSUInteger _immediateSizeUpdatesInTurn;
+  BOOL _sizeGuardResetScheduled;
+  uint64_t _sizeGuardGeneration;
+  std::optional<SizePair> _lastShadowSizeRequestInTurn;
+  std::optional<SizePair> _lastStyleSizeRequestInTurn;
+  SizeStatePatch _deferredSizePatch;
+#endif
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -170,14 +251,140 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 
 - (void)setShadowNodeSize:(float)width height:(float)height
 {
-  if (_state) {
 #if REACT_NATIVE_TARGET_VERSION >= 82
-    _state->updateState(ExpoViewState(width,height), react::EventQueue::UpdateMode::unstable_Immediate);
+  SizeStatePatch patch;
+  patch.shadowDimensions = SizePair{
+    width >= 0 ? width : std::numeric_limits<float>::quiet_NaN(),
+    height >= 0 ? height : std::numeric_limits<float>::quiet_NaN()
+  };
+  [self submitSizePatch:patch];
 #else
-    _state->updateState(ExpoViewState(width,height));
+  if (_state) {
+    _state->updateState(ExpoViewState(width, height));
+  }
 #endif
+}
+
+#if REACT_NATIVE_TARGET_VERSION >= 82
+
+- (void)submitSizePatch:(const SizeStatePatch &)patch
+{
+  RCTAssertMainQueue();
+
+  if (!_state) {
+    return;
+  }
+
+  // Transient per-turn dedup: prevents re-entrant same-size requests from
+  // committing again before `updateState` returns. Cleared every turn, so it
+  // can never go stale across turns.
+  if (patch.shadowDimensions) {
+    if (_lastShadowSizeRequestInTurn && nearlyEqualSize(*_lastShadowSizeRequestInTurn, *patch.shadowDimensions)) {
+      return;
+    }
+    _lastShadowSizeRequestInTurn = *patch.shadowDimensions;
+  }
+  if (patch.styleDimensions) {
+    if (_lastStyleSizeRequestInTurn && nearlyEqualSize(*_lastStyleSizeRequestInTurn, *patch.styleDimensions)) {
+      return;
+    }
+    _lastStyleSizeRequestInTurn = *patch.styleDimensions;
+  }
+
+  if (!_sizeGuardResetScheduled) {
+    _sizeGuardResetScheduled = YES;
+    const uint64_t generation = _sizeGuardGeneration;
+    __weak ExpoFabricViewObjC *weakSelf = self;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+      ExpoFabricViewObjC *strongSelf = weakSelf;
+      if (strongSelf == nil || strongSelf->_sizeGuardGeneration != generation) {
+        return;
+      }
+      strongSelf->_sizeGuardResetScheduled = NO;
+      strongSelf->_immediateSizeUpdatesInTurn = 0;
+      strongSelf->_lastShadowSizeRequestInTurn.reset();
+      strongSelf->_lastStyleSizeRequestInTurn.reset();
+
+      SizeStatePatch pending = strongSelf->_deferredSizePatch;
+      strongSelf->_deferredSizePatch = {};
+
+      if (!pending.empty()) {
+        // Deliberately entered into React Native's event queue only now: an
+        // `unstable_Immediate` update from any other view flushes the whole
+        // shared queue synchronously, which would pull an "asynchronous"
+        // update enqueued during the previous turn right back into the
+        // feedback loop this guard is breaking.
+        [strongSelf dispatchSizePatch:pending updateMode:react::EventQueue::UpdateMode::Asynchronous];
+      }
+    });
+  }
+
+  if (_immediateSizeUpdatesInTurn < kImmediateSizeUpdateBudgetPerTurn) {
+    _immediateSizeUpdatesInTurn++;
+    [self dispatchSizePatch:patch updateMode:react::EventQueue::UpdateMode::unstable_Immediate];
+  } else {
+    _deferredSizePatch.merge(patch);
   }
 }
+
+- (void)dispatchSizePatch:(const SizeStatePatch &)patch updateMode:(react::EventQueue::UpdateMode)updateMode
+{
+  const auto state = _state;
+  if (!state) {
+    return;
+  }
+
+  state->updateState(
+    [patch](const ExpoViewState &oldData) -> ExpoViewShadowNode<>::ConcreteState::SharedData {
+      ExpoViewState newData = oldData;
+      bool changed = false;
+
+      if (patch.shadowDimensions &&
+          !(nearlyEqualSize(oldData._width, patch.shadowDimensions->width) &&
+            nearlyEqualSize(oldData._height, patch.shadowDimensions->height))) {
+        newData._width = patch.shadowDimensions->width;
+        newData._height = patch.shadowDimensions->height;
+        changed = true;
+      }
+      if (patch.styleDimensions &&
+          !(nearlyEqualSize(oldData._styleWidth, patch.styleDimensions->width) &&
+            nearlyEqualSize(oldData._styleHeight, patch.styleDimensions->height))) {
+        newData._styleWidth = patch.styleDimensions->width;
+        newData._styleHeight = patch.styleDimensions->height;
+        changed = true;
+      }
+
+      // Returning nullptr cancels the commit before any layout work happens,
+      // so a no-op size update cannot dirty the tree.
+      return changed ? std::make_shared<const ExpoViewState>(newData) : nullptr;
+    },
+    updateMode);
+}
+
+- (void)resetSizeUpdateGuard
+{
+  _sizeGuardGeneration++;
+  _immediateSizeUpdatesInTurn = 0;
+  _sizeGuardResetScheduled = NO;
+  _lastShadowSizeRequestInTurn.reset();
+  _lastStyleSizeRequestInTurn.reset();
+  _deferredSizePatch = {};
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  [self resetSizeUpdateGuard];
+}
+
+- (void)invalidate
+{
+  [super invalidate];
+  [self resetSizeUpdateGuard];
+}
+
+#endif // REACT_NATIVE_TARGET_VERSION >= 82
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name
 {
@@ -187,16 +394,20 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 
 - (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height
 {
-  if (_state) {
-    float widthValue = width ? [width floatValue] : std::numeric_limits<float>::quiet_NaN();
-    float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
+  float widthValue = width ? [width floatValue] : std::numeric_limits<float>::quiet_NaN();
+  float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
 #if REACT_NATIVE_TARGET_VERSION >= 82
-    // synchronous update is only available in React Native 0.82 and above
-    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), react::EventQueue::UpdateMode::unstable_Immediate);
+  SizeStatePatch patch;
+  patch.styleDimensions = SizePair{
+    widthValue >= 0 ? widthValue : std::numeric_limits<float>::quiet_NaN(),
+    heightValue >= 0 ? heightValue : std::numeric_limits<float>::quiet_NaN()
+  };
+  [self submitSizePatch:patch];
 #else
+  if (_state) {
     _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
-#endif
   }
+#endif
 }
 
 #pragma mark - Component registration

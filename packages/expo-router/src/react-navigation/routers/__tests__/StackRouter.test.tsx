@@ -1,212 +1,106 @@
-import { expect, jest, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 
-import { CommonActions, type RouterConfigOptions, StackActions, StackRouter } from '..';
+import {
+  CommonActions,
+  type CommonNavigationAction,
+  extendRouterActions,
+  type ParamListBase,
+  type RouterConfigOptions,
+  StackActions,
+  type StackActionType,
+  StackRouter,
+  type StackNavigationState,
+} from '..';
+import { createInitialState } from '../../core/createInitialState';
 
-jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
-
-test('gets initial state from route names and params with initialRouteName', () => {
-  const router = StackRouter({ initialRouteName: 'baz' });
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'baz-test', name: 'baz', params: { answer: 42 } }],
-    stale: false,
-    type: 'stack',
-  });
-});
-
-test('gets initial state from route names and params without initialRouteName', () => {
-  const router = StackRouter({});
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
-    stale: false,
-    type: 'stack',
-  });
-});
-
-test('gets rehydrated state from partial state', () => {
-  const router = StackRouter({});
-
+describe('state without router type', () => {
   const options: RouterConfigOptions = {
-    routeNames: ['bar', 'baz', 'qux'],
-    routeParamList: {
-      baz: { answer: 42 },
-      qux: { name: 'Jane' },
-    },
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 1,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-1', name: 'qux' },
-          { name: 'baz', key: 'baz-test' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 1,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
-      { name: 'baz', key: 'baz-test', params: { answer: 42 } },
-    ],
-    stale: false,
-    type: 'stack',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-1', name: 'baz' },
-          { key: 'qux-2', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 2,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-1', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-2', name: 'qux', params: { name: 'Jane' } },
-    ],
-    stale: false,
-    type: 'stack',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 4,
-        routes: [],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
-    stale: false,
-    type: 'stack',
-  });
-});
-
-test('treats all routes as active when rehydrating state without an index', () => {
-  const router = StackRouter({});
-
-  expect(
-    router.getRehydratedState(
-      {
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          {
-            key: 'baz-1',
-            name: 'baz',
-            params: { id: '42' },
-            path: '/42',
-            state: { routes: [{ name: 'qux' }] },
-          },
-        ],
-      },
-      {
-        routeNames: ['bar', 'baz'],
-        routeParamList: {},
-        routeGetIdList: {},
-      }
-    )
-  ).toEqual({
-    index: 1,
-    key: 'stack-test',
     routeNames: ['bar', 'baz'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      {
-        key: 'baz-1',
-        name: 'baz',
-        params: { id: '42' },
-        path: '/42',
-        state: { routes: [{ name: 'qux' }] },
-      },
-    ],
+    routeGetIdList: { bar: ({ params }) => params?.id },
+  };
+  const createState = (index = 1): StackNavigationState<ParamListBase> => ({
     stale: false,
-    type: 'stack',
+    routeKeySeq: 0,
+    key: 'navigator:root',
+    index,
+    routeNames: options.routeNames,
+    routes: [
+      { key: 'bar', name: 'bar', params: { id: 'one' } },
+      { key: 'baz', name: 'baz' },
+    ],
+  });
+
+  test.each([
+    StackActions.push('bar'),
+    CommonActions.navigate('bar'),
+    CommonActions.goBack(),
+    CommonActions.preload('bar', { id: 'one' }),
+    CommonActions.preload('baz', { id: 'new' }),
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: options.routeNames } } as const,
+  ])('$type returns stack state', (action) => {
+    expect(StackRouter({}).getStateForAction(createState(), action, options)?.state.type).toBe(
+      'stack'
+    );
+  });
+
+  test('stamps stack state on route focus', () => {
+    expect(StackRouter({}).getStateForRouteFocus(createState(0), 'baz').type).toBe('stack');
+  });
+
+  test('stamps complete RESET state', () => {
+    const state = createState();
+    const result = StackRouter({}).getStateForAction(
+      state,
+      CommonActions.reset({ ...state, index: 0, routes: [state.routes[0]!] }),
+      options
+    );
+
+    expect(result?.state.type).toBe('stack');
+  });
+
+  test('preserves the type from complete RESET state', () => {
+    const state = createState();
+    const result = StackRouter({}).getStateForAction(
+      state,
+      CommonActions.reset({ ...state, type: 'stack' }),
+      options
+    );
+
+    expect(result?.state.type).toBe('stack');
+  });
+
+  test('warns and ignores a partial RESET state', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const result = StackRouter({}).getStateForAction(
+      createState(),
+      CommonActions.reset({ routes: [{ name: 'bar' }] }),
+      options
+    );
+
+    expect(result).toBeNull();
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('The RESET action payload must contain a complete navigation state.')
+    );
+    warn.mockRestore();
   });
 });
 
-test("doesn't rehydrate state if it's not stale", () => {
-  const router = StackRouter({});
-
+test('getStateForDeclaredRoutes keeps focus when an earlier active route is removed', () => {
   const state = {
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false as const,
+    routeKeySeq: 0,
     type: 'stack' as const,
+    key: 'navigator:stack',
+    index: 1,
+    routeNames: ['removed', 'focused', 'preloaded'],
+    routes: [
+      { key: 'removed', name: 'removed' },
+      { key: 'focused', name: 'focused' },
+      { key: 'preloaded', name: 'preloaded' },
+    ],
   };
-
-  expect(
-    router.getRehydratedState(state, {
-      routeNames: [],
-      routeParamList: {},
-      routeGetIdList: {},
-    })
-  ).toBe(state);
-});
-
-test('keeps the focused route when rehydration filters an earlier active route', () => {
-  const result = StackRouter({}).getRehydratedState(
-    {
-      index: 1,
-      routes: [
-        { key: 'removed', name: 'removed' },
-        { key: 'focused', name: 'focused' },
-        { key: 'preloaded', name: 'preloaded' },
-      ],
-    },
-    {
-      routeNames: ['focused', 'preloaded'],
-      routeParamList: {},
-      routeGetIdList: {},
-    }
-  );
+  const result = StackRouter({}).getStateForDeclaredRoutes(state, ['focused', 'preloaded']);
 
   expect(result.index).toBe(0);
   expect(result.routes.map((route) => route.key)).toEqual(['focused', 'preloaded']);
@@ -216,10 +110,10 @@ test('gets state on route names change', () => {
   const router = StackRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 2,
-        key: 'stack-test',
+        key: 'navigator:stack',
         routeNames: ['bar', 'baz', 'qux'],
         routes: [
           { key: 'bar-test', name: 'bar' },
@@ -227,56 +121,55 @@ test('gets state on route names change', () => {
           { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
         ],
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
         routeGetIdList: {},
       }
-    )
+    )?.state
   ).toEqual({
     index: 1,
-    key: 'stack-test',
+    key: 'navigator:stack',
     routeNames: ['qux', 'baz', 'foo', 'fiz'],
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
   });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
-        key: 'stack-test',
+        key: 'navigator:stack',
         routeNames: ['foo', 'bar'],
         routes: [
           { key: 'foo-test', name: 'foo' },
           { key: 'bar-test', name: 'bar' },
         ],
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
-        routeParamList: {
-          baz: { name: 'John' },
-        },
         routeGetIdList: {},
       }
-    )
+    )?.state
   ).toEqual({
     index: 0,
-    key: 'stack-test',
+    key: 'navigator:stack',
     routeNames: ['baz', 'qux'],
-    routes: [{ key: 'baz-test', name: 'baz', params: { name: 'John' } }],
+    routes: [{ key: 'baz:stack-0', name: 'baz' }],
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
   });
 });
@@ -285,33 +178,82 @@ test('gets state on route names change with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'qux' });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
-        key: 'stack-test',
+        key: 'navigator:stack',
         routeNames: ['foo', 'bar'],
         routes: [
           { key: 'foo-test', name: 'foo' },
           { key: 'bar-test', name: 'bar' },
         ],
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
-        routeParamList: {
-          baz: { name: 'John' },
-        },
         routeGetIdList: {},
       }
-    )
+    )?.state
   ).toEqual({
     index: 0,
-    key: 'stack-test',
+    key: 'navigator:stack',
     routeNames: ['baz', 'qux'],
-    routes: [{ key: 'qux-test', name: 'qux' }],
+    routes: [{ key: 'qux:stack-0', name: 'qux' }],
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
+  });
+});
+
+test('returns the same complete stack state when route names already match', () => {
+  const router = StackRouter({});
+  const state = {
+    ...createInitialState<StackNavigationState<ParamListBase>>({
+      routeNames: ['bar', 'baz'],
+      parentChain: 'test',
+    }),
+    type: 'stack' as const,
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
+      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+    )?.state
+  ).toBe(state);
+});
+
+test('promotes a surviving preloaded route when every active route is removed', () => {
+  const router = StackRouter({});
+  const state = {
+    stale: false as const,
+    routeKeySeq: 1,
+    type: 'stack' as const,
+    key: 'navigator:stack',
+    index: 0,
+    routeNames: ['active', 'preloaded', 'removed'],
+    routes: [
+      { key: 'active-test', name: 'active' },
+      { key: 'preloaded-existing', name: 'preloaded' },
+      { key: 'removed-test', name: 'removed' },
+    ],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
+      { routeNames: ['preloaded', 'new'], routeGetIdList: {} }
+    )?.state
+  ).toEqual({
+    ...state,
+    index: 0,
+    routeNames: ['preloaded', 'new'],
+    routes: [{ key: 'preloaded-existing', name: 'preloaded' }],
   });
 });
 
@@ -319,7 +261,6 @@ test('handles navigate action', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -327,8 +268,8 @@ test('handles navigate action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
-        key: 'root',
+        routeKeySeq: 0,
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -338,18 +279,19 @@ test('handles navigate action', () => {
       },
       CommonActions.navigate('qux', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
       {
-        key: 'qux-test',
+        key: 'qux:0',
         name: 'qux',
         params: { answer: 42 },
       },
@@ -360,8 +302,9 @@ test('handles navigate action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -371,17 +314,18 @@ test('handles navigate action', () => {
       },
       CommonActions.navigate('baz', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'baz:0', name: 'baz', params: { answer: 42 } },
     ],
   });
 });
@@ -390,7 +334,6 @@ test('updates params on navigate if already on the screen', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -398,8 +341,9 @@ test('updates params on navigate if already on the screen', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -409,11 +353,12 @@ test('updates params on navigate if already on the screen', () => {
       },
       CommonActions.navigate('bar', { answer: 96 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -427,7 +372,6 @@ test('merges params on navigate when specified', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -435,8 +379,9 @@ test('merges params on navigate when specified', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -446,11 +391,12 @@ test('merges params on navigate when specified', () => {
       },
       CommonActions.navigate('bar', { answer: 96 }, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -464,7 +410,6 @@ test("doesn't navigate to nonexistent screen", () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -472,8 +417,9 @@ test("doesn't navigate to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -491,7 +437,6 @@ test('ensures unique ID for navigate', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {
       bar: ({ params }) => params?.foo,
       qux: ({ params }) => params?.fux,
@@ -502,24 +447,26 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -527,27 +474,29 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 1,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
         ],
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -555,27 +504,29 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 1,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
           { key: 'bar', name: 'bar' },
         ],
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -583,28 +534,30 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 1,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
         ],
       },
       CommonActions.navigate('bar', { foo: 'b' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 2,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'b' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:1', name: 'bar', params: { foo: 'b' } },
     ],
   });
 });
@@ -613,7 +566,6 @@ test('ensure unique ID is only per route name for navigate', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {
       baz: ({ params }) => params?.foo,
       bar: ({ params }) => params?.foo,
@@ -625,8 +577,9 @@ test('ensure unique ID is only per route name for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -636,17 +589,18 @@ test('ensure unique ID is only per route name for navigate', () => {
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
       { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 });
@@ -655,7 +609,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -663,8 +616,9 @@ test('goes back to matching screen for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -678,18 +632,19 @@ test('goes back to matching screen for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
       {
-        key: 'qux-test',
+        key: 'qux:0',
         name: 'qux',
         params: { answer: 42 },
       },
@@ -700,8 +655,9 @@ test('goes back to matching screen for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -715,11 +671,12 @@ test('goes back to matching screen for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
@@ -729,8 +686,9 @@ test('goes back to matching screen for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 1,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -744,11 +702,12 @@ test('goes back to matching screen for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -762,7 +721,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {
       bar: ({ params }) => params?.foo,
       qux: ({ params }) => params?.fux,
@@ -773,13 +731,14 @@ test('goes back to matching ID for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 1,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
         ],
       },
       CommonActions.navigate({
@@ -788,16 +747,17 @@ test('goes back to matching ID for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -805,8 +765,9 @@ test('goes back to matching ID for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 3,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -822,11 +783,12 @@ test('goes back to matching ID for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -837,337 +799,10 @@ test('goes back to matching ID for navigate if pop: true', () => {
   });
 });
 
-test('handles navigate action (legacy)', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('qux', { answer: 42 }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 2,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar' },
-      {
-        key: 'qux-test',
-        name: 'qux',
-        params: { answer: 42 },
-      },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('baz', { answer: 42 }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 0,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { answer: 96 }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 1,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { answer: 96 } },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('unknown'),
-      options
-    )
-  ).toBeNull();
-});
-
-test("doesn't navigate to nonexistent screen (legacy)", () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('far', { answer: 42 }),
-      options
-    )
-  ).toBeNull();
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated({
-        name: 'far',
-        params: { answer: 42 },
-      }),
-      options
-    )
-  ).toBeNull();
-});
-
-test('ensures unique ID for navigate (legacy)', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
-    routeGetIdList: {
-      bar: ({ params }) => params?.foo,
-      qux: ({ params }) => params?.fux,
-    },
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [{ key: 'bar', name: 'bar' }],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 1,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 1,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'b' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 2,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'b' } },
-    ],
-  });
-});
-
-test('ignores legacy navigate when the matching route is preloaded', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar'],
-    routeParamList: {},
-    routeGetIdList: {
-      bar: ({ params }) => params?.foo,
-    },
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 0,
-        routeNames: ['baz', 'bar'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toBeNull();
-});
-
-test('ensure unique ID is only per route name for navigate (legacy)', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
-    routeGetIdList: {
-      baz: ({ params }) => params?.foo,
-      bar: ({ params }) => params?.foo,
-      qux: ({ params }) => params?.test,
-    },
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'qux-test', name: 'qux', params: { test: 'a' } },
-          { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 2,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'qux-test', name: 'qux', params: { test: 'a' } },
-      { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-    ],
-  });
-});
-
 test('handles go back action', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1175,8 +810,9 @@ test('handles go back action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1186,11 +822,12 @@ test('handles go back action', () => {
       },
       CommonActions.goBack(),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
@@ -1200,8 +837,9 @@ test('handles go back action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'baz', name: 'baz' }],
@@ -1216,7 +854,6 @@ test('handles pop action', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1224,8 +861,9 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1236,11 +874,12 @@ test('handles pop action', () => {
       },
       StackActions.pop(),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -1253,8 +892,9 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1265,11 +905,12 @@ test('handles pop action', () => {
       },
       StackActions.pop(2),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
@@ -1279,8 +920,9 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1291,11 +933,12 @@ test('handles pop action', () => {
       },
       StackActions.pop(4),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
@@ -1305,8 +948,9 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1317,15 +961,16 @@ test('handles pop action', () => {
       },
       {
         ...StackActions.pop(),
-        target: 'root',
+        target: 'navigator:root',
         source: 'bar-0',
       },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -1338,8 +983,9 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 4,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1352,15 +998,16 @@ test('handles pop action', () => {
       },
       {
         ...StackActions.pop(2),
-        target: 'root',
+        target: 'navigator:root',
         source: 'qux-0',
       },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -1374,8 +1021,9 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'baz-0', name: 'baz' }],
@@ -1390,7 +1038,6 @@ test('handles pop to top action', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1398,8 +1045,9 @@ test('handles pop to top action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1410,11 +1058,12 @@ test('handles pop to top action', () => {
       },
       StackActions.popToTop(),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
@@ -1425,7 +1074,6 @@ test('replaces focused screen with replace', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1433,8 +1081,9 @@ test('replaces focused screen with replace', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -1445,16 +1094,17 @@ test('replaces focused screen with replace', () => {
       },
       StackActions.replace('qux', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'qux:0', name: 'qux', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
@@ -1464,7 +1114,6 @@ test('replaces active screen with replace', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1472,8 +1121,9 @@ test('replaces active screen with replace', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -1487,16 +1137,17 @@ test('replaces active screen with replace', () => {
         source: 'baz',
       },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'qux:0', name: 'qux', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
@@ -1506,7 +1157,6 @@ test("handles replace if source key isn't present but target is not specified", 
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1514,8 +1164,9 @@ test("handles replace if source key isn't present but target is not specified", 
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -1529,17 +1180,18 @@ test("handles replace if source key isn't present but target is not specified", 
         source: 'magic',
       },
       options
-    )
+    )?.state
   ).toEqual({
     index: 1,
-    key: 'root',
+    key: 'navigator:root',
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'qux:0', name: 'qux', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
   });
 });
@@ -1548,7 +1200,6 @@ test("doesn't handle replace if source key isn't present when target is specifie
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1556,8 +1207,9 @@ test("doesn't handle replace if source key isn't present when target is specifie
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -1569,7 +1221,7 @@ test("doesn't handle replace if source key isn't present when target is specifie
       {
         ...StackActions.replace('qux', { answer: 42 }),
         source: 'magic',
-        target: 'root',
+        target: 'navigator:root',
       },
       options
     )
@@ -1580,7 +1232,6 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1588,8 +1239,9 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -1611,9 +1263,6 @@ test('handles push action', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      baz: { foo: 21 },
-    },
     routeGetIdList: {},
   };
 
@@ -1621,24 +1270,26 @@ test('handles push action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
       StackActions.push('baz'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { foo: 21 } },
+      { key: 'baz:0', name: 'baz', params: undefined },
     ],
   });
 
@@ -1646,24 +1297,26 @@ test('handles push action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
       StackActions.push('baz', { bar: 29 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { foo: 21, bar: 29 } },
+      { key: 'baz:0', name: 'baz', params: { bar: 29 } },
     ],
   });
 
@@ -1671,8 +1324,9 @@ test('handles push action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
@@ -1687,7 +1341,6 @@ test("doesn't push nonexistent screen", () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1695,8 +1348,9 @@ test("doesn't push nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1714,7 +1368,6 @@ test('ensures unique ID for push', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {
       bar: ({ params }) => params?.foo,
       qux: ({ params }) => params?.fux,
@@ -1725,24 +1378,26 @@ test('ensures unique ID for push', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
       StackActions.push('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -1750,27 +1405,29 @@ test('ensures unique ID for push', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 1,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
         ],
       },
       StackActions.push('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -1778,28 +1435,30 @@ test('ensures unique ID for push', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 1,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
         ],
       },
       StackActions.push('bar', { foo: 'b' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 2,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'b' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:1', name: 'bar', params: { foo: 'b' } },
     ],
   });
 });
@@ -1808,7 +1467,6 @@ test('ensure unique ID is only per route name for push', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {
       baz: ({ params }) => params?.foo,
       bar: ({ params }) => params?.foo,
@@ -1820,8 +1478,9 @@ test('ensure unique ID is only per route name for push', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1831,17 +1490,18 @@ test('ensure unique ID is only per route name for push', () => {
       },
       StackActions.push('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
       { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
     ],
   });
 });
@@ -1850,7 +1510,6 @@ test('adds path on navigate if provided', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1858,8 +1517,9 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1873,11 +1533,12 @@ test('adds path on navigate if provided', () => {
         path: '/foo/bar',
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -1890,8 +1551,9 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1905,11 +1567,12 @@ test('adds path on navigate if provided', () => {
         path: '/foo/baz',
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -1927,8 +1590,9 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar', params: { answer: 42 } }],
@@ -1938,17 +1602,18 @@ test('adds path on navigate if provided', () => {
         path: '/foo/bar',
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar', params: { answer: 42 } },
       {
-        key: 'baz-test',
+        key: 'baz:0',
         name: 'baz',
         path: '/foo/bar',
       },
@@ -1960,7 +1625,6 @@ test("doesn't remove existing path on navigate if not provided", () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1968,8 +1632,9 @@ test("doesn't remove existing path on navigate if not provided", () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -1983,11 +1648,12 @@ test("doesn't remove existing path on navigate if not provided", () => {
         params: { answer: 42 },
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2001,7 +1667,6 @@ test('handles popTo action', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -2009,8 +1674,9 @@ test('handles popTo action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2020,17 +1686,18 @@ test('handles popTo action', () => {
       },
       StackActions.popTo('qux', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
       {
-        key: 'qux-test',
+        key: 'qux:0',
         name: 'qux',
         params: { answer: 42 },
       },
@@ -2041,8 +1708,9 @@ test('handles popTo action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2052,11 +1720,12 @@ test('handles popTo action', () => {
       },
       StackActions.popTo('baz', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
@@ -2066,8 +1735,9 @@ test('handles popTo action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2077,11 +1747,12 @@ test('handles popTo action', () => {
       },
       StackActions.popTo('bar', { answer: 96 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2095,7 +1766,6 @@ test("doesn't popTo to nonexistent screen", () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -2103,8 +1773,9 @@ test("doesn't popTo to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2122,9 +1793,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {},
   };
 
@@ -2132,8 +1800,9 @@ test("doesn't merge params on popTo to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2144,16 +1813,17 @@ test("doesn't merge params on popTo to an existing screen", () => {
       },
       StackActions.popTo('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { color: 'test' } },
+      { key: 'bar', name: 'bar', params: undefined },
     ],
   });
 
@@ -2161,8 +1831,9 @@ test("doesn't merge params on popTo to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2172,16 +1843,17 @@ test("doesn't merge params on popTo to an existing screen", () => {
       },
       StackActions.popTo('bar', { fruit: 'orange' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { color: 'test', fruit: 'orange' } },
+      { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
     ],
   });
 });
@@ -2190,10 +1862,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {},
   };
 
@@ -2201,8 +1869,9 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2214,16 +1883,17 @@ test('merges params on popTo to an existing screen if merge: true', () => {
 
       StackActions.popTo('bar', {}, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { color: 'test', answer: 42 } },
+      { key: 'bar', name: 'bar', params: { answer: 42 } },
     ],
   });
 
@@ -2231,8 +1901,9 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2242,11 +1913,12 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       },
       StackActions.popTo('bar', { fruit: 'orange' }, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2254,7 +1926,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       {
         key: 'bar',
         name: 'bar',
-        params: { color: 'test', fruit: 'orange', answer: 42 },
+        params: { fruit: 'orange', answer: 42 },
       },
     ],
   });
@@ -2263,8 +1935,9 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2274,18 +1947,19 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       },
       StackActions.popTo('baz', { color: 'black' }, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       {
         key: 'baz',
         name: 'baz',
-        params: { foo: 12, test: 99, color: 'black' },
+        params: { test: 99, color: 'black' },
       },
     ],
   });
@@ -2295,7 +1969,6 @@ test("handles popTo if source key isn't present but target is not specified", ()
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -2303,8 +1976,9 @@ test("handles popTo if source key isn't present but target is not specified", ()
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -2318,17 +1992,18 @@ test("handles popTo if source key isn't present but target is not specified", ()
         source: 'magic',
       },
       options
-    )
+    )?.state
   ).toEqual({
     index: 1,
-    key: 'root',
+    key: 'navigator:root',
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
-      { key: 'baz', name: 'baz' },
+      { key: 'qux:0', name: 'qux', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', isPreloaded: true },
     ],
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
   });
 });
@@ -2337,7 +2012,6 @@ test('handles popTo when source and target match a route', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -2345,8 +2019,9 @@ test('handles popTo when source and target match a route', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 2,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -2358,19 +2033,20 @@ test('handles popTo when source and target match a route', () => {
       {
         ...StackActions.popTo('qux', { answer: 42 }),
         source: 'bar',
-        target: 'root',
+        target: 'navigator:root',
       },
       options
-    )
+    )?.state
   ).toEqual({
     index: 1,
-    key: 'root',
+    key: 'navigator:root',
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
+      { key: 'qux:0', name: 'qux', params: { answer: 42 } },
     ],
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
   });
 });
@@ -2379,7 +2055,6 @@ test("doesn't handle popTo if source key isn't present when target is specified"
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -2387,8 +2062,9 @@ test("doesn't handle popTo if source key isn't present when target is specified"
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routes: [
           { key: 'foo', name: 'foo' },
@@ -2400,7 +2076,7 @@ test("doesn't handle popTo if source key isn't present when target is specified"
       {
         ...StackActions.popTo('qux', { answer: 42 }),
         source: 'magic',
-        target: 'root',
+        target: 'navigator:root',
       },
       options
     )
@@ -2411,10 +2087,6 @@ test('adds route to preloaded list with preload', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2424,8 +2096,8 @@ test('adds route to preloaded list with preload', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
-        key: 'root',
+        routeKeySeq: 0,
+        key: 'navigator:root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2437,18 +2109,19 @@ test('adds route to preloaded list with preload', () => {
 
       CommonActions.preload('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar', params: { answer: 42 } },
       { key: 'qux', name: 'qux' },
-      { key: 'bar-test', name: 'bar', params: { color: 'test' } },
+      { key: 'bar:0', name: 'bar', params: undefined, isPreloaded: true },
     ],
   });
 
@@ -2456,8 +2129,9 @@ test('adds route to preloaded list with preload', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2472,18 +2146,19 @@ test('adds route to preloaded list with preload', () => {
 
       CommonActions.preload('bar', { answer: 42, something: 'else' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       {
         key: 'bar-existing',
         name: 'bar',
-        params: { answer: 42, color: 'test', something: 'else' },
+        params: { answer: 42, something: 'else' },
       },
       { key: 'baz', name: 'baz' },
     ],
@@ -2493,8 +2168,9 @@ test('adds route to preloaded list with preload', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2509,11 +2185,12 @@ test('adds route to preloaded list with preload', () => {
 
       CommonActions.preload('bar', { answer: 43 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2523,7 +2200,7 @@ test('adds route to preloaded list with preload', () => {
         params: { answer: 42, toBe: 'notMerged' },
       },
       { key: 'baz', name: 'baz' },
-      { key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } },
+      { key: 'bar:0', name: 'bar', params: { answer: 43 }, isPreloaded: true },
     ],
   });
 });
@@ -2532,7 +2209,6 @@ test('uses preloaded route when pushing a route with the same name', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -2540,8 +2216,9 @@ test('uses preloaded route when pushing a route with the same name', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2559,11 +2236,12 @@ test('uses preloaded route when pushing a route with the same name', () => {
 
       StackActions.push('qux'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2575,6 +2253,7 @@ test('uses preloaded route when pushing a route with the same name', () => {
       {
         key: 'bar-preloaded',
         name: 'bar',
+        isPreloaded: true,
       },
     ],
   });
@@ -2583,8 +2262,9 @@ test('uses preloaded route when pushing a route with the same name', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2603,11 +2283,12 @@ test('uses preloaded route when pushing a route with the same name', () => {
 
       StackActions.push('qux'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2623,19 +2304,44 @@ test('uses preloaded route when pushing a route with the same name', () => {
       {
         key: 'bar-preloaded',
         name: 'bar',
+        isPreloaded: true,
       },
     ],
   });
 });
 
+test.each([StackActions.push('bar'), CommonActions.navigate('bar')])(
+  '$type clears the marker when promoting a preloaded route',
+  (action) => {
+    const router = StackRouter({});
+    const state: StackNavigationState<ParamListBase> = {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 0,
+      routeNames: ['baz', 'bar'],
+      routes: [
+        { key: 'baz', name: 'baz' },
+        { key: 'bar-preloaded', name: 'bar', isPreloaded: true },
+      ],
+    };
+
+    const result = router.getStateForAction(state, action, {
+      routeNames: state.routeNames,
+      routeGetIdList: {},
+    })!;
+
+    const focusedRoute = result.state.routes[result.state.index]!;
+    expect(focusedRoute.key).toBe('bar-preloaded');
+    expect(focusedRoute.isPreloaded).toBeUndefined();
+  }
+);
+
 test('uses preloaded route when pushing a route with the same ID', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2645,17 +2351,18 @@ test('uses preloaded route when pushing a route with the same ID', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           {
-            key: 'qux-test',
+            key: 'qux:0',
             name: 'qux',
           },
           {
-            key: 'bar-test',
+            key: 'bar:0',
             params: {
               answer: 41,
             },
@@ -2666,19 +2373,19 @@ test('uses preloaded route when pushing a route with the same ID', () => {
 
       StackActions.push('bar', { answer: 41 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
-      { key: 'qux-test', name: 'qux' },
+      { key: 'qux:0', name: 'qux' },
       {
-        key: 'bar-test',
+        key: 'bar:0',
         params: {
-          color: 'test',
           answer: 41,
         },
         name: 'bar',
@@ -2691,13 +2398,13 @@ test('partitions active history from multiple preloaded routes', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'p1', 'p2', 'c'],
-    routeParamList: {},
     routeGetIdList: {},
   };
   const state = {
     stale: false as const,
+    routeKeySeq: 0,
     type: 'stack' as const,
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: options.routeNames,
     routes: [
@@ -2708,42 +2415,57 @@ test('partitions active history from multiple preloaded routes', () => {
     ],
   };
 
-  expect(router.getStateForAction(state, StackActions.push('p2', { preload: 2 }), options)).toEqual(
-    {
-      ...state,
-      index: 2,
-      routes: [state.routes[0], state.routes[1], state.routes[3], state.routes[2]],
-    }
-  );
+  const pushedState = router.getStateForAction(
+    state,
+    StackActions.push('p2', { preload: 2 }),
+    options
+  )?.state;
+  expect(pushedState?.index).toBe(2);
+  expect(pushedState?.routes.map((route) => route.key)).toEqual([
+    'a-key',
+    'b-key',
+    'p2-key',
+    'p1-key',
+  ]);
+  expect(pushedState?.routes[2]?.isPreloaded).toBeUndefined();
+  expect(pushedState?.routes[3]?.isPreloaded).toBe(true);
 
-  expect(
-    router.getStateForAction(
-      state,
-      CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
-      options
-    )
-  ).toEqual({
-    ...state,
-    index: 2,
-    routes: [state.routes[0], state.routes[1], state.routes[3], state.routes[2]],
-  });
+  const navigatedState = router.getStateForAction(
+    state,
+    CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
+    options
+  )?.state;
+  expect(navigatedState?.index).toBe(2);
+  expect(navigatedState?.routes.map((route) => route.key)).toEqual([
+    'a-key',
+    'b-key',
+    'p2-key',
+    'p1-key',
+  ]);
+  expect(navigatedState?.routes[2]?.isPreloaded).toBeUndefined();
+  expect(navigatedState?.routes[3]?.isPreloaded).toBe(true);
 
-  expect(router.getStateForAction(state, StackActions.push('c'), options)).toEqual({
+  expect(router.getStateForAction(state, StackActions.push('c'), options)?.state).toEqual({
     ...state,
+    routeKeySeq: 1,
     index: 2,
     routes: [
       state.routes[0],
       state.routes[1],
-      { key: 'c-test', name: 'c', params: undefined },
-      state.routes[2],
-      state.routes[3],
+      { key: 'c:0', name: 'c', params: undefined },
+      { ...state.routes[2], isPreloaded: true },
+      { ...state.routes[3], isPreloaded: true },
     ],
   });
 
-  expect(router.getStateForAction(state, StackActions.pop(), options)).toEqual({
+  expect(router.getStateForAction(state, StackActions.pop(), options)?.state).toEqual({
     ...state,
     index: 0,
-    routes: [state.routes[0], state.routes[2], state.routes[3]],
+    routes: [
+      state.routes[0],
+      { ...state.routes[2], isPreloaded: true },
+      { ...state.routes[3], isPreloaded: true },
+    ],
   });
 });
 
@@ -2751,10 +2473,6 @@ test('does not use preloaded route when pushing a route with different ID', () =
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2764,13 +2482,14 @@ test('does not use preloaded route when pushing a route with different ID', () =
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           {
-            key: 'qux-test',
+            key: 'qux:0',
             name: 'qux',
           },
           {
@@ -2786,22 +2505,23 @@ test('does not use preloaded route when pushing a route with different ID', () =
 
       StackActions.push('bar', { answer: 41 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
-      { key: 'qux-test', name: 'qux' },
+      { key: 'qux:0', name: 'qux' },
       {
-        key: 'bar-test',
+        key: 'bar:0',
         params: {
-          color: 'test',
           answer: 41,
         },
         name: 'bar',
+        path: undefined,
       },
       {
         key: 'bar-some',
@@ -2810,6 +2530,7 @@ test('does not use preloaded route when pushing a route with different ID', () =
           toBe: 'notMerged',
         },
         name: 'bar',
+        isPreloaded: true,
       },
     ],
   });
@@ -2819,9 +2540,6 @@ test('uses preloaded route when replacing current route', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {},
   };
 
@@ -2829,8 +2547,9 @@ test('uses preloaded route when replacing current route', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2845,11 +2564,12 @@ test('uses preloaded route when replacing current route', () => {
       },
       StackActions.replace('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2867,9 +2587,6 @@ test('uses preloaded route with the same ID when replacing current route', () =>
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2879,8 +2596,9 @@ test('uses preloaded route with the same ID when replacing current route', () =>
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2895,11 +2613,12 @@ test('uses preloaded route with the same ID when replacing current route', () =>
       },
       StackActions.replace('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -2917,9 +2636,6 @@ test('does not use preloaded route with different ID when replacing current rout
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2929,8 +2645,9 @@ test('does not use preloaded route with different ID when replacing current rout
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2945,24 +2662,26 @@ test('does not use preloaded route with different ID when replacing current rout
       },
       StackActions.popTo('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
       {
-        key: 'bar-test',
+        key: 'bar:0',
         name: 'bar',
-        params: { color: 'test', answer: 42 },
+        params: { answer: 42 },
       },
       {
         key: 'bar-preloaded',
         name: 'bar',
         params: { answer: 99 },
+        isPreloaded: true,
       },
     ],
   });
@@ -2972,9 +2691,6 @@ test('uses preloaded route with the same name when popTo replaces current route'
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {},
   };
 
@@ -2982,8 +2698,9 @@ test('uses preloaded route with the same name when popTo replaces current route'
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -2998,11 +2715,12 @@ test('uses preloaded route with the same name when popTo replaces current route'
       },
       StackActions.popTo('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -3020,9 +2738,6 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -3032,8 +2747,9 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -3048,11 +2764,12 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
       },
       StackActions.popTo('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
@@ -3070,9 +2787,6 @@ test('does not use preloaded route with different ID when popTo replaces current
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -3082,8 +2796,9 @@ test('does not use preloaded route with different ID when popTo replaces current
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 1,
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
@@ -3098,26 +2813,210 @@ test('does not use preloaded route with different ID when popTo replaces current
       },
       StackActions.popTo('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 1,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
       {
-        key: 'bar-test',
+        key: 'bar:0',
         name: 'bar',
-        params: { color: 'test', answer: 42 },
+        params: { answer: 42 },
       },
       {
         key: 'bar-preloaded',
         name: 'bar',
         params: { answer: 99 },
+        isPreloaded: true,
       },
     ],
+  });
+});
+
+test('returns the created route key for push', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'bar', name: 'bar' }],
+    },
+    StackActions.push('baz'),
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.affectedRouteKey).toBe('baz:0');
+});
+
+test('attaches trusted state to a pushed route', () => {
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'bar', name: 'bar' }],
+    },
+    {
+      type: 'PUSH',
+      payload: { name: 'baz', state: childState },
+    },
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[result.state.index ?? -1]?.state).toEqual({
+    routes: [{ name: 'child' }],
+  });
+});
+
+test('attaches trusted state when popping to an existing route', () => {
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 1,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar', name: 'bar' },
+        { key: 'baz', name: 'baz' },
+      ],
+    },
+    {
+      type: 'POP_TO',
+      payload: { name: 'bar', state: childState },
+    },
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[0]?.state).toEqual({ routes: [{ name: 'child' }] });
+});
+
+test('returns the exact duplicate-name route key for navigate', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 2,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar-a', name: 'bar', params: { id: 'a' } },
+        { key: 'bar-b', name: 'bar', params: { id: 'b' } },
+        { key: 'baz', name: 'baz' },
+      ],
+    },
+    CommonActions.navigate('bar', { id: 'a' }),
+    {
+      routeNames: ['bar', 'baz'],
+      routeGetIdList: { bar: ({ params }) => params?.id },
+    }
+  );
+
+  expect(result?.affectedRouteKey).toBe('bar-a');
+});
+
+test('returns the replacement key when replacing a non-focused route', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 1,
+      routeNames: ['foo', 'bar', 'qux'],
+      routes: [
+        { key: 'foo', name: 'foo' },
+        { key: 'bar', name: 'bar' },
+      ],
+    },
+    { ...StackActions.replace('qux'), source: 'foo', target: 'navigator:root' },
+    { routeNames: ['foo', 'bar', 'qux'], routeGetIdList: {} }
+  );
+
+  expect(result?.affectedRouteKey).toBe('qux:0');
+});
+
+test('returns the exact route key for popTo', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 2,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar-a', name: 'bar', params: { id: 'a' } },
+        { key: 'bar-b', name: 'bar', params: { id: 'b' } },
+        { key: 'baz', name: 'baz' },
+      ],
+    },
+    StackActions.popTo('bar', { id: 'a' }),
+    {
+      routeNames: ['bar', 'baz'],
+      routeGetIdList: { bar: ({ params }) => params?.id },
+    }
+  );
+
+  expect(result?.affectedRouteKey).toBe('bar-a');
+});
+
+test('returns the preloaded route key while focus remains elsewhere', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'baz', name: 'baz' }],
+    },
+    CommonActions.preload('bar'),
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[result.state.index ?? -1]?.key).toBe('baz');
+  expect(result?.affectedRouteKey).toBe('bar:0');
+});
+
+test('attaches trusted state to a preloaded route without changing focus', () => {
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      routeKeySeq: 0,
+      type: 'stack',
+      key: 'navigator:root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'baz', name: 'baz' }],
+    },
+    {
+      type: 'PRELOAD',
+      payload: { name: 'bar', state: childState },
+    },
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[result.state.index ?? -1]?.key).toBe('baz');
+  expect(result?.state.routes.find((route) => route.name === 'bar')?.state).toEqual({
+    routes: [{ name: 'child' }],
   });
 });
 
@@ -3125,7 +3024,6 @@ test('removes routes by name while preserving the focused route instance', () =>
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['index', 'secret', 'other'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -3133,8 +3031,9 @@ test('removes routes by name while preserving the focused route instance', () =>
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'stack',
-        key: 'root',
+        key: 'navigator:root',
         index: 3,
         routeNames: ['index', 'secret', 'other'],
         routes: [
@@ -3146,11 +3045,12 @@ test('removes routes by name while preserving the focused route instance', () =>
       },
       { type: 'REMOVE_ROUTES', payload: { routeNames: ['secret', 'other'] } },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
-    key: 'root',
+    key: 'navigator:root',
     index: 1,
     routeNames: ['index', 'secret', 'other'],
     routes: [
@@ -3166,8 +3066,9 @@ test.each(['secret', 'nonExisting'])(
     const router = StackRouter({});
     const state = {
       stale: false as const,
+      routeKeySeq: 0,
       type: 'stack' as const,
-      key: 'root',
+      key: 'navigator:root',
       index: 1,
       routeNames: ['index', 'secret'],
       routes: [
@@ -3182,10 +3083,125 @@ test.each(['secret', 'nonExisting'])(
         { type: 'REMOVE_ROUTES', payload: { routeNames: [name] } },
         {
           routeNames: state.routeNames,
-          routeParamList: {},
           routeGetIdList: {},
         }
-      )
+      )?.state
     ).toBe(state);
   }
 );
+
+test('getStateForDeclaredRoutes focuses the surviving top of the stack', () => {
+  const router = StackRouter({});
+  const state: StackNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'navigator:stack',
+    index: 2,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [
+      { key: 'bar-test', name: 'bar' },
+      { key: 'baz-test', name: 'baz' },
+      { key: 'qux-test', name: 'qux' },
+    ],
+  };
+
+  // `qux` is the focused top; dropping it leaves `baz` on top, not `bar`.
+  expect(router.getStateForDeclaredRoutes(state, ['bar', 'baz'])).toEqual({
+    ...state,
+    index: 1,
+    routes: [state.routes[0], state.routes[1]],
+  });
+});
+
+test('getStateForDeclaredRoutes returns the same state when every route is declared', () => {
+  const router = StackRouter({});
+  const state = createInitialState<StackNavigationState<ParamListBase>>({
+    routeNames: ['bar', 'baz'],
+    parentChain: 'test',
+  });
+
+  expect(router.getStateForDeclaredRoutes(state, ['bar', 'baz'])).toBe(state);
+});
+
+test('returns the same action result when preload markers are already normalized', () => {
+  const router = StackRouter({});
+  const state: StackNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'navigator:stack',
+    index: 0,
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', isPreloaded: true },
+    ],
+  };
+
+  const result = router.getStateForAction(
+    state,
+    { type: 'REMOVE_ROUTES', payload: { routeNames: ['missing'] } },
+    { routeNames: state.routeNames, routeGetIdList: {} }
+  )!;
+
+  expect(result.state).toBe(state);
+});
+
+test('does not reuse popped route keys', () => {
+  const router = StackRouter({});
+  const options = { routeNames: ['foo'], routeGetIdList: {} };
+  const initial = createInitialState<StackNavigationState<ParamListBase>>({
+    routeNames: ['foo'],
+    parentChain: 'root',
+  });
+  const push = StackActions.push('foo');
+
+  const firstPush = router.getStateForAction(initial, push, options)!.state;
+  const secondPush = router.getStateForAction(firstPush, push, options)!.state;
+  const popped = router.getStateForAction(secondPush, StackActions.pop(), options)!.state;
+  const pushedAgain = router.getStateForAction(popped, push, options)!.state;
+
+  expect(pushedAgain.routes[2]!.key).not.toBe(secondPush.routes[2]!.key);
+});
+
+describe('extended stack router', () => {
+  const options: RouterConfigOptions = { routeNames: ['index', 'second'], routeGetIdList: {} };
+  const state: StackNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'stack',
+    key: 'navigator:root',
+    routeKeySeq: 2,
+    index: 1,
+    routeNames: ['index', 'second'],
+    routes: [
+      { key: 'index:0', name: 'index' },
+      { key: 'second:1', name: 'second' },
+    ],
+  };
+
+  test('normalizes preload markers on the state returned by an extension', () => {
+    const router = extendRouterActions(
+      StackRouter,
+      (state, action: StackActionType | CommonNavigationAction | { type: 'CUSTOM' }) => {
+        if (action.type !== 'CUSTOM') {
+          return undefined;
+        }
+        return {
+          state: {
+            ...state,
+            index: 0,
+            routes: state.routes.map((route) => ({ ...route, isPreloaded: true as const })),
+          },
+          affectedRouteKey: state.routes[state.index]?.key,
+        };
+      }
+    )({});
+
+    const result = router.getStateForAction(state, { type: 'CUSTOM' }, options);
+
+    expect(result).not.toBeNull();
+    expect(result!.state.routes[0]?.isPreloaded).toBeUndefined();
+    expect(result!.state.routes[1]?.isPreloaded).toBe(true);
+  });
+});

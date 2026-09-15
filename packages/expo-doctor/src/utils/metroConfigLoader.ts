@@ -2,6 +2,8 @@ import type { InputConfigT } from '@expo/metro/metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { dynamicRequire } from './dynamicRequire';
+
 const notFoundError = (basePackage: string): Error =>
   new MetroConfigPackageMissingError(
     `Missing package "${basePackage}" in the project. ` +
@@ -20,10 +22,10 @@ function importMetroConfigFromProject(
   try {
     // NOTE(@kitten): We need to use the version of metro-config that Expo uses
     // Luckily, we can import `@expo/metro` via `expo` to get to the same version
-    const expoMetro = require.resolve('@expo/metro/metro-config', {
+    const expoMetro = dynamicRequire.resolve('@expo/metro/metro-config', {
       paths: [path.dirname(expoResolved)],
     });
-    return require(expoMetro);
+    return dynamicRequire(expoMetro);
   } catch {
     // NOTE(@kitten): Older versions of expo will not have `@expo/metro`. Let's try to
     // require `metro-config` directly
@@ -31,7 +33,7 @@ function importMetroConfigFromProject(
     if (!metroConfig) {
       throw notFoundError('react-native');
     }
-    return require(metroConfig);
+    return dynamicRequire(metroConfig);
   }
 }
 
@@ -45,7 +47,7 @@ function loadExpoMetroConfig(projectDir: string): typeof import('expo/metro-conf
   if (!expoMetroConfigResolved) {
     throw notFoundError('expo');
   }
-  _expoMetroConfig = require(expoMetroConfigResolved);
+  _expoMetroConfig = dynamicRequire(expoMetroConfigResolved);
   return _expoMetroConfig!;
 }
 

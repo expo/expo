@@ -102,6 +102,33 @@ export const getCanonicalUrl = (path: string) => {
   }
 };
 
+function collectPageHrefs(routes: NavigationRoute[], acc: Set<string>) {
+  for (const route of routes) {
+    if (!route) {
+      continue;
+    }
+    if (route.type === 'page' && route.href) {
+      acc.add(route.href);
+    }
+    if (route.children) {
+      collectPageHrefs(route.children, acc);
+    }
+  }
+}
+
+/**
+ * Resolve the path shown in the banner on unversioned pages. Returns undefined when the page has no
+ * counterpart in `latest`, which is the case for pages added after an SDK cut.
+ */
+export function getLatestVersionPath(routes: NavigationRoute[], pathname: string) {
+  const path = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const latestPath = Utilities.replaceVersionInUrl(path, 'latest');
+  const pages = new Set<string>();
+  collectPageHrefs(routes, pages);
+
+  return pages.has(latestPath) ? latestPath : undefined;
+}
+
 export const getMarkdownPath = (asPath: string) => {
   const path = asPath.split('?')[0].split('#')[0];
   if (path === '' || path === '/') {

@@ -299,8 +299,8 @@ export default function Suites({
         renderItem={({ item }) => (
           <SuiteResult suite={item} depth={0} failuresOnly={failuresOnly} />
         )}
-        ListHeaderComponent={header}
-        ListFooterComponent={footer}
+        ListHeaderComponent={header ?? undefined}
+        ListFooterComponent={footer ?? undefined}
         stickyHeaderIndices={[0]}
         onContentSizeChange={onContentSizeChange}
         onLayout={onLayout}

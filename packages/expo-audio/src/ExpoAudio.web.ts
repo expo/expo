@@ -53,13 +53,14 @@ export function useAudioPlayer(
   options: AudioPlayerOptions = {}
 ): AudioModule.AudioPlayerWeb {
   const { downloadFirst = false } = options;
+  const serializedSource = JSON.stringify(source);
 
   // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
   // If downloadFirst is false, we resolve the source here.
   // we call .replace() in the useEffect below to replace the source with the downloaded one.
   const initialSource = useMemo(() => {
     return downloadFirst ? null : resolveSource(source);
-  }, [JSON.stringify(source), downloadFirst]);
+  }, [serializedSource, downloadFirst]);
 
   const player = useReleasingSharedObject(
     () => new AudioModule.AudioPlayerWeb(initialSource, options),
@@ -86,7 +87,7 @@ export function useAudioPlayer(
     return () => {
       isCancelled = true;
     };
-  }, [player, JSON.stringify(source), downloadFirst]);
+  }, [player, serializedSource, downloadFirst]);
 
   return player;
 }
@@ -115,9 +116,10 @@ export function useAudioRecorder(
   statusListener?: (status: RecordingStatus) => void
 ): AudioModule.AudioRecorderWeb {
   const platformOptions = createRecordingOptions(options);
+  const serializedPlatformOptions = JSON.stringify(platformOptions);
   const recorder = useMemo(() => {
     return new AudioModule.AudioRecorderWeb(platformOptions);
-  }, [JSON.stringify(platformOptions)]);
+  }, [serializedPlatformOptions]);
 
   useEffect(() => {
     const subscription = recorder.addListener(RECORDING_STATUS_UPDATE, (status) => {
@@ -152,12 +154,14 @@ export async function getRecordingPermissionsAsync(): Promise<PermissionResponse
 
 export function useAudioPlaylist(options: AudioPlaylistOptions = {}): AudioModule.AudioPlaylistWeb {
   const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+  const serializedSources = JSON.stringify(sources);
 
-  const resolvedSources = useMemo(() => resolveSources(sources), [JSON.stringify(sources)]);
+  const resolvedSources = useMemo(() => resolveSources(sources), [serializedSources]);
+  const serializedResolvedSources = JSON.stringify(resolvedSources);
 
   const playlist = useMemo(
     () => new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin),
-    [JSON.stringify(resolvedSources), updateInterval, loop, crossOrigin]
+    [serializedResolvedSources, updateInterval, loop, crossOrigin]
   );
 
   useEffect(() => {

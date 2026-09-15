@@ -27,7 +27,6 @@ type Props = BottomTabNavigationConfig & {
   descriptors: BottomTabDescriptorMap;
   emitter: BottomTabEmitter;
   navigateToTab: (routeKey: string) => void;
-  preloadedRouteKeys: string[];
   popNestedStackToTop: (routeKey: string) => void;
 };
 
@@ -69,7 +68,6 @@ export function BottomTabView(props: Props) {
     descriptors,
     emitter,
     navigateToTab,
-    preloadedRouteKeys,
     popNestedStackToTop,
     safeAreaInsets,
     detachInactiveScreens = Platform.OS === 'web' ||
@@ -78,16 +76,6 @@ export function BottomTabView(props: Props) {
   } = props;
 
   const focusedRouteKey = state.routes[state.index]!.key;
-
-  /**
-   * List of loaded tabs, tabs will be loaded when navigated to.
-   */
-  const [loaded, setLoaded] = React.useState([focusedRouteKey]);
-
-  if (!loaded.includes(focusedRouteKey)) {
-    // Set the current tab to be loaded if it was not loaded before
-    setLoaded([...loaded, focusedRouteKey]);
-  }
 
   const previousRouteKeyRef = React.useRef(focusedRouteKey);
   const tabAnims = useAnimatedHashMap(state);
@@ -224,20 +212,17 @@ export function BottomTabView(props: Props) {
         {routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const {
-            lazy = true,
             animation = 'none',
             sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]!.sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = preloadedRouteKeys.includes(route.key);
 
-          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
-            // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
+          if (descriptor.route.key === undefined) {
+            // Don't render placeholder screens.
             return null;
           }
 
           const {
-            freezeOnBlur,
             header = ({ layout, options }: BottomTabHeaderProps) => (
               <Header {...options} layout={layout} title={getHeaderTitle(options, route.name)} />
             ),
@@ -274,21 +259,19 @@ export function BottomTabView(props: Props) {
               key={route.key}
               style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}
               active={activityState}
-              enabled={detachInactiveScreens}
-              freezeOnBlur={freezeOnBlur}
-              shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
+              enabled={detachInactiveScreens}>
               <BottomTabBarHeightContext.Provider
                 value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
                 <Screen
                   focused={isFocused}
-                  route={descriptor.route}
+                  route={route}
                   navigation={descriptor.navigation}
                   headerShown={headerShown}
                   headerStatusBarHeight={headerStatusBarHeight}
                   headerTransparent={headerTransparent}
                   header={header({
                     layout: dimensions,
-                    route: descriptor.route,
+                    route,
                     navigation: descriptor.navigation as BottomTabNavigationProp<ParamListBase>,
                     options: descriptor.options,
                   })}

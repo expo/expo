@@ -129,7 +129,7 @@ const style = `
 export default function loadStyle() {
   if (typeof window !== 'undefined') {
     const styleTag = document.createElement('style');
-    styleTag.innerHTML = style;
+    styleTag.textContent = style;
     styleTag.id = 'expo-image-styles';
     document.head.appendChild(styleTag);
   }

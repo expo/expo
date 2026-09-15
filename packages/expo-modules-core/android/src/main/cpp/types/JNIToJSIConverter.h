@@ -10,6 +10,7 @@
 #include "ObjectDeallocator.h"
 #include "../JavaScriptArrayBuffer.h"
 #include "../NativeArrayBuffer.h"
+#include "../MutableBufferNativeState.h"
 #include "../concepts/jni_deref.h"
 #include "../concepts/jni.h"
 #include "../concepts/jsi.h"
@@ -182,7 +183,7 @@ struct JNIToJSIConverter<JavaScriptArrayBuffer *> {
 template<>
 struct JNIToJSIConverter<NativeArrayBuffer *> {
   static jsi::Value convert(JNIEnv *, jsi::Runtime &rt, NativeArrayBuffer *value) {
-    jsi::ArrayBuffer arrayBuffer(rt, value->jsiMutableBuffer());
+    auto arrayBuffer = createNativeBackedArrayBuffer(rt, value->jsiMutableBuffer());
     return jsi::Value{rt, arrayBuffer};
   }
 };

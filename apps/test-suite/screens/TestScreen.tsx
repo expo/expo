@@ -292,13 +292,16 @@ function useTestRunner() {
     // Wrap it/xit/fit so that test functions taking unused parameters
     // (e.g. `async (t) => {}`) aren't mistaken by jasmine 5.x as
     // callback-style tests expecting a `done` argument.
-    const wrapSpec = (fn: Function) => () => fn();
+    const wrapSpec = (fn: jasmine.ImplementationCallback) => () => (fn as () => unknown)();
     const origIt = jasmine.it;
-    jasmine.it = (desc: string, fn: Function, t?: number) => origIt(desc, wrapSpec(fn), t);
+    jasmine.it = (desc: string, fn?: jasmine.ImplementationCallback, t?: number) =>
+      origIt(desc, fn && wrapSpec(fn), t);
     const origXit = jasmine.xit;
-    jasmine.xit = (desc: string, fn: Function, t?: number) => origXit(desc, wrapSpec(fn), t);
+    jasmine.xit = (desc: string, fn?: jasmine.ImplementationCallback, t?: number) =>
+      origXit(desc, fn && wrapSpec(fn), t);
     const origFit = jasmine.fit;
-    jasmine.fit = (desc: string, fn: Function, t?: number) => origFit(desc, wrapSpec(fn), t);
+    jasmine.fit = (desc: string, fn?: jasmine.ImplementationCallback, t?: number) =>
+      origFit(desc, fn && wrapSpec(fn), t);
 
     const suiteModuleMap = suiteModuleMapRef.current;
     let topLevelSuiteIndex = 0;

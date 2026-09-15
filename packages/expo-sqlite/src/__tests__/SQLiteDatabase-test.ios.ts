@@ -253,6 +253,65 @@ INSERT INTO users (name) VALUES ('aaa');
     // We still need to wait for promise1 to finish for promise1 to finalize the transaction.
     await promise1;
   }, 10000);
+
+  it('concurrent statement shorthands should each return their own rows', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(`
+CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+INSERT INTO test (id, value) VALUES (1, 'one');
+INSERT INTO test (id, value) VALUES (2, 'two');
+INSERT INTO test (id, value) VALUES (3, 'three');
+`);
+    // Each shorthand prepares its own statement, so concurrent callers must not share a cursor.
+    const rows = await Promise.all([
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 1),
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 2),
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 3),
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 1),
+    ]);
+    expect(rows.map((result) => result.map((row) => row.value))).toEqual([
+      ['one'],
+      ['two'],
+      ['three'],
+      ['one'],
+    ]);
+  });
+
+  it('concurrent writes and reads through the shorthands should all apply', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync('CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL)');
+    await Promise.all([
+      db.runAsync('INSERT INTO test (value) VALUES (?)', ['a']),
+      db.runAsync('INSERT INTO test (value) VALUES (?)', ['b']),
+      db.runAsync('INSERT INTO test (value) VALUES (?)', ['c']),
+    ]);
+    const values = await db.getAllAsync<{ value: string }>('SELECT value FROM test ORDER BY id');
+    expect(values.map((row) => row.value).sort()).toEqual(['a', 'b', 'c']);
+  });
+
+  it('getEachAsync should yield every row when abandoned partway and re-run', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(`
+CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+INSERT INTO test (id, value) VALUES (1, 'one');
+INSERT INTO test (id, value) VALUES (2, 'two');
+INSERT INTO test (id, value) VALUES (3, 'three');
+`);
+    // Breaking out of the loop finalizes the statement mid-cursor.
+    for await (const row of db.getEachAsync<{ value: string }>(
+      'SELECT value FROM test ORDER BY id'
+    )) {
+      expect(row.value).toBe('one');
+      break;
+    }
+    const all: string[] = [];
+    for await (const row of db.getEachAsync<{ value: string }>(
+      'SELECT value FROM test ORDER BY id'
+    )) {
+      all.push(row.value);
+    }
+    expect(all).toEqual(['one', 'two', 'three']);
+  });
 });
 
 describe('Database - Synchronous calls', () => {

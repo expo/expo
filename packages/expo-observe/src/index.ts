@@ -1,6 +1,19 @@
 import Observe from './module';
 
+/**
+ * @deprecated Use `Observe` instead. `AppMetrics` is the legacy name of this API from SDK 55.
+ */
 export { default as AppMetrics } from 'expo-app-metrics';
+export type {
+  AppMetricsErrorBoundaryFallbackProps,
+  AppMetricsErrorBoundaryProps,
+  AppMetricsRootProps,
+  ExpoAppMetricsModuleType,
+  LogAttributeValue,
+  LogEventOptions,
+  LogSeverity,
+  MetricAttributes,
+} from 'expo-app-metrics';
 export { ObserveErrorBoundary } from './ObserveErrorBoundary';
 export type {
   ObserveErrorBoundaryProps,
@@ -27,5 +40,7 @@ export type {
   ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,
+  ObserveNavigationIntegrationConfig,
+  ObserveNetworkTracesConfig,
 } from './types';
 export { useObserve } from './useObserve';

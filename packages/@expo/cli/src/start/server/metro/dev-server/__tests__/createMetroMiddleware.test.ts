@@ -65,6 +65,47 @@ describe(createMetroMiddleware, () => {
     expect(response.headers.get('Expires')).toBe('0');
   });
 
+  it('does not apply blanket no-cache headers to loader requests', async () => {
+    metro.middleware.use('/_expo/loaders/cacheable', (_req, res) => {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.end('{}');
+    });
+
+    const response = await server.fetch('/_expo/loaders/cacheable');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600');
+    expect(response.headers.get('Surrogate-Control')).toBeNull();
+    expect(response.headers.get('Pragma')).toBeNull();
+    expect(response.headers.get('Expires')).toBeNull();
+  });
+
+  it('strips the internal loader cache-busting param before downstream handlers', async () => {
+    let seenUrl: string | undefined;
+    metro.middleware.use('/_expo/loaders/stripped', (req, res) => {
+      seenUrl = req.url;
+      res.end('{}');
+    });
+
+    const response = await server.fetch('/_expo/loaders/stripped?user=1&_expo_loader_v=3');
+
+    expect(response.status).toBe(200);
+    expect(seenUrl).toContain('user=1');
+    expect(seenUrl).not.toContain('_expo_loader_v');
+  });
+
+  it('leaves loader URLs without the cache-busting param untouched', async () => {
+    let seenUrl: string | undefined;
+    metro.middleware.use('/_expo/loaders/untouched', (req, res) => {
+      seenUrl = req.url;
+      res.end('{}');
+    });
+
+    await server.fetch('/_expo/loaders/untouched?a=b%20c&d=1');
+
+    expect(seenUrl).toContain('a=b%20c&d=1');
+  });
+
   it('responds to /status requests', async () => {
     const response = await server.fetch('/status');
 

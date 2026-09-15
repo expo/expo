@@ -167,13 +167,21 @@ public class DevMenuManager: NSObject {
   }
 
   func openJSInspector() {
-    guard let manifestURL = currentManifestURL else {
+    // The bundle URL is the address this device reached the development server on, unlike the
+    // manifest URL, which carries the `exp` scheme and may omit the port the bundle was served on.
+    guard let bundleURL = currentBundleURL else {
       return
     }
-    let port = manifestURL.port ?? 8081
-    let host = manifestURL.host ?? "localhost"
-    let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
-    guard let url = URL(string: openURL) else { return }
+    let isServed = bundleURL.scheme == "http" || bundleURL.scheme == "https" || bundleURL.scheme == "exps" || bundleURL.scheme == "exp"
+    var components = URLComponents()
+    components.scheme = bundleURL.scheme == "https" || bundleURL.scheme == "exps" ? "https" : "http"
+    components.host = isServed ? bundleURL.host : "localhost"
+    components.port = isServed ? bundleURL.port : 8081
+    components.path = "/_expo/debugger"
+    components.queryItems = [
+      URLQueryItem(name: "applicationId", value: Bundle.main.bundleIdentifier ?? "")
+    ]
+    guard let url = components.url else { return }
     let request = NSMutableURLRequest(url: url)
     request.httpMethod = "PUT"
     URLSession.shared.dataTask(with: request as URLRequest).resume()

@@ -249,13 +249,18 @@ internal struct MediaHandler {
     let (photoUrl, pairedVideoUrl) = try generatePairedUrls(
       photoFileExtension: photoFileExtension, videoFileExtension: pairedVideoFileExtension)
 
+    // `isNetworkAccessAllowed` defaults to `false`, so without these options a Live Photo whose
+    // resources have been offloaded to iCloud can never be read.
+    let resourceOptions = PHAssetResourceRequestOptions()
+    resourceOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
+
     let imageData = try await PHAssetResourceManager.default().requestData(
-      for: photoResource, options: nil)
+      for: photoResource, options: resourceOptions)
 
     try await PHAssetResourceManager.default().writeData(
-      for: photoResource, toFile: photoUrl, options: nil)
+      for: photoResource, toFile: photoUrl, options: resourceOptions)
     try await PHAssetResourceManager.default().writeData(
-      for: videoResource, toFile: pairedVideoUrl, options: nil)
+      for: videoResource, toFile: pairedVideoUrl, options: resourceOptions)
 
     let fileSize = getFileSize(from: photoUrl)
     let mimeType = getMimeType(from: photoResource, fileExtension: photoUrl.pathExtension)
@@ -344,19 +349,25 @@ internal struct MediaHandler {
         let resourceOptions = PHAssetResourceRequestOptions()
         resourceOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
 
-        try await PHAssetResourceManager.default().writeData(
-          for: resource,
-          toFile: destinationUrl,
-          options: resourceOptions
-        )
+        do {
+          try await PHAssetResourceManager.default().writeData(
+            for: resource,
+            toFile: destinationUrl,
+            options: resourceOptions
+          )
 
-        let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
-        return try buildVideoResult(
-          for: destinationUrl,
-          withName: originalFilename,
-          mimeType: mimeType,
-          assetId: asset.localIdentifier
-        )
+          let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
+          return try buildVideoResult(
+            for: destinationUrl,
+            withName: originalFilename,
+            mimeType: mimeType,
+            assetId: asset.localIdentifier
+          )
+        } catch {
+          // Fall through to the slower path below, which writes to a freshly generated URL.
+          // Remove the partial export so truncated files don't pile up in the caches directory.
+          try? FileManager.default.removeItem(at: destinationUrl)
+        }
       }
     }
 
@@ -409,7 +420,10 @@ internal struct MediaHandler {
     // asset as *adjusted* and will re-render a temporary file for us. Copying the resource bytes
     // ourselves is dramatically faster because it just streams the already-existing file.
 
-    if options.videoExportPreset == .passthrough, let assetId = selectedVideo.assetIdentifier {
+    let photoLibraryReadStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+    let hasPhotoLibraryReadAccess = photoLibraryReadStatus == .authorized || photoLibraryReadStatus == .limited
+
+    if options.videoExportPreset == .passthrough, hasPhotoLibraryReadAccess, let assetId = selectedVideo.assetIdentifier {
       let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetId], options: nil)
       if let asset = fetchResult.firstObject {
         // Prefer the full-size resource when available, otherwise fall back to the default `.video`.
@@ -426,15 +440,21 @@ internal struct MediaHandler {
           let resourceOptions = PHAssetResourceRequestOptions()
           resourceOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
 
-          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: resourceOptions)
+          do {
+            try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: resourceOptions)
 
-          let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
-          return try buildVideoResult(
-            for: destinationUrl,
-            withName: originalFilename,
-            mimeType: mimeType,
-            assetId: assetId
-          )
+            let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
+            return try buildVideoResult(
+              for: destinationUrl,
+              withName: originalFilename,
+              mimeType: mimeType,
+              assetId: assetId
+            )
+          } catch {
+            // Fall through to the slower path below, which writes to a freshly generated URL.
+            // Remove the partial export so truncated files don't pile up in the caches directory.
+            try? FileManager.default.removeItem(at: destinationUrl)
+          }
         }
       }
       // If anything above fails we'll gracefully fall back to the existing (slower) path below.

@@ -117,6 +117,8 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
       previousDependencies.current = dependencies;
     }
     return newObject;
+    // This generic hook forwards the caller-provided dependency list, which cannot be an array literal.
+    // oxlint-disable-next-line react/use-memo
   }, dependencies);
 
   function releaseObject(obj: TSharedObject) {
@@ -156,6 +158,9 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
     }
   }, dependencies);
 
+  // Deliberately a value-less `useMemo`: its cache is dropped on fast refresh (unlike effects,
+  // which don't re-run), so re-executing it detects that a fast refresh happened.
+  // oxlint-disable-next-line react/void-use-memo
   useMemo(() => {
     isFastRefresh.current = true;
   }, []);

@@ -1,4 +1,9 @@
-import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
+import {
+  getValidInitialRoute,
+  type DynamicConvention,
+  type MiddlewareNode,
+  type RouteNode,
+} from './Route';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -876,7 +881,15 @@ function getLayoutNode(node: RouteNode, options: Options) {
   const loaded = node.loadRoute();
   if (loaded?.unstable_settings) {
     try {
-      // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        (loaded.unstable_settings.initialRouteName !== undefined ||
+          loaded.unstable_settings[groupName ?? '']?.initialRouteName !== undefined)
+      ) {
+        console.warn(
+          '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
+        );
+      }
       anchor =
         loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
     } catch (error: any) {
@@ -888,7 +901,6 @@ function getLayoutNode(node: RouteNode, options: Options) {
     }
 
     if (groupName) {
-      // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
       const groupSpecificInitialRouteName =
         loaded.unstable_settings?.[groupName]?.anchor ??
         loaded.unstable_settings?.[groupName]?.initialRouteName;
@@ -933,6 +945,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
       return child.route.replace(/\/index$/, '') === groupName;
     });
     let anchor = childMatchingGroup?.route;
+    let anchorGroupName: string | undefined;
     // We may strip loadRoute during testing
     if (!options.internal_stripLoadRoute) {
       const loaded = node.loadRoute();
@@ -956,31 +969,15 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
             loaded.unstable_settings?.[groupName]?.initialRouteName;
 
           anchor = groupSpecificInitialRouteName ?? anchor;
+          anchorGroupName = groupSpecificInitialRouteName ? groupName : undefined;
         }
       }
     }
 
     if (anchor) {
-      const anchorRoute = node.children.find((child) => child.route === anchor);
-      if (!anchorRoute) {
-        const validAnchorRoutes = node.children
-          .filter((child) => !child.generated)
-          .map((child) => `'${child.route}'`)
-          .join(', ');
-
-        if (groupName) {
-          throw new Error(
-            `Layout ${node.contextKey} has invalid anchor '${anchor}' for group '(${groupName})'. Valid options are: ${validAnchorRoutes}`
-          );
-        } else {
-          throw new Error(
-            `Layout ${node.contextKey} has invalid anchor '${anchor}'. Valid options are: ${validAnchorRoutes}`
-          );
-        }
-      }
-
       // Navigators can add initialRoutes into the history, so they need to be included in the entryPoints
-      node.initialRouteName = anchor;
+      const anchorRoute = getValidInitialRoute(node, anchor, anchorGroupName)!;
+      node.initialRouteName = anchorRoute.route;
       entryPoints.push(anchorRoute.contextKey);
     }
 

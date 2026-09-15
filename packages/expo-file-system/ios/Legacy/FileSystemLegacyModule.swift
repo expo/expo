@@ -75,11 +75,11 @@ public final class FileSystemLegacyModule: Module {
       if options.encoding == .base64 {
         return try readFileAsBase64(path: url.path, options: options)
       }
-      do {
-        return try String(contentsOfFile: url.path, encoding: options.encoding.toStringEncoding() ?? .utf8)
-      } catch {
-        throw FileNotReadableException(url.path)
-      }
+      return try readFileAsString(
+        path: url.path,
+        encoding: options.encoding.toStringEncoding() ?? .utf8,
+        options: options
+      )
     }
 
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in

@@ -1,0 +1,196 @@
+---
+title: 'EAS Workflows で Maestro による E2E テストを実行する'
+sidebar_title: E2E テスト
+description: EAS Workflows 上で Android と iOS の開発ビルドを使い、Maestro によるエンドツーエンド（E2E）テストを自動化する方法を学びます。
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+ナビゲーションの不具合やクラッシュする画面は、レビュアーがすべてのプルリクエストでアプリを動かせるとは限らないため、コードレビューをすり抜けてしまいがちです。
+
+## この章で学べること
+
+- ナビゲーションと画面の内容をテストする [Maestro](https://maestro.mobile.dev/) のフローファイルを書く
+- ワークフロー内で Android と iOS の[開発ビルド](/develop/development-builds/introduction/)に対して E2E テストを実行する
+- `on.pull_request` でプルリクエストのたびに、あるいは `on.pull_request_labeled` で必要なときだけ E2E テストをトリガーする
+
+> **important** EAS Workflows の Maestro ジョブタイプは、現時点では [alpha](/more/release-statuses/#alpha) です。
+
+## E2E テストが役に立つ理由
+
+これまでの章で作ったパイプラインは、プロジェクトをビルドしてアップデートを配信し、Slack で通知します。しかし、ナビゲーションの不具合やクラッシュする画面は、それでも気づかれないまま本番に届いてしまうことがあります。E2E テストは、実際のユーザー操作をシミュレートしてアプリが期待どおりに動くことを検証することで、こうした問題が本番に届く前に見つける助けになります。
+
+[Maestro](https://maestro.mobile.dev/) は、Android エミュレーターや iOS シミュレーター上でビルド済みのアプリに対して自動化されたフローを実行します。ボタンをタップし、テキストを入力し、画面の内容を検証し、画面間を移動できます。EAS Workflows は、Android 向けの APK または iOS シミュレーター向けのビルドを作成したあと、これらのフローをクラウド上で実行します。
+
+## E2E テストをセットアップする
+
+Android と iOS のどちらについても、E2E テスト用の専用の[ビルドプロファイル](/build/eas-json/)を追加する必要があります。このプロファイルは、Android では認証情報のセットアップを省略し、iOS ではビルドをシミュレーター上で実行できるようにします。
+
+<Step label="1">
+
+### e2e-test ビルドプロファイルを追加する
+
+**eas.json** に `e2e-test` プロファイルを追加します。このプロファイルは、Android では署名なしの APK を、iOS ではシミュレーター向けのビルドを作成します。
+
+```json eas.json
+{
+  /* @hide ... */ /* @end */
+  "build": {
+    "e2e-test": {
+      "withoutCredentials": true,
+      "android": {
+        "buildType": "apk",
+        "image": "latest"
+      },
+      "ios": {
+        "simulator": true,
+        "image": "latest"
+      }
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+### Maestro のフローファイルを追加する
+
+Expo プロジェクトのルートに **.maestro/** ディレクトリを作成し、次のテストファイルを追加します。
+
+たとえば次のコードスニペットは、アプリを起動して "Welcome" というテキストが表示されることを確認する、基本的なホーム画面のテストです。`appId` の `com.yourname.yourapp` は、自分のアプリの値に置き換えてください。Android では [`android.package`](/versions/latest/config/app/#package)、iOS では [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) で、いずれも **app.json** に定義されています。
+
+```yaml .maestro/home.yml
+appId: com.yourname.yourapp # Replace with your app's package name/bundle identifier from app config file
+---
+- launchApp
+- assertVisible: 'Welcome'
+```
+
+続いて、設定画面用のテストをもう 1 つ追加できます。
+
+```yaml .maestro/navigate.yml
+appId: com.yourname.yourapp # Replace with your app's package name/bundle identifier from app config file
+---
+- launchApp
+- tapOn: 'Settings'
+- assertVisible: 'Settings'
+```
+
+</Step>
+
+## E2E テスト用のワークフローを作成する
+
+<Step label="1">
+
+### e2e-tests.yml を作成する
+
+**.eas/workflows/** の中に **e2e-tests.yml** という新しいファイルを追加し、次のコードを記述します。
+
+```yaml .eas/workflows/e2e-tests.yml
+name: E2E Tests
+
+jobs:
+  build_android:
+    name: Build Android for E2E
+    type: build
+    params:
+      platform: android
+      profile: e2e-test
+  build_ios:
+    name: Build iOS for E2E
+    type: build
+    params:
+      platform: ios
+      profile: e2e-test
+  test_android:
+    name: Run Maestro tests (Android)
+    needs: [build_android]
+    type: maestro
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      flow_path: ['.maestro/home.yml', '.maestro/navigate.yml']
+  test_ios:
+    name: Run Maestro tests (iOS)
+    needs: [build_ios]
+    type: maestro
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      flow_path: ['.maestro/home.yml', '.maestro/navigate.yml']
+```
+
+上のワークフローには、Android と iOS 向けの 2 つのビルドジョブ `build_android` と `build_ios` があります。それぞれのビルドのあとに、対応する Maestro ジョブ（`test_android` または `test_ios`）がそのプラットフォーム向けのテストを実行します。
+
+各 Maestro ジョブは、`build_id` でビルドを参照し、`flow_path` で Maestro のフローファイルを指定します。
+
+</Step>
+
+<Step label="2">
+
+### ワークフローを手動で実行する
+
+`eas workflow:run` コマンドを使ってワークフローを手動で実行します。
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/e2e-tests.yml']} />
+
+EAS ダッシュボードでは、Android と iOS のビルドが並列に始まることが分かります。各ビルドが完了すると、対応する Maestro のテストジョブがそのビルドに対してフローファイルを実行します。
+
+<ContentSpotlight
+  alt="開発ビルドに対して Android と iOS のテストジョブを並列に実行している Maestro の E2E テスト実行を表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-run.png"
+  className="max-w-160"
+/>
+
+<ContentSpotlight
+  alt="Android と iOS の開発ビルドに対する Maestro の E2E テストジョブが正常に完了したことを表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-success.webp"
+  className="max-w-160"
+/>
+
+</Step>
+
+## E2E テストを自動でトリガーする
+
+ここまでは、ワークフローを手動で実行してきました。GitHub のイベントからトリガーすれば、プルリクエストのたびに実行したり、プルリクエストのラベルで必要なときだけ実行したりできます。
+
+### プルリクエストのたびに実行する
+
+プルリクエストのたびに E2E テストを実行するには、ワークフローに `on.pull_request` トリガーを追加します。
+
+```yaml .eas/workflows/e2e-tests.yml
+on:
+  pull_request:
+    branches: ['*']
+```
+
+### ラベルで必要なときだけ実行する
+
+必要なときだけ E2E テストを実行するには、[`on.pull_request_labeled`](/eas/workflows/syntax/#onpull_request_labeled) トリガーを使います。このトリガーは `labels` パラメーターを受け取り、そのいずれかのラベルがプルリクエストに追加されたときにだけワークフローが実行されます。たとえば、`test` ラベルを E2E テストのワークフローのトリガーに使えます。
+
+```yaml .eas/workflows/e2e-tests.yml
+on:
+  pull_request_labeled:
+    labels: ['test']
+```
+
+<ContentSpotlight
+  alt="GitHub プルリクエストのラベルによってトリガーされ、Android と iOS の開発ビルドに対して Maestro の E2E テストを実行している EAS Workflows の実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-pull-request-label.png"
+  className="max-w-160"
+/>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/cicd/e2e-tests"
+  name="CICD_TUTORIAL"
+  chapterTitle="第 4 章：E2E テスト"
+  summary="Android と iOS の開発ビルドに対する Maestro の E2E テストワークフローを作成し、トリガーはデフォルトで手動のままにしつつ、必要なときだけ実行するためのプルリクエストのラベルトリガーの使い方を学びました。"
+  nextChapterDescription="次の章では、フィンガープリントと OTA アップデートを組み合わせた本番ワークフローを作成する方法を学びます。"
+  nextChapterTitle="本番デプロイ"
+  nextChapterLink="/ja/tutorial/cicd/production"
+/>

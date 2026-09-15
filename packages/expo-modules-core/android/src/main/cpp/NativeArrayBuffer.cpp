@@ -1,4 +1,5 @@
 #include "NativeArrayBuffer.h"
+#include "MutableBufferNativeState.h"
 
 #include "JavaScriptRuntime.h"
 #include "JSIContext.h"
@@ -57,7 +58,7 @@ NativeArrayBuffer::initHybrid(jni::alias_ref<JavaPart::javaobject>,
 jni::local_ref<NativeArrayBuffer::javaobject>
 NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
                                jsi::ArrayBuffer &arrayBuffer) {
-  auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
+  auto mutableBuffer = expo::tryGetMutableBuffer(runtime, arrayBuffer);
   if (mutableBuffer) {
     auto byteBuffer = jni::JByteBuffer::wrapBytes(mutableBuffer->data(), mutableBuffer->size());
     byteBuffer->order(jni::JByteOrder::nativeOrder());
@@ -82,7 +83,7 @@ NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
   size_t size = typedArray.byteLength(runtime);
 
   auto backingBuffer = typedArray.getBuffer(runtime);
-  auto mutableBuffer = backingBuffer.tryGetMutableBuffer(runtime);
+  auto mutableBuffer = expo::tryGetMutableBuffer(runtime, backingBuffer);
   if (mutableBuffer) {
     size_t offset = typedArray.byteOffset(runtime);
     auto byteBuffer = jni::JByteBuffer::wrapBytes(

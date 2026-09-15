@@ -8,7 +8,6 @@ import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { joinWithCommasAnd } from '../utils/strings';
 import { applyPluginsAsync } from './applyPlugins';
 import { checkPackagesAsync } from './checkPackages';
@@ -31,11 +30,9 @@ export async function installAsync(
   options: Options & { projectRoot?: string },
   packageManagerArguments: string[] = []
 ) {
-  setNodeEnv('development');
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
   const projectRoot = options?.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
-  loadEnvFiles(projectRoot);
 
   // Resolve the package manager used by the project, or based on the provided arguments.
   const packageManager = PackageManager.createForProject(projectRoot, {

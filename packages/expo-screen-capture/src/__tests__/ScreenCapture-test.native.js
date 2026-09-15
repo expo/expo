@@ -61,6 +61,15 @@ describe('Test key functionality', () => {
     expect(ExpoScreenCapture.preventScreenCapture).toHaveBeenCalledTimes(1);
   });
 
+  it('a failed prevent call releases the key so a retry reaches the native method again', async () => {
+    ExpoScreenCapture.preventScreenCapture.mockRejectedValueOnce(new Error('no key window'));
+
+    await expect(ScreenCapture.preventScreenCaptureAsync('foo')).rejects.toThrow('no key window');
+    await ScreenCapture.preventScreenCaptureAsync('foo');
+
+    expect(ExpoScreenCapture.preventScreenCapture).toHaveBeenCalledTimes(2);
+  });
+
   it('enabling two keys but only removing one results in the allowScreenCapture native method not being called', async () => {
     await ScreenCapture.preventScreenCaptureAsync('foo');
     await ScreenCapture.preventScreenCaptureAsync('bar');

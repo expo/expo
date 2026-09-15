@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import os from 'os';
 import path from 'path';
 
 import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
@@ -47,7 +48,8 @@ export type ProfileType = null | {
 export type PackResult = {
   name: string;
   version: string;
-  filename: string;
+  /** Absolute path to the created tarball. */
+  filePath: string;
   files: { path: string }[];
 };
 
@@ -101,29 +103,35 @@ export async function downloadPackageTarballAsync(
 }
 
 /**
- * Creates a tarball from a package.
+ * Creates a tarball from a package. The returned `filePath` points into a temporary directory.
  *
  * We deliberately don't use `pnpm pack --json` here: pnpm prefixes the JSON
  * output with `prepack`/`prepare` lifecycle script stdout, which breaks
- * `JSON.parse` for packages that define those scripts. Instead we let `pnpm pack` write the
- * tarball to the package directory and discover the produced file via glob,
- * matching what is done by `downloadPackageTarballAsync` above.
+ * `JSON.parse` for packages that define those scripts. Instead we pack into an empty
+ * directory, so the tarball we just created is the only file we can find there.
+ * Packing into the package directory would be ambiguous: publish runs that fail before
+ * the cleanup step leave their tarballs behind, and we cannot tell those apart from a
+ * fresh one.
  */
 export async function packToTarballAsync(packageDir: string): Promise<PackResult> {
-  await spawnAsync('pnpm', ['pack'], {
+  const destination = await fs.mkdtemp(path.join(os.tmpdir(), 'expotools-pack-'));
+
+  await spawnAsync('pnpm', ['pack', '--pack-destination', destination], {
     cwd: packageDir,
     stdio: 'ignore',
     // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
     env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
   });
 
-  const tarballs = await glob('*.tgz', { cwd: packageDir });
-  if (tarballs.length === 0) {
-    throw new Error(`pnpm pack did not produce a tarball in ${packageDir}`);
+  const tarballs = await glob('*.tgz', { cwd: destination, absolute: true });
+  if (tarballs.length !== 1) {
+    throw new Error(
+      `Expected \`pnpm pack\` to produce exactly one tarball for ${packageDir} in ${destination}, found ${tarballs.length}.`
+    );
   }
 
   const { name, version } = require(path.join(packageDir, 'package.json'));
-  return { name, version, filename: tarballs[0], files: [] };
+  return { name, version, filePath: tarballs[0], files: [] };
 }
 
 type PublishOptions = {

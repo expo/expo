@@ -1,14 +1,18 @@
 import { act, render, screen } from '@testing-library/react-native';
 
+import { getPathFromState } from '../../../fork/getPathFromState';
 import type { ParamListBase } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
-import { getPathFromState } from '../getPathFromState';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
 import { useStateForPath } from '../useStateForPath';
-import { MockRouter } from './__fixtures__/MockRouter';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
+import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+
+beforeEach(() => {
+  MockRouterKey.current = 0;
+});
 
 test('gets focused route state at root', () => {
   const TestNavigator = (props: any): any => {
@@ -36,7 +40,9 @@ test('gets focused route state at root', () => {
   const navigation = createNavigationContainerRef<ParamListBase>();
 
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{ routes: [{ name: 'bar' }, { name: 'xux' }] }}>
       <TestNavigator>
         <Screen name="bar" component={TestScreen} />
         <Screen name="xux" component={TestScreen} />
@@ -47,9 +53,9 @@ test('gets focused route state at root', () => {
   expect(screen).toMatchInlineSnapshot(`
 [
   "bar",
-  "{"routes":[{"key":"bar","name":"bar"}]}",
+  "{"routes":[{"key":"bar-0","name":"bar"}]}",
   "xux",
-  "{"routes":[{"key":"xux","name":"xux"}]}",
+  "{"routes":[{"key":"xux-1","name":"xux"}]}",
 ]
 `);
 
@@ -58,9 +64,9 @@ test('gets focused route state at root', () => {
   expect(screen).toMatchInlineSnapshot(`
 [
   "bar",
-  "{"routes":[{"key":"bar","name":"bar"}]}",
+  "{"routes":[{"key":"bar-0","name":"bar"}]}",
   "xux",
-  "{"routes":[{"key":"xux","name":"xux"}]}",
+  "{"routes":[{"key":"xux-1","name":"xux"}]}",
 ]
 `);
 });
@@ -91,7 +97,17 @@ test('gets focused route state in nested navigator', () => {
   const navigation = createNavigationContainerRef<ParamListBase>();
 
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        routes: [
+          {
+            name: 'bar',
+            state: { routes: [{ name: 'bar-a' }, { name: 'bar-b' }] },
+          },
+          { name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar">
           {() => (
@@ -109,11 +125,11 @@ test('gets focused route state in nested navigator', () => {
   expect(screen).toMatchInlineSnapshot(`
 [
   "bar-a",
-  "{"routes":[{"key":"bar","name":"bar","state":{"routes":[{"key":"bar-a","name":"bar-a"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","state":{"routes":[{"key":"bar-a-3","name":"bar-a"}]}}]}",
   "bar-b",
-  "{"routes":[{"key":"bar","name":"bar","state":{"routes":[{"key":"bar-b","name":"bar-b"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","state":{"routes":[{"key":"bar-b-4","name":"bar-b"}]}}]}",
   "xux",
-  "{"routes":[{"key":"xux","name":"xux"}]}",
+  "{"routes":[{"key":"xux-1","name":"xux"}]}",
 ]
 `);
 
@@ -122,11 +138,11 @@ test('gets focused route state in nested navigator', () => {
   expect(screen).toMatchInlineSnapshot(`
 [
   "bar-a",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42},"state":{"routes":[{"key":"bar-a","name":"bar-a"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42},"state":{"routes":[{"key":"bar-a-3","name":"bar-a"}]}}]}",
   "bar-b",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42},"state":{"routes":[{"key":"bar-b","name":"bar-b"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42},"state":{"routes":[{"key":"bar-b-4","name":"bar-b"}]}}]}",
   "xux",
-  "{"routes":[{"key":"xux","name":"xux"}]}",
+  "{"routes":[{"key":"xux-1","name":"xux"}]}",
 ]
 `);
 
@@ -135,11 +151,11 @@ test('gets focused route state in nested navigator', () => {
   expect(screen).toMatchInlineSnapshot(`
 [
   "bar-a",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-a","name":"bar-a"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-a-3","name":"bar-a"}]}}]}",
   "bar-b",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-b","name":"bar-b"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-b-4","name":"bar-b"}]}}]}",
   "xux",
-  "{"routes":[{"key":"xux","name":"xux"}]}",
+  "{"routes":[{"key":"xux-1","name":"xux"}]}",
 ]
 `);
 
@@ -148,11 +164,11 @@ test('gets focused route state in nested navigator', () => {
   expect(screen).toMatchInlineSnapshot(`
 [
   "bar-a",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-a","name":"bar-a"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-a-3","name":"bar-a"}]}}]}",
   "bar-b",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-b","name":"bar-b"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-b-4","name":"bar-b"}]}}]}",
   "xux",
-  "{"routes":[{"key":"xux","name":"xux"}]}",
+  "{"routes":[{"key":"xux-1","name":"xux"}]}",
 ]
 `);
 
@@ -161,11 +177,11 @@ test('gets focused route state in nested navigator', () => {
   expect(screen).toMatchInlineSnapshot(`
 [
   "bar-a",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-a","name":"bar-a"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-a-3","name":"bar-a"}]}}]}",
   "bar-b",
-  "{"routes":[{"key":"bar","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-b","name":"bar-b"}]}}]}",
+  "{"routes":[{"key":"bar-0","name":"bar","params":{"answer":42,"screen":"bar-b"},"state":{"routes":[{"key":"bar-b-4","name":"bar-b"}]}}]}",
   "xux",
-  "{"routes":[{"key":"xux","name":"xux","params":{"fruit":"apple"}}]}",
+  "{"routes":[{"key":"xux-1","name":"xux","params":{"fruit":"apple"}}]}",
 ]
 `);
 });
@@ -182,7 +198,6 @@ test('gets path in each screen', () => {
       screens: {
         bar: {
           path: 'mybar/:answer?',
-          // @ts-expect-error - don't have proper types for test
           screens: {
             'bar-a': 'a',
             'bar-b': 'b',
@@ -213,7 +228,17 @@ test('gets path in each screen', () => {
   const navigation = createNavigationContainerRef<ParamListBase>();
 
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        routes: [
+          {
+            name: 'bar',
+            state: { routes: [{ name: 'bar-a' }, { name: 'bar-b' }] },
+          },
+          { name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar">
           {() => (

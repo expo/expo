@@ -57,8 +57,8 @@ struct AppContextTests {
   @Test
   func `preserves order and emits both candidates when CFBundleExecutable differs from CFBundleName`() {
     // When CFBundleExecutable differs from CFBundleName (e.g. dotted bundle name), both
-    // candidates are emitted with the executable-derived one first, since it is the Swift
-    // module name by construction.
+    // candidates are emitted with the executable-derived one first, since the Swift module name
+    // is derived from it.
     let classNames = AppContext.moduleProviderClassNames(
       withName: "ExpoModulesProvider",
       bundleNames: ["Universal_internal", "Universal.internal"]
@@ -67,6 +67,22 @@ struct AppContextTests {
     #expect(classNames == [
       "Universal_internal.ExpoModulesProvider",
       "Universal.internal.ExpoModulesProvider"
+    ])
+  }
+
+  @Test
+  func `also emits the c99-mangled candidate for a digit-first bundle name`() {
+    // `CFBundleExecutable` is the raw product name, but Xcode derives the Swift module name from
+    // `$(PRODUCT_NAME:c99extidentifier)`, so an app named `123myapp` builds into the module
+    // `_23myapp` and the unmangled candidate misses the generated provider entirely.
+    let classNames = AppContext.moduleProviderClassNames(
+      withName: "ExpoModulesProvider",
+      bundleNames: ["123myapp"]
+    )
+
+    #expect(classNames == [
+      "123myapp.ExpoModulesProvider",
+      "_23myapp.ExpoModulesProvider"
     ])
   }
 

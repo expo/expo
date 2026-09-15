@@ -8,6 +8,7 @@ platforms: ['ios', 'tvOS', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Overlay matches the official SwiftUI [overlay](<https://developer.apple.com/documentation/swiftui/view/overlay(alignment:content:)>) modifier and provides a way to layer secondary content on top of a view, positioned with a specified alignment.
@@ -26,7 +27,13 @@ Expo UI Overlay matches the official SwiftUI [overlay](<https://developer.apple.
 
 ## Usage
 
-```tsx OverlayExample.tsx
+<ComponentExample
+  title="OverlayExample.tsx"
+  src="/static/images/expo-ui/examples/overlay-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/overlay-basic-ios-dark.webp"
+  alt="A blue bell icon with a red circular badge showing 3 at its top-trailing corner">
+
+```tsx
 import { Host, Overlay, Text, Image } from '@expo/ui/swift-ui';
 import {
   foregroundStyle,
@@ -39,11 +46,19 @@ import {
 
 export default function OverlayExample() {
   return (
-    <Host style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <Host
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
       <Overlay alignment="topTrailing">
         <Image
           systemName="bell.fill"
-          modifiers={[font({ size: 28 }), foregroundStyle('#007AFF')]}
+          modifiers={[
+            font({ size: 28 }),
+            foregroundStyle('#007AFF'),
+          ]}
         />
         <Overlay.Content>
           <Text
@@ -64,10 +79,15 @@ export default function OverlayExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Overlay } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/overlay" apiName="Overlay" />
+<APISection
+  packageName="expo-ui/swift-ui/overlay"
+  apiName="Overlay"
+/>

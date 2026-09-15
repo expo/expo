@@ -130,16 +130,10 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
         retry();
       }
     } catch (error: any) {
-      // Error returned if the request is aborted should be an 'AbortError'. In
-      // React Native fetch is polyfilled using `whatwg-fetch` which:
-      // - creates `AbortError`s like this
-      //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L505
-      // - which creates exceptions like
-      //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L490-L494
-      if (typeof error === 'object' && error?.name === 'AbortError') {
-        // We don't consider AbortError a failure, it's a sign somewhere else the
-        // request is expected to succeed and we don't need this one, so let's
-        // just return.
+      // Depending on the fetch implementation, an aborted request may reject
+      // with `AbortError` or a native cancellation error.
+      if (signal.aborted || (typeof error === 'object' && error?.name === 'AbortError')) {
+        // An aborted request is not a failure, so don't log or retry it.
         return;
       }
 

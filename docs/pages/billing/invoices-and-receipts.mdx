@@ -78,7 +78,7 @@ An invoice contains your legally registered business name, address, tax ID, invo
 
 - Current plan's subscription amount (if subscribed to a plan)
 - Any overage charges (if applicable)
-- A plan's credit limit
+- Any plan credit applied
 
 Let's consider three different examples to understand how your invoice might look. If you subscribe to a [Production](/billing/plans/#production), [Enterprise](/billing/plans/#enterprise), or [Starter](/billing/plans/#starter) plan, one of these scenarios may apply to you.
 
@@ -86,22 +86,22 @@ Let's consider three different examples to understand how your invoice might loo
 
 In the first example, the invoice table shows a subscription charge for a Production plan:
 
-| Description                                                                                | Quantity | Unit price |      Amount |
-| ------------------------------------------------------------------------------------------ | -------: | ---------: | ----------: |
-| _FEB 1 - MAR 1, 2025_                                                                      |          |            |             |
-| EAS Build - Build (Android: 5 large and 5 medium builds; iOS: 5 large and 5 medium builds) |        1 |     $40.00 |      $40.00 |
-| EAS Build - Plan credit                                                                    |        1 |    -$40.00 |     -$40.00 |
-| _MAR 1 - APR 1, 2025_                                                                      |          |            |             |
-| Expo Application Services - Production                                                     |        1 |    $199.00 |     $199.00 |
-| **Total (USD)**                                                                            |          |            | **$199.00** |
+| Description                                                                                    | Quantity | Unit price |      Amount |
+| ---------------------------------------------------------------------------------------------- | -------: | ---------: | ----------: |
+| _FEB 1 - MAR 1, 2025_                                                                          |          |            |             |
+| EAS Build - Build (Android: 25 large and 20 medium builds; iOS: 25 large and 20 medium builds) |        1 |    $210.00 |     $210.00 |
+| EAS Build - Plan credit                                                                        |        1 |   -$210.00 |    -$210.00 |
+| _MAR 1 - APR 1, 2025_                                                                          |          |            |             |
+| Expo Application Services - Production                                                         |        1 |    $199.00 |     $199.00 |
+| **Total (USD)**                                                                                |          |            | **$199.00** |
 
 In the above example:
 
 - The first line item describes the EAS Build usage for the billing period of February 1 to March 1, 2025. It contains all the details about how many Android and iOS builds were created during this billing period and their cost.
-- The second line item describes the credit limit for the Production plan ($100) for the billing period of February 1 to March 1, 2025.
+- The second line item describes the plan credit applied ($210) for the billing period of February 1 to March 1, 2025.
 - The third line item describes the subscription charge for the Production plan for the next billing period of March 1 to April 1, 2025.
 
-Since the EAS Build usage ($40) doesn't exceed the plan's $225 credit amount, the subscriber only has to pay the $199 subscription amount for the Production plan.
+Since the EAS Build usage ($210) doesn't exceed the plan's $225 credit amount, the subscriber only has to pay the $199 subscription amount for the Production plan.
 
 ### Overage charges
 
@@ -119,7 +119,7 @@ In the second example, the invoice table shows a subscription charge for a Produ
 In the above example:
 
 - The first line item describes the EAS Build usage for the billing period of February 1 to March 1, 2025. It contains all the details about how many Android and iOS builds were created during this billing period and their cost.
-- The second line item describes the credit limit for the Production plan ($225) for the billing period of February 1 to March 1, 2025.
+- The second line item describes the plan credit applied ($225), which is the Production plan's full credit, for the billing period of February 1 to March 1, 2025.
 - The third line item describes the subscription charge for the Production plan for the next billing period of March 1 to April 1, 2025.
 
 Since the EAS Build usage exceeds the plan's credit amount for the billing period of February 1 to March 1, 2025, the subscriber has to pay the overage charge and the subscription amount for the Production plan for the next billing period.
@@ -131,8 +131,8 @@ In the third example, the subscriber is on a Starter plan. Any charges incurred 
 | Description                                                         | Quantity | Unit price |     Amount |
 | ------------------------------------------------------------------- | -------: | ---------: | ---------: |
 | _FEB 1 - MAR 1, 2025_                                               |          |            |            |
-| EAS Build - Build (Android: 10 medium builds; iOS 10 medium builds) |        1 |     $45.00 |     $45.00 |
-| EAS Build - Plan credit                                             |        1 |    -$45.00 |    -$45.00 |
+| EAS Build - Build (Android: 10 medium builds; iOS 10 medium builds) |        1 |     $30.00 |     $30.00 |
+| EAS Build - Plan credit                                             |        1 |    -$30.00 |    -$30.00 |
 | _MAR 1 - APR 1, 2025_                                               |          |            |            |
 | Expo Application Services - Starter                                 |        1 |     $19.00 |     $19.00 |
 | **Total (USD)**                                                     |          |            | **$19.00** |
@@ -140,7 +140,7 @@ In the third example, the subscriber is on a Starter plan. Any charges incurred 
 In the above example:
 
 - The first line item describes the EAS Build usage for the billing period of February 1 to March 1, 2025. It contains all the details about the number of Android and iOS builds created during this billing period and their cost.
-- The second line item describes the credit limit for the Starter plan ($25) for the billing period of February 1 to March 1, 2025.
+- The second line item describes the plan credit applied ($30) for the billing period of February 1 to March 1, 2025.
 - The third line item describes the subscription charge for the Starter plan for the next billing period of March 1 to April 1, 2025.
 
-Since the EAS Build usage doesn't exceed the plan's $45 credit amount, the subscriber only has to pay the $19 subscription amount for the Starter plan.
+Since the EAS Build usage ($30) doesn't exceed the plan's $45 credit amount, the subscriber only has to pay the $19 subscription amount for the Starter plan.

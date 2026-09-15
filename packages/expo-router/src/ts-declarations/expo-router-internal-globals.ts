@@ -15,9 +15,9 @@ declare global {
   var __EXPO_LOADER_INVALIDATE_LISTENERS__: undefined | (() => void)[];
   /**
    * Dev-only flag that ensures the default `loader-invalidate` listener is registered once
-   * across HMR re-evaluations of the `LoaderCache` module.
+   * across HMR re-evaluations of the `LoaderContext` module.
    *
-   * @see expo-router/src/loaders/LoaderCache.ts
+   * @see expo-router/src/loaders/LoaderContext.ts
    */
   var __EXPO_LOADER_INVALIDATE_LISTENER_REGISTERED__: undefined | true;
 }

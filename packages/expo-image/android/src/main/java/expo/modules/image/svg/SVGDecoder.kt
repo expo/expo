@@ -5,9 +5,15 @@ import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.SimpleResource
 import com.caverock.androidsvg.SVG
+import android.util.Log
 import com.caverock.androidsvg.SVGParseException
+import expo.modules.image.CustomOptions
+import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.nio.ByteBuffer
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.CodingErrorAction
 
 /**
  * Decodes an SVG internal representation from an [InputStream].
@@ -22,7 +28,7 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   @Throws(IOException::class)
   override fun decode(source: InputStream, width: Int, height: Int, options: Options): Resource<SVG>? {
     return try {
-      val svg: SVG = SVG.getFromInputStream(source)
+      val svg: SVG = parse(source, options)
       // Use document width and height if view box is not set.
       if (svg.documentViewBox == null) {
         val documentWidth = svg.documentWidth
@@ -52,5 +58,75 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
     } catch (ex: SVGParseException) {
       throw IOException("Cannot load SVG from stream", ex)
     }
+  }
+
+  /**
+   * Parses the document, first substituting the CSS custom properties the request asked for, or
+   * resolving every `var()` to its fallback when it asked for none. The substitution happens on the
+   * source text because AndroidSVG cannot resolve `var()` itself.
+   */
+  private fun parse(source: InputStream, options: Options): SVG {
+    val variables = options.get(CustomOptions.svgVariables)
+    val bytes = source.readBytes()
+    val text = decodeUtf8(bytes)
+      // Substituting would mean re-encoding the document as UTF-8, which would contradict its own
+      // XML declaration. Leave it to the parser, which sniffs the encoding itself.
+      ?: return SVG.getFromInputStream(ByteArrayInputStream(bytes)).also {
+        if (variables != null) {
+          Log.w(
+            "ExpoImage",
+            "`svgVariables` was ignored because the SVG document is not encoded in UTF-8. " +
+              "Re-encoding it would contradict the document's own XML declaration. " +
+              "Save the file as UTF-8 to use this prop."
+          )
+        }
+      }
+
+    val substituted = if (variables == null) {
+      SVGVariables.resolveFallbacks(text)
+    } else {
+      SVGVariables.substitute(text, variables)
+    }
+    return SVG.getFromString(substituted)
+  }
+
+  /**
+   * Decodes the document as UTF-8, or returns null when it is encoded differently.
+   *
+   * UTF-16 needs its own check: every byte of it is valid UTF-8, so a strict decode would succeed
+   * and yield NUL-interleaved text.
+   */
+  private fun decodeUtf8(bytes: ByteArray): String? = if (isUtf16(bytes)) {
+    null
+  } else {
+    decodeStrictUtf8(bytes)
+  }
+
+  /**
+   * Whether the document is UTF-16, by its byte order mark or by the interleaved NUL bytes. Every
+   * SVG opens with ASCII, so a NUL that early means UTF-16.
+   */
+  private fun isUtf16(bytes: ByteArray): Boolean {
+    if (bytes.size < 2) {
+      return false
+    }
+    val hasBom = (bytes[0] == 0xFE.toByte() && bytes[1] == 0xFF.toByte()) ||
+      (bytes[0] == 0xFF.toByte() && bytes[1] == 0xFE.toByte())
+    return hasBom || bytes.take(NUL_SNIFF_LENGTH).any { it == 0.toByte() }
+  }
+
+  private fun decodeStrictUtf8(bytes: ByteArray): String? = try {
+    Charsets.UTF_8.newDecoder()
+      .onMalformedInput(CodingErrorAction.REPORT)
+      .onUnmappableCharacter(CodingErrorAction.REPORT)
+      .decode(ByteBuffer.wrap(bytes))
+      .toString()
+  } catch (_: CharacterCodingException) {
+    null
+  }
+
+  companion object {
+    /** How far to look for the NUL bytes that mark UTF-16, in bytes. */
+    private const val NUL_SNIFF_LENGTH = 16
   }
 }

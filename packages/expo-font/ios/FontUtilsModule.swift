@@ -28,7 +28,7 @@ public final class FontUtilsModule: Module {
         // Adding baseline offset to vertically center the text within the specified line height
         attributes[.baselineOffset] = (lineHeight - font.lineHeight) / 2
       }
-      
+
       let attributedString = NSAttributedString(
         string: glyphs,
         attributes: attributes

@@ -1,64 +1,113 @@
 ---
 title: Using Supabase
 description: Add a Postgres database and user authentication to your React Native app with Supabase.
+platforms: ['android', 'ios']
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-[Supabase](https://supabase.com/?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as a Postgres database, user authentication, file storage, edge functions, realtime syncing, and a vector and AI toolkit. It's an open-source alternative to Google's Firebase.
+[Supabase](https://supabase.com/?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is a Backend-as-a-Service (BaaS) app development platform built on Postgres. It [generates a REST API](https://supabase.com/docs/guides/api?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) from your database and uses [row level security](https://supabase.com/docs/guides/auth/row-level-security?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to protect the data, so your React Native app can query that API directly, with no server in between.
 
-Supabase automatically [generates a REST API](https://supabase.com/docs/guides/api?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) from your database and employs a concept called [row level security (RLS)](https://supabase.com/docs/guides/auth/row-level-security?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to secure your data, making it possible to directly interact with your database from your React Native application without needing to go through a server!
-
-Supabase provides a TypeScript client library called [`supabase-js`](https://supabase.com/docs/reference/javascript/introduction?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to interact with the REST API. Alternatively, Supabase also exposes a [GraphQL API](https://supabase.com/docs/guides/database/extensions/pg_graphql?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) allowing you to use your favorite GraphQL client (for example, [Apollo Client](https://supabase.github.io/pg_graphql/usage_with_apollo/)) should you wish to.
+The EAS CLI integration automates the standard setup: authorizing your Supabase account, creating or linking a project, installing the SDK, and writing your environment variables. You can also [set it up manually](#manual-setup) and use the rest of this guide unchanged.
 
 <Prerequisites>
-  <Requirement title="A Supabase project">
-    Head over to [database.new](https://database.new?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to create a new Supabase project.
+  <Requirement title="Expo account">
+    Sign up for an [Expo account](https://expo.dev/signup).
   </Requirement>
-  <Requirement title="Project URL and Publishable key">
-    Get the **Project URL** from the API settings and **Publishable key** from the API Keys:
-
-    1. Go to the [API Settings](https://supabase.com/dashboard/project/_/settings/api) page in the Dashboard.
-    2. Find your Project `URL` and `service_role` keys on this page.
-    3. Then go to the [API Keys](https://supabase.com/dashboard/project/_/settings/api-keys).
-    4. Find your Project **Publishable key** on this page under the API Keys tab.
-
+  <Requirement title="EAS CLI">Install EAS CLI globally with `npm install -g eas-cli`.</Requirement>
+  <Requirement title="Expo project linked to EAS">
+    Create an Expo project and link it to EAS with `eas init`.
+  </Requirement>
+  <Requirement title="Supabase account">
+    Sign up for a [Supabase
+    account](https://supabase.com/dashboard/sign-up?utm_source=expo&utm_medium=referral&utm_term=expo-react-native).
   </Requirement>
 </Prerequisites>
 
-## Using the Supabase TypeScript SDK
+## What you'll learn
 
-Using [`supabase-js`](https://supabase.com/docs/reference/javascript/introduction?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is the most convenient way of leveraging the full power of the Supabase stack as it conveniently combines all the different services (database, auth, realtime, storage, edge functions) together.
+- [Install and configure Supabase](#install-and-configure-supabase) in your React Native app
+- [Add authentication](#add-authentication) with the client you create in Step 2
+- [Set up environments](#set-up-environments) for local development, Production, and Preview
+- [Manage the integration](#manage-the-integration) and [troubleshoot common problems](#troubleshooting)
 
-### Install and initialize the Supabase TypeScript SDK
+## Install and configure Supabase
 
 <Step label="1">
 
-After you have created your [Expo project](/get-started/create-a-project/), install `@supabase/supabase-js` and the required dependencies using the following command:
+### Run the `connect` command
+
+Run the following command in your project directory:
+
+<Terminal cmd={['$ eas integrations:supabase:connect']} />
+
+With no project linked, the command creates a new Supabase project. To use a Supabase project you already have, link it instead:
+
+<Terminal cmd={['$ eas integrations:supabase:connect --link <project-ref-or-url>']} />
+
+This command:
+
+- Opens your browser to authorize Supabase, then continues after you approve.
+- Asks which Supabase **organization** to use, if your account has more than one.
+- Asks for a **region** from Americas, Europe/Middle East/Africa, and Asia Pacific, then creates the project and waits until it's ready. The region sets your data residency and can't be changed after the project is created.
+- Installs `@supabase/supabase-js` and `expo-sqlite`, which stores the auth session, and adds the `expo-sqlite` config plugin to your [app config](/workflow/configuration/). If you use a [dynamic app config](/workflow/configuration/#dynamic-configuration), the command prints the plugin entry for you to add instead.
+- Writes `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to **.env.local** and to your EAS environment variables across the Production, Preview, and Development environments.
+
+Both values are meant to be public, so your app can ship them. Anyone who has them can query your database, so row level security is what keeps your data private. Enable it and add policies on every table your app reads or writes.
+
+> **warning** Never put the database password or a secret key in your app. A secret key bypasses row level security and grants full access to your data.
+
+Re-running `connect` is safe: it reuses your existing connection and Supabase project, and prompts before overwriting environment variables.
+
+<Collapsible summary="Finding your project reference ID">
+
+`--link` accepts a reference ID, a dashboard URL, or a project API URL. Supabase shows the reference ID under **Project Settings** > **General**. A project name doesn't work.
 
 <Terminal
-  cmd={{
-    npm: ['$ npx expo install @supabase/supabase-js expo-sqlite'],
-    yarn: ['$ yarn expo install @supabase/supabase-js expo-sqlite'],
-    pnpm: ['$ pnpm expo install @supabase/supabase-js expo-sqlite'],
-    bun: ['$ bun expo install @supabase/supabase-js expo-sqlite'],
-  }}
+  cmd={[
+    '$ eas integrations:supabase:connect --link abcdefghijklmnopqrst',
+    '',
+    '$ eas integrations:supabase:connect --link https://supabase.com/dashboard/project/abcdefghijklmnopqrst',
+  ]}
 />
+
+</Collapsible>
+
+<Collapsible summary="Running in CI or non-interactively">
+
+EAS Build and EAS Update read the variables from the environment they run in, so run `connect` in CI only when CI creates or links the project:
+
+<Terminal
+  cmd={['$ eas integrations:supabase:connect --non-interactive --region us-east-1 --overwrite']}
+/>
+
+- `--region` is required when the command creates a project without prompting. It takes `americas`, `emea`, `apac`, or a specific code such as `us-east-1`.
+- `--overwrite` replaces existing environment variables without prompting.
+- `--organization` selects a Supabase organization.
+- `--json` implies `--non-interactive`.
+
+Authorizing a Supabase account needs a browser, so run `connect` interactively at least once first.
+
+</Collapsible>
+
 </Step>
 
 <Step label="2">
 
-Create a helper file to initialize the Supabase client (`@supabase/supabase-js`). You need the API URL and the `Publishable` key copied [earlier](#prerequisites). These variables are safe to expose in your Expo app since Supabase has [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) enabled in the Database.
+### Create the Supabase client
 
-```ts utils/supabase.ts
+Create a helper file that initializes the client from the environment variables `connect` writes. Paths here follow the default Expo template, where `@/` maps to **src**. Check the `paths` field in **tsconfig.json** and put the file where your alias resolves, or use a relative import if your project has no alias.
+
+```ts src/lib/supabase.ts
 import 'expo-sqlite/localStorage/install';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = YOUR_REACT_NATIVE_SUPABASE_URL!;
-const supabasePublishableKey = YOUR_REACT_NATIVE_SUPABASE_PUBLISHABLE_KEY!;
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
@@ -70,44 +119,265 @@ export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
 });
 ```
 
-Now you can `import { supabase } from '/utils/supabase'` throughout your application to leverage the full power of Supabase!
+`expo-sqlite/localStorage/install` provides the `localStorage` that Supabase uses to persist sessions on the device, which keeps users signed in across app launches. `detectSessionInUrl` is `false` because Android and iOS have no URL to read a session from. Supabase's own quickstart also imports `react-native-url-polyfill/auto`, which Expo projects don't need, because Expo installs a `URL` global already.
 
 </Step>
 
-## Next steps
+<Step label="3">
+
+### Create a table
+
+Run `eas integrations:supabase:dashboard` to open your linked project, or open it from the Supabase dashboard. Select **SQL Editor**, then run:
+
+```sql Supabase SQL Editor
+create table public.todos (
+  id bigint generated always as identity primary key,
+  title text not null
+);
+alter table public.todos enable row level security;
+create policy "Anyone can read todos" on public.todos for select using (true);
+grant select on public.todos to anon, authenticated;
+insert into public.todos (title) values ('Hello from Supabase');
+```
+
+Requests use the `anon` role when signed out and `authenticated` after sign-in, and the policy decides which rows those roles can read. Without a policy, a select returns an empty array and no error. To let the app write, add an insert policy.
+
+The grant is a safeguard rather than a requirement. Hosted projects already grant `select`, `insert`, `update`, and `delete` on new tables in `public` to both roles. However, [Supabase is making those grants opt-in](https://supabase.com/docs/guides/database/hardening-data-api?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), and a project with them revoked fails with `permission denied for table todos`. Granting a privilege the table already has changes nothing.
+
+</Step>
+
+<Step label="4">
+
+### Verify the configuration
+
+Replace the contents of your first screen with a query against the table:
+
+```tsx src/app/index.tsx
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import { supabase } from '@/lib/supabase';
+
+export default function Index() {
+  const [titles, setTitles] = useState<string[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from('todos')
+      .select()
+      .then(({ data, error }) => {
+        if (error) {
+          setTitles([error.message]);
+          return;
+        }
+        setTitles(data.map(todo => todo.title));
+      });
+  }, []);
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {titles.map(title => (
+        <Text key={title}>{title}</Text>
+      ))}
+    </View>
+  );
+}
+```
+
+Start your app:
+
+<Terminal cmd={['$ npx expo start']} />
+
+If the screen shows `Hello from Supabase`, your client works. An empty screen means no policy allows the read. An error message means something else, so see [Troubleshooting](#troubleshooting).
+
+You can test everything in this guide in Expo Go. You need a [development build](/develop/development-builds/introduction/) once you pass options to the `expo-sqlite` plugin or add other native libraries.
+
+</Step>
+
+For the concepts behind these steps, see the Supabase database overview:
 
 <BoxLink
-  title="Build a User Management App"
-  description="Learn how to combine Supabase Auth and Database in this quickstart guide."
+  title="Supabase database overview"
+  description="Tables, row level security policies, and realtime updates."
+  href="https://supabase.com/docs/guides/database/overview?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
+/>
+
+## Add authentication
+
+The client from [Step 2](#create-the-supabase-client) already stores sessions, so email and password sign-in needs no extra configuration. New Supabase projects confirm email addresses by default. Your first `signUp` returns `data.user` with `data.session` set to `null` until the address is confirmed or you turn off **Confirm email** in your project's email provider settings.
+
+`autoRefreshToken` runs its refresh loop continuously on Android and iOS, so Supabase's [`startAutoRefresh` reference](https://supabase.com/docs/reference/javascript/auth-startautorefresh?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) recommends tying the loop to app state. Add this to your client file:
+
+```ts src/lib/supabase.ts
+import { AppState } from 'react-native';
+
+AppState.addEventListener('change', state => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
+```
+
+OAuth providers and magic links need a deep link back into your app, covered in [Supabase's mobile deep linking guide](https://supabase.com/docs/guides/auth/native-mobile-deep-linking?utm_source=expo&utm_medium=referral&utm_term=expo-react-native).
+
+## Set up environments
+
+`connect` stores the values as [EAS environment variables](/eas/environment-variables/), so each build or update reads them from the environment it runs in.
+
+A Supabase project holds one environment's data, so separate environments mean separate projects. Check your [Supabase plan limits](https://supabase.com/pricing?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) before creating a second project.
+
+**Development** runs locally with the [Supabase CLI](https://supabase.com/docs/guides/local-development?utm_source=expo&utm_medium=referral&utm_term=expo-react-native). Start Docker, then run:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx supabase init', '$ npx supabase start', '$ npx supabase status'],
+    yarn: ['$ yarn dlx supabase init', '$ yarn dlx supabase start', '$ yarn dlx supabase status'],
+    pnpm: ['$ pnpm dlx supabase init', '$ pnpm dlx supabase start', '$ pnpm dlx supabase status'],
+    bun: ['$ bunx supabase init', '$ bunx supabase start', '$ bunx supabase status'],
+  }}
+/>
+
+Replace the hosted values in **.env.local** with the API URL and publishable key that `supabase status` prints. Variables you export in your shell take precedence over **.env.local**, so edit the file instead of exporting. The local database starts empty, so run your table SQL against it too. Re-running `connect` writes the hosted values back.
+
+> **info** The local URL points at your computer. A physical device or an Android Emulator can't reach it, so use your computer's LAN address there instead of `127.0.0.1`.
+
+<Collapsible summary="Pointing the Development environment at a local stack">
+
+`connect` writes each value as one variable covering Production, Preview, and Development. `eas env:pull --environment development` asks before replacing **.env.local**, then rewrites the whole file from that environment, so it drops the local values you set.
+
+To point Development at a local stack instead, replace that one variable with two. `eas env:set` reuses a variable of the same name whose environments overlap the target, so a Development-only set would move Production and Preview to the local URL too:
+
+<Terminal
+  cmd={[
+    '$ eas env:delete --variable-name EXPO_PUBLIC_SUPABASE_URL',
+    '',
+    '$ eas env:set --name EXPO_PUBLIC_SUPABASE_URL --value <hosted-url> --environment production --environment preview --visibility plaintext',
+    '',
+    '$ eas env:set --name EXPO_PUBLIC_SUPABASE_URL --value http://127.0.0.1:54321 --environment development --visibility plaintext',
+  ]}
+/>
+
+Don't do this if any build profile in **eas.json** sets `"environment": "development"`. A cloud build then embeds a URL that no device can reach.
+
+</Collapsible>
+
+**Production** uses the project that `connect` set up.
+
+**Preview** has no project of its own by default. To give Preview, or any other EAS environment, its own hosted project, re-run `connect` with `--environment`. This creates a second project, which counts toward your plan's active-project limit:
+
+<Terminal cmd={['$ eas integrations:supabase:connect --environment preview']} />
+
+The new project's URL and key go to the named environments only, and your other environments keep pointing at the first project. If the target environments already hold `EXPO_PUBLIC_SUPABASE_*` values, the command asks to confirm before replacing them. Unlike `connect` without `--environment`, this doesn't install the SDK or touch **.env.local**. You can't combine `--environment` with `--link`, `--reauth`, or `--organization`.
+
+To point an EAS environment at a Supabase project you already have, set the two variables yourself with [`eas env:set`](/eas/environment-variables/) rather than using `--environment`. Replace the shared variable with two first, as shown above, so your other environments keep their current project.
+
+## Manage the integration
+
+Two commands manage the integration afterward:
+
+<Terminal
+  cmd={['$ eas integrations:supabase:dashboard', '', '$ eas integrations:supabase:disconnect']}
+/>
+
+`dashboard` opens your linked Supabase project. `disconnect` removes the Expo-side link only. Your Supabase project, its data, and your environment variables all stay unchanged.
+
+After you disconnect, `connect` no longer sees a linked project, so it creates a new one. To point the app back at the same project, run `connect --link` with its reference ID.
+
+## Manual setup
+
+`connect` is a shortcut for the standard Supabase setup. To do it manually:
+
+1. Create a project at [database.new](https://database.new?utm_source=expo&utm_medium=referral&utm_term=expo-react-native).
+2. Copy the **Project URL** from [API Settings](https://supabase.com/dashboard/project/_/settings/api?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) and the **Publishable key** from [API Keys](https://supabase.com/dashboard/project/_/settings/api-keys?utm_source=expo&utm_medium=referral&utm_term=expo-react-native).
+3. Install the SDK:
+
+   <Terminal
+     cmd={{
+       npm: ['$ npx expo install @supabase/supabase-js expo-sqlite'],
+       yarn: ['$ yarn expo install @supabase/supabase-js expo-sqlite'],
+       pnpm: ['$ pnpm expo install @supabase/supabase-js expo-sqlite'],
+       bun: ['$ bun expo install @supabase/supabase-js expo-sqlite'],
+     }}
+   />
+
+4. Add the `expo-sqlite` config plugin to your [app config](/workflow/configuration/).
+5. Set `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in **.env.local**, then create the client file from [Step 2](#create-the-supabase-client).
+
+## Troubleshooting
+
+<Collapsible summary="Active project limit reached">
+
+The Free plan entitles each user to two active projects, and an organization pools the entitlement of every owner and administrator in it. Paused projects don't count. Link a project you already have with `--link`, pause or delete one in the Supabase dashboard, upgrade the organization, or see Supabase's [billing FAQ](https://supabase.com/docs/guides/platform/billing-faq?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) for how the entitlement is shared. `--environment` can't be combined with `--link`, so on that path free a slot or set `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` on the target environments yourself.
+
+</Collapsible>
+
+<Collapsible summary="Project reference ID doesn't work">
+
+The project must belong to the Supabase organization you connected. See [Finding your project reference ID](#finding-your-project-reference-id) for the accepted formats.
+
+</Collapsible>
+
+<Collapsible summary="Environment variables don't update">
+
+After `connect` writes them, reload the app so it picks up the new values. If the app still reads the old value, stop the development server and run `npx expo start` again.
+
+</Collapsible>
+
+<Collapsible summary="Table doesn't exist right after you create it">
+
+Supabase caches your database schema, so a query right after you create a table can fail with `Could not find the table 'public.todos' in the schema cache`. Re-run it; the cache refreshes on its own.
+
+</Collapsible>
+
+<Collapsible summary="Permission denied for a table">
+
+Add the grant your query needs for both roles, such as `grant select on public.todos to anon, authenticated`. A policy alone isn't enough. Unlike a missing policy, which returns an empty array, this fails with `error.code` `42501`.
+
+</Collapsible>
+
+<Collapsible summary="Supabase authorization stopped working">
+
+If you revoked Expo's access in Supabase, run `eas integrations:supabase:connect --reauth`. This clears the stored connection and project link, reopens the browser, then asks whether to link a project or create one, so have your reference ID ready. Your Supabase projects aren't affected. `--reauth` needs a browser, so it fails in non-interactive mode.
+
+</Collapsible>
+
+<Collapsible summary="Extra project created without environment variables">
+
+If `connect --environment` creates a project and then fails to write the environment variables, the command prints the project URL and publishable key. Save those values with [`eas env:set`](/eas/environment-variables/).
+
+> **warning** Don't re-run `connect --environment` in this case. It creates another project, which counts against your plan limit.
+
+</Collapsible>
+
+## Further reading
+
+<BoxLink
+  title="Build a user management app"
+  description="Combine Supabase Auth and the database in this quickstart guide."
   href="https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />
 
 <BoxLink
   title="Sign in with Apple"
-  description="Supabase Auth supports using Sign in with Apple on the web and in native apps for iOS, macOS, watchOS or tvOS."
+  description="Add Sign in with Apple to your Android and iOS app with Supabase Auth."
   href="https://supabase.com/docs/guides/auth/social-login/auth-apple?platform=react-native&utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />
 
 <BoxLink
   title="Sign in with Google"
-  description="Supabase Auth supports Sign in with Google on the web, native Android applications, and Chrome extensions."
+  description="Add Sign in with Google to your Android and iOS app with Supabase Auth."
   href="https://supabase.com/docs/guides/auth/social-login/auth-google?platform=react-native&utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />
 
 <BoxLink
-  title="Deep Linking for OAuth and Magic Links"
-  description="When performing OAuth or sending magic link emails from native mobile applications, learn how to configure deep linking for Android and iOS applications."
-  href="https://supabase.com/docs/guides/auth/native-mobile-deep-linking?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
-/>
-
-<BoxLink
-  title="Offline-first React Native Apps with WatermelonDB"
-  description="Learn how to store your data locally and sync it with Postgres using WatermelonDB."
+  title="Offline-first apps with WatermelonDB"
+  description="Store your data locally and sync it with Postgres using WatermelonDB."
   href="https://supabase.com/blog/react-native-offline-first-watermelon-db?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />
 
 <BoxLink
-  title="React Native file upload with Supabase Storage"
-  description="Learn how to implement authentication and file upload in a React Native app."
+  title="File upload with Supabase Storage"
+  description="Implement authentication and file upload in a React Native app."
   href="https://supabase.com/blog/react-native-storage?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />

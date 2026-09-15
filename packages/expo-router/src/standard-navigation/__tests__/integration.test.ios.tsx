@@ -3,7 +3,9 @@ import { Pressable, Text, View } from 'react-native';
 import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation';
 
 import { router } from '../../imperative-api';
+import Stack from '../../layouts/StackClient';
 import type { ParamListBase } from '../../react-navigation/core';
+import { usePreventRemove } from '../../react-navigation/core/usePreventRemove';
 import {
   StackRouter,
   type StackNavigationState,
@@ -16,7 +18,11 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import { act, fireEvent, renderRouter, screen } from '../../testing-library';
-import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../appendMissingPlaceholderTabRoutes';
+import { createStandardRouterNavigator, integrateWithRouter } from '../index';
 import type { NavigatorContentProps, StandardNavigatorDescriptor } from '../types';
 
 type TestOptions = { title?: string };
@@ -35,26 +41,60 @@ function NavigatorContent(args: NavigatorArgs<TestOptions, TestEventMap>) {
   );
 }
 
-const StandardTabs = unstable_createStandardRouterNavigator<
+function RemovalPreventedScreen() {
+  usePreventRemove(true);
+  return null;
+}
+
+const StandardTabs = createStandardRouterNavigator<
   TestOptions,
   TabNavigationState<ParamListBase>,
   TestEventMap,
   { tintColor?: string },
   TabRouterOptions
->(NavigatorContent, TabRouter);
+>(NavigatorContent, TabRouter, {
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+});
+
+const processedContentSpy = jest.fn();
+const processStateSpy = jest.fn();
+
+const ProcessedTabs = createStandardRouterNavigator<
+  TestOptions,
+  TabNavigationState<ParamListBase>,
+  TestEventMap,
+  object,
+  TabRouterOptions,
+  { processedRouteNames: string[] }
+>(
+  (args) => {
+    processedContentSpy(args);
+    return null;
+  },
+  TabRouter,
+  {
+    createProps: ({ state }) => ({
+      processedRouteNames: state.routes.map((route) => route.name),
+    }),
+    processDescriptors: appendMissingPlaceholderTabDescriptors,
+    processState: (state, descriptors) => {
+      processStateSpy(state, descriptors);
+      return appendMissingPlaceholderTabRoutes(state, descriptors);
+    },
+  }
+);
 
 const lastArgs = (): NavigatorArgs<TestOptions, TestEventMap> & Record<string, unknown> =>
   contentSpy.mock.calls.at(-1)![0];
 
-const hrefByName = () =>
-  Object.fromEntries(lastArgs().state.routes.map((r) => [r.name, r.href] as const));
-
 beforeEach(() => {
   contentSpy.mockClear();
+  processedContentSpy.mockClear();
+  processStateSpy.mockClear();
 });
 
-describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator', () => {
-  it('renders declared screens and exposes a well-formed state', () => {
+describe('integrateWithRouter / createStandardRouterNavigator', () => {
+  it('keeps navigator state sparse by default', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -67,23 +107,33 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
     expect(lastArgs().state.index).toBe(0);
   });
 
-  it('builds an href for every route', () => {
+  it('applies processState before converting navigator state', () => {
     renderRouter({
       _layout: () => (
-        <StandardTabs>
-          <StandardTabs.Screen name="index" />
-          <StandardTabs.Screen name="second" />
-        </StandardTabs>
+        <ProcessedTabs>
+          <ProcessedTabs.Screen name="index" />
+          <ProcessedTabs.Screen name="second" />
+        </ProcessedTabs>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
     });
 
-    expect(hrefByName()).toEqual({ index: '/', second: '/second' });
+    const state = processedContentSpy.mock.calls.at(-1)![0].state;
+    expect(processStateSpy).toHaveBeenCalledTimes(1);
+    expect(state.routes).toEqual([
+      expect.objectContaining({ name: 'index', href: '/' }),
+      expect.objectContaining({ key: 'second', name: 'second', href: '/second' }),
+    ]);
+    expect(state.index).toBe(0);
+    expect(processedContentSpy.mock.calls.at(-1)![0].processedRouteNames).toEqual([
+      'index',
+      'second',
+    ]);
   });
 
   it('updates state when navigating imperatively', () => {
@@ -181,7 +231,7 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().tintColor).toBe('rebeccapurple');
   });
 
-  it('always registers undeclared filesystem routes', () => {
+  it('exposes placeholder descriptors for undeclared filesystem routes', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -192,11 +242,10 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
+    expect(lastArgs().state.routes.map((route) => route.name)).toEqual(['index']);
     expect(
-      lastArgs()
-        .state.routes.map((r) => r.name)
-        .sort()
-    ).toEqual(['index', 'second']);
+      (lastArgs().descriptors.second as StandardNavigatorDescriptor<TestOptions>).routeSource
+    ).toBe('filesystem');
   });
 
   it('distinguishes declared and inferred routes via descriptor routeSource', () => {
@@ -211,12 +260,11 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     });
 
     const { state, descriptors } = lastArgs();
-    const routeSourceByName = Object.fromEntries(
-      state.routes.map((route) => [
-        route.name,
-        (descriptors[route.key]! as StandardNavigatorDescriptor<TestOptions>).routeSource,
-      ])
-    );
+    const index = state.routes[0]!;
+    const routeSourceByName = {
+      index: (descriptors[index.key]! as StandardNavigatorDescriptor<TestOptions>).routeSource,
+      second: (descriptors.second as StandardNavigatorDescriptor<TestOptions>).routeSource,
+    };
     expect(routeSourceByName).toEqual({ index: 'layout', second: 'filesystem' });
   });
 
@@ -235,10 +283,8 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     });
 
     const args = lastArgs();
-    const second = args.state.routes.find((route) => route.name === 'second')!;
-
-    expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
-    expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
+    expect(args.state.routes.map((route) => route.name)).toEqual(['index']);
+    expect(args.descriptors.second!.options).toMatchObject({ hidden: true });
     expect(screen.queryByTestId('second')).toBeNull();
   });
 
@@ -300,7 +346,7 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
   });
 
   it('passes props derived from state via createProps to NavigatorContent', () => {
-    const StandardWithProps = unstable_createStandardRouterNavigator<
+    const StandardWithProps = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
@@ -329,10 +375,128 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().focusedName).toBe('second');
   });
 
+  it('exposes whether a route key is preloaded via createProps', () => {
+    const StandardWithIsPreloaded = createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions,
+      {
+        isPreloaded: (key: string) => boolean;
+        preloadSecond: () => void;
+        focusSecond: () => void;
+      }
+    >(NavigatorContent, TabRouter, {
+      createProps: ({ isPreloaded, dispatchSync }) => ({
+        isPreloaded,
+        preloadSecond: () => dispatchSync({ type: 'PRELOAD', payload: { name: 'second' } }),
+        focusSecond: () => dispatchSync(TabActions.jumpTo('second')),
+      }),
+    });
+
+    renderRouter({
+      _layout: () => (
+        <StandardWithIsPreloaded>
+          <StandardWithIsPreloaded.Screen name="index" />
+          <StandardWithIsPreloaded.Screen name="second" />
+        </StandardWithIsPreloaded>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    const activeKey = lastArgs().state.routes[0]!.key;
+    expect((lastArgs().isPreloaded as (key: string) => boolean)(activeKey)).toBe(false);
+    expect((lastArgs().isPreloaded as (key: string) => boolean)('unknown')).toBe(false);
+
+    act(() => (lastArgs().preloadSecond as () => void)());
+
+    const preloadedKey = lastArgs().state.routes.find((route) => route.name === 'second')!.key;
+    expect((lastArgs().isPreloaded as (key: string) => boolean)(preloadedKey)).toBe(true);
+
+    act(() => (lastArgs().focusSecond as () => void)());
+
+    expect(lastArgs().state.routes[lastArgs().state.index]!.key).toBe(preloadedKey);
+    expect((lastArgs().isPreloaded as (key: string) => boolean)(preloadedKey)).toBe(false);
+  });
+
+  it('exposes whether a route key has removal prevented via createProps', () => {
+    const StandardWithRemovalPrevention = createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions,
+      {
+        isRemovalPrevented: (key: string) => boolean;
+        preloadSecond: () => void;
+        focusSecond: () => void;
+      }
+    >(NavigatorContent, TabRouter, {
+      createProps: ({ isRemovalPrevented, dispatchSync }) => ({
+        isRemovalPrevented,
+        preloadSecond: () => dispatchSync({ type: 'PRELOAD', payload: { name: 'second' } }),
+        focusSecond: () => dispatchSync(TabActions.jumpTo('second')),
+      }),
+    });
+    renderRouter({
+      _layout: () => (
+        <StandardWithRemovalPrevention>
+          <StandardWithRemovalPrevention.Screen name="index" />
+          <StandardWithRemovalPrevention.Screen name="second" />
+        </StandardWithRemovalPrevention>
+      ),
+      index: () => <View testID="index" />,
+      second: RemovalPreventedScreen,
+    });
+
+    const activeKey = lastArgs().state.routes[0]!.key;
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(activeKey)).toBe(false);
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)('unknown')).toBe(false);
+
+    act(() => (lastArgs().preloadSecond as () => void)());
+
+    const preloadedKey = lastArgs().state.routes.find((route) => route.name === 'second')!.key;
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(preloadedKey)).toBe(false);
+
+    act(() => (lastArgs().focusSecond as () => void)());
+
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(preloadedKey)).toBe(true);
+  });
+
+  it('exposes removal prevention propagated from a nested route via createProps', () => {
+    const StandardWithRemovalPrevention = createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions,
+      { isRemovalPrevented: (key: string) => boolean }
+    >(NavigatorContent, TabRouter, {
+      createProps: ({ isRemovalPrevented }) => ({ isRemovalPrevented }),
+    });
+    renderRouter(
+      {
+        _layout: () => (
+          <StandardWithRemovalPrevention>
+            <StandardWithRemovalPrevention.Screen name="nested" />
+          </StandardWithRemovalPrevention>
+        ),
+        'nested/_layout': () => <Stack />,
+        'nested/index': RemovalPreventedScreen,
+      },
+      { initialUrl: '/nested' }
+    );
+
+    const parentKey = lastArgs().state.routes[0]!.key;
+    expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(parentKey)).toBe(true);
+  });
+
   // Covers the `dispatch` path of `createProps` (the part flagged as internal and most likely to
   // break): a prop built from the raw dispatch must actually mutate the navigator state when called.
   it('exposes a working dispatch via createProps to NavigatorContent', () => {
-    const StandardWithDispatch = unstable_createStandardRouterNavigator<
+    const StandardWithDispatch = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
@@ -364,12 +528,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
   });
 
-  // initialRouteName is a router option, not a NavigatorContent prop: it is destructured out of the
-  // props spread so it never reaches the content component (the focused route itself is URL-driven).
   it('does not leak initialRouteName to NavigatorContent', () => {
     renderRouter({
       _layout: () => (
-        <StandardTabs initialRouteName="second">
+        <StandardTabs
+          // @ts-expect-error `initialRouteName` is only supported through `unstable_settings`.
+          initialRouteName="second">
           <StandardTabs.Screen name="index" />
           <StandardTabs.Screen name="second" />
         </StandardTabs>
@@ -383,21 +547,15 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
 });
 
 describe('processScreens', () => {
-  const optionsByName = () =>
-    Object.fromEntries(
-      lastArgs().state.routes.map(
-        (route) => [route.name, lastArgs().descriptors[route.key]!.options] as const
-      )
-    );
-
   it('transforms declared screen options before they are rendered', () => {
-    const Prefixed = unstable_createStandardRouterNavigator<
+    const Prefixed = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
       object,
       TabRouterOptions
     >(NavigatorContent, TabRouter, {
+      processDescriptors: appendMissingPlaceholderTabDescriptors,
       processScreens: (screens) =>
         screens.map((screen) => ({
           ...screen,
@@ -416,21 +574,23 @@ describe('processScreens', () => {
       second: () => <View testID="second" />,
     });
 
-    expect(optionsByName()).toMatchObject({
-      index: { title: 'processed-index' },
-      second: { title: 'processed-second' },
+    const args = lastArgs();
+    expect(args.descriptors[args.state.routes[0]!.key]!.options).toMatchObject({
+      title: 'processed-index',
     });
+    expect(args.descriptors.second!.options).toMatchObject({ title: 'processed-second' });
   });
 
   it('receives only the declared screens', () => {
     const names: string[] = [];
-    const Recording = unstable_createStandardRouterNavigator<
+    const Recording = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
       object,
       TabRouterOptions
     >(NavigatorContent, TabRouter, {
+      processDescriptors: appendMissingPlaceholderTabDescriptors,
       processScreens: (screens) => {
         names.length = 0;
         names.push(...screens.map((screen) => screen.name));
@@ -449,12 +609,11 @@ describe('processScreens', () => {
     });
 
     expect(names).toEqual(['index']);
-    // The undeclared route is still registered, it just never reaches the processor.
-    expect(lastArgs().state.routes.map((route) => route.name)).toContain('second');
+    expect(lastArgs().descriptors.second).toBeDefined();
   });
 
   it('rejects dropped screens', () => {
-    const Filtered = unstable_createStandardRouterNavigator<
+    const Filtered = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
@@ -479,7 +638,7 @@ describe('processScreens', () => {
   });
 
   it('rejects renamed screens', () => {
-    const Renamed = unstable_createStandardRouterNavigator<
+    const Renamed = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
@@ -503,7 +662,7 @@ describe('processScreens', () => {
   });
 
   it('rejects screens renamed in place', () => {
-    const Renamed = unstable_createStandardRouterNavigator<
+    const Renamed = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
@@ -529,7 +688,7 @@ describe('processScreens', () => {
   });
 
   it('rejects duplicate screens returned by the processor', () => {
-    const Duplicated = unstable_createStandardRouterNavigator<
+    const Duplicated = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
@@ -555,7 +714,7 @@ describe('processScreens', () => {
 });
 
 describe('preloaded routes projected through the integration (StackRouter)', () => {
-  const StandardStack = unstable_createStandardRouterNavigator<
+  const StandardStack = createStandardRouterNavigator<
     TestOptions,
     StackNavigationState<ParamListBase>,
     TestEventMap,
@@ -610,18 +769,18 @@ describe('preloaded routes projected through the integration (StackRouter)', () 
   });
 });
 
-describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
+describe('assertStandardNavigator (via integrateWithRouter)', () => {
   // Kept in sync with the messages thrown in assertStandardNavigator (index.tsx). The `type` is
   // interpolated via JSON.stringify, so a string becomes `"weird"` and `undefined` stays unquoted.
   const noNavigatorMessage =
     'Could not integrate a standard navigator because no navigator was provided. ' +
     'Pass the object returned by `createStandardNavigator(...)` from the `standard-navigation` package, ' +
-    'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)` which creates it for you.';
+    'or use `createStandardRouterNavigator(NavigatorContent, router)` which creates it for you.';
   const wrongTypeMessage = (type: string) =>
     `Could not integrate a standard navigator because its \`type\` is ${type}, not "standard". ` +
     'This value is likely not a standard-navigation navigator. ' +
     'Create it with `createStandardNavigator(...)` from the `standard-navigation` package, ' +
-    'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)`.';
+    'or use `createStandardRouterNavigator(NavigatorContent, router)`.';
   // Kept in sync with the warning logged in assertStandardNavigator (index.tsx).
   const wrongVersionMessage = (version: number) =>
     `This standard navigator targets the standard-navigation v${version} contract, ` +
@@ -631,21 +790,21 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
     'or check the standard-navigation release notes for migration steps.';
 
   it('throws when the navigator is null', () => {
-    expect(() => unstable_integrateWithRouter(null as any, TabRouter)).toThrow(
+    expect(() => integrateWithRouter(null as any, TabRouter)).toThrow(
       new Error(noNavigatorMessage)
     );
   });
 
   it('throws a wrong-type error when required fields are missing', () => {
     // An empty object has an `undefined` type, which fails the `type === "standard"` check first.
-    expect(() => unstable_integrateWithRouter({} as any, TabRouter)).toThrow(
+    expect(() => integrateWithRouter({} as any, TabRouter)).toThrow(
       new Error(wrongTypeMessage('undefined'))
     );
   });
 
   it('throws when the navigator type is not "standard"', () => {
     expect(() =>
-      unstable_integrateWithRouter(
+      integrateWithRouter(
         { type: 'weird', version: 1, NavigatorContent: () => null } as any,
         TabRouter
       )
@@ -656,7 +815,7 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       expect(() =>
-        unstable_integrateWithRouter(
+        integrateWithRouter(
           { type: 'standard', version: 2, NavigatorContent: () => null } as any,
           TabRouter
         )
@@ -671,7 +830,7 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       expect(() =>
-        unstable_integrateWithRouter(
+        integrateWithRouter(
           { type: 'standard', version: 0, NavigatorContent: () => null } as any,
           TabRouter
         )
@@ -684,7 +843,7 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
 
   it('accepts a navigator produced by the real createStandardNavigator', () => {
     expect(() =>
-      unstable_integrateWithRouter(
+      integrateWithRouter(
         createStandardNavigator(() => null),
         TabRouter
       )
@@ -718,7 +877,10 @@ describe('custom-navigators guide example', () => {
     );
   }
 
-  const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+  const Tabs = createStandardRouterNavigator(TabsContent, TabRouter, {
+    processDescriptors: appendMissingPlaceholderTabDescriptors,
+    processState: appendMissingPlaceholderTabRoutes,
+  });
 
   const renderExample = () =>
     renderRouter({
@@ -757,13 +919,13 @@ describe('custom-navigators guide example', () => {
   // TabRouter and preloads the route. The previous `POP_TO_TOP` example was a silent no-op on tabs
   // (only StackRouter handles it), so a copy-paste user got a button that did nothing.
   //
-  // `preloadedNames` is derived from the raw `state` — exactly the "router-specific information that
-  // is not part of the standard state" that `createProps` exists to expose (TabRouter keeps preloaded
-  // routes in `preloadedRouteKeys`, which the standard contract does not project).
+  // `materializedNames` is derived from non-focused routes in the raw `state` — exactly the
+  // "router-specific information that is not part of the standard state" that `createProps` exists
+  // to expose.
   type CreatePropsProps = {
     activeRouteKey: string;
     preload: (name: string) => void;
-    preloadedNames: string[];
+    materializedNames: string[];
   };
   type ContentProps = NavigatorContentProps<
     { title?: string },
@@ -781,7 +943,7 @@ describe('custom-navigators guide example', () => {
     return <View style={{ flex: 1 }}>{props.descriptors[focusedRoute.key]!.render()}</View>;
   }
 
-  const Tabs = unstable_createStandardRouterNavigator<
+  const Tabs = createStandardRouterNavigator<
     { title?: string },
     TabNavigationState<ParamListBase>,
     Record<string, never>,
@@ -792,9 +954,9 @@ describe('custom-navigators guide example', () => {
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
-      preloadedNames: state.preloadedRouteKeys
-        .map((key) => state.routes.find((route) => route.key === key)?.name)
-        .filter((name): name is string => name !== undefined),
+      materializedNames: state.routes
+        .filter((_, index) => index !== state.index)
+        .map((route) => route.name),
     }),
   });
 
@@ -821,12 +983,12 @@ describe('custom-navigators guide example', () => {
 
   it('preloads a route via the createProps PRELOAD dispatch without moving focus', () => {
     renderExample();
-    expect(lastProps().preloadedNames).toEqual([]);
+    expect(lastProps().materializedNames).toEqual([]);
 
     act(() => lastProps().preload('settings'));
 
     // The action reached the TabRouter: `settings` is now preloaded, and focus stayed on `index`.
-    expect(lastProps().preloadedNames).toEqual(['settings']);
+    expect(lastProps().materializedNames).toEqual(['settings']);
     expect(lastProps().state.index).toBe(0);
     expect(lastProps().state.routes[lastProps().state.index]!.name).toBe('index');
   });

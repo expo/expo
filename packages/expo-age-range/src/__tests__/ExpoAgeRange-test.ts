@@ -32,4 +32,9 @@ describe('ExpoAgeRange', () => {
     // The mock represents the unsupported case (iOS and web).
     await expect(ExpoAgeRange.requestAgeSignalsAccessAsync()).resolves.toBeNull();
   });
+
+  it(`invokes setFakeAgeSignals`, () => {
+    expect(ExpoAgeRange.setFakeAgeSignals({ lowerBound: 18 })).toBeUndefined();
+    expect(ExpoAgeRange.setFakeAgeSignals(null)).toBeUndefined();
+  });
 });

@@ -5,6 +5,7 @@ import {
   Keyboard,
   type KeyboardEventListener,
   type KeyboardEventName,
+  Pressable,
   View,
 } from 'react-native';
 
@@ -51,6 +52,33 @@ test('renders a bottom tab navigator and navigates between screens on tab press'
 
   expect(screen.queryByText('Screen second')).not.toBeNull();
   expect(screen).toHavePathname('/second');
+});
+
+test('an unvisited tab option can navigate with its placeholder navigation', async () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen
+          name="second"
+          options={({ navigation }) => ({
+            tabBarButton: ({ children }) => (
+              <Pressable testID="second-tab" onPress={() => navigation.navigate('second')}>
+                {children}
+              </Pressable>
+            ),
+          })}
+        />
+      </Tabs>
+    ),
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  expect(screen.queryByText('Screen second')).toBeNull();
+  await userEvent.press(screen.getByTestId('second-tab'));
+  expect(screen).toHavePathname('/second');
+  expect(screen.queryByText('Screen second')).not.toBeNull();
 });
 
 test('renders tabs in route names order while preserving focus', () => {
@@ -101,6 +129,21 @@ test('handles screens preloading', () => {
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).toBeNull();
 
   act(() => router.prefetch('/second'));
+
+  expect(screen.queryByText('Screen second', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('preloads a non-lazy screen after mount', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" options={{ lazy: false }} />
+      </Tabs>
+    ),
+    index: () => null,
+    second: () => <Text>Screen second</Text>,
+  });
 
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).not.toBeNull();
 });
@@ -178,6 +221,52 @@ test('does not navigate when a tabPress listener prevents the default action', a
 
   await userEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
 
+  expect(screen).toHavePathname('/');
+});
+
+test('a focused tabPress listener does not intercept an unvisited tab', async () => {
+  function Index() {
+    const navigation = useNavigation<BottomTabNavigationProp<ParamListBase>>();
+    useEffect(
+      () => navigation.addListener('tabPress', (event) => event.preventDefault()),
+      [navigation]
+    );
+    return <View testID="index" />;
+  }
+
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: Index,
+    second: () => <View testID="second" />,
+  });
+
+  await userEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  expect(screen).toHavePathname('/second');
+});
+
+test('an unvisited tabPress listener can prevent navigation', async () => {
+  const secondTabPress = jest.fn((event) => event.preventDefault());
+
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" listeners={{ tabPress: secondTabPress }} />
+      </Tabs>
+    ),
+    index: () => <View testID="index" />,
+    second: () => <View testID="second" />,
+  });
+
+  await userEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  expect(secondTabPress).toHaveBeenCalledTimes(1);
   expect(screen).toHavePathname('/');
 });
 
@@ -423,7 +512,7 @@ test('renders a custom tabBar and lets it emit and navigate', async () => {
       <View testID="custom-tab-bar">
         {state.routes.map((route) => (
           <Text
-            key={route.key}
+            key={route.name}
             testID={`tab-${route.name}`}
             onPress={() => {
               const event = emitter.emit({
@@ -461,6 +550,24 @@ test('renders a custom tabBar and lets it emit and navigate', async () => {
   expect(screen).toHavePathname('/second');
 });
 
+test('warns when a custom tabBar navigates to an unknown target', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs
+        tabBar={({ navigateToTab }) => (
+          <Text testID="unknown-tab" onPress={() => navigateToTab('unknown-key')} />
+        )}>
+        <Tabs.Screen name="index" />
+      </Tabs>
+    ),
+    index: () => null,
+  });
+
+  act(() => screen.getByTestId('unknown-tab').props.onPress());
+
+  expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Bottom tabs could not switch'));
+});
+
 test('lets a tabPress listener prevent navigation from a custom tabBar', async () => {
   function Second() {
     const navigation = useNavigation<BottomTabNavigationProp<ParamListBase>>();
@@ -476,7 +583,7 @@ test('lets a tabPress listener prevent navigation from a custom tabBar', async (
       <View>
         {state.routes.map((route) => (
           <Text
-            key={route.key}
+            key={route.name}
             testID={`tab-${route.name}`}
             onPress={() => {
               const event = emitter.emit({
