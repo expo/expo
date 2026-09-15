@@ -26,6 +26,7 @@
 
 - [iOS] Preserve SwiftUI view identity across widget and Live Activity updates so system update animations can run. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
 - [Android] Fix Gradle build failure when no Android widget is configured. ([#50038](https://github.com/expo/expo/pull/50038) by [@keith-kurak](https://github.com/keith-kurak))
+- [iOS] Fix widgets rendering the "Please adopt containerBackground API" placeholder by applying a fallback container background when the layout doesn't set one, including when the layout fails to evaluate.
 
 ### 💡 Others
 
