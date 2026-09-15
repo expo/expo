@@ -8,7 +8,7 @@ import type {
   SessionOptions,
 } from './LanguageModels.types';
 import { createOperation, type Operation } from './Operation';
-import { preparationProgress, readAvailability } from './availability';
+import { describeUnavailableReason, preparationProgress, readAvailability } from './availability';
 import { observeBackground } from './background';
 import { getTools, toolDeclarations } from './tools';
 
@@ -276,7 +276,9 @@ async function openSessionAsync(
         ? 'ERR_MODEL_NOT_READY'
         : 'ERR_MODEL_UNAVAILABLE',
       availability.status === 'unavailable'
-        ? `The requested system language model is unavailable: ${availability.reason}.`
+        ? `The requested system language model is unavailable. ${describeUnavailableReason(
+            availability.reason
+          )} (reason: ${availability.reason}).`
         : 'The requested system language model is not ready.'
     );
   }
