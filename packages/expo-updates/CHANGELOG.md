@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+- Load app config and env files in the selected mode when generating native Updates resources. ([#49452](https://github.com/expo/expo/pull/49452) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Use production config by default when Updates native debugging embeds production JavaScript. ([#49452](https://github.com/expo/expo/pull/49452) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [Android] Use the app's `react.root` when generating Updates resources. ([#49452](https://github.com/expo/expo/pull/49452) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-15

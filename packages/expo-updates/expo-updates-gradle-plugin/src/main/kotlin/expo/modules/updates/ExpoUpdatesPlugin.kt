@@ -25,7 +25,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       logger.warn("Stop expo-updates resource generation because ReactExtension is not registered")
       return
     }
-    val entryFile = detectedEntryFile(reactExtension)
+
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
     if (isNativeDebuggingEnabled(project)) {
@@ -35,16 +35,19 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
       val targetName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-      val projectRoot = project.rootProject.projectDir.parentFile.toPath()
-      val isDebuggableVariant =
-        reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
+      val isDebuggableVariant = isDebuggableVariant(variant.name, reactExtension.debuggableVariants.get())
+      val configMode = getConfigMode(
+        inheritedMode = System.getenv("__EXPO_CONFIG_MODE"),
+        isDebuggableVariant = isDebuggableVariant
+      )
 
       val createUpdatesResourcesTask = project.tasks.register("create${targetName}UpdatesResources", CreateUpdatesResourcesTask::class.java) {
         it.description = "expo-updates: Create updates resources for ${targetName}."
-        it.projectRoot.set(projectRoot.toString())
-        it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
+        it.projectRoot.set(reactExtension.root.map { directory -> directory.asFile.absolutePath })
+        it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs)
         it.debuggableVariant.set(isDebuggableVariant)
-        it.entryFile.set(entryFile.toPath().toString())
+        it.configMode.set(configMode)
+        it.entryFile.set(detectedEntryFile(reactExtension).absolutePath)
       }
       variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
     }
@@ -62,6 +65,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
     @get:Input
     abstract val debuggableVariant: Property<Boolean>
+
+    @get:Input
+    abstract val configMode: Property<String>
 
     @get:Input
     abstract val entryFile: Property<String>
@@ -83,6 +89,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           add(assetDir.get().toString())
           add(if (debuggableVariant.get()) "only-fingerprint" else "all")
           add(entryFile.get())
+          add(debuggableVariant.get().toString())
         }
 
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -91,6 +98,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           it.commandLine(args)
         }
 
+        it.environment("__EXPO_CONFIG_MODE", configMode.get())
         it.workingDir(projectRoot)
       }
     }
@@ -117,6 +125,18 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     }
   }
 }
+
+internal fun getConfigMode(
+  inheritedMode: String?,
+  isDebuggableVariant: Boolean
+): String = when {
+  inheritedMode != null -> inheritedMode
+  isDebuggableVariant -> "development"
+  else -> "production"
+}
+
+internal fun isDebuggableVariant(variantName: String, debuggableVariants: List<String>): Boolean =
+  debuggableVariants.any { it.equals(variantName, ignoreCase = true) }
 
 /**
  * Synced implementation from [RNGP](https://github.com/facebook/react-native/blob/9bdd777fd766ff/packages/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/utils/PathUtils.kt#L20-L33)
