@@ -15,6 +15,8 @@ import { NativeTabsView } from '../NativeTabsView';
 import { BottomAccessoryPlacementContext } from '../hooks';
 import { SUPPORTED_BLUR_EFFECTS, SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS } from '../types';
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actualModule = jest.requireActual(

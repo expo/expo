@@ -317,7 +317,7 @@ export function createImperativeRouter(
     reload,
     prefetch: (href, options) => prefetchImpl(enqueue, href, options),
     setTransitionMode: (mode) => {
-      defaultTransitionMode = mode;
+      setDefaultTransitionMode(mode);
       setTransitionMode(mode);
     },
     setParams: setParams as ImperativeRouter['setParams'],
@@ -329,7 +329,11 @@ const throwBeforeFirstRender = () => {
   throw new Error('The imperative router is unavailable before the first render has finished.');
 };
 
-export let defaultTransitionMode: NavigationTransitionMode = 'preload-only';
+let defaultTransitionMode: NavigationTransitionMode = 'preload-only';
+
+export function getDefaultTransitionMode() {
+  return defaultTransitionMode;
+}
 
 function setDefaultTransitionMode(mode: NavigationTransitionMode) {
   defaultTransitionMode = mode;

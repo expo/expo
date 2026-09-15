@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
-import { createImperativeRouter, defaultTransitionMode, router, unboundRouter } from './router';
+import { createImperativeRouter, getDefaultTransitionMode, router, unboundRouter } from './router';
 import type { RoutingIntent } from './routingQueue';
 import type { NavigationTransitionMode } from './types';
 
@@ -39,7 +39,7 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
   const [queue, setQueue] = useState(EMPTY);
   const [isPending, startTransition] = useTransition();
   const [transitionMode, setTransitionMode] =
-    useState<NavigationTransitionMode>(defaultTransitionMode);
+    useState<NavigationTransitionMode>(getDefaultTransitionMode);
   const api = useMemo<RoutingQueueApi>(
     () => ({
       enqueue: (intent) => setQueue((previous) => [...previous, intent]),

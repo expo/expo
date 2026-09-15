@@ -17,6 +17,8 @@ function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
 }
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 function RouterBridge() {
   const api = use(RoutingQueueApiContext)!;
   return (
@@ -69,7 +71,6 @@ it('updates the global transition mode from useRouterActions', () => {
   act(() => result.current.router.setTransitionMode('never'));
 
   expect(result.current.api.transitionMode).toBe('never');
-  act(() => result.current.router.setTransitionMode('preload-only'));
 });
 
 it('uses a transition mode set before the router binds', () => {
@@ -80,7 +81,6 @@ it('uses a transition mode set before the router binds', () => {
   });
 
   expect(result.current.transitionMode).toBe('never');
-  router.setTransitionMode('preload-only');
 });
 
 it('restores the throwing router after the provider unmounts', () => {

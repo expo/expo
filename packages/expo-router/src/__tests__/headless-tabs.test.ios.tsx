@@ -20,6 +20,8 @@ import { useNavigatorContext } from '../views/Navigator';
 import type { PressableProps } from '../views/Pressable';
 import { Pressable } from '../views/Pressable';
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 function createDeferred() {
   let resolve!: (value: string) => void;
   const promise = new Promise<string>((resolvePromise) => {
