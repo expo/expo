@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove Expo Router compatibility checks for `@react-navigation` packages. ([#50176](https://github.com/expo/expo/pull/50176) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-14
