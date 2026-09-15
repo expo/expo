@@ -81,7 +81,7 @@ surfaces as a build error, naming the fix:
   compiles the two languages in separate targets, and only the module can
   declare where its split goes. Either an `spm.config.json`
   (`packages/expo-sensors` is a worked example) or a checked-in `Package.swift`
-  (`packages/expo-file-system`) makes it consumable, persisted with
+  (`packages/expo-constants`) makes it consumable, persisted with
   `patch-package` for a module you do not own, and upstreamed so every consumer
   gets it. This mirrors what React Native's autolinker asks of community
   libraries.

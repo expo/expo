@@ -1057,3 +1057,122 @@ describe('the minimum floor a checked-in manifest is raised to', () => {
     expect(emitted('16.4', null)).toContain('platforms: [.iOS("16.4")],');
   });
 });
+
+describe('dependencies on targets the generated package cannot declare', () => {
+  const dumpWithBinaryTarget = JSON.stringify({
+    name: 'TestModule',
+    products: [
+      { name: 'TestModule', type: { library: ['automatic'] }, targets: ['Src', 'Vendored'] },
+    ],
+    targets: [
+      {
+        name: 'Src',
+        type: 'regular',
+        path: 'ios/Src',
+        dependencies: [{ byName: ['Vendored', null] }],
+      },
+      { name: 'Vendored', type: 'binary', path: 'ios/Vendored.xcframework' },
+    ],
+  });
+
+  it('reports a dependency on a non-regular target of the same package', () => {
+    const { targets, unsupportedTargetDeps } = parseDumpedManifest(dumpWithBinaryTarget);
+    expect(unsupportedTargetDeps).toEqual([
+      { target: 'Src', dependsOn: 'Vendored', kind: 'binary' },
+    ]);
+    expect(targets.map((t) => t.name)).toEqual(['Src']);
+  });
+
+  it('reports the kind of every non-regular target a dependency names', () => {
+    const { unsupportedTargetDeps } = parseDumpedManifest(
+      JSON.stringify({
+        name: 'TestModule',
+        products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Src'] }],
+        targets: [
+          {
+            name: 'Src',
+            type: 'regular',
+            path: 'ios/Src',
+            dependencies: [{ byName: ['Macros', null] }, { target: ['Codegen', null] }],
+          },
+          { name: 'Macros', type: 'macro', path: 'Macros' },
+          { name: 'Codegen', type: 'plugin', path: 'Codegen' },
+        ],
+      })
+    );
+    expect(unsupportedTargetDeps).toEqual([
+      { target: 'Src', dependsOn: 'Macros', kind: 'macro' },
+      { target: 'Src', dependsOn: 'Codegen', kind: 'plugin' },
+    ]);
+  });
+
+  // The shape of packages/expo-constants, which the diagnostics cite as a worked
+  // manifest: an ordinary Swift/Objective-C split must stay out of this entirely.
+  it('says nothing about a dependency between two regular targets', () => {
+    const { targets, unsupportedTargetDeps } = parseDumpedManifest(
+      JSON.stringify({
+        name: 'expo-constants',
+        products: [
+          {
+            name: 'EXConstants',
+            type: { library: ['automatic'] },
+            targets: ['EXConstants', 'EXConstantsObjC'],
+          },
+        ],
+        targets: [
+          {
+            name: 'EXConstants',
+            type: 'regular',
+            path: 'ios/EXConstants',
+            dependencies: [{ byName: ['EXConstantsObjC', null] }],
+          },
+          {
+            name: 'EXConstantsObjC',
+            type: 'regular',
+            path: 'ios/EXConstantsObjC',
+            dependencies: [],
+          },
+        ],
+      })
+    );
+    expect(unsupportedTargetDeps).toEqual([]);
+    expect(targets[0].siblingDeps).toEqual(['EXConstantsObjC']);
+  });
+
+  it('says nothing about a name that is no target of this package — an external product', () => {
+    const { targets, unsupportedTargetDeps } = parseDumpedManifest(
+      JSON.stringify({
+        name: 'TestModule',
+        products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Src'] }],
+        targets: [
+          {
+            name: 'Src',
+            type: 'regular',
+            path: 'ios/Src',
+            dependencies: [{ byName: ['SomeUpstreamProduct', null] }],
+          },
+        ],
+      })
+    );
+    expect(unsupportedTargetDeps).toEqual([]);
+    expect(targets[0].siblingDeps).toEqual([]);
+  });
+
+  it('skips the module instead of emitting a target whose dependency was dropped', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-binary-dep-'));
+    const moduleRoot = path.join(tmp, 'module');
+    const outDir = path.join(tmp, 'out');
+    fs.mkdirSync(path.join(moduleRoot, 'ios', 'Src'), { recursive: true });
+    runDumpPackage.mockReturnValue(dumpWithBinaryTarget);
+
+    const result = emitSourceManifestPackage(moduleRoot, null, '/abs/interfaces', outDir, null);
+
+    expect(result.packageDep).toBeUndefined();
+    expect(result.unsupportedTargetDeps).toEqual([
+      { target: 'Src', dependsOn: 'Vendored', kind: 'binary' },
+    ]);
+    expect(fs.existsSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'))).toBe(
+      false
+    );
+  });
+});
