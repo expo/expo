@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [Android] Discover Expo Modules v2 modules at compile time. ([#50178](https://github.com/expo/expo/pull/50178) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
