@@ -15,6 +15,7 @@
 
 ### Bug fixes
 
+- Report why a model is unavailable in plain language, keeping the provider's own reason instead of replacing it with an unmet feature requirement.
 - Keep source imports compatible with released Expo versions that do not export the event subscription type.
 - Prepare compiled output for publishing and exclude tests and local build caches from the package.
 - Keep canceled or rejected results out of retained session history on Apple, Android, and Web.
