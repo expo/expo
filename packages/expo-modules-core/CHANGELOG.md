@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Removed the inline prebuilt XCFramework conditional from `ExpoModulesCore.podspec` so the pod is patched through the same path as every other precompiled Expo module. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-15
