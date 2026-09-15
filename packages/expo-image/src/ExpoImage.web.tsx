@@ -74,6 +74,7 @@ export default function ExpoImage({
   responsivePolicy,
   onLoadEnd,
   onDisplay,
+  onPlaceholderDisplay,
   priority,
   loading,
   blurRadius,
@@ -124,6 +125,7 @@ export default function ExpoImage({
               className={className}
               events={{
                 onTransitionEnd: [onAnimationFinished],
+                onPlaceholderDisplay: [onPlaceholderDisplay],
               }}
               contentPosition={{ left: '50%', top: '50%' }}
               hashPlaceholderContentPosition={contentPosition}

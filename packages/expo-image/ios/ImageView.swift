@@ -118,6 +118,8 @@ public final class ImageView: ExpoView {
 
   let onDisplay = EventDispatcher()
 
+  let onPlaceholderDisplay = EventDispatcher()
+
   // MARK: - View
 
   public override var bounds: CGRect {
@@ -664,6 +666,8 @@ public final class ImageView: ExpoView {
 
     if !isPlaceholder {
       onDisplay()
+    } else if image != nil {
+      onPlaceholderDisplay()
     }
 
 #if !os(tvOS)

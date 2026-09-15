@@ -14,6 +14,7 @@ export type OnLoadEvent =
 export type OnTransitionEndEvent = (() => void) | undefined | null;
 export type OnMountEvent = (() => void) | undefined | null;
 export type OnDisplayEvent = (() => void) | undefined | null;
+export type OnPlaceholderDisplayEvent = (() => void) | undefined | null;
 
 export type ImageWrapperEvents = {
   onLoad?: OnLoadEvent[];
@@ -21,6 +22,7 @@ export type ImageWrapperEvents = {
   onTransitionEnd?: OnTransitionEndEvent[];
   onMount?: OnMountEvent[];
   onDisplay?: OnDisplayEvent[];
+  onPlaceholderDisplay?: OnPlaceholderDisplayEvent[];
 };
 
 export type ImageWrapperProps = {
