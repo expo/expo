@@ -15,6 +15,7 @@ import {
   stripInvisibleSegmentsFromPath,
 } from './matchers';
 import type { RequireContext } from './types';
+import type { ContextKey, EntryPoint } from './types/paths';
 import { shouldLinkExternally } from './utils/url';
 
 export type Options = {
@@ -66,6 +67,7 @@ type DirectoryNode = {
 export type RedirectConfig = {
   source: string;
   destination: string;
+  /** A context key, or the destination URL when `external` is set. Widened because this type is public. */
   destinationContextKey: string;
   permanent?: boolean;
   methods?: string[];
@@ -75,7 +77,7 @@ export type RedirectConfig = {
 export type RewriteConfig = {
   source: string;
   destination: string;
-  destinationContextKey: string;
+  destinationContextKey: EntryPoint;
   methods?: string[];
 };
 
@@ -133,7 +135,10 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
  * Given a RequireContext, return the middleware node if one is found. If more than one middleware file is found, an error is thrown.
  */
 function getMiddleware(contextModule: RequireContext, options: Options): MiddlewareNode | null {
-  const allMiddlewareFiles = contextModule.keys().filter((key) => key.includes('+middleware'));
+  // Metro types context keys as plain strings; they are always `./`-prefixed.
+  const allMiddlewareFiles = (contextModule.keys() as ContextKey[]).filter((key) =>
+    key.includes('+middleware')
+  );
 
   // Check if middleware is enabled via plugin config
   if (!options.unstable_useServerMiddleware) {
@@ -230,11 +235,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let hasRoutes = false;
   let isValid = false;
 
-  const contextKeys = contextModule.keys();
+  // Metro types context keys as plain strings; they are always `./`-prefixed.
+  const contextKeys = contextModule.keys() as ContextKey[];
   const redirects: Record<string, RedirectConfig> = {};
   const rewrites: Record<string, RewriteConfig> = {};
 
-  let validRedirectDestinations: { contextKey: string; nameWithoutInvisible: string }[] | undefined;
+  let validRedirectDestinations:
+    | { contextKey: ContextKey; nameWithoutInvisible: string }[]
+    | undefined;
 
   const getValidDestinations = () => {
     // Loop over contexts once and cache the valid destinations
@@ -446,7 +454,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       }
 
       const redirect = redirects[meta.route]!;
-      node.destinationContextKey = redirect.destinationContextKey;
+      // `RedirectConfig` is public and types this as `string`; the router only ever stores a
+      // context key here, or the destination URL for an external redirect.
+      node.destinationContextKey = redirect.destinationContextKey as EntryPoint;
       node.permanent = redirect.permanent;
       node.generated = true;
       if (node.type === 'route') {
@@ -626,7 +636,7 @@ function getNameWithoutInvisibleSegmentsFromRedirectPath(path: string): string {
 }
 
 // Creates fake context key for redirects and rewrites
-function getSourceContextKeyFromRedirectSource(source: string): string {
+function getSourceContextKeyFromRedirectSource(source: string): ContextKey {
   const name = getNameFromRedirectPath(source);
   const prefix = './';
   const suffix = /\.[tj]sx?$/.test(name) ? '' : '.js'; // Ensure it has a file extension

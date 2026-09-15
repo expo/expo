@@ -1115,6 +1115,30 @@ describe('redirects', () => {
     });
   });
 
+  it('stores the destination URL of an external redirect as its entry point', () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        './(app)/index': () => null,
+      }),
+      {
+        internal_stripLoadRoute: true,
+        skipGenerated: true,
+        redirects: [
+          {
+            source: '/old',
+            destination: 'https://example.com/new',
+            external: true,
+          } as RedirectConfig,
+        ],
+        preserveRedirectAndRewrites: true,
+      }
+    );
+
+    const redirect = routes!.children.find((child) => child.type === 'redirect')!;
+    expect(redirect.destinationContextKey).toBe('https://example.com/new');
+    expect(redirect.entryPoints).toContain('https://example.com/new');
+  });
+
   it('can add dynamic redirects', () => {
     expect(
       getRoutes(

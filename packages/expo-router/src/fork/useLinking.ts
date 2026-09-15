@@ -24,7 +24,7 @@ import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
 import { extractExpoPathFromURL } from './extractPathFromURL';
-import { appendBaseUrl } from './getPathFromState';
+import { appendBaseUrl } from './getPathFromState-forks';
 
 const linkingHandlers: symbol[] = [];
 

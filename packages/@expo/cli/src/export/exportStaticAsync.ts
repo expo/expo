@@ -9,7 +9,7 @@ import type { SerialAsset } from '@expo/metro-config/build/serializer/serializer
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
-import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import { getRoutePathname, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import type { PageHeaderInfo, RoutesManifest } from 'expo-server/private';
 import path from 'path';
@@ -276,7 +276,7 @@ export async function exportFromServerAsync(
           const data = await loaderResponse.json();
           // Transforms a `route.contextKey` into a normalized path. For example,
           // `./nested/[id]/index.tsx` becomes `/nested/[id]/index`
-          const loaderKey = getContextKey(route.contextKey);
+          const loaderKey = getRoutePathname(route.contextKey);
           const fileSystemPath = `_expo/loaders${loaderKey}`;
           files.set(fileSystemPath, {
             contents: JSON.stringify(data, null, 2),

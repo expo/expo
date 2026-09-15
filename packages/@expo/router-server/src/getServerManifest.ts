@@ -1,5 +1,5 @@
 import {
-  getContextKey,
+  getRoutePathname,
   sortRoutes,
   type RouteNode,
   type PageHeadersConfig,
@@ -212,5 +212,5 @@ function getNamedRouteRegex(
 }
 
 function getNormalizedContextKey(contextKey: string): string {
-  return getContextKey(contextKey).replace(/\/index$/, '') ?? '/';
+  return getRoutePathname(contextKey).replace(/\/index$/, '') ?? '/';
 }

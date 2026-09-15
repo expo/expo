@@ -47,7 +47,8 @@ export function useLocalSearchParams<
 >(): RouteParams<TRoute> & TParams;
 export function useLocalSearchParams() {
   const params = React.use(LocalRouteParamsContext) ?? {};
-  const { params: previewParams } = usePreviewInfo();
+  const previewInfo = usePreviewInfo();
+  const previewParams = previewInfo.isPreview ? previewInfo.params : undefined;
   return Object.fromEntries(
     Object.entries(previewParams ?? params).map(([key, value]) => {
       // React Navigation doesn't remove `undefined` values from the params object, and you cannot remove them via

@@ -42,10 +42,11 @@ export function getNameFromFilePath(name: string): string {
   return removeSupportedExtensions(removeFileSystemDots(name));
 }
 
-export function getContextKey(name: string): string {
+/** Turn a context key such as `./(tabs)/index.tsx` into the route's URL pathname `/(tabs)`. */
+export function getRoutePathname(contextKey: string): string {
   // The root path is `` (empty string) so always prepend `/` to ensure
   // there is some value.
-  const normal = '/' + getNameFromFilePath(name);
+  const normal = '/' + getNameFromFilePath(contextKey);
   if (!normal.endsWith('_layout')) {
     return normal;
   }
