@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add version mappings for SDK 57 (react-native 0.86) and SDK 58 (react-native 0.88).
+- Migrate iOS projects to the UIKit scene-based life cycle when installing SDK 58 or newer.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
