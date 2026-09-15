@@ -73,9 +73,14 @@ describe(warnInvalidMiddlewareMatcherSettings, () => {
 describe(createRouteHandlerMiddleware, () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it.each(['static', 'server', 'single', undefined] as const)(
+  it.each([
+    ['static', '_expo/loaders/index.js'],
+    ['server', '_expo/loaders/index.js'],
+    ['single', undefined],
+    [undefined, undefined],
+  ] as const)(
     'only exposes data loaders for static and server output (output: %s)',
-    async (output) => {
+    async (output, expectedLoader) => {
       jest.mocked(fetchManifest).mockResolvedValue({
         htmlRoutes: [{ file: 'index.tsx', page: '/index', namedRegex: /^\/$/, routeKeys: {} }],
         apiRoutes: [],
@@ -112,9 +117,7 @@ describe(createRouteHandlerMiddleware, () => {
 
       const hooks = jest.mocked(createRequestHandler).mock.calls[0]![1]!;
       const manifest = await hooks.getRoutesManifest!();
-      expect(manifest?.htmlRoutes[0]?.loader).toBe(
-        ['static', 'server'].includes(output ?? '') ? '_expo/loaders/index.js' : undefined
-      );
+      expect(manifest?.htmlRoutes[0]?.loader).toBe(expectedLoader);
     }
   );
 });

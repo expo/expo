@@ -22,7 +22,10 @@ import type {
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import { SSG_LOADER_HEADER_ALLOWLIST } from '../start/server/metro/resolveLoader';
+import {
+  getLoaderRouteContextKey,
+  SSG_LOADER_HEADER_ALLOWLIST,
+} from '../start/server/metro/resolveLoader';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
@@ -268,8 +271,7 @@ export async function exportFromServerAsync(
 
       const renderOpts: GetStaticContentOptions = {};
 
-      const isGeneratedRoute = route.dynamic === null && route.parentContextKey;
-      const contextKey = isGeneratedRoute ? route.parentContextKey! : route.contextKey;
+      const contextKey = getLoaderRouteContextKey(route);
 
       const loaderResponse = loaderReferences.has(path.resolve(appDir, contextKey))
         ? await executeLoaderAsync(normalizedPathname, route)

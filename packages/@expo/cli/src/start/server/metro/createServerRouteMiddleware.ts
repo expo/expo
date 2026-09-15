@@ -99,6 +99,7 @@ export function createRouteHandlerMiddleware(
               {
                 file: 'index.js',
                 page: '/index',
+                generated: true,
                 routeKeys: {},
                 namedRegex: /^\/(?:index)?\/?$/i,
               },

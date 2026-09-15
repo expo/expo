@@ -9,8 +9,7 @@ module.exports = {
   },
   web: {
     bundler: 'metro',
-    // This fixture uses registerRootComponent rather than Expo Router.
-    output: 'single',
+    output: 'server',
   },
   experiments: {
     autolinkingModuleResolution: true,
