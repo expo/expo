@@ -980,6 +980,73 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       }
       expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
     });
+
+    for (const useNewConnection of [false, true]) {
+      nativeIt(
+        'can clean up and retry a failed close (useNewConnection=' + useNewConnection + ')',
+        async () => {
+          const options = {
+            useNewConnection,
+            finalizeUnusedStatementsBeforeClosing: false,
+          };
+          const databaseName = 'close-retry.db';
+          const db = await SQLite.openDatabaseAsync(databaseName, options);
+          await db.execAsync(
+            'DROP TABLE IF EXISTS close_test; CREATE TABLE close_test (value); INSERT INTO close_test VALUES (42)'
+          );
+          const statement = await db.prepareAsync('SELECT * FROM close_test');
+          try {
+            // A failed close must neither consume a reference nor silently succeed on retry.
+            for (let attempt = 0; attempt < 2; attempt++) {
+              let error = null;
+              try {
+                await db.closeAsync();
+              } catch (e) {
+                error = e;
+              }
+              expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
+            }
+            expect(await db.getFirstAsync('SELECT * FROM close_test')).toEqual({
+              value: 42,
+            });
+
+            if (!useNewConnection) {
+              const sharedDb = await SQLite.openDatabaseAsync(databaseName, options);
+              try {
+                // Reopening must reuse the still-open database, not create an empty one.
+                expect(await sharedDb.getFirstAsync('SELECT * FROM close_test')).toEqual({
+                  value: 42,
+                });
+              } finally {
+                await sharedDb.closeAsync();
+              }
+            }
+          } finally {
+            await statement.finalizeAsync();
+            await db.closeAsync();
+            await SQLite.deleteDatabaseAsync(databaseName);
+          }
+          // Android used to remove the cache entry on failure, making the retry a no-op.
+          expect(() => db.execSync('SELECT 1')).toThrow();
+        }
+      );
+    }
+
+    nativeIt('can clean up and retry a failed synchronous close', () => {
+      const db = SQLite.openDatabaseSync(':memory:', {
+        useNewConnection: true,
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      const statement = db.prepareSync('SELECT 1');
+      try {
+        expect(() => db.closeSync()).toThrow();
+        expect(db.getFirstSync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        statement.finalizeSync();
+        db.closeSync();
+      }
+      expect(() => db.execSync('SELECT 1')).toThrow();
+    });
   });
 
   describe('Database - serialize / deserialize', () => {
