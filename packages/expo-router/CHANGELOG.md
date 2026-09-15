@@ -87,6 +87,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Add `activityEnabled` to navigators and screens to hide deeply nested route content with React Activity. ([#49913](https://github.com/expo/expo/pull/49913) by [@Ubax](https://github.com/Ubax))
+- Support application-defined screen options in custom standard navigators. ([#49984](https://github.com/expo/expo/pull/49984) by [@Ubax](https://github.com/Ubax))
 - Export `createBaseTabProps`, `createNativeStackProps`, `createJSStackProps`, `createJSTabsProps`, `createJSTopTabsProps`, and `createNativeTabsProps` for integrating navigators with Expo Router. ([#49966](https://github.com/expo/expo/pull/49966) by [@Ubax](https://github.com/Ubax))
 - Export `createBaseStackProps` for integrating custom stack navigators with Expo Router. ([#49963](https://github.com/expo/expo/pull/49963) by [@Ubax](https://github.com/Ubax))
 - Expose route removal prevention state to custom navigators through `createProps`. ([#49962](https://github.com/expo/expo/pull/49962) by [@Ubax](https://github.com/Ubax))
