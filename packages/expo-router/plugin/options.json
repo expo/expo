@@ -190,7 +190,7 @@
           "default": false
         },
         "unstable_useServerDataLoaders": {
-          "description": "Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config.",
+          "description": "Deprecated as of SDK 58. Data loaders no longer require an opt-in; this option has no effect.",
           "type": "boolean",
           "default": false
         },

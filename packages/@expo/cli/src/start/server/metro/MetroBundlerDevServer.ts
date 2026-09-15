@@ -598,7 +598,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     request?: ImmutableRequest;
     resolveMetadata?: ResolveMetadataFunction;
   }): Promise<DevServerRenderOptions> {
-    const { exp } = getConfig(this.projectRoot);
     const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
     const params = resolvedLoaderRoute?.params ?? {};
     const renderOptions: DevServerRenderOptions = { params };
@@ -622,8 +621,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
-    const useServerDataLoaders = exp.extra?.router?.unstable_useServerDataLoaders === true;
-    if (!useServerDataLoaders || !resolvedLoaderRoute) {
+    if (!resolvedLoaderRoute) {
       return renderOptions;
     }
 
@@ -1859,8 +1857,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    *
    * This function is used during development and production builds, and **must** receive a valid
    * matched route.
-   *
-   * @experimental
    */
   async executeServerDataLoaderAsync(
     location: URL,
@@ -1869,14 +1865,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     request?: ImmutableRequest
   ): Promise<Response | undefined> {
     const { exp } = getConfig(this.projectRoot);
-    const { unstable_useServerDataLoaders, unstable_useServerRendering } = exp.extra?.router;
-
-    if (!unstable_useServerDataLoaders) {
-      throw new CommandError(
-        'LOADERS_NOT_ENABLED',
-        'Server data loaders are not enabled. Add `unstable_useServerDataLoaders` to your `expo-router` plugin config.'
-      );
-    }
+    const unstable_useServerRendering = exp.extra?.router?.unstable_useServerRendering;
 
     const { routerRoot } = this.instanceMetroOptions;
     assert(

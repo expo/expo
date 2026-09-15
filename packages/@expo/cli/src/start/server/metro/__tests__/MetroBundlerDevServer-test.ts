@@ -417,7 +417,6 @@ describe('getStaticPageAsync', () => {
         },
         extra: {
           router: {
-            unstable_useServerDataLoaders: true,
             unstable_useServerRendering: true,
           },
         },
@@ -474,11 +473,6 @@ describe('executeServerDataLoaderAsync', () => {
         slug: 'test',
         web: {
           output: 'static',
-        },
-        extra: {
-          router: {
-            unstable_useServerDataLoaders: true,
-          },
         },
       },
     } as unknown as ReturnType<typeof getConfig>);
