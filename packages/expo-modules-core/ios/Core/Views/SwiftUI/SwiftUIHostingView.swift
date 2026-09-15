@@ -85,6 +85,7 @@ extension ExpoSwiftUI {
       }
 
       props.shadowNodeProxy = shadowNodeProxy
+      props.hostingView = self
 
       shadowNodeProxy.objectWillChange.send()
 

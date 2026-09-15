@@ -60,7 +60,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
       let HostLayout = props.useViewportSizeMeasurement
-        ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection))
+        ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection, hostingView: props.hostingView))
         : AnyLayout(ZStackLayout(alignment: alignment))
       HostLayout {
         Children()
@@ -105,6 +105,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ViewportSizeMeasurementLayout: Layout {
   let layoutDirection: LayoutDirection
+  /// The `Host`'s own view. Its window is the one to measure against, not a process-global pick.
+  weak var hostingView: UIView?
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     let maxSize = safeAreaSize()
@@ -144,12 +146,11 @@ private struct ViewportSizeMeasurementLayout: Layout {
 #if os(macOS)
     // `SceneGeometry` is built on `UIWindowScene`, which has no macOS counterpart. The closest
     // analogue to a window's safe area is its content layout rect, which excludes the title bar.
-    guard let window = NSApplication.shared.keyWindow ?? NSApplication.shared.windows.first else {
-      return .zero
-    }
-    return window.contentLayoutRect.size
+    // The host's own window comes first; the key window only covers the moment before it's attached.
+    let window = hostingView?.window ?? NSApplication.shared.keyWindow ?? NSApplication.shared.windows.first
+    return window?.contentLayoutRect.size ?? .zero
 #else
-    return SceneGeometry.safeAreaSize()
+    return SceneGeometry.safeAreaSize(for: hostingView)
 #endif
   }
 }

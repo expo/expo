@@ -43,6 +43,12 @@ extension ExpoSwiftUI {
     public internal(set) weak var appContext: AppContext?
 
     /**
+     The UIKit/AppKit view that hosts this SwiftUI view. Lets a view resolve its own window, which is
+     not necessarily the key window under multi-window.
+     */
+    public internal(set) weak var hostingView: UIView?
+
+    /**
      A global event dispatcher that allows views to call `view.dispatchEvent(_:payload)` directly
      */
     public let globalEventDispatcher = EventDispatcher(GLOBAL_EVENT_NAME)
