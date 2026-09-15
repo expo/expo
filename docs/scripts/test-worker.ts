@@ -423,6 +423,29 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   console.log('✓ Accept: text/markdown request passes through page redirects');
 }
 
+async function testRemovedSdkRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing removed SDK 54 and expo-av redirects ---');
+
+  const cases = [
+    { from: '/versions/latest/sdk/av', to: '/versions/latest/sdk/audio' },
+    { from: '/versions/latest/sdk/audio-av', to: '/versions/latest/sdk/audio' },
+    { from: '/versions/latest/sdk/video-av', to: '/versions/latest/sdk/video' },
+    { from: '/versions/v54.0.0/sdk/camera', to: '/versions/latest/sdk/camera' },
+  ];
+
+  for (const { from, to } of cases) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+
+    if (response.status !== 301 || !location.endsWith(to)) {
+      throw new Error(
+        `Expected ${from} to 301 to ${to}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to ${to}`);
+  }
+}
+
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
   console.log('\n--- Testing agent discovery redirects ---');
 
@@ -475,6 +498,7 @@ async function mainAsync(): Promise<void> {
     await testAcceptQualityValuesAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
+    await testRemovedSdkRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
 
