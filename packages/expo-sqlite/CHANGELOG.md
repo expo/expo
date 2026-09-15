@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `SQLiteProvider` skipping re-renders when only `children` change. ([#45099](https://github.com/expo/expo/pull/45099) by [@vladlenskiy](https://github.com/vladlenskiy))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-14
