@@ -212,7 +212,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
   });
 
   it('passes application-defined screen options through processScreens and descriptors', () => {
-    const CustomOptionsTabs = unstable_createStandardRouterNavigator<
+    const CustomOptionsTabs = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
