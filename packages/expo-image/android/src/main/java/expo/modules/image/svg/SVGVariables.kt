@@ -100,8 +100,7 @@ object SVGVariables {
   ): Int {
     val found = indexOfIgnoreCase(chars, "</style", start)
     val end = if (found == -1) chars.size else found
-    // A CDATA-wrapped stylesheet, which is how some editors export one, is still CSS, but its
-    // entities are not decoded by the parser.
+    // A CDATA-wrapped stylesheet is still CSS, but its entities are not decoded by the parser.
     val context = if (indexOf(chars, "<![CDATA[", start) in start until end) {
       Context.CDATA_STYLE_BODY
     } else {
@@ -282,8 +281,7 @@ object SVGVariables {
     if (context.isCSS && value.any { it == '{' || it == '}' || it == ';' }) {
       return null
     }
-    // A value is inserted as written, so a `var()` inside one would survive into the finished
-    // document where no renderer can resolve it. Treat it as unresolved instead.
+    // A `var()` inside a value would survive into the document, where no renderer resolves it.
     if (containsVariableReference(value)) {
       return null
     }
@@ -436,10 +434,7 @@ object SVGVariables {
 
   // MARK: - Character helpers
 
-  /**
-   * Whether a caller-supplied value contains a `var()` reference of its own. Matches the same way
-   * the scanner does, so a value that merely contains the letters `var` is not rejected.
-   */
+  /** Whether a value contains a `var()` of its own. Matched as the scanner does, so `harvard` is not. */
   private fun containsVariableReference(value: String): Boolean {
     val chars = value.toCharArray()
     for (index in chars.indices) {

@@ -291,9 +291,7 @@ struct SVGVariablesTests {
 
     @Test
     func `rejects a value that refers to another custom property`() {
-      // Values are inserted as written, so a `var()` inside one would survive into the finished
-      // document, where neither renderer can resolve it. Dropping the attribute lets the renderer
-      // apply its own default instead of failing to parse the value.
+      // A `var()` inside a value would survive into the document, where no renderer resolves it.
       #expect(substitute(##"<rect fill="var(--a)"/>"##, ["--a": "var(--b, blue)"])
         == ##"<rect/>"##)
       // A rejected value is unresolved, like any other, so the attribute is dropped rather than
@@ -326,8 +324,7 @@ struct SVGVariablesTests {
 
     @Test
     func `does not escape metacharacters inside a CDATA style body`() {
-      // A CDATA section is not parsed for entities, so an escaped value would reach the CSS as the
-      // literal text `A &amp; B`. Editors such as Illustrator and Inkscape wrap stylesheets this way.
+      // Entities are not decoded inside CDATA, so escaping would reach the CSS as literal `A &amp; B`.
       #expect(substitute("<style><![CDATA[.a { fill: var(--a) }]]></style>", ["--a": "A & B"])
         == "<style><![CDATA[.a { fill: A & B }]]></style>")
     }

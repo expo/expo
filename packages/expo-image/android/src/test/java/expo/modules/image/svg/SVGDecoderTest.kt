@@ -32,9 +32,7 @@ class SVGDecoderTest {
 
   @Test
   fun `parses a utf-16 document with a byte order mark`() {
-    // Every byte of BOM-less UTF-16 is also a valid single-byte UTF-8 sequence, so a strict UTF-8
-    // decode succeeds and yields NUL-interleaved text. Substituting into that would hand the parser
-    // garbage, so the bytes go to the parser untouched and it reads the mark.
+    // A strict UTF-8 decode accepts UTF-16, so the bytes go to the parser untouched instead.
     val document = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 20"/>"""
     val resource = decode(document.toByteArray(Charsets.UTF_16), mapOf("--unused" to "red"))
     assertNotNull(resource)
@@ -45,9 +43,8 @@ class SVGDecoderTest {
 
   @Test
   fun `leaves a utf-16 document untouched rather than substituting into it`() {
-    // Without a byte order mark or an encoding declaration nothing can tell the parser the byte
-    // order, so this document is unparseable either way. What matters is that the variables are not
-    // substituted into misdecoded text, which would corrupt a document the parser could otherwise read.
+    // Unparseable either way without a mark. What matters is that we do not substitute into
+    // misdecoded text, which would corrupt a document the parser could otherwise read.
     val document = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="var(--box)"/>"""
     assertThrows(IOException::class.java) {
       decode(document.toByteArray(Charsets.UTF_16LE), mapOf("--box" to "0 0 10 20"))

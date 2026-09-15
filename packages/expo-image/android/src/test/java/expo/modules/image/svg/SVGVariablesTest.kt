@@ -413,9 +413,7 @@ class SVGVariablesTest {
 
   @Test
   fun `rejects a value that refers to another custom property`() {
-    // Values are inserted as written, so a `var()` inside one would survive into the finished
-    // document, where neither renderer can resolve it. Dropping the attribute lets the renderer
-    // apply its own default instead of failing to parse the value.
+    // A `var()` inside a value would survive into the document, where no renderer resolves it.
     assertEquals(
       """<rect/>""",
       substitute("""<rect fill="var(--a)"/>""", mapOf("--a" to "var(--b, blue)"))
@@ -460,8 +458,7 @@ class SVGVariablesTest {
 
   @Test
   fun `does not escape metacharacters inside a CDATA style body`() {
-    // A CDATA section is not parsed for entities, so an escaped value would reach the CSS as the
-    // literal text `A &amp; B`. Editors such as Illustrator and Inkscape wrap stylesheets this way.
+    // Entities are not decoded inside CDATA, so escaping would reach the CSS as literal `A &amp; B`.
     assertEquals(
       "<style><![CDATA[.a { fill: A & B }]]></style>",
       substitute("<style><![CDATA[.a { fill: var(--a) }]]></style>", mapOf("--a" to "A & B"))

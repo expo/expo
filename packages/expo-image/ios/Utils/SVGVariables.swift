@@ -123,8 +123,7 @@ internal enum SVGVariables {
   ) -> Int {
     let end = firstIndex(ofCaseInsensitive: "</style", in: chars, from: start) ?? chars.count
     let body = Array(chars[start..<end])
-    // A CDATA-wrapped stylesheet, which is how some editors export one, is still CSS, but its
-    // entities are not decoded by the parser.
+    // A CDATA-wrapped stylesheet is still CSS, but its entities are not decoded by the parser.
     let context: Context = firstIndex(of: "<![CDATA[", in: body, from: 0) != nil ? .cdataStyleBody : .styleBody
     out += substituteValue(body, variables: variables, context: context).text
     return end
@@ -304,8 +303,7 @@ internal enum SVGVariables {
     if context.isCSS, value.contains(where: { $0 == "{" || $0 == "}" || $0 == ";" }) {
       return nil
     }
-    // A value is inserted as written, so a `var()` inside one would survive into the finished
-    // document where no renderer can resolve it. Treat it as unresolved instead.
+    // A `var()` inside a value would survive into the document, where no renderer resolves it.
     if containsVariableReference(value) {
       return nil
     }
@@ -450,8 +448,7 @@ internal enum SVGVariables {
 
   // MARK: - Character helpers
 
-  /// Whether a caller-supplied value contains a `var()` reference of its own. Matches the same way
-  /// the scanner does, so a value that merely contains the letters `var` is not rejected.
+  /// Whether a value contains a `var()` of its own. Matched as the scanner does, so `harvard` is not.
   private static func containsVariableReference(_ value: String) -> Bool {
     let chars = Array(value)
     for index in chars.indices where matchesIgnoringCase(chars, at: index, "var(") {

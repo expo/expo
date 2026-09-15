@@ -70,7 +70,7 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
     val bytes = source.readBytes()
     val text = decodeUtf8(bytes)
       // Substituting would mean re-encoding the document as UTF-8, which would contradict its own
-      // XML declaration. Leave it alone rather than corrupt it, and let the parser sniff the encoding.
+      // XML declaration. Leave it to the parser, which sniffs the encoding itself.
       ?: return SVG.getFromInputStream(ByteArrayInputStream(bytes)).also {
         if (variables != null) {
           Log.w(
@@ -93,9 +93,8 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   /**
    * Decodes the document as UTF-8, or returns null when it is encoded differently.
    *
-   * UTF-16 is checked separately because a strict UTF-8 decode does not reject it: every byte of
-   * BOM-less UTF-16 text is a valid single-byte UTF-8 sequence, so the decode would succeed and
-   * yield NUL-interleaved text.
+   * UTF-16 needs its own check: every byte of it is valid UTF-8, so a strict decode would succeed
+   * and yield NUL-interleaved text.
    */
   private fun decodeUtf8(bytes: ByteArray): String? = if (isUtf16(bytes)) {
     null
@@ -104,9 +103,8 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   }
 
   /**
-   * Whether the document is UTF-16, by its byte order mark or by the NUL bytes that ASCII markup
-   * encoded as UTF-16 interleaves. Every SVG starts with `<?xml` or `<svg`, so the first few
-   * characters are ASCII in any encoding a renderer accepts.
+   * Whether the document is UTF-16, by its byte order mark or by the interleaved NUL bytes. Every
+   * SVG opens with ASCII, so a NUL that early means UTF-16.
    */
   private fun isUtf16(bytes: ByteArray): Boolean {
     if (bytes.size < 2) {
