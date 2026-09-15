@@ -6,8 +6,7 @@
 
 ### 🎉 New features
 
-- Add version mappings for SDK 57 (react-native 0.86) and SDK 58 (react-native 0.88).
-- Migrate iOS projects to the UIKit scene-based life cycle when installing SDK 58 or newer.
+- Migrate iOS projects to the UIKit scene-based life cycle when installing SDK 58 or newer. ([#50174](https://github.com/expo/expo/pull/50174) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
