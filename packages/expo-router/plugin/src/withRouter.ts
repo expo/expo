@@ -111,13 +111,14 @@ export type Props = {
 
 const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   const props = _props || {};
-  validate(schema, props);
 
-  if (props.unstable_useServerMiddleware) {
+  if (Object.hasOwn(props, 'unstable_useServerMiddleware')) {
     warnOnce(
       '`unstable_useServerMiddleware` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
     );
   }
+
+  validate(schema, props);
 
   withExpoHeadIos(config);
   withGammaScreens(config);
