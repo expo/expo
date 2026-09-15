@@ -12,7 +12,9 @@ const { createReactNativeConfigAsync } = require('../reactNativeConfig');
 
 const APP_ROOT = '/app';
 const EXTERNAL_CONFIGS_DIR = path.resolve(__dirname, '../../external-configs/ios');
-const VERSION_PREFIX = '15.15.4/0.87.1/250829098.0.17';
+const PACKAGE_VERSION = '15.15.4';
+const VERSIONS = { reactNativeVersion: '0.87.1', hermesVersion: '250829098.0.17' };
+const VERSION_PREFIX = `${PACKAGE_VERSION}/${VERSIONS.reactNativeVersion}/${VERSIONS.hermesVersion}`;
 
 /** findExpoRepoRoot() resolves this from its own location, so a test that wants the
  * monorepo candidates has to plant the marker it probes for. */
@@ -42,14 +44,25 @@ function mockInternalPackage(name: string, products: unknown[], { inRepo = false
   return packageRoot;
 }
 
-function mockExternalPackage(name: string, products: unknown[]) {
+/** Accumulates across calls so a test can install more than one external package. */
+let externalDependencies: Record<string, unknown> = {};
+
+function mockExternalPackage(
+  name: string,
+  products: unknown[],
+  { iosVersion, manifestVersion }: { iosVersion?: string; manifestVersion?: string } = {}
+) {
   const packageRoot = `${APP_ROOT}/node_modules/${name}`;
   vol.fromJSON({
     [`${EXTERNAL_CONFIGS_DIR}/${name}/spm.config.json`]: JSON.stringify({ products }),
+    [`${packageRoot}/package.json`]: JSON.stringify({ name, version: manifestVersion }),
   });
-  createReactNativeConfigAsync.mockResolvedValue({
-    dependencies: { [name]: { root: packageRoot, name } },
-  });
+  externalDependencies[name] = {
+    root: packageRoot,
+    name,
+    ...(iosVersion && { platforms: { ios: { version: iosVersion } } }),
+  };
+  createReactNativeConfigAsync.mockResolvedValue({ dependencies: externalDependencies });
   return packageRoot;
 }
 
@@ -58,6 +71,7 @@ beforeEach(() => {
   // The resolver falls back to this variable, so an exported one would silently add a
   // candidate base and turn the suite red on a machine set up for the pipeline.
   delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+  externalDependencies = {};
   findModulesAsync.mockResolvedValue({});
   createReactNativeConfigAsync.mockResolvedValue({ dependencies: {} });
 });
@@ -92,14 +106,16 @@ describe('resolvePrebuiltMetadataAsync artifact locator', () => {
     });
   });
 
-  it('describes an external product completely, under the caller-supplied version prefix', async () => {
-    const packageRoot = mockExternalPackage('react-native-svg', [
-      { name: 'RNSVG', podName: 'RNSVG', spmPackages: [{ productName: 'SVGNative' }] },
-    ]);
+  it('describes an external product completely, under its own version prefix', async () => {
+    const packageRoot = mockExternalPackage(
+      'react-native-svg',
+      [{ name: 'RNSVG', podName: 'RNSVG', spmPackages: [{ productName: 'SVGNative' }] }],
+      { iosVersion: PACKAGE_VERSION }
+    );
 
     const document = await resolvePrebuiltMetadataAsync(optionsLoader, {
       mode: 'app-plan',
-      versionPrefix: VERSION_PREFIX,
+      ...VERSIONS,
     });
 
     expect(document.RNSVG?.artifact).toEqual({
@@ -187,14 +203,14 @@ describe('resolvePrebuiltMetadataAsync artifact locator', () => {
     ]);
   });
 
-  it('never versions an internal product, whatever prefix the caller supplies', async () => {
+  it('never versions an internal product, whatever versions the caller supplies', async () => {
     const packageRoot = mockInternalPackage('expo-image', [
       { name: 'ExpoImage', podName: 'ExpoImage' },
     ]);
 
     const document = await resolvePrebuiltMetadataAsync(optionsLoader, {
       mode: 'app-plan',
-      versionPrefix: VERSION_PREFIX,
+      ...VERSIONS,
     });
 
     expect(document.ExpoImage?.artifact.bases).toEqual([`${packageRoot}/prebuilds/output`]);
@@ -245,5 +261,96 @@ describe('resolvePrebuiltMetadataAsync artifact locator', () => {
       '/from-env/expo-image/output',
       `${packageRoot}/prebuilds/output`,
     ]);
+  });
+
+  it('prefixes each external package with its own version', async () => {
+    const svgRoot = mockExternalPackage('react-native-svg', [{ podName: 'RNSVG' }], {
+      iosVersion: '15.15.4',
+    });
+    const screensRoot = mockExternalPackage('react-native-screens', [{ podName: 'RNScreens' }], {
+      iosVersion: '4.26.0',
+    });
+
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, {
+      mode: 'app-plan',
+      ...VERSIONS,
+    });
+
+    const suffix = `${VERSIONS.reactNativeVersion}/${VERSIONS.hermesVersion}`;
+    expect(document.RNSVG?.artifact.bases).toEqual([
+      `${svgRoot}/prebuilds/output/15.15.4/${suffix}`,
+      `${svgRoot}/prebuilds/output`,
+    ]);
+    expect(document.RNSVG?.artifact.debug.remoteKey).toBe(
+      `react-native-svg/output/15.15.4/${suffix}/debug/xcframeworks/RNSVG.tar.gz`
+    );
+    expect(document.RNScreens?.artifact.bases).toEqual([
+      `${screensRoot}/prebuilds/output/4.26.0/${suffix}`,
+      `${screensRoot}/prebuilds/output`,
+    ]);
+    expect(document.RNScreens?.artifact.release.remoteKey).toBe(
+      `react-native-screens/output/4.26.0/${suffix}/release/xcframeworks/RNScreens.tar.gz`
+    );
+  });
+
+  it('falls back to the package manifest when the React Native config carries no ios version', async () => {
+    const packageRoot = mockExternalPackage('react-native-svg', [{ podName: 'RNSVG' }], {
+      manifestVersion: '15.15.4',
+    });
+
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, {
+      mode: 'app-plan',
+      ...VERSIONS,
+    });
+
+    expect(document.RNSVG?.artifact.bases).toEqual([
+      `${packageRoot}/prebuilds/output/${VERSION_PREFIX}`,
+      `${packageRoot}/prebuilds/output`,
+    ]);
+  });
+
+  it('prefers the React Native config version over the package manifest', async () => {
+    mockExternalPackage('react-native-svg', [{ podName: 'RNSVG' }], {
+      iosVersion: '15.15.4',
+      manifestVersion: '9.9.9',
+    });
+
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, {
+      mode: 'app-plan',
+      ...VERSIONS,
+    });
+
+    expect(document.RNSVG?.artifact.debug.remoteKey).toBe(
+      `react-native-svg/output/${VERSION_PREFIX}/debug/xcframeworks/RNSVG.tar.gz`
+    );
+  });
+
+  it.each([
+    ['the package version', {}, VERSIONS],
+    [
+      'the React Native version',
+      { iosVersion: PACKAGE_VERSION },
+      { ...VERSIONS, reactNativeVersion: undefined },
+    ],
+    [
+      'the Hermes version',
+      { iosVersion: PACKAGE_VERSION },
+      { ...VERSIONS, hermesVersion: undefined },
+    ],
+  ])('leaves an external product unversioned when %s is missing', async (_, pkg, versions) => {
+    const packageRoot = mockExternalPackage('react-native-svg', [{ podName: 'RNSVG' }], pkg);
+
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, {
+      mode: 'app-plan',
+      ...versions,
+    });
+
+    expect(document.RNSVG?.artifact.bases).toEqual([`${packageRoot}/prebuilds/output`]);
+    expect(document.RNSVG?.artifact.debug.remoteKey).toBe(
+      'react-native-svg/output/debug/xcframeworks/RNSVG.tar.gz'
+    );
+    expect(document.RNSVG?.artifact.release.remoteKey).toBe(
+      'react-native-svg/output/release/xcframeworks/RNSVG.tar.gz'
+    );
   });
 });

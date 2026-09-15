@@ -6,6 +6,7 @@ import type { LinkingOptionsLoader } from './commands/autolinkingOptions';
 import { scanDependenciesInSearchPath } from './dependencies';
 import { createMemoizer } from './memoize';
 import {
+  buildVersionPrefix,
   getArtifactBases,
   getArtifactSuffixes,
   getRemoteArtifactKey,
@@ -48,10 +49,12 @@ export interface ResolvePrebuiltMetadataOptions {
    * 'app-plan' locates configs through the app's module resolution.
    * Defaults to 'catalog' inside an expo repository checkout, 'app-plan' elsewhere. */
   mode?: 'catalog' | 'app-plan';
-  /** `<packageVersion>/<reactNativeVersion>/<hermesVersion>` for external products.
-   * Resolving those three versions stays with the caller until ENG-26089 single-sources
-   * it; without a prefix the external candidates degrade to the unversioned ones. */
-  versionPrefix?: string | null;
+  /** External products are published under `<packageVersion>/<reactNativeVersion>/<hermesVersion>`.
+   * The package version is read per package during the scan; resolving the other two stays
+   * with the caller until ENG-26089 single-sources them. Whenever one of the three is
+   * missing, that package's candidates degrade to the unversioned ones, as Ruby does. */
+  reactNativeVersion?: string | null;
+  hermesVersion?: string | null;
   /** Overrides the monorepo build directory. Omit it to read `EXPO_PRECOMPILED_MODULES_PATH`,
    * the same variable the CocoaPods integrator reads; pass null to ignore that variable. */
   customModulesPath?: string | null;
@@ -61,7 +64,8 @@ export interface ResolvePrebuiltMetadataOptions {
 interface ArtifactContext {
   repoRoot: string | null;
   customModulesPath: string | null;
-  versionPrefix: string | null;
+  reactNativeVersion: string | null;
+  hermesVersion: string | null;
 }
 
 /** Package identity as both discovery modes already report it. */
@@ -72,7 +76,12 @@ type DiscoveredPackages = Record<string, { path: string } | undefined>;
  * products. */
 export async function resolvePrebuiltMetadataAsync(
   optionsLoader: LinkingOptionsLoader,
-  { mode, versionPrefix, customModulesPath }: ResolvePrebuiltMetadataOptions = {}
+  {
+    mode,
+    reactNativeVersion,
+    hermesVersion,
+    customModulesPath,
+  }: ResolvePrebuiltMetadataOptions = {}
 ): Promise<PrebuiltMetadataDocument> {
   return createMemoizer().withMemoizer(async () => {
     const appRoot = await optionsLoader.getAppRoot();
@@ -89,7 +98,8 @@ export async function resolvePrebuiltMetadataAsync(
         customModulesPath !== undefined
           ? customModulesPath
           : (process.env.EXPO_PRECOMPILED_MODULES_PATH ?? null),
-      versionPrefix: versionPrefix ?? null,
+      reactNativeVersion: reactNativeVersion ?? null,
+      hermesVersion: hermesVersion ?? null,
     };
 
     const entries: PrebuiltMetadataDocument = {};
@@ -193,7 +203,7 @@ function addInternalProducts(
         podspecDir: resolvePodspecDir(packageRoot, podName),
         productName,
         artifact: buildArtifactLocator(
-          { type: 'internal', npmPackage, packageRoot, productName, product },
+          { type: 'internal', npmPackage, packageRoot, productName, product, versionPrefix: null },
           artifactContext
         ),
       };
@@ -222,10 +232,21 @@ async function scanExternalConfigsAsync(
       continue;
     }
     const npmPackage = path.relative(externalConfigsDir, file.parentPath).split(path.sep).join('/');
-    const packageRoot = dependencies[npmPackage]?.root;
-    if (!packageRoot) {
+    const dependency = dependencies[npmPackage];
+    if (!dependency?.root) {
       continue;
     }
+    const packageRoot = dependency.root;
+    // precompiled_modules.rb:1564,1570-1573: the version react-native config reports for
+    // the installed package wins, its manifest is the fallback.
+    const packageVersion: string | undefined =
+      dependency.platforms?.ios?.version ??
+      readJsonFile(path.join(packageRoot, 'package.json'))?.version;
+    const versionPrefix = buildVersionPrefix(
+      packageVersion,
+      artifactContext.reactNativeVersion,
+      artifactContext.hermesVersion
+    );
     const config = readJsonFile(file.path);
     try {
       for (const product of config?.products ?? []) {
@@ -241,7 +262,7 @@ async function scanExternalConfigsAsync(
           podspecDir: packageRoot,
           productName,
           artifact: buildArtifactLocator(
-            { type: 'external', npmPackage, packageRoot, productName, product },
+            { type: 'external', npmPackage, packageRoot, productName, product, versionPrefix },
             artifactContext
           ),
         };
@@ -257,13 +278,19 @@ interface SpmConfigProduct {
   spmPackages?: { productName?: string }[];
 }
 
-interface ProductIdentity {
-  type: 'internal' | 'external';
+interface CommonProductIdentity {
   npmPackage: string;
   packageRoot: string;
   productName: string;
   product: SpmConfigProduct;
 }
+
+/** The version prefix is per package, since external packages are versioned independently
+ * of each other. Internal products are never published under one, so their variant admits
+ * nothing else. */
+type ProductIdentity =
+  | (CommonProductIdentity & { type: 'internal'; versionPrefix: null })
+  | (CommonProductIdentity & { type: 'external'; versionPrefix: string | null });
 
 function byFlavor<T>(build: (flavor: PrebuiltFlavor) => T): Record<PrebuiltFlavor, T> {
   return Object.fromEntries(PREBUILT_FLAVORS.map((flavor) => [flavor, build(flavor)])) as Record<
@@ -273,22 +300,18 @@ function byFlavor<T>(build: (flavor: PrebuiltFlavor) => T): Record<PrebuiltFlavo
 }
 
 function buildArtifactLocator(
-  { type, npmPackage, packageRoot, productName, product }: ProductIdentity,
-  { repoRoot, customModulesPath, versionPrefix }: ArtifactContext
+  { type, npmPackage, packageRoot, productName, product, versionPrefix }: ProductIdentity,
+  { repoRoot, customModulesPath }: ArtifactContext
 ): PrebuiltArtifactLocator {
-  // Only external products are published under a version prefix.
-  const versioned = type === 'external' ? versionPrefix : null;
   const common = { npmPackage, packageRoot, customModulesPath, repoRoot };
   return {
     bases: getArtifactBases(
-      type === 'external'
-        ? { ...common, type, versionPrefix: versioned }
-        : { ...common, type: 'internal' }
+      type === 'external' ? { ...common, type, versionPrefix } : { ...common, type: 'internal' }
     ),
     ...byFlavor((flavor) => ({
       ...getArtifactSuffixes(productName, flavor),
       ...(type === 'external' && {
-        remoteKey: getRemoteArtifactKey(npmPackage, versioned, productName, flavor),
+        remoteKey: getRemoteArtifactKey(npmPackage, versionPrefix, productName, flavor),
       }),
     })),
     sharedSpmDeps: Object.fromEntries(
