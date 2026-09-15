@@ -3908,7 +3908,7 @@ importers:
         specifier: ^5.2.0
         version: 5.2.2
       expo-build-properties:
-        specifier: workspace:~57.0.18
+        specifier: workspace:~57.0.19
         version: link:../expo-build-properties
       expo-manifests:
         specifier: workspace:~57.0.2

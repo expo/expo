@@ -403,7 +403,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (57.0.2):
     - ExpoModulesCore
-  - ExpoBrownfield (57.0.20):
+  - ExpoBrownfield (57.0.21):
     - ExpoModulesCore
   - ExpoCalendar (57.0.3):
     - ExpoModulesCore
@@ -4068,7 +4068,7 @@ SPEC CHECKSUMS:
   ExpoBlob: 6ee4581e2c742293d2ef973d62db709fab7b37c7
   ExpoBlur: 975b78b65b3c8f475c44bd8f8b53948146b1ff9b
   ExpoBrightness: 940f5df30fde74a40039ddaabd0f077f03b24550
-  ExpoBrownfield: cae071724b9c423c5de51c7caa6289dabe17ee8d
+  ExpoBrownfield: 23137cc47f1058f5c52ee775534e49d00da772fa
   ExpoCalendar: c1154af2fce6106addd0360455673ddcfe830b40
   ExpoCamera: c4c16b83b6db376e5a0e538fe2a04deafbb5b6d8
   ExpoCameraBarcodeScanning: 69275ab8ecd76f338da22df825c59405bcf36472
