@@ -4129,13 +4129,13 @@ SPEC CHECKSUMS:
   ExpoSMS: de0548417822ae2993a43a6b9db32f3b17ef29f5
   ExpoSpeech: bd1d1df24f0cda4bdaca80cecf643c95cbf3ce61
   ExpoSplashScreen: 2e2d769ba6ba2d35dadeb639fca87aca05b30f8e
-  ExpoSQLite: 738ba9dd8c5e0c08eaf6af9066f21e14edf3c409
+  ExpoSQLite: 23a3956a514d335ecae88ed998c643b2ba619a89
   ExpoStoreReview: 992c914c25f53c9aeac76f394059d1720323d0e5
   ExpoSymbols: a4890c7155018c1bad5358aa7b7c7698cd40205f
   ExpoSystemUI: 45f67a7fa85173c428e487e9e57da6d3fe11a0d8
   ExpoTaskManager: 5683404910266aa7fb453045d9e33818ac73aab6
   ExpoTrackingTransparency: 70c95b35095135ff067b0ba3ec5dc8b9e6f3b8f2
-  ExpoUI: 3ad784f408042f5abbee55715e2ee8024fc39355
+  ExpoUI: d1c6d5e7ac3ec459dcfe46e5cfec803b97199520
   ExpoVideo: 3cedcb72dd5110def73469149046cd09c8be8860
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 425753b9da57163310b03f4bafaad28bb9971fe0
