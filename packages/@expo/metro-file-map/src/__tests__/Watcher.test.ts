@@ -32,7 +32,6 @@ function makeWatcher(
     console,
     enableSymlinks: false,
     extensions: ['js'],
-    forceNodeFilesystemAPI: true,
     healthCheckFilePrefix: overrides.healthCheckFilePrefix ?? null,
     ignoreForCrawl: overrides.ignoreForCrawl ?? (() => false),
     ignorePatternForWatch: null,
