@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add opt-in UIKit scene lifecycle support with React Native startup, deep links, Handoff, and quick actions.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
