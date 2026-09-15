@@ -121,7 +121,7 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
     );
   }
 
-  if (props.unstable_useServerDataLoaders) {
+  if (Object.hasOwn(props, 'unstable_useServerDataLoaders')) {
     warnOnce(
       '`unstable_useServerDataLoaders` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
     );
