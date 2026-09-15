@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.enableSceneSupport` to adopt the UIKit scene lifecycle in SDK 57 projects. The property is a no-op on SDK 58 and newer.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

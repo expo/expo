@@ -1,5 +1,9 @@
 import type { AndroidConfig } from 'expo/config-plugins';
-import { withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
+import {
+  WarningAggregator,
+  withGradleProperties,
+  withPodfileProperties,
+} from 'expo/config-plugins';
 
 import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
@@ -10,6 +14,7 @@ jest.mock('expo/config-plugins', () => {
   return {
     ...plugins,
     withDangerousMod: jest.fn().mockImplementation((config) => config),
+    WarningAggregator: { addWarningIOS: jest.fn() },
   };
 });
 
@@ -545,5 +550,18 @@ describe('shared config fields', () => {
     expect(iosModResults).toMatchObject({
       'expo.useHermesV1': 'false',
     });
+  });
+});
+
+describe('ios.enableSceneSupport', () => {
+  it('should run the scene support plugin', () => {
+    const config = { sdkVersion: '58.0.0' } as any;
+
+    withBuildProperties(config, { ios: { enableSceneSupport: true } });
+
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'ios.enableSceneSupport',
+      expect.stringContaining('no longer required')
+    );
   });
 });
