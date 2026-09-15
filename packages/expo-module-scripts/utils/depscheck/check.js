@@ -12,6 +12,7 @@ import { getPackageName, getSourceFileImports, getSourceFilesAsync, isNCCBuilt }
  *   dependencies?: Record<string, string>,
  *   devDependencies?: Record<string, string>,
  *   peerDependencies?: Record<string, string>,
+ *   optionalDependencies?: Record<string, string>,
  * }} PackageJson
  *
  * The three levels of which dangerous dependencies are allowed.
@@ -33,6 +34,7 @@ const DependencyKind = {
   Normal: 'dependencies',
   Dev: 'devDependencies',
   Peer: 'peerDependencies',
+  Optional: 'optionalDependencies',
 };
 
 /** @type {string[]} */
@@ -110,12 +112,14 @@ const WORKSPACE_SPECIFIER = 'workspace:';
 /**
  * Checks whether the package has valid dependency chains for each (external) import.
  *
- * @param {{ packageName: string, packagePath: string, packageJson: PackageJson }} pkg Package to check
+ * @param {{ packageName: string, packagePath: string, packageJson: PackageJson, workspacePackageNames?: Set<string> }} pkg Package to check
  * @param {PackageCheckType} [type] What part of the package needs to be checked
  * @param {DepsLogger} [logger]
  * @returns {Promise<void>}
  */
 export async function checkDependenciesAsync(pkg, type = 'package', logger = defaultLogger) {
+  validateWorkspaceDependencyProtocols(pkg, logger);
+
   if (isNCCBuilt(pkg.packageJson)) {
     return;
   }
@@ -211,6 +215,43 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
     logger.warn(`📦 Risky versions: ${invalidDependencyRanges.join(', ')} are pinned!`);
     throw new Error(`${pkg.packageName} has invalid pinned versions.`);
   }
+}
+
+/**
+ * Ensures internal dependency declarations use the workspace protocol so pnpm and Changesets
+ * reliably recognize relationships between packages in this repository.
+ *
+ * @param {{ packageName: string, packageJson: PackageJson, workspacePackageNames?: Set<string> }} pkg
+ * @param {DepsLogger} [logger]
+ */
+export function validateWorkspaceDependencyProtocols(pkg, logger = defaultLogger) {
+  if (!pkg.workspacePackageNames) {
+    return;
+  }
+
+  const invalidDependencies = getDependencies(pkg.packageJson, [
+    DependencyKind.Normal,
+    DependencyKind.Dev,
+    DependencyKind.Peer,
+    DependencyKind.Optional,
+  ]).filter(
+    (dependency) =>
+      dependency.name !== pkg.packageName &&
+      pkg.workspacePackageNames.has(dependency.name) &&
+      !(dependency.kind === DependencyKind.Peer && dependency.versionRange === '*') &&
+      !dependency.versionRange.startsWith(WORKSPACE_SPECIFIER)
+  );
+
+  if (!invalidDependencies.length) {
+    return;
+  }
+
+  logger.warn(
+    `📦 Invalid workspace dependency versions: ${invalidDependencies
+      .map(({ kind, name, versionRange }) => `${kind}.${name} (${versionRange})`)
+      .join(', ')}`
+  );
+  throw new Error(`${pkg.packageName} has internal dependencies without the workspace: protocol.`);
 }
 
 /**
