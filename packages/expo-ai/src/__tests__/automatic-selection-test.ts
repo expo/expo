@@ -6,7 +6,7 @@ import {
   schema,
   type ModelSchema,
 } from '../index';
-import { availableModel, FakeSession } from './fixtures/FakeSession';
+import { availableModel, FakeSession, nativeResult } from './fixtures/FakeSession';
 
 jest.mock('../ExpoAI', () => ({
   __esModule: true,
@@ -25,7 +25,7 @@ const tool = (execute = jest.fn().mockResolvedValue({ answer: 'local' })) => ({
 const calls = (...responses: string[]) => {
   const sessions = responses.map((response) => {
     const session = new FakeSession();
-    session.generateAsync.mockResolvedValue(response);
+    session.generateAsync.mockResolvedValue(nativeResult(response));
     return session;
   });
   nativeModule.createSessionAsync.mockReset().mockResolvedValueOnce(owner);
@@ -40,7 +40,7 @@ beforeEach(() => {
 });
 
 it('prefers native constraints without letting repair or step budgets weaken categorization', async () => {
-  owner.generateAsync.mockResolvedValue('"work"');
+  owner.generateAsync.mockResolvedValue(nativeResult('"work"'));
   await expect(
     categorizeAsync('note', {
       categories: ['work', 'personal'],
@@ -76,7 +76,7 @@ it('keeps native tools and constraints together when both are available', async 
     (requestId) =>
       new Promise((resolve) => {
         owner.resolveTool.mockImplementation(() => {
-          resolve('"work"');
+          resolve(nativeResult('"work"'));
           return true;
         });
         owner.emit('onToolCall', {
@@ -190,7 +190,7 @@ it('uses native tools once and repairs unsupported structured output without rep
     (requestId) =>
       new Promise((resolve) => {
         nativeTools!.resolveTool.mockImplementation(() => {
-          resolve('bad JSON');
+          resolve(nativeResult('bad JSON'));
           return true;
         });
         nativeTools!.emit('onToolCall', {

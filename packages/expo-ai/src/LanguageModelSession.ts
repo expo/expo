@@ -18,6 +18,7 @@ import type {
 import { createOperation, type Operation } from './Operation';
 import { withAppleToolContext } from './appleTools';
 import { observeBackground } from './background';
+import { runCleanup } from './cleanup';
 import {
   generateValidated,
   runValidatedTools,
@@ -25,8 +26,9 @@ import {
 } from './compatibility';
 import { snapshotImages } from './images';
 import { compileSchema, hasNumericBounds, parseResponse } from './schema';
+import { authorizeToolCall, snapshotToolArguments } from './toolAuthorization';
 import type { RuntimeTool } from './tools';
-import { aggregateUsage, readCompletion } from './usage';
+import { aggregateUsage, generateNativeCompletion } from './usage';
 
 export type InternalRequestOptions = RequestOptions & {
   schema?: ModelSchema;
@@ -34,24 +36,8 @@ export type InternalRequestOptions = RequestOptions & {
 type ActiveRequest = { id: string; operation: Operation };
 let nextRequestId = 0;
 
-function cleanup(actions: (() => void)[], taskFailed = false): void {
-  let failed = false;
-  let failure: unknown;
-  for (const action of actions) {
-    try {
-      action();
-    } catch (cause) {
-      if (!failed) {
-        failed = true;
-        failure = cause;
-      }
-    }
-  }
-  if (failed && !taskFailed) throw normalizeError(failure);
-}
-
 function releaseNativeSession(session: NativeSession, taskFailed = false): void {
-  cleanup([() => session.dispose(), () => session.release()], taskFailed);
+  runCleanup([() => session.dispose(), () => session.release()], taskFailed);
 }
 
 function integer(value: unknown, name: string, min: number, max: number): asserts value is number {
@@ -234,7 +220,7 @@ export class LanguageModelSession {
     this.subscriptions.clear();
     this.history = [];
     this.pendingNativeTurns = [];
-    cleanup([
+    runCleanup([
       ...subscriptions.map((subscription) => () => subscription.remove()),
       () => releaseNativeSession(this.native),
     ]);
@@ -409,7 +395,7 @@ export class LanguageModelSession {
       }
       if (backgroundSubscription) actions.push(() => backgroundSubscription!.remove());
       try {
-        cleanup(actions, failed);
+        runCleanup(actions, failed);
       } finally {
         if (this.active?.id === id) this.active = undefined;
       }
@@ -464,34 +450,18 @@ export class LanguageModelSession {
             );
           callIds.add(event.callId);
           const input = parseResponse(event.argumentsJSON, tool.inputSchema);
-          const argumentsSnapshot = completedTools ? JSON.parse(JSON.stringify(input)) : undefined;
+          const argumentsSnapshot = completedTools ? snapshotToolArguments(input) : undefined;
           if (++toolCalls > (options.maximumToolCalls ?? 4))
             throw new LanguageModelError('ERR_TOOL_CALL_LIMIT', 'The tool-call limit was reached.');
-          if (options.beforeTool) {
-            let allowed: boolean;
-            try {
-              allowed = await operation.run(() =>
-                options.beforeTool!({
-                  callId: event.callId,
-                  name: tool.name,
-                  arguments: JSON.parse(JSON.stringify(input)),
-                  signal: operation.signal,
-                })
-              );
-            } catch (cause) {
-              operation.check();
-              throw new LanguageModelError(
-                'ERR_TOOL_DECISION_FAILED',
-                'The beforeTool callback failed.',
-                { cause }
-              );
+          await authorizeToolCall(
+            operation,
+            options.beforeTool,
+            { callId: event.callId, name: tool.name, arguments: input },
+            {
+              denied: 'The tool action was not allowed.',
+              invalid: 'The tool action was not allowed.',
             }
-            if (allowed !== true)
-              throw new LanguageModelError(
-                allowed === false ? 'ERR_TOOL_DENIED' : 'ERR_TOOL_DECISION_INVALID',
-                'The tool action was not allowed.'
-              );
-          }
+          );
           operation.check();
           emit({
             type: 'tool-start',
@@ -541,21 +511,13 @@ export class LanguageModelSession {
     this.subscriptions.add(toolSubscription);
     let failed = false;
     try {
-      const response = await operation.run(() =>
-        (native.generateWithMetadataAsync ?? native.generateAsync).call(
-          native,
-          id,
-          prompt,
-          JSON.stringify({
-            schema,
-            stream,
-            maximumOutputTokens: options.maximumOutputTokens,
-            maximumToolCalls: options.maximumToolCalls ?? 4,
-            ...(options.images?.length ? { images: options.images } : {}),
-          })
-        )
-      );
-      const completion = readCompletion(response, native.generateWithMetadataAsync !== undefined);
+      const completion = await generateNativeCompletion(operation, native, id, prompt, {
+        schema,
+        stream,
+        maximumOutputTokens: options.maximumOutputTokens,
+        maximumToolCalls: options.maximumToolCalls ?? 4,
+        ...(options.images?.length ? { images: options.images } : {}),
+      });
       usage.push(completion.usage);
       return schema ? parseResponse(completion.text, schema) : completion.text;
     } catch (cause) {
@@ -567,7 +529,7 @@ export class LanguageModelSession {
         actions.push(() => textSubscription.remove());
       if (this.subscriptions.delete(toolSubscription))
         actions.push(() => toolSubscription.remove());
-      cleanup(actions, failed);
+      runCleanup(actions, failed);
     }
   }
 
@@ -612,20 +574,12 @@ export class LanguageModelSession {
           nativeTools.completedTools
         )) as string;
       }
-      const response = await operation.run(() =>
-        (session.generateWithMetadataAsync ?? session.generateAsync).call(
-          session,
-          id,
-          prompt,
-          JSON.stringify({
-            schema,
-            maximumOutputTokens: options.maximumOutputTokens,
-            maximumToolCalls: 0,
-            ...(options.images?.length ? { images: options.images } : {}),
-          })
-        )
-      );
-      const completion = readCompletion(response, session.generateWithMetadataAsync !== undefined);
+      const completion = await generateNativeCompletion(operation, session, id, prompt, {
+        schema,
+        maximumOutputTokens: options.maximumOutputTokens,
+        maximumToolCalls: 0,
+        ...(options.images?.length ? { images: options.images } : {}),
+      });
       usage.push(completion.usage);
       return completion.text;
     } catch (cause) {

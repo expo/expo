@@ -1,5 +1,7 @@
 import { LanguageModelError } from './LanguageModelError';
 import type { GenerationUsage } from './LanguageModels.types';
+import type { NativeSession } from './NativeLanguageModels.types';
+import type { Operation } from './Operation';
 
 const unknownUsage = (): GenerationUsage => ({ inputTokens: null, outputTokens: null });
 const fields = [
@@ -10,10 +12,7 @@ const fields = [
   'contextTokens',
 ] as const;
 
-export function readCompletion(
-  response: unknown,
-  includesMetadata: boolean
-): {
+export function readCompletion(response: unknown): {
   text: string;
   usage: GenerationUsage;
 } {
@@ -24,7 +23,6 @@ export function readCompletion(
     );
   }
   if (typeof response !== 'string') invalid();
-  if (!includesMetadata) return { text: response, usage: unknownUsage() };
   let result: unknown;
   try {
     result = JSON.parse(response);
@@ -44,6 +42,20 @@ export function readCompletion(
     counts[key] = value as number | null;
   }
   return { text, usage: counts };
+}
+
+/** Runs a native generation and validates its result envelope. */
+export async function generateNativeCompletion(
+  operation: Operation,
+  session: NativeSession,
+  requestId: string,
+  prompt: string,
+  options: object
+): Promise<{ text: string; usage: GenerationUsage }> {
+  const response = await operation.run(() =>
+    session.generateAsync(requestId, prompt, JSON.stringify(options))
+  );
+  return readCompletion(response);
 }
 
 /** Sum all reported model calls. A missing measurement never becomes a measured zero. */

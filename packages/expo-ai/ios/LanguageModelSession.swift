@@ -17,7 +17,7 @@ internal final class LanguageModelSession: SharedObject, @unchecked Sendable {
     super.init()
   }
 
-  func generate(requestId: String, prompt: String, optionsJSON: String, withMetadata: Bool = false) async throws -> String {
+  func generate(requestId: String, prompt: String, optionsJSON: String) async throws -> String {
     let options = try LanguageModelRequestOptions(json: optionsJSON)
     let request = try start(requestId: requestId, maximumToolCalls: options.maximumToolCalls, images: options.images)
     defer {
@@ -31,15 +31,10 @@ internal final class LanguageModelSession: SharedObject, @unchecked Sendable {
       do {
         let result = try await task.value
         try request.checkActive()
-        let response: String
-        if withMetadata {
-          struct Response: Encodable { let text: String; let usage: LanguageModelUsage }
-          // JSONEncoder produces UTF-8.
-          // swiftlint:disable:next optional_data_string_conversion
-          response = String(decoding: try JSONEncoder().encode(Response(text: result, usage: request.usage)), as: UTF8.self)
-        } else {
-          response = result
-        }
+        struct Response: Encodable { let text: String; let usage: LanguageModelUsage }
+        // JSONEncoder produces UTF-8.
+        // swiftlint:disable:next optional_data_string_conversion
+        let response = String(decoding: try JSONEncoder().encode(Response(text: result, usage: request.usage)), as: UTF8.self)
         try lock.withLock {
           guard !isDisposed else { throw LanguageModelException.disposed() }
           try request.prepareResult()

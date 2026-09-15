@@ -11,7 +11,7 @@ const inputSchema: ModelSchema = {
   additionalProperties: false,
 };
 const action = (id = 'one', amount: unknown = 1, name = 'save') =>
-  JSON.stringify({ type: 'tool', id, name, arguments: { amount } });
+  JSON.stringify({ type: 'tool', id, calls: { [name]: { amount } } });
 const result = (value: unknown) => JSON.stringify({ type: 'result', value });
 
 function setup(responses: (string | (() => Promise<string> | string))[], timeoutMs?: number) {
@@ -129,6 +129,29 @@ describe('validated generation', () => {
 });
 
 describe('validated tool loop', () => {
+  it('uses the same calls-map action protocol without response constraints', async () => {
+    const { options, tool, execute, complete } = setup([action(), result('done')]);
+    await runValidatedTools({ ...options, tools: [tool] });
+    expect(JSON.parse(complete.mock.calls[0]![0]).instruction).toContain(
+      '"calls":{"registered-tool"'
+    );
+    expect(execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects the previous unconstrained name-and-arguments action shape', async () => {
+    const legacy = JSON.stringify({
+      type: 'tool',
+      id: 'one',
+      name: 'save',
+      arguments: { amount: 1 },
+    });
+    const { options, tool, execute } = setup([legacy]);
+    await expect(
+      runValidatedTools({ ...options, maximumRetries: 0, tools: [tool] })
+    ).rejects.toMatchObject({ code: 'ERR_VALIDATION_RETRIES_EXHAUSTED' });
+    expect(execute).not.toHaveBeenCalled();
+  });
+
   it('validates arguments before interception, tool events, or handler execution', async () => {
     const { options, tool, execute } = setup([action('one', 'wrong')]);
     const beforeTool = jest.fn();

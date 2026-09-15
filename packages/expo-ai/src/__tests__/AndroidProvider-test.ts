@@ -8,7 +8,7 @@ import {
   prepareAsync,
   schema,
 } from '../index';
-import { FakeSession } from './fixtures/FakeSession';
+import { FakeSession, nativeResult } from './fixtures/FakeSession';
 
 jest.mock('../ExpoAI', () => ({
   __esModule: true,
@@ -113,7 +113,7 @@ it('reports immutable Android capabilities and provider identity on text generat
   if (ready.status === 'available') expect(Object.isFrozen(ready.capabilities)).toBe(true);
   owner.generateAsync.mockImplementation(async (requestId) => {
     owner.emit('onText', { requestId, text: 'local' });
-    return 'local answer';
+    return nativeResult('local answer');
   });
   const onUpdate = jest.fn();
   await expect(generateAsync('task', { onUpdate })).resolves.toMatchObject({
@@ -421,13 +421,12 @@ function tool(execute = jest.fn().mockResolvedValue({ count: 2, matches: ['local
 const action = JSON.stringify({
   type: 'tool',
   id: 'call-1',
-  name: 'lookup',
-  arguments: { query: 'note' },
+  calls: { lookup: { query: 'note' } },
 });
 function completions(...responses: string[]) {
   const sessions = responses.map((response) => {
     const session = new FakeSession();
-    session.generateAsync.mockResolvedValue(response);
+    session.generateAsync.mockResolvedValue(nativeResult(response));
     return session;
   });
   nativeModule.createSessionAsync.mockReset().mockResolvedValueOnce(owner);

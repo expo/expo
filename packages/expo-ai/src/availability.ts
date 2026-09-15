@@ -49,7 +49,7 @@ function readCapabilities(value: unknown): ModelCapabilities {
   }) as ModelCapabilities;
 }
 
-/** Decode current provider responses and the existing Apple availability payload. */
+/** Decode the common provider availability envelope. */
 export function readAvailability(
   value: unknown,
   requirements: ModelRequirements
@@ -59,16 +59,16 @@ export function readAvailability(
   const result = value as Record<string, unknown>;
   const capabilities =
     result.capabilities === undefined ? undefined : readCapabilities(result.capabilities);
-  // Android supplies capabilities before assets are ready, so an unsupported
-  // requirement can reject before an explicit preparation starts a download.
-  if (capabilities && requirements.requires?.some((key) => capabilities[key] !== 'supported')) {
-    return { status: 'unavailable', reason: 'unsupported-feature' };
-  }
   if (result.status === 'unavailable') {
     return {
       status: 'unavailable',
       reason: typeof result.reason === 'string' ? result.reason : 'unknown',
     };
+  }
+  // Providers supply capabilities before assets are ready, so an unsupported
+  // requirement can reject before an explicit preparation starts a download.
+  if (capabilities && requirements.requires?.some((key) => capabilities[key] !== 'supported')) {
+    return { status: 'unavailable', reason: 'unsupported-feature' };
   }
   if (
     result.status === 'not-ready' ||
@@ -78,25 +78,41 @@ export function readAvailability(
     return { status: result.status, progress: preparationProgress(result.progress) };
   }
   if (result.status !== 'available') invalid('Unknown native availability response.');
-  const available =
-    capabilities ??
-    Object.freeze({
-      provider: 'apple-foundation-models',
-      model: null,
-      execution: 'on-device',
-      constrainedOutput: 'supported',
-      runtimeToolDeclarations: 'supported',
-      images: result.images === true ? 'supported' : 'unsupported',
-      ...(typeof result.imageTools === 'boolean'
-        ? { imageTools: result.imageTools ? ('supported' as const) : ('unsupported' as const) }
-        : {}),
-      contextTokens:
-        Number.isSafeInteger(result.contextTokens) && (result.contextTokens as number) > 0
-          ? (result.contextTokens as number)
-          : null,
-    } satisfies ModelCapabilities);
-  if (requirements.requires?.some((key) => available[key] !== 'supported')) {
+  if (!capabilities) invalid('The native provider returned invalid capabilities.');
+  if (requirements.requires?.some((key) => capabilities[key] !== 'supported')) {
     return { status: 'unavailable', reason: 'unsupported-feature' };
   }
-  return { status: 'available', capabilities: available };
+  return { status: 'available', capabilities };
+}
+
+// A Map rather than an object, because providers send free-form reason strings that would
+// otherwise match inherited members such as `constructor`.
+const unavailableReasons = new Map<string, string>([
+  [
+    'module-unavailable',
+    'The expo-ai native module is missing from this app. Create a new development build after installing the package.',
+  ],
+  [
+    'unsupported-os-version',
+    'This operating system is older than the on-device model requires. Update the device or test on a supported OS version.',
+  ],
+  [
+    'model-unavailable',
+    'The device provides no on-device model, or its system configuration is not ready.',
+  ],
+  [
+    'unsupported-feature',
+    'The device model does not support a capability this request requires. Remove that capability from the requires list if your app can work without it.',
+  ],
+  ['language-support-unknown', 'The provider cannot confirm support for the requested languages.'],
+  [
+    'browser-api-unavailable',
+    'This browser does not expose the Prompt API. Use a browser that supports it.',
+  ],
+  ['browser-model-unavailable', 'This browser exposes the Prompt API but has no model available.'],
+]);
+
+/** Explain an unavailability reason, including codes this version does not recognise. */
+export function describeUnavailableReason(reason: string): string {
+  return unavailableReasons.get(reason) ?? 'The provider did not report a recognised cause.';
 }
