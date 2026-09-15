@@ -98,6 +98,7 @@ export type { RouteSource } from './react-navigation/native';
 // Router factories for use with `createStandardRouterNavigator` / `integrateWithRouter`,
 // and the helpers for customizing them.
 export {
+  attachRouteState,
   extendRouter,
   extendRouterActions,
   StackRouter,
