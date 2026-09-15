@@ -163,3 +163,38 @@ describe('Native Bottom Tabs Navigation', () => {
     expectNoRenders();
   });
 });
+
+describe('NativeTabs initialRouteName', () => {
+  it('honors unstable_settings.initialRouteName for backBehavior: initialRoute', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { initialRouteName: 'events' },
+          default: () => (
+            <NativeTabs>
+              <NativeTabs.Trigger name="chats" />
+              <NativeTabs.Trigger name="events" />
+            </NativeTabs>
+          ),
+        },
+        chats: () => <View testID="chats" />,
+        events: () => <View testID="events" />,
+      },
+      { initialUrl: '/chats' }
+    );
+
+    // Trigger order (tab bar order) is chats then events.
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toMatch(/^chats-[-\w]+/);
+    expect(TabsScreen.mock.calls[1]![0].screenKey).toMatch(/^events-[-\w]+/);
+    expect(screen).toHavePathname('/chats');
+
+    // Default backBehavior is `initialRoute`. Without wiring layout initialRouteName into
+    // TabRouter, back would treat the first Trigger (`chats`) as the initial route.
+    act(() => router.back());
+
+    expect(screen).toHavePathname('/events');
+    expect(TabsHost.mock.calls.at(-1)![0].navStateRequest.selectedScreenKey).toMatch(
+      /^events-[-\w]+/
+    );
+  });
+});
