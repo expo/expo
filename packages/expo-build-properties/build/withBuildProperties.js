@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withBuildProperties = void 0;
 const android_1 = require("./android");
 const ios_1 = require("./ios");
+const iosSceneSupport_1 = require("./iosSceneSupport");
 const pluginConfig_1 = require("./pluginConfig");
 /**
  * Config plugin allowing customizing native Android and iOS build properties for managed apps.
@@ -29,6 +30,7 @@ const withBuildProperties = (config, props) => {
     config = (0, ios_1.withIosBuildProperties)(config, pluginConfig);
     config = (0, ios_1.withIosDeploymentTarget)(config, pluginConfig);
     config = (0, ios_1.withIosInfoPlist)(config, pluginConfig);
+    config = (0, iosSceneSupport_1.withIosSceneSupport)(config, pluginConfig);
     return config;
 };
 exports.withBuildProperties = withBuildProperties;

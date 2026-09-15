@@ -382,6 +382,16 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
      * @default true
      */
     usePrecompiledModules?: boolean;
+    /**
+     * Adopt the UIKit scene lifecycle in an Expo SDK 57 iOS project, as required by the iOS 27 SDK (Xcode 27).
+     * When `true`, the AppDelegate exposes its `ExpoReactNativeFactory`, React Native startup moves to Expo's
+     * scene delegate, and the scene manifest is added to **Info.plist**. When `false`, these changes are reverted.
+     *
+     * Only the standard SDK 57 Swift AppDelegate template is supported. Requires Expo SDK 57.0.23 or newer.
+     *
+     * Expo SDK 58 and newer include scene lifecycle support, so this property is no longer required and can be removed.
+     */
+    enableSceneSupport?: boolean;
 }
 /**
  * Interface representing extra CocoaPods dependency.

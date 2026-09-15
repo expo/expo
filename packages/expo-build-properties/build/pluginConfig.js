@@ -214,6 +214,7 @@ const schema = {
                 },
                 useHermesV1: { type: 'boolean', nullable: true },
                 usePrecompiledModules: { type: 'boolean', nullable: true },
+                enableSceneSupport: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },
