@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the duplicate setup check in `init` reporting Windows-style paths, which also made its tests fail on Windows.
+
 ### 💡 Others
 
 ## 0.3.0 — 2026-09-14
