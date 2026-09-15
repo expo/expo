@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add support for the `Image` component. ([#50116](https://github.com/expo/expo/pull/50116) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
