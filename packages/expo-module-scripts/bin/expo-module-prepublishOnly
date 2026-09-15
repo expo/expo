@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { commandRunner, packageManagerRunAsync } from '../utils/commandUtils.js';
 import { validateRawIosPrebuilds } from '../utils/iosPrebuilds.js';
+import { validateRawAndroidPrebuilds } from '../utils/androidPrebuilds.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,6 +16,7 @@ async function runAsync() {
   // Run the package's own `build` script so `expo-build` modules still emit output before publishing.
   await packageManagerRunAsync(['build']);
   validateRawIosPrebuilds();
+  validateRawAndroidPrebuilds();
 }
 
 (async () => {

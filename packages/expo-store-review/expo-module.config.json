@@ -4,6 +4,11 @@
     "modules": ["StoreReviewModule"]
   },
   "android": {
-    "modules": ["expo.modules.storereview.StoreReviewModule"]
+    "modules": ["expo.modules.storereview.StoreReviewModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.storereview",
+      "repository": "local-maven-repo"
+    }
   }
 }
