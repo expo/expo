@@ -1031,7 +1031,7 @@ struct JavaScriptRuntimeTests {
       #expect((weakObject?.lock() != nil) == true)
     }
 
-    runtime.collectGarbage()
+    runtime.collectGarbage { weakObject?.lock() == nil }
 
     #expect((weakObject?.lock() == nil) == true)
   }
