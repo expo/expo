@@ -491,3 +491,81 @@ describe('unresolvable target paths', () => {
     expect(report).toContain('Module path: /node_modules/expo-foo');
   });
 });
+
+describe('dependencies on targets the generated package cannot declare', () => {
+  const pending = [
+    {
+      podName: 'ExpoFoo',
+      packageName: 'expo-foo',
+      moduleRoot: '/node_modules/expo-foo',
+      hasSources: true,
+      prebuildProduct: null,
+      unsupportedTargetDeps: [{ target: 'ExpoFoo', dependsOn: 'FooKit', kind: 'binary' }],
+    },
+  ];
+
+  it('classifies a module whose manifest depends on a non-regular target', () => {
+    expect(classifyUnsupported({ pending, coreAvailable: true })).toEqual([
+      {
+        reason: 'unsupported-target-dependency',
+        podName: 'ExpoFoo',
+        packageName: 'expo-foo',
+        moduleRoot: '/node_modules/expo-foo',
+        dependencies: [{ target: 'ExpoFoo', dependsOn: 'FooKit', kind: 'binary' }],
+      },
+    ]);
+  });
+
+  it('names both targets, the kind, and the prebuild remedy', () => {
+    const report = renderUnsupportedReport(classifyUnsupported({ pending, coreAvailable: true }));
+    expect(report).toMatch(/^error: Expo module "expo-foo" \(pod ExpoFoo\)/);
+    expect(report).toContain('"ExpoFoo"');
+    expect(report).toContain('"FooKit"');
+    expect(report).toContain('binary target');
+    expect(report).toContain('spm.config.json');
+    expect(report).toContain('packages/expo-sensors');
+    expect(report).toContain('npx patch-package expo-foo');
+    expect(report).toContain('Module path: /node_modules/expo-foo');
+  });
+
+  it('renders every kind as prose, and explains the rule without enumerating kinds', () => {
+    const report = renderUnsupportedReport(
+      classifyUnsupported({
+        pending: [
+          {
+            ...pending[0],
+            unsupportedTargetDeps: [
+              { target: 'ExpoFoo', dependsOn: 'FooSystem', kind: 'systemLibrary' },
+              { target: 'ExpoFoo', dependsOn: 'FooMystery' },
+            ],
+          },
+        ],
+        coreAvailable: true,
+      })
+    );
+    expect(report).toContain('"FooSystem", a system library target');
+    expect(report).not.toContain('systemLibrary');
+    expect(report).not.toContain('undefined target');
+    expect(report).not.toContain('binary, macro, plugin or system');
+  });
+
+  it('lists every dependency it found, not just the first', () => {
+    const report = renderUnsupportedReport(
+      classifyUnsupported({
+        pending: [
+          {
+            ...pending[0],
+            unsupportedTargetDeps: [
+              { target: 'ExpoFoo', dependsOn: 'FooKit', kind: 'binary' },
+              { target: 'ExpoFooObjC', dependsOn: 'FooMacros', kind: 'macro' },
+            ],
+          },
+        ],
+        coreAvailable: true,
+      })
+    );
+    expect(report).toContain('"FooKit"');
+    expect(report).toContain('"FooMacros"');
+    expect(report).toContain('macro target');
+  });
+});

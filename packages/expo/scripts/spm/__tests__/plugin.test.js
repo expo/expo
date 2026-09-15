@@ -24,7 +24,7 @@ jest.mock('../flavored-frameworks', () => ({
   prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
 }));
 
-const { resolveExpoModules, prebuiltMetadata, generateModulesProvider } = require('../cli');
+const { resolveExpoModules, prebuiltMetadata, generateModulesProvider, runDumpPackage } = require('../cli');
 const { resolveAppTarget } = require('../app-target');
 const { UnsupportedModulesError } = require('../diagnostics');
 const { resolveFlavoredFramework } = require('../flavored-frameworks');
@@ -774,5 +774,85 @@ describe('the iOS deployment floor', () => {
   // can be its source.
   it('takes the floor from the document, not from the podspec', () => {
     expect(emitted('ExpoDisagreeing')).toContain('platforms: [.iOS("17.5")],');
+  });
+});
+
+describe('the checked-in manifest branch', () => {
+  let logs;
+  let outDir;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-plugin-manifest-'));
+    outDir = path.join(tmp, 'out');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const vendored = path.join(tmp, 'expo-vendored');
+    const vendoredPodspecDir = pureSwiftModule(vendored, 'ExpoVendored', spec());
+    fs.writeFileSync(
+      path.join(vendored, 'Package.swift'),
+      '// swift-tools-version: 6.0\n// checked in by the module\n'
+    );
+    runDumpPackage.mockReturnValue(
+      JSON.stringify({
+        name: 'ExpoVendored',
+        products: [
+          { name: 'ExpoVendored', type: { library: ['automatic'] }, targets: ['ExpoVendored'] },
+        ],
+        targets: [
+          {
+            name: 'ExpoVendored',
+            type: 'regular',
+            path: 'ios',
+            dependencies: [{ byName: ['VendoredKit', null] }],
+          },
+          { name: 'VendoredKit', type: 'binary', path: 'ios/VendoredKit.xcframework' },
+        ],
+      })
+    );
+    resolveExpoModules.mockReturnValue([
+      { packageName: 'expo-modules-core', pods: [{ podName: 'ExpoModulesCore', podspecDir: core }] },
+      {
+        packageName: 'expo-vendored',
+        pods: [{ podName: 'ExpoVendored', podspecDir: vendoredPodspecDir }],
+      },
+    ]);
+    logs = {
+      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    try {
+      expoSpmPlugin({
+        react: null,
+        outputDir: outDir,
+        appRoot: path.join(tmp, 'app', 'ios'),
+        projectRoot: path.join(tmp, 'app'),
+      });
+      thrown = null;
+    } catch (error) {
+      thrown = error;
+    }
+  });
+
+  afterAll(() => Object.values(logs).forEach((spy) => spy.mockRestore()));
+
+  it('fails the sync for a manifest depending on a target it cannot declare', () => {
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown.unsupported).toEqual([
+      expect.objectContaining({
+        reason: 'unsupported-target-dependency',
+        podName: 'ExpoVendored',
+        dependencies: [{ target: 'ExpoVendored', dependsOn: 'VendoredKit', kind: 'binary' }],
+      }),
+    ]);
+    expect(logs.error.mock.calls.map(([text]) => text).join('\n')).toContain(
+      'target "ExpoVendored" depends on "VendoredKit", a binary target'
+    );
+  });
+
+  it('emits no package for it', () => {
+    expect(
+      fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoVendored', 'Package.swift'))
+    ).toBe(false);
   });
 });
