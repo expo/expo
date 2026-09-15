@@ -92,7 +92,7 @@ Static rendering is supported in production web apps by rendering all Suspense b
 
 To ensure a consistent first render, all layout routes leading up to the leaf route for a URL will be included in the initial server response.
 
-All initial routes, defined with `unstable_settings = { initialRouteName: '...' }` will be included in the initial HTML file as they are required for the first render. For example, if the server request is for a modal, the screen rendered under the modal will also be included to ensure the modal is rendered correctly.
+All anchor routes, defined with `unstable_settings = { anchor: '...' }` will be included in the initial HTML file as they are required for the first render. For example, if the server request is for a modal, the screen rendered under the modal will also be included to ensure the modal is rendered correctly.
 
 ## Caveats
 

@@ -166,6 +166,38 @@ describe(withExtendedResolver, () => {
     );
   });
 
+  it.each([
+    '@react-navigation/core',
+    '@react-navigation/native',
+    '@react-navigation/native-stack',
+    '@react-navigation/drawer',
+  ])('resolves %s without Expo Router compatibility checks', (moduleName) => {
+    mockMinFs();
+    jest.mocked(getResolveFunc()).mockReturnValueOnce({
+      type: 'sourceFile',
+      filePath: `/root/node_modules/${moduleName}/lib/module/index.js`,
+    });
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    expect(
+      modified.resolver.resolveRequest!(
+        getResolverContext({
+          originModulePath: '/root/node_modules/example/index.js',
+        }),
+        moduleName,
+        'ios'
+      )
+    ).toEqual({
+      type: 'sourceFile',
+      filePath: `/root/node_modules/${moduleName}/lib/module/index.js`,
+    });
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+  });
+
   it(`resolves to react-native-web on web`, async () => {
     mockMinFs();
 

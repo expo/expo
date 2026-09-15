@@ -6,6 +6,16 @@
 
 ### 🎉 New features
 
+- [Android] Add support for the `Image` component. ([#50116](https://github.com/expo/expo/pull/50116) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.1 — 2026-09-14
+
+### 🎉 New features
+
 - [iOS] Add support for `Overlay`, `Background`, and `Mask` in widgets and Live Activities. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes

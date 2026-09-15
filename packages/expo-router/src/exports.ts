@@ -76,6 +76,8 @@ export {
 
 export {
   IsWithinNativeNavigator,
+  createStandardRouterNavigator,
+  integrateWithRouter,
   unstable_createStandardRouterNavigator,
   unstable_integrateWithRouter,
 } from './standard-navigation';
@@ -87,19 +89,43 @@ export type {
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './standard-navigation';
+export { createBaseStackProps } from './layouts/stack-utils/createBaseStackProps';
+export { createBaseTabProps } from './layouts/createBaseTabProps';
+export { createNativeStackProps } from './layouts/createNativeStackProps';
 
 export type { RouteSource } from './react-navigation/native';
 
-// Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
-export { StackRouter, TabRouter } from './react-navigation/routers';
+// Router factories for use with `createStandardRouterNavigator` / `integrateWithRouter`,
+// and the helpers for customizing them.
+export {
+  extendRouter,
+  extendRouterActions,
+  StackRouter,
+  TabRouter,
+} from './react-navigation/routers';
 export { NativeStackView } from './react-navigation/native-stack';
 export type {
   NativeStackDescriptorMap,
   NativeStackViewState,
 } from './react-navigation/native-stack';
 export type {
+  CommonNavigationAction,
+  DefaultRouterOptions,
+  NavigationAction,
+  NavigationState,
+  Router,
+  RouterActionContext,
+  RouterActionReducer,
+  RouterActionResult,
+  RouterConfigOptions,
+  RouterExtension,
+  RouterExtensionContext,
+  RouterExtensionOptions,
+  RouterFactory,
+  StackActionType,
   StackNavigationState,
   StackRouterOptions,
+  TabActionType,
   TabNavigationState,
   TabRouterOptions,
 } from './react-navigation/routers';
