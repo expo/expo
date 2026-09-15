@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Detect the coding agent running `create-expo` and print how to install the Expo plugin (Claude Code, Codex) or Expo Skills (Cursor and others) for it, unless the plugin is already installed. Inside Claude Code, emit the plugin-install hint and always generate `CLAUDE.md` and `.claude/settings.json`. ([#49696](https://github.com/expo/expo/pull/49696) by [@zvadaadam](https://github.com/zvadaadam))
 ### 🐛 Bug fixes
 
 - Derive project names from the app name the same way as `@expo/config-plugins`, keeping accented characters ('Árbók' now becomes 'Arbok', not 'rbk'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))

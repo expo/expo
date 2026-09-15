@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Ask Claude Code to offer the Expo plugin (Expo Skills and the Expo MCP Server) when it runs an Expo CLI command, using the Claude Code plugin hint protocol. ([#49696](https://github.com/expo/expo/pull/49696) by [@zvadaadam](https://github.com/zvadaadam))
 - Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
