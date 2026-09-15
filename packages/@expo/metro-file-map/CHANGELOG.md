@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Remove the unused `forceNodeFilesystemAPI` option. ([#50193](https://github.com/expo/expo/pull/50193) by [@robhogan](https://github.com/robhogan))
+
 ## 58.0.1 — 2026-09-15
 
 ### 💡 Others
