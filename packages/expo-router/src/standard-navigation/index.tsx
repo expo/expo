@@ -342,7 +342,8 @@ export function integrateWithRouter<
       // The overloads require a compatible router factory.
       router as RouterFactory<State, NavigationAction, RouterOptions>,
       useNavigationBuilderProps,
-      { activityDefaultThreshold: options?.activityDefaultThreshold }
+      // The overloads validate the options contract.
+      { activityDefaultThreshold: (options as Options | undefined)?.activityDefaultThreshold }
     );
 
     const { dispatch, dispatchSync } = navigation;
