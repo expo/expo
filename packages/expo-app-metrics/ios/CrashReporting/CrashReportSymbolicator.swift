@@ -25,6 +25,13 @@ import MachO
 /// Where `currentLoadAddress` is the slide-adjusted address of the binary's first segment
 /// (typically `__TEXT`) in this process. We grab it from the dyld image table.
 enum CrashReportSymbolicator {
+  /// How far past a symbol's start a frame can land and still be attributed to it.
+  ///
+  /// `dladdr` tells us the nearest symbol at or below an address, but not how far away it was, so
+  /// this is all we have to go on. It's big enough to cover almost every gap between the symbols
+  /// our release builds keep, and far smaller than the gaps that produced wrong names.
+  private static let maxSymbolMatchDistance: UInt64 = 8 * 1024
+
   /// Annotates each frame in the tree with its resolved symbol, when one is available.
   static func symbolicate(_ tree: CrashReport.CallStackTree) -> CrashReport.CallStackTree {
     // Threads in a crash tree share many leaf frames (RunLoop guts, pthread entry points,
@@ -45,7 +52,9 @@ enum CrashReportSymbolicator {
     _ frame: CrashReport.CallStackTree.Frame,
     cache: inout [String: String]
   ) -> CrashReport.CallStackTree.Frame {
-    let symbol = resolveSymbol(for: frame, cache: &cache)
+    // We resolve very little of a stripped binary, so keep whatever MetricKit gave us instead.
+    // Even its `<redacted>` marker says more than an empty field.
+    let symbol = resolveSymbol(for: frame, cache: &cache) ?? frame.symbol
     let subFrames = frame.subFrames?.map { symbolicateFrame($0, cache: &cache) }
     return CrashReport.CallStackTree.Frame(
       binaryName: frame.binaryName,
@@ -72,6 +81,19 @@ enum CrashReportSymbolicator {
     var info = Dl_info()
     guard dladdr(UnsafeRawPointer(bitPattern: UInt(currentAddress)), &info) != 0,
       let symbolPtr = info.dli_sname
+    else {
+      return nil
+    }
+    // A stripped binary can leave gaps megabytes wide between the symbols it keeps, and `dladdr`
+    // will happily name a frame after whichever one happens to precede it. Nothing marks that as a
+    // guess, so it sends you looking at code that never ran. Better to admit we don't know and let
+    // the caller fall back to `binaryName + offset`.
+    guard let symbolStart = info.dli_saddr else {
+      return nil
+    }
+    let symbolAddress = UInt64(UInt(bitPattern: symbolStart))
+    guard currentAddress >= symbolAddress,
+      currentAddress - symbolAddress <= Self.maxSymbolMatchDistance
     else {
       return nil
     }
