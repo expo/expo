@@ -51,11 +51,20 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
 
 /// A dev-launcher command, not a deep link, so it never becomes the initial URL or reaches JS.
 /// React Native's own Linking module still sees it.
+///
+/// Debug only, because the responder is: `EXDevLauncherFingerprintCheck.handle` answers nothing in
+/// a release build, so the parameter is reserved nowhere else. expo-linking ships in every app
+/// while the dev launcher does not, and a release build that swallowed a URL carrying this
+/// parameter would drop a deep link nothing else handles.
 private func isFingerprintCheckURL(_ url: URL) -> Bool {
+  #if DEBUG
   guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems else {
     return false
   }
   return queryItems.contains {
     $0.name == FingerprintCheckProtocol.markerParam && $0.value == FingerprintCheckProtocol.markerValue
   }
+  #else
+  return false
+  #endif
 }
