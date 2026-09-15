@@ -149,6 +149,30 @@ describe('BunPackageManager', () => {
     });
   });
 
+  describe('minimumReleaseAge', () => {
+    it('disables the release age gate when installing', async () => {
+      const bun = new BunPackageManager({ cwd: projectRoot });
+      await bun.installAsync();
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'bun',
+        ['install', '--minimum-release-age=0'],
+        expect.anything()
+      );
+    });
+
+    it('disables the release age gate when adding packages', async () => {
+      const bun = new BunPackageManager({ cwd: projectRoot });
+      await bun.addAsync(['expo']);
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'bun',
+        ['add', 'expo', '--minimum-release-age=0'],
+        expect.anything()
+      );
+    });
+  });
+
   describe('installAsync', () => {
     it('runs normal installation', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
@@ -156,7 +180,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['install'],
+        ['install', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -167,7 +191,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['install', '--ignore-scripts'],
+        ['install', '--ignore-scripts', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -213,7 +237,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['install'],
+        ['install', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -224,7 +248,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['add', '@react-navigation/native'],
+        ['add', '@react-navigation/native', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -235,7 +259,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['add', '@react-navigation/native', '@react-navigation/drawer'],
+        ['add', '@react-navigation/native', '@react-navigation/drawer', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -248,7 +272,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['install'],
+        ['install', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -259,7 +283,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['add', '--dev', 'eslint'],
+        ['add', '--dev', 'eslint', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -270,7 +294,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['add', '--dev', 'eslint', 'prettier'],
+        ['add', '--dev', 'eslint', 'prettier', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -283,7 +307,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['install'],
+        ['install', '--minimum-release-age=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -294,7 +318,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['add', '--global', 'expo-cli@^5'],
+        ['add', '--global', 'expo-cli@^5', '--minimum-release-age=0'],
         expect.anything()
       );
     });
@@ -305,7 +329,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
-        ['add', '--global', 'expo-cli@^5', 'eas-cli'],
+        ['add', '--global', 'expo-cli@^5', 'eas-cli', '--minimum-release-age=0'],
         expect.anything()
       );
     });
