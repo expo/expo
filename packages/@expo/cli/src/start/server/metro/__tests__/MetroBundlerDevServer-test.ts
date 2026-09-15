@@ -302,16 +302,11 @@ describe('getStaticPageAsync', () => {
         web: {
           output: 'server',
         },
-        extra: {
-          router: {
-            unstable_useServerRendering: true,
-          },
-        },
       },
     } as unknown as ReturnType<typeof getConfig>);
   });
 
-  it('returns a ReadableStream for non-RSC development SSR', async () => {
+  it('returns a ReadableStream for server output', async () => {
     const devServer = createDevServerForStaticPageTests();
     const stream = new ReadableStream<Uint8Array>();
     const getStreamingContent = jest.fn(async () => stream);
@@ -368,7 +363,7 @@ describe('getStaticPageAsync', () => {
     });
   });
 
-  it('preserves the string HTML path when SSR streaming is disabled', async () => {
+  it('preserves the string HTML path for static output', async () => {
     jest.mocked(getConfig).mockReturnValue({
       pkg: {},
       exp: {
@@ -376,11 +371,6 @@ describe('getStaticPageAsync', () => {
         slug: 'test',
         web: {
           output: 'static',
-        },
-        extra: {
-          router: {
-            unstable_useServerRendering: false,
-          },
         },
       },
     } as unknown as ReturnType<typeof getConfig>);
@@ -414,11 +404,6 @@ describe('getStaticPageAsync', () => {
         slug: 'test',
         web: {
           output: 'server',
-        },
-        extra: {
-          router: {
-            unstable_useServerRendering: true,
-          },
         },
       },
     } as unknown as ReturnType<typeof getConfig>);
