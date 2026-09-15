@@ -68,7 +68,7 @@ In SDK 58 and later, API routes are enabled by default with `web.output: "server
 
 This exports prerendered HTML and API routes to **dist/server**, and client assets to **dist/client**. It requires a [deployed server](#deployment).
 
-Set `apiRoutes` to `false` to disable API routes while keeping your selected rendering mode. The setting supports `static` and `server` output only.
+Set `apiRoutes` to `false` to disable API routes while keeping your selected rendering mode. Enabling API routes requires `static` or `server` output. An explicit `apiRoutes: false` is accepted in any output mode.
 
 </Step>
 

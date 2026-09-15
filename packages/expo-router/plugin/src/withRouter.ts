@@ -140,7 +140,7 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
 
   validate(schema, props);
 
-  if (props.apiRoutes !== undefined && !['static', 'server'].includes(config.web?.output ?? '')) {
+  if (props.apiRoutes === true && !['static', 'server'].includes(config.web?.output ?? '')) {
     throw new Error(
       'The `apiRoutes` option requires `web.output` to be set to `static` or `server`.'
     );

@@ -155,7 +155,7 @@ export function hasWarnedAboutMiddleware() {
 export function warnInvalidWebOutput() {
   if (!hasWarnedAboutApiRouteOutput) {
     Log.warn(
-      chalk.yellow`Using API routes requires {bold apiRoutes: true} in the {bold expo-router} config plugin, or {bold web.output: "server"} with API routes enabled. ${learnMore(
+      chalk.yellow`Set {bold apiRoutes: true} in the {bold expo-router} config plugin, or use {bold web.output: "server"}. ${learnMore(
         'https://docs.expo.dev/router/reference/api-routes/'
       )}`
     );

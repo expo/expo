@@ -12,11 +12,14 @@ describe('apiRoutes', () => {
     ).toThrow('The `apiRoutes` option requires `web.output` to be set to `static` or `server`.');
   });
 
-  it('preserves an explicit false value', () => {
-    const config = withRouter(
-      { name: 'test', slug: 'test', web: { output: 'server' } },
-      { apiRoutes: false }
-    );
-    expect(config.extra?.router.apiRoutes).toBe(false);
-  });
+  it.each(['static', 'server', 'single', undefined] as const)(
+    'preserves an explicit false value with %s output',
+    (output) => {
+      const config = withRouter(
+        { name: 'test', slug: 'test', web: { output } },
+        { apiRoutes: false }
+      );
+      expect(config.extra?.router.apiRoutes).toBe(false);
+    }
+  );
 });
