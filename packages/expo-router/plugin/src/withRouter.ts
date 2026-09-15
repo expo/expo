@@ -1,5 +1,6 @@
 import { validate } from '@expo/schema-utils';
 import { ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
+import { styleText } from 'node:util';
 
 const schema = require('../options.json');
 
@@ -113,8 +114,8 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   validate(schema, props);
 
   if (props.unstable_useServerMiddleware) {
-    console.warn(
-      'As of SDK 58, unstable_useServerMiddleware is no longer required and will be removed in future releases'
+    warnOnce(
+      '`unstable_useServerMiddleware` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
     );
   }
 
@@ -132,5 +133,13 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
     },
   };
 };
+
+const warnMap: Record<string, boolean> = {};
+function warnOnce(message: string) {
+  if (!warnMap[message]) {
+    warnMap[message] = true;
+    console.warn(styleText('red', message, { stream: process.stderr }));
+  }
+}
 
 export default withRouter;
