@@ -31,7 +31,6 @@ function crawl(overrides: Partial<CrawlerOptions> = {}) {
     computeSha1: false,
     console,
     extensions: ['js'],
-    forceNodeFilesystemAPI: true,
     ignore: () => false,
     includeSymlinks: false,
     onStatus: jest.fn(),
