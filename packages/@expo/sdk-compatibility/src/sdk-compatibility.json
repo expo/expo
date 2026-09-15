@@ -14,7 +14,7 @@
         "xcodeVersionRange": ">=26.4.0"
       },
       "runtime": {
-        "reactNative": "0.87",
+        "reactNative": "0.88",
         "reactNativeWeb": "0.21.0",
         "reactNativeTvos": "0.87-stable",
         "react": "19.2.3"
