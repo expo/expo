@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove Expo Router compatibility checks for `@react-navigation` packages.
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-14
