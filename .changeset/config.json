@@ -4,6 +4,7 @@
   "commit": false,
   "access": "public",
   "baseBranch": "main",
+  "format": "oxfmt",
   "updateInternalDependencies": "patch",
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "ignore": [],
