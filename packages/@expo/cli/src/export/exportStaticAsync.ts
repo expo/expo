@@ -221,7 +221,8 @@ export async function exportFromServerAsync(
   Log.log(logOutput);
 
   const platform = 'web';
-  const isExportingWithSSR = exportServer && !devServer.isReactServerComponentsEnabled;
+  const isExportingWithSSR =
+    exp?.web?.output === 'server' && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
   const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
     outputDir,
