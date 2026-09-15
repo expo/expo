@@ -1,49 +1,52 @@
-// Gradle script for generating serialized public app config (from app.config.js/ts or app.json) and bundling it into the APK
-
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
+import org.gradle.work.DisableCachingByDefault
+import javax.inject.Inject
 
+@DisableCachingByDefault(because = 'App config can read files and environment values not tracked by Gradle.')
+abstract class CreateExpoConfig extends DefaultTask {
+  @Inject abstract ExecOperations getExecOperations()
+  @Input abstract Property<String> getProjectRoot()
+  @Input abstract ListProperty<String> getNodeExecutableAndArgs()
+  @Input abstract Property<String> getConfigMode()
+  @InputFile @PathSensitive(PathSensitivity.NONE) abstract RegularFileProperty getConfigScript()
+  @OutputDirectory abstract DirectoryProperty getAssetDir()
 
-def expoConstantsDir = project.providers.exec {
-  workingDir(projectDir)
-  commandLine("node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));")
-}.standardOutput.asText.get().trim()
-
-def config = project.hasProperty("react") ? project.react : [];
-def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-
-afterEvaluate {
-  def expoGradleExtension = gradle.extensions.findByName("expoGradle")
-  def customProjectRoot = expoGradleExtension?.projectRoot
-  def projectRoot = file("${customProjectRoot ?: rootProject.projectDir}")
-  def assetsDir = file("$buildDir/generated/assets/expo-constants")
-
-  def currentCreateConfigTask = tasks.register('createExpoConfig', Exec) {
-    description = 'expo-constants: Create app.config.'
-
-    doFirst {
-      assetsDir.deleteDir()
-      assetsDir.mkdirs()
-    }
-
-    // Mark the task as always out-of-date so it always runs - ie. regenerate app.config on every build
+  CreateExpoConfig() {
     outputs.upToDateWhen { false }
-
-    // Add generated assetsDir into assets.srcDirs
-    project.android.sourceSets.main.assets.srcDirs += assetsDir
-
-    // Set up outputs so gradle can cache the result
-    outputs.dir assetsDir
-
-    // Switch to project root and generate the app config
-    workingDir projectRoot
-
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-      commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
-    } else {
-      commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
-    }
   }
 
-  // Generate app.config at preBuild
-  tasks.getByName('preBuild').dependsOn(currentCreateConfigTask)
+  @TaskAction
+  void generate() {
+    def output = assetDir.get().asFile
+    output.mkdirs()
+    def args = nodeExecutableAndArgs.get() + [configScript.get().asFile.absolutePath, projectRoot.get(), output.absolutePath]
+    execOperations.exec {
+      workingDir projectRoot.get()
+      environment '__EXPO_CONFIG_MODE', configMode.get()
+      commandLine Os.isFamily(Os.FAMILY_WINDOWS) ? ['cmd', '/c'] + args : args
+    }
+  }
+}
+
+pluginManager.withPlugin('com.android.library') {
+  def android = extensions.getByName('android')
+  def androidComponents = extensions.getByName('androidComponents')
+  def script = new File(projectDir, '../scripts/getAppConfig.js')
+  androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+    def expoGradleExtension = gradle.extensions.findByName('expoGradle')
+    def configRoot = expoGradleExtension?.projectRoot ?: rootProject.projectDir
+    def nativeDevelopment = android.buildTypes.getByName(variant.buildType).debuggable
+    def task = tasks.register("create${variant.name.capitalize()}ExpoConfig", CreateExpoConfig) {
+      description = "expo-constants: Create app.config for ${variant.name}."
+      projectRoot.set(configRoot.absolutePath)
+      nodeExecutableAndArgs.set(['node'])
+      configScript.set(script)
+      configMode.set(providers.environmentVariable('__EXPO_CONFIG_MODE').orElse(
+        nativeDevelopment ? 'development' : 'production'
+      ))
+      assetDir.set(layout.buildDirectory.dir("generated/assets/expo-constants/${variant.name}"))
+    }
+    variant.sources.assets.addGeneratedSourceDirectory(task) { it.assetDir }
+  }
 }
