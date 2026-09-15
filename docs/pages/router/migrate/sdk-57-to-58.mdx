@@ -55,7 +55,7 @@ Ancestor route params are also no longer copied into descendant routes during im
 
 ### Move `initialRouteName` to `unstable_settings`
 
-The `initialRouteName` navigator prop is removed. Export `unstable_settings.anchor` from the layout that owns the initial route:
+The `initialRouteName` navigator prop is removed. To add a back destination when deep linking into a stack, export `unstable_settings.anchor` from that stack's layout:
 
 <DiffBlock
   raw={`diff --git a/app/(tabs)/_layout.tsx b/app/(tabs)/_layout.tsx
@@ -74,7 +74,9 @@ The `initialRouteName` navigator prop is removed. Export `unstable_settings.anch
  }`}
 />
 
-Expo Router now builds complete initial state from the URL. For example, a stack nested in tabs reads the setting from that stack's own **\_layout.tsx** file. During imperative navigation, pass `{ withAnchor: true }` when the initial route should be inserted below the destination.
+> **info** Do not use `anchor` to choose the app's initial screen. The launch URL determines that screen. For the default `/` URL, use an **index.tsx** route. See [Core concepts](/router/basics/core-concepts/) for details.
+
+Expo Router now builds complete initial state from the URL. For example, a stack nested in tabs reads the setting from that stack's own **\_layout.tsx** file. During imperative navigation, pass `{ withAnchor: true }` when the anchor route should be inserted below the destination.
 
 See [Router settings](/router/advanced/router-settings/) for initial route and anchor behavior.
 
