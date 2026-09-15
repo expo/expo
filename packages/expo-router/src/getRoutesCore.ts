@@ -1,7 +1,11 @@
 import {
+  getChildren,
   getValidInitialRoute,
   type DynamicConvention,
+  type LayoutRouteNode,
   type MiddlewareNode,
+  type RedirectRouteNode,
+  type RewriteRouteNode,
   type RouteNode,
 } from './Route';
 import {
@@ -48,17 +52,40 @@ export type Options = {
   preserveRedirectAndRewrites?: boolean;
 
   /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
-  getSystemRoute: (
-    route: Pick<RouteNode, 'route' | 'type'> & {
-      defaults?: RouteNode;
-      redirectConfig?: RedirectConfig;
-      rewriteConfig?: RewriteConfig;
-    }
-  ) => RouteNode;
+  getSystemRoute: (route: SystemRouteRequest) => RouteNode;
 };
 
+/**
+ * A request for a system route. Redirects and rewrites only need their module
+ * swapped, so they pass the node built so far as `defaults`.
+ */
+export type SystemRouteRequest = {
+  type: RouteNode['type'];
+  route: string;
+  defaults?: RedirectRouteNode | RewriteRouteNode;
+  redirectConfig?: RedirectConfig;
+  rewriteConfig?: RewriteConfig;
+};
+
+/**
+ * `getSystemRoute` is supplied by the caller, so its return type is only as
+ * narrow as `RouteNode`. Check that it honoured the requested kind.
+ */
+function asSystemRouteType<T extends RouteNode['type']>(
+  node: RouteNode,
+  type: T
+): Extract<RouteNode, { type: T }> {
+  if (node.type !== type) {
+    throw new Error(
+      `getSystemRoute returned a "${node.type}" node for a "${type}" request. Return a node whose \`type\` matches the requested type.`
+    );
+  }
+  // The check above proves the discriminant, which TypeScript cannot carry through `Extract`.
+  return node as Extract<RouteNode, { type: T }>;
+}
+
 type DirectoryNode = {
-  layout?: RouteNode[];
+  layout?: LayoutRouteNode[];
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
@@ -98,7 +125,7 @@ const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-export function getRoutes(contextModule: RequireContext, options: Options): RouteNode | null {
+export function getRoutes(contextModule: RequireContext, options: Options): LayoutRouteNode | null {
   const middleware = getMiddleware(contextModule, options);
   const directoryTree = getDirectoryTree(contextModule, options);
 
@@ -231,7 +258,8 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let isValid = false;
 
   const contextKeys = contextModule.keys();
-  const redirects: Record<string, RedirectConfig> = {};
+  // Normalized from the plugin config, so `permanent` is always resolved.
+  const redirects: Record<string, RedirectConfig & { permanent: boolean }> = {};
   const rewrites: Record<string, RewriteConfig> = {};
 
   let validRedirectDestinations: { contextKey: string; nameWithoutInvisible: string }[] | undefined;
@@ -368,8 +396,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       continue;
     }
 
-    let node: RouteNode = {
-      type: meta.isApi ? 'api' : meta.isLayout ? 'layout' : 'route',
+    const base = {
       loadRoute() {
         let routeModule: any;
 
@@ -437,54 +464,86 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       contextKey: filePath,
       route: '', // This is overwritten during hoisting based upon the _layout
       dynamic: null,
-      children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
     };
+
+    let node: RouteNode = meta.isApi
+      ? { ...base, type: 'api' }
+      : meta.isLayout
+        ? // While we are building the directory tree, we don't know the layout's children just yet. They are added during hoisting.
+          { ...base, type: 'layout', children: [] }
+        : { ...base, type: 'route' };
 
     if (meta.isRedirect) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
       }
-
-      const redirect = redirects[meta.route]!;
-      node.destinationContextKey = redirect.destinationContextKey;
-      node.permanent = redirect.permanent;
-      node.generated = true;
-      if (node.type === 'route') {
-        node = options.getSystemRoute({
-          type: 'redirect',
-          route: redirect.destination,
-          defaults: node,
-          redirectConfig: redirect,
-        });
-      }
-      if (redirect!.methods) {
-        node.methods = redirect.methods;
-      }
-      node.type = 'redirect';
       processedRedirectsRewrites.add(meta.route);
+
+      // A `_layout` is a container, not a destination, so it cannot be a redirect
+      // source. Keep it a layout and ignore the rule.
+      if (!meta.isLayout) {
+        const redirect = redirects[meta.route]!;
+        const defaults: RedirectRouteNode = {
+          ...base,
+          type: 'redirect',
+          destinationContextKey: redirect.destinationContextKey,
+          permanent: redirect.permanent,
+          generated: true,
+        };
+
+        // A real file at the redirect source keeps its own `loadRoute`. Only a
+        // source with no file behind it gets the generated redirect module.
+        const resolved =
+          node.type === 'route'
+            ? asSystemRouteType(
+                options.getSystemRoute({
+                  type: 'redirect',
+                  route: redirect.destination,
+                  defaults,
+                  redirectConfig: redirect,
+                }),
+                'redirect'
+              )
+            : defaults;
+
+        node = redirect.methods ? { ...resolved, methods: redirect.methods } : resolved;
+      }
     }
 
     if (meta.isRewrite) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
       }
-
-      const rewrite = rewrites[meta.route]!;
-      node.destinationContextKey = rewrite.destinationContextKey;
-      node.generated = true;
-      if (node.type === 'route') {
-        node = options.getSystemRoute({
-          type: 'rewrite',
-          route: rewrite.destination,
-          defaults: node,
-          rewriteConfig: rewrite,
-        });
-      }
-      if (rewrite.methods) {
-        node.methods = rewrite.methods;
-      }
-      node.type = 'rewrite';
       processedRedirectsRewrites.add(meta.route);
+
+      // A `_layout` is a container, not a destination, so it cannot be a rewrite
+      // source. Keep it a layout and ignore the rule.
+      if (!meta.isLayout) {
+        const rewrite = rewrites[meta.route]!;
+        const defaults: RewriteRouteNode = {
+          ...base,
+          type: 'rewrite',
+          destinationContextKey: rewrite.destinationContextKey,
+          generated: true,
+        };
+
+        // A real file at the rewrite source keeps its own `loadRoute`. Only a
+        // source with no file behind it gets the generated rewrite module.
+        const resolved =
+          node.type === 'route'
+            ? asSystemRouteType(
+                options.getSystemRoute({
+                  type: 'rewrite',
+                  route: rewrite.destination,
+                  defaults,
+                  rewriteConfig: rewrite,
+                }),
+                'rewrite'
+              )
+            : defaults;
+
+        node = rewrite.methods ? { ...resolved, methods: rewrite.methods } : resolved;
+      }
     }
 
     /**
@@ -593,10 +652,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
    */
   if (!rootDirectory.layout) {
     rootDirectory.layout = [
-      options.getSystemRoute({
-        type: 'layout',
-        route: '',
-      }),
+      asSystemRouteType(options.getSystemRoute({ type: 'layout', route: '' }), 'layout'),
     ];
   }
 
@@ -640,7 +696,7 @@ function flattenDirectoryTreeToRoutes(
   directory: DirectoryNode,
   options: Options,
   /* The nearest _layout file in the directory tree */
-  layout?: RouteNode,
+  layout?: LayoutRouteNode,
   /* Route names are relative to their layout */
   pathToRemove = ''
 ) {
@@ -717,7 +773,7 @@ function validateRouteTreeExports(node: RouteNode) {
   }
 
   runtimeValidateRouteNode(node);
-  for (const child of node.children) {
+  for (const child of getChildren(node)) {
     validateRouteTreeExports(child);
   }
 }
@@ -867,14 +923,14 @@ function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
   }
 }
 
-function getLayoutNode(node: RouteNode, options: Options) {
+function getLayoutNode(node: RouteNode, options: Options): LayoutRouteNode {
   /**
    * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
    * Each of these layouts will have a different anchor based upon the first group name.
    */
   // We may strip loadRoute during testing
   const groupName = matchLastGroupName(node.route);
-  const childMatchingGroup = node.children.find((child) => {
+  const childMatchingGroup = getChildren(node).find((child) => {
     return child.route.replace(/\/index$/, '') === groupName;
   });
   let anchor = childMatchingGroup?.route;
@@ -911,6 +967,7 @@ function getLayoutNode(node: RouteNode, options: Options) {
 
   return {
     ...node,
+    type: 'layout',
     route: node.route.replace(/\/?_layout$/, ''),
     children: [], // Each layout should have its own children
     initialRouteName: anchor,
@@ -925,12 +982,8 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
   if (node.type === 'route') {
     node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
   } else if (node.type === 'redirect') {
-    node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey!])];
+    node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey])];
   } else if (node.type === 'layout') {
-    if (!node.children) {
-      throw new Error(`Layout "${node.contextKey}" does not contain any child routes`);
-    }
-
     // Every node below this layout will have it as an entryPoint
     entryPoints = [...entryPoints, node.contextKey];
 
@@ -987,7 +1040,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
   }
 }
 
-function getMostSpecific(routes: RouteNode[]) {
+function getMostSpecific<T extends RouteNode>(routes: T[]): T {
   const route = routes[routes.length - 1]!;
 
   if (!routes[0]) {

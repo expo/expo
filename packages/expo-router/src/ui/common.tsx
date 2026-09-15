@@ -1,5 +1,6 @@
 import {
   findRouteNodeByName,
+  getChildren,
   getValidInitialRouteName,
   sortRoutesWithInitial,
   type RouteNode,
@@ -265,7 +266,8 @@ function hasDeepDestination(
   while (state) {
     const childRoute = state.routes[state.index ?? state.routes.length - 1];
     const initialRouteName =
-      getValidInitialRouteName(node) ?? [...node.children].sort(sortRoutesWithInitial())[0]?.route;
+      getValidInitialRouteName(node) ??
+      [...getChildren(node)].sort(sortRoutesWithInitial())[0]?.route;
     if (
       !childRoute ||
       childRoute.name !== initialRouteName ||

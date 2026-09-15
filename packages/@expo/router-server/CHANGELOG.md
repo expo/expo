@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Narrow `RouteNode` reads to the new discriminated union from `expo-router`. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@jakub-agent](https://github.com/jakub-agent))
+
 ## 58.0.1 — 2026-09-14
 
 ### 🐛 Bug fixes

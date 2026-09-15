@@ -1,4 +1,4 @@
-import type { RouteNode } from 'expo-router/build/Route';
+import { isInternal, type RouteNode } from 'expo-router/build/Route';
 import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 /**
@@ -37,15 +37,16 @@ export function fromRuntimeManifestRoute(
   options: FromRuntimeManifestRouteOptions
 ): ResolvedLoaderRoute | null {
   // Skip internal routes (like `_sitemap` or `+not-found`)
-  if (route.internal) {
+  if (isInternal(route)) {
     return null;
   }
 
   // For static routes that were generated from dynamic routes, we need to use the parent's
   // context key to find the loader
   // @see expo-router/src/loadStaticParamsAsync.ts
+  const parentContextKey = route.type === 'route' ? route.parentContextKey : undefined;
   const contextKey =
-    route.dynamic === null && route.parentContextKey ? route.parentContextKey : route.contextKey;
+    route.dynamic === null && parentContextKey ? parentContextKey : route.contextKey;
 
   if (!contextKey) {
     return null;
