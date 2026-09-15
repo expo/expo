@@ -184,6 +184,11 @@
             }
           }
         },
+        "unstable_useServerMiddleware": {
+          "description": "Deprecated as of SDK 58. Server middleware no longer requires an opt-in; this option has no effect.",
+          "type": "boolean",
+          "default": false
+        },
         "unstable_useServerDataLoaders": {
           "description": "Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config.",
           "type": "boolean",
