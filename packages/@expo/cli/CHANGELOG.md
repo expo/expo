@@ -17,6 +17,7 @@
 
 - Remove Expo Router compatibility checks for `@react-navigation` packages. ([#50176](https://github.com/expo/expo/pull/50176) by [@Ubax](https://github.com/Ubax))
 - Fix app names in prebuild templates: derive project identifiers from the raw name in XML and plists ('A & B' gave 'AampB' in plists but 'AB' elsewhere), and escape display names for Android resources and plists. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+- Resolve Expo Router `asyncRoutes` for the platform being bundled instead of reusing the web value from the Metro instance, so the SDK 58 web-only default no longer switches native production exports to the lazy import mode. ([#50209](https://github.com/expo/expo/pull/50209) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 

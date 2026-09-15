@@ -13,6 +13,7 @@
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-14
+- Keep the synchronous Expo Router import mode for native production bundles in the Noxcturnal transformer, matching `babel-preset-expo`. ([#50209](https://github.com/expo/expo/pull/50209) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
