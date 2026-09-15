@@ -6,13 +6,17 @@
 
 ### 🎉 New features
 
-- Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))
-- Export `attachRouteState` for custom router extensions. ([#49712](https://github.com/expo/expo/pull/49712) by [@Ubax](https://github.com/Ubax))
-- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.3 — 2026-09-15
+
+### 🎉 New features
+
+- Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))
+- Export `attachRouteState` for custom router extensions. ([#49712](https://github.com/expo/expo/pull/49712) by [@Ubax](https://github.com/Ubax))
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
 
 ## 58.0.2 — 2026-09-14
 

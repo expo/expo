@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Derive project names from the app name the same way as `@expo/config-plugins`, keeping accented characters ('Árbók' now becomes 'Arbok', not 'rbk'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 5.1.2 — 2026-09-15
+
+### 🐛 Bug fixes
+
+- Derive project names from the app name the same way as `@expo/config-plugins`, keeping accented characters ('Árbók' now becomes 'Arbok', not 'rbk'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 
 ## 5.1.1 — 2026-09-14
 

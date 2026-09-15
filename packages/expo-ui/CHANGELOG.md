@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [macOS] Added minimal macOS support. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [macOS] Added minimal macOS support. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.1 — 2026-09-14
 
