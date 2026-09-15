@@ -46,6 +46,10 @@ export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOp
       CI: '1',
       // Disable telemetry
       EXPO_NO_TELEMETRY: '1',
+      // Keep scaffolding independent of the runner's package manager and personal Git profile.
+      npm_config_user_agent: 'npm',
+      GIT_CONFIG_GLOBAL: os.devNull,
+      GIT_CONFIG_NOSYSTEM: '1',
       // Set INIT_CWD to ensure the CLI uses the correct working directory
       // (the CLI checks INIT_CWD first before process.cwd())
       INIT_CWD: cwdPath,

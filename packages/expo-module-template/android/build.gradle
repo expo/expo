@@ -1,4 +1,5 @@
 <% const sdk = typeof compat === 'undefined' ? {} : compat; -%>
+<% const moduleVersion = type === 'standalone' || type === 'remote' ? project.version : '0.1.0'; -%>
 <% if (usesCompose) { -%>
 buildscript {
   repositories {
@@ -19,13 +20,13 @@ apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 <% } -%>
 
 group = '<%- project.package %>'
-version = '<% if (type === 'remote') { %><%- project.version %><% } else { %>0.1.0<% } %>'
+version = '<%- moduleVersion %>'
 
 android {
   namespace "<%- project.package %>"
   defaultConfig {
     versionCode 1
-    versionName "<% if (type === 'remote') { %><%- project.version %><% } else { %>0.1.0<% } %>"
+    versionName "<%- moduleVersion %>"
   }
 <% if (usesCompose) { -%>
   buildFeatures {

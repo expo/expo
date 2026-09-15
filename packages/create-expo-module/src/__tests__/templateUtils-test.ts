@@ -267,6 +267,45 @@ describe('standalone SharedObject dependencies', () => {
   });
 });
 
+describe('podspec module metadata', () => {
+  it.each(['standalone', 'remote'])(
+    'uses package metadata for the %s module type',
+    async (type) => {
+      const data = await buildAugmentedData(SNIPPETS_DIR, mockData);
+      const podspec = await renderTemplateFile('ios/{%- project.name %}.podspec', {
+        ...data,
+        type,
+      });
+      expect(podspec).toContain("require 'json'");
+      expect(podspec).toContain("s.version        = package['version']");
+      expect(podspec).toContain("s.source         = { git: 'https://github.com/test/test' }");
+    }
+  );
+
+  it('renders local metadata without a repository or package.json', async () => {
+    const data = await buildAugmentedData(SNIPPETS_DIR, localData);
+    const podspec = await renderTemplateFile('ios/{%- project.name %}.podspec', data);
+    expect(podspec).not.toContain("require 'json'");
+    expect(podspec).toContain("s.source         = { git: '' }");
+  });
+});
+
+describe('Android module metadata', () => {
+  it.each([
+    ['standalone', '1.2.3'],
+    ['remote', '1.2.3'],
+    ['local', '0.1.0'],
+  ])('uses the correct version for the %s module type', async (type, version) => {
+    const data = await buildAugmentedData(SNIPPETS_DIR, {
+      ...mockData,
+      project: { ...mockData.project, version: '1.2.3' },
+    });
+    const gradle = await renderTemplateFile('android/build.gradle', { ...data, type });
+    expect(gradle).toContain(`version = '${version}'`);
+    expect(gradle).toContain(`versionName "${version}"`);
+  });
+});
+
 describe('templates rendered by a CLI that does not supply `compat`', () => {
   // Older published CLIs render the template with only the substitution data. The output must
   // match the template's own SDK, the same as when a current CLI passes no overrides.

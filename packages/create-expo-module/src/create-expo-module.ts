@@ -301,7 +301,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   const slug = await askForPackageSlugAsync(target, options.local, options);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
-    : path.join(CWD, target || slug);
+    : path.resolve(CWD, target || slug);
 
   if (!targetDir) {
     return;
