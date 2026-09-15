@@ -13,6 +13,7 @@
 
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
+- [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
@@ -49,7 +50,6 @@
 - Fix platform resolution of the `expo/dom` and `expo/dom/internal` subpath exports ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Remove a duplicated `ExpoModulesCore-Swift.h` import block in `ExpoReactNativeFactory.mm` whose `#else` branch imported the header unconditionally, breaking builds where neither form is on the header search path. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Forward URL, user activity, life cycle and quick action events to `AppDelegate` overrides under the UIScene life cycle. ([#49925](https://github.com/expo/expo/pull/49925) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
