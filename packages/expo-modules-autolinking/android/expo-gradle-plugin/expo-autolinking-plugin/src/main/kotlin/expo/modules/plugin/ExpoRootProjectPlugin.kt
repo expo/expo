@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtraPropertiesExtension
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.internal.extensions.core.extra
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -22,6 +23,7 @@ class ExpoRootProjectPlugin : Plugin<Project> {
       maybeOverrideCmakeVersion()
       setDefaultCmakeObjectPathMax()
       disableLinkedModulesLintWhenRequested()
+      declareInlinedEnvironmentAsBundleTaskInputs()
     }
   }
 }
@@ -167,6 +169,65 @@ private fun Project.disableLintVitalAnalysis() {
     }
   }
 }
+
+/**
+ * Declares the values that Expo inlines into the JavaScript bundle as inputs of React Native's
+ * `createBundle*JsAndAssets` tasks.
+ *
+ * Those tasks declare the JavaScript sources and the bundle settings as inputs, but not the
+ * environment the bundler reads. Expo inlines every `EXPO_PUBLIC_*` value into a release bundle,
+ * and it takes those values from the process environment and from the `.env` files in the project
+ * directory. A build that only changes such a value keeps the same JavaScript sources, so Gradle
+ * reports the task as `UP-TO-DATE` and the app keeps the value of the previous build.
+ *
+ * Two environment variables switch that inlining off. They change the bundle without changing a
+ * value, so they are inputs as well:
+ *  - `EXPO_NO_DOTENV` stops `@expo/env` from reading the `.env` files. A value that only a `.env`
+ *    file sets is then inlined as `undefined`.
+ *  - `EXPO_NO_CLIENT_ENV_VARS` keeps `process.env.EXPO_PUBLIC_*` in the production bundle instead
+ *    of replacing it with the value.
+ *
+ * Both are optional input properties, because an unset variable gives a provider without a value.
+ *
+ * The scope ends there. Other environment variables that change the bundle, such as
+ * `EXPO_ROUTER_*` and `EXPO_UNSTABLE_*`, are not inputs of these tasks.
+ *
+ * Every property here holds a provider, and Gradle reads a provider when it snapshots the task
+ * inputs, not when it configures the build. A changed value therefore re-runs the bundle task and
+ * leaves the configuration cache valid.
+ * [org.gradle.api.provider.ProviderFactory.environmentVariablesPrefixedBy] also keeps every
+ * variable outside the `EXPO_PUBLIC_` prefix out of the build inputs.
+ */
+internal fun Project.declareInlinedEnvironmentAsBundleTaskInputs() {
+  val publicEnv = providers.environmentVariablesPrefixedBy(PUBLIC_ENV_PREFIX)
+  val noDotenv = providers.environmentVariable(NO_DOTENV_ENV_VARIABLE)
+  val noClientEnvVars = providers.environmentVariable(NO_CLIENT_ENV_VARS_ENV_VARIABLE)
+  // The root Gradle project is the `android` directory, so its parent is the project directory
+  // that holds the `.env` files.
+  val dotenvFiles = fileTree(projectDir.parentFile) { fileTree ->
+    fileTree.include(DOTENV_FILE_PATTERNS)
+  }
+
+  subprojects { subproject ->
+    subproject.tasks.configureEach { task ->
+      if (task.name.startsWith(BUNDLE_TASK_PREFIX) && task.name.endsWith(BUNDLE_TASK_SUFFIX)) {
+        task.inputs.property("expoPublicEnv", publicEnv)
+        task.inputs.property("expoNoDotenv", noDotenv).optional(true)
+        task.inputs.property("expoNoClientEnvVars", noClientEnvVars).optional(true)
+        task.inputs.files(dotenvFiles)
+          .withPropertyName("expoDotenvFiles")
+          .withPathSensitivity(PathSensitivity.RELATIVE)
+      }
+    }
+  }
+}
+
+private const val PUBLIC_ENV_PREFIX = "EXPO_PUBLIC_"
+private const val NO_DOTENV_ENV_VARIABLE = "EXPO_NO_DOTENV"
+private const val NO_CLIENT_ENV_VARS_ENV_VARIABLE = "EXPO_NO_CLIENT_ENV_VARS"
+private val DOTENV_FILE_PATTERNS = listOf(".env", ".env.*")
+private const val BUNDLE_TASK_PREFIX = "createBundle"
+private const val BUNDLE_TASK_SUFFIX = "JsAndAssets"
 
 fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
   // Android related
