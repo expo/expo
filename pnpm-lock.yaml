@@ -2910,9 +2910,6 @@ importers:
       micromatch:
         specifier: ^4.0.4
         version: 4.0.8
-      walker:
-        specifier: ^1.0.8
-        version: 1.0.8
     devDependencies:
       '@expo/metro':
         specifier: ~56.1.0
