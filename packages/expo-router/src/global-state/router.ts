@@ -198,7 +198,7 @@ function linkToImpl(
       href,
       options: navigationOptions,
     },
-    ...(inTransition === undefined ? {} : { inTransition }),
+    inTransition,
   };
 
   enqueue(linkAction);
@@ -286,8 +286,7 @@ export type ImperativeRouter = {
    * Configures which queued navigation operations use React transitions. The default is
    * `preload-only`; `never` cannot be overridden by individual operations.
    *
-   * This API is experimental. Although it is stable and works well, its API and underlying
-   * behavior may change in minor releases.
+   * @experimental
    */
   setTransitionMode: (mode: NavigationTransitionMode) => void;
 };
@@ -302,7 +301,7 @@ type InternalRouter = ImperativeRouter & {
 
 export function createImperativeRouter(
   enqueue: (intent: RoutingIntent) => void,
-  setTransitionMode: (mode: NavigationTransitionMode) => void = throwBeforeFirstRender
+  setTransitionMode: (mode: NavigationTransitionMode) => void
 ): InternalRouter {
   return {
     navigate: (href, options) => navigateImpl(enqueue, href, options),
@@ -317,7 +316,10 @@ export function createImperativeRouter(
     canGoBack,
     reload,
     prefetch: (href, options) => prefetchImpl(enqueue, href, options),
-    setTransitionMode,
+    setTransitionMode: (mode) => {
+      defaultTransitionMode = mode;
+      setTransitionMode(mode);
+    },
     setParams: setParams as ImperativeRouter['setParams'],
     linkTo: (href, options) => linkToImpl(enqueue, href, options),
   };
@@ -326,6 +328,12 @@ export function createImperativeRouter(
 const throwBeforeFirstRender = () => {
   throw new Error('The imperative router is unavailable before the first render has finished.');
 };
+
+export let defaultTransitionMode: NavigationTransitionMode = 'preload-only';
+
+function setDefaultTransitionMode(mode: NavigationTransitionMode) {
+  defaultTransitionMode = mode;
+}
 
 export const unboundRouter: InternalRouter = {
   navigate: throwBeforeFirstRender,
@@ -340,7 +348,7 @@ export const unboundRouter: InternalRouter = {
   canGoBack: throwBeforeFirstRender,
   reload: throwBeforeFirstRender,
   prefetch: throwBeforeFirstRender,
-  setTransitionMode: throwBeforeFirstRender,
+  setTransitionMode: setDefaultTransitionMode,
   setParams: throwBeforeFirstRender,
   linkTo: throwBeforeFirstRender,
 };

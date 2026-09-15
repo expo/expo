@@ -21,8 +21,7 @@ export function shouldUseTransition(
 
   mode satisfies 'preload-only';
 
-  if (intents.every((intent) => intent.inTransition === true)) return true;
-  return intents.every(isPreloadIntent);
+  return intents.every((intent) => intent.inTransition === true || isPreloadIntent(intent));
 }
 
 function isPreloadIntent(intent: RoutingIntent): boolean {

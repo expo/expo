@@ -13,8 +13,7 @@ export type LinkToOptions = {
    * Opts this operation into or out of React transitions. Every operation in a queued batch must
    * allow transitions for the batch to use one.
    *
-   * This API is experimental. Although it is stable and works well, its API and underlying
-   * behavior may change in minor releases.
+   * @experimental
    */
   inTransition?: boolean;
 

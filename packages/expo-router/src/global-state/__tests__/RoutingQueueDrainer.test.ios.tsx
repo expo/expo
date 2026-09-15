@@ -189,10 +189,11 @@ describe(shouldUseTransition, () => {
       expect(shouldUseTransition([{ ...intent, inTransition: false }], 'preload-only')).toBe(false);
     });
 
-    it('does not mix preloads and opted-in operations in one transition', () => {
-      expect(
-        shouldUseTransition([navigate('PRELOAD'), navigate('PUSH', true)], 'preload-only')
-      ).toBe(false);
+    it.each([
+      ['preload followed by an opted-in operation', navigate('PRELOAD'), navigate('PUSH', true)],
+      ['opted-in operation followed by a preload', navigate('PUSH', true), navigate('PRELOAD')],
+    ])('allows %s in one transition', (_, first, second) => {
+      expect(shouldUseTransition([first, second], 'preload-only')).toBe(true);
     });
   });
 
