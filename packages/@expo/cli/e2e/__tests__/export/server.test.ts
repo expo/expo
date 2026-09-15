@@ -85,7 +85,9 @@ describe('server-output', () => {
     });
 
     it('renders dynamic parameters in every runtime', async () => {
-      expect(await server.fetchAsync('/blog/123').then((res) => res.text())).toMatch(/123/);
+      expect(await server.fetchAsync('/blog/123').then((res) => res.text())).toMatch(
+        /Post: <!-- -->123/
+      );
     });
 
     it(`can hit the 404 route`, async () => {
@@ -417,9 +419,10 @@ describe('server-output', () => {
           path.join(server.outputDir, 'server/_expo/routes.json')
         );
         // Asset hashes depend on the bundled source and should not affect route snapshots.
-        expect(
-          JSON.parse(JSON.stringify(manifest).replace(/[a-f0-9]{32}/g, '[hash]'))
-        ).toMatchSnapshot();
+        expect({
+          ...manifest,
+          assets: JSON.parse(JSON.stringify(manifest.assets).replace(/[a-f0-9]{32}/g, '[hash]')),
+        }).toMatchSnapshot();
       });
     });
   });

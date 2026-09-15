@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Apps using `web.output: 'server'` now server-side render pages at request time. ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
 
 - Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))

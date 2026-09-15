@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Apps using `web.output: 'server'` now server-side render pages at request time. ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
 
 - Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))
