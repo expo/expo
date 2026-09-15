@@ -248,6 +248,25 @@ describe('buildAugmentedData', () => {
   });
 });
 
+describe('standalone SharedObject dependencies', () => {
+  it('declares a direct development dependency and a host-compatible peer dependency', async () => {
+    const data = await buildAugmentedData(SNIPPETS_DIR, {
+      ...mockData,
+      project: { ...mockData.project, features: ['SharedObject'] },
+    });
+    const pkg = JSON.parse(await renderTemplateFile('$package.json', data));
+    expect(pkg.devDependencies['expo-modules-core']).toBe('~58.0.0');
+    expect(pkg.peerDependencies['expo-modules-core']).toBe('*');
+  });
+
+  it('does not add the dependency when SharedObject is not selected', async () => {
+    const data = await buildAugmentedData(SNIPPETS_DIR, mockData);
+    const pkg = JSON.parse(await renderTemplateFile('$package.json', data));
+    expect(pkg.devDependencies['expo-modules-core']).toBeUndefined();
+    expect(pkg.peerDependencies['expo-modules-core']).toBeUndefined();
+  });
+});
+
 describe('templates rendered by a CLI that does not supply `compat`', () => {
   // Older published CLIs render the template with only the substitution data. The output must
   // match the template's own SDK, the same as when a current CLI passes no overrides.
