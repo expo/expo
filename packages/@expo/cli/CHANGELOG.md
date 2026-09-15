@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Default the file map to watching unless `CI` is set, matching Metro, so `CI=0` no longer turns watching off. ([#50196](https://github.com/expo/expo/pull/50196) by [@robhogan](https://github.com/robhogan))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23
