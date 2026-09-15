@@ -4,6 +4,7 @@ import {
   generateKeyPair,
   generateSelfSignedCodeSigningCertificate,
 } from '@expo/code-signing-certificates';
+import { loadProjectEnv } from '@expo/env';
 import { getConfig } from 'expo/config';
 import fs from 'fs';
 import { vol } from 'memfs';
@@ -13,10 +14,15 @@ import { configureCodeSigningAsync } from '../configureCodeSigningAsync';
 
 jest.mock('fs');
 jest.mock('node:fs', () => require('memfs').fs);
+jest.mock('@expo/env');
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
 describe('codesigning:configure', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterEach(() => {
     vol.reset();
   });
@@ -66,7 +72,10 @@ describe('codesigning:configure', () => {
         certificateInput: 'certificates',
         keyInput: 'keys',
         keyid,
+        mode: 'development',
       });
+
+      expect(loadProjectEnv).toHaveBeenCalledWith(projectRoot, { mode: 'development' });
 
       const config = getConfig(projectRoot);
       expect((config.exp.updates as any).codeSigningCertificate).toEqual(
@@ -113,6 +122,7 @@ describe('codesigning:configure', () => {
         certificateInput: 'certificates',
         keyInput: 'keys',
         keyid: undefined,
+        mode: 'development',
       })
     ).rejects.toThrow('Certificate validity expired');
 
