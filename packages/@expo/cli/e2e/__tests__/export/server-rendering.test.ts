@@ -8,6 +8,7 @@ import {
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
+import { getSourceMapSources } from '../../utils/sourceMap';
 import { findProjectFiles, getHtml } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
@@ -144,7 +145,7 @@ describe('exports server', () => {
       for (const file of clientMapFiles) {
         const sourceMap = JSON.parse(fs.readFileSync(path.join(server.outputDir, file!), 'utf8'));
         expect(sourceMap.version).toBe(3);
-        expect(sourceMap.sources).toEqual(
+        expect(getSourceMapSources(sourceMap)).toEqual(
           expect.arrayContaining([
             '__prelude__',
             // NOTE: No `/Users/evanbacon/`...

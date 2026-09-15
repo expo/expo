@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createExpoStart, executeExpoAsync } from '../utils/expo';
+import { getSourceMapMappings, getSourceMapSources } from '../utils/sourceMap';
 import {
   projectRoot,
   getLoadedModulesAsync,
@@ -149,9 +150,9 @@ describeSkipWin('server', () => {
     expect(sourceMapUrl).toBeTruthy();
 
     const sourceMaps = await expo.fetchBundleAsync(sourceMapUrl!).then((res) => res.json());
-    expect(sourceMaps).toMatchObject({
-      version: 3,
-      sources: expect.arrayContaining([
+    expect(sourceMaps.version).toBe(3);
+    expect(getSourceMapSources(sourceMaps)).toEqual(
+      expect.arrayContaining([
         '__prelude__',
         // NOTE(@kitten): We can slot in our own runtime here
         expect.pathMatching(
@@ -167,9 +168,9 @@ describeSkipWin('server', () => {
         '\0polyfill:external-require',
         // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
         '\0polyfill:environment-variables',
-      ]),
-      mappings: expect.any(String),
-    });
+      ])
+    );
+    expect(getSourceMapMappings(sourceMaps)).toContainEqual(expect.any(String));
   });
 });
 

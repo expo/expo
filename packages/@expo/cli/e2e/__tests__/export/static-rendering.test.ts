@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { getSourceMapSources } from '../../utils/sourceMap';
 import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
@@ -118,7 +119,7 @@ describe('exports static', () => {
       // Ensure the bundle does not contain a source map reference
       const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
       expect(sourceMap.version).toBe(3);
-      expect(sourceMap.sources).toEqual(
+      expect(getSourceMapSources(sourceMap)).toEqual(
         expect.arrayContaining([
           '__prelude__',
           // NOTE: No `/Users/evanbacon/`...

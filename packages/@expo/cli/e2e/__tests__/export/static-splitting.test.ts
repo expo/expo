@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
+import { getSourceMapSources } from '../../utils/sourceMap';
 import {
   expectChunkPathMatching,
   findProjectFiles,
@@ -117,7 +118,7 @@ describe('exports static with bundle splitting', () => {
 
       // Common chunk
       if (file!.match(/__common/)) {
-        const sources: string[] = sourceMap.sources;
+        const sources = getSourceMapSources(sourceMap);
         expect(
           sources.every(
             (source) => source.startsWith('/packages/') || source.startsWith('/node_modules/')
