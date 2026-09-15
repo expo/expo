@@ -242,6 +242,20 @@ public:
 };
 
 /**
+ * Converter from js function to [expo.modules.kotlin.jni.Callback].
+ */
+class CallbackFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
  * Converter from js function to [expo.modules.kotlin.jni.JavaScriptArrayBuffer].
  */
 class JavaScriptArrayBufferFrontendConverter : public FrontendConverter {
