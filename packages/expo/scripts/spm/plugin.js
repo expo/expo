@@ -78,6 +78,37 @@ function podIdentity(metadata, pod) {
   };
 }
 
+// Expo modules use Swift macros (@Field, @Record, @OptimizedFunction). A macro expands
+// only when the compiler is handed the macro plugin executable, which ships prebuilt and
+// declares no SwiftPM products — so it travels as a compiler flag, not a dependency.
+// CocoaPods resolves the same binary the same way in
+// `expo-modules-autolinking/scripts/ios/project_integrator.rb#resolve_macros_plugin_dir`.
+function macroPluginFlags(coreModuleRoot) {
+  let pkgJsonPath;
+  try {
+    pkgJsonPath = require.resolve('@expo/expo-modules-macros-plugin/package.json', {
+      paths: [coreModuleRoot],
+    });
+  } catch {
+    throw new Error(
+      `[expo-spm-plugin] Could not resolve "@expo/expo-modules-macros-plugin" from ${coreModuleRoot}. ` +
+        'Expo modules are compiled from source here, and their Swift macros cannot expand without ' +
+        'this plugin — the build would fail with "external macro implementation could not be found". ' +
+        'Reinstall your JavaScript dependencies and build again.'
+    );
+  }
+  const tool = path.join(path.dirname(pkgJsonPath), 'apple', 'ExpoModulesMacros-tool');
+  if (!fs.existsSync(tool)) {
+    throw new Error(
+      `[expo-spm-plugin] The Expo Swift macro plugin is missing its executable at ${tool}. ` +
+        'Expo modules are compiled from source here, and their Swift macros cannot expand without ' +
+        'it — the build would fail with "external macro implementation could not be found". ' +
+        'Reinstall your JavaScript dependencies and build again.'
+    );
+  }
+  return ['-Xfrontend', '-load-plugin-executable', '-Xfrontend', `${tool}#ExpoModulesMacros`];
+}
+
 module.exports = function expoSpmPlugin(context) {
   const { react, outputDir } = context;
   // `context.appRoot` is the Xcode project dir (`<app>/ios`); the autolinking
@@ -119,10 +150,12 @@ module.exports = function expoSpmPlugin(context) {
   // receives the plugin result. No runtime binary enters the SwiftPM graph.
   const precompiledFrameworks = new Map();
   const flavoredFrameworks = [];
+  let coreModuleRoot = null;
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
       const { moduleRoot, productName } = podIdentity(metadata, pod);
+      if (pod.podName === 'ExpoModulesCore') coreModuleRoot = moduleRoot;
       const needsReact = moduleNeedsReact(pod.podName, moduleRoot);
       const framework = resolveFlavoredFramework({
         packageName: mod.packageName,
@@ -151,6 +184,12 @@ module.exports = function expoSpmPlugin(context) {
   // the CocoaPods installer raises them the same way, after install.
   const coreDeploymentTarget = metadata['ExpoModulesCore']?.iosDeploymentTarget ?? null;
   if (coreAvailable) {
+    // Every emitted source target compiles against the same ExpoModulesCore interface tree,
+    // so every one of them may use the macros — the set CocoaPods reaches through its
+    // "is core or depends on core" gate. Resolved on first use so an install that emits
+    // no source package at all does not need the macro plugin present.
+    let resolvedMacroFlags = null;
+    const macroFlags = () => (resolvedMacroFlags ??= macroPluginFlags(coreModuleRoot));
     for (const mod of modules) {
       const pods = mod.pods ?? [];
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
@@ -165,7 +204,8 @@ module.exports = function expoSpmPlugin(context) {
           frameworkSearchPath,
           outDir,
           codegenPkgPath,
-          coreDeploymentTarget
+          coreDeploymentTarget,
+          macroFlags()
         );
         if (e.unsupportedTargetDeps != null) {
           unsupportedTargetDeps.set(moduleRoot, e.unsupportedTargetDeps);
@@ -202,7 +242,8 @@ module.exports = function expoSpmPlugin(context) {
                 frameworkSearchPath,
                 outDir,
                 codegenPkgPath,
-                raiseFloor(metadata[pod.podName]?.iosDeploymentTarget, coreDeploymentTarget)
+                raiseFloor(metadata[pod.podName]?.iosDeploymentTarget, coreDeploymentTarget),
+                macroFlags()
               );
         if (e != null) {
           packageDependencies.push(e.packageDep);
