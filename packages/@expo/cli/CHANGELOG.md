@@ -15,6 +15,9 @@
 ### 🐛 Bug fixes
 
 - Fix cache pollution in production by inlined environment variable values with a vary-cache approach ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+- Use the Xcode configuration to choose env mode in `expo run:ios`. Configurations containing case-sensitive `Debug` use development and other configurations use production. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Pass the resolved iOS scheme and configuration to build cache providers. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Stop `expo run:ios --configuration Debug` from starting Metro when `--no-bundler` is passed. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 

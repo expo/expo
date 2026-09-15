@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update the types in `BuildScheme.ts` to accept custom Xcode configuration names. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 58.0.1 — 2026-09-15
 
 ### 🐛 Bug fixes
