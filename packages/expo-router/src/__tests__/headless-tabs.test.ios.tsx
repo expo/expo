@@ -20,6 +20,8 @@ import { useNavigatorContext } from '../views/Navigator';
 import type { PressableProps } from '../views/Pressable';
 import { Pressable } from '../views/Pressable';
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 function createDeferred() {
   let resolve!: (value: string) => void;
   const promise = new Promise<string>((resolvePromise) => {
@@ -131,6 +133,8 @@ it('keeps the current tab visible while a queued tab switch suspends', async () 
       SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
     },
   });
+
+  act(() => router.setTransitionMode('always'));
 
   const navigationAct = act(() => fireEvent.press(screen.getByTestId('goto-slow')));
 
