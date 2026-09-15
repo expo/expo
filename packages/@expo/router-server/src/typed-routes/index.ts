@@ -17,6 +17,38 @@ export type { RequireContextPonyFill } from 'expo-router/internal/testing';
 export const version = 52;
 
 /**
+ * The `require.context` key for a file watched by Metro, or `null` when the file
+ * sits outside the app root and is not a route at all.
+ *
+ * Keys are POSIX and root-relative (`./fruit/banana.ts`), while `path.relative`
+ * answers with the host separator. Both differences matter on Windows: the
+ * escape marker is `..\`, not `../`, and a key holding backslashes matches
+ * nothing in the context.
+ *
+ * `pathModule` is injected by the tests so both platforms can be covered from
+ * either host.
+ */
+export function getRouteContextKey(
+  appRoot: string,
+  filePath: string,
+  pathModule: Pick<path.PlatformPath, 'relative' | 'isAbsolute' | 'sep'> = path
+): string | null {
+  const relativePath = pathModule.relative(appRoot, filePath);
+
+  // A path on another Windows drive has no relative form, so `relative` hands
+  // back the absolute one rather than a `..` chain.
+  if (
+    relativePath === '..' ||
+    relativePath.startsWith(`..${pathModule.sep}`) ||
+    pathModule.isAbsolute(relativePath)
+  ) {
+    return null;
+  }
+
+  return `./${relativePath.split(pathModule.sep).join('/')}`;
+}
+
+/**
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
 export function getWatchHandler(
@@ -30,14 +62,11 @@ export function getWatchHandler(
     if (!process.env.EXPO_ROUTER_APP_ROOT) return;
 
     let shouldRegenerate = false;
-    let relativePath = path.relative(process.env.EXPO_ROUTER_APP_ROOT, filePath);
-    const isInsideAppRoot = !relativePath.startsWith('../');
-    const basename = path.basename(relativePath);
+    const relativePath = getRouteContextKey(process.env.EXPO_ROUTER_APP_ROOT, filePath);
 
-    if (!isInsideAppRoot) return;
+    if (relativePath === null) return;
 
-    // require.context paths always start with './' when relative to the root
-    relativePath = `./${relativePath}`;
+    const basename = path.posix.basename(relativePath);
 
     if (type === 'delete') {
       ctx.__delete(relativePath);
