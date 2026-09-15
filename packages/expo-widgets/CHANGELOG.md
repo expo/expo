@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Rebuild the widgets JS bundle on every Xcode build so JS changes are picked up without a clean build. ([#TODO](https://github.com/expo/expo/pull/TODO) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-14

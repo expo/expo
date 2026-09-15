@@ -36,12 +36,10 @@ Pod::Spec.new do |s|
     :name => 'Build ExpoWidgets Bundle',
     :script => project_root_env_var + 'bash -l -c "\"$PODS_TARGET_SRCROOT/../scripts/xcode-build-bundle.sh\""',
     :execution_position => :before_compile,
-    # NOTE(@krystofwoldrich): Ideally we would specify `__dir__/**/*`, but Xcode doesn't support patterns
-    :input_files  => ["#{__dir__}/../package.json"],
-    :output_files  => [
-      "#{__dir__}/../bundle/build/ExpoWidgets.bundle",
-      "#{__dir__}/../bundle/build/ExpoWidgetsLayoutRegistry.json",
-    ],
+    # NOTE: The bundle depends on JS sources that Xcode cannot track through input files (this
+    # package, `@expo/ui`, and the app's own widget layouts), so the phase declares no inputs or
+    # outputs. Declaring only `package.json` made Xcode skip the phase on incremental builds until
+    # the next clean build, which left a stale bundle after JS changes.
   }
   copy_bundle_script = {
     :name => 'Prepare ExpoWidgets Resources',
@@ -64,7 +62,8 @@ Pod::Spec.new do |s|
   }
   # :always_out_of_date is only available in CocoaPods 1.13.0 and later
   if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
-    # always run the script without warning
+    # always run the scripts without warning
+    build_bundle_script[:always_out_of_date] = "1"
     copy_bundle_script[:always_out_of_date] = "1"
   end
   s.script_phases = [build_bundle_script, copy_bundle_script]
