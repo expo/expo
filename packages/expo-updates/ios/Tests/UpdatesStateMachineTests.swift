@@ -178,4 +178,17 @@ struct UpdatesStateMachineTests {
     #expect(machine.context.isUpdatePending == false)
     #expect(machine.context.rollback?.commitTime == commitTime)
   }
+
+  @Test
+  func `an event that is not allowed from the current state is dropped`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    // `downloadError` is only allowed while downloading. From idle it must be rejected without
+    // trapping, so that a startup failure cannot take down the app.
+    machine.processEventForTesting(.downloadError(errorMessage: "boom"))
+
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.downloadError == nil)
+  }
 }
