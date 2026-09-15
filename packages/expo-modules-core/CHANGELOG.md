@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [macOS] Fixed a crash when mounting a SwiftUI view in a release build. react-native-macos assigns component view tags through `reactTag`, which the virtual view did not declare. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-16
