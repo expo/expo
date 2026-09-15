@@ -37,6 +37,7 @@
     "cli-table3": "^0.6.5",
     "cwait": "^1.1.2",
     "diff": "^8.0.3",
+    "expo-modules-autolinking": "workspace:*",
     "folder-hash": "^4.0.4",
     "fs-extra": "^11.2.0",
     "getenv": "^2.0.0",

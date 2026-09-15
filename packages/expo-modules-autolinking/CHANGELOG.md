@@ -12,7 +12,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Pick the same precompiled xcframework every time when a package has several versioned builds on disk, instead of whichever one the filesystem happened to list first.
+
 ### 💡 Others
+
+- [iOS] Add a single pure description of the precompiled xcframework artifact layout, so the producer, the CocoaPods integrator and the artifact cache can stop each encoding their own copy. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Derive the precompiled artifact version prefix from each third-party package's own version, so every external package is located under the directory it is published to instead of sharing one package version.
+- [iOS] Describe the precompiled artifact base, flavor directory and shared SPM dependency root as their own path builders, and export them so `et prebuild` writes the layout this package reads.
 
 ## 58.0.1 — 2026-09-14
 
