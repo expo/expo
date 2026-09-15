@@ -303,6 +303,31 @@ describe('test_spec blocks', () => {
       )
     ).toBe('16.4');
   });
+
+  it.each([
+    ['a linker flag', '    ts.pod_target_xcconfig = { "OTHER_LDFLAGS" => "-Wl,--end-group" }'],
+    ['prose', '    ts.summary = "start to end here"'],
+  ])('closes the block where it really ends, past an `end` inside %s', (_name, line) => {
+    expect(
+      linkageDeclaration(
+        spec("  s.test_spec 'Tests' do |ts|", line, "    ts.frameworks = 'XCTest'", '  end')
+      )
+    ).toBeNull();
+  });
+
+  it('closes the block where it really ends, past a `do` inside a string', () => {
+    expect(
+      linkageDeclaration(
+        spec(
+          "  s.test_spec 'Tests' do |ts|",
+          '    ts.summary = "things to do in here"',
+          "    ts.frameworks = 'XCTest'",
+          '  end',
+          "  s.frameworks = 'Photos'"
+        )
+      )
+    ).toEqual({ number: 6, text: "s.frameworks = 'Photos'" });
+  });
 });
 
 describe('a `#` inside a quoted string', () => {
@@ -326,6 +351,20 @@ describe('a `#` inside a quoted string', () => {
     expect(linkageDeclaration(spec('  s.frameworks = "#{prefix}Kit"'))).toEqual({
       number: 2,
       text: 's.frameworks = "#{prefix}Kit"',
+    });
+  });
+
+  it('strips a trailing comment while keeping the interpolation before it', () => {
+    expect(linkageDeclaration(spec('  s.frameworks = "#{prefix}Kit" # keep?'))).toEqual({
+      number: 2,
+      text: 's.frameworks = "#{prefix}Kit"',
+    });
+  });
+
+  it('strips a trailing comment without truncating a string holding astral characters', () => {
+    expect(linkageDeclaration(spec('  s.frameworks = "🎉🎉🎉PhotosKit" # note'))).toEqual({
+      number: 2,
+      text: 's.frameworks = "🎉🎉🎉PhotosKit"',
     });
   });
 

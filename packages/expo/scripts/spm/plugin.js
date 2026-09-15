@@ -83,6 +83,7 @@ module.exports = function expoSpmPlugin(context) {
   const unmappedDeps = []; // emitted pods depending on pods with no SwiftPM counterpart
   const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
   const unresolvedTargets = new Map(); // module root → manifest targets with no sources on disk
+  const unsupportedTargetDeps = new Map(); // module root → deps the generated package cannot declare
   const podspecErrors = new Map(); // module root → podspec line the reader refused
   const podspecLinkage = new Map(); // module root → podspec line declaring native linkage
 
@@ -135,7 +136,9 @@ module.exports = function expoSpmPlugin(context) {
           outDir,
           codegenPkgPath
         );
-        if (e.unresolvedTargets != null) {
+        if (e.unsupportedTargetDeps != null) {
+          unsupportedTargetDeps.set(moduleRoot, e.unsupportedTargetDeps);
+        } else if (e.unresolvedTargets != null) {
           unresolvedTargets.set(moduleRoot, e.unresolvedTargets);
         } else {
           packageDependencies.push(e.packageDep);
@@ -220,6 +223,7 @@ module.exports = function expoSpmPlugin(context) {
         moduleRoot,
         pureSwift: isPureSwift(moduleRoot),
         hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
+        unsupportedTargetDeps: unsupportedTargetDeps.get(moduleRoot) ?? null,
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         podspecError: podspecErrors.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
