@@ -142,6 +142,11 @@ public struct AppMetrics {
     }
   }
 
+  /// The shared sink every span producer writes completed rows through. Nonisolated so the
+  /// JS-thread module functions can hand it to span handles; it resolves the database on the
+  /// actor at write time.
+  static let spanWriter = SpanWriter()
+
   // MARK: - Main session
 
   /// The main session that tracks metrics for the entire lifecycle of the app process.
