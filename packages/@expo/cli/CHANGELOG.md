@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Use the application's `react.debuggableVariants` list to select the env mode in `expo run:android`. ([#50204](https://github.com/expo/expo/pull/50204) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
