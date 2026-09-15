@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ExpoHeader.pch"
+#include "CallbackContext.h"
 #include "JNIDeallocator.h"
 #include "JSharedObject.h"
 #include "ArrayBuffer.h"
@@ -10,8 +11,6 @@
 #include "NativeArrayBuffer.h"
 
 #include <fbjni/detail/CoreClasses.h>
-#include <ReactCommon/CallInvoker.h>
-#include <react/bridging/LongLivedObject.h>
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;
@@ -21,28 +20,14 @@ namespace expo {
 
 class JSIContext;
 
+/**
+ * Single-fire callback that settles a JS promise. Resolving or rejecting twice throws.
+ */
 class JavaCallback : public jni::HybridClass<JavaCallback, Destructible> {
 public:
   static auto constexpr
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaCallback;";
   static auto constexpr TAG = "JavaCallback";
-
-  class CallbackContext : public react::LongLivedObject {
-  public:
-    CallbackContext(
-      jsi::Runtime &rt,
-      std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
-      std::optional<jsi::Function> resolveHolder,
-      std::optional<jsi::Function> rejectHolder
-    );
-
-    jsi::Runtime &rt;
-    std::weak_ptr<react::CallInvoker> jsCallInvokerHolder;
-    std::optional<jsi::Function> resolveHolder;
-    std::optional<jsi::Function> rejectHolder;
-
-    void invalidate();
-  };
 
   static void registerNatives();
 
