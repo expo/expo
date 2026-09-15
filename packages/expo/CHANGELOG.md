@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
@@ -18,6 +21,7 @@
 ### 💡 Others
 
 - [iOS] The SwiftPM autolinking plugin no longer reads the iOS deployment floor out of a module's podspec. The floor comes from `expo-modules-autolinking prebuilt-metadata` alone, so a podspec that states it in a form the reader refused no longer fails the sync. ([#50112](https://github.com/expo/expo/pull/50112) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Bring the `Package.swift` the SwiftPM autolinking plugin generates up to what CocoaPods already carries: a module's build settings, its declared iOS deployment floor and its `PrivacyInfo.xcprivacy`, plus `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target. Modules the plugin cannot place are now reported with the reason and the fix, including one whose `Package.swift` depends on a target the generated package cannot declare. The podspec reader no longer mistakes a `test_spec`'s linkage for the module's own. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.0-preview.0 — 2026-09-10
@@ -29,8 +33,6 @@
 ### 🎉 New features
 
 - [Android] Allow `getDefaultReactHost` to take a custom `jsRuntimeFactory`, so an app can run a JavaScript engine other than Hermes. ([#49686](https://github.com/expo/expo/pull/49686) by [@ammarahm-ed](https://github.com/ammarahm-ed))
-- [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
@@ -56,9 +58,6 @@
 
 ### 💡 Others
 
-- [iOS] Ship a module's `PrivacyInfo.xcprivacy` from the `Package.swift` the SwiftPM autolinking plugin generates, so apps built with Swift Package Manager carry the privacy manifests CocoaPods builds already ship.
-- [iOS] Explain why the SwiftPM autolinking plugin skipped a module: native linkage declared only in the podspec, an iOS deployment floor that is not a literal, or manifest targets whose sources are missing. Warn when a module links through its xcconfig.
-- [iOS] Mirror a module's build settings and declared iOS deployment floor into the `Package.swift` the SwiftPM autolinking plugin generates, and define `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target so `EXAppDefines` reports the new architecture under Swift Package Manager.
 - [iOS] Split the mixed Swift/Objective-C sources into `Expo` and `ExpoObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#45906](https://github.com/expo/expo/pull/45906) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Make the `Expo`/`ExpoObjC` source split compile under Swift Package Manager: a new `ExpoLoader` target breaks the Swift↔ObjC cycle, and UIKit and React's app-delegate headers are imported explicitly. No-ops for CocoaPods. ([#49832](https://github.com/expo/expo/pull/49832) by [@chrfalch](https://github.com/chrfalch))
 - Re-export `useReleasingSharedObjectWithLifecycle` from `expo-modules-core`. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))

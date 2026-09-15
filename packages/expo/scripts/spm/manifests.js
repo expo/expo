@@ -31,7 +31,10 @@ function siblingDependency(dep) {
 
 const siblingName = (dep) => (typeof dep === 'string' ? dep : dep.name);
 
-/** Keep only regular targets and library products; resolve same-package sibling deps by name. */
+/**
+ * Keep only regular targets and library products; resolve same-package sibling deps by
+ * name, and collect the deps that name a target the generated package cannot declare.
+ */
 function parseDumpedManifest(json) {
   const pkg = JSON.parse(json);
   const regular = (pkg.targets ?? [])
@@ -49,19 +52,29 @@ function parseDumpedManifest(json) {
       siblingDeps: (t.dependencies ?? []).map(siblingDependency).filter(Boolean),
     }));
   const regularNames = new Set(regular.map((t) => t.name));
-  // Only regular targets are mirrored, so a dependency on a binary/macro/plugin/
-  // system target would name a target the generated package does not declare.
+  // Only regular targets are mirrored, so a dependency on a target of any other kind
+  // would name a target the generated package does not declare.
   const targets = regular.map((t) => ({
     ...t,
     siblingDeps: t.siblingDeps.filter((d) => regularNames.has(siblingName(d))),
   }));
+  // Dropping such a dependency silently ends in an undefined symbol at link time, so it
+  // is collected and reported. A name that is NO target of this package is a product of
+  // a dependency package — `.byName` resolves to that too — and is correctly dropped.
+  const declaredKinds = new Map((pkg.targets ?? []).map((t) => [t.name, t.type]));
+  const unsupportedTargetDeps = regular.flatMap((t) =>
+    t.siblingDeps
+      .map(siblingName)
+      .filter((name) => !regularNames.has(name) && declaredKinds.has(name))
+      .map((name) => ({ target: t.name, dependsOn: name, kind: declaredKinds.get(name) }))
+  );
   const products = (pkg.products ?? [])
     .filter((p) => Object.keys(p.type ?? {})[0] === 'library')
     .map((p) => ({ name: p.name, targets: (p.targets ?? []).filter((n) => regularNames.has(n)) }))
     .filter((p) => p.targets.length);
   const iosDeploymentTarget =
     (pkg.platforms ?? []).find((p) => p.platformName === 'ios')?.version ?? null;
-  return { name: pkg.name, iosDeploymentTarget, products, targets };
+  return { name: pkg.name, iosDeploymentTarget, products, targets, unsupportedTargetDeps };
 }
 
 // ---------------------------------------------------------------------------
@@ -556,8 +569,10 @@ function sourceDependencies(react, codegenPkgPath) {
  * compilation at Expo's binary-free framework interface tree. RN owns the merge;
  * the checked-in manifest stays for standalone dev/describe.
  *
- * Returns `{ unresolvedTargets }` instead when a target's sources cannot be
- * located — the module is skipped and diagnosed rather than emitted broken.
+ * Returns `{ unsupportedTargetDeps }` when the manifest depends on a target the
+ * generated package cannot declare, or `{ unresolvedTargets }` when a target's
+ * sources cannot be located — the module is then skipped and diagnosed rather than
+ * emitted broken.
  */
 function emitSourceManifestPackage(
   moduleRoot,
@@ -568,7 +583,8 @@ function emitSourceManifestPackage(
   minimumIosDeploymentTarget = null,
   macroFlags = []
 ) {
-  const dumped = parseDumpedManifest(runDumpPackage(moduleRoot));
+  const { unsupportedTargetDeps, ...dumped } = parseDumpedManifest(runDumpPackage(moduleRoot));
+  if (unsupportedTargetDeps.length) return { unsupportedTargetDeps };
   const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
   if (unresolvedTargets.length) return { unresolvedTargets };
   const manifest = {

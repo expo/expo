@@ -99,6 +99,15 @@ function classifyUnsupported({ pending, coreAvailable }) {
         snippet,
       };
     }
+    if (p.unsupportedTargetDeps?.length) {
+      return {
+        reason: 'unsupported-target-dependency',
+        podName: p.podName,
+        packageName: p.packageName,
+        moduleRoot: p.moduleRoot,
+        dependencies: p.unsupportedTargetDeps,
+      };
+    }
     if (p.unresolvedTargets?.length) {
       return {
         reason: 'unresolvable-target-path',
@@ -169,7 +178,7 @@ function renderMixedNoManifest({ podName, packageName, moduleRoot }) {
     `error: Expo module "${packageName}" (pod ${podName}) mixes Swift and Objective-C/C++ sources but ships neither a Package.swift nor an spm.config.json, so it cannot be built with Swift Package Manager.`,
     `  Swift Package Manager compiles Swift and Objective-C in separate targets, and only the module can declare where its split goes. Either route makes it consumable:`,
     `  1. Add an spm.config.json to ${packageName} so the Expo prebuild pipeline can build it into an XCFramework — it compiles mixed-language targets, so no source split is needed. packages/expo-sensors is a worked example.`,
-    `  2. Or add a Package.swift to ${packageName} that splits its sources into a Swift target and an Objective-C target. packages/expo-file-system is a worked example.`,
+    `  2. Or add a Package.swift to ${packageName} that splits its sources into a Swift target and an Objective-C target. packages/expo-constants is a worked example, splitting into EXConstants and EXConstantsObjC.`,
     `  3. If you do not own ${packageName}, persist either manifest with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
     `  4. Ask ${packageName}'s maintainer to ship it upstream, or open a PR adding it, so every consumer gets Swift Package Manager support.`,
     `  5. To build without this module for now, exclude it in your app's package.json: "expo": { "autolinking": { "exclude": ["${packageName}"] } } — its native module will then be unavailable at runtime.`,
@@ -213,13 +222,50 @@ function renderUnresolvableTargetPath({ podName, packageName, moduleRoot, target
   ].join('\n');
 }
 
+// Map, not an object: the kind comes from a dumped manifest, and an inherited key like
+// "constructor" would otherwise resolve to a function.
+const TARGET_KIND_PHRASES = new Map([
+  ['binary', 'a binary target'],
+  ['macro', 'a macro target'],
+  ['plugin', 'a plugin target'],
+  ['system', 'a system library target'],
+  ['systemLibrary', 'a system library target'],
+  ['test', 'a test target'],
+  ['executable', 'an executable target'],
+]);
+
+const targetKindPhrase = (kind) => TARGET_KIND_PHRASES.get(kind) ?? 'not a source target';
+
+/**
+ * The module's manifest wires a source target to a target the generated package
+ * cannot re-declare. Emitting the target without that dependency would compile and
+ * fail at link time instead, with nothing naming the manifest that caused it.
+ */
+function renderUnsupportedTargetDependency({ podName, packageName, moduleRoot, dependencies }) {
+  const wiring =
+    dependencies.length === 1
+      ? 'whose source target depends on a target'
+      : 'whose source targets depend on targets';
+  return [
+    `error: Expo module "${packageName}" (pod ${podName}) ships a Package.swift ${wiring} the generated package cannot declare, so it was skipped.`,
+    ...dependencies.map(
+      ({ target, dependsOn, kind }) =>
+        `      target "${target}" depends on "${dependsOn}", ${targetKindPhrase(kind)}`
+    ),
+    `  The generated package mirrors only the module's regular source targets. A target of any other kind is built by Swift Package Manager from the module's own manifest, so the generated package has nothing to depend on. Emitting the target without that dependency would compile and then fail at link time with undefined symbols, far from the manifest that declared it.`,
+    `  Add an spm.config.json to ${packageName} so the Expo prebuild pipeline builds the whole module into an XCFramework instead — it compiles the package as checked in, these targets included. packages/expo-sensors is a worked example.`,
+    `  If you do not own ${packageName}, persist that file with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
+    `  Module path: ${moduleRoot}`,
+  ].join('\n');
+}
+
 function renderNeedsManifestForLinkage({ podName, packageName, moduleRoot, file, line, snippet }) {
   return [
     `error: Expo module "${packageName}" (pod ${podName}) declares native linkage in its podspec, which the Swift Package Manager plugin does not read, so it was skipped.`,
     `  ${file}:${line} declares it:`,
     `      ${snippet}`,
     `  A podspec is Ruby: reading it without running it means guessing, and a guessed link line does not fail here — it fails in a shipped app with a missing symbol. Swift Package Manager needs the linkage stated exactly.`,
-    `  Add a Package.swift to ${packageName} declaring the module's target with \`linkerSettings: [.linkedFramework("Photos"), .linkedLibrary("sqlite3")]\` — the plugin mirrors those verbatim. Or add an spm.config.json, so the Expo prebuild pipeline builds the module into an XCFramework instead. packages/expo-file-system is a worked Package.swift, packages/expo-sensors a worked spm.config.json.`,
+    `  Add a Package.swift to ${packageName} declaring the module's target with \`linkerSettings: [.linkedFramework("Photos"), .linkedLibrary("sqlite3")]\` — the plugin mirrors those verbatim. Or add an spm.config.json, so the Expo prebuild pipeline builds the module into an XCFramework instead. packages/expo-constants shows the shape of a checked-in Package.swift, though it declares no linkage of its own; packages/expo-sensors is a worked spm.config.json.`,
     `  If you do not own ${packageName}, persist that file with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
     `  Module path: ${moduleRoot}`,
   ].join('\n');
@@ -241,6 +287,7 @@ const RENDERERS = {
   'prebuild-available': renderPrebuildAvailable,
   'no-apple-sources': renderNoAppleSources,
   'unresolvable-target-path': renderUnresolvableTargetPath,
+  'unsupported-target-dependency': renderUnsupportedTargetDependency,
   'needs-manifest-for-linkage': renderNeedsManifestForLinkage,
   'core-unavailable': renderCoreUnavailable,
 };
