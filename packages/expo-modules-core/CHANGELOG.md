@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Compile `expo-module-gradle-plugin` against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

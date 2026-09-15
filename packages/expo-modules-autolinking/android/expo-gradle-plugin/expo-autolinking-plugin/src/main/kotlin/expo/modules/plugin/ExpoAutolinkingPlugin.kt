@@ -61,28 +61,17 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       .named("preBuild", Task::class.java)
       .configure { it.dependsOn(generatePackagesList, generateInlineModules) }
 
-    // Registers the generated sources. The right mechanism differs by AGP version:
-    // - AGP 9 disallows Provider instances in the legacy SourceSet API and only compiles .kt from
-    //   the variant `kotlin` sources, so use the Variant Sources API
-    // - AGP 8 does not expose `variant.sources.kotlin`, so fall back to the legacy source set
+    // Registers the generated sources through the Variant Sources API. AGP 9 only compiles .kt
+    // files from the variant `kotlin` sources and disallows Provider instances in the legacy
+    // SourceSet API.
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
-    if (androidComponents.pluginVersion.major >= 9) {
-      androidComponents.onVariants { variant ->
-        @Suppress("UnstableApiUsage")
-        val kotlinSource = requireNotNull(variant.sources.kotlin) { "Can't access kotlin source sets" }
+    androidComponents.onVariants { variant ->
+      @Suppress("UnstableApiUsage")
+      val kotlinSource = requireNotNull(variant.sources.kotlin) { "Can't access kotlin source sets" }
 
-        with(kotlinSource) {
-          addGeneratedSourceDirectory(generatePackagesList) { it.outputDirectory }
-          addGeneratedSourceDirectory(generateInlineModules) { it.outputDirectory }
-        }
-      }
-    } else {
-      androidComponents.finalizeDsl { ext ->
-        ext
-          .sourceSets
-          .getByName("main")
-          .java
-          .srcDirs(getPackageListDir(project), getInlineModulesDir(project))
+      with(kotlinSource) {
+        addGeneratedSourceDirectory(generatePackagesList) { it.outputDirectory }
+        addGeneratedSourceDirectory(generateInlineModules) { it.outputDirectory }
       }
     }
   }
