@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [Android] Discover Expo Modules v2 modules at compile time.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
