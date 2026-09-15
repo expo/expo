@@ -604,6 +604,7 @@ class SQLiteExecuteSyncResultImpl<T> {
         'The SQLite cursor has been shifted and is unable to retrieve the first row without being reset. Invoke `resetSync()` to reset the cursor first if you want to retrieve the first row.'
       );
     }
+    this.isStepCalled = true;
     const columnNames = this.getColumnNamesSync();
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
@@ -641,6 +642,7 @@ class SQLiteExecuteSyncResultImpl<T> {
   }
 
   *generatorSync(): IterableIterator<T> {
+    this.isStepCalled = true;
     const columnNames = this.getColumnNamesSync();
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
