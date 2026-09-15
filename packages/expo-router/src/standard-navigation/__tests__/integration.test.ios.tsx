@@ -99,6 +99,8 @@ beforeEach(() => {
   processStateSpy.mockClear();
 });
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 describe('integrateWithRouter / createStandardRouterNavigator', () => {
   it('keeps navigator state sparse by default', () => {
     renderRouter({
@@ -606,6 +608,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     });
 
     expect(lastArgs().state.index).toBe(0);
+
+    act(() => router.setTransitionMode('always'));
 
     act(() => {
       // The shared content spy cannot retain navigator-specific injected prop types.
