@@ -58,6 +58,7 @@ export type SimControlLog = {
     | 'com.apple.CoreTelephony'
     | 'com.apple.WebKit'
     | 'com.apple.runningboard'
+    | 'com.apple.VisionKit'
     | string;
   category: '' | 'access' | 'connection' | 'plugin';
   /**
@@ -237,6 +238,25 @@ function isRunningBoardServicesLog(simLog: SimControlLog): boolean {
   return simLog.subsystem === 'com.apple.runningboard';
 }
 
+// Apple media/vision framework noise that appears in simulator when playing video
+// or when Live Text / Visual Look Up / Translation scans frames on unsupported devices.
+// These are benign simulator-only messages that drown out app logs.
+const NOISY_MEDIA_FRAMEWORK_IMAGES = new Set([
+  'VideoToolbox',
+  'MediaToolbox',
+  'CoreMedia',
+  'CoreGraphics',
+  'TranslationUI',
+  'VisionKitCore',
+]);
+
+function isMediaFrameworkLog(simLog: SimControlLog): boolean {
+  if (simLog.source?.image && NOISY_MEDIA_FRAMEWORK_IMAGES.has(simLog.source.image)) {
+    return true;
+  }
+  return false;
+}
+
 function formatMessage(simLog: SimControlLog): string {
   // TODO: Maybe change "TCC" to "Consent" or "System".
   const category = chalk.gray(`[${simLog.source?.image ?? simLog.subsystem}]`);
@@ -255,7 +275,9 @@ export function onMessage(simLog: SimControlLog) {
       !isReactLog(simLog) &&
       !isCoreTelephonyLog(simLog) &&
       !isWebKitLog(simLog) &&
-      !isRunningBoardServicesLog(simLog)
+      !isRunningBoardServicesLog(simLog) &&
+      // Hide noisy Apple media/vision framework logs (VideoToolbox, MediaToolbox, etc.)
+      !isMediaFrameworkLog(simLog)
     ) {
       hasLogged = true;
       // Sim: This app has crashed because it attempted to access privacy-sensitive data without a usage description.  The app's Info.plist must contain an NSCameraUsageDescription key with a string value explaining to the user how the app uses this data.
