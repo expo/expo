@@ -22,7 +22,7 @@ To keep the behavior of `web.output: "server"` from SDK 57 and earlier, use `web
 
 <Step label="1">
 
-Set `web.output` to `server` in your project's [app config](/versions/latest/config/app/) to enable server rendering:
+In SDK 58 and later, Expo Router uses server rendering when `web.output` is omitted. New projects created with the default or tabs template also use server output. To switch an existing project, set `web.output` to `server` in your [app config](/versions/latest/config/app/):
 
 ```json app.json
 {

@@ -75,6 +75,84 @@ describe(getProjectConfigDescriptionWithPaths, () => {
   });
 });
 
+describe('default web output', () => {
+  afterEach(() => vol.reset());
+
+  it.each(['dependencies', 'devDependencies'])(
+    'defaults Router projects with %s to server',
+    (field) => {
+      vol.fromJSON({
+        '/project/package.json': JSON.stringify({ [field]: { 'expo-router': '~58.0.0' } }),
+        '/project/app.json': JSON.stringify({ expo: { sdkVersion: '58.0.0' } }),
+      });
+
+      expect(getConfig('/project').exp.web?.output).toBe('server');
+      expect(getConfig('/project', { isPublicConfig: true }).exp.web?.output).toBe('server');
+    }
+  );
+
+  it.each(['static', 'single', 'server'])('preserves explicit %s output', (output) => {
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ dependencies: { 'expo-router': '~58.0.0' } }),
+      '/project/app.json': JSON.stringify({ expo: { sdkVersion: '58.0.0', web: { output } } }),
+    });
+
+    expect(getConfig('/project').exp.web?.output).toBe(output);
+  });
+
+  it('preserves other web settings', () => {
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ dependencies: { 'expo-router': '~58.0.0' } }),
+      '/project/app.json': JSON.stringify({
+        expo: { sdkVersion: '58.0.0', web: { favicon: './icon.png' } },
+      }),
+    });
+
+    expect(getConfig('/project').exp.web).toEqual({ output: 'server', favicon: './icon.png' });
+  });
+
+  it('lets a dynamic config override the Router default', () => {
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ dependencies: { 'expo-router': '~58.0.0' } }),
+      '/project/app.json': JSON.stringify({ expo: { sdkVersion: '58.0.0' } }),
+      '/project/app.config.js': `module.exports = ({ config }) => ({ ...config, web: { ...config.web, output: 'static' } });`,
+    });
+
+    expect(getConfig('/project').exp.web?.output).toBe('static');
+  });
+
+  it('does not enable server output for projects without Router', () => {
+    vol.fromJSON({
+      '/project/package.json': '{}',
+      '/project/app.json': JSON.stringify({ expo: { sdkVersion: '58.0.0' } }),
+      '/project/node_modules/expo-router/package.json': JSON.stringify({ name: 'expo-router' }),
+    });
+
+    expect(getConfig('/project').exp.web?.output).toBeUndefined();
+  });
+
+  it.each(['55.0.0', '57.0.0'])('preserves the implicit mode for SDK %s', (sdkVersion) => {
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ dependencies: { 'expo-router': '*' } }),
+      '/project/app.json': JSON.stringify({ expo: { sdkVersion } }),
+    });
+
+    expect(getConfig('/project').exp.web?.output).toBeUndefined();
+  });
+
+  it.each([
+    ['57.0.0', undefined],
+    ['58.0.0-preview.0', 'server'],
+  ])('uses the installed Expo version %s when sdkVersion is omitted', (version, output) => {
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ dependencies: { 'expo-router': '*' } }),
+      '/project/node_modules/expo/package.json': JSON.stringify({ version }),
+    });
+
+    expect(getConfig('/project').exp.web?.output).toBe(output);
+  });
+});
+
 describe('getConfig public config', () => {
   const appJsonWithPrivateData = {
     name: 'testing 123',

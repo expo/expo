@@ -37,13 +37,13 @@ The [`web.output`](/versions/latest/config/app/#output) target can be configured
 }
 ```
 
-Expo Router supports three output targets for web apps.
+Expo Router supports three output targets for web apps. In SDK 58 and later, projects that depend on `expo-router` default to `server` when `web.output` is omitted. Projects without Expo Router default to `single`. Explicit output settings take precedence.
 
-| Output             | Expo Router | API Routes  | Description                                                                                                                                                                      |
-| ------------------ | ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `single` (default) | <YesIcon /> | <NoIcon />  | Outputs a Single Page Application (SPA) with a single **index.html** in the output directory and has no statically indexable HTML.                                               |
-| `server`           | <YesIcon /> | <YesIcon /> | Creates **client** and **server** directories. Client files are output as separate HTML files. API routes as separate JavaScript files for hosting with a custom Node.js server. |
-| `static`           | <YesIcon /> | <NoIcon />  | Outputs separate HTML files for every route in the **app** directory.                                                                                                            |
+| Output   | Expo Router | API Routes  | Description                                                                                                                                               |
+| -------- | ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `single` | <YesIcon /> | <NoIcon />  | Outputs a Single Page Application (SPA) with a single **index.html** in the output directory and has no statically indexable HTML.                        |
+| `server` | <YesIcon /> | <YesIcon /> | Creates **client** and **server** directories with client assets, API routes, and a server that renders HTML for each request. Requires a server runtime. |
+| `static` | <YesIcon /> | <NoIcon />  | Outputs separate HTML files for every route in the **app** directory.                                                                                     |
 
 > **info** **Note**: For `static` and `server` output modes, you can configure [global HTTP headers](/router/web/server-headers) that are applied to all route responses via the `expo-router` plugin.
 
@@ -93,6 +93,8 @@ When you're ready to go to production, you can instantly deploy your website wit
 />
 
 ## Hosting on third-party services
+
+The static hosting configurations below require `web.output` to be set to `static` or `single`. For server output, use [EAS Hosting](/eas/hosting) or follow the [server deployment guide](/router/web/server-rendering/#deployment).
 
 ### Netlify
 
@@ -268,7 +270,7 @@ Then, initialize your firebase project to host by running the command:
 The settings will depend on how you built your Expo website:
 
 1. When asked about the public path, make sure to specify the **dist** directory.
-2. When prompted **Configure as a single-page app (rewrite all urls to /index.html)**, only select **Yes** if you used `web.output: "single"` (default). Otherwise, select **No**.
+2. When prompted **Configure as a single-page app (rewrite all urls to /index.html)**, only select **Yes** if you used `web.output: "single"`. Otherwise, select **No**.
 
 </Step>
 

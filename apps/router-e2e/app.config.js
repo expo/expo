@@ -39,7 +39,7 @@ module.exports = {
     reactServerFunctions: process.env.E2E_SERVER_FUNCTIONS,
   },
   web: {
-    output: process.env.EXPO_USE_STATIC ?? 'static',
+    output: process.env.EXPO_USE_STATIC,
     bundler: 'metro',
     favicon: process.env.E2E_FAVICON || undefined,
   },
