@@ -399,6 +399,65 @@ module.exports = App;`;
   expect(mappedExport.line).toBe(7);
 });
 
+describe('EXPO_ROUTER_IMPORT_MODE', () => {
+  async function transformImportMode(overrides: Partial<JsTransformOptions>) {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/node_modules/expo-router/_ctx.ios.js',
+      projectRoot: '/app',
+      source: `module.exports = process.env.EXPO_ROUTER_IMPORT_MODE;`,
+      options: options(overrides),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') throw new Error('Expected a complete transform');
+    return result.result.code;
+  }
+
+  const asyncRoutes = { engine: 'hermes', asyncRoutes: 'true' } as const;
+
+  it('is synchronous when async routes are not requested', async () => {
+    expect(await transformImportMode({ platform: 'web', dev: false })).toMatch(/["']sync["']/);
+  });
+
+  it('is lazy for web production bundles with async routes', async () => {
+    expect(
+      await transformImportMode({
+        platform: 'web',
+        dev: false,
+        customTransformOptions: asyncRoutes,
+      })
+    ).toMatch(/["']lazy["']/);
+  });
+
+  it.each(['ios', 'android'])(
+    'is lazy for %s development bundles with async routes',
+    async (platform) => {
+      expect(
+        await transformImportMode({
+          platform,
+          dev: true,
+          customTransformOptions: asyncRoutes,
+        })
+      ).toMatch(/["']lazy["']/);
+    }
+  );
+
+  // Matches `getAsyncRoutes` in `babel-preset-expo`: production async routes are web-only.
+  it.each(['ios', 'android'])(
+    'stays synchronous for %s production bundles even with async routes',
+    async (platform) => {
+      expect(
+        await transformImportMode({
+          platform,
+          dev: false,
+          customTransformOptions: asyncRoutes,
+        })
+      ).toMatch(/["']sync["']/);
+    }
+  );
+});
+
 it('completes plain production application JavaScript through the native path', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename: '/app/src/config.js',

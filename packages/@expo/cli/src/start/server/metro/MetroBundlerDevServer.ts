@@ -44,7 +44,7 @@ import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
-import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
+import { type EnvironmentMode, getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
 import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
 import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -557,15 +557,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     clientBoundaries?: string[];
     platform?: string;
   } = {}) {
-    const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+    const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot } =
       this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
         routerRoot != null &&
-        reactCompiler != null &&
-        asyncRoutes != null,
+        reactCompiler != null,
       'The server must be started before calling getStaticResourcesAsync.'
     );
 
@@ -580,7 +579,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       serializerIncludeMaps: includeSourceMaps,
       mainModuleName: resolvedMainModuleName,
       lazy: !env.EXPO_NO_METRO_LAZY,
-      asyncRoutes,
+      asyncRoutes: this.getAsyncRoutesForPlatform(platform),
       baseUrl,
       isExporting,
       routerRoot,
@@ -661,15 +660,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     request?: ImmutableRequest
   ): Promise<{ content: string | ReadableStream<Uint8Array>; resources?: SerialAsset[] }> {
     const { exp } = getConfig(this.projectRoot);
-    const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+    const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot } =
       this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
         baseUrl != null &&
         reactCompiler != null &&
-        routerRoot != null &&
-        asyncRoutes != null,
+        routerRoot != null,
       'The server must be started before calling getStaticPageAsync.'
     );
     const platform = 'web';
@@ -684,7 +682,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       lazy: !env.EXPO_NO_METRO_LAZY,
       baseUrl,
       isExporting,
-      asyncRoutes,
+      asyncRoutes: this.getAsyncRoutesForPlatform(platform),
       routerRoot,
       clientBoundaries,
       bytecode: false,
@@ -933,7 +931,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Possibly issues with using an absolute path here...
       mainModuleName: convertPathToModuleSpecifier(filePath),
       lazy: false,
-      asyncRoutes: false,
+      asyncRoutes: this.getAsyncRoutesForPlatform(
+        specificOptions.platform ?? 'web',
+        specificOptions.mode
+      ),
       inlineSourceMap: false,
       engine: 'hermes',
       minify: false,
@@ -964,6 +965,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       filename,
       map,
     };
+  }
+
+  /**
+   * Resolve whether async routes are enabled for a platform. The setting is platform-specific
+   * (SDK 58 enables it by default on web only) and production async routes are web-only, so it
+   * must never be resolved once for the Metro instance and shared between platforms.
+   */
+  getAsyncRoutesForPlatform(
+    platform: string,
+    mode: EnvironmentMode = this.instanceMetroOptions.mode ?? 'development'
+  ): boolean {
+    const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+    return getAsyncRoutesFromExpoConfig(exp, mode, platform);
   }
 
   async nativeExportBundleAsync(
@@ -1192,6 +1206,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       routerRoot,
       isExporting,
       ...options,
+      // Async routes are platform-specific (enabled by default on web only), so they must be
+      // resolved for the platform being exported rather than reused from the Metro instance.
+      asyncRoutes: this.getAsyncRoutesForPlatform(options.platform, options.mode),
       environment: 'client',
       serializerOutput: 'static',
     };
@@ -1259,7 +1276,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || isApiRoutesEnabled(exp);
     const baseUrl = getBaseUrlFromExpoConfig(exp);
-    const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
     const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
@@ -1289,8 +1305,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       routerRoot,
       reactCompiler,
       minify: options.minify,
-      asyncRoutes,
-      // Options that are changing between platforms like engine, platform, and environment aren't set here.
+      // Options that are changing between platforms like engine, platform, environment, and
+      // asyncRoutes aren't set here. See `getAsyncRoutesForPlatform`.
     };
     this.instanceMetroOptions = instanceMetroOptions;
 
@@ -1305,7 +1321,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       web: this.isTargetingWeb(),
       baseUrl,
-      asyncRoutes,
+      asyncRoutes: getAsyncRoutesFromExpoConfig(exp, mode, 'web'),
       routerRoot: event.path(appDir),
       serverComponents: this.isReactServerComponentsEnabled,
       serverActions: isReactServerActionsOnlyEnabled,
@@ -1489,6 +1505,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
+          getAsyncRoutesForPlatform: this.getAsyncRoutesForPlatform.bind(this),
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
@@ -1562,6 +1579,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
+          getAsyncRoutesForPlatform: this.getAsyncRoutesForPlatform.bind(this),
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),

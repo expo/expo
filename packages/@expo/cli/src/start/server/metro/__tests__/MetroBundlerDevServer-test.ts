@@ -84,10 +84,46 @@ function createDevServerForStaticPageTests() {
     baseUrl: '',
     reactCompiler: false,
     routerRoot: 'app',
-    asyncRoutes: false,
   };
   devServer['getDevServerUrlOrAssert'] = jest.fn(() => 'http://localhost:8081');
   return devServer;
+}
+
+function mockRouterConfigOnce(asyncRoutes: unknown) {
+  jest.mocked(getConfig).mockReturnValueOnce({
+    pkg: {},
+    exp: {
+      name: 'my-app',
+      slug: 'my-app',
+      extra: { router: { asyncRoutes } },
+    },
+  } as any);
+}
+
+function createExportingDevServer(mode: 'development' | 'production') {
+  vol.fromJSON(
+    {
+      '/index.js': '',
+      '/package.json': JSON.stringify({ main: 'index.js' }),
+    },
+    '/'
+  );
+
+  const devServer = new MetroBundlerDevServer(
+    '/',
+    getPlatformBundlers('/', { web: { bundler: 'metro' } })
+  );
+  devServer['instanceMetroOptions'] = {
+    mode,
+    minify: mode === 'production',
+    isExporting: true,
+    baseUrl: '',
+    reactCompiler: false,
+    routerRoot: 'app',
+  };
+  const loadModuleContents = jest.fn(async () => ({ artifacts: [], assets: [] }));
+  devServer['metroLoadModuleContents'] = loadModuleContents as any;
+  return { devServer, loadModuleContents };
 }
 
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
@@ -524,5 +560,123 @@ describe('exportServerRouteAsync', () => {
       ].join('\n')
     );
     expect(files.has('_expo/server/render.js.map')).toBe(true);
+  });
+});
+
+describe('getAsyncRoutesForPlatform', () => {
+  it('resolves the SDK 58 web-only default per platform', () => {
+    const devServer = createDevServerForStaticPageTests();
+    mockRouterConfigOnce({ web: true });
+    expect(devServer.getAsyncRoutesForPlatform('web')).toBe(true);
+    mockRouterConfigOnce({ web: true });
+    expect(devServer.getAsyncRoutesForPlatform('ios')).toBe(false);
+    mockRouterConfigOnce({ web: true });
+    expect(devServer.getAsyncRoutesForPlatform('android')).toBe(false);
+  });
+
+  it('defaults to the mode of the Metro instance', () => {
+    const devServer = createDevServerForStaticPageTests();
+    devServer['instanceMetroOptions'].mode = 'production';
+    mockRouterConfigOnce({ ios: 'development', web: true });
+    expect(devServer.getAsyncRoutesForPlatform('ios')).toBe(false);
+    mockRouterConfigOnce({ ios: 'development', web: true });
+    expect(devServer.getAsyncRoutesForPlatform('ios', 'development')).toBe(true);
+  });
+});
+
+describe('legacySinglePageExportBundleAsync', () => {
+  const exportOptions = (platform: string, mode: 'development' | 'production') => ({
+    platform,
+    mode,
+    mainModuleName: 'index.js',
+    minify: mode === 'production',
+    bytecode: false,
+  });
+
+  it.each(['ios', 'android'])(
+    'keeps synchronous routes for %s production exports with the web-only default',
+    async (platform) => {
+      const { devServer, loadModuleContents } = createExportingDevServer('production');
+      mockRouterConfigOnce({ web: true });
+
+      await devServer.legacySinglePageExportBundleAsync(exportOptions(platform, 'production'));
+
+      expect(loadModuleContents).toHaveBeenCalledTimes(1);
+      expect(loadModuleContents).toHaveBeenCalledWith(
+        './index.js',
+        expect.objectContaining({ platform, mode: 'production', asyncRoutes: false }),
+        expect.anything()
+      );
+    }
+  );
+
+  it('enables async routes for web production exports with the web-only default', async () => {
+    const { devServer, loadModuleContents } = createExportingDevServer('production');
+    mockRouterConfigOnce({ web: true });
+
+    await devServer.legacySinglePageExportBundleAsync(exportOptions('web', 'production'));
+
+    expect(loadModuleContents).toHaveBeenCalledWith(
+      './index.js',
+      expect.objectContaining({ platform: 'web', asyncRoutes: true }),
+      expect.anything()
+    );
+  });
+
+  it('never enables async routes for native production exports, even when explicitly enabled', async () => {
+    const { devServer, loadModuleContents } = createExportingDevServer('production');
+    mockRouterConfigOnce(true);
+
+    await devServer.legacySinglePageExportBundleAsync(exportOptions('ios', 'production'));
+
+    expect(loadModuleContents).toHaveBeenCalledWith(
+      './index.js',
+      expect.objectContaining({ platform: 'ios', asyncRoutes: false }),
+      expect.anything()
+    );
+  });
+
+  it('preserves explicit native development opt-ins', async () => {
+    const { devServer, loadModuleContents } = createExportingDevServer('development');
+    mockRouterConfigOnce({ ios: 'development', web: true });
+
+    await devServer.legacySinglePageExportBundleAsync(exportOptions('ios', 'development'));
+
+    expect(loadModuleContents).toHaveBeenCalledWith(
+      './index.js',
+      expect.objectContaining({ platform: 'ios', mode: 'development', asyncRoutes: true }),
+      expect.anything()
+    );
+  });
+
+  it('does not let native exports change the web setting', async () => {
+    const { devServer, loadModuleContents } = createExportingDevServer('production');
+    mockRouterConfigOnce({ web: true });
+    await devServer.legacySinglePageExportBundleAsync(exportOptions('ios', 'production'));
+    mockRouterConfigOnce({ web: true });
+    await devServer.legacySinglePageExportBundleAsync(exportOptions('web', 'production'));
+
+    expect(
+      loadModuleContents.mock.calls.map(([, opts]: any) => [opts.platform, opts.asyncRoutes])
+    ).toEqual([
+      ['ios', false],
+      ['web', true],
+    ]);
+  });
+});
+
+describe('getStaticResourcesAsync', () => {
+  it('resolves async routes for the web platform', async () => {
+    const devServer = createDevServerForStaticPageTests();
+    const importAsArtifacts = jest.fn(async () => ({ artifacts: [], assets: [] }));
+    devServer['metroImportAsArtifactsAsync'] = importAsArtifacts as any;
+    mockRouterConfigOnce({ web: true });
+
+    await devServer.getStaticResourcesAsync({ mainModuleName: './index.js' });
+
+    expect(importAsArtifacts).toHaveBeenCalledWith(
+      './index.js',
+      expect.objectContaining({ platform: 'web', asyncRoutes: true })
+    );
   });
 });

@@ -1,6 +1,10 @@
 import { env } from 'node:process';
 
-import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
+import {
+  createBundleUrlPath,
+  getAsyncRoutesFromExpoConfig,
+  getMetroDirectBundleOptions,
+} from '../metroOptions';
 
 describe(getMetroDirectBundleOptions, () => {
   it(`asserts unsupported options: using bytecode on web`, () => {
@@ -137,4 +141,55 @@ describe(createBundleUrlPath, () => {
       })
     ).toEqual('/index.bundle?platform=ios&dev=true&hot=false&resolver.exporting=true');
   });
+});
+
+describe(getAsyncRoutesFromExpoConfig, () => {
+  const expWithAsyncRoutes = (asyncRoutes: unknown) =>
+    ({ name: 'app', slug: 'app', extra: { router: { asyncRoutes } } }) as any;
+
+  it.each([
+    // SDK 58 default from the `expo-router` config plugin: web-only.
+    [{ web: true }, 'development', 'web', true],
+    [{ web: true }, 'production', 'web', true],
+    [{ web: true }, 'development', 'ios', false],
+    [{ web: true }, 'production', 'ios', false],
+    [{ web: true }, 'production', 'android', false],
+    // Explicit platform values take precedence over `default`.
+    [{ ios: 'development', web: true }, 'development', 'ios', true],
+    [{ ios: 'development', web: true }, 'development', 'android', false],
+    [{ default: true }, 'development', 'android', true],
+    [{ default: true, web: false }, 'production', 'web', false],
+    // Scalar values apply to every platform.
+    [true, 'development', 'ios', true],
+    [true, 'production', 'web', true],
+    ['development', 'development', 'android', true],
+    ['development', 'production', 'web', false],
+    ['production', 'production', 'web', true],
+    ['production', 'development', 'web', false],
+    [false, 'development', 'web', false],
+    [undefined, 'development', 'web', false],
+  ] as const)(
+    'resolves asyncRoutes=%j in %s for %s to %s',
+    (asyncRoutes, mode, platform, expected) => {
+      expect(getAsyncRoutesFromExpoConfig(expWithAsyncRoutes(asyncRoutes), mode, platform)).toBe(
+        expected
+      );
+    }
+  );
+
+  it.each([
+    [true, 'ios'],
+    [true, 'android'],
+    ['production', 'ios'],
+    [{ default: true }, 'android'],
+    [{ ios: true }, 'ios'],
+    [{ ios: 'production' }, 'ios'],
+  ] as const)(
+    'never enables production async routes on native (asyncRoutes=%j, platform=%s)',
+    (asyncRoutes, platform) => {
+      expect(
+        getAsyncRoutesFromExpoConfig(expWithAsyncRoutes(asyncRoutes), 'production', platform)
+      ).toBe(false);
+    }
+  );
 });

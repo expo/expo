@@ -125,6 +125,13 @@ export function getAsyncRoutesFromExpoConfig(
   mode: EnvironmentMode,
   platform: string
 ) {
+  // Production async routes are web-only. Native production bundles are never split, so the
+  // synchronous import mode is always used there regardless of the configured value. This mirrors
+  // `getAsyncRoutes` in `babel-preset-expo`.
+  if (mode === 'production' && platform !== 'web') {
+    return false;
+  }
+
   let asyncRoutesSetting;
 
   if (exp.extra?.router?.asyncRoutes) {

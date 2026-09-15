@@ -112,6 +112,81 @@ describe(getRewriteRequestUrl, () => {
     );
   });
 
+  it(`enables async routes for native development requests when configured`, () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      pkg: {},
+      exp: {
+        sdkVersion: '49.0.0',
+        name: 'my-app',
+        slug: 'my-app',
+        extra: { router: { asyncRoutes: true } },
+      },
+    } as any);
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'hey' }),
+        'index.js': 'console.log("lol")',
+      },
+      '/'
+    );
+
+    const rewrite = getRewriteRequestUrl('/');
+
+    expect(rewrite('/.expo/.virtual-metro-entry.bundle?platform=ios&dev=true')).toBe(
+      '/index.bundle?platform=ios&dev=true&transform.routerRoot=app&transform.asyncRoutes=true&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable'
+    );
+  });
+
+  it(`never enables async routes for native production requests`, () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      pkg: {},
+      exp: {
+        sdkVersion: '49.0.0',
+        name: 'my-app',
+        slug: 'my-app',
+        extra: { router: { asyncRoutes: true } },
+      },
+    } as any);
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'hey' }),
+        'index.js': 'console.log("lol")',
+      },
+      '/'
+    );
+
+    const rewrite = getRewriteRequestUrl('/');
+
+    expect(rewrite('/.expo/.virtual-metro-entry.bundle?platform=ios&dev=false')).toBe(
+      '/index.bundle?platform=ios&dev=false&transform.routerRoot=app&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable'
+    );
+  });
+
+  it(`enables async routes for web production requests with the web-only default`, () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      pkg: {},
+      exp: {
+        sdkVersion: '49.0.0',
+        name: 'my-app',
+        slug: 'my-app',
+        extra: { router: { asyncRoutes: { web: true } } },
+      },
+    } as any);
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'hey' }),
+        'index.js': 'console.log("lol")',
+      },
+      '/'
+    );
+
+    const rewrite = getRewriteRequestUrl('/');
+
+    expect(rewrite('/.expo/.virtual-metro-entry.bundle?platform=web&dev=false')).toBe(
+      '/index.bundle?platform=web&dev=false&transform.routerRoot=app&transform.asyncRoutes=true'
+    );
+  });
+
   it('rewrites expo request urls to entry point, with host and port', () => {
     vol.fromJSON(
       {
