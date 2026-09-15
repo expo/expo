@@ -1,0 +1,49 @@
+---
+title: Navigator comparison
+description: Compare the navigation relationships available in Expo Router and choose one for your app.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo Router layouts define how routes in a directory relate to each other. Choose a navigator based on that relationship first, then consider its appearance and platform behavior. You can [nest navigators](/router/advanced/nesting-navigators/) when different parts of an app need different relationships.
+
+| Navigator                                         | Relationship model                                                             | Platforms                               | Customization and behavior                                                                                                          | Best use                                                                                  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [Stack](/router/advanced/stack/)                  | Routes are pushed onto and popped from a history stack.                        | Android, iOS, web                       | Uses a native stack on Android and iOS, including platform transitions and headers. Screen options customize the native behavior.   | Drill-down flows, details, forms, and modals where users move forward and back.           |
+| [JavaScript tabs](/router/advanced/tabs/)         | Routes are peers selected from a persistent tab bar.                           | Android, iOS, web                       | Uses React Navigation bottom tabs. The tab bar and transitions are rendered by the app and can be customized with React components. | Familiar cross-platform tabs that need flexible styling or React Navigation options.      |
+| [Native Tabs](/router/advanced/native-tabs/)      | Routes are peers selected from the system tab bar.                             | Android, iOS, web with a basic fallback | Uses each mobile platform's native tab bar, so appearance and available options differ by platform.                                 | Apps that prioritize system conventions, native behavior, and platform-specific features. |
+| [Drawer](/router/advanced/drawer/)                | Routes are peers selected from a side panel.                                   | Android, iOS, web                       | Uses a gesture-driven drawer on mobile and CSS animations on web. The drawer content and screen options are customizable.           | Apps with several destinations that should stay available without occupying a bottom bar. |
+| [Custom tabs](/router/advanced/custom-tabs/)      | Routes are explicit tab targets connected to triggers by name and URL.         | Android, iOS, web                       | Provides unstyled, headless components. You own the tab bar's structure, styling, and interaction design.                           | Bespoke tab interfaces and navigation patterns that styled tab navigators cannot express. |
+| [`Slot`](/router/basics/navigation-layouts/#slot) | Renders the active child route without creating a new navigation relationship. | Android, iOS, web                       | Adds no navigation UI, transitions, or history of its own. The surrounding layout is entirely app-defined.                          | Shared providers or UI around routes whose navigation is managed by a parent layout.      |
+
+If the routes have a forward-and-back hierarchy, start with a Stack. For a small set of top-level destinations, choose JavaScript tabs for customization or Native Tabs for platform-native behavior. Use a Drawer when top-level destinations should be hidden until needed, custom tabs for a bespoke tab interface, and `Slot` when the layout should not introduce another navigator.
+
+## Platform comparison
+
+The same route relationship can look different when it is backed by native platform UI. These examples compare Stack and Native Tabs on Android and iOS.
+
+### Stack
+
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <ContentSpotlight
+    alt="An Expo Router Stack on iOS."
+    src="/static/images/expo-router/navigators/stack-ios.png"
+  />
+  <ContentSpotlight
+    alt="An Expo Router Stack on Android."
+    src="/static/images/expo-router/navigators/stack-android.png"
+  />
+</div>
+
+### Native Tabs
+
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <ContentSpotlight
+    alt="Expo Router Native Tabs on iOS."
+    src="/static/images/expo-router/navigators/native-tabs-ios.png"
+  />
+  <ContentSpotlight
+    alt="Expo Router Native Tabs on Android."
+    src="/static/images/expo-router/navigators/native-tabs-android.png"
+  />
+</div>

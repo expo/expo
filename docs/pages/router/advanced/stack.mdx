@@ -8,6 +8,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 import { ReactNavigationOptions } from '~/ui/components/ReactNavigationOptions';
 import { TabsGroup, Tabs, Tab } from '~/ui/components/Tabs';
@@ -23,6 +24,17 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 A stack navigator is the foundational way of navigating between routes in an app. On Android, a stacked route animates on top of the current screen. On iOS, a stacked route animates from the right. Expo Router provides a `Stack` navigation component that creates a navigation stack and allows you to add new routes in your app.
 
 This guide provides information on how you can create a `Stack` navigator in your project and customize an individual route's options and header.
+
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <ContentSpotlight
+    alt="An Expo Router Stack showing a movie catalog on iOS."
+    src="/static/images/expo-router/navigators/stack-ios.png"
+  />
+  <ContentSpotlight
+    alt="An Expo Router Stack showing a journal on Android."
+    src="/static/images/expo-router/navigators/stack-android.png"
+  />
+</div>
 
 <TabsGroup>
 

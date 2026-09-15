@@ -39,6 +39,8 @@ const HomeIndex = () => {
       <CaseLink href="/js-tabs" text="JS Tabs" />
       <CaseLink href="/top-tabs" text="JS Top Tabs" />
       <CaseLink href="/experimental-stack" text="Experimental Stack" />
+      <CaseLink href="/navigator-showcase/stack" text="Navigator showcase: Stack" />
+      <CaseLink href="/navigator-showcase/native-tabs" text="Navigator showcase: Native Tabs" />
       <CaseLink href="/navigation-aware-activity" text="Navigation Aware Activity" />
       <CaseLink href="/drawer" text="Drawer" />
       <CaseLink href="/drawer-open" text="Drawer (default open)" />

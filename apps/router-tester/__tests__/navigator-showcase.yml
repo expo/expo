@@ -1,0 +1,10 @@
+appId: dev.expo.routertester
+---
+- openLink: router-tester://navigator-showcase/stack
+- assertVisible: Navigator showcase: Stack
+- assertVisible:
+    text: 'Movies|Hello, Jordan'
+- openLink: router-tester://navigator-showcase/native-tabs
+- assertVisible: Navigator showcase: Native Tabs
+- assertVisible:
+    text: 'Listen Now|Good afternoon'

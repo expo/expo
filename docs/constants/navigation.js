@@ -273,6 +273,7 @@ export const general = [
       makePage('router/basics/common-navigation-patterns.mdx'),
     ]),
     makeGroup('Navigation patterns', [
+      makePage('router/advanced/navigator-comparison.mdx'),
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
       makePage('router/advanced/native-tabs.mdx'),
