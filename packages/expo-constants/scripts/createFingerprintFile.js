@@ -12,9 +12,7 @@ const FINGERPRINT_FILE_NAME = 'app.fingerprint';
 /**
  * Write the project fingerprint to `app.fingerprint`, next to `app.config`.
  *
- * Deletes any previous one first: the iOS destination directory persists across builds. The
- * options must match the reader's (`src/project/fingerprint.ts` in expo/expo-agent-cli).
- *
+ * The options must match the reader's (`src/project/fingerprint.ts` in expo/expo-agent-cli).
  * Never rejects: the fingerprint is optional metadata, so a failure is warned and the build goes on.
  *
  * @param {string} projectRoot
@@ -34,10 +32,8 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
 
 /** @type {typeof createFingerprintFileAsync} */
 async function writeFingerprintFileAsync(projectRoot, destinationDir, platform, enabled) {
-  // A caller that names no platform is not managing fingerprints: `@expo/cli`'s rebundle path runs
-  // this script for the app config alone, and removing the file there would strip the fingerprint
-  // out of an app a build already embedded it into. A caller that names one still gets the stale
-  // file cleared, even when the platform is not one this embeds for.
+  // No platform means the caller is not managing fingerprints — `@expo/cli`'s rebundle path asks
+  // for the app config alone — and clearing the file would strip it out of an app already built.
   if (platform === undefined) {
     return null;
   }
@@ -93,7 +89,6 @@ function isFingerprintEmbeddingDisabled() {
 
 /** @param {Error} error */
 function warnFingerprintEmbedFailed(error) {
-  // The fingerprint is optional metadata: never fail the build over it.
   console.warn(
     `Could not embed the project fingerprint (app.fingerprint): ${error.message}. ` +
       `The build continues normally, but \`npx @expo/agent-cli status --explain\` cannot tell whether this build matches the project until a build with an embedded fingerprint succeeds.`
@@ -105,8 +100,8 @@ module.exports = {
   FINGERPRINT_FILE_NAME,
 };
 
-// Direct invocation from the Android build. The gradle task is registered for debuggable variants
-// only, so `enabled` is always true here.
+// Direct invocation from the Android build, whose task only exists for debuggable variants — hence
+// the hardcoded `enabled`.
 if (require.main === module) {
   (async () => {
     const projectRoot = resolveProjectRoot(process.argv[2] ?? process.cwd());

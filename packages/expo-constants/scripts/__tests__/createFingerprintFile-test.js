@@ -128,8 +128,8 @@ describe(`createFingerprintFileAsync`, () => {
     });
   });
 
-  // `@expo/cli`'s rebundle path calls `getAppConfig.js` for the app config alone, with no platform
-  // and no embed flag. It is not managing fingerprints, so it must not remove what a build embedded.
+  // `@expo/cli`'s rebundle path asks for the app config alone, so it must not remove what a build
+  // already embedded.
   it(`leaves an existing fingerprint alone when the caller names no platform`, async () => {
     const { createFingerprintFileAsync, FINGERPRINT_FILE_NAME } = loadModule();
     const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
@@ -154,8 +154,7 @@ describe(`createFingerprintFileAsync`, () => {
     expect(mockCreateFingerprintAsync).toHaveBeenCalled();
   });
 
-  // The fingerprint is optional metadata, so the function owns that policy: every caller would
-  // otherwise have to remember to catch, and one that forgot would fail the build over it.
+  // The function owns the never-throw policy, so no caller has to remember to catch.
   it(`warns instead of rejecting when fingerprint computation fails`, async () => {
     mockCreateFingerprintAsync.mockRejectedValue(new Error('boom'));
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
