@@ -101,6 +101,20 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
   return self;
 }
 
+#if TARGET_OS_OSX
+// react-native-macos writes `reactTag` where iOS writes `tag` (see the header). `tag` stays the
+// single source of truth, so both accessors go through it.
+- (void)setReactTag:(nullable NSNumber *)reactTag
+{
+  self.tag = reactTag.integerValue;
+}
+
+- (nullable NSNumber *)reactTag
+{
+  return @(self.tag);
+}
+#endif // TARGET_OS_OSX
+
 // Detect when this NSObject is incorrectly inserted into a UIKit view hierarchy.
 // UIKit calls a private selector early in `_isAncestorOfFirstResponder`.
 // We intercept it here and throw before the insertion proceeds.

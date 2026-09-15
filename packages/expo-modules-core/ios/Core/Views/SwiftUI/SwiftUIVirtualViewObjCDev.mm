@@ -16,6 +16,9 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewProtocol.h>
+#if TARGET_OS_OSX
+#import <React/UIView+React.h>
+#endif
 
 namespace react = facebook::react;
 
@@ -127,6 +130,15 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
   }
 }
 #endif // TARGET_OS_IOS || TARGET_OS_TV
+
+#if TARGET_OS_OSX
+// react-native-macos writes `reactTag` (the `RCTComponent` property on `NSView`) where iOS
+// writes `tag`, and `NSView.tag` is read-only, so read the tag back through `reactTag`.
+- (NSInteger)tag
+{
+  return self.reactTag.integerValue;
+}
+#endif // TARGET_OS_OSX
 
 #include "SwiftUIVirtualViewSharedImpl+Private.h"
 

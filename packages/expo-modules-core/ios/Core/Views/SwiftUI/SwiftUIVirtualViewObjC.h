@@ -12,6 +12,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SwiftUIVirtualViewObjC : NSObject
 
 @property (nonatomic) NSInteger tag;
+
+#if TARGET_OS_OSX
+/**
+ react-native-macos assigns a component view its tag through `reactTag`, the `RCTComponent`
+ property it adds to `NSView`, where iOS assigns `tag`. This view is a plain `NSObject`, so it has
+ to declare `reactTag` itself or mounting fails with an unrecognized selector. It is bridged to
+ `tag`, which is what the rest of the virtual view reads.
+ */
+@property (nonatomic, copy, nullable) NSNumber *reactTag;
+#endif
+
 @property (nonatomic, copy, nullable) NSString *componentName;
 
 /**
