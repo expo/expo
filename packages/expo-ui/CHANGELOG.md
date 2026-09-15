@@ -10,8 +10,6 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `Button` dropping `systemImage` when no `label` is given, which rendered an empty button. ([#50075](https://github.com/expo/expo/pull/50075) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

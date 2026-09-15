@@ -18,6 +18,7 @@ import {
   font,
   foregroundStyle,
   frame,
+  labelStyle,
   lineLimit,
   listRowBackground,
   listStyle,
@@ -126,12 +127,12 @@ const MESSAGES: Message[] = [
   },
 ];
 
-// Icon-only actions, matching SwiftUI's `Button(role:action:)` with an image label.
+// `labelStyle('iconOnly')` hides the titles, but VoiceOver still reads them.
 const ACTIONS = [
-  'arrowshape.turn.up.left',
-  'arrowshape.turn.up.right',
-  'archivebox',
-  'trash',
+  { label: 'Reply', systemImage: 'arrowshape.turn.up.left' },
+  { label: 'Forward', systemImage: 'arrowshape.turn.up.right' },
+  { label: 'Archive', systemImage: 'archivebox' },
+  { label: 'Delete', systemImage: 'trash' },
 ] as const;
 
 export default function NavigationSplitViewScreen() {
@@ -236,7 +237,12 @@ export default function NavigationSplitViewScreen() {
                 {/* Collapsed on the detail, the split view already supplies a back button,
                     so a second way back would be redundant. */}
                 {compactColumn === 'detail' ? null : (
-                  <Button systemImage="sidebar.left" onPress={toggleSidebar} />
+                  <Button
+                    label="Toggle sidebar"
+                    systemImage="sidebar.left"
+                    modifiers={[labelStyle('iconOnly')]}
+                    onPress={toggleSidebar}
+                  />
                 )}
               </HStack>
 
@@ -273,7 +279,13 @@ export default function NavigationSplitViewScreen() {
 
               <HStack spacing={28}>
                 {ACTIONS.map((action) => (
-                  <Button key={action} systemImage={action} onPress={() => {}} />
+                  <Button
+                    key={action.label}
+                    label={action.label}
+                    systemImage={action.systemImage}
+                    modifiers={[labelStyle('iconOnly')]}
+                    onPress={() => {}}
+                  />
                 ))}
                 <Spacer />
               </HStack>
