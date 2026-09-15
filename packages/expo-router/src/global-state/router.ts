@@ -289,6 +289,9 @@ export type ImperativeRouter = {
   /**
    * Configures which queued navigation operations use React transitions. The default is
    * `preload-only`; `never` cannot be overridden by individual operations.
+   *
+   * This API is experimental. Although it is stable and works well, its API and underlying
+   * behavior may change in minor releases.
    */
   setTransitionMode: (mode: NavigationTransitionMode) => void;
 };
