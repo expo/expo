@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use the native config mode when regenerating app config with `run:ios --unstable-rebundle`. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-15

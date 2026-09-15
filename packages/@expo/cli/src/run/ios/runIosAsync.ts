@@ -1,3 +1,4 @@
+import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -93,21 +94,33 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       options.binary = binaryPath;
     }
 
+    const possibleBundleOutput = path.join(options.binary, 'main.jsbundle');
+    const shouldRebundle = fs.existsSync(possibleBundleOutput);
+    const configMode =
+      !shouldRebundle && props.configuration.includes('Debug') ? 'development' : 'production';
+
     Log.log('Rebundling the Expo config file');
-    // Re-bundle the config file the same way the app was originally bundled.
-    await spawnAsync('node', [
-      // TODO(@kitten): This isn't correct. The template installs expo-constants, but expo also depends on it
-      // This however means that the top-level module doesn't have to exist. With isolated dependencies this will then fail
-      // But we can't resolve via `expo` because that then may do something differently than autolinking if the root has a different version
-      path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
-      projectRoot,
-      path.join(options.binary, 'EXConstants.bundle'),
-    ]);
+    await spawnAsync(
+      'node',
+      [
+        // TODO(@kitten): This isn't correct. The template installs expo-constants, but expo also depends on it
+        // This however means that the top-level module doesn't have to exist. With isolated dependencies this will then fail
+        // But we can't resolve via `expo` because that then may do something differently than autolinking if the root has a different version
+        path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
+        projectRoot,
+        path.join(options.binary, 'EXConstants.bundle'),
+      ],
+      {
+        env: {
+          ...getOriginalEnv(),
+          NODE_ENV: process.env.NODE_ENV,
+          __EXPO_CONFIG_MODE: process.env.__EXPO_CONFIG_MODE ?? configMode,
+        },
+      }
+    );
     // Re-bundle the app.
 
-    const possibleBundleOutput = path.join(options.binary, 'main.jsbundle');
-
-    if (fs.existsSync(possibleBundleOutput)) {
+    if (shouldRebundle) {
       Log.log('Rebundling the app...');
       await exportEagerAsync(projectRoot, {
         resetCache: false,
