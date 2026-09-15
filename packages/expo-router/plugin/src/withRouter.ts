@@ -163,14 +163,6 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   };
 };
 
-const warnMap: Record<string, boolean> = {};
-function warnOnce(message: string) {
-  if (!warnMap[message]) {
-    warnMap[message] = true;
-    console.warn(styleText('red', message, { stream: process.stderr }));
-  }
-}
-
 function normalizeAsyncRoutesProp(props: Props) {
   const asyncRoutes = props.asyncRoutes;
 
@@ -189,6 +181,14 @@ function normalizeAsyncRoutesProp(props: Props) {
   }
 
   return props;
+}
+
+const warnMap: Record<string, boolean> = {};
+function warnOnce(message: string) {
+  if (!warnMap[message]) {
+    warnMap[message] = true;
+    console.warn(styleText('red', message, { stream: process.stderr }));
+  }
 }
 
 export default withRouter;
