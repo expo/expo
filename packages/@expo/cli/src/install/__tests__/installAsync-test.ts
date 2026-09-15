@@ -167,6 +167,27 @@ describe(installAsync, () => {
     expect(applyPluginsAsync).not.toHaveBeenCalled();
   });
 
+  it('forwards --expo-only to the follow-up command when installing expo first', async () => {
+    jest.mocked(getVersionedPackagesAsync).mockResolvedValueOnce({
+      packages: ['expo@56.0.0-canary-20260810-abcd123'],
+      messages: [],
+      excludedNativeModules: [],
+    });
+
+    await installAsync(
+      ['expo@canary'],
+      { projectRoot, check: true, expoOnly: true, pnpm: true },
+      packageManagerArguments
+    );
+
+    expect(installExpoPackageAsync).toHaveBeenCalledWith(projectRoot, {
+      packageManager,
+      packageManagerArguments,
+      expoPackageToInstall: 'expo@56.0.0-canary-20260810-abcd123',
+      followUpCommandArgs: ['--check', '--expo-only'],
+    });
+  });
+
   describe('with EXPO_NO_DEPENDENCY_VALIDATION enabled', () => {
     let originalNoDependencyValidation: string | undefined;
 
