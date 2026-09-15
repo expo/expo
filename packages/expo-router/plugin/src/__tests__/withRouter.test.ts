@@ -25,60 +25,24 @@ describe('apiRoutes', () => {
 });
 
 describe('asyncRoutes', () => {
-  it('defaults to enabled on web', () => {
-    expect(
-      withRouter({
-        name: 'test',
-        slug: 'test',
-      })
-    ).toMatchObject({
-      extra: {
-        router: {
-          asyncRoutes: { web: true },
-        },
-      },
-    });
+  it('defaults to enabled only on web', () => {
+    const config = withRouter({ name: 'test', slug: 'test' });
+    expect(config.extra?.router.asyncRoutes).toEqual({ web: true });
   });
 
   it('adds the web default to a partial platform configuration', () => {
-    expect(
-      withRouter(
-        {
-          name: 'test',
-          slug: 'test',
-        },
-        { asyncRoutes: { android: 'development' } }
-      )
-    ).toMatchObject({
-      extra: {
-        router: {
-          asyncRoutes: {
-            android: 'development',
-            web: true,
-          },
-        },
-      },
-    });
+    const config = withRouter(
+      { name: 'test', slug: 'test' },
+      { asyncRoutes: { android: 'development' } }
+    );
+    expect(config.extra?.router.asyncRoutes).toEqual({ android: 'development', web: true });
   });
 
   it.each([true, false, 'development', 'production'] as const)(
     'preserves the scalar value %p',
     (asyncRoutes) => {
-      expect(
-        withRouter(
-          {
-            name: 'test',
-            slug: 'test',
-          },
-          { asyncRoutes }
-        )
-      ).toMatchObject({
-        extra: {
-          router: {
-            asyncRoutes,
-          },
-        },
-      });
+      const config = withRouter({ name: 'test', slug: 'test' }, { asyncRoutes });
+      expect(config.extra?.router.asyncRoutes).toBe(asyncRoutes);
     }
   );
 
@@ -88,63 +52,40 @@ describe('asyncRoutes', () => {
     { web: false },
     { default: false, web: true },
   ])('preserves an explicit web or default value: %p', (asyncRoutes) => {
-    expect(
-      withRouter(
-        {
-          name: 'test',
-          slug: 'test',
-        },
-        { asyncRoutes }
-      )
-    ).toMatchObject({
-      extra: {
-        router: {
-          asyncRoutes,
-        },
-      },
-    });
+    const config = withRouter({ name: 'test', slug: 'test' }, { asyncRoutes });
+    expect(config.extra?.router.asyncRoutes).toEqual(asyncRoutes);
   });
 
   it('normalizes an existing router configuration', () => {
-    expect(
-      withRouter({
-        name: 'test',
-        slug: 'test',
-        extra: {
-          router: {
-            asyncRoutes: { ios: 'development' },
-          },
-        },
-      })
-    ).toMatchObject({
-      extra: {
-        router: {
-          asyncRoutes: {
-            ios: 'development',
-            web: true,
-          },
-        },
-      },
+    const config = withRouter({
+      name: 'test',
+      slug: 'test',
+      extra: { router: { asyncRoutes: { ios: 'development' } } },
     });
+    expect(config.extra?.router.asyncRoutes).toEqual({ ios: 'development', web: true });
   });
 
   it('preserves an explicit value from an existing router configuration', () => {
-    expect(
-      withRouter({
+    const config = withRouter({
+      name: 'test',
+      slug: 'test',
+      extra: { router: { asyncRoutes: false } },
+    });
+    expect(config.extra?.router.asyncRoutes).toBe(false);
+  });
+
+  it('lets plugin options override existing router settings while preserving other extra values', () => {
+    const config = withRouter(
+      {
         name: 'test',
         slug: 'test',
-        extra: {
-          router: {
-            asyncRoutes: false,
-          },
-        },
-      })
-    ).toMatchObject({
-      extra: {
-        router: {
-          asyncRoutes: false,
-        },
+        extra: { custom: 'value', router: { asyncRoutes: false, origin: 'https://example.com' } },
       },
+      { asyncRoutes: { ios: 'development' } }
+    );
+    expect(config.extra).toEqual({
+      custom: 'value',
+      router: { origin: 'https://example.com', asyncRoutes: { ios: 'development', web: true } },
     });
   });
 });
