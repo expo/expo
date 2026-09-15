@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Auto-patch `ExpoModulesCore` like every other precompiled pod, so its `Podfile.lock` checksum no longer depends on the project's location on disk and `pod install --deployment` can pass. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-15
