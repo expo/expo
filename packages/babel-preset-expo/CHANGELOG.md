@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add regression tests asserting that `EXPO_ROUTER_IMPORT_MODE` stays `sync` for native production bundles. ([#50209](https://github.com/expo/expo/pull/50209) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.1 — 2026-09-14
 
 ### 💡 Others
