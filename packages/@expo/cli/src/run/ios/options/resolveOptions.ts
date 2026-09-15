@@ -31,7 +31,7 @@ export async function resolveOptionsAsync(
   const configuration = options.configuration || 'Debug';
 
   // Normalize the osType from the scheme, defaulting to iOS if not recognized.
-  const osType: OSType = isOSType(schemeOsType) ? (schemeOsType as OSType) : 'iOS';
+  const osType: OSType = isOSType(schemeOsType) ? schemeOsType : 'iOS';
 
   // Resolve the device based on the provided device id or prompt
   // from a list of devices (connected or simulated) that are filtered by the scheme.
@@ -61,7 +61,6 @@ export async function resolveOptionsAsync(
 
   return {
     ...bundlerProps,
-    shouldStartBundler: options.configuration === 'Debug' || bundlerProps.shouldStartBundler,
     projectRoot,
     isSimulator,
     xcodeProject,
