@@ -6,6 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.3 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 🐛 Bug fixes
+
+- [iOS] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50018](https://github.com/expo/expo/pull/50018) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50019](https://github.com/expo/expo/pull/50019) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - [iOS] Skip reading and hashing embedded assets on first launch by default, serving them from the app binary instead of copying them into the updates cache. ([#47284](https://github.com/expo/expo/pull/47284) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Allow overriding the package used to detect the installed dev client via the `expo.updates.devClientPackage`. ([#48020](https://github.com/expo/expo/pull/48020) by [@alanjhughes](https://github.com/alanjhughes))
 - Resolve relative asset URLs from `updateUrl` base URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))

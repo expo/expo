@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Respect the declared `UTI`/`mimeType` when sharing. ([#48052](https://github.com/expo/expo/pull/48052) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 58.0.3 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [iOS] Respect the declared `UTI`/`mimeType` when sharing. ([#48052](https://github.com/expo/expo/pull/48052) by [@behenate](https://github.com/behenate))
 
 ## 57.0.8 - 2026-07-29
 

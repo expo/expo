@@ -996,3 +996,27 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
     type: 'drawer',
   });
 });
+
+test('clears the focused preload marker after drawer actions', () => {
+  const router = DrawerRouter({});
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'drawer',
+    routeKeySeq: 2,
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar:0', name: 'bar', isPreloaded: true },
+      { key: 'baz:1', name: 'baz' },
+    ],
+    history: [{ type: 'route', key: 'bar:0' }],
+  };
+  const options: RouterConfigOptions = { routeNames: ['bar', 'baz'], routeGetIdList: {} };
+
+  const opened = router.getStateForAction(state, DrawerActions.openDrawer(), options);
+  const focused = router.getStateForRouteFocus(state, 'bar:0');
+
+  expect(opened?.state.routes[0]?.isPreloaded).toBeUndefined();
+  expect(focused.routes[0]?.isPreloaded).toBeUndefined();
+});

@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "57.0.2",
+  "version": "58.0.1",
   "description": "Error overlay for universal Expo apps.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
   "license": "MIT",
@@ -89,7 +89,7 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.87.1",
+    "react-native": "0.88.0-rc.0",
     "react-native-web": "^0.21.0",
     "rimraf": "^6.1.2"
   },

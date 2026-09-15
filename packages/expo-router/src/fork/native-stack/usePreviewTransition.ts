@@ -16,7 +16,8 @@ import type {
  */
 export function usePreviewTransition(
   state: NativeStackViewState,
-  originalEmit: NativeStackViewEmit
+  originalEmit: NativeStackViewEmit,
+  isPreloaded: (key: string) => boolean
 ) {
   const { openPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
 
@@ -93,5 +94,10 @@ export function usePreviewTransition(
     return state;
   }, [state, previewTransitioningScreenId]);
 
-  return { computedState, emit };
+  const isComputedRoutePreloaded = React.useCallback(
+    (key: string) => computedState.routes[computedState.index]?.key !== key && isPreloaded(key),
+    [computedState, isPreloaded]
+  );
+
+  return { computedState, emit, isPreloaded: isComputedRoutePreloaded };
 }

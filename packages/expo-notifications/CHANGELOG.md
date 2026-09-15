@@ -4,7 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Show notifications that arrive while the app is in the foreground, unless the app asks for another behavior with `setNotificationHandler`. A handler that doesn't answer within 3 seconds no longer drops the notification. `setNotificationHandler(null)` still stops `expo-notifications` from showing a notification. ([#49072](https://github.com/expo/expo/pull/49072) by [@vonovak](https://github.com/vonovak))
+- [Android] Prevent an FCM `dataString` field from overriding the notification's derived data. ([#49274](https://github.com/expo/expo/pull/49274) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
 
@@ -15,6 +30,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Prevent a crash when reading the notification large icon from a manifest without meta-data. ([#49273](https://github.com/expo/expo/pull/49273) by [@vonovak](https://github.com/vonovak))
 - [iOS] Fix a data race on `NotificationCenterManager`'s delegate list that crashed the app with `SIGSEGV` when one app context registered its modules while another tore its own down, such as on a dev-client reload or `Updates.reloadAsync()`. [#49554](https://github.com/expo/expo/pull/49554) by [@dennytosp](https://github.com/dennytosp))
 - [Android] Prevented `onUserLeaveHint` from firing when a notification tap opens the app, which made picture-in-picture implementations enter PiP unexpectedly. ([#48471](https://github.com/expo/expo/pull/48471) by [@stareezy-1](https://github.com/stareezy-1))
 - [iOS] Avoid warning when an aborted push token registration request rejects with a native fetch cancellation error. ([#48547](https://github.com/expo/expo/pull/48547) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
@@ -24,6 +40,8 @@
 
 ### 💡 Others
 
+- [Android] Remove an unreachable legacy JSON null-stripping fallback. ([#49272](https://github.com/expo/expo/pull/49272) by [@vonovak](https://github.com/vonovak))
+- [Android] Correct native-value lookup semantics for audio usage and content type enums. ([#49270](https://github.com/expo/expo/pull/49270) by [@vonovak](https://github.com/vonovak))
 - Drop usage of the deprecated `LegacyEventEmitter`. ([#49080](https://github.com/expo/expo/pull/49080) by [@vonovak](https://github.com/vonovak))
 
 ## 57.0.8 - 2026-07-29

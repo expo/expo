@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Stopped passing `testString` to `expo-font`, which removed the option; font loading no longer needs one. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - Fixed `style` prop being ignored on `SymbolView`'s non-native fallback. ([#48553](https://github.com/expo/expo/pull/48553) by [@fallmo](https://github.com/fallmo))
 
 ### 💡 Others

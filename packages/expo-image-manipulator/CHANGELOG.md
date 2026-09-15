@@ -6,6 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Added `maxWidth`/`maxHeight` options to `ImageManipulator.manipulate` and `useImageManipulator` that downsample large images while decoding, significantly reducing the peak memory usage and avoiding out-of-memory crashes. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 
 ### 🐛 Bug fixes

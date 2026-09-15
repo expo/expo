@@ -619,7 +619,7 @@ test('can dynamically route using singular function', () => {
 });
 
 describe('prefetch', () => {
-  it('can preload the href', () => {
+  it('can prefetch the href', () => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;

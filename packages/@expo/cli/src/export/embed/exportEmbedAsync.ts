@@ -6,8 +6,6 @@
  */
 import { getConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
@@ -384,12 +382,6 @@ export async function createMetroServerAndBundleRequestAsync(
       watch: false,
     }),
   }));
-
-  // The dev server applies the same patch from `instantiateMetro.ts`;
-  // this is the export-embed / `expo-updates` path, where `data.map`
-  // would otherwise reach Metro's readers in the unwrapped wire shape.
-  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
-  patchMetroSourceMapStringForPackedMaps();
 
   return { server: metro, bundleRequest };
 }

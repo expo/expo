@@ -1,29 +1,31 @@
 import ExpoModulesCore
 
+@ExpoModule("ExpoHaptics")
 public class HapticsModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoHaptics")
+  // Feedback generators must be used on the main thread, so these members are isolated to the main
+  // actor instead of the JS thread the macro would pick for them.
+  @JS
+  @MainActor
+  func notificationAsync(notificationType: NotificationType) async {
+    let generator = UINotificationFeedbackGenerator()
+    generator.prepare()
+    generator.notificationOccurred(notificationType.toFeedbackType())
+  }
 
-    AsyncFunction("notificationAsync") { (notificationType: NotificationType) in
-      let generator = UINotificationFeedbackGenerator()
-      generator.prepare()
-      generator.notificationOccurred(notificationType.toFeedbackType())
-    }
-    .runOnQueue(.main)
+  @JS
+  @MainActor
+  func impactAsync(style: ImpactStyle) async {
+    let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
+    generator.prepare()
+    generator.impactOccurred()
+  }
 
-    AsyncFunction("impactAsync") { (style: ImpactStyle) in
-      let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
-      generator.prepare()
-      generator.impactOccurred()
-    }
-    .runOnQueue(.main)
-
-    AsyncFunction("selectionAsync") {
-      let generator = UISelectionFeedbackGenerator()
-      generator.prepare()
-      generator.selectionChanged()
-    }
-    .runOnQueue(.main)
+  @JS
+  @MainActor
+  func selectionAsync() async {
+    let generator = UISelectionFeedbackGenerator()
+    generator.prepare()
+    generator.selectionChanged()
   }
 
   enum NotificationType: String, Enumerable {

@@ -4,9 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
 

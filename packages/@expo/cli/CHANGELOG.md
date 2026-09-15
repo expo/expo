@@ -4,6 +4,31 @@
 
 ### 🛠 Breaking changes
 
+- Bundle source maps served by `expo start` and written by `expo export` are now [index maps](https://tc39.es/ecma426/#sec-index-source-map), as Metro now always emits them. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+### 🎉 New features
+
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Remove Expo Router compatibility checks for `@react-navigation` packages. ([#50176](https://github.com/expo/expo/pull/50176) by [@Ubax](https://github.com/Ubax))
+- Fix app names in prebuild templates: derive project identifiers from the raw name in XML and plists ('A & B' gave 'AampB' in plists but 'AB' elsewhere), and escape display names for Android resources and plists. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Remove `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD`. Uninstall `expo-symbols` to exclude Material Symbols support from Android apps. ([#49738](https://github.com/expo/expo/pull/49738) by [@Ubax](https://github.com/Ubax))
 - Remove the `EXPO_UNSTABLE_WEB_MODAL` environment variable and its Expo Router module alias. ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
 - Use the Expo command mode to set `NODE_ENV` and load **.env** files. ([#48741](https://github.com/expo/expo/pull/48741) by [@ramonclaudio](https://github.com/ramonclaudio))
@@ -69,6 +94,7 @@
 - [Internal] Align local annotations in the Metro integration with Metro's own types. ([#49669](https://github.com/expo/expo/pull/49669) by [@robhogan](https://github.com/robhogan))
 - [Internal] Import Expo's Metro type extensions from `@expo/metro-config` instead of relying on global type augmentations. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
 - Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- Remove the unused `confirm_account` query param from the browser login URL. ([#49891](https://github.com/expo/expo/pull/49891) by [@byronkarlen](https://github.com/byronkarlen))
 
 ## 57.0.11 - 2026-07-29
 

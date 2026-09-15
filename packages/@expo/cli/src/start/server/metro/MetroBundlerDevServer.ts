@@ -9,7 +9,10 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
+import {
+  flattenSourceMap,
+  sourceMapStringNonBlocking,
+} from '@expo/metro-config/build/serializer/sourceMap';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
@@ -210,17 +213,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         /(?<=^|\n)\/\/# sourceMappingURL=[^\n]*(?=\s*$)/,
         `//# sourceMappingURL=${artifactBasename}`
       );
-      const parsedMap = typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
+      // Metro emits indexed source maps, which have no top-level `sources` to rewrite
+      const parsedMap = flattenSourceMap(
+        typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map
+      );
       const mapData: any = {
         ...descriptor,
         contents: JSON.stringify({
           version: parsedMap.version,
-          sources: parsedMap.sources.map((source: string) => {
-            source =
-              typeof source === 'string' && source.startsWith(this.projectRoot)
-                ? path.relative(this.projectRoot, source)
-                : source;
-            return convertPathToModuleSpecifier(source);
+          sources: parsedMap.sources.map((source) => {
+            if (source == null) {
+              return source;
+            }
+            return convertPathToModuleSpecifier(
+              source.startsWith(this.projectRoot) ? path.relative(this.projectRoot, source) : source
+            );
           }),
           sourcesContent: new Array(parsedMap.sources.length).fill(null),
           names: parsedMap.names,

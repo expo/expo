@@ -4,6 +4,21 @@
 
 ### 🛠 Breaking changes
 
+- Hash autolinked packages that live in a virtual store, such as pnpm's `node_modules/.pnpm`. Nested `node_modules` folders inside a package are still skipped. Fingerprints change once on upgrade for isolated installs. ([#48704](https://github.com/expo/expo/pull/48704) by [@kudo](https://github.com/kudo))
+- Normalized the resolved autolinking config before hashing (dependency maps become sorted arrays). Fingerprints change once on upgrade for every preset, including `strict`. `balanced` and `relaxed` also strip path fields, including `scriptPhases[].path`. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Added `SourceSkips.AutolinkingConfigPaths` to omit filesystem path fields from the resolved `expo-modules-autolinking` and `react-native-config` configs. Linked module names and `scriptPhases` names still hash. `scriptPhases[].path` and path overrides from the project's **react-native.config.js**, such as `sourceDir`, are omitted. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.21.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Extended `SourceSkips.ExpoConfigVersions` to also strip the platform-specific version overrides `ios.version` and `android.version` (which take precedence over the top-level `version`). Projects already setting this flag will see their fingerprint hash change after upgrading.
 - Hashed the built-in `react-native` source by its `package.json` name+version instead of the whole `package.json`, so fingerprints change once on upgrade. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
 - Changed the default preset to `balanced`, which changes the default fingerprint once on upgrade. Use `preset: 'strict'` to keep the previous behavior. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))

@@ -3,7 +3,7 @@ export type SharingOptions = {
   /**
    * The MIME type of the target file, for example `image/jpeg`.
    * On Android, it sets the `mimeType` of the sharing `Intent`. On iOS, it determines
-   * the shared file's type when [`UTI`](#uti) cannot provide a filename extension.
+   * the shared file's type when `UTI` cannot provide a filename extension.
    * > **Note:** On iOS the MIME type is not attached to the shared item as metadata.
    * > It is only used to give the file the matching extension, which is how the share
    * > sheet infers the type. MIME types that iOS cannot map to a canonical filename
@@ -21,10 +21,10 @@ export type SharingOptions = {
   /**
    * [Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)
    *  - the type of the target file. When iOS can map the identifier to a canonical
-   * filename extension, it takes precedence over [`mimeType`](#mimetype).
+   * filename extension, it takes precedence over `mimeType`.
    * > **Note:** iOS can only resolve types registered by the system or an installed app..
    * > If it cannot map `UTI` to a canonical filename extension, `UTI` is ignored and
-   * > [`mimeType`](#mimetype) is used instead.
+   * > `mimeType` is used instead.
    *
    * > **Note:** When mapped, `UTI` takes precedence over the file's existing
    * > extension. The original extension is not removed; the preferred extension is

@@ -4,9 +4,29 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template. ([#50108](https://github.com/expo/expo/pull/50108) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.0-preview.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
+
+- [Android] Allow `getDefaultReactHost` to take a custom `jsRuntimeFactory`, so an app can run a JavaScript engine other than Hermes. ([#49686](https://github.com/expo/expo/pull/49686) by [@ammarahm-ed](https://github.com/ammarahm-ed))
 
 ### 🐛 Bug fixes
 
@@ -27,9 +47,12 @@
 - Fix `import.meta.url` being `null` on web when `transform.inlineRequires` is enabled. ([#49045](https://github.com/expo/expo/pull/49045) by [@expo-bot](https://github.com/expo-bot))
 - Fix platform resolution of the `expo/dom` and `expo/dom/internal` subpath exports ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Remove a duplicated `ExpoModulesCore-Swift.h` import block in `ExpoReactNativeFactory.mm` whose `#else` branch imported the header unconditionally, breaking builds where neither form is on the header search path. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Forward URL, user activity, life cycle and quick action events to `AppDelegate` overrides under the UIScene life cycle. ([#49925](https://github.com/expo/expo/pull/49925) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
+- [iOS] Split the mixed Swift/Objective-C sources into `Expo` and `ExpoObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#45906](https://github.com/expo/expo/pull/45906) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make the `Expo`/`ExpoObjC` source split compile under Swift Package Manager: a new `ExpoLoader` target breaks the Swift↔ObjC cycle, and UIKit and React's app-delegate headers are imported explicitly. No-ops for CocoaPods. ([#49832](https://github.com/expo/expo/pull/49832) by [@chrfalch](https://github.com/chrfalch))
 - Re-export `useReleasingSharedObjectWithLifecycle` from `expo-modules-core`. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] `ExpoReactHostFactory` now passes host handlers' `DevSupportManagerFactory` to `ReactHostImpl`. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build by guarding the `bundleConfiguration` override, which requires react-native 0.84+. ([#48494](https://github.com/expo/expo/pull/48494) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))

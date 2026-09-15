@@ -1,6 +1,7 @@
 {
   "name": "expo-docs",
   "version": "57.0.0",
+  "betaVersion": "58.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -37,13 +38,6 @@
     "install-vale": "node --experimental-strip-types scripts/install-vale.ts",
     "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale",
     "upstream-sync": "node --experimental-strip-types ./scripts/upstream-sync.ts"
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "12.2.1",
-      "onFail": "warn"
-    }
   },
   "engines": {
     "node": ">=24"

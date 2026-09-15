@@ -1,0 +1,668 @@
+{
+  "schemaVersion": "2.0",
+  "name": "expo-ui/community/bottom-sheet",
+  "variant": "project",
+  "kind": 1,
+  "children": [
+    {
+      "name": "BottomSheetMethods",
+      "variant": "declaration",
+      "kind": 2097152,
+      "comment": {
+        "summary": [
+          { "kind": "text", "text": "Imperative methods exposed by " },
+          { "kind": "code", "text": "`BottomSheet`" },
+          { "kind": "text", "text": " and " },
+          { "kind": "code", "text": "`BottomSheetModal`" },
+          { "kind": "text", "text": " refs." }
+        ]
+      },
+      "children": [
+        {
+          "name": "close",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": { "summary": [{ "kind": "text", "text": "Close the bottom sheet." }] },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "collapse",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Snap to the minimum snap point." }],
+            "blockTags": [
+              {
+                "tag": "@remarks",
+                "content": [
+                  { "kind": "text", "text": "On Android, this snaps to the partially expanded state." }
+                ]
+              }
+            ]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "dismiss",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Dismiss the bottom sheet." }]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "expand",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Snap to the maximum snap point." }]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "forceClose",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Force close the bottom sheet." }],
+            "blockTags": [
+              {
+                "tag": "@remarks",
+                "content": [
+                  { "kind": "text", "text": "Behaves the same as " },
+                  { "kind": "code", "text": "`close()`" },
+                  { "kind": "text", "text": " in this implementation." }
+                ]
+              }
+            ]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "present",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Present the bottom sheet at the first snap point." }]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "snapToIndex",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Snap to a snap point by index." }],
+            "blockTags": [
+              {
+                "tag": "@remarks",
+                "content": [
+                  { "kind": "text", "text": "On Android, indices map to partial and expanded states." }
+                ]
+              }
+            ]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "parameters": [
+                    {
+                      "name": "index",
+                      "variant": "param",
+                      "kind": 32768,
+                      "type": { "type": "intrinsic", "name": "number" }
+                    }
+                  ],
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "snapToPosition",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Snap to a pixel value or percentage position." }],
+            "blockTags": [
+              {
+                "tag": "@remarks",
+                "content": [
+                  { "kind": "text", "text": "Arbitrary positioning is fully supported on web. Native platforms map the value to the nearest available detent or state." }
+                ]
+              }
+            ]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "parameters": [
+                    {
+                      "name": "position",
+                      "variant": "param",
+                      "kind": 32768,
+                      "type": {
+                        "type": "union",
+                        "types": [
+                          { "type": "intrinsic", "name": "string" },
+                          { "type": "intrinsic", "name": "number" }
+                        ]
+                      }
+                    }
+                  ],
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BottomSheetProps",
+      "variant": "declaration",
+      "kind": 2097152,
+      "comment": {
+        "summary": [
+          { "kind": "text", "text": "Props for the " },
+          { "kind": "code", "text": "`BottomSheet`" },
+          { "kind": "text", "text": " component. API-compatible with " },
+          { "kind": "code", "text": "`@gorhom/bottom-sheet`" },
+          { "kind": "text", "text": " where native platform behavior allows." }
+        ]
+      },
+      "children": [
+        {
+          "name": "children",
+          "variant": "declaration",
+          "kind": 1024,
+          "comment": { "summary": [{ "kind": "text", "text": "The content to render inside the bottom sheet." }] },
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "React.ReactNode",
+            "package": "@types/react"
+          }
+        },
+        {
+          "name": "enableDynamicSizing",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": { "isOptional": true },
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Whether the sheet should automatically size to fit its content." }],
+            "blockTags": [{ "tag": "@default", "content": [{ "kind": "text", "text": "true" }] }]
+          },
+          "type": { "type": "intrinsic", "name": "boolean" }
+        },
+        {
+          "name": "enablePanDownToClose",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": { "isOptional": true },
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Whether the sheet can be dismissed by panning down." }],
+            "blockTags": [{ "tag": "@default", "content": [{ "kind": "text", "text": "false" }] }]
+          },
+          "type": { "type": "intrinsic", "name": "boolean" }
+        },
+        {
+          "name": "index",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": { "isOptional": true },
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Initial snap point index. Set to -1 to start closed." }],
+            "blockTags": [{ "tag": "@default", "content": [{ "kind": "text", "text": "0" }] }]
+          },
+          "type": { "type": "intrinsic", "name": "number" }
+        },
+        {
+          "name": "onChange",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": { "isOptional": true },
+          "comment": { "summary": [{ "kind": "text", "text": "Called when the current snap point index changes." }] },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "parameters": [
+                    {
+                      "name": "index",
+                      "variant": "param",
+                      "kind": 32768,
+                      "type": { "type": "intrinsic", "name": "number" }
+                    }
+                  ],
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "onClose",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": { "isOptional": true },
+          "comment": { "summary": [{ "kind": "text", "text": "Called when the bottom sheet is fully closed." }] },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "onDismiss",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": { "isOptional": true },
+          "comment": {
+            "summary": [
+              { "kind": "text", "text": "Alias for " },
+              { "kind": "code", "text": "`onClose`" },
+              { "kind": "text", "text": " for " },
+              { "kind": "code", "text": "`BottomSheetModal`" },
+              { "kind": "text", "text": " compatibility." }
+            ]
+          },
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "signatures": [
+                {
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "type": { "type": "intrinsic", "name": "void" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "snapPoints",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": { "isOptional": true },
+          "comment": {
+            "summary": [{ "kind": "text", "text": "Points for the bottom sheet to snap to, ordered from bottom to top." }]
+          },
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "union",
+              "types": [
+                { "type": "intrinsic", "name": "string" },
+                { "type": "intrinsic", "name": "number" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BottomSheetViewProps",
+      "variant": "declaration",
+      "kind": 2097152,
+      "comment": {
+        "summary": [
+          { "kind": "text", "text": "Props for the " },
+          { "kind": "code", "text": "`BottomSheetView`" },
+          { "kind": "text", "text": " content wrapper." }
+        ]
+      },
+      "children": [
+        {
+          "name": "children",
+          "variant": "declaration",
+          "kind": 1024,
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "React.ReactNode",
+            "package": "@types/react"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BottomSheet",
+      "variant": "declaration",
+      "kind": 64,
+      "signatures": [
+        {
+          "name": "BottomSheet",
+          "variant": "signature",
+          "kind": 4096,
+          "comment": {
+            "summary": [
+              { "kind": "text", "text": "Bottom sheet component. Defaults to " },
+              { "kind": "code", "text": "`index={0}`" },
+              { "kind": "text", "text": " and opens at the first snap point on mount." }
+            ]
+          },
+          "parameters": [
+            {
+              "name": "props",
+              "variant": "param",
+              "kind": 32768,
+              "type": { "type": "reference", "name": "BottomSheetProps", "package": "@expo/ui" }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.JSX.Element"
+            },
+            "name": "Element",
+            "package": "@types/react",
+            "qualifiedName": "React.JSX.Element"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BottomSheetModal",
+      "variant": "declaration",
+      "kind": 64,
+      "signatures": [
+        {
+          "name": "BottomSheetModal",
+          "variant": "signature",
+          "kind": 4096,
+          "comment": {
+            "summary": [
+              { "kind": "text", "text": "Modal variant of " },
+              { "kind": "code", "text": "`BottomSheet`" },
+              { "kind": "text", "text": ". Starts closed and opens with " },
+              { "kind": "code", "text": "`present()`" },
+              { "kind": "text", "text": "." }
+            ]
+          },
+          "parameters": [
+            {
+              "name": "props",
+              "variant": "param",
+              "kind": 32768,
+              "type": { "type": "reference", "name": "BottomSheetProps", "package": "@expo/ui" }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.JSX.Element"
+            },
+            "name": "Element",
+            "package": "@types/react",
+            "qualifiedName": "React.JSX.Element"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BottomSheetModalProvider",
+      "variant": "declaration",
+      "kind": 64,
+      "signatures": [
+        {
+          "name": "BottomSheetModalProvider",
+          "variant": "signature",
+          "kind": 4096,
+          "comment": {
+            "summary": [
+              { "kind": "text", "text": "Provider for " },
+              { "kind": "code", "text": "`BottomSheetModal`" },
+              { "kind": "text", "text": ". It renders children directly for API compatibility." }
+            ]
+          },
+          "parameters": [
+            {
+              "name": "__namedParameters",
+              "variant": "param",
+              "kind": 32768,
+              "type": {
+                "type": "reflection",
+                "declaration": {
+                  "name": "__type",
+                  "variant": "declaration",
+                  "kind": 65536,
+                  "children": [
+                    {
+                      "name": "children",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "type": {
+                        "type": "reference",
+                        "target": {
+                          "packageName": "@types/react",
+                          "packagePath": "index.d.ts",
+                          "qualifiedName": "React.ReactNode"
+                        },
+                        "name": "React.ReactNode",
+                        "package": "@types/react"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.JSX.Element"
+            },
+            "name": "Element",
+            "package": "@types/react",
+            "qualifiedName": "React.JSX.Element"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BottomSheetView",
+      "variant": "declaration",
+      "kind": 64,
+      "signatures": [
+        {
+          "name": "BottomSheetView",
+          "variant": "signature",
+          "kind": 4096,
+          "comment": {
+            "summary": [
+              { "kind": "text", "text": "A wrapper for content inside a " },
+              { "kind": "code", "text": "`BottomSheet`" },
+              { "kind": "text", "text": "." }
+            ]
+          },
+          "parameters": [
+            {
+              "name": "__namedParameters",
+              "variant": "param",
+              "kind": 32768,
+              "type": { "type": "reference", "name": "BottomSheetViewProps", "package": "@expo/ui" }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.JSX.Element"
+            },
+            "name": "Element",
+            "package": "@types/react",
+            "qualifiedName": "React.JSX.Element"
+          }
+        }
+      ]
+    },
+    {
+      "name": "useBottomSheet",
+      "variant": "declaration",
+      "kind": 64,
+      "signatures": [
+        {
+          "name": "useBottomSheet",
+          "variant": "signature",
+          "kind": 4096,
+          "comment": {
+            "summary": [
+              { "kind": "text", "text": "Returns the imperative methods for the nearest " },
+              { "kind": "code", "text": "`BottomSheet`" },
+              { "kind": "text", "text": "." }
+            ]
+          },
+          "type": { "type": "reference", "name": "BottomSheetMethods", "package": "@expo/ui" }
+        }
+      ]
+    },
+    { "name": "default", "variant": "reference", "kind": 4194304 }
+  ],
+  "packageName": "@expo/ui"
+}

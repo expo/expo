@@ -55,6 +55,45 @@ class NetworkRequestInterceptorTest {
     assertEquals("GET", snapshot.method)
     assertNull(snapshot.errorDescription)
     assertTrue(snapshot.redirects.isEmpty())
+    // No cache is installed on the test client, so every response is a plain network load.
+    assertEquals(NetworkRequest.FetchType.NETWORK, snapshot.fetchType)
+  }
+
+  @Test
+  fun `records a cancellation that happens partway through the response body`() {
+    // The body wrapper signals on close as well as EOF, so abandoning a partially read response
+    // still records a snapshot. This pins what that snapshot looks like: OkHttp reports the
+    // cancellation through `Call.isCanceled`, not an exception on the interceptor's path, so
+    // without the `isCanceled` check a truncated transfer would read as a clean success.
+    server.enqueue(MockResponse().setResponseCode(200).setBody("0123456789"))
+
+    val call = client.newCall(Request.Builder().url(server.url("/partial")).build())
+    val response = call.execute()
+    val source = response.body!!.source()
+    source.readByte()
+    call.cancel()
+    response.close()
+
+    assertEquals(1, monitor.recent.size)
+    val snapshot = monitor.recent.first()
+    assertEquals(200, snapshot.statusCode)
+    assertTrue("a canceled call must be flagged even without an exception", snapshot.canceled)
+  }
+
+  @Test
+  fun `leaves the fetch type unknown when the request never produced a response`() {
+    // A transport failure has no response to classify, so the snapshot must not claim the
+    // response came off the network.
+    server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+    try {
+      client.newCall(Request.Builder().url(server.url("/boom")).build()).execute()
+    } catch (_: IOException) {
+      // Expected: the interceptor records the failure and rethrows.
+    }
+
+    assertEquals(1, monitor.recent.size)
+    assertNull(monitor.recent.first().fetchType)
   }
 
   @Test
@@ -149,8 +188,10 @@ class NetworkRequestInterceptorTest {
     server.enqueue(MockResponse().setResponseCode(301).setHeader("Location", "/c"))
     server.enqueue(MockResponse().setResponseCode(200).setBody("final"))
 
+    val before = System.currentTimeMillis()
     val response = client.newCall(Request.Builder().url(server.url("/a")).build()).execute()
     response.close()
+    val after = System.currentTimeMillis()
 
     assertEquals(1, monitor.recent.size)
     val redirects = monitor.recent.first().redirects
@@ -163,6 +204,11 @@ class NetworkRequestInterceptorTest {
     assertTrue(redirects[1].fromUrl.endsWith("/b"))
     assertTrue(redirects[1].toUrl.endsWith("/c"))
     assertEquals(301, redirects[1].statusCode)
+    // Each hop records when its 3xx response arrived, in chain order and inside the call window.
+    val firstRespondedAt = checkNotNull(redirects[0].respondedAtMs)
+    val secondRespondedAt = checkNotNull(redirects[1].respondedAtMs)
+    assertTrue(firstRespondedAt in before..after)
+    assertTrue(secondRespondedAt in firstRespondedAt..after)
   }
 
   @Test

@@ -4,7 +4,6 @@ import type { ComponentProps, ComponentType } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import { StackRouter } from '../react-navigation/native';
-import { makePopAction } from '../react-navigation/native-stack/utils/makePopAction';
 import {
   type StackNavigationConfig,
   type StackNavigatorCreateProps,
@@ -13,33 +12,44 @@ import {
   unstable_createStandardStackNavigator,
 } from '../react-navigation/stack';
 import { makeRestoreRouteAction } from '../react-navigation/stack/utils/makeRestoreRouteAction';
-import { unstable_integrateWithRouter } from '../standard-navigation';
-import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
+import { integrateWithRouter } from '../standard-navigation';
 import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
+import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 
 export * from '../react-navigation/stack';
 
 /**
- * Creates the adapter props required to integrate the JavaScript stack with Expo Router.
+ * Creates the props required to integrate Expo Router's JavaScript stack navigator.
+ *
+ * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The JavaScript stack navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { StackRouter, integrateWithRouter } from 'expo-router';
+ * import { createJSStackProps } from 'expo-router/js-stack';
+ * import { navigator } from './navigator';
+ *
+ * export const Stack = integrateWithRouter(navigator, StackRouter, {
+ *   createProps: createJSStackProps,
+ * });
+ * ```
  */
-export function unstable_createPropsForJSStack({
-  dispatchSync,
-  navigation,
-  state,
-}: StandardNavigatorCreatePropsFactoryDeps<
-  StackNavigationState<ParamListBase>
->): StackNavigatorCreateProps {
+export function createJSStackProps(
+  args: StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>
+): StackNavigatorCreateProps {
   return {
-    pop: makePopAction(dispatchSync, state.key),
-    restoreRoute: makeRestoreRouteAction(dispatchSync, state),
-    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
+    ...createBaseStackProps(args),
+    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+    restoreRoute: makeRestoreRouteAction(args.dispatchSync, args.state),
   };
 }
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
-const JSStack = unstable_integrateWithRouter<
+const JSStack = integrateWithRouter<
   StackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardStackNavigationEventMap,
@@ -47,7 +57,8 @@ const JSStack = unstable_integrateWithRouter<
   object,
   StackNavigatorCreateProps
 >(unstable_createStandardStackNavigator, StackRouter, {
-  createProps: unstable_createPropsForJSStack,
+  activityDefaultThreshold: 2,
+  createProps: createJSStackProps,
 });
 
 /**

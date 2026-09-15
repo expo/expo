@@ -1,5 +1,6 @@
 import { validate } from '@expo/schema-utils';
 import { ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
+import { styleText } from 'node:util';
 
 const schema = require('../options.json');
 
@@ -93,7 +94,10 @@ export type Props = {
   headers?: Record<string, string | string[]>;
   /** A list of headers that are set on a specific path's response from the server. */
   pageHeaders?: PageHeadersConfig[];
-  /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
+  /**
+   * (Deprecated) Enable experimental server middleware support. Middleware no longer requires an opt-in as of SDK 58.
+   * @deprecated
+   */
   unstable_useServerMiddleware?: boolean;
   /** Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config. */
   unstable_useServerDataLoaders?: boolean;
@@ -107,6 +111,13 @@ export type Props = {
 
 const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   const props = _props || {};
+
+  if (Object.hasOwn(props, 'unstable_useServerMiddleware')) {
+    warnOnce(
+      '`unstable_useServerMiddleware` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
+    );
+  }
+
   validate(schema, props);
 
   withExpoHeadIos(config);
@@ -123,5 +134,13 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
     },
   };
 };
+
+const warnMap: Record<string, boolean> = {};
+function warnOnce(message: string) {
+  if (!warnMap[message]) {
+    warnMap[message] = true;
+    console.warn(styleText('red', message, { stream: process.stderr }));
+  }
+}
 
 export default withRouter;

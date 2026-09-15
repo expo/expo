@@ -4,9 +4,25 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Compile the autolinking Gradle plugins against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
-- [iOS] Detect React Native versions that ship self-contained XCFrameworks (no VFS overlay) during precompile and pod install, falling back to the legacy VFS overlay integration on pre-0.87 versions. ([#47256](https://github.com/expo/expo/pull/47256) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Discover Expo Modules v2 modules at compile time. ([#50178](https://github.com/expo/expo/pull/50178) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
+- [iOS] Resolve React Native headers from the self-contained XCFrameworks that React Native 0.87 ships, extending React Native's module map coverage to the Expo pods during precompile and pod install. ([#47256](https://github.com/expo/expo/pull/47256) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
 - [Android] Support linking published Gradle plugins. ([#48334](https://github.com/expo/expo/pull/48334) by [@jakex7](https://github.com/jakex7))
 
@@ -28,6 +44,7 @@
 
 ### 💡 Others
 
+- [iOS] Extract the prebuilt-modules metadata scan into a product-resolution library with catalog and app-plan projections; standalone projects now resolve through the app's module resolution instead of erroring (ENG-25370). ([#49603](https://github.com/expo/expo/pull/49603) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Read the XCFramework `Info.plist` files out of a prebuilt tarball in a single `tar` pass instead of a listing pass plus one extract per plist, roughly halving the per-pod archive work during `pod install`. ([#49580](https://github.com/expo/expo/pull/49580) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add a `prebuilt-metadata` command emitting the prebuilt-modules identity document (npm package ↔ pod ↔ product), verified field-by-field against the Ruby derivations fixture (ENG-25370 phase 1). ([#49335](https://github.com/expo/expo/pull/49335) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add a derivations snapshot dump for precompiled modules (`EXPO_PRECOMPILED_DUMP` / `dump_precompiled_derivations.rb`) with a committed bare-expo fixture enforced by an e2e test, guarding the migration of these derivations to autolinking metadata. ([#49150](https://github.com/expo/expo/pull/49150) by [@chrfalch](https://github.com/chrfalch))

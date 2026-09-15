@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - Pick up files written into a new directory while `FallbackWatcher` starts to watch it, so a package installed while the dev server runs is resolvable (fixes [#48950](https://github.com/expo/expo/issues/48950)). ([#49363](https://github.com/expo/expo/pull/49363) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
