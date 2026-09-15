@@ -30,29 +30,24 @@ The module-level `router` is still available, but it throws before the first rou
 
 In SDK 57, React Navigation could interpret `screen`, `params`, and `initial` as instructions for building nested state. In SDK 58, they are ordinary user parameters. Navigate to a complete href instead:
 
-```tsx app/profile.tsx
-// Before (SDK 57)
-import { useNavigation } from 'expo-router';
-
-const navigation = useNavigation();
-
-navigation.navigate('(tabs)', {
-  screen: 'feed',
-  params: { id: '42' },
-});
-```
-
-```tsx app/profile.tsx
-// After (SDK 58)
-import { useRouter } from 'expo-router';
-
-const router = useRouter();
-
-router.push({
-  pathname: '/(tabs)/feed/[id]',
-  params: { id: '42' },
-});
-```
+<DiffBlock
+  raw={`diff --git a/app/profile.tsx b/app/profile.tsx
+--- a/app/profile.tsx
++++ b/app/profile.tsx
+@@ -1,8 +1,8 @@
+-import { useNavigation } from 'expo-router';
++import { useRouter } from 'expo-router';
+ 
+-const navigation = useNavigation();
++const router = useRouter();
+ 
+-navigation.navigate('(tabs)', {
+-  screen: 'feed',
++router.push({
++  pathname: '/(tabs)/feed/[id]',
+   params: { id: '42' },
+ });`}
+/>
 
 See [Navigate to a screen in a nested navigator](/router/advanced/nesting-navigators/#navigate-to-a-screen-in-a-nested-navigator) for more examples.
 
@@ -62,27 +57,22 @@ Ancestor route params are also no longer copied into descendant routes during im
 
 The `initialRouteName` navigator prop is removed. Export `unstable_settings.anchor` from the layout that owns the initial route:
 
-```tsx app/(tabs)/_layout.tsx
-// Before (SDK 57)
-import { Stack } from 'expo-router';
-
-export default function FeedLayout() {
-  return <Stack initialRouteName="index" />;
-}
-```
-
-```tsx app/(tabs)/_layout.tsx
-// After (SDK 58)
-import { Stack } from 'expo-router';
-
-export const unstable_settings = {
-  anchor: 'index',
-};
-
-export default function FeedLayout() {
-  return <Stack />;
-}
-```
+<DiffBlock
+  raw={`diff --git a/app/(tabs)/_layout.tsx b/app/(tabs)/_layout.tsx
+--- a/app/(tabs)/_layout.tsx
++++ b/app/(tabs)/_layout.tsx
+@@ -1,5 +1,9 @@
+ import { Stack } from 'expo-router';
+ 
++export const unstable_settings = {
++  anchor: 'index',
++};
++
+ export default function FeedLayout() {
+-  return <Stack initialRouteName="index" />;
++  return <Stack />;
+ }`}
+/>
 
 Expo Router now builds complete initial state from the URL. For example, a stack nested in tabs reads the setting from that stack's own **\_layout.tsx** file. During imperative navigation, pass `{ withAnchor: true }` when the initial route should be inserted below the destination.
 
@@ -242,26 +232,27 @@ To navigate somewhere other than the blocked destination, retain the `disablePre
 
 Dispatch functions are no longer supported. Read the state first, compute an action, and dispatch the action object:
 
-```tsx
-// Before (SDK 57)
-navigation.dispatch(state =>
-  CommonActions.reset({
-    ...state,
-    index: 0,
-    routes: [state.routes[0]],
-  })
-);
-
-// After (SDK 58)
-const state = navigation.getState();
-const action = CommonActions.reset({
-  ...state,
-  index: 0,
-  routes: [state.routes[0]],
-});
-
-navigation.dispatch(action);
-```
+<DiffBlock
+  raw={`diff --git a/navigation.ts b/navigation.ts
+--- a/navigation.ts
++++ b/navigation.ts
+@@ -1,7 +1,8 @@
+-navigation.dispatch(state =>
+-  CommonActions.reset({
+-    ...state,
+-    index: 0,
+-    routes: [state.routes[0]],
+-  })
+-);
++const state = navigation.getState();
++const action = CommonActions.reset({
++  ...state,
++  index: 0,
++  routes: [state.routes[0]],
++});
++
++navigation.dispatch(action);`}
+/>
 
 The read and deferred dispatch are not atomic. Use `dispatchSync(action)` deliberately if other navigation work cannot happen between them.
 
@@ -378,17 +369,18 @@ The base stack and tab routers handle `PUSH`. If an extension overrides `getStat
 
 `getStateForAction` now returns the next state together with the key of the route affected by the action:
 
-```ts
-// Before (SDK 57)
-return nextState;
-
-// After (SDK 58)
-// `affectedRoute` is selected by this action's handling logic.
-return {
-  state: nextState,
-  affectedRouteKey: affectedRoute?.key,
-};
-```
+<DiffBlock
+  raw={`diff --git a/custom-router.ts b/custom-router.ts
+--- a/custom-router.ts
++++ b/custom-router.ts
+@@ -1 +1,5 @@
+-return nextState;
++// \`affectedRoute\` is selected by this action's handling logic.
++return {
++  state: nextState,
++  affectedRouteKey: affectedRoute?.key,
++};`}
+/>
 
 Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `null` when the router cannot handle an action.
 
@@ -397,31 +389,52 @@ Set `affectedRouteKey` to the route selected or changed by that specific action,
 `extendRouter` receives the base router and a `nextKey` function. `nextKey` generates deterministic route keys, and the wrapper writes the updated `routeKeySeq` into returned state:
 
 ```ts
-import { attachRouteState, extendRouter, StackRouter } from 'expo-router';
+import {
+  attachRouteState,
+  extendRouter,
+  StackRouter,
+  type CommonNavigationAction,
+  type StackActionType,
+} from 'expo-router';
+
+type CustomAction = {
+  type: 'CUSTOM-ACTION';
+  payload: { name: string; params?: object };
+};
 
 const CustomStackRouter = extendRouter(StackRouter, ({ baseRouter, nextKey }) => ({
-  getStateForAction(state, action, config) {
-    if (action.type !== 'PUSH') {
-      return baseRouter.getStateForAction(state, action, config);
+  getStateForAction(
+    state,
+    action: CommonNavigationAction | StackActionType | CustomAction,
+    config
+  ) {
+    if (action.type === 'CUSTOM-ACTION') {
+      if (!state.routeNames.includes(action.payload.name)) {
+        return null;
+      }
+
+      const route = attachRouteState(
+        {
+          key: nextKey(action.payload.name),
+          name: action.payload.name,
+          params: action.payload.params,
+        },
+        action
+      );
+      const activeRoutes = state.routes.slice(0, state.index + 1);
+      const preloadedRoutes = state.routes.slice(state.index + 1);
+
+      return {
+        state: {
+          ...state,
+          index: activeRoutes.length,
+          routes: [...activeRoutes, route, ...preloadedRoutes],
+        },
+        affectedRouteKey: route.key,
+      };
     }
 
-    const route = attachRouteState(
-      {
-        key: nextKey(action.payload.name),
-        name: action.payload.name,
-        params: action.payload.params,
-      },
-      action
-    );
-
-    return {
-      state: {
-        ...state,
-        index: state.routes.length,
-        routes: [...state.routes, route],
-      },
-      affectedRouteKey: route.key,
-    };
+    return baseRouter.getStateForAction(state, action, config);
   },
 }));
 ```
@@ -440,15 +453,14 @@ For new custom integrations, use `createStandardRouterNavigator` in an app or `i
   raw={`diff --git a/src/expo-router.ts b/src/expo-router.ts
 --- a/src/expo-router.ts
 +++ b/src/expo-router.ts
-@@ -1,5 +1,5 @@
+@@ -1,4 +1,4 @@
 -import { withLayoutContext } from 'expo-router';
 -import { createNavigator } from './navigator';
 +import { createStandardRouterNavigator, TabRouter } from 'expo-router';
 +import { TabNavigatorContent } from './navigator';
  
 -export const Tabs = withLayoutContext(createNavigator().Navigator);
-+export const Tabs = createStandardRouterNavigator(TabNavigatorContent, TabRouter);
-`}
++export const Tabs = createStandardRouterNavigator(TabNavigatorContent, TabRouter);`}
 />
 
 `withLayoutContext` remains supported for existing React Navigation navigators. Remove its former third `useOnlyUserDefinedScreens` argument if your integration uses it. Filesystem routes remain registered; use descriptor `routeSource` when navigator UI needs to distinguish layout-declared routes from filesystem routes.
