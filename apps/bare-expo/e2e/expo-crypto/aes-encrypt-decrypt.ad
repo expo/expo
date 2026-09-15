@@ -1,0 +1,27 @@
+# expo-crypto: AES key generation and a full encrypt/decrypt cycle, including a failing
+# decrypt when the additional authenticated data does not match.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/expo-crypto/aes"
+wait text "AESEncryptionKey.generate" 20000
+press label="AESEncryptionKey.generate: RUN"
+wait text "AESEncryptionKey.generate = " 10000
+scroll bottom
+press label="Full encrypt/decrypt cycle: RUN"
+wait text "Full encrypt/decrypt cycle = {" 10000
+wait text "\"decrypted\": \"Hello, World!\"" 5000
+wait text "\"success\": true" 5000
+# Cycle plaintext to "Secret".
+press label="Full encrypt/decrypt cycle: plaintext"
+press label="Full encrypt/decrypt cycle: RUN"
+wait text "\"decrypted\": \"Secret\"" 10000
+# Matching AAD on both sides still succeeds.
+press label="Full encrypt/decrypt cycle: encryptionAAD"
+press label="Full encrypt/decrypt cycle: decryptionAAD"
+press label="Full encrypt/decrypt cycle: RUN"
+wait text "\"success\": true" 10000
+# Mismatched AAD must fail to decrypt.
+press label="Full encrypt/decrypt cycle: decryptionAAD"
+press label="Full encrypt/decrypt cycle: RUN"
+wait text "Full encrypt/decrypt cycle = Error" 10000
+close
