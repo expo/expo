@@ -178,4 +178,18 @@ struct UpdatesStateMachineTests {
     #expect(machine.context.isUpdatePending == false)
     #expect(machine.context.rollback?.commitTime == commitTime)
   }
+
+  @Test
+  func `entering the downloading state first lets a download error reach the context`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    // This is the sequence both StartupProcedure implementations use when a background update
+    // fails while the machine is idle.
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadError(errorMessage: "Failed to download remote update: HTTP 502"))
+
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.downloadError?["message"] == "Failed to download remote update: HTTP 502")
+  }
 }

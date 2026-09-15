@@ -211,9 +211,16 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if self.procedureContext.getCurrentState() == .checking {
+      switch self.procedureContext.getCurrentState() {
+      case .checking:
         self.procedureContext.processStateEvent(.checkError(errorMessage: error.localizedDescription))
-      } else if self.procedureContext.getCurrentState() == .downloading {
+      case .downloading:
+        self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
+      default:
+        // The machine is idle, so `downloadError` on its own would be an illegal transition and
+        // would be dropped, leaving `useUpdates()` with no record of the failure. Move into the
+        // downloading state first, as the Android implementation does.
+        self.procedureContext.processStateEvent(.download)
         self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
       }
     case .updateAvailable:
