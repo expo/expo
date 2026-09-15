@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Add opt-in UIKit scene lifecycle support with React Native startup, deep links, Handoff, and quick actions. ([#50191](https://github.com/expo/expo/pull/50191) by [@chrfalch](https://github.com/chrfalch))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.23 — 2026-09-15
+
+### 🎉 New features
+
+- [iOS] Add opt-in UIKit scene lifecycle support with React Native startup, deep links, Handoff, and quick actions. ([#50191](https://github.com/expo/expo/pull/50191) by [@chrfalch](https://github.com/chrfalch))
 
 ## 57.0.22 — 2026-09-11
 
