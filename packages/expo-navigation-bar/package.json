@@ -50,6 +50,7 @@
     "debug": "^4.3.2"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.0",
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
