@@ -12,7 +12,7 @@ import {
   unstable_createStandardStackNavigator,
 } from '../react-navigation/stack';
 import { makeRestoreRouteAction } from '../react-navigation/stack/utils/makeRestoreRouteAction';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { integrateWithRouter } from '../standard-navigation';
 import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
@@ -29,11 +29,11 @@ export * from '../react-navigation/stack';
  *
  * @example
  * ```tsx
- * import { StackRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { StackRouter, integrateWithRouter } from 'expo-router';
  * import { createJSStackProps } from 'expo-router/js-stack';
  * import { navigator } from './navigator';
  *
- * export const Stack = unstable_integrateWithRouter(navigator, StackRouter, {
+ * export const Stack = integrateWithRouter(navigator, StackRouter, {
  *   createProps: createJSStackProps,
  * });
  * ```
@@ -49,7 +49,7 @@ export function createJSStackProps(
 }
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
-const JSStack = unstable_integrateWithRouter<
+const JSStack = integrateWithRouter<
   StackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardStackNavigationEventMap,

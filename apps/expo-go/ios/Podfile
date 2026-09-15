@@ -49,7 +49,11 @@ target 'Expo Go' do
 
   # Expo modules
   use_expo_modules!({
+    searchPaths: [
+      '../../../packages'
+    ],
     exclude: [
+      'expo-app-intents',
       'expo-app-metrics',
       'expo-module-template',
       'expo-dev-launcher',

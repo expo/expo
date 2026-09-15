@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Update the native tabs import path in the `TabView` API reference. ([#50119](https://github.com/expo/expo/pull/50119) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes

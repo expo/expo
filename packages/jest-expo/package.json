@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "58.0.0",
+  "version": "58.0.1",
   "description": "A Jest preset to painlessly test your Expo / React Native apps.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo",
   "bugs": {

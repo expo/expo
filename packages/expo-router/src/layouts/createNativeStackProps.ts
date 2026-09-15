@@ -15,11 +15,11 @@ import { createBaseStackProps } from './stack-utils/createBaseStackProps';
  * import {
  *   createNativeStackProps,
  *   StackRouter,
- *   unstable_integrateWithRouter,
+ *   integrateWithRouter,
  * } from 'expo-router';
  * import { navigator } from './navigator';
  *
- * export const Stack = unstable_integrateWithRouter(navigator, StackRouter, {
+ * export const Stack = integrateWithRouter(navigator, StackRouter, {
  *   createProps: createNativeStackProps,
  * });
  * ```

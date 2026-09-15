@@ -18,13 +18,13 @@ import {
   type DrawerRouterOptions,
   type ParamListBase,
 } from '../react-navigation/native';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 
-export const Drawer = unstable_integrateWithRouter<
+export const Drawer = integrateWithRouter<
   DrawerNavigationOptions,
   DrawerNavigationState<ParamListBase>,
   StandardDrawerNavigationEventMap,

@@ -12,10 +12,10 @@ import type { StandardNavigatorCreatePropsFactoryDeps } from '../../standard-nav
  *
  * @example
  * ```tsx
- * import { createBaseStackProps, StackRouter, unstable_integrateWithRouter } from 'expo-router';
+ * import { createBaseStackProps, StackRouter, integrateWithRouter } from 'expo-router';
  * import { navigator } from './navigator';
  *
- * export const Stack = unstable_integrateWithRouter(navigator, StackRouter, {
+ * export const Stack = integrateWithRouter(navigator, StackRouter, {
  *   createProps: createBaseStackProps,
  * });
  * ```
