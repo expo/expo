@@ -177,14 +177,16 @@ export function transformNativeBundleForMd5Filename({
     const assetEntity = files.get(artifact.filename);
     assert(assetEntity);
     if (Buffer.isBuffer(assetEntity.contents)) {
-      const searchBuffer = Buffer.from(`${hash}.html`, 'utf8');
-      const replaceBuffer = Buffer.from(`${htmlMd5}.html`, 'utf8');
-      assert(searchBuffer.length === replaceBuffer.length);
-      let index = assetEntity.contents.indexOf(searchBuffer, 0);
-      while (index !== -1) {
-        replaceBuffer.copy(assetEntity.contents, index);
-        index = assetEntity.contents.indexOf(searchBuffer, index + searchBuffer.length);
-      }
+      // Renaming inside compiled Hermes bytecode is unsound: hermesc
+      // overlap-packs strings that share suffix/prefix bytes, so a same-length
+      // in-place replacement can overwrite bytes owned by a neighbouring
+      // string (this silently corrupted unrelated string literals such as API
+      // keys in exported bundles). Bytecode compilation is deferred until
+      // after this rename (see exportApp), so this should never be reached.
+      throw new Error(
+        `Cannot rename DOM component asset "${htmlOutputName}" inside the compiled Hermes bytecode of "${artifact.filename}". ` +
+          'DOM component html renames must be applied to the serialized JS before bytecode compilation.'
+      );
     } else {
       const search = `${hash}.html`;
       const replace = `${htmlMd5}.html`;
