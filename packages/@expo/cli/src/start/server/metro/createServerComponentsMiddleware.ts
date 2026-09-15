@@ -47,6 +47,7 @@ export function createServerComponentsMiddleware(
   {
     rscPath,
     instanceMetroOptions,
+    getAsyncRoutesForPlatform,
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     useClientRouter,
@@ -55,6 +56,8 @@ export function createServerComponentsMiddleware(
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
+    /** Resolve the platform-specific async routes setting. */
+    getAsyncRoutesForPlatform: (platform: string) => boolean;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     useClientRouter: boolean;
@@ -343,20 +346,17 @@ export function createServerComponentsMiddleware(
       isExporting,
       baseUrl,
       routerRoot,
-      asyncRoutes,
       preserveEnvVars,
       reactCompiler,
       lazy,
     } = instanceMetroOptions;
 
     assert(
-      isExporting != null &&
-        baseUrl != null &&
-        mode != null &&
-        routerRoot != null &&
-        asyncRoutes != null,
-      `The server must be started. (isExporting: ${isExporting}, baseUrl: ${baseUrl}, mode: ${mode}, routerRoot: ${routerRoot}, asyncRoutes: ${asyncRoutes})`
+      isExporting != null && baseUrl != null && mode != null && routerRoot != null,
+      `The server must be started. (isExporting: ${isExporting}, baseUrl: ${baseUrl}, mode: ${mode}, routerRoot: ${routerRoot})`
     );
+
+    const asyncRoutes = getAsyncRoutesForPlatform(context.platform);
 
     return (file: string, isServer: boolean) => {
       const filePath = path.join(

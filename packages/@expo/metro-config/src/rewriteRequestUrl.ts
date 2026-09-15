@@ -34,6 +34,11 @@ function isEnableHermesManaged(
   }
 }
 function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
+  // Production async routes are web-only. Keep in sync with `metroOptions.ts` in `@expo/cli`.
+  if (mode === 'production' && platform !== 'web') {
+    return false;
+  }
+
   let asyncRoutesSetting;
 
   if (exp.extra?.router?.asyncRoutes) {
