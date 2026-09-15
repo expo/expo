@@ -10,7 +10,7 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import { renderRouter } from '../../testing-library';
-import { unstable_createStandardRouterNavigator } from '../index';
+import { createStandardRouterNavigator } from '../index';
 import { useStandardActions } from '../useStandardActions';
 
 type Navigation = Parameters<typeof useStandardActions>[0];
@@ -101,7 +101,7 @@ describe('useStandardActions (integration)', () => {
       </>
     );
   }
-  const StandardTabs = unstable_createStandardRouterNavigator<
+  const StandardTabs = createStandardRouterNavigator<
     Record<string, never>,
     TabNavigationState<ParamListBase>,
     Record<string, never>,

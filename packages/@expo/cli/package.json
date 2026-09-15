@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "58.0.0",
+  "version": "58.0.1",
   "description": "The Expo CLI",
   "keywords": [
     "cli",

@@ -8,15 +8,10 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import {
-  type CommonNavigationAction,
+  extendRouterActions,
   type NavigationState,
-  type ParamListBase,
   type PartialState,
-  type Router,
-  type TabActionType,
-  type TabNavigationState,
   TabRouter,
-  type TabRouterOptions,
 } from '../react-navigation/native';
 
 const zoomParamNames = [
@@ -81,85 +76,76 @@ function appendNoAnimationParamToFocusedRoutes<
   return { ...state, routes } as T;
 }
 
-export function NativeBottomTabsRouter(options: TabRouterOptions) {
-  const tabRouter = TabRouter({ ...options });
+export const NativeBottomTabsRouter = extendRouterActions(
+  TabRouter,
+  (state, action, { baseRouter }) => {
+    switch (action.type) {
+      case 'PUSH':
+      case 'NAVIGATE': {
+        const actionResult = baseRouter.getStateForAction(state, action);
+        const newStateFromNavigation = actionResult?.state;
 
-  const nativeTabRouter: Router<
-    TabNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction
-  > = {
-    ...tabRouter,
-    getStateForAction: (state, action: TabActionType | CommonNavigationAction, options) => {
-      switch (action.type) {
-        case 'PUSH':
-        case 'NAVIGATE': {
-          const actionResult = tabRouter.getStateForAction(state, action, options);
-          const newStateFromNavigation = actionResult?.state;
-
-          if (!newStateFromNavigation) {
-            return actionResult;
-          }
-          const focusedRouteKey = state.routes[state.index]?.key;
-          const nextFocusedRouteKey =
-            newStateFromNavigation.routes[newStateFromNavigation.index]?.key;
-          const didTabChange =
-            focusedRouteKey !== undefined &&
-            nextFocusedRouteKey !== undefined &&
-            focusedRouteKey !== nextFocusedRouteKey;
-          const index = newStateFromNavigation.routes.findIndex(
-            (route) => route.name === action.payload.name
-          );
-          if (index === -1) {
-            return actionResult;
-          }
-
-          const newState = {
-            ...newStateFromNavigation,
-            routes: newStateFromNavigation.routes.map((route) => {
-              if (route.name !== action.payload.name) {
-                return route;
-              }
-
-              const expoParams: InternalExpoRouterParams = getInternalExpoRouterParams(
-                action.payload.params
-              );
-
-              if (process.env.NODE_ENV !== 'production') {
-                if (expoParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]) {
-                  console.warn(
-                    'Zoom transition is not supported when navigating between tabs. Falling back to standard navigation transition.'
-                  );
-                }
-              }
-
-              // Zoom transition needs to be disabled for navigation inside tabs
-              // Otherwise user can end up in a situation where a view is missing on one tab
-              // because it was used to perform zoom transition on another tab
-              const params = removeParams(
-                appendInternalExpoRouterParams(route.params, expoParams),
-                zoomParamNames
-              );
-              let childState = route.state ? removeZoomParamsFromState(route.state) : undefined;
-              if (
-                childState &&
-                didTabChange &&
-                action.payload.state?.__internal__routerActionState === true
-              ) {
-                childState = appendNoAnimationParamToFocusedRoutes(childState);
-              }
-              return {
-                ...route,
-                ...(childState ? { state: childState } : undefined),
-                params,
-              };
-            }),
-          };
-          return { ...actionResult, state: newState };
+        if (!newStateFromNavigation) {
+          return actionResult;
         }
-      }
-      return tabRouter.getStateForAction(state, action, options);
-    },
-  };
+        const focusedRouteKey = state.routes[state.index]?.key;
+        const nextFocusedRouteKey =
+          newStateFromNavigation.routes[newStateFromNavigation.index]?.key;
+        const didTabChange =
+          focusedRouteKey !== undefined &&
+          nextFocusedRouteKey !== undefined &&
+          focusedRouteKey !== nextFocusedRouteKey;
+        const index = newStateFromNavigation.routes.findIndex(
+          (route) => route.name === action.payload.name
+        );
+        if (index === -1) {
+          return actionResult;
+        }
 
-  return nativeTabRouter;
-}
+        const newState = {
+          ...newStateFromNavigation,
+          routes: newStateFromNavigation.routes.map((route) => {
+            if (route.name !== action.payload.name) {
+              return route;
+            }
+
+            const expoParams: InternalExpoRouterParams = getInternalExpoRouterParams(
+              action.payload.params
+            );
+
+            if (process.env.NODE_ENV !== 'production') {
+              if (expoParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]) {
+                console.warn(
+                  'Zoom transition is not supported when navigating between tabs. Falling back to standard navigation transition.'
+                );
+              }
+            }
+
+            // Zoom transition needs to be disabled for navigation inside tabs
+            // Otherwise user can end up in a situation where a view is missing on one tab
+            // because it was used to perform zoom transition on another tab
+            const params = removeParams(
+              appendInternalExpoRouterParams(route.params, expoParams),
+              zoomParamNames
+            );
+            let childState = route.state ? removeZoomParamsFromState(route.state) : undefined;
+            if (
+              childState &&
+              didTabChange &&
+              action.payload.state?.__internal__routerActionState === true
+            ) {
+              childState = appendNoAnimationParamToFocusedRoutes(childState);
+            }
+            return {
+              ...route,
+              ...(childState ? { state: childState } : undefined),
+              params,
+            };
+          }),
+        };
+        return { ...actionResult, state: newState };
+      }
+    }
+    return undefined;
+  }
+);

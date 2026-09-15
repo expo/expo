@@ -9,7 +9,7 @@ import {
   type TabRouterOptions,
 } from '../react-navigation/native';
 import {
-  unstable_createStandardRouterNavigator,
+  createStandardRouterNavigator,
   type StandardNavigatorDescriptor,
 } from '../standard-navigation';
 import { appendMissingPlaceholderTabDescriptors } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
@@ -20,7 +20,7 @@ const probeContent = jest.fn((args: NavigatorArgs<object, Record<string, never>>
   args.descriptors[args.state.routes[args.state.index]!.key]!.render()
 );
 
-const Probe = unstable_createStandardRouterNavigator<
+const Probe = createStandardRouterNavigator<
   object,
   TabNavigationState<ParamListBase>,
   Record<string, never>,
