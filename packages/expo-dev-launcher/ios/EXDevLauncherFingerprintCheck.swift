@@ -13,18 +13,18 @@ internal struct FingerprintCheckRequest: Equatable {
     guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
           let queryItems = components.queryItems,
           queryItems.contains(where: {
-            $0.name == FingerprintCheckProtocol.markerParam
-              && $0.value == FingerprintCheckProtocol.markerValue
+            $0.name == EmbeddedFingerprint.CheckProtocol.markerParam
+              && $0.value == EmbeddedFingerprint.CheckProtocol.markerValue
           }),
-          let nonce = queryItems.first(where: { $0.name == FingerprintCheckProtocol.nonceParam })?.value,
+          let nonce = queryItems.first(where: { $0.name == EmbeddedFingerprint.CheckProtocol.nonceParam })?.value,
           !nonce.isEmpty,
           let callbackString = queryItems.first(where: {
-            $0.name == FingerprintCheckProtocol.callbackParam
+            $0.name == EmbeddedFingerprint.CheckProtocol.callbackParam
           })?.value,
           let callback = URL(string: callbackString),
           // The CLI never emits https, and https to an IP literal would fail TLS anyway.
           callback.scheme == "http",
-          callback.path == FingerprintCheckProtocol.callbackPath,
+          callback.path == EmbeddedFingerprint.CheckProtocol.callbackPath,
           let callbackHost = callback.host,
           isPrivateAddress(callbackHost) else {
       return nil
@@ -103,13 +103,10 @@ public class EXDevLauncherFingerprintCheck: NSObject {
       return false
     }
 
-    let nonce = request.nonce
-    let fingerprint = EmbeddedFingerprint.read()
-    let body: [String: Any] = [
-      FingerprintCheckProtocol.nonceBodyKey: nonce,
-      FingerprintCheckProtocol.fingerprintBodyKey: fingerprint?.hash ?? NSNull(),
-      FingerprintCheckProtocol.fingerprintVersionBodyKey: fingerprint?.fingerprintVersion ?? NSNull()
-    ]
+    let body = EmbeddedFingerprint.checkResponseBody(
+      nonce: request.nonce,
+      fingerprint: EmbeddedFingerprint.read()
+    )
 
     var urlRequest = URLRequest(url: request.callback)
     urlRequest.httpMethod = "POST"

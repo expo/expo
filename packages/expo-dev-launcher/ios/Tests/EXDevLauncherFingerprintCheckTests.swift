@@ -8,7 +8,7 @@ import Testing
 struct EXDevLauncherFingerprintCheckTests {
   /// `host` defaults to a user-land route, to prove the marker alone selects the channel.
   ///
-  /// The parameter names are spelled out rather than read from `FingerprintCheckProtocol`: these
+  /// The parameter names are spelled out rather than read from `CheckProtocol`: these
   /// are the literals the agent CLI sends, so renaming the constant has to fail here.
   private func triggerUrl(
     host: String = "some-app-route",

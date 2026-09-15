@@ -56,7 +56,8 @@ private func isFingerprintCheckURL(_ url: URL) -> Bool {
     return false
   }
   return queryItems.contains {
-    $0.name == FingerprintCheckProtocol.markerParam && $0.value == FingerprintCheckProtocol.markerValue
+    $0.name == EmbeddedFingerprint.CheckProtocol.markerParam
+      && $0.value == EmbeddedFingerprint.CheckProtocol.markerValue
   }
   #else
   return false
