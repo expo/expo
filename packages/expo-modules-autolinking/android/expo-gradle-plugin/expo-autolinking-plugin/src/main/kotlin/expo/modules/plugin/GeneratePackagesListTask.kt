@@ -66,7 +66,7 @@ abstract class GeneratePackagesListTask : DefaultTask() {
     return """package ${namespace.get()}
 
 import expo.modules.v2.ExpoModulesV2Provider
-import io.github.expo.modules.v2.modules.Module
+import io.github.expo.modules.v2.Module
 
 class ExpoModulesV2ModuleList : ExpoModulesV2Provider {
   override fun getModules(): List<Class<out Module>> {
