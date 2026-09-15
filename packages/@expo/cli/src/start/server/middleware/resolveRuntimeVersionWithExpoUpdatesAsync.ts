@@ -1,3 +1,5 @@
+import type { EnvMode } from '@expo/env';
+
 import { env } from '../../../utils/env';
 import {
   ExpoUpdatesCLIModuleNotFoundError,
@@ -9,18 +11,19 @@ import type { RuntimePlatform } from './resolvePlatform';
 export async function resolveRuntimeVersionWithExpoUpdatesAsync({
   projectRoot,
   platform,
+  mode,
 }: {
   projectRoot: string;
   platform: RuntimePlatform;
+  mode: EnvMode;
 }): Promise<string | null> {
   try {
     const extraArgs = env.EXPO_DEBUG ? ['--debug'] : [];
-    const resolvedRuntimeVersionJSONResult = await expoUpdatesCommandAsync(projectRoot, [
-      'runtimeversion:resolve',
-      '--platform',
-      platform,
-      ...extraArgs,
-    ]);
+    const resolvedRuntimeVersionJSONResult = await expoUpdatesCommandAsync(
+      projectRoot,
+      ['runtimeversion:resolve', '--platform', platform, ...extraArgs],
+      mode
+    );
     const runtimeVersionResult: { runtimeVersion: string | null } = JSON.parse(
       resolvedRuntimeVersionJSONResult
     );

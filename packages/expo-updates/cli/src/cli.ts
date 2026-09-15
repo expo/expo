@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { getOriginalEnv } from '@expo/env';
 import arg from 'arg';
 import chalk from 'chalk';
 import Debug from 'debug';
@@ -6,6 +7,8 @@ import { boolish } from 'getenv';
 
 import { logCmdError } from './utils/errors';
 import * as Log from './utils/log';
+
+process.env = getOriginalEnv();
 
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {
