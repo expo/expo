@@ -1,66 +1,167 @@
-name: Publish Packages
+name: Release Packages
 
 on:
+  push:
+    branches:
+      - main
+      # - sdk-58
   workflow_dispatch:
-    inputs:
-      skip-ios-prebuilds:
-        description: Skip restoring or building iOS XCFrameworks with Turbo
-        type: boolean
-        default: false
-  pull_request:
-    paths:
-      - .github/workflows/publish-packages.yml
   schedule:
     - cron: 0 1 * * * # Nightly at 1:00 AM UTC
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: true
+permissions: {}
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: expo
+  RCT_HERMES_V1_ENABLED: "1"
+  NPM_CONFIG_PROVENANCE: "true"
 
 jobs:
-  publish-packages:
-    if: github.repository == 'expo/expo'
-    runs-on: macos-26
-    timeout-minutes: 180
+  stable-mode:
+    name: Select stable release mode
+    if: >-
+      github.repository == 'expo/expo' &&
+      github.ref_name == 'main' &&
+      github.event_name == 'push'
+    runs-on: ubuntu-24.04
     permissions:
-      # Lets the runner mint an OIDC token so npm can authenticate the publish
-      # through trusted publishing instead of a long-lived token.
-      id-token: write
       contents: read
+    outputs:
+      mode: ${{ steps.mode.outputs.mode }}
     steps:
-      - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: 🔨 Switch to Xcode 26.4.1
-        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
-      - name: 🔨 Add bin to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🔨 Install pnpm
-        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
-          cache: 'pnpm'
-          registry-url: https://registry.npmjs.org/
-      - name: 🔨 Use JDK 17
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - id: mode
+        name: Select version or publish
+        run: |
+          if find .changeset -maxdepth 1 -type f -name '*.md' ! -name README.md -print -quit | grep -q .; then
+            echo 'mode=version' >> "$GITHUB_OUTPUT"
+          else
+            pnpm exec changeset publish-plan --output "$RUNNER_TEMP/publish-plan.json"
+            if jq -e '[.plan[]?[]?] | length > 0' "$RUNNER_TEMP/publish-plan.json" >/dev/null; then
+              echo 'mode=publish' >> "$GITHUB_OUTPUT"
+            else
+              echo 'No unpublished package versions found; skipping stable publication.'
+              echo 'mode=noop' >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  stable-version:
+    name: Create or update version PR
+    needs: stable-mode
+    if: needs.stable-mode.outputs.mode == 'version'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    concurrency:
+      group: publish-packages-version-${{ github.ref_name }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: 📦 Publish canaries
-        run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }} ${{ inputs.skip-ios-prebuilds && '--skip-ios-prebuilds' || '' }}
+          fetch-depth: 0
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Create release PR
+        uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
+        with:
+          github-token: ${{ github.token }}
+          version-script: pnpm expotools version-packages
+          commit-message: Version packages (${{ github.ref_name }})
+          pr-title: Version packages (${{ github.ref_name }})
+          pr-base-branch: ${{ github.ref_name }}
+
+  stable-publish:
+    name: Publish stable packages
+    needs: stable-mode
+    if: needs.stable-mode.outputs.mode == 'publish'
+    runs-on: macos-26
+    timeout-minutes: 180
+    environment: npm-publish-stable
+    concurrency:
+      group: publish-packages-stable-${{ github.ref_name }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - run: echo "$(pwd)/bin" >> "$GITHUB_PATH"
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - run: pnpm install --frozen-lockfile
+      - name: Publish with Changesets
+        uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
+        with:
+          github-token: ${{ github.token }}
+          publish-script: pnpm expotools publish-packages
+
+  canary-publish:
+    name: Publish canary packages
+    if: >-
+      github.repository == 'expo/expo' &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: macos-26
+    timeout-minutes: 180
+    environment: npm-publish-canary
+    concurrency:
+      group: publish-packages-canary-${{ github.ref_name }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - run: echo "$(pwd)/bin" >> "$GITHUB_PATH"
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - run: pnpm install --frozen-lockfile
+      - name: Publish canaries
+        # Scheduled runs are temporarily dry-run while the Changesets canary flow is validated.
+        run: pnpm expotools publish-canary ${{ github.event_name == 'schedule' && '--dry-run' || '' }}
         env:
-          FORCE_COLOR: '2'
-      - name: 🔔 Notify on Slack
-        uses: ./.github/actions/slack-notify
+          FORCE_COLOR: "2"
+      - uses: ./.github/actions/slack-notify
         if: failure() && github.event_name == 'schedule'
         with:
           webhook: ${{ secrets.slack_webhook_api }}
