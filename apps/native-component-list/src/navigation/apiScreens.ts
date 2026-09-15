@@ -85,6 +85,17 @@ export const ScreensList: ScreenConfig[] = [
           options: { title: 'Age Range' },
         },
       ]),
+  ...(isRunningInExpoGo()
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/AIScreen'));
+          },
+          name: 'AI',
+          options: { title: 'AI' },
+        },
+      ]),
   {
     getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));
