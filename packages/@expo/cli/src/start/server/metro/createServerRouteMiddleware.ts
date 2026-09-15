@@ -218,7 +218,7 @@ export function createRouteHandlerMiddleware(
       async getMiddleware(route) {
         const { exp } = options.config;
 
-        if (exp.web?.output !== 'server' && exp.extra?.router?.apiRoutes !== true) {
+        if (exp.web?.output !== 'server' && !isApiRoutesEnabled(exp)) {
           warnInvalidMiddlewareOutput();
           return {
             default: () => {
