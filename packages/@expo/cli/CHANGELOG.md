@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Bundle source maps served by `expo start` and written by `expo export` are now [index maps](https://tc39.es/ecma426/#sec-index-source-map), as Metro now always emits them. Tools that read top-level `sources` or `mappings` must handle `sections`. Maps composed with Hermes bytecode and server output maps remain flat. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- Bundle source maps served by `expo start` and written by `expo export` are now [index maps](https://tc39.es/ecma426/#sec-index-source-map), as Metro now always emits them. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
 
 ### 🎉 New features
 
