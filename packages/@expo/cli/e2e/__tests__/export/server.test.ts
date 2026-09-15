@@ -2,6 +2,7 @@ import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import {
   prepareServers,
   setupServer,
@@ -10,7 +11,7 @@ import {
   RUNTIME_EXPO_SERVE,
   RUNTIME_WORKERD,
 } from '../../utils/runtime';
-import { findProjectFiles } from '../utils';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
@@ -481,6 +482,107 @@ describe.each([
           expect(manifest.apiRoutes.some((route) => route.page === '/methods')).toBe(apiRoutes);
         }
       });
+    }
+  });
+});
+
+describe.each(['static', 'server'])('API route bundle exclusion with %s output', (output) => {
+  const projectRoot = getRouterE2ERoot();
+  const handlerMarker = 'EXPO_API_HANDLER_BUNDLE_PROBE';
+  const dependencyMarker = 'EXPO_API_DEPENDENCY_BUNDLE_PROBE';
+  const handler = `import { value } from '../api-only-dependency';
+export function GET() {
+  return Response.json({ marker: '${handlerMarker}', value });
+}`;
+  let fixtureDir: string;
+  const outputDirs: string[] = [];
+
+  beforeAll(async () => {
+    // Isolate the probes from other tests using the server fixture.
+    fixtureDir = await fs.mkdtemp(path.join(projectRoot, '__e2e__', 'api-route-bundling-'));
+    await fs.cp(path.join(projectRoot, '__e2e__', 'server'), fixtureDir, { recursive: true });
+    await fs.writeFile(
+      path.join(fixtureDir, 'api-only-dependency.ts'),
+      `export const value = '${dependencyMarker}';`
+    );
+    await fs.writeFile(path.join(fixtureDir, 'app/bundle-probe+api.ts'), handler);
+  });
+
+  afterAll(async () => {
+    await fs.rm(fixtureDir, { recursive: true, force: true });
+    for (const outputDir of outputDirs) {
+      await fs.rm(outputDir, { recursive: true, force: true });
+    }
+  });
+
+  async function exportProbe(apiRoutes: boolean, reject = true) {
+    const outputDir = await fs.mkdtemp(path.join(projectRoot, 'dist-api-route-bundling-'));
+    outputDirs.push(outputDir);
+    const result = await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--clear', '--source-maps', '--output-dir', outputDir],
+      {
+        reject,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: output,
+          E2E_ROUTER_API_ROUTES: String(apiRoutes),
+          E2E_ROUTER_SRC: path.basename(fixtureDir),
+        },
+      }
+    );
+    return { outputDir, result };
+  }
+
+  it.each([false, true])('bundles API-only code only when enabled: %p', async (apiRoutes) => {
+    const { outputDir } = await exportProbe(apiRoutes);
+    const files = findProjectFiles(outputDir);
+    const contents = await Promise.all(
+      files.map((file) => fs.readFile(path.join(outputDir, file)))
+    );
+    for (const marker of [handlerMarker, dependencyMarker]) {
+      const matches = files.filter((_, i) => contents[i].includes(marker));
+      if (apiRoutes) {
+        expect(matches).toContain('server/_expo/functions/bundle-probe+api.js');
+        expect(matches.filter((file) => file.startsWith('client/'))).toEqual([]);
+      } else {
+        expect(matches).toEqual([]);
+      }
+    }
+    if (!apiRoutes) {
+      expect(files.filter((file) => file.includes('+api.'))).toEqual([]);
+    }
+
+    const server = createExpoServe({ cwd: projectRoot });
+    try {
+      await server.startAsync([outputDir]);
+      const response = await server.fetchAsync('/bundle-probe');
+      expect(response.status).toBe(apiRoutes ? 200 : 404);
+      if (apiRoutes) {
+        expect(await response.json()).toEqual({ marker: handlerMarker, value: dependencyMarker });
+      }
+      const page = await server.fetchAsync('/blog-ssg/abc');
+      expect(page.status).toBe(200);
+      expect(await page.text()).toMatch(/Post: <!-- -->abc/);
+    } finally {
+      await server.stopAsync();
+    }
+  });
+
+  it('does not resolve API-only imports when disabled', async () => {
+    const missingModule = './intentionally-missing-api-only-module';
+    await fs.writeFile(
+      path.join(fixtureDir, 'app/bundle-probe+api.ts'),
+      `import { value } from '${missingModule}';
+export function GET() { return Response.json({ value }); }`
+    );
+    try {
+      await exportProbe(false);
+      const { result } = await exportProbe(true, false);
+      expect(result.exitCode).not.toBe(0);
+      expect(result.stderr).toContain(missingModule);
+    } finally {
+      await fs.writeFile(path.join(fixtureDir, 'app/bundle-probe+api.ts'), handler);
     }
   });
 });
