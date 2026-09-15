@@ -1,5 +1,53 @@
 # Expo release workflow
 
+## Package release automation
+
+Package changes are released through `publish-packages.yml`:
+
+1. Package changes land with `.changeset/*.md` files.
+2. The workflow runs `et version-packages` and updates `Version packages (<branch>)`.
+3. That pull request contains the new package versions, changelogs, generated version files, and
+   lockfile.
+4. After it is merged, the workflow runs `et publish-packages`. This builds and precompiles the
+   packages, then publishes them with Changesets.
+
+Only this workflow can use npm trusted publishing. Use it for normal releases.
+
+### Emergency local execution
+
+For an emergency, start from a clean checkout of a release branch that has publishing enabled:
+
+```sh
+et version-packages
+git add -A
+git commit -m "Version packages (<branch>)"
+et publish-packages --dry-run
+```
+
+You must commit the result of `et version-packages` before publishing. Normally it consumes all
+pending changesets, so `--force` is not needed.
+
+`et publish-packages --force` only permits publishing when changeset files remain. It does not skip
+the other safety checks. Local publishing also needs separate npm credentials because npm trusted
+publishing is only available to the GitHub workflow. Prefer pushing the version commit and letting
+the workflow publish it.
+
+### Release branch and dist-tag configuration
+
+`.changeset/expo.json` contains the release settings for each branch:
+
+- `publish` is the npm tag for normal releases. `null` disables them.
+- `canary` is the npm tag for canaries. `null` disables them.
+- `allowMajor` controls whether the branch accepts major changesets.
+- `branches` contains settings for named branches.
+- `sdkBranchDefaults` contains the defaults for other `sdk-N` branches. `{branch}` is replaced with
+  the branch name. For example, `sdk-57` uses `sdk-57` and `canary-sdk-57` by default.
+
+The workflow also has its own branch allowlist. Update both files when enabling a release branch.
+During the SDK 58 beta, `main` publishes to `next` and `sdk-58` publishing is disabled. After beta,
+disable releases from `main`, enable `sdk-58` with the `latest` tag, and enable `sdk-58` in the
+workflow. Older SDK branches use an npm tag matching their branch name.
+
 # Stage 0 - Infra & Prerelease
 
 ## 0.1. Update vendored modules
@@ -14,7 +62,7 @@
 - Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
 - Pay extra attention to messages and warnings printed along the way for each module. Sometimes there's need for some extra manual work to be done in the updated files.
-- Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
+- Add a changeset for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
 - Make sure that each individual library update lands on `main` as a **separate commit** so that it's easy to revert later on if needed.
 
 ## 0.2. Update schema
