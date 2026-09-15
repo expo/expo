@@ -1,0 +1,60 @@
+import groovy.json.JsonOutput
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.TaskAction
+
+abstract class ExpoResolveBuildMode extends DefaultTask {
+  @Input abstract Property<String> getVariantName()
+  @Input abstract MapProperty<String, String> getVariantModes()
+  @Input abstract Property<Boolean> getReactPluginApplied()
+
+  @TaskAction
+  void reportMode() {
+    if (!reactPluginApplied.get()) {
+      throw new GradleException('The application must apply the React Native Gradle plugin to resolve its build mode.')
+    }
+    def requested = variantName.get()
+    def modes = variantModes.get()
+    def matches = modes.keySet().findAll { it.equalsIgnoreCase(requested) }
+    if (matches.isEmpty()) {
+      throw new GradleException("Unknown or disabled Android variant '${requested}'. Available variants: ${modes.keySet().join(', ')}.")
+    }
+    if (matches.size() != 1) {
+      throw new GradleException("Ambiguous Android variant '${requested}'. Matching variants: ${matches.join(', ')}.")
+    }
+    def selected = matches.first()
+    println('EXPO_ANDROID_BUILD_MODE=' + JsonOutput.toJson([
+      version: 1,
+      projectPath: ':app',
+      variant: selected,
+      mode: modes[selected],
+    ]))
+  }
+}
+
+gradle.beforeProject { project ->
+  if (gradle.parent != null || project.path != ':app') return
+
+  project.pluginManager.withPlugin('com.android.application') {
+    def reportTask = project.tasks.register('expoResolveBuildMode', ExpoResolveBuildMode) {
+      variantName.set(project.providers.gradleProperty('expo.android.variant'))
+      variantModes.set([:])
+      reactPluginApplied.set(false)
+    }
+    project.pluginManager.withPlugin('com.facebook.react') {
+      reportTask.configure { reactPluginApplied.set(true) }
+      def react = project.extensions.getByName('react')
+      def components = project.extensions.getByName('androidComponents')
+      components.onVariants(components.selector().all()) { variant ->
+        def name = variant.name
+        def mode = react.debuggableVariants.get().any { it.equalsIgnoreCase(name) } ? 'development' : 'production'
+        reportTask.configure {
+          variantModes.put(name, mode)
+        }
+      }
+    }
+  }
+}
