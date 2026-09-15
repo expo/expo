@@ -71,4 +71,56 @@ describe(resolveOptionsAsync, () => {
       xcodeProject: { isWorkspace: false, name: '/ios/ReactNativeProject.xcodeproj' },
     });
   });
+
+  describe.each([
+    { target: 'simulator', isSimulator: true },
+    { target: 'device', isSimulator: false },
+  ])('on a $target', ({ isSimulator }) => {
+    it.each(['Debug', 'DebugStaging', 'debugStaging'])(
+      'respects --no-bundler without forcing SKIP_BUNDLING for %s',
+      async (configuration) => {
+        vol.fromJSON(fixture, '/');
+        jest.mocked(isSimulatorDevice).mockReturnValueOnce(isSimulator);
+
+        expect(await resolveOptionsAsync('/', { bundler: false, configuration })).toEqual(
+          expect.objectContaining({
+            configuration,
+            shouldSkipInitialBundling: configuration === 'Debug' && !isSimulator,
+            shouldStartBundler: false,
+          })
+        );
+      }
+    );
+  });
+
+  it('respects --no-bundler without an explicit configuration', async () => {
+    vol.fromJSON(fixture, '/');
+
+    expect(await resolveOptionsAsync('/', { bundler: false })).toEqual(
+      expect.objectContaining({ shouldStartBundler: false })
+    );
+  });
+
+  it('defaults to Debug even when an explicit scheme has a Release Run configuration', async () => {
+    vol.fromJSON(
+      {
+        ...fixture,
+        'ios/ReactNativeProject.xcodeproj/xcshareddata/xcschemes/Client.xcscheme': `
+          <Scheme version="1.3">
+            <LaunchAction buildConfiguration="Release">
+              <BuildableProductRunnable>
+                <BuildableReference BlueprintIdentifier="13B07F861A680F5B00A75B9A"
+                  BlueprintName="ReactNativeProject" BuildableName="ReactNativeProject.app"
+                  ReferencedContainer="container:ReactNativeProject.xcodeproj" />
+              </BuildableProductRunnable>
+            </LaunchAction>
+          </Scheme>`,
+      },
+      '/'
+    );
+
+    expect(await resolveOptionsAsync('/', { scheme: 'Client' })).toEqual(
+      expect.objectContaining({ scheme: 'Client', configuration: 'Debug' })
+    );
+  });
 });
