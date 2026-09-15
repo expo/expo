@@ -6844,6 +6844,9 @@ importers:
       diff:
         specifier: ^8.0.3
         version: 8.0.3
+      expo-modules-autolinking:
+        specifier: workspace:*
+        version: link:../packages/expo-modules-autolinking
       folder-hash:
         specifier: ^4.0.4
         version: 4.1.2

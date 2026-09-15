@@ -20,6 +20,7 @@ const SHARED_SPM_DEPS_SOURCE_DIR = '.spm-deps';
 const BUNDLED_PREBUILDS_DIR = 'prebuilds';
 const BUNDLED_SHARED_SPM_DEPS_SUBPATH = path.join(BUNDLED_PREBUILDS_DIR, 'spm-deps');
 const XCFRAMEWORKS_DIR = 'xcframeworks';
+const ARTIFACT_OUTPUT_DIR = 'output';
 
 /**
  * Returns null when any version is missing. An empty string counts as missing, which is
@@ -37,6 +38,16 @@ export function buildVersionPrefix(
   return path.posix.join(packageVersion, reactNativeVersion, hermesVersion);
 }
 
+/** Directory the monorepo builds every precompiled package under. */
+export function getMonorepoBuildDir(repoRoot: string): string {
+  return path.join(repoRoot, 'packages', 'precompile', PRECOMPILE_BUILD_DIR);
+}
+
+/** Build path of one package within the monorepo build directory. */
+export function getPackageBuildDir(repoRoot: string, npmPackage: string): string {
+  return path.join(getMonorepoBuildDir(repoRoot), npmPackage);
+}
+
 interface CommonArtifactBaseOptions {
   npmPackage: string;
   packageRoot: string;
@@ -48,6 +59,12 @@ export type ArtifactBaseOptions =
   | (CommonArtifactBaseOptions & { type: 'internal'; versionPrefix?: never })
   | (CommonArtifactBaseOptions & { type: 'external'; versionPrefix?: string | null });
 
+/** The base an already-resolved build path holds its artifacts under. */
+export function getArtifactBase(buildPath: string, versionPrefix?: string | null): string {
+  const output = path.join(buildPath, ARTIFACT_OUTPUT_DIR);
+  return versionPrefix ? path.join(output, versionPrefix) : output;
+}
+
 /** Ordered candidate base directories. Callers probe them in order. */
 export function getArtifactBases({
   type,
@@ -57,20 +74,21 @@ export function getArtifactBases({
   repoRoot,
   versionPrefix,
 }: ArtifactBaseOptions): string[] {
-  const buildRoot = customModulesPath || (repoRoot && monorepoBuildDir(repoRoot));
-  const bundledOutput = packageRoot && path.join(packageRoot, BUNDLED_PREBUILDS_DIR, 'output');
+  const packageBuildDir = customModulesPath
+    ? path.join(customModulesPath, npmPackage)
+    : repoRoot && getPackageBuildDir(repoRoot, npmPackage);
   const versioned = type === 'external' ? versionPrefix : null;
 
   const bases: string[] = [];
-  if (buildRoot) {
-    const output = path.join(buildRoot, npmPackage, 'output');
-    bases.push(versioned ? path.join(output, versioned) : output);
+  if (packageBuildDir) {
+    bases.push(getArtifactBase(packageBuildDir, versioned));
   }
-  if (bundledOutput) {
+  if (packageRoot) {
+    const bundled = path.join(packageRoot, BUNDLED_PREBUILDS_DIR);
     if (versioned) {
-      bases.push(path.join(bundledOutput, versioned));
+      bases.push(getArtifactBase(bundled, versioned));
     }
-    bases.push(bundledOutput);
+    bases.push(getArtifactBase(bundled));
   }
   return bases;
 }
@@ -81,9 +99,14 @@ export interface ArtifactSuffixes {
   tarball: string;
 }
 
+/** Base-relative directory holding every product of one flavor. */
+export function getArtifactDirSuffix(flavor: PrebuiltFlavor): string {
+  return path.posix.join(flavor, XCFRAMEWORKS_DIR);
+}
+
 /** Base-relative. Join against an entry from getArtifactBases(). */
 export function getArtifactSuffixes(productName: string, flavor: PrebuiltFlavor): ArtifactSuffixes {
-  const dir = path.posix.join(flavor, XCFRAMEWORKS_DIR);
+  const dir = getArtifactDirSuffix(flavor);
   return {
     dir,
     framework: path.posix.join(dir, `${productName}.xcframework`),
@@ -110,7 +133,7 @@ export function getRemoteArtifactKey(
 ): string {
   return path.posix.join(
     npmPackage,
-    'output',
+    ARTIFACT_OUTPUT_DIR,
     versionPrefix || '',
     getArtifactSuffixes(productName, flavor).tarball
   );
@@ -136,7 +159,7 @@ export function getSharedSpmDepBases(
     bases.push(path.join(customModulesPath, SHARED_SPM_DEPS_SOURCE_DIR, depName));
   }
   if (repoRoot) {
-    bases.push(path.join(monorepoBuildDir(repoRoot), SHARED_SPM_DEPS_SOURCE_DIR, depName));
+    bases.push(path.join(getSharedSpmDepsRoot(repoRoot), depName));
   }
   if (packageRoot) {
     bases.push(path.join(packageRoot, BUNDLED_SHARED_SPM_DEPS_SUBPATH, depName));
@@ -144,11 +167,12 @@ export function getSharedSpmDepBases(
   return bases;
 }
 
+/** Directory the producer writes every shared SPM dependency of the monorepo into. */
+export function getSharedSpmDepsRoot(repoRoot: string): string {
+  return path.join(getMonorepoBuildDir(repoRoot), SHARED_SPM_DEPS_SOURCE_DIR);
+}
+
 /** Base-relative, and deliberately not the product grammar: no 'xcframeworks' segment. */
 export function getSharedSpmDepSuffix(depName: string, flavor: PrebuiltFlavor): string {
   return path.posix.join(flavor, `${depName}.xcframework`);
-}
-
-function monorepoBuildDir(repoRoot: string): string {
-  return path.join(repoRoot, 'packages', 'precompile', PRECOMPILE_BUILD_DIR);
 }

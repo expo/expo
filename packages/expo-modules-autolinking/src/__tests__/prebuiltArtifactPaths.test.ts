@@ -1,10 +1,15 @@
 import {
   buildVersionPrefix,
+  getArtifactBase,
   getArtifactBases,
+  getArtifactDirSuffix,
   getArtifactSuffixes,
+  getPackageBuildDir,
   getRemoteArtifactKey,
   getSharedSpmDepBases,
+  getSharedSpmDepsRoot,
   getSharedSpmDepSuffix,
+  getMonorepoBuildDir,
   PREBUILT_FLAVORS,
   type PrebuiltFlavor,
 } from '../prebuiltArtifactPaths';
@@ -38,6 +43,79 @@ describe(buildVersionPrefix, () => {
 
   it.each(missingVersionCases)('returns null when the %s is missing', (_label, pkg, rn, hermes) => {
     expect(buildVersionPrefix(pkg, rn, hermes)).toBeNull();
+  });
+});
+
+describe(getMonorepoBuildDir, () => {
+  it('is the precompile build directory of a repo checkout', () => {
+    expect(getMonorepoBuildDir(REPO_ROOT)).toBe('/repo/packages/precompile/.build');
+  });
+});
+
+describe(getPackageBuildDir, () => {
+  it('is the directory the monorepo builds one package under', () => {
+    expect(getPackageBuildDir(REPO_ROOT, 'expo-image')).toBe(
+      '/repo/packages/precompile/.build/expo-image'
+    );
+  });
+
+  it('keeps both segments of a scoped package name', () => {
+    expect(getPackageBuildDir(REPO_ROOT, '@expo/ui')).toBe(
+      '/repo/packages/precompile/.build/@expo/ui'
+    );
+  });
+
+  it('is the build path the monorepo candidate of getArtifactBases resolves artifacts under', () => {
+    expect(
+      getArtifactBases({
+        type: 'internal',
+        npmPackage: '@expo/ui',
+        packageRoot: '/repo/packages/expo-ui',
+        repoRoot: REPO_ROOT,
+      })
+    ).toContain('/repo/packages/precompile/.build/@expo/ui/output');
+  });
+});
+
+describe(getArtifactBase, () => {
+  it('appends the output directory to an already-resolved build path', () => {
+    expect(getArtifactBase(`${MONOREPO_BASE}/expo-image`)).toBe(
+      `${MONOREPO_BASE}/expo-image/output`
+    );
+  });
+
+  it('appends the version prefix below the output directory', () => {
+    expect(getArtifactBase(`${MONOREPO_BASE}/react-native-skia`, VERSION_PREFIX)).toBe(
+      `${MONOREPO_BASE}/react-native-skia/output/${VERSION_PREFIX}`
+    );
+  });
+
+  it.each([null, undefined, ''])('ignores a %p version prefix', (versionPrefix) => {
+    expect(getArtifactBase(`${MONOREPO_BASE}/expo-image`, versionPrefix)).toBe(
+      `${MONOREPO_BASE}/expo-image/output`
+    );
+  });
+
+  it('keeps both segments of a scoped package name in the build path', () => {
+    expect(getArtifactBase(`${MONOREPO_BASE}/@expo/ui`)).toBe(`${MONOREPO_BASE}/@expo/ui/output`);
+  });
+
+  it('accepts a build path outside the monorepo, such as a package-local one', () => {
+    expect(getArtifactBase(`${PACKAGE_ROOT}/.expo-prebuild`)).toBe(
+      `${PACKAGE_ROOT}/.expo-prebuild/output`
+    );
+  });
+
+  it('produces the npm-bundled candidate of getArtifactBases', () => {
+    expect(getArtifactBase(`${PACKAGE_ROOT}/prebuilds`)).toBe(`${PACKAGE_ROOT}/prebuilds/output`);
+    expect(
+      getArtifactBases({
+        type: 'internal',
+        npmPackage: 'expo-image',
+        packageRoot: PACKAGE_ROOT,
+        repoRoot: REPO_ROOT,
+      })
+    ).toContain(`${PACKAGE_ROOT}/prebuilds/output`);
   });
 });
 
@@ -119,6 +197,20 @@ describe(getArtifactBases, () => {
   });
 });
 
+describe(getArtifactDirSuffix, () => {
+  it('is the flavor directory and its xcframeworks subdirectory', () => {
+    expect(getArtifactDirSuffix('debug')).toBe('debug/xcframeworks');
+    expect(getArtifactDirSuffix('release')).toBe('release/xcframeworks');
+  });
+
+  it.each(PREBUILT_FLAVORS)(
+    'is the directory the %s product suffixes are relative to',
+    (flavor) => {
+      expect(getArtifactSuffixes('ExpoImage', flavor).dir).toBe(`${flavor}/xcframeworks`);
+    }
+  );
+});
+
 describe(getArtifactSuffixes, () => {
   it('describes the debug layout', () => {
     expect(getArtifactSuffixes('ExpoImage', 'debug')).toEqual({
@@ -154,6 +246,19 @@ describe(getRemoteArtifactKey, () => {
     const key = getRemoteArtifactKey('@expo/ui', VERSION_PREFIX, 'ExpoUI', 'release');
     expect(key).toBe(`@expo/ui/output/${VERSION_PREFIX}/release/xcframeworks/ExpoUI.tar.gz`);
     expect(key).not.toContain('\\');
+  });
+});
+
+describe(getSharedSpmDepsRoot, () => {
+  it('is the shared dependency directory of the monorepo build dir', () => {
+    expect(getSharedSpmDepsRoot(REPO_ROOT)).toBe(`${MONOREPO_BASE}/.spm-deps`);
+  });
+
+  it('is the monorepo candidate of getSharedSpmDepBases without the dep name', () => {
+    expect(getSharedSpmDepsRoot(REPO_ROOT)).toBe(`${MONOREPO_BASE}/.spm-deps`);
+    expect(getSharedSpmDepBases('SDWebImage', { repoRoot: REPO_ROOT })).toEqual([
+      `${MONOREPO_BASE}/.spm-deps/SDWebImage`,
+    ]);
   });
 });
 

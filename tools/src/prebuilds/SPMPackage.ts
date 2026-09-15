@@ -5,11 +5,12 @@
  * native SPM declarations that are easier to read and understand.
  */
 
+import { getPackageBuildDir } from 'expo-modules-autolinking/prebuiltArtifactPaths';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { getPrecompileDir } from '../Directories';
+import { getExpoRepositoryRootDir } from '../Directories';
 import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
@@ -1405,7 +1406,7 @@ async function buildPackageSwiftContext(
       const depBuildPath =
         usesPackageLocalBuildPath(pkg) && dependencyPackage
           ? getPackageLocalBuildPath(dependencyPackage)
-          : path.join(getPrecompileDir(), '.build', packageName);
+          : getPackageBuildDir(getExpoRepositoryRootDir(), packageName);
       const xcframeworkPath = Frameworks.getFrameworkPath(depBuildPath, productName, buildType);
 
       if (await fs.pathExists(xcframeworkPath)) {
