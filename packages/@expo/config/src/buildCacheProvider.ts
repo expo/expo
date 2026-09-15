@@ -17,8 +17,8 @@ type IosRunOptions = {
   port?: number;
   /** Xcode scheme to build. */
   scheme?: string | boolean;
-  /** Xcode configuration to build. Default `Debug` */
-  configuration?: 'Debug' | 'Release';
+  /** Xcode configuration to build. Default: `Debug`. */
+  configuration?: string;
   /** Should start the bundler dev server. */
   bundler?: boolean;
   /** Should install missing dependencies before building. */
