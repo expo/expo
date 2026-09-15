@@ -1,5 +1,5 @@
 import { events } from '2g';
-import type { ExpoUpdatesManifest } from '@expo/config';
+import type { ExpoConfig, ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import crypto from 'crypto';
@@ -18,6 +18,7 @@ import type { ManifestRequestInfo } from './ManifestMiddleware';
 import { ManifestMiddleware } from './ManifestMiddleware';
 import { manifestDebugEvent } from './events';
 import { parseForwardedRequestInfo } from './resolveForwarded';
+import type { RuntimePlatform } from './resolvePlatform';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
 import type { ServerRequest } from './server.types';
@@ -55,6 +56,14 @@ interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
 }
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
+  // Resolving the runtime version can shell out to `expo-updates runtimeversion:resolve`, which
+  // recomputes the project fingerprint under `runtimeVersion: { policy: 'fingerprint' }` — this can
+  // take several seconds, longer than some clients' connection timeout. Cache the result per platform
+  // for the lifetime of this dev-server session (like other config-derived values already are),
+  // instead of recomputing it on every manifest request.
+  // https://github.com/expo/expo/issues/46415
+  private runtimeVersionCache = new Map<RuntimePlatform, Promise<string | null>>();
+
   public getParsedHeaders(req: ServerRequest): ExpoGoManifestRequestInfo {
     let platform = parsePlatformHeader(req);
 
@@ -107,6 +116,34 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     };
   }
 
+  private resolveCachedRuntimeVersionAsync(
+    exp: ExpoConfig,
+    platform: RuntimePlatform
+  ): Promise<string | null> {
+    if (!this.runtimeVersionCache.has(platform)) {
+      const runtimeVersionPromise = (async () =>
+        (await resolveRuntimeVersionWithExpoUpdatesAsync({
+          projectRoot: this.projectRoot,
+          platform,
+        })) ??
+        // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
+        // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when
+        // expo-updates is not installed.
+        (await Updates.getRuntimeVersionAsync(
+          this.projectRoot,
+          { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
+          // TODO(@kitten): Runtime-version resolution only reads ios/android config
+          // tvos/macos fall back to the shared `runtimeVersion` until they get explicit support
+          platform as 'android' | 'ios'
+        )))();
+      // Don't cache a rejection: a transient failure (e.g. a subprocess error) shouldn't
+      // permanently break manifest requests for the rest of the dev-server session.
+      runtimeVersionPromise.catch(() => this.runtimeVersionCache.delete(platform));
+      this.runtimeVersionCache.set(platform, runtimeVersionPromise);
+    }
+    return this.runtimeVersionCache.get(platform)!;
+  }
+
   private getDefaultResponseHeaders(): Headers {
     const headers = new Headers();
     // set required headers for Expo Updates manifest specification
@@ -122,21 +159,10 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     const { exp, hostUri, expoGoConfig, bundleUrl } =
       await this._resolveProjectSettingsAsync(requestOptions);
 
-    const runtimeVersion =
-      (await resolveRuntimeVersionWithExpoUpdatesAsync({
-        projectRoot: this.projectRoot,
-        platform: requestOptions.platform,
-      })) ??
-      // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
-      // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when
-      // expo-updates is not installed.
-      (await Updates.getRuntimeVersionAsync(
-        this.projectRoot,
-        { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
-        // TODO(@kitten): Runtime-version resolution only reads ios/android config
-        // tvos/macos fall back to the shared `runtimeVersion` until they get explicit support
-        requestOptions.platform as 'android' | 'ios'
-      ));
+    const runtimeVersion = await this.resolveCachedRuntimeVersionAsync(
+      exp,
+      requestOptions.platform
+    );
     if (!runtimeVersion) {
       throw new CommandError(
         'MANIFEST_MIDDLEWARE',
