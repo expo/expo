@@ -20,6 +20,10 @@
     "**/ios/**",
     "!**/src/**/android/**",
     "!**/src/**/ios/**",
+    "packages/expo-module-template/src/**",
+    "packages/expo-module-template/example/**",
+    "packages/expo-module-template/$package.json",
+    "packages/expo-module-template/expo-module.config.json",
     "react-native-lab/**"
   ],
   "sortImports": {

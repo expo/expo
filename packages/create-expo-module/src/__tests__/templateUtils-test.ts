@@ -1,14 +1,18 @@
+import ejs from 'ejs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { copyFileSnippets } from '../snippets';
 import {
+  buildAugmentedData,
   getGeneratedWebStubSentinel,
+  getLocalSdkMajorVersion,
   getTemplateDistTag,
   normalizeNpmPackResult,
   updateWebStub,
 } from '../templateUtils';
-import type { SubstitutionData } from '../types';
+import type { LocalSubstitutionData, SubstitutionData } from '../types';
 
 const mockData: SubstitutionData = {
   project: {
@@ -119,5 +123,245 @@ describe('updateWebStub', () => {
     await expect(fs.promises.readFile(webFile, 'utf8')).resolves.toBe(
       'export default class MyModuleModule {}\n'
     );
+  });
+});
+
+const TEMPLATE_DIR = path.resolve(__dirname, '../../../expo-module-template');
+const SNIPPETS_DIR = path.join(TEMPLATE_DIR, 'snippets');
+
+const localData: LocalSubstitutionData = {
+  project: {
+    slug: 'my-module',
+    name: 'MyModule',
+    package: 'expo.modules.mymodule',
+    moduleName: 'MyModuleModule',
+    viewName: 'MyModuleView',
+    swiftUIViewName: 'MyModuleSwiftUIView',
+    swiftUIModifierName: 'MyModuleSwiftUIModifier',
+    composeViewName: 'MyModuleComposeView',
+    composeModifierName: 'MyModuleComposeModifier',
+    sharedObjectName: 'MyModuleModuleSharedObject',
+    platforms: ['apple', 'android'],
+    features: ['ComposeView', 'ComposeModifier'],
+  },
+  type: 'local',
+};
+
+async function renderTemplateFile(relativePath: string, data: object): Promise<string> {
+  const template = await fs.promises.readFile(path.join(TEMPLATE_DIR, relativePath), 'utf8');
+  return ejs.render(template, data);
+}
+
+describe(getLocalSdkMajorVersion, () => {
+  let projectDir: string;
+
+  beforeEach(async () => {
+    projectDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'sdk-version-'));
+    await fs.promises.mkdir(path.join(projectDir, 'node_modules', 'expo'), { recursive: true });
+    await fs.promises.writeFile(path.join(projectDir, 'package.json'), '{"name":"app"}');
+  });
+
+  afterEach(async () => {
+    await fs.promises.rm(projectDir, { recursive: true, force: true });
+  });
+
+  it('returns the major version of the host project’s expo dependency as a number', async () => {
+    await fs.promises.writeFile(
+      path.join(projectDir, 'node_modules', 'expo', 'package.json'),
+      '{"name":"expo","version":"55.0.3"}'
+    );
+    await expect(getLocalSdkMajorVersion(projectDir)).resolves.toBe(55);
+  });
+
+  it('rejects when the host project has no expo dependency', async () => {
+    await expect(getLocalSdkMajorVersion(projectDir)).rejects.toThrow(
+      'Could not find expo/package.json in node_modules'
+    );
+  });
+
+  it('finds Expo hoisted to a parent workspace', async () => {
+    await fs.promises.writeFile(
+      path.join(projectDir, 'node_modules', 'expo', 'package.json'),
+      '{"version":"55.0.3"}'
+    );
+    const appDir = path.join(projectDir, 'apps', 'app');
+    await fs.promises.mkdir(appDir, { recursive: true });
+    await expect(getLocalSdkMajorVersion(appDir)).resolves.toBe(55);
+  });
+
+  it('prefers the nearest installation over the parent workspace', async () => {
+    await fs.promises.writeFile(
+      path.join(projectDir, 'node_modules', 'expo', 'package.json'),
+      '{"version":"57.0.0"}'
+    );
+    const appDir = path.join(projectDir, 'apps', 'app');
+    const expoDir = path.join(appDir, 'node_modules', 'expo');
+    await fs.promises.mkdir(expoDir, { recursive: true });
+    await fs.promises.writeFile(path.join(expoDir, 'package.json'), '{"version":"55.0.3"}');
+    await expect(getLocalSdkMajorVersion(appDir)).resolves.toBe(55);
+  });
+
+  it('follows a pnpm installation symlink', async () => {
+    const storeDir = path.join(
+      projectDir,
+      'node_modules',
+      '.pnpm',
+      'expo@55.0.3',
+      'node_modules',
+      'expo'
+    );
+    await fs.promises.mkdir(storeDir, { recursive: true });
+    await fs.promises.writeFile(path.join(storeDir, 'package.json'), '{"version":"55.0.3"}');
+    const expoDir = path.join(projectDir, 'node_modules', 'expo');
+    await fs.promises.rmdir(expoDir);
+    await fs.promises.symlink(storeDir, expoDir, 'junction');
+    await expect(getLocalSdkMajorVersion(projectDir)).resolves.toBe(55);
+  });
+
+  it('does not hide invalid package JSON', async () => {
+    await fs.promises.writeFile(
+      path.join(projectDir, 'node_modules', 'expo', 'package.json'),
+      '{invalid'
+    );
+    await expect(getLocalSdkMajorVersion(projectDir)).rejects.toThrow(SyntaxError);
+  });
+
+  it('returns null when the expo version has a non-numeric major', async () => {
+    await fs.promises.writeFile(
+      path.join(projectDir, 'node_modules', 'expo', 'package.json'),
+      '{"name":"expo","version":"unknown.0.0"}'
+    );
+    await expect(getLocalSdkMajorVersion(projectDir)).resolves.toBeNull();
+  });
+});
+
+describe('buildAugmentedData', () => {
+  it('exposes the SDK 55 overrides for a local module in an SDK 55 project', async () => {
+    const augmented = await buildAugmentedData(SNIPPETS_DIR, { ...localData, sdkVersion: 55 });
+    expect(augmented.compat.modernExpoUI).toBe(false);
+    expect(augmented.compat.iosDeploymentTarget).toBe('15.1');
+  });
+
+  it('exposes no overrides for a standalone module', async () => {
+    const augmented = await buildAugmentedData(SNIPPETS_DIR, mockData);
+    expect(augmented.compat).toEqual({});
+  });
+});
+
+describe('templates rendered by a CLI that does not supply `compat`', () => {
+  // Older published CLIs render the template with only the substitution data. The output must
+  // match the template's own SDK, the same as when a current CLI passes no overrides.
+  const withoutCompat = { ...localData, usesCompose: true, usesSwiftUI: false, usesExpoUI: true };
+
+  it('renders the podspec with the current deployment target', async () => {
+    const podspec = await renderTemplateFile('ios/{%- project.name %}.podspec', withoutCompat);
+    expect(podspec).toContain(":ios => '16.4'");
+  });
+
+  it('renders build.gradle with the current Compose versions', async () => {
+    const gradle = await renderTemplateFile('android/build.gradle', withoutCompat);
+    expect(gradle).toContain('foundation-android:1.10.6');
+  });
+
+  it('renders the Compose snippets for the current @expo/ui API', async () => {
+    const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'no-compat-snippets-'));
+    try {
+      await copyFileSnippets(SNIPPETS_DIR, localData.project.features, withoutCompat, tmpDir);
+      const view = await fs.promises.readFile(
+        path.join(tmpDir, 'src', 'MyModuleComposeView.tsx'),
+        'utf8'
+      );
+      expect(view).toContain('extends PrimitiveBaseProps');
+    } finally {
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('SDK-dependent template output', () => {
+  let legacy: Awaited<ReturnType<typeof buildAugmentedData>>;
+  let modern: Awaited<ReturnType<typeof buildAugmentedData>>;
+
+  beforeAll(async () => {
+    legacy = await buildAugmentedData(SNIPPETS_DIR, { ...localData, sdkVersion: 55 });
+    modern = await buildAugmentedData(SNIPPETS_DIR, { ...localData, sdkVersion: 58 });
+  });
+
+  it('pins the SDK 55 Compose artifact versions in build.gradle', async () => {
+    const gradle = await renderTemplateFile('android/build.gradle', legacy);
+    expect(gradle).toContain('foundation-android:1.10.2');
+    expect(gradle).toContain('material3-android:1.5.0-alpha13');
+  });
+
+  it('uses the current Compose artifact versions in build.gradle by default', async () => {
+    const gradle = await renderTemplateFile('android/build.gradle', modern);
+    expect(gradle).toContain('foundation-android:1.10.6');
+    expect(gradle).toContain('material3-android:1.5.0-alpha17');
+  });
+
+  it('lowers the iOS deployment target to 15.1 for SDK 55', async () => {
+    const podspec = await renderTemplateFile('ios/{%- project.name %}.podspec', legacy);
+    expect(podspec).toContain(":ios => '15.1'");
+    expect(podspec).toContain(":tvos => '15.1'");
+  });
+
+  it('keeps the iOS deployment target at 16.4 by default', async () => {
+    const podspec = await renderTemplateFile('ios/{%- project.name %}.podspec', modern);
+    expect(podspec).toContain(":ios => '16.4'");
+  });
+
+  it('registers the Compose view without a Content block on SDK 55', async () => {
+    expect(legacy.moduleSnippetsKt).toContain('ExpoUIView<MyModuleComposeViewProps>');
+    expect(legacy.moduleSnippetsKt).not.toContain('Content {');
+  });
+
+  it('registers the Compose view with a Content block by default', async () => {
+    expect(modern.moduleSnippetsKt).toContain('Content { props ->');
+  });
+
+  it('generates a self-contained Compose view and modifier for SDK 55', async () => {
+    const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'legacy-snippets-'));
+    try {
+      await copyFileSnippets(SNIPPETS_DIR, localData.project.features, legacy, tmpDir);
+      const view = await fs.promises.readFile(
+        path.join(tmpDir, 'src', 'MyModuleComposeView.tsx'),
+        'utf8'
+      );
+      const modifier = await fs.promises.readFile(
+        path.join(tmpDir, 'src', 'MyModuleComposeModifier.ts'),
+        'utf8'
+      );
+      expect(view).toContain(
+        "import type { ExpoModifier } from '@expo/ui/jetpack-compose/modifiers'"
+      );
+      expect(view).toContain('function createViewModifierEventListener(');
+      expect(view).not.toContain('PrimitiveBaseProps');
+      expect(modifier).toContain("$type: 'myModuleComposeModifier'");
+      expect(modifier).not.toContain('createModifier(');
+    } finally {
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it('generates a Compose view and modifier that use the @expo/ui helpers by default', async () => {
+    const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'modern-snippets-'));
+    try {
+      await copyFileSnippets(SNIPPETS_DIR, localData.project.features, modern, tmpDir);
+      const view = await fs.promises.readFile(
+        path.join(tmpDir, 'src', 'MyModuleComposeView.tsx'),
+        'utf8'
+      );
+      const modifier = await fs.promises.readFile(
+        path.join(tmpDir, 'src', 'MyModuleComposeModifier.ts'),
+        'utf8'
+      );
+      expect(view).toContain('extends PrimitiveBaseProps');
+      expect(view).toContain(
+        "import { createViewModifierEventListener } from '@expo/ui/jetpack-compose/modifiers'"
+      );
+      expect(modifier).toContain("createModifier('myModuleComposeModifier', params)");
+    } finally {
+      await fs.promises.rm(tmpDir, { recursive: true, force: true });
+    }
   });
 });

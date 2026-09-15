@@ -6,6 +6,7 @@ import prompts from 'prompts';
 
 import { detectFeaturesFromFile, findModuleDefinitionFile } from './featureDetection';
 import { filterFeaturesByPlatforms, resolveFeatures, type Feature } from './features';
+import { assertSupportedLocalSdk } from './localSdk';
 import { formatRunCommand, resolvePackageManager } from './packageManager';
 import { ALL_PLATFORMS, type Platform } from './prompts';
 import { copyNativeFileSnippets, copyWebFileSnippets } from './snippets';
@@ -13,6 +14,7 @@ import {
   buildAugmentedData,
   copyTemplateFiles,
   downloadPackageAsync,
+  getLocalSdkMajorVersion,
   handleSuffix,
   slugToAndroidPackage,
   updateWebStub,
@@ -219,7 +221,8 @@ function buildSubstitutionData(
   info: ExistingModuleInfo,
   newPlatforms: Platform[],
   features: Feature[],
-  sharedObjectName: string | null
+  sharedObjectName: string | null,
+  sdkVersion: number | null
 ): SubstitutionData | LocalSubstitutionData {
   const allPlatforms = [...info.platforms, ...newPlatforms];
   const resolvedSharedObjectName = sharedObjectName ?? `${info.moduleName}SharedObject`;
@@ -240,7 +243,7 @@ function buildSubstitutionData(
   };
 
   if (info.isLocal) {
-    return { project, type: 'local' };
+    return { project, type: 'local', sdkVersion };
   }
 
   return {
@@ -452,7 +455,8 @@ async function updatePublicModuleNameFromSources(
 
 async function resolveTemplatePath(
   options: AddPlatformSupportOptions,
-  moduleInfo: ExistingModuleInfo
+  moduleInfo: ExistingModuleInfo,
+  sdkVersion: number | null
 ): Promise<TemplatePathInfo> {
   if (options.source) {
     const templatePath = path.resolve(CWD, options.source);
@@ -474,7 +478,7 @@ async function resolveTemplatePath(
   const templateTempDir = await fs.promises.mkdtemp(
     path.join(os.tmpdir(), 'add-platform-support-')
   );
-  const templatePath = await downloadPackageAsync(templateTempDir, moduleInfo.isLocal);
+  const templatePath = await downloadPackageAsync(templateTempDir, moduleInfo.isLocal, sdkVersion);
   return { templatePath, templateTempDir };
 }
 
@@ -502,7 +506,7 @@ async function addNativePlatformFiles(
       moduleType: moduleInfo.isLocal ? 'local' : 'standalone',
     });
     const dataForNewPlatforms = {
-      ...data,
+      ...augmentedData,
       project: { ...data.project, platforms: nativePlatforms },
     } as SubstitutionData | LocalSubstitutionData;
     await copyNativeFileSnippets(snippetsDir, detectedFeatures, dataForNewPlatforms, moduleRoot);
@@ -523,9 +527,9 @@ async function addWebPlatformFiles(
 
   const snippetsDir = path.join(templatePath, 'snippets');
   await newStep('Updating web implementation', async (step) => {
-    await updateWebStub(templatePath, moduleRoot, data);
+    const augmentedData = await updateWebStub(templatePath, moduleRoot, data);
     const dataWithWeb = {
-      ...data,
+      ...augmentedData,
       project: { ...data.project, platforms: ['web'] as Platform[] },
     } as SubstitutionData | LocalSubstitutionData;
     await copyWebFileSnippets(snippetsDir, detectedFeatures, dataWithWeb, moduleRoot);
@@ -553,6 +557,10 @@ export async function addPlatformSupport(
   const moduleRoot = modulePathArg ? path.resolve(CWD, modulePathArg) : CWD;
   const configPath = path.join(moduleRoot, 'expo-module.config.json');
   const moduleInfo = await readModuleInfoOrExit(moduleRoot, configPath);
+  const sdkVersion = moduleInfo.isLocal
+    ? await getLocalSdkMajorVersion(moduleRoot).catch(() => null)
+    : null;
+  assertSupportedLocalSdk(sdkVersion);
   const moduleDefinitionFile = await findExistingModuleDefinitionFile(moduleRoot, moduleInfo);
   const platformsToAdd = await resolvePlatformsToAdd(moduleInfo, options);
   if (!platformsToAdd) {
@@ -574,9 +582,14 @@ export async function addPlatformSupport(
     moduleInfo,
     platformsToAdd,
     detectedFeatures,
-    sharedObjectName
+    sharedObjectName,
+    sdkVersion
   );
-  const { templatePath, templateTempDir } = await resolveTemplatePath(options, moduleInfo);
+  const { templatePath, templateTempDir } = await resolveTemplatePath(
+    options,
+    moduleInfo,
+    sdkVersion
+  );
 
   try {
     await addNativePlatformFiles(
