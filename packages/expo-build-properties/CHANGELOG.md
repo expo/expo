@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `ios.enableSceneSupport` to adopt the UIKit scene lifecycle in SDK 57 projects. The property is a no-op on SDK 58 and newer.
+- Add `ios.enableSceneSupport` to adopt the UIKit scene lifecycle in SDK 57 projects. The property is a no-op on SDK 58 and newer. ([#50205](https://github.com/expo/expo/pull/50205) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
