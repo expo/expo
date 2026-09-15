@@ -17,10 +17,14 @@ jest.mock('../app-target', () => ({
     podfilePropertiesPath: null,
   })),
 }));
+// Only what touches the filesystem is faked; the pure helpers stay real, so the
+// plugin is tested against the ordering and the collision check it really applies.
 jest.mock('../flavored-frameworks', () => ({
+  ...jest.requireActual('../flavored-frameworks'),
   resolveFlavoredFramework: jest.fn(({ frameworkName }) =>
     frameworkName === 'ExpoModulesCore' ? { id: 'ExpoModulesCore', name: 'ExpoModulesCore' } : null
   ),
+  resolveSpmDependencyFrameworks: jest.fn(() => []),
   prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
 }));
 
@@ -32,7 +36,11 @@ const {
 } = require('../cli');
 const { resolveAppTarget } = require('../app-target');
 const { UnsupportedModulesError } = require('../diagnostics');
-const { resolveFlavoredFramework } = require('../flavored-frameworks');
+const {
+  prepareCompileInterfaces,
+  resolveFlavoredFramework,
+  resolveSpmDependencyFrameworks,
+} = require('../flavored-frameworks');
 const expoSpmPlugin = require('../plugin');
 
 const spec = (...body) => ['Pod::Spec.new do |s|', ...body, 'end', ''].join('\n');
@@ -64,6 +72,9 @@ function restoreModuleMocks() {
   resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
     frameworkName === 'ExpoModulesCore' ? { id: 'ExpoModulesCore', name: 'ExpoModulesCore' } : null
   );
+  resolveSpmDependencyFrameworks.mockReset();
+  resolveSpmDependencyFrameworks.mockReturnValue([]);
+  prepareCompileInterfaces.mockImplementation(() => '/abs/interfaces');
 }
 
 describe('the pure-Swift branch', () => {
@@ -886,5 +897,256 @@ describe('the checked-in manifest branch', () => {
     expect(
       fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoVendored', 'Package.swift'))
     ).toBe(false);
+  });
+});
+
+// A precompiled module links its SwiftPM packages (SDWebImage, ZXingObjC, …) as
+// separate XCFrameworks. RN takes them in the same flat array as the modules.
+describe('the SwiftPM packages a precompiled module links', () => {
+  let logs;
+  let result;
+  let roots;
+  let compiled;
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-deps-plugin-'));
+    const outDir = path.join(tmp, 'out');
+    roots = { core: path.join(tmp, 'expo-modules-core'), image: path.join(tmp, 'expo-image') };
+    const core = pureSwiftModule(roots.core, 'ExpoModulesCore', spec());
+    const imagePodspecDir = mixedModule(roots.image, 'ExpoImage');
+    fs.writeFileSync(
+      path.join(imagePodspecDir, 'ExpoImage.podspec'),
+      spec(
+        "  s.dependency 'ExpoModulesCore'",
+        "  s.dependency 'SDWebImage'",
+        "  s.dependency 'libavif/libdav1d'",
+        "  s.dependency 'SomeUnmappedPod'"
+      )
+    );
+
+    resolveExpoModules.mockReturnValue([
+      {
+        packageName: 'expo-modules-core',
+        pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+      },
+      { packageName: 'expo-image', pods: [{ podName: 'ExpoImage', podspecDir: imagePodspecDir }] },
+    ]);
+    prebuiltMetadata.mockReturnValue({
+      ExpoImage: {
+        type: 'internal',
+        npmPackage: 'expo-image',
+        packageRoot: roots.image,
+        podspecDir: imagePodspecDir,
+        productName: 'ExpoImage',
+        spmDependencies: ['SDWebImage', 'libavif'],
+      },
+    });
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' || frameworkName === 'ExpoImage'
+        ? { id: frameworkName === 'ExpoImage' ? 'expo-image' : 'expo-modules-core', frameworkName }
+        : null
+    );
+    resolveSpmDependencyFrameworks.mockReturnValue([
+      { id: 'expo-sdweb-image', frameworkName: 'SDWebImage' },
+      { id: 'expo-libavif', frameworkName: 'libavif' },
+    ]);
+    generateModulesProvider.mockReset();
+    generateModulesProvider.mockImplementation(() => {
+      const providerPath = path.join(outDir, 'expo', 'ExpoModulesProvider.swift');
+      fs.mkdirSync(path.dirname(providerPath), { recursive: true });
+      fs.writeFileSync(providerPath, 'ExpoModulesCore.self\n');
+      return providerPath;
+    });
+    // Snapshotted at call time: the plugin hands the builder the same array it
+    // returns, so reading the retained argument afterwards would prove nothing
+    // about what the builder was given.
+    prepareCompileInterfaces.mockImplementation((frameworks) => {
+      compiled = frameworks.map((framework) => framework.frameworkName);
+      return '/abs/interfaces';
+    });
+    logs = {
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    result = expoSpmPlugin({
+      react: null,
+      outputDir: outDir,
+      appRoot: path.join(tmp, 'app', 'ios'),
+      projectRoot: path.join(tmp, 'app'),
+    });
+  });
+
+  afterAll(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    restoreModuleMocks();
+  });
+
+  it('resolves them from the precompiled pods that declare them', () => {
+    expect(resolveSpmDependencyFrameworks).toHaveBeenCalledWith([
+      expect.objectContaining({
+        podName: 'ExpoModulesCore',
+        moduleRoot: roots.core,
+        spmDependencies: undefined,
+      }),
+      expect.objectContaining({
+        podName: 'ExpoImage',
+        moduleRoot: roots.image,
+        spmDependencies: ['SDWebImage', 'libavif'],
+      }),
+    ]);
+  });
+
+  it('declares each one beside the modules, exactly once', () => {
+    expect(result.flavoredFrameworks).toEqual([
+      { id: 'expo-image', frameworkName: 'ExpoImage' },
+      { id: 'expo-libavif', frameworkName: 'libavif' },
+      { id: 'expo-modules-core', frameworkName: 'ExpoModulesCore' },
+      { id: 'expo-sdweb-image', frameworkName: 'SDWebImage' },
+    ]);
+  });
+
+  it('compiles their headers into the interface tree', () => {
+    expect(compiled).toEqual(['ExpoImage', 'libavif', 'ExpoModulesCore', 'SDWebImage']);
+  });
+
+  it('warns about the pods a precompiled module depends on that nothing provides', () => {
+    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    expect(report).toContain('warning: Expo module "expo-image" (pod ExpoImage)');
+    expect(report).toContain('SomeUnmappedPod');
+  });
+
+  it('keeps the dependencies it resolved, and their subspecs, out of that warning', () => {
+    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    expect(report).not.toContain('SDWebImage');
+    expect(report).not.toContain('libavif');
+  });
+});
+
+describe('a dependency that collides with a precompiled module', () => {
+  let logs;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-collision-'));
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const fooRoot = path.join(tmp, 'expo-foo');
+    const fooPodspecDir = mixedModule(fooRoot, 'ExpoFoo');
+
+    resolveExpoModules.mockReturnValue([
+      {
+        packageName: 'expo-modules-core',
+        pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+      },
+      { packageName: 'expo-foo', pods: [{ podName: 'ExpoFoo', podspecDir: fooPodspecDir }] },
+    ]);
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' || frameworkName === 'ExpoFoo'
+        ? {
+            id: frameworkName === 'ExpoFoo' ? 'expo-foo' : 'expo-modules-core',
+            frameworkName,
+            flavors: { debug: `/abs/${frameworkName}.xcframework` },
+          }
+        : null
+    );
+    // `Foo` and `ExpoFoo` are different products with the same stable id.
+    resolveSpmDependencyFrameworks.mockReturnValue([
+      { id: 'expo-foo', frameworkName: 'Foo', flavors: { debug: '/abs/Foo.xcframework' } },
+    ]);
+    logs = {
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    try {
+      expoSpmPlugin({
+        react: null,
+        outputDir: path.join(tmp, 'out'),
+        appRoot: path.join(tmp, 'app', 'ios'),
+        projectRoot: path.join(tmp, 'app'),
+      });
+      thrown = null;
+    } catch (error) {
+      thrown = error;
+    }
+  });
+
+  afterAll(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    restoreModuleMocks();
+  });
+
+  it('fails the sync naming both products, instead of handing React Native a graph it rejects', () => {
+    expect(thrown).not.toBeNull();
+    expect(thrown.message).toContain('ExpoFoo');
+    expect(thrown.message).toContain('Foo');
+    expect(thrown.message).toContain('framework id "expo-foo"');
+  });
+});
+
+describe('a package whose first pod alone is precompiled', () => {
+  let logs;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-multipod-'));
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const multiPodspecDir = mixedModule(path.join(tmp, 'expo-multi'), 'ExpoMulti');
+    fs.writeFileSync(
+      path.join(multiPodspecDir, 'ExpoMulti.podspec'),
+      spec("  s.dependency 'SomeUnmappedPod'")
+    );
+
+    resolveExpoModules.mockReturnValue([
+      {
+        packageName: 'expo-modules-core',
+        pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+      },
+      {
+        packageName: 'expo-multi',
+        pods: [
+          { podName: 'ExpoMulti', podspecDir: multiPodspecDir },
+          { podName: 'ExpoMultiHelper', podspecDir: multiPodspecDir },
+        ],
+      },
+    ]);
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' || frameworkName === 'ExpoMulti'
+        ? { id: frameworkName.toLowerCase(), frameworkName }
+        : null
+    );
+    logs = {
+      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    try {
+      expoSpmPlugin({
+        react: null,
+        outputDir: path.join(tmp, 'out'),
+        appRoot: path.join(tmp, 'app', 'ios'),
+        projectRoot: path.join(tmp, 'app'),
+      });
+      thrown = null;
+    } catch (error) {
+      thrown = error;
+    }
+  });
+
+  afterAll(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    restoreModuleMocks();
+  });
+
+  // The sibling pod is buildable neither way, so the sync fails on it — as it did
+  // before this change. The warning is what must not double.
+  it('fails only on the sibling pod SwiftPM cannot build', () => {
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown.unsupported).toEqual([
+      expect.objectContaining({ podName: 'ExpoMultiHelper' }),
+    ]);
+  });
+
+  it('warns about its unmapped dependencies once, not once per pass', () => {
+    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    expect(report.match(/warning: Expo module "expo-multi"/g)).toHaveLength(1);
   });
 });

@@ -242,6 +242,15 @@ describe('unmappedPodDependencies', () => {
     expect(UNMAPPED_POD_ALLOWLIST.has('sqlite3')).toBe(true);
     expect(unmappedPodDependencies(['sqlite3', 'SDWebImage'])).toEqual(['SDWebImage']);
   });
+
+  it('drops a dependency whose full name or root name is a resolved SwiftPM dependency', () => {
+    expect(
+      unmappedPodDependencies(
+        ['SDWebImage', 'libavif', 'libavif/libdav1d', 'ZXingObjC/OneD'],
+        new Set(['SDWebImage', 'libavif'])
+      )
+    ).toEqual(['ZXingObjC/OneD']);
+  });
 });
 
 describe('renderUnsupportedReport', () => {
