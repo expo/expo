@@ -45,7 +45,13 @@ const {
   renderXcconfigLinkerWarning,
   reportUnsupported,
 } = require('./diagnostics');
-const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
+const {
+  assertDistinctFlavoredFrameworks,
+  byteOrder,
+  prepareCompileInterfaces,
+  resolveFlavoredFramework,
+  resolveSpmDependencyFrameworks,
+} = require('./flavored-frameworks');
 const {
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
@@ -150,6 +156,7 @@ module.exports = function expoSpmPlugin(context) {
   // receives the plugin result. No runtime binary enters the SwiftPM graph.
   const precompiledFrameworks = new Map();
   const flavoredFrameworks = [];
+  const precompiledPods = [];
   let coreModuleRoot = null;
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
@@ -166,12 +173,37 @@ module.exports = function expoSpmPlugin(context) {
       if (framework != null) {
         precompiledFrameworks.set(pod.podName, framework);
         flavoredFrameworks.push(framework);
+        precompiledPods.push({
+          packageName: mod.packageName,
+          podName: pod.podName,
+          podspecDir: pod.podspecDir,
+          moduleRoot,
+          spmDependencies: metadata[pod.podName]?.spmDependencies,
+        });
         emitted.add(pod.podName);
         if (needsReact) reactWired.push(pod.podName);
       }
     }
   }
-  flavoredFrameworks.sort((a, b) => a.id.localeCompare(b.id));
+  // The SwiftPM packages those modules link ship as their own XCFrameworks, and
+  // RN takes them in the same flat array. They join before the interface tree is
+  // built, so source modules compile against their headers too.
+  const dependencyFrameworks = resolveSpmDependencyFrameworks(precompiledPods);
+  flavoredFrameworks.push(...dependencyFrameworks);
+  flavoredFrameworks.sort((a, b) => byteOrder(a.id, b.id));
+  assertDistinctFlavoredFrameworks(flavoredFrameworks);
+
+  // Pass 2 reports this for the modules it emits, which a precompiled pod reaches
+  // only when a sibling pod of its package is not precompiled — so the report for
+  // precompiled pods belongs here. What the resolved dependencies already carry is
+  // not uncovered, their subspecs included.
+  const satisfiedDependencies = new Set(dependencyFrameworks.map((f) => f.frameworkName));
+  for (const { packageName, podName, podspecDir } of precompiledPods) {
+    const unmapped = collectUnmappedDependencies(podspecDir, satisfiedDependencies);
+    if (unmapped.length > 0) {
+      unmappedDeps.push({ packageName, podName, pods: unmapped });
+    }
+  }
   const frameworkSearchPath =
     precompiledFrameworks.size > 0
       ? prepareCompileInterfaces(flavoredFrameworks, path.join(outDir, 'compile-interfaces'))
@@ -261,8 +293,11 @@ module.exports = function expoSpmPlugin(context) {
         }
       }
 
-      if (emitted.has(pod.podName)) {
-        const unmapped = collectUnmappedDependencies(pod.podspecDir);
+      // A precompiled pod was already diagnosed in pass 1. It still reaches here
+      // when a sibling pod of the same package is not precompiled, and warning
+      // again would print the identical block twice.
+      if (emitted.has(pod.podName) && !precompiledFrameworks.has(pod.podName)) {
+        const unmapped = collectUnmappedDependencies(pod.podspecDir, satisfiedDependencies);
         if (unmapped.length > 0) {
           unmappedDeps.push({
             packageName: mod.packageName,

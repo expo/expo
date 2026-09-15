@@ -137,17 +137,23 @@ function podspecDependencies(text) {
   return deps;
 }
 
-/** The subset of pod dependencies with no SwiftPM counterpart. */
-function unmappedPodDependencies(deps) {
+/**
+ * The subset of pod dependencies with no SwiftPM counterpart. `satisfied` holds
+ * the SwiftPM packages already declared as frameworks, matched on the root of the
+ * pod name so that a subspec (`libavif/libdav1d`) is covered by its package —
+ * the match CocoaPods makes in `precompiled_modules.rb#strip_matching_dependencies`.
+ */
+function unmappedPodDependencies(deps, satisfied = new Set()) {
   return deps.filter(
     (dep) =>
       !UNMAPPED_POD_ALLOWLIST.has(dep) &&
+      !satisfied.has(dep.split('/')[0]) &&
       !COVERED_POD_PREFIXES.some((prefix) => dep.startsWith(prefix))
   );
 }
 
 /** Pods outside the SwiftPM graph that `podspecDir`'s podspecs depend on. */
-function collectUnmappedDependencies(podspecDir) {
+function collectUnmappedDependencies(podspecDir, satisfied) {
   let entries = [];
   try {
     entries = fs.readdirSync(podspecDir).filter((f) => f.endsWith('.podspec'));
@@ -162,7 +168,7 @@ function collectUnmappedDependencies(podspecDir) {
     } catch {
       continue;
     }
-    unmappedPodDependencies(podspecDependencies(text)).forEach((d) => deps.add(d));
+    unmappedPodDependencies(podspecDependencies(text), satisfied).forEach((d) => deps.add(d));
   }
   return [...deps];
 }
