@@ -32,6 +32,10 @@ See: [migration guide](https://docs.expo.dev/example)
 
 Use an HTTPS URL, an HTTPS Markdown link, or a GitHub reference such as `#123`.
 
+The first valid standalone `See:` line replaces the automatically added pull request or commit
+link. The author is still added automatically. Invalid or additional `See:` lines are ignored.
+`See:` text in a paragraph or code block is left unchanged.
+
 ## Check the changeset
 
 Run `pnpm changeset status` to check the package names and version bumps. Documentation, tests, apps, CI, and private tooling do not need a changeset.
