@@ -91,7 +91,6 @@ module.exports = {
           ? JSON.parse(process.env.E2E_ROUTER_PAGE_HEADERS)
           : undefined,
         unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
-        unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
         unstable_useServerRendering: process.env.E2E_ROUTER_SERVER_RENDERING === 'true',
       },
     ],

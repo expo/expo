@@ -185,7 +185,7 @@
           }
         },
         "unstable_useServerMiddleware": {
-          "description": "Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config.",
+          "description": "Deprecated as of SDK 58. Server middleware no longer requires an opt-in; this option has no effect.",
           "type": "boolean",
           "default": false
         },
