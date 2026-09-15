@@ -29,6 +29,9 @@ minimumReleaseAgeExclude:
   - 'react-native'
   - multitars
   - noxcturnal
+  - '@changesets/apply-release-plan@8.1.1'
+  - '@changesets/cli@3.0.3'
+  - '@changesets/config@4.0.1'
 
 overrides:
   '@types/babel__code-frame': ^7.27.0
