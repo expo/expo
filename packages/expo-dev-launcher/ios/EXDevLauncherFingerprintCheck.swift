@@ -93,12 +93,10 @@ private class NoRedirectSessionDelegate: NSObject, URLSessionTaskDelegate {
 /**
  * Answers a fingerprint-check trigger URL: a tool cannot read a physical device's app container,
  * so the app posts its embedded fingerprint back instead.
- *
- * The literals are shared with `fingerprintCheckProtocol.ts` in expo/expo-agent-cli.
  */
 @objc(EXDevLauncherFingerprintCheck)
 public class EXDevLauncherFingerprintCheck: NSObject {
-  /** Handles a fingerprint-check trigger URL. Returns true when the URL was consumed. */
+  /** True when the URL was a trigger and this consumed it. */
   @objc public static func handle(_ url: URL) -> Bool {
     #if DEBUG
     guard let request = FingerprintCheckRequest.parse(url) else {

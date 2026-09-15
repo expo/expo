@@ -6,8 +6,7 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
   {
-    // Early return: a trigger URL belongs to the dev launcher. Code added below never runs for
-    // it, so anything that must see every URL goes above.
+    // Code below never sees a trigger URL, so anything that must see every URL goes above.
     if isFingerprintCheckURL(url) {
       return false
     }
@@ -20,8 +19,7 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     guard let url = urls.first else {
       return
     }
-    // Early return: a trigger URL belongs to the dev launcher. Code added below never runs for
-    // it, so anything that must see every URL goes above.
+    // Code below never sees a trigger URL, so anything that must see every URL goes above.
     if isFingerprintCheckURL(url) {
       return
     }
@@ -49,13 +47,9 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   }
 }
 
-/// A dev-launcher command, not a deep link, so it never becomes the initial URL or reaches JS.
-/// React Native's own Linking module still sees it.
-///
-/// Debug only, because the responder is: `EXDevLauncherFingerprintCheck.handle` answers nothing in
-/// a release build, so the parameter is reserved nowhere else. expo-linking ships in every app
-/// while the dev launcher does not, and a release build that swallowed a URL carrying this
-/// parameter would drop a deep link nothing else handles.
+/// A dev-launcher command, not a deep link. Debug only: `EXDevLauncherFingerprintCheck` answers
+/// nothing in a release build, so swallowing the URL there would drop a deep link nothing else
+/// handles.
 private func isFingerprintCheckURL(_ url: URL) -> Bool {
   #if DEBUG
   guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems else {

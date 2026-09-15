@@ -6,12 +6,10 @@ import Testing
 
 @Suite("EXDevLauncherFingerprintCheck")
 struct EXDevLauncherFingerprintCheckTests {
-  /// The trigger is host-agnostic, so `host` defaults to a user-land route to prove the marker
-  /// alone selects the channel. `marker` nil leaves the reserved parameter off entirely.
+  /// `host` defaults to a user-land route, to prove the marker alone selects the channel.
   ///
-  /// The parameter names are spelled out here rather than taken from `FingerprintCheckProtocol`
-  /// on purpose: these are the literals the agent CLI sends, so a rename of the constant has to
-  /// fail here. Assert against the wire format, not against the implementation's own spelling.
+  /// The parameter names are spelled out rather than read from `FingerprintCheckProtocol`: these
+  /// are the literals the agent CLI sends, so renaming the constant has to fail here.
   private func triggerUrl(
     host: String = "some-app-route",
     marker: String? = "1",
