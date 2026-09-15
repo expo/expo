@@ -12,7 +12,6 @@ on:
     paths:
       - .github/workflows/sdk.yml
       - packages/**
-      - templates/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
       - turbo.json
@@ -20,7 +19,6 @@ on:
     paths:
       - .github/workflows/sdk.yml
       - packages/**
-      - templates/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
       - turbo.json
