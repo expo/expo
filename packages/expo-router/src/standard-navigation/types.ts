@@ -76,6 +76,10 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
   dispatch: (action: NavigationAction) => void;
   dispatchSync: (action: NavigationAction) => void;
   navigation: NavigationHelpers<ParamListBase>;
+  /** Returns whether the route with the given key is preloaded. */
+  isPreloaded: (key: string) => boolean;
+  /** Returns whether removal is prevented for the route with the given key. */
+  isRemovalPrevented: (key: string) => boolean;
 }
 
 /**
@@ -204,7 +208,7 @@ type NavigatorContentInferenceCarrier<
 
 /**
  * Props for a standard navigator's `NavigatorContent` component. Annotate your content component
- * with this type to declare the events it emits, so `unstable_createStandardRouterNavigator` can
+ * with this type to declare the events it emits, so `createStandardRouterNavigator` can
  * type `emitter.emit` for you.
  *
  * @example

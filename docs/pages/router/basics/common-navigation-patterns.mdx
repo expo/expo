@@ -54,9 +54,9 @@ In the **src/app/(tabs)/feed/\_layout.tsx** file, return a `Stack` component:
 ```tsx src/app/(tabs)/feed/_layout.tsx
 import { Stack } from 'expo-router';
 
-/* @info Setting `initialRouteName` ensures that direct links deep into the stack still push the index route onto the stack first. */
+/* @info Setting `anchor` ensures that direct links deep into the stack still push the index route onto the stack first. */
 export const unstable_settings = {
-  initialRouteName: 'index',
+  anchor: 'index',
 };
 /* @end */
 
@@ -67,7 +67,7 @@ export default function FeedLayout() {
 
 Now, within the **src/app/(tabs)/feed** directory, you can have `Link` components that point to different posts (for example, `/feed/123`). Those links will push the `feed/[postId]` route onto the stack, leaving the tab navigator visible.
 
-You can also navigate from any other tab to a post in the feed tab with the same URL. Use `withAnchor` in conjunction with `initialRouteName` to ensure that the `feed/index` route is always the first screen in the stack:
+You can also navigate from any other tab to a post in the feed tab with the same URL. Use `withAnchor` in conjunction with `anchor` to ensure that the `feed/index` route is always the first screen in the stack:
 
 ```tsx src/app/(tabs)/feed/index.tsx
 <Link href="/feed/123" withAnchor>

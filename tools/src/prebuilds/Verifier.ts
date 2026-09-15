@@ -251,7 +251,12 @@ export const FrameworkVerifier = {
           const foundSlices: string[] = [];
 
           for (const slice of sliceNames) {
-            const bundlePath = path.join(xcframeworkPath, slice, bundleName);
+            const bundlePath = Frameworks.getResourceBundlePathInSlice(
+              xcframeworkPath,
+              slice,
+              product.name,
+              bundleName
+            );
             if (await fs.pathExists(bundlePath)) {
               foundSlices.push(slice);
             } else {

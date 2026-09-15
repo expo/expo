@@ -1036,7 +1036,7 @@ it('throws when the configured initial route does not exist', () => {
       second: () => <Text testID="second">Second</Text>,
     })
   ).toThrow(
-    'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "index", "second". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+    'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "index", "second". Set `unstable_settings.anchor` to the name of a route in this layout.'
   );
 });
 
