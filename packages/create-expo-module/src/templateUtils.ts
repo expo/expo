@@ -16,6 +16,8 @@ import {
 } from './snippets';
 import type { LocalSubstitutionData, SubstitutionData } from './types';
 import { env } from './utils/env';
+import { UserError } from './utils/errors';
+import { writeFileAsync, type WriteFile } from './utils/files';
 import { newStep } from './utils/ora';
 import { extractLocalTarball } from './utils/tar';
 
@@ -252,6 +254,39 @@ export async function downloadPackageAsync(
   });
 }
 
+/** Uses a custom or downloaded template, cleaning up downloaded files when the action finishes. */
+export async function withTemplateAsync<T>(
+  options: { source?: string; isLocal: boolean; sdkVersion: number | null },
+  action: (templatePath: string) => Promise<T>
+): Promise<T> {
+  const { source, isLocal, sdkVersion } = options;
+  if (source) {
+    if (!fs.existsSync(source)) {
+      throw new UserError(
+        `❌ Template source directory does not exist: ${source}.\n` +
+          '   Check the --source path and try again.'
+      );
+    }
+    if (!fs.statSync(source).isDirectory()) {
+      throw new UserError(
+        `❌ Template source is not a directory: ${source}.\n` +
+          '   Pass the root directory of an expo-module-template package.'
+      );
+    }
+    return action(source);
+  }
+
+  const templateTempDir = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), 'create-expo-module-template-')
+  );
+  try {
+    const templatePath = await downloadPackageAsync(templateTempDir, isLocal, sdkVersion);
+    return await action(templatePath);
+  } finally {
+    await fs.promises.rm(templateTempDir, { recursive: true, force: true });
+  }
+}
+
 /**
  * Builds the augmented substitution data object by rendering all snippet slots.
  * Extracted from `createModuleFromTemplate` for reuse.
@@ -347,7 +382,8 @@ export async function copyTemplateFiles(
     platforms: Platform[];
     platformsOnly?: boolean;
     moduleType: 'standalone' | 'local';
-  }
+  },
+  writeFile: WriteFile = writeFileAsync
 ): Promise<void> {
   const { platforms, platformsOnly = false, moduleType } = options;
   const files = await getFilesAsync(templatePath);
@@ -376,10 +412,7 @@ export async function copyTemplateFiles(
     const template = await fs.promises.readFile(fromPath, 'utf8');
     const renderedContent = ejs.render(template, augmentedData);
 
-    if (!fs.existsSync(path.dirname(toPath))) {
-      await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
-    }
-    await fs.promises.writeFile(toPath, renderedContent, 'utf8');
+    await writeFile(toPath, renderedContent);
   }
 }
 
@@ -390,7 +423,8 @@ export async function copyTemplateFiles(
 export async function updateWebStub(
   templatePath: string,
   targetDir: string,
-  data: SubstitutionData | LocalSubstitutionData
+  data: SubstitutionData | LocalSubstitutionData,
+  writeFile: WriteFile = writeFileAsync
 ): Promise<void> {
   const snippetsDir = path.join(templatePath, 'snippets');
   const augmentedData = await buildAugmentedData(snippetsDir, data);
@@ -419,8 +453,5 @@ export async function updateWebStub(
   const template = await fs.promises.readFile(fromPath, 'utf8');
   const renderedContent = ejs.render(template, augmentedData);
 
-  if (!fs.existsSync(path.dirname(toPath))) {
-    await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
-  }
-  await fs.promises.writeFile(toPath, renderedContent, 'utf8');
+  await writeFile(toPath, renderedContent);
 }
