@@ -34,11 +34,13 @@ const sourceLines = (text) => text.replace(/\r\n/g, '\n').split('\n');
 
 /**
  * The line with the contents of its string literals blanked out and the indices
- * intact, so a `#` inside a quoted string — Ruby interpolation, most often — is not
- * mistaken for the start of a comment.
+ * intact, so nothing quoted is read as code: neither a `#` — Ruby interpolation,
+ * most often — as the start of a comment, nor a `do`/`end` as a block.
  */
 function codeView(line) {
-  const chars = [...line];
+  // Code units, not code points: `stripComment` slices the ORIGINAL line with an index
+  // found here, so blanking an emoji to a single space would cut the line short.
+  const chars = line.split('');
   let quote = null;
   for (let i = 0; i < chars.length; i++) {
     const char = chars[i];
@@ -67,9 +69,15 @@ const TEST_SPEC_RX = /\.test_spec\b/;
 const BLOCK_KEYWORD_RX = /^\s*(?:if|unless|case|while|until|begin|def)\b/;
 const countMatches = (text, pattern) => text.match(pattern)?.length ?? 0;
 
+/**
+ * What a line opens minus what it closes, counted on the blanked view: an `end` in a
+ * string — a `-Wl,--end-group` linker flag, or plain prose — would otherwise close a
+ * block a line early and leak the next line out of it.
+ */
 function blockDelta(line) {
-  const opened = countMatches(line, /\bdo\b/g) + (BLOCK_KEYWORD_RX.test(line) ? 1 : 0);
-  return opened - countMatches(line, /\bend\b/g);
+  const code = codeView(line);
+  const opened = countMatches(code, /\bdo\b/g) + (BLOCK_KEYWORD_RX.test(code) ? 1 : 0);
+  return opened - countMatches(code, /\bend\b/g);
 }
 
 /**
