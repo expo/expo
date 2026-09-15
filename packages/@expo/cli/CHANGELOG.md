@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bundle source maps served by `expo start` and written by `expo export` are now [index maps](https://tc39.es/ecma426/#sec-index-source-map), as Metro now always emits them. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
 ### 🎉 New features
 
 - Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
@@ -14,6 +16,8 @@
 - Fix app names in prebuild templates: derive project identifiers from the raw name in XML and plists ('A & B' gave 'AampB' in plists but 'AB' elsewhere), and escape display names for Android resources and plists. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.1 — 2026-09-14
 

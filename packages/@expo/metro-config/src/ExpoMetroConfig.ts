@@ -413,7 +413,6 @@ export function getDefaultConfig(
     transformer: {
       unstable_workerThreads: true,
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      unstable_renameRequire: false,
       _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg?.browserslist

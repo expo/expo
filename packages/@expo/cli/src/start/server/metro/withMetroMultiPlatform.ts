@@ -35,7 +35,11 @@ import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createTypescriptResolver } from './createTypescriptResolver';
 import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  isFailedToResolveNameError,
+  isFailedToResolvePathError,
+  isFailedToResolveUnsupportedError,
+} from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
@@ -334,7 +338,9 @@ export function withExtendedResolver(
         // If the error is directly related to a resolver not being able to resolve a module, then
         // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
         const isResolutionError =
-          isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+          isFailedToResolveNameError(error) ||
+          isFailedToResolvePathError(error) ||
+          isFailedToResolveUnsupportedError(error);
         if (!isResolutionError) {
           throw error;
         }

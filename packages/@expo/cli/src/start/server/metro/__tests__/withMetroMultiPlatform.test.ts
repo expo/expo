@@ -35,6 +35,10 @@ class FailedToResolveNameError extends Error {
     super('Failed to resolve name');
   }
 }
+
+class FailedToResolveUnsupportedError extends Error {
+  readonly name = 'FailedToResolveUnsupportedError';
+}
 jest.mock('@expo/metro/metro-resolver', () => {
   const resolve = jest.fn(() => ({ type: 'empty' }));
   return {
@@ -452,6 +456,28 @@ describe(withExtendedResolver, () => {
       'node:path',
       platform
     );
+  });
+
+  it(`resolves a node.js built-in as a shim on web when its URI scheme is unsupported`, async () => {
+    mockMinFs();
+
+    // Metro rejects a `node:` specifier with no registered scheme resolver
+    jest.mocked(getResolveFunc()).mockImplementationOnce(() => {
+      throw new FailedToResolveUnsupportedError(
+        "No resolver is registered for the 'node:' URI scheme."
+      );
+    });
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    expect(
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'node:async_hooks', 'web')
+    ).toEqual({
+      type: 'empty',
+    });
   });
 
   it(`resolves a node.js built-in as a an installed module on web`, async () => {
