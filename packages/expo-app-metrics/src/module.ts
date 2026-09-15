@@ -1,5 +1,9 @@
-import { requireNativeModule } from 'expo';
+import { requireOptionalNativeModule } from 'expo';
 
+import { ExpoAppMetricsShim } from './ExpoAppMetricsShim';
 import type { ExpoAppMetricsModuleType } from './types';
 
-export default requireNativeModule<ExpoAppMetricsModuleType>('ExpoAppMetrics');
+// Hosts that leave expo-app-metrics out, such as Expo Go, have no native module. Fall back to the
+// shim so importing the package never throws.
+export default requireOptionalNativeModule<ExpoAppMetricsModuleType>('ExpoAppMetrics') ??
+  new ExpoAppMetricsShim();
