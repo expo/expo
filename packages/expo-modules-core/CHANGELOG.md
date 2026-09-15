@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed native-backed `ArrayBuffer`s and `NativeArrayBuffer`s being copied instead of shared when passed back from JS on Hermes V1.
+- [Android] Fixed native-backed `ArrayBuffer`s and `NativeArrayBuffer`s being copied instead of shared when passed back from JS on Hermes V1. ([#50132](https://github.com/expo/expo/pull/50132) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
