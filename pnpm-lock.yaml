@@ -966,6 +966,9 @@ importers:
       expo-age-range:
         specifier: workspace:*
         version: link:../../packages/expo-age-range
+      expo-ai:
+        specifier: workspace:*
+        version: link:../../packages/expo-ai
       expo-app-intents:
         specifier: workspace:*
         version: link:../../packages/expo-app-intents
