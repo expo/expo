@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
-import { getSourceMapSources } from '../../utils/sourceMap';
+import { expectSourceMapSection } from '../../utils/sourceMap';
 import {
   expectChunkPathMatching,
   findProjectFiles,
@@ -118,13 +118,12 @@ describe('exports static with bundle splitting', () => {
 
       // Common chunk
       if (file!.match(/__common/)) {
-        const sources = getSourceMapSources(sourceMap);
-        expect(
-          sources.every(
-            (source) => source.startsWith('/packages/') || source.startsWith('/node_modules/')
-          )
-        ).toBe(true);
-        expect(sources.some((source) => source.includes('router-e2e/__e2e__/'))).toBe(false);
+        expect(sourceMap.sections.length).toBeGreaterThan(0);
+        for (const section of sourceMap.sections) {
+          expect(section).toEqual(
+            expectSourceMapSection(expect.stringMatching(/^\/(packages|node_modules)\//))
+          );
+        }
       } else {
         // expect(sourceMap.sources).toEqual(
         //   expect.arrayContaining([

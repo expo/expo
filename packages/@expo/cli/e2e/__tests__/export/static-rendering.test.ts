@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { getSourceMapSources } from '../../utils/sourceMap';
+import { expectSourceMapSection } from '../../utils/sourceMap';
 import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
@@ -119,22 +119,26 @@ describe('exports static', () => {
       // Ensure the bundle does not contain a source map reference
       const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
       expect(sourceMap.version).toBe(3);
-      expect(getSourceMapSources(sourceMap)).toEqual(
+      expect(sourceMap.sections).toEqual(
         expect.arrayContaining([
-          '__prelude__',
+          expectSourceMapSection('__prelude__'),
           // NOTE: No `/Users/evanbacon/`...
           // NOTE(@kitten): We can slot in our own runtime here
-          expect.pathMatching(
-            new RegExp(
-              [
-                '/node_modules/metro-runtime/src/polyfills/require.js',
-                '/@expo/cli/build/metro-require/require.js',
-              ].join('|')
+          expectSourceMapSection(
+            expect.pathMatching(
+              new RegExp(
+                [
+                  '/node_modules/metro-runtime/src/polyfills/require.js',
+                  '/@expo/cli/build/metro-require/require.js',
+                ].join('|')
+              )
             )
           ),
 
           // NOTE: relative to the server root for optimal source map support
-          expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),
+          expectSourceMapSection(
+            expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/)
+          ),
         ])
       );
     }
