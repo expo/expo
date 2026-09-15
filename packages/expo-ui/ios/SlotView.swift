@@ -3,19 +3,19 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class SlotViewProps: ExpoSwiftUI.ViewProps {
+public final class SlotViewProps: ExpoSwiftUI.ViewProps {
   @Field var name: String = ""
   @Field var extraProps: [String: Any]?
 }
 
-internal struct SlotView: ExpoSwiftUI.View {
-  @ObservedObject var props: SlotViewProps
+public struct SlotView: ExpoSwiftUI.View {
+  @ObservedObject public var props: SlotViewProps
 
-  init(props: SlotViewProps) {
+  public init(props: SlotViewProps) {
     self.props = props
   }
 
-  var body: some View {
+  public var body: some View {
     Children()
   }
 

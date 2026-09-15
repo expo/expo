@@ -103,7 +103,7 @@ Each of these has an `spm.config.json` in its package root:
 | `expo-age-range` | `ExpoAgeRange` |
 | `expo-app-integrity` | `ExpoAppIntegrity` |
 | `expo-apple-authentication` | `ExpoAppleAuthentication` |
-| `expo-application` | `EXApplication` |
+| `expo-application` | `ExpoApplication` |
 | `expo-asset` | `ExpoAsset` |
 | `expo-audio` | `ExpoAudio` |
 | `expo-background-fetch` | `ExpoBackgroundFetch` |
@@ -447,7 +447,7 @@ Version specifiers: `{ "exact": "4.5.0" }`, `{ "from": "4.0.0" }`, `{ "branch": 
 | `path`               | string          | Source path relative to package root               |
 | `pattern`            | string          | Glob pattern for source files                      |
 | `headerPattern`      | string          | Glob pattern for header files (objc/cpp only)      |
-| `exclude`            | array           | Paths to exclude from sources                      |
+| `exclude`            | array           | Paths to exclude from sources. `**/Tests/**` is always excluded, and generated `.swiftinterface` files are rejected if they import test-only modules such as `Testing` |
 | `dependencies`       | array           | Target dependencies                                |
 | `linkedFrameworks`   | array           | System frameworks to link                          |
 | `includeDirectories` | array           | Header search paths (objc/cpp only, default: `["include"]`) |

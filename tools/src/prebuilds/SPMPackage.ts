@@ -33,7 +33,7 @@ import {
   ResolvedTargetDependency,
   SPMPackageVersion,
 } from './SPMPackage.types';
-import { createAsyncSpinner, SpinnerError } from './Utils';
+import { createAsyncSpinner, resolveFrameworkTargetPath, SpinnerError } from './Utils';
 import { resolvePackagePath } from './resolvePackage';
 
 /**
@@ -1539,7 +1539,7 @@ async function buildPackageSwiftContext(
   // These are binary targets that other source targets can depend on
   for (const target of product.targets) {
     if (target.type === 'framework') {
-      const frameworkPath = path.join(pkg.path, target.path);
+      const frameworkPath = resolveFrameworkTargetPath(pkg.path, target);
       const relativePath = path.relative(packageSwiftDir, frameworkPath);
       spinner.info(`Adding vendored framework target: ${target.name} at ${relativePath}`);
       resolvedTargets.push({

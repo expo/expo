@@ -324,6 +324,9 @@ export async function parseModule(
       // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
       {
         ...METRO_CONFIG_DEFAULTS.transformer,
+        // Matches `ExpoMetroConfig`, and the upcoming Metro default. The option goes away once
+        // Metro flips it, so fixtures shouldn't bake in the renamed `require`.
+        unstable_renameRequire: false,
         asyncRequireModulePath: 'expo-mock/async-require',
         unstable_allowRequireContext: true,
         allowOptionalDependencies: true,

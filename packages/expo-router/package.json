@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "58.0.0",
+  "version": "58.0.2",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",
@@ -202,13 +202,21 @@
       "expo-source": "./src/ui/index.ts",
       "default": "./build/ui/index.js"
     },
-    "./unstable-native-tabs": {
+    "./native-tabs": {
       "types": {
         "expo-source": "./src/native-tabs/index.ts",
         "default": "./build/native-tabs/index.d.ts"
       },
       "expo-source": "./src/native-tabs/index.ts",
       "default": "./build/native-tabs/index.js"
+    },
+    "./unstable-native-tabs": {
+      "types": {
+        "expo-source": "./src/unstable-native-tabs.ts",
+        "default": "./build/unstable-native-tabs.d.ts"
+      },
+      "expo-source": "./src/unstable-native-tabs.ts",
+      "default": "./build/unstable-native-tabs.js"
     },
     "./unstable-split-view": {
       "types": {
@@ -286,7 +294,7 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-native-masked-view/masked-view": "^0.3.2",
-    "@react-native/normalize-colors": "0.87.1",
+    "@react-native/normalize-colors": "0.88.0-rc.0",
     "client-only": "^0.0.1",
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
@@ -324,6 +332,7 @@
     "react-native-screens": "^4.27.0",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.12.2",
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
@@ -343,6 +352,7 @@
     "react-native-safe-area-context": ">= 5.4.0",
     "react-native-screens": "^4.27.0",
     "react-native-web": "*",
+    "react-native-worklets": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
@@ -365,6 +375,9 @@
       "optional": true
     },
     "react-native-web": {
+      "optional": true
+    },
+    "react-native-worklets": {
       "optional": true
     },
     "react-server-dom-webpack": {

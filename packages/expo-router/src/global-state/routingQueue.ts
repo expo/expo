@@ -9,8 +9,6 @@ interface NavigateToHrefIntent {
     href: string;
     originalHref?: string;
   };
-  metadata?: RoutingIntentMetadata;
-  onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
 }
 
 interface RoutingIntentMetadata {
@@ -19,7 +17,13 @@ interface RoutingIntentMetadata {
   };
 }
 
-export type RoutingIntent =
+type RoutingIntentOptions = {
+  inTransition?: boolean;
+  metadata?: RoutingIntentMetadata;
+  onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
+};
+
+export type RoutingIntent = (
   | NavigateToHrefIntent
   | {
       type: 'COMPUTED_ACTION';
@@ -27,12 +31,10 @@ export type RoutingIntent =
         compute: (state: NavigationState, registry: RouterRegistry) => NavigationAction | undefined;
         originKey?: string;
       };
-      metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
     }
   | {
       type: 'ACTION';
       payload: { action: NavigationAction; originKey?: string };
-      metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
-    };
+    }
+) &
+  RoutingIntentOptions;
