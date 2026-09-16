@@ -1,6 +1,17 @@
 import type { MiddlewareMatcher } from 'expo-server';
+import { createRequestHandler } from 'expo-server/adapter/http';
 
-import { warnInvalidMiddlewareMatcherSettings } from '../router';
+import { createRouteHandlerMiddleware } from '../createServerRouteMiddleware';
+import { fetchManifest } from '../fetchRouterManifest';
+import { warnInvalidMiddlewareMatcherSettings, warnInvalidWebOutput } from '../router';
+
+jest.mock('expo-server/adapter/http', () => ({ createRequestHandler: jest.fn() }));
+jest.mock('resolve-from', () => ({ silent: jest.fn(() => '/expo-router') }));
+jest.mock('../fetchRouterManifest', () => ({ fetchManifest: jest.fn() }));
+jest.mock('../router', () => ({
+  ...jest.requireActual('../router'),
+  warnInvalidWebOutput: jest.fn(),
+}));
 
 describe(warnInvalidMiddlewareMatcherSettings, () => {
   const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -60,5 +71,141 @@ describe(warnInvalidMiddlewareMatcherSettings, () => {
         expect.stringContaining(`String patterns in middleware matcher must start with '/'`)
       );
     });
+  });
+});
+
+describe(createRouteHandlerMiddleware, () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it.each([
+    ['static', '_expo/loaders/index.js'],
+    ['server', '_expo/loaders/index.js'],
+    ['single', undefined],
+    [undefined, undefined],
+  ] as const)(
+    'only exposes data loaders for static and server output (output: %s)',
+    async (output, expectedLoader) => {
+      jest.mocked(fetchManifest).mockResolvedValue({
+        htmlRoutes: [{ file: 'index.tsx', page: '/index', namedRegex: /^\/$/, routeKeys: {} }],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      });
+
+      createRouteHandlerMiddleware('/', {
+        appDir: '/app',
+        routerRoot: 'app',
+        config: {
+          exp: { name: 'test', slug: 'test', web: { output } },
+          pkg: {},
+          rootConfig: { expo: { name: 'test', slug: 'test' } },
+          staticConfigPath: null,
+          dynamicConfigPath: null,
+          dynamicConfigObjectType: null,
+          hasUnusedStaticConfig: false,
+        },
+        headers: {},
+        getStaticPageAsync: async () => ({ content: '' }),
+        bundleApiRoute: async () => null,
+        executeLoaderAsync: async () => undefined,
+        // RSC installs the route middleware even for single-page output.
+        rsc: {
+          path: '/_flight',
+          handler: {
+            GET: async () => new Response(),
+            POST: async () => new Response(),
+          },
+        },
+      });
+
+      const hooks = jest.mocked(createRequestHandler).mock.calls[0]![1]!;
+      const manifest = await hooks.getRoutesManifest!();
+      expect(manifest?.htmlRoutes[0]?.loader).toBe(expectedLoader);
+    }
+  );
+
+  it.each([
+    { apiRoutes: undefined, hasRoutes: true, shouldWarn: true },
+    { apiRoutes: false, hasRoutes: true, shouldWarn: true },
+    { apiRoutes: true, hasRoutes: true, shouldWarn: false },
+    { apiRoutes: false, hasRoutes: false, shouldWarn: false },
+  ])('warns about disabled static API routes: %j', async ({ apiRoutes, hasRoutes, shouldWarn }) => {
+    jest.mocked(fetchManifest).mockResolvedValue({
+      htmlRoutes: [],
+      apiRoutes: hasRoutes
+        ? [{ file: 'hello+api.ts', page: '/hello', namedRegex: /^\/hello$/, routeKeys: {} }]
+        : [],
+      notFoundRoutes: [],
+      redirects: [],
+      rewrites: [],
+    });
+    createRouteHandlerMiddleware('/', {
+      appDir: '/app',
+      routerRoot: 'app',
+      config: {
+        exp: {
+          name: 'test',
+          slug: 'test',
+          web: { output: 'static' },
+          extra: { router: { apiRoutes } },
+        },
+        pkg: {},
+        rootConfig: { expo: { name: 'test', slug: 'test' } },
+        staticConfigPath: null,
+        dynamicConfigPath: null,
+        dynamicConfigObjectType: null,
+        hasUnusedStaticConfig: false,
+      },
+      headers: {},
+      getStaticPageAsync: async () => ({ content: '' }),
+      bundleApiRoute: async () => null,
+      executeLoaderAsync: async () => undefined,
+    });
+
+    const hooks = jest.mocked(createRequestHandler).mock.calls[0]![1]!;
+    const manifest = await hooks.getRoutesManifest!();
+    expect(warnInvalidWebOutput).toHaveBeenCalledTimes(shouldWarn ? 1 : 0);
+    expect(manifest?.apiRoutes).toHaveLength(apiRoutes && hasRoutes ? 1 : 0);
+  });
+
+  it('keeps the RSC endpoint when API routes are disabled', async () => {
+    jest.mocked(fetchManifest).mockResolvedValue({
+      htmlRoutes: [],
+      apiRoutes: [{ file: 'hello+api.ts', page: '/hello', namedRegex: /^\/hello$/, routeKeys: {} }],
+      notFoundRoutes: [],
+      redirects: [],
+      rewrites: [],
+    });
+    const rscHandler = { GET: async () => new Response(), POST: async () => new Response() };
+    createRouteHandlerMiddleware('/', {
+      appDir: '/app',
+      routerRoot: 'app',
+      config: {
+        exp: {
+          name: 'test',
+          slug: 'test',
+          web: { output: 'server' },
+          extra: { router: { apiRoutes: false } },
+          experiments: { reactServerFunctions: true },
+        },
+        pkg: {},
+        rootConfig: { expo: { name: 'test', slug: 'test' } },
+        staticConfigPath: null,
+        dynamicConfigPath: null,
+        dynamicConfigObjectType: null,
+        hasUnusedStaticConfig: false,
+      },
+      headers: {},
+      getStaticPageAsync: async () => ({ content: '' }),
+      bundleApiRoute: async () => null,
+      executeLoaderAsync: async () => undefined,
+      rsc: { path: '/_flight', handler: rscHandler },
+    });
+
+    const hooks = jest.mocked(createRequestHandler).mock.calls[0]![1]!;
+    const manifest = await hooks.getRoutesManifest!();
+    expect(manifest?.apiRoutes.map((route) => route.page)).toEqual(['/_flight/[...rsc]']);
+    expect(await hooks.getApiRoute!(manifest!.apiRoutes[0]!)).toBe(rscHandler);
   });
 });

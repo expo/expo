@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [Android] Add support for the `Image` component. ([#50116](https://github.com/expo/expo/pull/50116) by [@jakex7](https://github.com/jakex7))
+
 ## 58.0.1 — 2026-09-14
 
 ### 🎉 New features

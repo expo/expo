@@ -6,11 +6,20 @@
 
 ### 🎉 New features
 
-- Add support for separate restored and output Metro transform cache directories. ([#50023](https://github.com/expo/expo/pull/50023) by [@sjchmiela](https://github.com/sjchmiela))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Add support for separate restored and output Metro transform cache directories. ([#50023](https://github.com/expo/expo/pull/50023) by [@sjchmiela](https://github.com/sjchmiela))
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- Use Metro's compact source maps in place of Expo's packed source map format. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.1 — 2026-09-14
 

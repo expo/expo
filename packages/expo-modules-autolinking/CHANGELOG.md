@@ -16,6 +16,16 @@
 - [iOS] Derive the precompiled artifact version prefix from each third-party package's own version, so every external package is located under the directory it is published to instead of sharing one package version. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Describe the precompiled artifact base, flavor directory and shared SPM dependency root as their own path builders, and export them so `et prebuild` writes the layout this package reads. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
 
+## 58.0.2 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- [Android] Compile the autolinking Gradle plugins against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+- [Android] Discover Expo Modules v2 modules at compile time. ([#50178](https://github.com/expo/expo/pull/50178) by [@lukmccall](https://github.com/lukmccall))
+
 ## 58.0.1 — 2026-09-14
 
 _This version does not introduce any user-facing changes._

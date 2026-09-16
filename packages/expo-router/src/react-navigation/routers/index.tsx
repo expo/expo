@@ -3,6 +3,7 @@ import * as CommonActions from './CommonActions';
 export { CommonActions };
 
 export { BaseRouter } from './BaseRouter';
+export { attachRouteState } from './attachRouteState';
 export type {
   DrawerActionHelpers,
   DrawerActionType,

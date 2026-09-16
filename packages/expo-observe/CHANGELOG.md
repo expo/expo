@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.4 — 2026-09-15
+
+### 🎉 New features
+
+- Add a `networkTraces` option to `configure` to record network requests as trace spans, with an optional capture filter. Recording is opt-in, so it never adds to your event usage unless you turn it on. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.3 — 2026-09-14
 
 _This version does not introduce any user-facing changes._

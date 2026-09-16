@@ -11,8 +11,9 @@ import {
 } from 'react';
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
-import { createImperativeRouter, router, unboundRouter } from './router';
+import { createImperativeRouter, getDefaultTransitionMode, router, unboundRouter } from './router';
 import type { RoutingIntent } from './routingQueue';
+import type { NavigationTransitionMode } from './types';
 
 const EMPTY: RoutingIntent[] = [];
 let boundBridges = 0;
@@ -26,6 +27,8 @@ export type RoutingQueueApi = {
   enqueue: (intent: RoutingIntent) => void;
   dequeue: (processed: RoutingIntent[]) => void;
   startTransition: TransitionStartFunction;
+  transitionMode: NavigationTransitionMode;
+  setTransitionMode: (mode: NavigationTransitionMode) => void;
 };
 
 export const RoutingQueueApiContext = createContext<RoutingQueueApi | undefined>(undefined);
@@ -35,6 +38,8 @@ export const NavigationPendingContext = createContext(false);
 export function RoutingQueueProvider({ children }: PropsWithChildren) {
   const [queue, setQueue] = useState(EMPTY);
   const [isPending, startTransition] = useTransition();
+  const [transitionMode, setTransitionMode] =
+    useState<NavigationTransitionMode>(getDefaultTransitionMode);
   const api = useMemo<RoutingQueueApi>(
     () => ({
       enqueue: (intent) => setQueue((previous) => [...previous, intent]),
@@ -42,8 +47,10 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
       dequeue: (processed) =>
         setQueue((previous) => (previous === processed ? EMPTY : previous.slice(processed.length))),
       startTransition,
+      transitionMode,
+      setTransitionMode,
     }),
-    [startTransition]
+    [startTransition, transitionMode]
   );
 
   return (
@@ -63,7 +70,18 @@ export function useEnqueueRoutingIntent() {
   return api.enqueue;
 }
 
-export function ImperativeRoutingQueueBridge({ enqueue }: Pick<RoutingQueueApi, 'enqueue'>) {
+export function useSetRoutingTransitionMode() {
+  const api = use(RoutingQueueApiContext);
+  if (api === undefined) {
+    return throwMissingRoutingQueue;
+  }
+  return api.setTransitionMode;
+}
+
+export function ImperativeRoutingQueueBridge({
+  enqueue,
+  setTransitionMode,
+}: Pick<RoutingQueueApi, 'enqueue' | 'setTransitionMode'>) {
   useClientLayoutEffect(() => {
     if (__DEV__ && boundBridges > 0) {
       console.error(
@@ -77,13 +95,13 @@ export function ImperativeRoutingQueueBridge({ enqueue }: Pick<RoutingQueueApi, 
 
     boundBridges++;
     // The exported router identity must stay stable, so the bridge mutates it in place.
-    Object.assign(router, createImperativeRouter(enqueue));
+    Object.assign(router, createImperativeRouter(enqueue, setTransitionMode));
 
     return () => {
       boundBridges--;
       Object.assign(router, unboundRouter);
     };
-  }, [enqueue]);
+  }, [enqueue, setTransitionMode]);
 
   return null;
 }

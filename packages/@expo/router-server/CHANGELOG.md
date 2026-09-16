@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.1 — 2026-09-14
 
 ### 🐛 Bug fixes

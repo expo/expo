@@ -27,7 +27,6 @@ test.describe('server rendering in production', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: 'static-rendering',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     });
     console.timeEnd('expo export');
