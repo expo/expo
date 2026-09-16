@@ -310,7 +310,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
         throw ForegroundServiceStartNotAllowedException()
       }
 
-      if (shouldUseForegroundService && !hasForegroundServicePermissions()) {
+      if (shouldUseForegroundService && !hasForegroundServicePermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)) {
         throw ForegroundServicePermissionsException()
       }
 
@@ -362,7 +362,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
       if (!AppForegroundedSingleton.isForegrounded && shouldUseForegroundService) {
         throw ForegroundServiceStartNotAllowedException()
       }
-      if (shouldUseForegroundService && !hasMotionActivityForegroundServicePermissions()) {
+      if (shouldUseForegroundService && !hasForegroundServicePermissions(Manifest.permission.FOREGROUND_SERVICE_HEALTH)) {
         throw ForegroundServicePermissionsException()
       }
 
@@ -1006,30 +1006,18 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
     } ?: throw Exceptions.AppContextLost()
   }
 
-  private fun hasForegroundServicePermissions(): Boolean {
+  /**
+   * Checks whether the app can run a foreground service typed as [typedForegroundServicePermission]
+   * (e.g. `FOREGROUND_SERVICE_LOCATION`, `FOREGROUND_SERVICE_HEALTH`).
+   */
+  private fun hasForegroundServicePermissions(typedForegroundServicePermission: String): Boolean {
     appContext.permissions?.let {
       return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        val canAccessForegroundServiceLocation = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        val canAccessTypedForegroundService = it.hasGrantedPermissions(typedForegroundServicePermission)
         val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
-        canAccessForegroundService && canAccessForegroundServiceLocation
+        canAccessForegroundService && canAccessTypedForegroundService
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
-        canAccessForegroundService
-      } else {
-        true
-      }
-    } ?: throw Exceptions.AppContextLost()
-  }
-
-  private fun hasMotionActivityForegroundServicePermissions(): Boolean {
-    appContext.permissions?.let {
-      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        val canAccessForegroundServiceHealth = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_HEALTH)
-        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
-        canAccessForegroundService && canAccessForegroundServiceHealth
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
-        canAccessForegroundService
+        it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
       } else {
         true
       }
