@@ -101,6 +101,7 @@ import {
   getRouterDirectoryModuleIdWithManifest,
   hasWarnedAboutApiRoutes,
   isApiRouteConvention,
+  isExpoRouterApp,
   warnInvalidWebOutput,
 } from './router';
 import { serialAssetsToStaticContentAssets } from './serializeHtml';
@@ -1258,7 +1259,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
 
-    const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+    const useServerRendering =
+      isExpoRouterApp(config.pkg) && ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');

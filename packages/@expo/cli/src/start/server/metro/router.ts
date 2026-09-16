@@ -1,4 +1,4 @@
-import type { ExpoConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 import type { MiddlewareMatcher } from 'expo-server';
 import { sync as globSync } from 'glob';
@@ -12,6 +12,14 @@ import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
 import type { EnvironmentMode } from '../../../utils/nodeEnv';
 import { event } from './routerEvents';
+
+/** Check the app's declared dependencies, since Router may also resolve from a parent workspace. */
+export function isExpoRouterApp(pkg: PackageJSONConfig): boolean {
+  return (
+    typeof pkg.dependencies?.['expo-router'] === 'string' ||
+    typeof pkg.devDependencies?.['expo-router'] === 'string'
+  );
+}
 
 /**
  * Get the relative path for requiring the `/app` folder relative to the `expo-router/entry` file.
