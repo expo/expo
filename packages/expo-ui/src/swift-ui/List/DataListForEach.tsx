@@ -179,16 +179,23 @@ export function DataListForEach<ItemT>({
             : { ...previous, first, last };
         });
       }}>
-      {indices.map((index, slot) => (
-        <RecycledRow
-          key={slot}
-          item={data[index]!}
-          index={index}
-          itemKey={itemKeys[index]!}
-          revision={current.revision}
-          renderItem={renderItem}
-        />
-      ))}
+      {indices.map((index, slot) => {
+        const item = data[index];
+        const itemKey = itemKeys[index];
+        if (item === undefined || itemKey === undefined) {
+          throw new Error(`List.ForEach could not resolve the item at index ${index}.`);
+        }
+        return (
+          <RecycledRow
+            key={slot}
+            item={item}
+            index={index}
+            itemKey={itemKey}
+            revision={current.revision}
+            renderItem={renderItem}
+          />
+        );
+      })}
     </NativeList>
   );
 }
