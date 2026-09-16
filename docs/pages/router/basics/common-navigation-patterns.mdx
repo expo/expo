@@ -5,7 +5,7 @@ sidebar_title: Common patterns
 searchRank: 8
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { RouterLogo } from '@expo/styleguide';
 import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -54,9 +54,9 @@ In the **src/app/(tabs)/feed/\_layout.tsx** file, return a `Stack` component:
 ```tsx src/app/(tabs)/feed/_layout.tsx
 import { Stack } from 'expo-router';
 
-/* @info Setting `initialRouteName` ensures that direct links deep into the stack still push the index route onto the stack first. */
+/* @info Setting `anchor` ensures that direct links deep into the stack still push the index route onto the stack first. */
 export const unstable_settings = {
-  initialRouteName: 'index',
+  anchor: 'index',
 };
 /* @end */
 
@@ -67,7 +67,7 @@ export default function FeedLayout() {
 
 Now, within the **src/app/(tabs)/feed** directory, you can have `Link` components that point to different posts (for example, `/feed/123`). Those links will push the `feed/[postId]` route onto the stack, leaving the tab navigator visible.
 
-You can also navigate from any other tab to a post in the feed tab with the same URL. Use `withAnchor` in conjunction with `initialRouteName` to ensure that the `feed/index` route is always the first screen in the stack:
+You can also navigate from any other tab to a post in the feed tab with the same URL. Use `withAnchor` in conjunction with `anchor` to ensure that the `feed/index` route is always the first screen in the stack:
 
 ```tsx src/app/(tabs)/feed/index.tsx
 <Link href="/feed/123" withAnchor>
@@ -116,7 +116,7 @@ export default function RootLayout() {
   title="Nested navigators"
   description="Learn more about how to use nested navigators in your Expo Router app."
   href="/router/advanced/nesting-navigators/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Different tabs per platform: platform-specific tabs
@@ -187,7 +187,7 @@ When you're already focused on a tab and navigating to a user, you will stay in 
   title="Shared routes"
   description="Learn more about how distinct routes can share the same URL in Expo Router."
   href="/router/advanced/shared-routes/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Authenticated users only: protected routes
@@ -279,7 +279,7 @@ export default function TabsLayout() {
   title="Expo Router authentication"
   description="Follow an in-depth guide for implementing authentication using protected routes."
   href="/router/advanced/authentication/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Sometimes the best route isn't a route at all
@@ -309,5 +309,5 @@ export default function Layout() {
   title="Modals in Expo Router"
   description="Learn multiple patterns for displaying modals in Expo Router, including using a modal inside of a layout file."
   href="/router/advanced/modals/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />

@@ -9,6 +9,7 @@ export { TopTabs };
 
 export {
   createStandardMaterialTopTabNavigator,
+  createJSTopTabsProps,
   MaterialTopTabBar,
   MaterialTopTabView,
   useTabAnimation,

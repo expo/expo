@@ -665,6 +665,71 @@
 /get-started/introduction.md /get-started/create-a-project.md 301
 /submit/introduction.md /deploy/submit-to-app-stores.md 301
 
+# Bare roots of removed SDK version trees. The splat rules near the end of this
+# file cover their subpaths, but a splat does not match the version root itself.
+/versions/v50.0.0 /versions/latest 301
+/versions/v51.0.0 /versions/latest 301
+/versions/v52.0.0 /versions/latest 301
+/versions/v53.0.0 /versions/latest 301
+
+# The -next and -av SDK pages were promoted to the stable slug. The -av pages
+# kept their name only through v54, the -next pages only through v55.
+/versions/latest/sdk/media-library-next /versions/latest/sdk/media-library 301
+/versions/latest/sdk/media-library-next/ /versions/latest/sdk/media-library 301
+/versions/latest/sdk/media-library-next.md /versions/latest/sdk/media-library.md 301
+/versions/latest/sdk/calendar-next /versions/latest/sdk/calendar 301
+/versions/latest/sdk/calendar-next/ /versions/latest/sdk/calendar 301
+/versions/latest/sdk/calendar-next.md /versions/latest/sdk/calendar.md 301
+/versions/latest/sdk/contacts-next /versions/latest/sdk/contacts 301
+/versions/latest/sdk/contacts-next/ /versions/latest/sdk/contacts 301
+/versions/latest/sdk/contacts-next.md /versions/latest/sdk/contacts.md 301
+/versions/v56.0.0/sdk/media-library-next /versions/v56.0.0/sdk/media-library 301
+/versions/v56.0.0/sdk/media-library-next/ /versions/v56.0.0/sdk/media-library 301
+/versions/v56.0.0/sdk/media-library-next.md /versions/v56.0.0/sdk/media-library.md 301
+/versions/v56.0.0/sdk/calendar-next /versions/v56.0.0/sdk/calendar 301
+/versions/v56.0.0/sdk/calendar-next/ /versions/v56.0.0/sdk/calendar 301
+/versions/v56.0.0/sdk/calendar-next.md /versions/v56.0.0/sdk/calendar.md 301
+/versions/v56.0.0/sdk/contacts-next /versions/v56.0.0/sdk/contacts 301
+/versions/v56.0.0/sdk/contacts-next/ /versions/v56.0.0/sdk/contacts 301
+/versions/v56.0.0/sdk/contacts-next.md /versions/v56.0.0/sdk/contacts.md 301
+/versions/latest/sdk/filesystem-next /versions/latest/sdk/filesystem 301
+/versions/latest/sdk/filesystem-next/ /versions/latest/sdk/filesystem 301
+/versions/latest/sdk/filesystem-next.md /versions/latest/sdk/filesystem.md 301
+/versions/latest/sdk/video-av /versions/latest/sdk/video 301
+/versions/latest/sdk/video-av/ /versions/latest/sdk/video 301
+/versions/latest/sdk/video-av.md /versions/latest/sdk/video.md 301
+/versions/latest/sdk/audio-av /versions/latest/sdk/audio 301
+/versions/latest/sdk/audio-av/ /versions/latest/sdk/audio 301
+/versions/latest/sdk/audio-av.md /versions/latest/sdk/audio.md 301
+/versions/unversioned/sdk/sqlite-next /versions/unversioned/sdk/sqlite 301
+/versions/unversioned/sdk/sqlite-next/ /versions/unversioned/sdk/sqlite 301
+/versions/unversioned/sdk/sqlite-next.md /versions/unversioned/sdk/sqlite.md 301
+
+# The URL reference moved into the expo package reference.
+/versions/latest/sdk/url /versions/latest/sdk/expo/#url-api 301
+/versions/latest/sdk/url/ /versions/latest/sdk/expo/#url-api 301
+/versions/latest/sdk/url.md /versions/latest/sdk/expo.md 301
+/versions/unversioned/sdk/url /versions/unversioned/sdk/expo/#url-api 301
+/versions/unversioned/sdk/url/ /versions/unversioned/sdk/expo/#url-api 301
+/versions/unversioned/sdk/url.md /versions/unversioned/sdk/expo.md 301
+
+# Section root for Expo Router, which has no index page.
+/router /router/introduction 301
+/router/ /router/introduction 301
+/router.md /router/introduction.md 301
+
+# Pages removed or merged. These already had client-side entries in
+# common/client-redirects.ts, which only run after a 404 has been served.
+/guides/using-vexo /guides/using-analytics 301
+/guides/using-vexo/ /guides/using-analytics 301
+/guides/using-vexo.md /guides/using-analytics.md 301
+/eas-update/updating-your-app /eas-update/getting-started 301
+/eas-update/updating-your-app/ /eas-update/getting-started 301
+/eas-update/updating-your-app.md /eas-update/getting-started.md 301
+/eas-update/continuous-deployment /eas/workflows/examples/introduction 301
+/eas-update/continuous-deployment/ /eas/workflows/examples/introduction 301
+/eas-update/continuous-deployment.md /eas/workflows/examples/introduction.md 301
+
 # EAS Build, Submit, Update, and Insights predate the /eas/* URL convention;
 /eas/build/* /build/:splat 301
 /eas/build /build/introduction 301
@@ -709,6 +774,8 @@
 /eas/hosting/environment-variables/ /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
 /versions/v50.0.0/* /versions/latest/:splat 301
 /versions/v52.0.0/* /versions/latest/:splat 301
+/versions/v51.0.0/* /versions/latest/:splat 301
+/versions/v53.0.0/* /versions/latest/:splat 301
 
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.

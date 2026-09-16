@@ -17,6 +17,7 @@ import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
+  isApiRoutesEnabled,
   warnInvalidMiddlewareOutput,
   warnInvalidMiddlewareMatcherSettings,
 } from './router';
@@ -63,6 +64,13 @@ export function createRouteHandlerMiddleware(
         const manifest = await fetchManifest(projectRoot, options);
         event('manifest_fetched', {});
 
+        if (manifest && !isApiRoutesEnabled(options.config.exp)) {
+          if (options.config.exp.web?.output === 'static' && manifest.apiRoutes.length) {
+            warnInvalidWebOutput(manifest.apiRoutes.map((route) => route.file));
+          }
+          manifest.apiRoutes = [];
+        }
+
         // TODO(@hassankhan): Invert the conditionals for an early return if no manifest if found
 
         if (
@@ -79,9 +87,8 @@ export function createRouteHandlerMiddleware(
           });
         }
 
-        const { exp } = options.config;
-
-        if (manifest && exp.extra?.router?.unstable_useServerDataLoaders === true) {
+        const output = options.config.exp.web?.output;
+        if (manifest && (output === 'static' || output === 'server')) {
           // In development, set `loader` property on all HTML routes. We can't know which routes
           // have loaders without bundling via Metro to detect exports. In production, this is
           // populated by `exportStaticAsync.ts` after bundling.
@@ -100,6 +107,7 @@ export function createRouteHandlerMiddleware(
               {
                 file: 'index.js',
                 page: '/index',
+                generated: true,
                 routeKeys: {},
                 namedRegex: /^\/(?:index)?\/?$/i,
               },
@@ -114,8 +122,7 @@ export function createRouteHandlerMiddleware(
       async getHtml(request, route) {
         try {
           const { exp } = options.config;
-          const isSSREnabled =
-            exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+          const isSSREnabled = exp.web?.output === 'server';
 
           const { content } = await options.getStaticPageAsync(
             request.url,
@@ -188,7 +195,7 @@ export function createRouteHandlerMiddleware(
         }
 
         const { exp } = options.config;
-        if (exp.web?.output !== 'server') {
+        if (!isApiRoutesEnabled(exp)) {
           warnInvalidWebOutput();
         }
 
@@ -214,22 +221,12 @@ export function createRouteHandlerMiddleware(
       async getMiddleware(route) {
         const { exp } = options.config;
 
-        if (!options.unstable_useServerMiddleware) {
-          return {
-            default: () => {
-              throw new CommandError(
-                'Server middleware is not enabled. Add unstable_useServerMiddleware: true to your `expo-router` plugin config.'
-              );
-            },
-          };
-        }
-
-        if (exp.web?.output !== 'server') {
+        if (exp.web?.output !== 'server' && !isApiRoutesEnabled(exp)) {
           warnInvalidMiddlewareOutput();
           return {
             default: () => {
               console.warn(
-                'Server middleware is only supported when web.output is set to "server" in your app config'
+                'Server middleware requires server output or apiRoutes: true in the expo-router config plugin'
               );
             },
           };
