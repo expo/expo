@@ -1,6 +1,11 @@
+import * as WebBrowser from 'expo-web-browser';
 import { AuthRequest } from '../AuthRequest';
 import { CodeChallengeMethod, Prompt } from '../AuthRequest.types';
 import { getQueryParams } from '../QueryParams';
+
+jest.mock('expo-web-browser', () => ({
+  openAuthSessionAsync: jest.fn(),
+}));
 
 jest.mock('expo-crypto', () => ({
   getRandomValues: jest.fn((x) => x),
@@ -195,4 +200,46 @@ it(`loads an auth request without pkce`, async () => {
   expect(request.codeVerifier).not.toBeDefined();
 
   expect(typeof request.state).toBe('string');
+});
+
+describe('promptAsync error handling', () => {
+  const mockOpenAuthSession = WebBrowser.openAuthSessionAsync as jest.Mock;
+
+  beforeEach(() => {
+    mockOpenAuthSession.mockReset();
+  });
+
+  it(`returns { type: 'error' } when WebBrowser result has an error field`, async () => {
+    const errorMessage =
+      "The operation couldn't be completed. Application with identifier com.example.app is not associated with domain example.com.";
+    mockOpenAuthSession.mockResolvedValue({ type: 'cancel', error: errorMessage });
+
+    const request = new AuthRequest({
+      clientId: 'test',
+      scopes: [],
+      redirectUri: 'foo://bar',
+      state: 'teststate',
+    });
+    await request.makeAuthUrlAsync(mockDiscovery);
+
+    const result = await request.promptAsync(mockDiscovery);
+    expect(result.type).toBe('error');
+    if (result.type !== 'error') throw new Error('Invalid type for test');
+    expect(result.errorCode).toBe(errorMessage);
+  });
+
+  it(`returns { type: 'cancel' } when WebBrowser result has no error field`, async () => {
+    mockOpenAuthSession.mockResolvedValue({ type: 'cancel' });
+
+    const request = new AuthRequest({
+      clientId: 'test',
+      scopes: [],
+      redirectUri: 'foo://bar',
+      state: 'teststate',
+    });
+    await request.makeAuthUrlAsync(mockDiscovery);
+
+    const result = await request.promptAsync(mockDiscovery);
+    expect(result.type).toBe('cancel');
+  });
 });

@@ -186,7 +186,11 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       throw new Error('An unexpected error occurred');
     }
     if (result.type !== 'success') {
-      return { type: result.type };
+      if ('error' in result && result.error) {
+        return { type: 'error', errorCode: result.error, error: null, params: {}, authentication: null, url: '' };
+      } else {
+        return { type: result.type };
+      }
     }
 
     return this.parseReturnUrl(result.url);
