@@ -212,6 +212,10 @@ PODS:
     - ExpoModulesCore
   - ExpoSymbols (57.0.1):
     - ExpoModulesCore
+  - ExpoUI (57.0.8):
+    - ExpoModulesCore
+    - ExpoModulesWorklets
+    - React-RCTFabric
   - ExpoWebBrowser (57.0.2):
     - ExpoModulesCore
   - EXStructuredHeaders (57.0.0)
@@ -2870,6 +2874,7 @@ DEPENDENCIES:
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
+  - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
@@ -3040,6 +3045,9 @@ EXTERNAL SOURCES:
   ExpoSymbols:
     inhibit_warnings: false
     :path: "../../../packages/expo-symbols/ios"
+  ExpoUI:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-ui/ios"
   ExpoWebBrowser:
     inhibit_warnings: false
     :path: "../../../packages/expo-web-browser/ios"
@@ -3235,6 +3243,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 973d523fe9b1f99223dd945fed9ad1226ae64920
   ExpoSQLite: 73ec3c3dd0c5e8c6592c341edf00efa6271c51a8
   ExpoSymbols: 7c7c7bd3c52f0b6dcbba6e8af4088b0dc1ea7d29
+  ExpoUI: 3f8335f6e5ff5c4457c216e417be69ac26f81706
   ExpoWebBrowser: 9b98d939d5f1c5dd8f523f0a0683056fb1204434
   EXStructuredHeaders: 1423c3602a30eb078e03b63b251ef912267dd4c0
   EXUpdates: 869269e96522fcc2994523e8e83c5affd071e6d4

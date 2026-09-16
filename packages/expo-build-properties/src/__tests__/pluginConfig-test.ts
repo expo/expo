@@ -141,6 +141,18 @@ describe(validateConfig, () => {
     }).toThrow();
   });
 
+  it('should validate ios.enableSceneSupport', () => {
+    expect(() => {
+      validateConfig({ ios: { enableSceneSupport: true } });
+    }).not.toThrow();
+    expect(() => {
+      validateConfig({ ios: { enableSceneSupport: false } });
+    }).not.toThrow();
+    expect(() => {
+      validateConfig({ ios: { enableSceneSupport: 'yes' } });
+    }).toThrow();
+  });
+
   it('should validate ios.forceStaticLinking', () => {
     expect(() => {
       validateConfig({ ios: {} });
