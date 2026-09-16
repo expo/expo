@@ -4,6 +4,8 @@ import ExpoModulesCore
 import SwiftUI
 
 final class ListForEachProps: UIBaseViewProps {
+  @Field var deleteEnabled: Bool = false
+  @Field var moveEnabled: Bool = false
   var onDelete = EventDispatcher()
   var onMove = EventDispatcher()
 }
@@ -17,8 +19,8 @@ struct ListForEachView: ExpoSwiftUI.View {
 
   var body: some View {
     Children()
-      .onDelete(perform: handleDelete)
-      .onMove(perform: handleMove)
+      .onDelete(perform: props.deleteEnabled ? handleDelete : nil)
+      .onMove(perform: props.moveEnabled ? handleMove : nil)
   }
 
   func handleDelete(at offsets: IndexSet) {

@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'List.ForEach data (experimental)',
+    route: 'ui/virtualized-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DataListForEachScreen'));
+    },
+  },
+  {
     name: 'Label component',
     route: 'ui/label',
     options: {},
