@@ -185,7 +185,7 @@
           }
         },
         "apiRoutes": {
-          "description": "Enable API routes with static or server output. Defaults to true for server output and false for static output.",
+          "description": "Enable API routes with static or server output. Defaults to `true` for server output and `false` for static output.",
           "type": "boolean"
         },
         "unstable_useServerMiddleware": {
