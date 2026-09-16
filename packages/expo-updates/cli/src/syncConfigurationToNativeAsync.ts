@@ -1,3 +1,4 @@
+import { type EnvMode, loadProjectEnv } from '@expo/env';
 import plist from '@expo/plist';
 import { getConfig } from 'expo/config';
 import { XML, AndroidConfig, IOSConfig } from 'expo/config-plugins';
@@ -10,6 +11,7 @@ type SyncConfigurationToNativeOptions = {
   projectRoot: string;
   platform: 'ios' | 'android';
   workflow: Workflow;
+  mode: EnvMode;
 };
 
 /**
@@ -22,6 +24,8 @@ export async function syncConfigurationToNativeAsync(
     // not applicable to managed workflow
     return;
   }
+
+  loadProjectEnv(options.projectRoot, { mode: options.mode });
 
   switch (options.platform) {
     case 'android':
