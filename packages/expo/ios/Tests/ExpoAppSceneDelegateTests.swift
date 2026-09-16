@@ -249,11 +249,14 @@ struct ExpoAppSceneDelegateTests {
   func `notifies React Native through the injected notifier for a warm URL`() {
     let spy = SpyAppDelegate()
     let url = URL(string: "bareexpo://scene-delegate/warm-open-url")!
+    let recorder = OpenURLNotificationRecorder()
     var notifications = 0
     SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:]) {
       notifications += 1
     }
+    #expect(spy.openedURLs.first?.url == url)
     #expect(notifications == 1)
+    #expect(recorder.count(of: url) == 0)
   }
 
   @Test
@@ -274,23 +277,16 @@ struct ExpoAppSceneDelegateTests {
   func `notifies React Native through the injected notifier for a warm user activity`() {
     let spy = SpyAppDelegate()
     let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
-    userActivity.webpageURL = URL(string: "https://expo.dev/scene-delegate/warm-activity")!
+    let webpageURL = URL(string: "https://expo.dev/scene-delegate/warm-activity")!
+    userActivity.webpageURL = webpageURL
+    let recorder = OpenURLNotificationRecorder()
     var notifications = 0
     SceneEventForwarder(appDelegate: { spy }).continue(userActivity) {
       notifications += 1
     }
     #expect(spy.continuedUserActivities.first === userActivity)
     #expect(notifications == 1)
-  }
-
-  @Test
-  @MainActor
-  func `falls back to the app delegate API when no notifier is injected`() {
-    let spy = SpyAppDelegate()
-    let url = URL(string: "bareexpo://scene-delegate/cold-open-url")!
-    let recorder = OpenURLNotificationRecorder()
-    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:])
-    #expect(recorder.count(of: url) == 1)
+    #expect(recorder.count(of: webpageURL) == 0)
   }
 
   @Test
