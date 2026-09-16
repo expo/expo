@@ -219,6 +219,9 @@ public final class ExpoUIModule: Module {
       Prop("renderVersion") { (view: SyncListView, version: Int) in
         view.setRenderVersion(version)
       }
+      Prop("showsFPS") { (view: SyncListView, showsFPS: Bool) in
+        view.setShowsFPS(showsFPS)
+      }
       Prop("estimatedItemSize") { (view: SyncListView, estimatedItemSize: Double) in
         view.setEstimatedItemSize(estimatedItemSize)
       }

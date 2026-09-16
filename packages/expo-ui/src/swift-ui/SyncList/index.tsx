@@ -9,6 +9,7 @@ type NativeSyncListProps = {
   itemCount: number;
   renderVersion: number;
   estimatedItemSize: number;
+  showsFPS: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -43,6 +44,13 @@ export interface SyncListProps {
    */
   estimatedItemSize?: number;
 
+  /**
+   * Displays native UI frame timing, including in release builds. This measures display-link
+   * callbacks, not GPU presentation or JavaScript FPS, and adds a small measurement overhead.
+   * @default false
+   */
+  showsFPS?: boolean;
+
   style?: StyleProp<ViewStyle>;
 }
 
@@ -58,7 +66,13 @@ export interface SyncListProps {
  * > **Warning:** this is an experiment. Its API can change in any release.
  * @platform ios
  */
-export function SyncList({ itemCount, renderItem, estimatedItemSize = 120, style }: SyncListProps) {
+export function SyncList({
+  itemCount,
+  renderItem,
+  estimatedItemSize = 120,
+  showsFPS = false,
+  style,
+}: SyncListProps) {
   const [listId] = useState(createSyncListId);
 
   // A render-phase adjustment keeps the native version and renderer inputs in the same commit.
@@ -81,6 +95,7 @@ export function SyncList({ itemCount, renderItem, estimatedItemSize = 120, style
       itemCount={itemCount}
       renderVersion={renderVersion}
       estimatedItemSize={estimatedItemSize}
+      showsFPS={showsFPS}
       style={style}
     />
   );

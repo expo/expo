@@ -131,6 +131,7 @@ export default function SyncListScreen() {
         style={styles.list}
         itemCount={ITEM_COUNT}
         estimatedItemSize={150}
+        showsFPS
         renderItem={renderMessage}
       />
     </View>
