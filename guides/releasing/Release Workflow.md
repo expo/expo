@@ -9,7 +9,8 @@ Package changes are released through `publish-packages.yml`:
 3. That pull request contains the new package versions, changelogs, generated version files, and
    lockfile.
 4. After it is merged, the workflow runs `et publish-packages`. This builds and precompiles the
-   packages, then publishes them with Changesets.
+   packages, publishes them with Changesets, and updates the staging versions endpoint from the
+   checked-out `expo` version.
 
 Only this workflow can use npm trusted publishing. Use it for normal releases.
 
