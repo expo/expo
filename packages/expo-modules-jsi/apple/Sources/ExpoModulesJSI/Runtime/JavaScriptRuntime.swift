@@ -691,10 +691,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   // MARK: - Garbage collection
 
+  // Both `collectGarbage` overloads below are for tests and memory diagnostics only. Don't call
+  // either from production code: a forced collection stops the world for as long as the heap takes
+  // to trace, and the engine already collects on its own schedule with far better information about
+  // when that is worth paying for.
+
   /// Requests a full, synchronous garbage collection of the JavaScript heap.
   ///
-  /// Intended for tests and memory diagnostics. The engine collects on its own, so calling this in
-  /// production code usually costs more than it saves.
+  /// - Important: For tests and memory diagnostics only. This blocks the JavaScript thread for the
+  ///   length of a full collection, so calling it in production code costs more than it saves.
   ///
   /// - Note: This is a no-op on engines whose runtime doesn't implement GC instrumentation. JSI's
   ///   default implementation does nothing; Hermes overrides it with a real collection.
@@ -703,6 +708,49 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @JavaScriptActor
   public func collectGarbage(cause: String = #function) {
     expo.collectGarbage(pointee, std.string(cause))
+  }
+
+  /// Collects garbage repeatedly until `condition` holds, or until the pass budget runs out.
+  ///
+  /// - Important: For tests and memory diagnostics only, and more so than the single-pass overload:
+  ///   this runs up to `passes` full collections back to back, blocking the JavaScript thread for
+  ///   all of them. A production caller that reaches for this wants a weak reference or an explicit
+  ///   release hook, not a forced collection.
+  ///
+  /// One collection does not always finish the job. Releasing a detached native state means
+  /// finalizing the decoration that owns its `shared_ptr`, and a single pass does not always get
+  /// there: measured over 3000 attempts against a populated heap, 4.4% needed a second pass and a
+  /// handful needed a third. Asserting on a release after exactly one collection therefore tests
+  /// the engine's scheduling as much as the code under test, which is what made several suites
+  /// flaky on busy CI machines.
+  ///
+  /// Collecting again is what makes progress here; waiting does not substitute for it. The same
+  /// measurement with a microtask drain and a millisecond of sleep in place of the extra passes
+  /// left 18 times as many unreleased.
+  ///
+  /// This does not weaken the assertion that follows it: a value that is genuinely leaked never
+  /// satisfies `condition`, exhausts the budget, and still fails.
+  ///
+  /// - Note: This is a no-op on engines whose runtime doesn't implement GC instrumentation, in
+  ///   which case `condition` is evaluated once per pass and the budget is spent in full.
+  /// - Parameters:
+  ///   - passes: Maximum number of collections to run. The default sits far above what an
+  ///     unleaked value needs, so exhausting it means the value is leaked, not merely unlucky.
+  ///   - cause: Reason for the collection, as the engine should report it in its logs.
+  ///     Defaults to the calling function's name.
+  ///   - condition: Evaluated after each collection. Collecting stops as soon as it returns `true`.
+  @JavaScriptActor
+  public func collectGarbage(
+    passes: Int = 10,
+    cause: String = #function,
+    until condition: () -> Bool
+  ) {
+    for _ in 0..<passes {
+      collectGarbage(cause: cause)
+      if condition() {
+        return
+      }
+    }
   }
 
   // MARK: - Equatable

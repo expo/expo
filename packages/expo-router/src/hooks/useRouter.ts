@@ -33,6 +33,7 @@ const routerWithWarnings: ImperativeRouter = {
   setParams: createNOOPWithWarning('setParams'),
   reload: createNOOPWithWarning('reload'),
   prefetch: createNOOPWithWarning('prefetch'),
+  setTransitionMode: createNOOPWithWarning('setTransitionMode'),
 };
 
 /**

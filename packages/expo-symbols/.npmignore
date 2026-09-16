@@ -17,3 +17,8 @@ __rsc_tests__
 /android/src/androidTest/
 /android/src/test/
 /ios/Tests
+
+# Exclude native build output (pnpm pack ignores nested .gitignore files)
+.cxx/
+.gradle/
+/android/build/

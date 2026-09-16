@@ -25,3 +25,8 @@ __rsc_tests__
 
 # Include all files in dev-plugin-dist, which `prepublishOnly` generates
 !/dev-plugin-dist/**/*
+
+# Exclude native build output (pnpm pack ignores nested .gitignore files)
+.cxx/
+.gradle/
+/android/build/

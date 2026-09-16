@@ -11,7 +11,7 @@ internal enum ContainerBackgroundPlacementOptions: String, Enumerable {
   case navigation
   case navigationSplitView
 
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
   @available(iOS 18.0, *)
   var toContainerBackgroundPlacement: ContainerBackgroundPlacement {
     switch self {
@@ -28,7 +28,15 @@ internal struct ContainerBackgroundModifier: ViewModifier, Record {
   @Field var container: ContainerBackgroundPlacementOptions?
 
   func body(content: Content) -> some View {
-#if !os(tvOS)
+#if os(tvOS)
+    content
+#elseif os(macOS)
+    if let shapeStyle = style?.toAnyShapeStyle(), container == .widget {
+      content.containerBackground(shapeStyle, for: .widget)
+    } else {
+      content
+    }
+#else
     if let shapeStyle = style?.toAnyShapeStyle(), let container {
       if #available(iOS 18.0, *) {
         content.containerBackground(shapeStyle, for: container.toContainerBackgroundPlacement)
@@ -40,8 +48,6 @@ internal struct ContainerBackgroundModifier: ViewModifier, Record {
     } else {
       content
     }
-#else
-    content
 #endif
   }
 }

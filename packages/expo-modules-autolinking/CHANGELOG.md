@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- [Android] Compile the autolinking Gradle plugins against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+- [Android] Discover Expo Modules v2 modules at compile time. ([#50178](https://github.com/expo/expo/pull/50178) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.0 — 2026-09-10
 
 ### 🎉 New features

@@ -19,7 +19,6 @@ describe.each(
     export: {
       env: {
         EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
