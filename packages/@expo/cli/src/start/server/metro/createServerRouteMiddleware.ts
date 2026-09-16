@@ -65,6 +65,9 @@ export function createRouteHandlerMiddleware(
         event('manifest_fetched', {});
 
         if (manifest && !isApiRoutesEnabled(options.config.exp)) {
+          if (options.config.exp.web?.output === 'static' && manifest.apiRoutes.length) {
+            warnInvalidWebOutput(manifest.apiRoutes.map((route) => route.file));
+          }
           manifest.apiRoutes = [];
         }
 

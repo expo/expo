@@ -91,11 +91,15 @@ export function getRouterDirectory(projectRoot: string): string {
 }
 
 export function isApiRoutesEnabled(exp: ExpoConfig): boolean {
+  const apiRoutes = exp.extra?.router?.apiRoutes;
+  if (apiRoutes != null) {
+    return apiRoutes === true;
+  }
+
   return (
-    exp.extra?.router?.apiRoutes ??
-    (exp.web?.output === 'server' ||
-      !!exp.experiments?.reactServerComponentRoutes ||
-      !!exp.experiments?.reactServerFunctions)
+    exp.web?.output === 'server' ||
+    !!exp.experiments?.reactServerComponentRoutes ||
+    !!exp.experiments?.reactServerFunctions
   );
 }
 
@@ -160,11 +164,11 @@ export function hasWarnedAboutMiddleware() {
   return hasWarnedAboutMiddlewareOutput;
 }
 
-export function warnInvalidWebOutput() {
+export function warnInvalidWebOutput(apiRoutes: string[] = []) {
   if (!hasWarnedAboutApiRouteOutput) {
     Log.warn(
-      chalk.yellow`Set {bold apiRoutes: true} in the {bold expo-router} config plugin, or use {bold web.output: "server"}. ${learnMore(
-        'https://docs.expo.dev/router/reference/api-routes/'
+      chalk.yellow`API routes are disabled. Remove the API routes or set {bold apiRoutes: true} in the {bold expo-router} config plugin to enable them.${apiRoutes.length ? ` Routes: ${apiRoutes.join(', ')}.` : ''} ${learnMore(
+        'https://docs.expo.dev/router/web/api-routes/'
       )}`
     );
   }

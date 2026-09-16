@@ -11,12 +11,32 @@ SDK 58 changes how Expo Router builds navigation state and integrates with navig
 Use the following checklist to find the sections that apply to your app:
 
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
+- For web apps using `web.output: "server"`, review the [server rendering changes](#review-server-rendering-behavior).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
 
 > **info** This guide covers the changes most likely to require application updates. See the [`expo-router` changelog](https://github.com/expo/expo/blob/main/packages/expo-router/CHANGELOG.md#5800--2026-09-10) for the complete list of SDK 58 changes.
 
 ## Common migrations
+
+### Review server rendering behavior
+
+In SDK 58, `web.output: "server"` renders HTML pages on each request instead of prerendering them during export.
+
+To keep the behavior of `web.output: "server"` from SDK 57 and earlier, set `web.output` to `"static"` and enable `apiRoutes: true` in the `expo-router` config plugin in your [app config](/versions/latest/config/app/):
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "output": "static"
+    },
+    "plugins": [["expo-router", { "apiRoutes": true }]]
+  }
+}
+```
+
+This combines prerendered HTML with API routes and still requires a [deployed server](/router/web/api-routes/#deployment). To render HTML on each request, keep `web.output: "server"` and follow the [server rendering guide](/router/web/server-rendering/).
 
 ### Prefer `useRouter` in components
 
