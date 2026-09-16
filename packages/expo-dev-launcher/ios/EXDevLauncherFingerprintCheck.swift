@@ -103,9 +103,13 @@ public class EXDevLauncherFingerprintCheck: NSObject {
   private static let answeredNonce = OSAllocatedUnfairLock<String?>(initialState: nil)
 
   /**
-   One cold launch delivers the trigger URL twice — `launchOptions`, then `application(_:open:)` —
-   and answering both would post twice. Only the last nonce is kept: the repeat follows its
-   original immediately.
+   Whether this nonce is unclaimed, and claim it.
+
+   One trigger reaches `handle` twice in exactly one case: a **non-scene cold start**, where
+   `launchOptions` carries the URL into `didFinishLaunching` and `application(_:open:)` delivers it
+   again ~25 ms later. A scene app gets one delivery cold or warm, and so does a warm non-scene app.
+   Posting both would answer twice, so the first claim wins. One slot is enough: the repeat follows
+   its original immediately.
    */
   internal static func claimNonce(_ nonce: String) -> Bool {
     return answeredNonce.withLock { stored in
