@@ -25,8 +25,6 @@ struct SceneEventForwarder {
     let delegate = appDelegate()
 
 #if DEBUG
-    // Scene apps only, cold start and warm alike: a scene routes every URL through here.
-    // React Native must not see the link, or expo-router routes to it.
     if EmbeddedFingerprint.CheckProtocol.isCheckURL(url) {
       _ = delegate?.application(application, open: url, options: options)
       return
