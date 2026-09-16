@@ -508,7 +508,7 @@ export async function startMotionActivityUpdatesAsync(
   taskName: string,
   options: MotionActivityTaskOptions = {}
 ): Promise<void> {
-  _validate(taskName);
+  _validate(taskName, 'Background motion activity');
   await ExpoLocation.startMotionActivityUpdatesAsync(taskName, options);
 }
 
@@ -521,7 +521,7 @@ export async function startMotionActivityUpdatesAsync(
  * @platform ios
  */
 export async function stopMotionActivityUpdatesAsync(taskName: string): Promise<void> {
-  _validate(taskName);
+  _validate(taskName, 'Background motion activity');
   await ExpoLocation.stopMotionActivityUpdatesAsync(taskName);
 }
 
@@ -534,20 +534,20 @@ export async function stopMotionActivityUpdatesAsync(taskName: string): Promise<
  * @platform ios
  */
 export async function hasStartedMotionActivityUpdatesAsync(taskName: string): Promise<boolean> {
-  _validate(taskName);
+  _validate(taskName, 'Background motion activity');
   return ExpoLocation.hasStartedMotionActivityUpdatesAsync(taskName);
 }
 
 // --- Background location updates
 
-function _validate(taskName: string) {
+function _validate(taskName: string, featureName: string) {
   if (!taskName || typeof taskName !== 'string') {
     throw new Error(`\`taskName\` must be a non-empty string. Got ${taskName} instead.`);
   }
   if (isRunningInExpoGo()) {
     if (!warnAboutExpoGoDisplayed) {
       const message =
-        'Background location is limited in Expo Go:\n' +
+        `${featureName} is limited in Expo Go:\n` +
         'On Android, it is not available at all.\n' +
         'On iOS, it works when running in the Simulator.\n' +
         'You can use this API, and all others, in a development build. Learn more: https://expo.fyi/dev-client.';
@@ -594,7 +594,7 @@ export async function startLocationUpdatesAsync(
   taskName: string,
   options: LocationTaskOptions = { accuracy: LocationAccuracy.Balanced }
 ): Promise<void> {
-  _validate(taskName);
+  _validate(taskName, 'Background location');
   await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
 
@@ -605,7 +605,7 @@ export async function startLocationUpdatesAsync(
  * @return A promise resolving as soon as the task is unregistered.
  */
 export async function stopLocationUpdatesAsync(taskName: string): Promise<void> {
-  _validate(taskName);
+  _validate(taskName, 'Background location');
   await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
 
@@ -616,7 +616,7 @@ export async function stopLocationUpdatesAsync(taskName: string): Promise<void> 
  * started or not.
  */
 export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean> {
-  _validate(taskName);
+  _validate(taskName, 'Background location');
   return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
 
@@ -684,7 +684,7 @@ export async function startGeofencingAsync(
   taskName: string,
   regions: LocationRegion[] = []
 ): Promise<void> {
-  _validate(taskName);
+  _validate(taskName, 'Geofencing');
   _validateRegions(regions);
   await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
@@ -697,7 +697,7 @@ export async function startGeofencingAsync(
  * @return A promise resolving as soon as the task is unregistered.
  */
 export async function stopGeofencingAsync(taskName: string): Promise<void> {
-  _validate(taskName);
+  _validate(taskName, 'Geofencing');
   await ExpoLocation.stopGeofencingAsync(taskName);
 }
 
@@ -708,6 +708,6 @@ export async function stopGeofencingAsync(taskName: string): Promise<void> {
  * started or not.
  */
 export async function hasStartedGeofencingAsync(taskName: string): Promise<boolean> {
-  _validate(taskName);
+  _validate(taskName, 'Geofencing');
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
