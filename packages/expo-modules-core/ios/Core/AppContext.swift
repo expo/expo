@@ -201,6 +201,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
   }
 
+  /**
+   The host's `RCTSurfacePresenter`
+   */
+  public var reactSurfacePresenter: NSObject? {
+    return hostWrapper?.surfacePresenter()
+  }
+
   // MARK: - Running on specific queues
 
   /**

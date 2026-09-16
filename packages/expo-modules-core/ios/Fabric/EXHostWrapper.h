@@ -18,6 +18,11 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 
 - (nullable UIView *)findViewWithTag:(NSInteger)tag;
 
+/**
+ The host's `RCTSurfacePresenter`
+ */
+- (nullable NSObject *)surfacePresenter;
+
 - (nullable id)findModuleWithName:(nonnull NSString *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary;
 
 - (nullable NSURL *)bundleURL;

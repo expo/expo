@@ -32,6 +32,11 @@
   return [componentViewRegistry findComponentViewWithTag:tag];
 }
 
+- (nullable NSObject *)surfacePresenter
+{
+  return _host.surfacePresenter;
+}
+
 - (nullable NSURL *)bundleURL
 {
   return [_host.bundleManager bundleURL];

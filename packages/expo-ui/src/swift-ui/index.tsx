@@ -36,6 +36,7 @@ export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
 export * from './SwipeActions';
+export * from './SyncList';
 export * from './Text';
 export { useNativeState } from '../State';
 export { withAnimation, type WithAnimationCompletionCriteria } from './withAnimation';

@@ -207,5 +207,21 @@ public final class ExpoUIModule: Module {
 
     // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
     ExpoUIView(SyncToggleView.self)
+
+    // Experimental UIKit list whose rows are React roots rendered and mounted on the UI thread.
+    View(SyncListView.self) {
+      Prop("listId") { (view: SyncListView, listId: String) in
+        view.setListId(listId)
+      }
+      Prop("itemCount") { (view: SyncListView, itemCount: Int) in
+        view.setItemCount(itemCount)
+      }
+      Prop("renderVersion") { (view: SyncListView, version: Int) in
+        view.setRenderVersion(version)
+      }
+      Prop("estimatedItemSize") { (view: SyncListView, estimatedItemSize: Double) in
+        view.setEstimatedItemSize(estimatedItemSize)
+      }
+    }
   }
 }

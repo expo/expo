@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'SyncList component (experimental)',
+    route: 'ui/sync-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SyncListScreen'));
+    },
+  },
+  {
     name: 'Label component',
     route: 'ui/label',
     options: {},
