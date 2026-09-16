@@ -30,19 +30,6 @@ struct EXDevLauncherFingerprintCheckTests {
     return URL(string: "exp+app://\(host)?\(parts.joined(separator: "&"))")!
   }
 
-  // MARK: - Answering a nonce once
-
-  // One cold launch delivers the trigger URL twice, so the responder must post once.
-  @Test func answersANonceOnlyOnce() {
-    #expect(EXDevLauncherFingerprintCheck.claimNonce("nonce-once-a") == true)
-    #expect(EXDevLauncherFingerprintCheck.claimNonce("nonce-once-a") == false)
-  }
-
-  @Test func answersEachNewNonce() {
-    #expect(EXDevLauncherFingerprintCheck.claimNonce("nonce-new-a") == true)
-    #expect(EXDevLauncherFingerprintCheck.claimNonce("nonce-new-b") == true)
-  }
-
   // MARK: - Valid requests
 
   @Test("accepts a trigger whose host is an app route, because the marker selects the channel")

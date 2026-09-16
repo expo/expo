@@ -1,8 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import os
-
 import ExpoModulesCore
 
 /** A validated trigger URL. Separate from the POST so the SSRF guard is unit-testable. */
@@ -98,37 +96,11 @@ private class NoRedirectSessionDelegate: NSObject, URLSessionTaskDelegate {
  */
 @objc(EXDevLauncherFingerprintCheck)
 public class EXDevLauncherFingerprintCheck: NSObject {
-  #if DEBUG
-  /// The lock holds the nonce rather than guarding it, so there is no mutable static to make safe.
-  private static let answeredNonce = OSAllocatedUnfairLock<String?>(initialState: nil)
-
-  /**
-   Whether this nonce is unclaimed, and claim it.
-
-   One trigger reaches `handle` twice in exactly one case: a **non-scene cold start**, where
-   `launchOptions` carries the URL into `didFinishLaunching` and `application(_:open:)` delivers it
-   again ~25 ms later. A scene app gets one delivery cold or warm, and so does a warm non-scene app.
-   Posting both would answer twice, so the first claim wins. One slot is enough: the repeat follows
-   its original immediately.
-   */
-  internal static func claimNonce(_ nonce: String) -> Bool {
-    return answeredNonce.withLock { stored in
-      let isNew = stored != nonce
-      stored = nonce
-      return isNew
-    }
-  }
-  #endif
-
   /** True when the URL was a trigger and this consumed it. */
   @objc public static func handle(_ url: URL) -> Bool {
     #if DEBUG
     guard let request = FingerprintCheckRequest.parse(url) else {
       return false
-    }
-    guard claimNonce(request.nonce) else {
-      // Consumed: this is the second delivery of a URL already answered.
-      return true
     }
 
     let body = EmbeddedFingerprint.checkResponseBody(
