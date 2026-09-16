@@ -44,26 +44,10 @@ export function projectBrowserHistory(
   if (action?.type === 'push') {
     return appendEntry(history, nextState, path, 'push');
   }
-  let index = history.index;
   if (action?.type === 'pop') {
-    index = Math.max(0, history.index - action.count);
-    if (action.target) {
-      const { navigatorKey, routeKey } = action.target;
-      // A single parent pop can remove several entries created by a nested stack.
-      // Match only the visible branch; a hidden navigator is not a browser destination.
-      for (let candidate = history.index - 1; candidate >= 0; candidate--) {
-        let state: NavigationState | undefined = history.entries[candidate]!.state;
-        while (state && state.key !== navigatorKey) {
-          state = state.routes[state.index]?.state as NavigationState | undefined;
-        }
-        if (state?.routes[state.index]?.key === routeKey) {
-          index = candidate;
-          break;
-        }
-      }
-    }
+    return projectPop(history, nextState, path, action);
   }
-  return refreshEntry(history, index, nextState, path);
+  return refreshEntry(history, history.index, nextState, path);
 }
 
 /** Refreshes the current entry after a structural change that is not a navigation. */
@@ -72,12 +56,7 @@ export function refreshBrowserHistory(
   nextState: NavigationState,
   config: BrowserHistoryConfig
 ): BrowserHistoryProjection {
-  return refreshEntry(
-    history,
-    history.index,
-    nextState,
-    getPathForState(nextState, config.linking)
-  );
+  return projectBrowserHistory(history, nextState, config);
 }
 
 /**
@@ -190,6 +169,33 @@ function appendEntry(
     history: { ...history, entries, index: entries.length - 1, entrySeq: history.entrySeq + 1 },
     events: [{ type: 'browser-history', op, entryId: id, path }],
   };
+}
+
+function projectPop(
+  history: BrowserHistory,
+  state: NavigationState,
+  path: string,
+  action: Extract<RouterBrowserHistoryAction, { type: 'pop' }>
+): BrowserHistoryProjection {
+  let index = Math.max(0, history.index - action.count);
+  if (action.target) {
+    const { navigatorKey, routeKey } = action.target;
+    // A single parent pop can remove several entries created by a nested stack.
+    // Match only the visible branch; a hidden navigator is not a browser destination.
+    for (let candidate = history.index - 1; candidate >= 0; candidate--) {
+      let candidateState: NavigationState | undefined = history.entries[candidate]!.state;
+      while (candidateState && candidateState.key !== navigatorKey) {
+        candidateState = candidateState.routes[candidateState.index]?.state as
+          | NavigationState
+          | undefined;
+      }
+      if (candidateState?.routes[candidateState.index]?.key === routeKey) {
+        index = candidate;
+        break;
+      }
+    }
+  }
+  return refreshEntry(history, index, state, path);
 }
 
 function refreshEntry(

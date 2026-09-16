@@ -45,7 +45,9 @@ export type BrowserHistoryConfig = {
 };
 
 export type BrowserHistoryProjection = {
+  /** Updated reducer-owned entries, or `undefined` on platforms without browser history. */
   history: BrowserHistory | undefined;
+  /** Ordered browser commands to apply after React commits the matching navigation state. */
   events: BrowserHistoryEvent[];
 };
 

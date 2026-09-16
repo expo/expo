@@ -19,8 +19,6 @@ const linkingHandlers: symbol[] = [];
 
 type Options = LinkingOptions<ParamListBase>;
 
-// Browser history sync lives in the navigation reducer (`global-state/browserHistory.ts`); this
-// hook only seeds the initial state from the URL.
 export function useLinking(
   _ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
   {

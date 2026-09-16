@@ -83,3 +83,10 @@ Dependencies are locally linked to `/Users/jakubtkacz/Documents/code/expo`; expo
 - Documented the original problem, router-owned history contract, reducer/report/adapter pipeline, exact unmounted-stack push sequence, browser restoration, nested pop targets, prevention, Suspense handling, native behavior, tests, and known limits.
 - Added Mermaid flow and sequence diagrams, decision tables, source links, and a suggested review order.
 - Proofread source links against the current tree and ran `git diff --check`.
+
+## Review comment follow-up
+
+- Removed the requested explanatory comment from `useLinking`.
+- Documented the `history` and `events` fields on `BrowserHistoryProjection`.
+- Reused `projectBrowserHistory` for structural refreshes and extracted pop projection into its own helper.
+- Validation passed: browser-history Web/Node tests (38 tests), TypeScript, lint, and `git diff --check`. Lint retains the existing unrelated StackToolbarMenu React Compiler warning.
