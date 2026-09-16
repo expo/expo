@@ -29,7 +29,7 @@ const HAS_X_ASYNC_CONFIG: FunctionDescription = {
     },
     {
       name: 'hasUrlAsync',
-      action: withSupportedPlatforms(['ios'], Clipboard.hasImageAsync),
+      action: withSupportedPlatforms(['ios'], Clipboard.hasUrlAsync),
     },
   ],
 };

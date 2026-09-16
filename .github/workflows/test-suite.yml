@@ -312,6 +312,28 @@ jobs:
             exit 1
           fi
         working-directory: apps/bare-expo/e2e
+      - name: 🤖 Run agent-device e2e scripts (bare-expo)
+        # Non-blocking while the agent-device suite collects a flake baseline. Runs before Maestro
+        # so its results do not depend on the Maestro outcome; the Maestro step re-uses the booted
+        # simulator and installed app.
+        continue-on-error: true
+        run: |
+          xcrun simctl boot "iPhone 17 Pro" || true
+          xcrun simctl bootstatus "iPhone 17 Pro" -b
+          xcrun simctl install "iPhone 17 Pro" ios/build/BareExpo.app
+          npm install -g agent-device@0.20.10
+          # Known limitation: the first script pays for the XCTest runner start on a fresh
+          # machine, several minutes, and usually fails its launch wait. The rest of the suite
+          # runs normally.
+          ./e2e/run-agent-device.sh ios auto ~/agentDeviceArtifacts || echo "agent-device suite failed (non-blocking)"
+          # Hand Maestro a clean simulator: it boots one itself and launches the app with the
+          # screen inspector injected.
+          xcrun simctl shutdown all
+        working-directory: apps/bare-expo
+        env:
+          # CI simulators are slower than local ones; see AD_WAIT_SCALE in run-agent-device.sh.
+          AD_WAIT_SCALE: 3
+        timeout-minutes: 30
       - name: 🧪 Run e2e tests (bare-expo)
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
@@ -332,6 +354,7 @@ jobs:
           path: |
             ~/maestroArtifacts/tests/**/*
             ~/Library/Logs/maestro/**/*
+            ~/agentDeviceArtifacts/**/*
           overwrite: true
       - name: 🔗 Artifacts download URL
         if: always()
@@ -508,7 +531,14 @@ jobs:
             fuser -k 7123/tcp 2>/dev/null || true
             mkdir -p ~/.maestro/tests
             LOG=~/.maestro/tests/screenshot-server-logs-$(date +%s); ./e2e/image-comparison/src/server.ts > "$LOG" 2>&1 & echo $! > /tmp/image-server.pid; sleep 2; kill -0 $(cat /tmp/image-server.pid) 2>/dev/null || { echo "Image comparison server failed to start. Logs:"; cat "$LOG"; exit 1; }
-            # Run the actual tests
+            # agent-device scripts run first and are non-blocking while they collect a flake
+            # baseline. They must run inside this action because the emulator only lives for its
+            # duration.
+            adb install -r android/app/build/outputs/apk/release/app-release.apk
+            npm install -g agent-device@0.20.10
+            # The x86 CI emulator needs about 10 s per accessibility snapshot; see AD_WAIT_SCALE.
+            AD_WAIT_SCALE=4 ./e2e/run-agent-device.sh android auto ~/agentDeviceArtifacts || echo "agent-device suite failed (non-blocking)"
+            # Run the Maestro flows
             ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
       - name: 📦 Prepare testing artifacts
@@ -524,6 +554,7 @@ jobs:
           name: bare-expo-artifacts-android
           path: |
             ~/maestroArtifacts/tests/**/*
+            ~/agentDeviceArtifacts/**/*
           overwrite: true
       - name: 🔗 Artifacts download URL
         if: always()
