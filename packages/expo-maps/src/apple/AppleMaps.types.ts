@@ -169,6 +169,22 @@ export enum AppleMapsColorScheme {
 }
 
 /**
+ * How often `AppleMaps.View` invokes `onCameraMove` while the camera is moving.
+ * @platform ios
+ */
+export enum AppleMapsCameraUpdateFrequency {
+  /**
+   * `onCameraMove` is invoked once, when the camera stops moving.
+   */
+  ON_END = 'ON_END',
+  /**
+   * `onCameraMove` is invoked for every camera change while the camera is moving, for example
+   * throughout a pan, pinch or rotate gesture and throughout a camera animation.
+   */
+  CONTINUOUS = 'CONTINUOUS',
+}
+
+/**
  * @platform ios
  * @see https://developer.apple.com/documentation/mapkit/AppleMapPointOfInterestCategory
  */
@@ -524,6 +540,17 @@ export type AppleMapsViewProps = {
   properties?: AppleMapsProperties;
 
   /**
+   * How often `onCameraMove` is invoked while the camera is moving.
+   * By default it is invoked once, when the camera stops moving. With `CONTINUOUS` it is also
+   * invoked throughout a gesture or a camera animation, for example to regroup clustered markers
+   * while the user is still pinching.
+   *
+   * `GoogleMaps.View` always reports camera changes continuously.
+   * @default AppleMapsCameraUpdateFrequency.ON_END
+   */
+  cameraUpdateFrequency?: AppleMapsCameraUpdateFrequency;
+
+  /**
    * Lambda invoked when the user clicks on the map.
    * It won't be invoked if the user clicks on POI or a marker.
    */
@@ -562,6 +589,7 @@ export type AppleMapsViewProps = {
   /**
    * Lambda invoked when the map was moved by the user.
    * Also runs once on initial mount with the starting viewport.
+   * How often it is invoked while the camera is moving is controlled by `cameraUpdateFrequency`.
    */
   onCameraMove?: (event: CameraMoveEvent) => void;
 };
