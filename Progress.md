@@ -90,3 +90,8 @@ Dependencies are locally linked to `/Users/jakubtkacz/Documents/code/expo`; expo
 - Documented the `history` and `events` fields on `BrowserHistoryProjection`.
 - Reused `projectBrowserHistory` for structural refreshes and extracted pop projection into its own helper.
 - Validation passed: browser-history Web/Node tests (38 tests), TypeScript, lint, and `git diff --check`. Lint retains the existing unrelated StackToolbarMenu React Compiler warning.
+- Follow-up review documentation: explained the projection fallthrough, structural refresh example,
+  restore parameters and helpers, adapter boundary, committed snapshot, and browser-intent exclusion.
+- Simplified owned-entry lookup with `find` while retaining its index for browser deltas.
+- Validation passed: browser-history and navigation-tree reducer suites in Web/Node (60 tests),
+  TypeScript, lint, and `git diff --check`.

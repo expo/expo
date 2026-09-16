@@ -45,6 +45,10 @@ type ReducerConfig = {
 type TreeOperation =
   | Exclude<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
   | (Extract<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
+      /**
+       * Browser traversal may interrupt a suspended transition. Restore from the last committed
+       * result so commands from the abandoned transition are not applied later.
+       */
       committed?: NavigationTreeResult;
     })
   | {
@@ -127,7 +131,8 @@ function warnIfStaleState(state: NavigationState) {
   }
 }
 
-// Reduces the navigation state, then derives the browser history from the change.
+// Browser changes restore a saved navigation state. Other operations update navigation first,
+// then queue the matching browser command to run after React commits.
 function navigationTreeReducer(
   result: NavigationTreeResult,
   operation: TreeOperation,
@@ -135,9 +140,7 @@ function navigationTreeReducer(
 ): NavigationTreeResult {
   if (operation.type === 'BROWSER_HISTORY_CHANGED') {
     if (operation.committed) {
-      // The browser moved from the committed UI, not a destination still suspended
-      // in a transition. Discard its speculative entries and report commands, while
-      // keeping event IDs monotonic so already-consumed events cannot be replayed.
+      // Discard the interrupted transition while keeping event IDs monotonic.
       result = { ...operation.committed, eventSeq: result.eventSeq };
     }
     if (!result.history) {
@@ -165,6 +168,8 @@ function navigationTreeReducer(
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
 }
 
+// Browser changes are handled above because they restore reducer-owned history and may call this
+// helper with a generated navigation intent. Excluding them prevents a recursive restore.
 function reduceTree(
   result: NavigationTreeResult,
   operation: Exclude<TreeOperation, { type: 'BROWSER_HISTORY_CHANGED' }>,

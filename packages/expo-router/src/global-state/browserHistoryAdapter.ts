@@ -12,6 +12,10 @@ function readChange(): BrowserHistoryChange {
   return { id: typeof id === 'string' ? id : null, path: pathname + search + hash };
 }
 
+/**
+ * Connects reducer-generated history events to `window.history`. It applies commands in order and
+ * reports browser-initiated back, forward, and hash changes to the navigation reducer.
+ */
 export function createBrowserHistoryAdapter(): BrowserHistoryAdapter {
   // Pending callbacks for `history.go(n)`.
   const pending: (() => void)[] = [];

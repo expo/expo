@@ -47,10 +47,16 @@ export function projectBrowserHistory(
   if (action?.type === 'pop') {
     return projectPop(history, nextState, path, action);
   }
+  // Push and pop change which owned entry is current, so they need special handling above.
+  // `replace` and no instruction both refresh this entry. An explicit `replace` only matters
+  // while nested routers compose their instructions, where it can override a child push.
   return refreshEntry(history, history.index, nextState, path);
 }
 
-/** Refreshes the current entry after a structural change that is not a navigation. */
+/**
+ * Refreshes the current entry after `NAVIGATOR_CHANGED` or `NAVIGATOR_UNMOUNTED`, for example when
+ * a navigator registers its routes or is removed from the tree.
+ */
 export function refreshBrowserHistory(
   history: BrowserHistory,
   nextState: NavigationState,
@@ -60,11 +66,14 @@ export function refreshBrowserHistory(
 }
 
 /**
- * Applies a browser-originated change. An owned entry restores its saved state. An entry the
- * browser created on its own (`id` is `null`, e.g. a hash link) is claimed as the next owned
- * entry. An entry from before this page load replaces the owned list, since the rest of the
- * browser stack is unknown. Every change leaves the browser entry claimed by the reducer, so the
- * owned entries and the browser stack cannot drift apart.
+ * Restores navigation after browser back or forward. Known entries reuse their saved state;
+ * unknown entries are rebuilt from the URL and claimed by this page.
+ *
+ * @param history Entries owned by this page, including their navigation snapshots.
+ * @param result Current navigation reducer result.
+ * @param change Entry ID and URL selected by the browser.
+ * @param config Linking and route configuration used to parse the URL.
+ * @param reduce Applies the navigation intent produced by the restore.
  */
 export function restoreBrowserHistory<Result extends { state: NavigationState }>(
   history: BrowserHistory,
@@ -73,10 +82,9 @@ export function restoreBrowserHistory<Result extends { state: NavigationState }>
   config: BrowserHistoryConfig,
   reduce: Reduce<Result>
 ): BrowserHistoryRestore<Result> {
-  const owned =
-    change.id === null ? -1 : history.entries.findIndex((entry) => entry.id === change.id);
-  const ownedEntry = history.entries[owned];
+  const ownedEntry = history.entries.find((entry) => entry.id === change.id);
   if (ownedEntry) {
+    const ownedIndex = history.entries.indexOf(ownedEntry);
     const reduced =
       ownedEntry.path === change.path
         ? reduce(result, reset(ownedEntry.state))
@@ -87,9 +95,9 @@ export function restoreBrowserHistory<Result extends { state: NavigationState }>
         result: reduced,
         history,
         events:
-          owned === history.index
+          ownedIndex === history.index
             ? []
-            : [{ type: 'browser-history', op: 'go', delta: history.index - owned }],
+            : [{ type: 'browser-history', op: 'go', delta: history.index - ownedIndex }],
       };
     }
     const path = getPathForState(reduced.state, config.linking);
@@ -98,9 +106,9 @@ export function restoreBrowserHistory<Result extends { state: NavigationState }>
       history: {
         ...history,
         entries: history.entries.map((entry, index) =>
-          index === owned ? { ...entry, path, state: reduced.state } : entry
+          index === ownedIndex ? { ...entry, path, state: reduced.state } : entry
         ),
-        index: owned,
+        index: ownedIndex,
       },
       events: path === change.path ? [] : [replace(ownedEntry.id, path)],
     };
@@ -125,6 +133,7 @@ export function restoreBrowserHistory<Result extends { state: NavigationState }>
   };
 }
 
+/** Converts a browser URL into a navigation intent and applies it to the current result. */
 function reduceToPath<Result extends { state: NavigationState }>(
   history: BrowserHistory,
   basePath: string,
@@ -171,6 +180,7 @@ function appendEntry(
   };
 }
 
+/** Selects the owned entry that represents a router pop and refreshes it with the new state. */
 function projectPop(
   history: BrowserHistory,
   state: NavigationState,
@@ -198,6 +208,7 @@ function projectPop(
   return refreshEntry(history, index, state, path);
 }
 
+/** Updates an owned entry and emits the browser commands needed to select and replace it. */
 function refreshEntry(
   history: BrowserHistory,
   index: number,
