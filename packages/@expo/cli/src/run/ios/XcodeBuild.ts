@@ -48,7 +48,7 @@ export function logPrettyItem(message: string) {
 export function matchEstimatedBinaryPath(buildOutput: string): string | null {
   // Match the full path that contains `/(.*)/Developer/Xcode/DerivedData/(.*)/Build/Products/(.*)/(.*).app`
   const appBinaryPathMatch = buildOutput.match(
-    /(\/(?:\\\s|[^ ])+\/Developer\/Xcode\/DerivedData\/(?:\\\s|[^ ])+\/Build\/Products\/(?:Debug|Release)-(?:[^\s/]+)\/(?:\\\s|[^ ])+\.app)/
+    /(\/(?:\\\s|[^ ])+\/Developer\/Xcode\/DerivedData\/(?:\\\s|[^ ])+\/Build\/Products\/(?:\\\s|[^\s/])+-(?:[^\s/]+)\/(?:\\\s|[^ ])+\.app)/
   );
   const pathFiltered = appBinaryPathMatch?.filter((a) => typeof a === 'string' && a);
   if (!pathFiltered?.length) {

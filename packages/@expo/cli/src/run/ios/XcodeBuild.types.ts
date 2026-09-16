@@ -3,7 +3,7 @@ import type { BuildCacheProvider } from '@expo/config';
 import type { OSType } from '../../start/platforms/ios/simctl';
 import type { BundlerProps } from '../resolveBundlerProps';
 
-export type XcodeConfiguration = 'Debug' | 'Release';
+export type XcodeConfiguration = string;
 
 export type Options = {
   /** iOS device to target. Use "generic" for a build-only workflow without a specific device. */

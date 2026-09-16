@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Allow custom Xcode configuration names in the build cache provider types. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 58.0.0 — 2026-09-10
 
 ### 💡 Others

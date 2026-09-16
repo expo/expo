@@ -22,10 +22,11 @@ import * as XcodeBuild from './XcodeBuild';
 import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
+import { resolveXcodeConfigurationMode } from './options/resolveXcodeConfiguration';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
-  const mode = options.configuration === 'Release' ? 'production' : 'development';
+  const mode = resolveXcodeConfigurationMode(options.configuration || 'Debug');
   loadEnvFiles(projectRoot, { mode });
 
   assertPlatform();
@@ -38,6 +39,11 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
+  const runOptions = {
+    ...options,
+    scheme: props.scheme,
+    configuration: props.configuration,
+  };
 
   if (props.device) {
     event('device:selected', {
@@ -54,7 +60,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     const localPath = await resolveBuildCache({
       projectRoot,
       platform: 'ios',
-      runOptions: options,
+      runOptions,
       provider: props.buildCacheProvider,
     });
     if (localPath) {
@@ -182,7 +188,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
         platform: 'ios',
         provider: props.buildCacheProvider,
         buildPath: binaryPath,
-        runOptions: options,
+        runOptions,
       });
     }
     return;
@@ -246,7 +252,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       platform: 'ios',
       provider: props.buildCacheProvider,
       buildPath: binaryPath,
-      runOptions: options,
+      runOptions,
     });
   }
 }

@@ -339,4 +339,17 @@ ProcessInfoPlistFile /Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352
       '/Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Products/Debug-iphonesimulator/dec352blank.app'
     );
   });
+
+  it.each(['DebugStaging', 'Staging'])(
+    'matches the binary fallback for configuration %s',
+    (configuration) => {
+      expect(
+        getAppBinaryPath(
+          fixture.replaceAll('Debug-iphonesimulator', `${configuration}-iphonesimulator`)
+        )
+      ).toBe(
+        `/Users/evanbacon/Library/Developer/Xcode/DerivedData/dec352blank-atotwaonfbrdkmgspyclhglnaagn/Build/Products/${configuration}-iphonesimulator/dec352blank.app`
+      );
+    }
+  );
 });
