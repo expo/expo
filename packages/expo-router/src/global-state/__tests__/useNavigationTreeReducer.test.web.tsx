@@ -91,7 +91,7 @@ test('emits one push per action in a batch', () => {
   ]);
 });
 
-test('restores an owned entry on a browser change without browser commands', () => {
+test('restores a tracked entry on a browser change without browser commands', () => {
   const result = renderReducer();
   const initialEntryId = browserEvents(result)![0]!;
   act(() =>

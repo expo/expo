@@ -54,7 +54,7 @@ Dependencies are locally linked to `/Users/jakubtkacz/Documents/code/expo`; expo
 - Initial full package run: 418 suites passed; only 3 existing RSC asset snapshots failed because the linked dependency transformer emits a different relative path for this worktree (same sitemap.png, different checkout path). No snapshot updates made.
 - Independent senior review found parent focus decisions missing, singular/deduplicated forward visits incorrectly treated as replace/pop, and parent pop counts failing to account for nested browser entries.
 - Added failing regressions for hidden-child parent focus, singular promotion, and nested pop targeting; confirmed failures before fixes.
-- Extended the contract with a router-owned focus hook and optional pop destination (navigator/route keys). Browser projection resolves that destination among owned snapshots, falling back to the bounded count for unknown/synthetic destinations.
+- Extended the contract with a router-owned focus hook and optional pop destination (navigator/route keys). Browser projection resolves that destination among tracked snapshots, falling back to the bounded count for unknown/synthetic destinations.
 - Stack and history-based tab promotions now create visits even when deduplication does not grow the state. Older browser entries removed from navigator history by explicit singular/dedup options are still browser history; complete equivalence of those incompatible history policies is not claimed.
 - Typecheck initially found overly broad types in the new tests; narrowing the fixtures before final validation.
 
@@ -92,6 +92,15 @@ Dependencies are locally linked to `/Users/jakubtkacz/Documents/code/expo`; expo
 - Validation passed: browser-history Web/Node tests (38 tests), TypeScript, lint, and `git diff --check`. Lint retains the existing unrelated StackToolbarMenu React Compiler warning.
 - Follow-up review documentation: explained the projection fallthrough, structural refresh example,
   restore parameters and helpers, adapter boundary, committed snapshot, and browser-intent exclusion.
-- Simplified owned-entry lookup with `find` while retaining its index for browser deltas.
+- Simplified tracked-entry lookup with `find` while retaining its index for browser deltas.
 - Validation passed: browser-history and navigation-tree reducer suites in Web/Node (60 tests),
   TypeScript, lint, and `git diff --check`.
+
+## Terminology follow-up
+
+- Renamed the browser-history concept from "owned entry" to "tracked entry" across source comments,
+  local variables, tests, contributor guidance, and PR documentation.
+- "Tracked" means the current page session knows the browser entry ID and has its saved navigation
+  snapshot. Router ownership language remains only where it describes which router decides policy.
+- Validation passed: browser-history and navigation-tree reducer suites in Web/Node (60 tests),
+  TypeScript, lint, terminology search, and `git diff --check`.

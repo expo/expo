@@ -11,7 +11,7 @@ export type BrowserHistoryEntry = {
   state: NavigationState;
 };
 
-/** The browser entries this app owns, in browser order. */
+/** Browser entries tracked by this page, in browser order. */
 export type BrowserHistory = {
   entries: readonly BrowserHistoryEntry[];
   index: number;
@@ -45,7 +45,7 @@ export type BrowserHistoryConfig = {
 };
 
 export type BrowserHistoryProjection = {
-  /** Updated reducer-owned entries, or `undefined` on platforms without browser history. */
+  /** Updated tracked entries, or `undefined` on platforms without browser history. */
   history: BrowserHistory | undefined;
   /** Ordered browser commands to apply after React commits the matching navigation state. */
   events: BrowserHistoryEvent[];

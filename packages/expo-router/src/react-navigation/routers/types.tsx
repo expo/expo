@@ -243,9 +243,9 @@ export type RouterBrowserHistoryAction =
   | { type: 'replace' }
   | {
       type: 'pop';
-      /** Fallback count for destinations without an owned browser entry (e.g. an initial anchor). */
+      /** Fallback count for destinations without a tracked browser entry (e.g. an initial anchor). */
       count: number;
-      /** Find the destination among owned entries, including entries made by nested navigators. */
+      /** Find the destination among tracked entries, including entries made by nested navigators. */
       target?: { navigatorKey: string; routeKey: string };
     };
 

@@ -5,7 +5,7 @@
 - Work in `/Users/jakubtkacz/.codex/worktrees/dabb/expo` on `@ubax/eng-22046-derive-browser-history-from-reducer`.
 - Fetched and pulled the branch; starting commit is `4e985efdca5dcf415cfd3374e88e93af36d3739b`.
 - The same branch is checked out in another worktree; do not edit that worktree or commit/push without considering its shared branch reference.
-- Make browser-history decisions belong to routers, including two consecutive nested `router.push` calls producing two entries. Keep browser back and in-app back aligned wherever owned browser entries allow it.
+- Make browser-history decisions belong to routers, including two consecutive nested `router.push` calls producing two entries. Keep browser back and in-app back aligned wherever tracked browser entries allow it.
 
 ## Findings
 
@@ -41,7 +41,7 @@ Read this plan and `Progress.md` after compaction. No implementation edits exist
 ## Adjustments from regression tests and review
 
 - Add optional `getBrowserHistoryForRouteFocus(previous, next, childAction)` so parent routers can contribute decisions without inspecting navigator types in global code. Explicit `replace` consumes drawer-state entries during child navigation.
-- Pop metadata includes an optional navigator/route destination; owned browser snapshots resolve the actual browser distance across nested stacks. The count remains a fallback for synthetic anchors.
+- Pop metadata includes an optional navigator/route destination; tracked browser snapshots resolve the actual browser distance across nested stacks. The count remains a fallback for synthetic anchors.
 - Forward singular/deduplicated visits push when focus changes even if state length does not grow. Earlier browser snapshots survive explicit navigator deduplication; absolute equivalence is not promised for those conflicting histories.
 - The exact batch from an unmounted tab exposed a separate sequencing requirement: process one queued destination per committed transition, allowing router registration before the next href. Browser traversals/back/replace/reset/dismiss can supersede suspended navigation. Queue entries have stable identities across React rebasing.
 

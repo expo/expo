@@ -109,7 +109,7 @@ type NavigationTreeResult = {
   state: NavigationState;
   report: NavigationTreeReport | undefined;
   eventSeq: number;
-  // Web only; the browser entries this app owns.
+  // Web only; browser entries tracked by this page.
   history: BrowserHistory | undefined;
   browserHistoryAction?: RouterBrowserHistoryAction;
 };
@@ -168,7 +168,7 @@ function navigationTreeReducer(
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
 }
 
-// Browser changes are handled above because they restore reducer-owned history and may call this
+// Browser changes are handled above because they restore tracked history and may call this
 // helper with a generated navigation intent. Excluding them prevents a recursive restore.
 function reduceTree(
   result: NavigationTreeResult,

@@ -103,7 +103,7 @@ The browser only sees a linear list of entries. Expo Router therefore needs a de
 | **Router** | The object that understands a navigator's actions. Examples are `StackRouter`, `TabRouter`, and `DrawerRouter`. |
 | **Reducer** | The pure code that applies an action to the navigation tree and computes the next internal browser-history state. |
 | **Browser entry** | One item in `window.history`, visited with browser Back or Forward. |
-| **Owned entry** | A browser entry created or claimed by this Expo Router session and identified by an Expo Router entry ID. |
+| **Tracked entry** | A browser entry whose ID and navigation snapshot Expo Router knows during the current page session. |
 | **Report event** | A description of a browser side effect that the reducer emits for execution after React commits. |
 | **Adapter** | The only layer that calls `window.history.pushState`, `replaceState`, or `go`. |
 
@@ -260,7 +260,7 @@ sequenceDiagram
     Queue->>Reducer: process destination
     Reducer->>Stack: getStateForAction(PUSH)
     Stack-->>Reducer: next state + browserHistory: push
-    Reducer->>Reducer: append owned history entry
+    Reducer->>Reducer: append tracked history entry
     Reducer-->>Report: push event
     Note over Reducer,Report: React commits /products/42
     Report->>Adapter: apply push event
@@ -335,13 +335,13 @@ sequenceDiagram
     Browser->>Sync: popstate with entry ID
     Sync->>Queue: BROWSER_HISTORY_CHANGED
     Queue->>Reducer: process browser entry
-    Reducer->>Reducer: find owned snapshot by ID
+    Reducer->>Reducer: find tracked snapshot by ID
     Reducer-->>React: restore saved navigation state
     Note over Reducer,React: Same route keys and nested navigator state are reused
     React-->>Browser: UI now matches selected browser entry
 ```
 
-For an entry owned by the current session, the reducer restores the saved navigation snapshot. It does not reconstruct the state only from the URL.
+For an entry tracked by the current session, the reducer restores the saved navigation snapshot. It does not reconstruct the state only from the URL.
 
 That distinction preserves details that a URL cannot express, including nested navigator history and route identity. The end-to-end coverage also verifies that a restored nested route does not remount in the tested scenario.
 
@@ -395,9 +395,9 @@ The router result contract is public enough for custom routers to provide the sa
 
 | Router instruction | Internal effect | Browser effect after commit |
 | --- | --- | --- |
-| `{ type: 'push' }` | Append an owned snapshot and discard the forward branch | `pushState` |
-| `{ type: 'pop', ... }` | Select an earlier owned snapshot | `history.go(delta)` when browser movement is needed |
-| `{ type: 'replace' }` | Refresh the current owned snapshot | `replaceState` |
+| `{ type: 'push' }` | Append a tracked snapshot and discard the forward branch | `pushState` |
+| `{ type: 'pop', ... }` | Select an earlier tracked snapshot | `history.go(delta)` when browser movement is needed |
+| `{ type: 'replace' }` | Refresh the current tracked snapshot | `replaceState` |
 | No instruction | Treat as a state refresh rather than a new visit | `replaceState` when the current entry needs updating |
 
 An explicit `replace` and an omitted instruction can produce the same browser operation. The explicit form is still meaningful while nested router results are composed: a parent router can deliberately override a child's `push`.
@@ -452,7 +452,7 @@ Consider:
 
 A parent navigator may report “pop one route” to return from the `/b` branch to `/a`. The browser must move back two entries.
 
-The reducer uses the target navigator and route keys to search saved browser snapshots along their focused branches. It can then find the actual owned entry containing the target and calculate the correct browser delta.
+The reducer uses the target navigator and route keys to search saved browser snapshots along their focused branches. It can then find the tracked entry containing the target and calculate the correct browser delta.
 
 This is another reason the browser layer stores full navigation snapshots internally instead of keeping only URLs.
 
@@ -497,17 +497,17 @@ The result is simple from the user's perspective: abandoned renders do not leak 
 
 The browser can report entries that the current in-memory session does not recognize.
 
-### Known owned ID
+### Known tracked entry
 
-If the entry ID exists in the reducer's owned history, Expo Router restores its exact saved navigation state.
+If the entry ID exists in the reducer's tracked history, Expo Router restores its exact saved navigation state.
 
 ### No Expo Router ID
 
-For an unowned entry, Expo Router parses the current URL or hash into navigation state and claims the browser entry with a new ID.
+For an untracked entry, Expo Router parses the current URL or hash into navigation state and starts tracking it with a new ID.
 
 ### Old ID after reload
 
-After a full reload, `window.history` may still contain an ID from the previous JavaScript session, while the new reducer has no saved snapshot for it. The entry is treated as unknown, parsed from its URL, and becomes the starting point for a new owned history list.
+After a full reload, `window.history` may still contain an ID from the previous JavaScript session, while the new reducer has no saved snapshot for it. The entry is treated as unknown, parsed from its URL, and becomes the starting point for a new tracked history list.
 
 ### Anchored deep links
 
@@ -547,7 +547,7 @@ Native platforms do not have browser history, so changing their commit cadence w
 
 - [`reduceNavigationTree.ts`](./packages/expo-router/src/global-state/reduceNavigationTree.ts) applies navigation actions, propagates router decisions through ancestors, and observes prevented removals.
 - [`browserHistoryTypes.ts`](./packages/expo-router/src/global-state/browserHistoryTypes.ts) contains the serializable internal types and report-event shapes.
-- [`browserHistory.ts`](./packages/expo-router/src/global-state/browserHistory.ts) projects router instructions into owned browser-history snapshots. It also restores known entries and resolves pop targets.
+- [`browserHistory.ts`](./packages/expo-router/src/global-state/browserHistory.ts) projects router instructions into tracked browser-history snapshots. It also restores known entries and resolves pop targets.
 - [`useNavigationTreeReducer.ts`](./packages/expo-router/src/global-state/useNavigationTreeReducer.ts) keeps navigation state, internal browser history, and report events in one reducer result.
 
 ### Browser integration
@@ -588,7 +588,7 @@ These verify that each router reports the correct semantic decision:
 
 These cover:
 
-- claiming the initial browser entry;
+- tracking the initial browser entry;
 - pushes and forward-history truncation;
 - pops, clamping, and replacement;
 - route identity and structural refreshes;
@@ -645,7 +645,7 @@ The PR covers immediate Back alignment and popping to surviving route identities
 
 ### Same-URL entries need semantic information
 
-URLs alone cannot distinguish states such as an open and closed drawer. The design handles these while the session owns the entries because it stores navigation snapshots internally. That distinction cannot be reconstructed from the URL alone after a reload.
+URLs alone cannot distinguish states such as an open and closed drawer. The design handles these while the session tracks the entries because it stores navigation snapshots internally. That distinction cannot be reconstructed from the URL alone after a reload.
 
 ---
 
@@ -656,7 +656,7 @@ For the quickest path through the PR:
 1. Read the router contract in [`types.tsx`](./packages/expo-router/src/react-navigation/routers/types.tsx).
 2. Read the `StackRouter` decisions and their tests.
 3. Read [`reduceNavigationTree.ts`](./packages/expo-router/src/global-state/reduceNavigationTree.ts) to see how child and parent decisions are composed.
-4. Read [`browserHistory.ts`](./packages/expo-router/src/global-state/browserHistory.ts) to see how decisions become owned entries and browser deltas.
+4. Read [`browserHistory.ts`](./packages/expo-router/src/global-state/browserHistory.ts) to see how decisions become tracked entries and browser deltas.
 5. Read [`useNavigationTreeReducer.ts`](./packages/expo-router/src/global-state/useNavigationTreeReducer.ts) and [`useNavigationTreeReportEvents.ts`](./packages/expo-router/src/global-state/useNavigationTreeReportEvents.ts) to understand the pure-reducer/committed-side-effect boundary.
 6. Read the web queue drainer and its tests for the previously unmounted navigator case.
 7. Finish with the Playwright scenarios to see the behavior from a user's perspective.

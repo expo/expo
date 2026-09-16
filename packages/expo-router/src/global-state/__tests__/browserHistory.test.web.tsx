@@ -72,7 +72,7 @@ beforeEach(() => {
   reduceResets.mockClear();
 });
 
-test('creates one owned entry and claims the browser entry', () => {
+test('starts tracking the current browser entry', () => {
   const state = stack(['a']);
 
   expect(createBrowserHistory(state, config)).toEqual({
@@ -115,7 +115,7 @@ test('goes back and refreshes the entry when instructed to pop', () => {
   ]);
 });
 
-test('clamps a traversal at the first owned entry', () => {
+test('clamps a traversal at the first tracked entry', () => {
   const previous = stack(['a', 'b', 'c']);
   const next = stack(['a']);
   const current = history([previous]);
@@ -184,7 +184,7 @@ test('refreshes without moving the browser after a structural change', () => {
 });
 
 describe('restore', () => {
-  test('restores an owned entry without browser commands', () => {
+  test('restores a tracked entry without browser commands', () => {
     const first = stack(['a']);
     const second = stack(['a', 'b']);
     const current = history([first, second]);
@@ -263,7 +263,7 @@ describe('restore', () => {
     expect(restored).toEqual({ result, history: current, events: [] });
   });
 
-  test('keeps the owned entries when an owned entry has another browser path', () => {
+  test('keeps the tracked entries when a tracked entry has another browser path', () => {
     const first = stack(['a']);
     const second = stack(['a', 'b']);
     const current = history([first, second]);
@@ -298,7 +298,7 @@ describe('restore', () => {
     ]);
   });
 
-  test('claims a browser-created hash entry and navigates to the href', () => {
+  test('tracks a browser-created hash entry and navigates to the href', () => {
     const first = stack(['a']);
     const current = history([first]);
     const withHash: NavigationState = {
@@ -439,7 +439,7 @@ describe('restore', () => {
   });
 });
 
-test('pops to the owned target instead of counting nested entries as parent routes', () => {
+test('pops to the tracked target instead of counting nested entries as parent routes', () => {
   const first = stack(['a']);
   const child = stack(['a'], 0, 'child');
   const nested = {
