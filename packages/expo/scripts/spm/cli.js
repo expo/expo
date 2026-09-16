@@ -19,7 +19,15 @@ function resolveAutolinkingBin() {
   });
 }
 
-/** `expo-modules-autolinking resolve --platform apple --json` from the app root. */
+/**
+ * `expo-modules-autolinking resolve --platform apple --json` from the app root:
+ * the Expo modules to contribute, and beside them the extra CocoaPods
+ * dependencies the app declares (`extraPods`, via Podfile.properties.json),
+ * which the plugin reports but cannot install.
+ *
+ * Both are always arrays: an older CLI answers with the module array alone, and
+ * an app that declares no extra pods omits the key.
+ */
 function resolveExpoModules(appRoot) {
   const bin = resolveAutolinkingBin();
   const stdout = execFileSync(process.execPath, [bin, 'resolve', '--platform', 'apple', '--json'], {
@@ -28,7 +36,8 @@ function resolveExpoModules(appRoot) {
     maxBuffer: MAX_BUFFER,
   });
   const parsed = JSON.parse(stdout);
-  return Array.isArray(parsed) ? parsed : (parsed.modules ?? []);
+  if (Array.isArray(parsed)) return { modules: parsed, extraDependencies: [] };
+  return { modules: parsed.modules ?? [], extraDependencies: parsed.extraDependencies ?? [] };
 }
 
 /**
