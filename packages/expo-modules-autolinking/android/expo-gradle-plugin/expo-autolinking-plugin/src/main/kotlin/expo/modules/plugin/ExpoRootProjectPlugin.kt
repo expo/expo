@@ -1,6 +1,7 @@
 package expo.modules.plugin
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
@@ -21,6 +22,7 @@ class ExpoRootProjectPlugin : Plugin<Project> {
       defineDefaultProperties(libs)
       maybeOverrideCmakeVersion()
       setDefaultCmakeObjectPathMax()
+      maybeOverrideNdkVersion()
       disableLinkedModulesLintWhenRequested()
     }
   }
@@ -116,6 +118,30 @@ internal fun Project.cmakeObjectPathMax(): Int? {
 
 private const val CMAKE_OBJECT_PATH_MAX_PROPERTY = "expo.android.cmakeObjectPathMax"
 private const val DEFAULT_CMAKE_OBJECT_PATH_MAX = 1024
+
+/**
+ * Maybe override the `android.ndkVersion` of all Android library subprojects with the version the
+ * root project defines, so the app and the modules it links build with one NDK instead of AGP's
+ * default.
+ * A module that declares its own `ndkVersion` keeps it.
+ */
+private fun Project.maybeOverrideNdkVersion() {
+  val ndkVersion = (findProperty("ndkVersion") as? String)?.takeIf { it.isNotBlank() }
+    ?: return
+
+  logger.quiet(
+    "${"[ExpoRootProject]".withColor(Colors.GREEN)} Overriding NDK version: ${ndkVersion.withColor(Colors.GREEN)}"
+  )
+
+  val applyNdkVersion = { subproject: Project ->
+    val android = subproject.extensions.getByType(LibraryExtension::class.java)
+    android.ndkVersion = ndkVersion
+  }
+
+  subprojects { subproject ->
+    subproject.plugins.withId("com.android.library") { applyNdkVersion(subproject) }
+  }
+}
 
 /**
  * Determines whether autolinked native modules should be linted when building the release version
