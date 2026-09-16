@@ -26,6 +26,13 @@ public extension EmbeddedFingerprint {
     public static let callbackParam = "__expo_fingerprint_callback"
 
     public static let callbackPath = "/fingerprint-callback"
+
+    public static func isCheckURL(_ url: URL) -> Bool {
+      guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems else {
+        return false
+      }
+      return queryItems.contains { $0.name == markerParam && $0.value == markerValue }
+    }
   }
 
   /// The JSON posted back to the callback. A build that embedded no fingerprint answers with nulls

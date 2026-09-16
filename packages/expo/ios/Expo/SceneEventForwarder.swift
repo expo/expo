@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
 import Foundation
 import React
 
@@ -22,6 +23,15 @@ struct SceneEventForwarder {
   func open(url: URL, options: [UIApplication.OpenURLOptionsKey: Any]) {
     let application = UIApplication.shared
     let delegate = appDelegate()
+
+#if DEBUG
+    // Scene apps only, cold start and warm alike: a scene routes every URL through here.
+    // React Native must not see the link, or expo-router routes to it.
+    if EmbeddedFingerprint.CheckProtocol.isCheckURL(url) {
+      _ = delegate?.application(application, open: url, options: options)
+      return
+    }
+#endif
 
     notifyLinkingManagerUnlessAlreadyNotified(of: url) {
       _ = delegate?.application(application, open: url, options: options)

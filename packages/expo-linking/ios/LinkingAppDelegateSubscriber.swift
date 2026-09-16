@@ -49,18 +49,9 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   }
 }
 
-/// A dev-launcher command, not a deep link. Debug only: `EXDevLauncherFingerprintCheck` answers
-/// nothing in a release build, so swallowing the URL there would drop a deep link nothing else
-/// handles.
 private func isFingerprintCheckURL(_ url: URL) -> Bool {
   #if DEBUG
-  guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems else {
-    return false
-  }
-  return queryItems.contains {
-    $0.name == EmbeddedFingerprint.CheckProtocol.markerParam
-      && $0.value == EmbeddedFingerprint.CheckProtocol.markerValue
-  }
+  return EmbeddedFingerprint.CheckProtocol.isCheckURL(url)
   #else
   return false
   #endif

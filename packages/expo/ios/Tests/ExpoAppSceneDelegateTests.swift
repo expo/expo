@@ -222,6 +222,25 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
+  func `keeps a fingerprint-check trigger away from RCTLinkingManager so JS does not see it`() {
+    let url = URL(string: "bareexpo://?__expo_fingerprint_check=1&__expo_fingerprint_nonce=abc")!
+    let recorder = OpenURLNotificationRecorder()
+    let spy = SpyAppDelegate()
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:])
+    #expect(recorder.count(of: url) == 0)
+  }
+
+  @Test
+  @MainActor
+  func `still hands a fingerprint-check trigger to the app delegate`() {
+    let url = URL(string: "bareexpo://?__expo_fingerprint_check=1&__expo_fingerprint_nonce=def")!
+    let delegate = LegacyLinkingAppDelegate()
+    SceneEventForwarder(appDelegate: { delegate }).open(url: url, options: [:])
+    #expect(delegate.openedURLs == [url])
+  }
+
+  @Test
+  @MainActor
   func `notifies RCTLinkingManager once when the delegate notifies it too`() {
     let delegate = LegacyLinkingAppDelegate()
     let url = URL(string: "bareexpo://scene-delegate/legacy-open-url")!
