@@ -108,6 +108,14 @@ export async function prepareAndroidPrecompileToolchainAsync(): Promise<void> {
   ];
 
   console.log(`Preparing Android precompile toolchain: ${components.join(', ')}`);
+  const sdkRoot = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
+  if (
+    sdkRoot &&
+    components.every((component) => fs.existsSync(path.join(sdkRoot, ...component.split(';'))))
+  ) {
+    console.log('Android precompile toolchain is already installed.');
+    return;
+  }
   const installer = findAndroidSdkInstaller();
   await spawnAsync(installer.command, installer.installArgs(components), { stdio: 'inherit' });
 }
