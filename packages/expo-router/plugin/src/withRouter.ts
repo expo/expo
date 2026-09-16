@@ -105,7 +105,7 @@ export type Props = {
    */
   unstable_useServerDataLoaders?: boolean;
   /**
-   * (Deprecated) Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time.
+   * Server rendering no longer requires an opt-in as of SDK 58. This option has no effect.
    * @deprecated
    */
   unstable_useServerRendering?: boolean;
