@@ -33,12 +33,13 @@ export default (program: Command) => {
     .description('Publish packages from an already-versioned stable release commit.')
     .asyncAction(async (options: CommandOptions) => {
       const branchName = await getReleaseBranchAsync();
-      await assertReleaseBranch(branchName, 'stable');
-      await assertCleanWorkingTreeAsync();
-      await assertChangesetPrerequisiteAsync('absent', options.force);
+      if (!options.force) {
+        await assertReleaseBranch(branchName, 'stable');
+        await assertCleanWorkingTreeAsync();
+        await assertChangesetPrerequisiteAsync('absent', options.force);
+        await assertVersionCommitAsync();
+      }
       const publishPlan = await getPublishPlanAsync();
-      await assertVersionCommitAsync();
-
       if (publishPlan.length) {
         await runTurboTasksAsync(['build']);
         await runTurboTasksAsync(['precompile-ios', 'precompile-android']);
