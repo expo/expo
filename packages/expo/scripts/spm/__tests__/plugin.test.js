@@ -327,7 +327,10 @@ describe('the checked-in manifest branch', () => {
       })
     );
     resolveExpoModules.mockReturnValue([
-      { packageName: 'expo-modules-core', pods: [{ podName: 'ExpoModulesCore', podspecDir: core }] },
+      {
+        packageName: 'expo-modules-core',
+        pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+      },
       {
         packageName: 'expo-vendored',
         pods: [{ podName: 'ExpoVendored', podspecDir: vendoredPodspecDir }],
