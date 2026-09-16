@@ -285,6 +285,7 @@ export function useNavigationBuilder<
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);
 
+      // TODO(@ubax): Remove the UNSTABLE_router prop
       return {
         ...original,
         ...overrides,

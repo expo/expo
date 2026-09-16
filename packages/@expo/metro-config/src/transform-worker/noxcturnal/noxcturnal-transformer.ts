@@ -398,7 +398,6 @@ export interface NoxcturnalMetroTransformInput extends NoxcturnalTransformInput 
     minifierConfig?: { output?: { comments?: boolean } };
     unstable_disableModuleWrapping?: boolean;
     unstable_allowRequireContext?: boolean;
-    unstable_renameRequire?: boolean;
   };
 }
 

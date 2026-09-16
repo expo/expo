@@ -348,6 +348,27 @@ describe('ExperimentalStack — Screen activityMode', () => {
     expect(keys.some((k) => k.startsWith('a:'))).toBe(true);
     expect(keys.some((k) => k.startsWith('b:'))).toBe(true);
   });
+
+  it('detaches preloaded routes until they are focused', () => {
+    renderRouter(
+      {
+        a: () => null,
+        b: () => null,
+        _layout: () => <ExperimentalStack />,
+      },
+      { initialUrl: '/a' }
+    );
+
+    act(() => router.prefetch('/b'));
+
+    const preloaded = Object.entries(screenPropsByKey()).find(([key]) => key.startsWith('b:'))?.[1];
+    expect(preloaded?.activityMode).toBe('detached');
+
+    act(() => router.push('/b'));
+
+    const focused = Object.entries(screenPropsByKey()).find(([key]) => key.startsWith('b:'))?.[1];
+    expect(focused?.activityMode).toBe('attached');
+  });
 });
 
 describe('ExperimentalStack — dismiss handlers', () => {

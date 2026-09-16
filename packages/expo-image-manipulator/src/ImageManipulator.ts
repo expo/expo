@@ -19,7 +19,7 @@ import { validateArguments } from './validators';
  * @param saveOptions A map defining how modified image should be saved.
  * @return Promise which fulfils with [`ImageResult`](#imageresult) object.
  * @deprecated It has been replaced by the new, contextual and object-oriented API.
- * Use [`ImageManipulator.manipulate`](#manipulatesource) or [`useImageManipulator`](#useimagemanipulatorsource) instead.
+ * Use [`ImageManipulator.manipulate`](#manipulatesource-options) or [`useImageManipulator`](#useimagemanipulatorsource-options) instead.
  */
 export async function manipulateAsync(
   uri: string,

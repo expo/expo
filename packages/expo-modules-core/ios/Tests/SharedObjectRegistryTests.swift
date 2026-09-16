@@ -124,7 +124,7 @@ struct SharedObjectRegistryTests {
 
     // Detach drops JSI's shared_ptr; the destructor's releaser calls `registry.delete(id)`.
     jsObject.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    try runtime.collectGarbage { registry.get(id) == nil }
 
     #expect(registry.get(id) == nil)
     #expect(nativeObject.sharedObjectId == 0)
@@ -192,7 +192,7 @@ struct SharedObjectRegistryTests {
     // The native state is still attached to `jsObject`. Detaching now would call
     // the releaser whose `[weak self]` is now nil — must not crash.
     jsObject.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    try runtime.collectGarbage()
   }
 
   @Suite("pullNextId", .serialized)
