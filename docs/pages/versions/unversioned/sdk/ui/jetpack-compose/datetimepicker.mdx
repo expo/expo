@@ -137,6 +137,12 @@ export default function InputVariantExample() {
 
 ### Date range picker
 
+<ComponentExample
+  title="DateRangePickerAndroidExample.tsx"
+  src="/static/images/expo-ui/examples/datetimepicker-date-range-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datetimepicker-date-range-android-dark.webp"
+  alt="A date range picker with a five day range selected and the days between it highlighted">
+
 ```tsx
 import { useState } from 'react';
 import {
@@ -145,7 +151,7 @@ import {
   Host,
 } from '@expo/ui/jetpack-compose';
 
-export default function DateRangePickerExample() {
+export default function DateRangePickerAndroidExample() {
   const [range, setRange] = useState<DateRangeSelection>({
     start: new Date(),
     end: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
@@ -163,9 +169,17 @@ export default function DateRangePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 The callback's `end` value is `null` until the user finishes selecting the range.
 
 ### Date range picker dialog
+
+<ComponentExample
+  title="DateRangePickerDialogExample.tsx"
+  src="/static/images/expo-ui/examples/datetimepicker-date-range-dialog-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datetimepicker-date-range-dialog-android-dark.webp"
+  alt="A modal date range picker dialog with an empty start and end date and Cancel and OK buttons">
 
 ```tsx
 import { useState } from 'react';
@@ -206,6 +220,8 @@ export default function DateRangePickerDialogExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

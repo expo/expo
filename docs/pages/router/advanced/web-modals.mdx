@@ -99,7 +99,7 @@ import {
   type NativeStackNavigationOptions,
   type NativeStackViewState,
   StackRouter,
-  unstable_createStandardRouterNavigator,
+  createStandardRouterNavigator,
   type NavigatorContentProps,
 } from 'expo-router';
 import type { ReactNode } from 'react';
@@ -154,7 +154,7 @@ function ModalStackContent({ state, descriptors, actions }: NavigatorContentProp
   );
 }
 
-export const ModalStack = unstable_createStandardRouterNavigator(ModalStackContent, StackRouter);
+export const ModalStack = createStandardRouterNavigator(ModalStackContent, StackRouter);
 
 const styles = StyleSheet.create({
   overlay: {

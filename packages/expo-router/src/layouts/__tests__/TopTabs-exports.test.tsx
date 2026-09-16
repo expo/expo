@@ -13,4 +13,8 @@ describe('expo-router/js-top-tabs re-exports', () => {
     expect(entry.TopTabs.Screen).toBeDefined();
     expect(entry.TopTabs.Protected).toBeDefined();
   });
+
+  it('exports the JS top tabs props helper', () => {
+    expect(entry.createJSTopTabsProps).toBeDefined();
+  });
 });

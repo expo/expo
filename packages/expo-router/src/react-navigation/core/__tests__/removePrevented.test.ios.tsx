@@ -17,7 +17,7 @@ beforeEach(() => {
   require('nanoid/non-secure').__key = 0;
 });
 
-test('blocks removal with the hook and emits removePrevented', () => {
+test('blocks removal and emits removed with deferred effect cleanup', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
     return (

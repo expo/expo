@@ -10,7 +10,7 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import { renderRouter } from '../../testing-library';
-import { unstable_createStandardRouterNavigator } from '../index';
+import { createStandardRouterNavigator } from '../index';
 import { useStandardEmitter } from '../useStandardEmitter';
 
 type TestEventMap = {
@@ -128,7 +128,7 @@ describe('useStandardEmitter (integration)', () => {
       </>
     );
   }
-  const StandardTabs = unstable_createStandardRouterNavigator<
+  const StandardTabs = createStandardRouterNavigator<
     Record<string, never>,
     TabNavigationState<ParamListBase>,
     IntegrationEventMap,
