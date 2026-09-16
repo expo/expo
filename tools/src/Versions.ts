@@ -41,6 +41,7 @@ export type VersionsSdkSchema = Partial<{
   androidClientVersion: string;
   androidExpoViewUrl: string;
   expokitNpmPackage: string;
+  expoVersion: string;
   expoReactNativeTag: string;
   facebookReactNativeVersion: string;
   facebookReactVersion: string;

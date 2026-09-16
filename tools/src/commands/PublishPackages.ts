@@ -1,6 +1,12 @@
 import { Command } from '@expo/commander';
+import fs from 'node:fs';
+import path from 'node:path';
+import semver from 'semver';
 
+import { EXPO_DIR } from '../Constants';
+import logger from '../Logger';
 import { runTurboTasksAsync } from '../Turbo';
+import * as Versions from '../Versions';
 import {
   assertCleanWorkingTreeAsync,
   assertChangesetPrerequisiteAsync,
@@ -31,14 +37,38 @@ export default (program: Command) => {
       await assertCleanWorkingTreeAsync();
       await assertChangesetPrerequisiteAsync('absent', options.force);
       const publishPlan = await getPublishPlanAsync();
-      if (!publishPlan.length) return;
       await assertVersionCommitAsync();
-      await runTurboTasksAsync(['build']);
-      await runTurboTasksAsync(['precompile-ios', 'precompile-android']);
+
+      if (publishPlan.length) {
+        await runTurboTasksAsync(['build']);
+        await runTurboTasksAsync(['precompile-ios', 'precompile-android']);
+      }
       if (options.dryRun) {
-        await packChangesetsAsync('expo-changesets-pack-');
+        if (publishPlan.length) {
+          await packChangesetsAsync('expo-changesets-pack-');
+        }
         return;
       }
-      await runChangesetsAsync(await getStablePublishArgsAsync(branchName));
+      if (publishPlan.length) {
+        await runChangesetsAsync(await getStablePublishArgsAsync(branchName));
+      }
+
+      await updateVersionsEndpointAsync();
     });
 };
+
+async function updateVersionsEndpointAsync(): Promise<void> {
+  const expoPackage = JSON.parse(
+    await fs.promises.readFile(path.join(EXPO_DIR, 'packages/expo/package.json'), 'utf8')
+  );
+  const sdkVersion = `${semver.major(expoPackage.version)}.0.0`;
+  const expoVersion = `~${expoPackage.version}`;
+
+  logger.info(
+    `Updating the versions endpoint for SDK ${sdkVersion} with expoVersion ${expoVersion}.`
+  );
+  await Versions.modifySdkVersionsAsync(sdkVersion, (sdkVersions) => ({
+    ...sdkVersions,
+    expoVersion,
+  }));
+}

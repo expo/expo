@@ -121,6 +121,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Publish with Changesets
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
+        env:
+          EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
         with:
           github-token: ${{ github.token }}
           publish-script: pnpm expotools publish-packages
