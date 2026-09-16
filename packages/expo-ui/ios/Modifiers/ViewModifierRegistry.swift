@@ -1813,6 +1813,113 @@ internal struct NavigationTitleModifier: ViewModifier, Record {
   }
 }
 
+#if !os(tvOS)
+internal enum NavigationBarTitleDisplayModeOptions: String, Enumerable {
+  case automatic
+  case inline
+  case large
+
+  var value: NavigationBarItem.TitleDisplayMode {
+    switch self {
+    case .automatic: return .automatic
+    case .inline: return .inline
+    case .large: return .large
+    }
+  }
+}
+
+internal struct NavigationBarTitleDisplayModeModifier: ViewModifier, Record {
+  @Field var mode: NavigationBarTitleDisplayModeOptions = .automatic
+
+  func body(content: Content) -> some View {
+    content.navigationBarTitleDisplayMode(mode.value)
+  }
+}
+
+internal struct NavigationBarBackButtonHiddenModifier: ViewModifier, Record {
+  @Field var hidden: Bool = true
+
+  func body(content: Content) -> some View {
+    content.navigationBarBackButtonHidden(hidden)
+  }
+}
+
+internal enum ToolbarPlacementOptions: String, Enumerable {
+  case navigationBar
+  case bottomBar
+  case tabBar
+
+  @ViewBuilder
+  func apply<Content: View>(to content: Content, visibility: Visibility) -> some View {
+    if #available(iOS 18.0, *) {
+      switch self {
+      case .navigationBar: content.toolbarVisibility(visibility, for: .navigationBar)
+      case .bottomBar: content.toolbarVisibility(visibility, for: .bottomBar)
+      case .tabBar: content.toolbarVisibility(visibility, for: .tabBar)
+      }
+    } else {
+      switch self {
+      case .navigationBar: content.toolbar(visibility, for: .navigationBar)
+      case .bottomBar: content.toolbar(visibility, for: .bottomBar)
+      case .tabBar: content.toolbar(visibility, for: .tabBar)
+      }
+    }
+  }
+}
+
+internal struct ToolbarVisibilityModifier: ViewModifier, Record {
+  @Field var visibility: VisibilityOptions = .automatic
+  @Field var bars: [ToolbarPlacementOptions] = [.navigationBar]
+
+  func body(content: Content) -> some View {
+    bars.reduce(AnyView(content)) { result, bar in
+      AnyView(bar.apply(to: result, visibility: visibility.toVisibility()))
+    }
+  }
+}
+
+internal struct NavigationSplitViewColumnWidthModifier: ViewModifier, Record {
+  @Field var width: Double?
+  @Field var min: Double?
+  @Field var ideal: Double?
+  @Field var max: Double?
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if let width {
+      content.navigationSplitViewColumnWidth(width)
+    } else if let ideal {
+      content.navigationSplitViewColumnWidth(min: min ?? ideal, ideal: ideal, max: max ?? ideal)
+    } else {
+      content
+    }
+  }
+}
+
+internal enum NavigationSplitViewStyleOptions: String, Enumerable {
+  case automatic
+  case balanced
+  case prominentDetail
+
+  @ViewBuilder
+  func apply<Content: View>(to content: Content) -> some View {
+    switch self {
+    case .automatic: content.navigationSplitViewStyle(.automatic)
+    case .balanced: content.navigationSplitViewStyle(.balanced)
+    case .prominentDetail: content.navigationSplitViewStyle(.prominentDetail)
+    }
+  }
+}
+
+internal struct NavigationSplitViewStyleModifier: ViewModifier, Record {
+  @Field var style: NavigationSplitViewStyleOptions = .automatic
+
+  func body(content: Content) -> some View {
+    style.apply(to: content)
+  }
+}
+#endif
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -1988,6 +2095,28 @@ extension ViewModifierRegistry {
     register("navigationTitle") { params, appContext, _ in
       return try NavigationTitleModifier(from: params, appContext: appContext)
     }
+
+#if !os(tvOS)
+    register("navigationBarTitleDisplayMode") { params, appContext, _ in
+      return try NavigationBarTitleDisplayModeModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationBarBackButtonHidden") { params, appContext, _ in
+      return try NavigationBarBackButtonHiddenModifier(from: params, appContext: appContext)
+    }
+
+    register("toolbarVisibility") { params, appContext, _ in
+      return try ToolbarVisibilityModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewColumnWidth") { params, appContext, _ in
+      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewStyle") { params, appContext, _ in
+      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
+    }
+#endif
 
     register("accessibilityLabel") { params, appContext, _ in
       return try AccessibilityLabelModifier(from: params, appContext: appContext)

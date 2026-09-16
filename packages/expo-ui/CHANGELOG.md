@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- [iOS] Added navigation bar and split view modifiers to the SwiftUI API.
+- [iOS] Added placement support through `Toolbar.Item`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

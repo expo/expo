@@ -18,6 +18,38 @@ export interface ToolbarContentProps {
   children: React.ReactNode;
 }
 
+/**
+ * The semantic location of an item in a toolbar.
+ */
+export type ToolbarItemPlacement =
+  | 'automatic'
+  | 'principal'
+  | 'topBarLeading'
+  | 'topBarTrailing'
+  | 'bottomBar'
+  | 'navigation'
+  | 'primaryAction'
+  | 'secondaryAction'
+  | 'cancellationAction'
+  | 'confirmationAction'
+  | 'destructiveAction'
+  | 'status'
+  | 'keyboard';
+
+/**
+ * Props that configure an item placed in a toolbar.
+ */
+export interface ToolbarItemProps {
+  /**
+   * The semantic placement of the item in the toolbar.
+   */
+  placement: ToolbarItemPlacement;
+  /**
+   * The item to place in the toolbar.
+   */
+  children: React.ReactNode;
+}
+
 const ToolbarNativeView: React.ComponentType<ToolbarProps> = requireNativeView(
   'ExpoUI',
   'ToolbarView'
@@ -28,6 +60,17 @@ const ToolbarNativeView: React.ComponentType<ToolbarProps> = requireNativeView(
  */
 function ToolbarContent(props: ToolbarContentProps) {
   return <Slot name="content">{props.children}</Slot>;
+}
+
+/**
+ * Places an item in a specific part of the toolbar.
+ */
+function ToolbarItem({ placement, children }: ToolbarItemProps) {
+  return (
+    <Slot name="item" extraProps={{ placement }}>
+      {children}
+    </Slot>
+  );
 }
 
 /**
@@ -59,6 +102,9 @@ function ToolbarComponent(props: ToolbarProps) {
   );
 }
 
-const Toolbar = Object.assign(ToolbarComponent, { Content: ToolbarContent });
+const Toolbar = Object.assign(ToolbarComponent, {
+  Content: ToolbarContent,
+  Item: ToolbarItem,
+});
 
 export { Toolbar };

@@ -1694,6 +1694,59 @@ export const resizable = (
  */
 export const navigationTitle = (title: string) => createModifier('navigationTitle', { title });
 
+/**
+ * Configures the title display mode for this view.
+ * @param mode - The display mode for the title.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationbartitledisplaymode(_:)).
+ */
+export const navigationBarTitleDisplayMode = (mode: 'automatic' | 'inline' | 'large') =>
+  createModifier('navigationBarTitleDisplayMode', { mode });
+
+/**
+ * Hides the navigation bar back button for this view.
+ * @param hidden - Whether to hide the back button.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationbarbackbuttonhidden(_:)).
+ */
+export const navigationBarBackButtonHidden = (hidden = true) =>
+  createModifier('navigationBarBackButtonHidden', { hidden });
+
+/**
+ * A bar managed by SwiftUI.
+ */
+export type ToolbarPlacement = 'navigationBar' | 'bottomBar' | 'tabBar';
+
+/**
+ * Specifies the visibility of one or more bars managed by SwiftUI.
+ * @param visibility - The preferred visibility of the bars.
+ * @param bars - The bars whose visibility should change.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/toolbarvisibility(_:for:)).
+ */
+export const toolbarVisibility = (
+  visibility: 'automatic' | 'visible' | 'hidden',
+  bars: ToolbarPlacement[] = ['navigationBar']
+) => createModifier('toolbarVisibility', { visibility, bars });
+
+/**
+ * A fixed width or flexible width constraints for a navigation split view column.
+ */
+export type NavigationSplitViewColumnWidth = number | { min?: number; ideal: number; max?: number };
+
+/**
+ * Sets a fixed or flexible width for a navigation split view column.
+ * @param width - The fixed width or flexible width constraints.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationsplitviewcolumnwidth(_:)).
+ */
+export const navigationSplitViewColumnWidth = (width: NavigationSplitViewColumnWidth) =>
+  createModifier('navigationSplitViewColumnWidth', typeof width === 'number' ? { width } : width);
+
+/**
+ * Sets the style for navigation split views within this view.
+ * @param style - The split view style to apply.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationsplitviewstyle(_:)).
+ */
+export const navigationSplitViewStyle = (style: 'automatic' | 'balanced' | 'prominentDetail') =>
+  createModifier('navigationSplitViewStyle', { style });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -1838,7 +1891,12 @@ export type BuiltInModifier =
   | ReturnType<typeof widgetURL>
   | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>
-  | ReturnType<typeof navigationTitle>;
+  | ReturnType<typeof navigationTitle>
+  | ReturnType<typeof navigationBarTitleDisplayMode>
+  | ReturnType<typeof navigationBarBackButtonHidden>
+  | ReturnType<typeof toolbarVisibility>
+  | ReturnType<typeof navigationSplitViewColumnWidth>
+  | ReturnType<typeof navigationSplitViewStyle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

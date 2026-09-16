@@ -1,0 +1,15 @@
+appId: dev.expo.routertester
+name: Split view
+---
+- stopApp: dev.expo.routertester
+- openLink: router-tester://split-view
+- runFlow: ../close-warning.yml
+- tapOn: "Passkeys"
+- assertVisible: "Github"
+- tapOn: "Github"
+- assertVisible: "ID: Github"
+- tapOn:
+    id: "split-view-back"
+    optional: true
+- assertNotVisible: "ID: Github"
+- assertVisible: "Github"

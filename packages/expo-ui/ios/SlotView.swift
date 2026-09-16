@@ -35,6 +35,13 @@ extension [any ExpoSwiftUI.AnyChild] {
       .filter { $0.props.name == name }
   }
 
+  func slots(_ name: String, extra key: String, equals value: String) -> [any ExpoSwiftUI.AnyChild] {
+    filter {
+      guard let slot = $0.childView as? SlotView, slot.props.name == name else { return false }
+      return slot.extra(key, as: String.self) == value
+    }
+  }
+
   func withoutSlot(_ name: String) -> [any ExpoSwiftUI.AnyChild] {
     filter {
       guard let slot = $0.childView as? SlotView else { return true }

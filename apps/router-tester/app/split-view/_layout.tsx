@@ -1,4 +1,5 @@
-import { Link, useGlobalSearchParams } from 'expo-router';
+import { Button, Toolbar } from '@expo/ui/swift-ui';
+import { Link, router, Slot, usePathname } from 'expo-router';
 import React from 'react';
 import { PlatformColor, Pressable, ScrollView, Text, View } from 'react-native';
 // Available starting from react-native-screens@4.17.0
@@ -11,42 +12,82 @@ const passkeys = ['Github', 'Google', 'Facebook', 'Twitter', 'Apple', 'Microsoft
 const security = ['Admin1234', 'Root'];
 
 const all = [...passkeys, ...security];
+const typeTitles: Record<string, string> = {
+  all: 'All',
+  passkeys: 'Passkeys',
+  codes: 'Codes',
+  security: 'Security',
+  deleted: 'Deleted',
+};
 
 export default function Layout() {
+  const { type, id } = useSplitViewPath();
+  // `preferredCompactColumn` is available on iOS 17 and newer.
+  const compactColumn = id ? 'detail' : type ? 'content' : 'sidebar';
+
   return (
     <RouterSplitView
-      sidebar={
-        <SafeAreaView
-          // edges={{ top: true, left: true }}
-          edges={['left', 'top']}
-          style={{
-            flex: 1,
-            flexWrap: 'wrap',
-            gap: 8,
-            flexDirection: 'row',
-            padding: 8,
-          }}>
-          <PasscodeCard title="All" param="all" />
-          <PasscodeCard title="Passkeys" param="passkeys" />
-          <PasscodeCard title="Codes" param="codes" />
-          <PasscodeCard title="Security" param="security" />
-          <PasscodeCard title="Deleted" param="deleted" />
-        </SafeAreaView>
-      }
-      content={<PasswordElementList />}
-      detail={
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Detail</Text>
-        </View>
-      }
+      compactColumn={compactColumn}
+      onCompactColumnChange={(column) => {
+        if (column === 'sidebar') {
+          router.navigate('/split-view');
+        } else if (column === 'content') {
+          router.navigate(`/split-view/${type ?? 'all'}`);
+        }
+      }}
+      sidebar={{
+        title: 'Passwords',
+        children: (
+          <SafeAreaView
+            // edges={{ top: true, left: true }}
+            edges={['left', 'top']}
+            style={{
+              flex: 1,
+              flexWrap: 'wrap',
+              gap: 8,
+              flexDirection: 'row',
+              padding: 8,
+            }}>
+            <PasscodeCard title="All" param="all" />
+            <PasscodeCard title="Passkeys" param="passkeys" />
+            <PasscodeCard title="Codes" param="codes" />
+            <PasscodeCard title="Security" param="security" />
+            <PasscodeCard title="Deleted" param="deleted" />
+          </SafeAreaView>
+        ),
+      }}
+      content={{
+        title: type ? (typeTitles[type] ?? type) : 'All',
+        titleDisplayMode: 'inline',
+        children: <PasswordElementList />,
+      }}
+      detail={{
+        title: id ?? 'Detail',
+        backButtonHidden: true,
+        toolbarItems: id ? (
+          <Toolbar.Item placement="topBarLeading">
+            <Button
+              systemImage="chevron.left"
+              label="Back"
+              testID="split-view-back"
+              onPress={() => router.navigate(`/split-view/${type ?? 'all'}`)}
+            />
+          </Toolbar.Item>
+        ) : undefined,
+        children: (
+          <View>
+            <Slot />
+          </View>
+        ),
+      }}
     />
   );
 }
 
 function PasswordElementList() {
-  const params = useGlobalSearchParams();
+  const { type } = useSplitViewPath();
   const data = (() => {
-    switch (params.type) {
+    switch (type) {
       case 'all':
       case undefined:
         return all;
@@ -68,8 +109,8 @@ function PasswordElementList() {
 }
 
 function PasscodeCard({ param, title }: { param: string; title: string }) {
-  const params = useGlobalSearchParams();
-  const isActive = params.type === param;
+  const { type } = useSplitViewPath();
+  const isActive = type === param || (param === 'all' && type === undefined);
   return (
     <Link
       href={`/split-view/${param}/`}
@@ -93,10 +134,10 @@ function PasscodeCard({ param, title }: { param: string; title: string }) {
 }
 
 function PasswordElement({ title }: { title: string }) {
-  const params = useGlobalSearchParams();
-  const isActive = params.id === title;
+  const { type, id } = useSplitViewPath();
+  const isActive = id === title;
   return (
-    <Link href={`/split-view/${params.type}/${title}/`} asChild>
+    <Link href={`/split-view/${type ?? 'all'}/${title}/`} asChild>
       <Pressable
         style={{
           backgroundColor: isActive ? PlatformColor('systemBlue') : undefined,
@@ -109,4 +150,10 @@ function PasswordElement({ title }: { title: string }) {
       </Pressable>
     </Link>
   );
+}
+
+function useSplitViewPath() {
+  // Router navigation can retain params from a reused dynamic route, while the pathname is current.
+  const [, , type, id] = usePathname().split('/');
+  return { type, id };
 }

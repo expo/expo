@@ -2,12 +2,10 @@ import { useLocalSearchParams } from 'expo-router';
 import { Text, View } from 'react-native';
 
 export default function Id() {
-  const { id, type } = useLocalSearchParams();
-
-  console.log('Rendering [type]/[id] with id:', id, type);
+  const { id } = useLocalSearchParams();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ padding: 24 }}>
       <Text>ID: {id}</Text>
     </View>
   );
