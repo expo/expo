@@ -47,6 +47,11 @@ const SCENE_APP_DELEGATE = LEGACY_APP_DELEGATE.replace(
   'class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {'
 ).replace(`\n${WRAPPED_STARTUP}`, '');
 
+const FIREBASE_LINES = `    // @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-1
+    FirebaseApp.configure()
+    // @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
+`;
+
 const SCENE_MANIFEST = {
   UIApplicationSupportsMultipleScenes: false,
   UISceneConfigurations: {
@@ -136,6 +141,57 @@ describe(withIosSceneSupport, () => {
     expect(results.appDelegate).toBe(SCENE_APP_DELEGATE);
   });
 
+  it('keeps lines another plugin inserted inside the startup block', () => {
+    const appDelegate = LEGACY_APP_DELEGATE.replace(
+      '    factory.startReactNative(',
+      `${FIREBASE_LINES}    factory.startReactNative(`
+    );
+    const results = mockIosMods({ appDelegate, infoPlist: BASE_INFO_PLIST });
+
+    withIosSceneSupport(makeConfig('57.0.23'), { ios: { enableSceneSupport: true } });
+
+    expect(results.appDelegate).toBe(
+      SCENE_APP_DELEGATE.replace(
+        '    reactNativeFactory = factory\n\n',
+        `    reactNativeFactory = factory\n\n#if os(iOS) || os(tvOS)\n${FIREBASE_LINES}#endif\n\n`
+      )
+    );
+  });
+
+  it('keeps inserted lines in an AppDelegate without the os() wrapper', () => {
+    const appDelegate = LEGACY_APP_DELEGATE_UNWRAPPED.replace(
+      '    factory.startReactNative(',
+      `${FIREBASE_LINES}    factory.startReactNative(`
+    );
+    const results = mockIosMods({ appDelegate, infoPlist: BASE_INFO_PLIST });
+
+    withIosSceneSupport(makeConfig('57.0.23'), { ios: { enableSceneSupport: true } });
+
+    expect(results.appDelegate).toBe(
+      SCENE_APP_DELEGATE.replace(
+        '    reactNativeFactory = factory\n\n',
+        `    reactNativeFactory = factory\n\n${FIREBASE_LINES}\n`
+      )
+    );
+  });
+
+  it('keeps a line another plugin inserted above the startup block', () => {
+    const appDelegate = LEGACY_APP_DELEGATE.replace(
+      '\n#if os(iOS) || os(tvOS)',
+      '\n    FirebaseApp.configure()\n#if os(iOS) || os(tvOS)'
+    );
+    const results = mockIosMods({ appDelegate, infoPlist: BASE_INFO_PLIST });
+
+    withIosSceneSupport(makeConfig('57.0.23'), { ios: { enableSceneSupport: true } });
+
+    expect(results.appDelegate).toBe(
+      SCENE_APP_DELEGATE.replace(
+        '    reactNativeFactory = factory\n\n',
+        '    reactNativeFactory = factory\n\n    FirebaseApp.configure()\n\n'
+      )
+    );
+  });
+
   it('leaves an already adopted project unchanged when enabled', () => {
     const results = mockIosMods({
       appDelegate: SCENE_APP_DELEGATE,
@@ -207,6 +263,20 @@ describe(withIosSceneSupport, () => {
       infoPlist: BASE_INFO_PLIST,
       language: 'objcpp',
     });
+    expect(() =>
+      withIosSceneSupport(makeConfig('57.0.23'), { ios: { enableSceneSupport: true } })
+    ).toThrow(/Swift AppDelegate/);
+  });
+
+  it('throws when the startup block is missing a statement', () => {
+    mockIosMods({
+      appDelegate: LEGACY_APP_DELEGATE.replace(
+        '    window = UIWindow(frame: UIScreen.main.bounds)\n',
+        ''
+      ),
+      infoPlist: BASE_INFO_PLIST,
+    });
+
     expect(() =>
       withIosSceneSupport(makeConfig('57.0.23'), { ios: { enableSceneSupport: true } })
     ).toThrow(/Swift AppDelegate/);
