@@ -71,8 +71,7 @@ type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 
 type ChunkSettings = {
-  /** Match the initial modules. */
-  test: RegExp;
+  absolutePath: string;
 };
 
 export type SerializeChunkOptions = {
@@ -100,7 +99,7 @@ export async function graphToSerialAssetsAsync(
   const entryChunks = gatherChunks(
     preModules,
     chunks,
-    { test: pathToRegex(entryFile) },
+    { absolutePath: entryFile },
     preModules,
     graph,
     options,
@@ -620,18 +619,6 @@ export function getSortedModules(
   );
 }
 
-// Convert file paths to regex matchers.
-function pathToRegex(path: string) {
-  // Escape regex special characters, except for '*'
-  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
-
-  // Replace '*' with '.*' to act as a wildcard in regex
-  regexSafePath = regexSafePath.replace(/\*/g, '.*');
-
-  // Create a RegExp object with the modified string
-  return new RegExp('^' + regexSafePath + '$');
-}
-
 function collectOutputReferences(modules: Iterable<Module>, key: string): string[] {
   return [
     ...new Set(
@@ -656,10 +643,9 @@ function getEntryModulesForChunkSettings(
   settings: ChunkSettings
 ): Set<Module<MixedOutput>> {
   const modules = new Set<Module<MixedOutput>>();
-  for (const entry of graph.dependencies) {
-    if (settings.test.test(entry[0])) {
-      modules.add(entry[1]);
-    }
+  const module = graph.dependencies.get(settings.absolutePath);
+  if (module) {
+    modules.add(module);
   }
   return modules;
 }
@@ -736,7 +722,7 @@ function gatherChunks(
         const asyncChunks = gatherChunks(
           runtimePremodules,
           chunks,
-          { test: pathToRegex(dependency.absolutePath) },
+          { absolutePath: dependency.absolutePath },
           isWorker ? runtimePremodules : [],
           graph,
           options,
