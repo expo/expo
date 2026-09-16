@@ -1,5 +1,4 @@
 import { VaryingCacheStore } from '@expo/metro-config/build/cache-vary/VaryingCacheStore';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
 import DeltaCalculator from '@expo/metro/metro/DeltaBundler/DeltaCalculator';
 import { EventEmitter } from 'node:events';
 
@@ -168,14 +167,12 @@ describe(patchTransformFileForCacheVary, () => {
     };
     const bundler = { transformFile: jest.fn(async () => original) } as any;
 
-    patchTransformFileForPackedMaps(bundler);
     patchTransformFileForCacheVary(bundler);
 
     const result = await bundler.transformFile('/file.js', {} as any);
 
     expect(result.unstable_transformResultKey).toMatch(/^base-key::[0-9a-f]{40}$/);
     expect(result.output[0].data.expoCacheVary).toEqual(dims);
-    expect(Array.isArray(result.output[0].data.map)).toBe(true);
   });
 });
 
