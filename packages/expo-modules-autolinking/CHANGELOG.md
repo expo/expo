@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Pick the same precompiled xcframework every time when a package has several versioned builds on disk, instead of whichever one the filesystem happened to list first.
+- [iOS] Pick the same precompiled xcframework every time when a package has several versioned builds on disk, instead of whichever one the filesystem happened to list first. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
