@@ -122,6 +122,22 @@ export async function test(t: JasmineInterface) {
         t.expect(image.height).toBe(100);
         t.expect(image.width).toBe(100);
       });
+
+      t.it('resolves a pending render after the context is released', async () => {
+        const context = ImageManipulator.manipulate(assetUri).resize({ width: 100, height: 100 });
+        const pending = context.renderAsync();
+
+        // `useImageManipulator` releases the context on unmount, which can land while a render
+        // started in an effect is still in flight. Releasing means JS is done with the object,
+        // not that the call already awaiting it should be cancelled.
+        context.release();
+
+        const image = await pending;
+
+        t.expect(image.width).toBe(100);
+        t.expect(image.height).toBe(100);
+        image.release();
+      });
     });
 
     t.describe('Image', () => {
