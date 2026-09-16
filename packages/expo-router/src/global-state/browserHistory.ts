@@ -14,6 +14,8 @@ import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { getRootStackRouteNames } from './utils';
 
 type Reduce<Result> = (result: Result, intent: ReducibleIntent) => Result;
+type PopAction = Extract<RouterBrowserHistoryAction, { type: 'pop' }>;
+type PopTarget = NonNullable<PopAction['target']>;
 
 /** Starts tracking the browser entry that is current when the app loads. */
 export function createBrowserHistory(
@@ -185,27 +187,33 @@ function projectPop(
   history: BrowserHistory,
   state: NavigationState,
   path: string,
-  action: Extract<RouterBrowserHistoryAction, { type: 'pop' }>
+  action: PopAction
 ): BrowserHistoryProjection {
-  let index = Math.max(0, history.index - action.count);
-  if (action.target) {
-    const { navigatorKey, routeKey } = action.target;
-    // A single parent pop can remove several entries created by a nested stack.
-    // Match only the visible branch; a hidden navigator is not a browser destination.
-    for (let candidate = history.index - 1; candidate >= 0; candidate--) {
-      let candidateState: NavigationState | undefined = history.entries[candidate]!.state;
-      while (candidateState && candidateState.key !== navigatorKey) {
-        candidateState = candidateState.routes[candidateState.index]?.state as
-          | NavigationState
-          | undefined;
-      }
-      if (candidateState?.routes[candidateState.index]?.key === routeKey) {
-        index = candidate;
-        break;
-      }
-    }
+  return refreshEntry(history, findPopIndex(history, action), state, path);
+}
+
+/** Finds the browser entry for the pop target, falling back to the router's pop count. */
+function findPopIndex(history: BrowserHistory, action: PopAction): number {
+  const fallbackIndex = Math.max(0, history.index - action.count);
+  const { target } = action;
+  if (!target) {
+    return fallbackIndex;
   }
-  return refreshEntry(history, index, state, path);
+
+  // A single parent pop can remove several entries created by a nested stack.
+  const targetIndex = history.entries.findLastIndex(
+    (entry, index) => index < history.index && isTargetFocused(entry.state, target)
+  );
+  return targetIndex === -1 ? fallbackIndex : targetIndex;
+}
+
+/** Checks whether the target is visible by following only the state's focused route branch. */
+function isTargetFocused(state: NavigationState, target: PopTarget): boolean {
+  let focusedState: NavigationState | undefined = state;
+  while (focusedState && focusedState.key !== target.navigatorKey) {
+    focusedState = focusedState.routes[focusedState.index]?.state as NavigationState | undefined;
+  }
+  return focusedState?.routes[focusedState.index]?.key === target.routeKey;
 }
 
 /** Updates a tracked entry and emits the browser commands needed to select and replace it. */
