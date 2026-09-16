@@ -81,12 +81,12 @@ test('creates one owned entry and claims the browser entry', () => {
   });
 });
 
-test('pushes an entry and drops forward entries when the focused history grows', () => {
+test('pushes an entry and drops forward entries when instructed to push', () => {
   const previous = stack(['a']);
   const next = stack(['a', 'c']);
   const current = history([previous, stack(['a', 'b'])], 0);
 
-  const result = projectBrowserHistory(current, previous, next, config);
+  const result = projectBrowserHistory(current, next, config, { type: 'push' });
 
   expect(result.history).toEqual({
     entries: [current.entries[0], { id: 'p:2', path: '/c', state: next }],
@@ -99,12 +99,12 @@ test('pushes an entry and drops forward entries when the focused history grows',
   ]);
 });
 
-test('goes back and refreshes the entry when the focused history shrinks', () => {
+test('goes back and refreshes the entry when instructed to pop', () => {
   const previous = stack(['a', 'b', 'c']);
   const next = stack(['a']);
   const current = history([stack(['a']), stack(['a', 'b']), previous]);
 
-  const result = projectBrowserHistory(current, previous, next, config);
+  const result = projectBrowserHistory(current, next, config, { type: 'pop', count: 2 });
 
   expect(result.history?.index).toBe(0);
   expect(result.history?.entries[0]).toEqual({ id: 'p:0', path: '/a', state: next });
@@ -120,7 +120,7 @@ test('clamps a traversal at the first owned entry', () => {
   const next = stack(['a']);
   const current = history([previous]);
 
-  const result = projectBrowserHistory(current, previous, next, config);
+  const result = projectBrowserHistory(current, next, config, { type: 'pop', count: 2 });
 
   expect(result.history?.index).toBe(0);
   expect(result.events).toEqual([
@@ -128,7 +128,7 @@ test('clamps a traversal at the first owned entry', () => {
   ]);
 });
 
-test('replaces the current entry when the history length is unchanged', () => {
+test('replaces the current entry without a history instruction', () => {
   const previous = stack(['a', 'b']);
   const next: NavigationState = {
     ...previous,
@@ -136,7 +136,7 @@ test('replaces the current entry when the history length is unchanged', () => {
   };
   const current = history([stack(['a']), previous]);
 
-  const result = projectBrowserHistory(current, previous, next, config);
+  const result = projectBrowserHistory(current, next, config);
 
   expect(result.history?.index).toBe(1);
   expect(result.history?.entries[1]).toEqual({ id: 'p:1', path: '/b', state: next });
@@ -150,7 +150,7 @@ test('does not push for a preloaded route', () => {
   const next = stack(['a', 'b'], 0);
   const current = history([previous]);
 
-  const result = projectBrowserHistory(current, previous, next, config);
+  const result = projectBrowserHistory(current, next, config);
 
   expect(result.events).toEqual([
     { type: 'browser-history', op: 'replace', entryId: 'p:0', path: '/a' },
@@ -162,7 +162,7 @@ test('replaces when the root navigator changed identity', () => {
   const next = stack(['a', 'b'], 1, 'other-root');
   const current = history([previous]);
 
-  const result = projectBrowserHistory(current, previous, next, config);
+  const result = projectBrowserHistory(current, next, config);
 
   expect(result.events).toEqual([
     { type: 'browser-history', op: 'replace', entryId: 'p:0', path: '/b' },
@@ -437,4 +437,25 @@ describe('restore', () => {
       { type: 'browser-history', op: 'replace', entryId: 'old:3', path: '/a' },
     ]);
   });
+});
+
+test('pops to the owned target instead of counting nested entries as parent routes', () => {
+  const first = stack(['a']);
+  const child = stack(['a'], 0, 'child');
+  const nested = {
+    ...stack(['a', 'b']),
+    routes: [first.routes[0]!, { key: 'b', name: 'b', state: child }],
+  };
+  const details = {
+    ...nested,
+    routes: [first.routes[0]!, { ...nested.routes[1]!, state: stack(['a', 'b'], 1, 'child') }],
+  };
+  const current = history([first, nested, details]);
+  const result = projectBrowserHistory(current, first, config, {
+    type: 'pop',
+    count: 1,
+    target: { navigatorKey: 'root', routeKey: 'a' },
+  });
+  expect(result.history?.index).toBe(0);
+  expect(result.events[0]).toEqual({ type: 'browser-history', op: 'go', delta: -2 });
 });

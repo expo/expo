@@ -8,7 +8,12 @@ import {
   type TabRouterOptions,
 } from './TabRouter';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
-import type { CommonNavigationAction, ParamListBase, Router } from './types';
+import type {
+  CommonNavigationAction,
+  ParamListBase,
+  Router,
+  RouterBrowserHistoryAction,
+} from './types';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -141,7 +146,12 @@ function drawerRouterExtension({
     return removeDrawerFromHistory(state);
   };
 
-  return {
+  const drawerRouter: Router<
+    DrawerNavigationState<ParamListBase>,
+    DrawerActionType | CommonNavigationAction
+  > = {
+    ...router,
+
     getStateForRouteFocus(state, key) {
       const result = router.getStateForRouteFocus(ensureDrawerStateHistory(state), key);
 
@@ -210,6 +220,76 @@ function drawerRouterExtension({
     },
 
     actionCreators: DrawerActions,
+  };
+
+  return {
+    ...drawerRouter,
+    getBrowserHistoryForRouteFocus(previous, next, childAction) {
+      if (
+        isDrawerInHistory(previous) &&
+        !isDrawerInHistory(next) &&
+        (childAction?.type === 'push' ||
+          previous.routes[previous.index]?.key !== next.routes[next.index]?.key)
+      ) {
+        // Navigation consumes the open drawer entry, leaving the previous closed page
+        // available to both browser back and the child navigator's back action.
+        return { type: 'replace' };
+      }
+      const delta =
+        (next.history?.length ?? 0) -
+        (ensureDrawerStateHistory(previous).history?.length ?? 0);
+      return delta > 0
+        ? { type: 'push' }
+        : delta < 0
+          ? {
+              type: 'pop',
+              count: -delta,
+              target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
+            }
+          : undefined;
+    },
+    getStateForAction(inputState, action, options) {
+      const state = ensureDrawerStateHistory(inputState);
+      const result = drawerRouter.getStateForAction(state, action, options);
+      if (result === null) {
+        return null;
+      }
+      let browserHistory: RouterBrowserHistoryAction | undefined;
+      switch (action.type) {
+        case 'OPEN_DRAWER':
+        case 'CLOSE_DRAWER':
+        case 'TOGGLE_DRAWER':
+        case 'PUSH':
+        case 'NAVIGATE':
+        case 'JUMP_TO':
+        case 'GO_BACK': {
+          // Closing the drawer while switching routes belongs to the same navigation.
+          const delta = (result.state.history?.length ?? 0) - (state.history?.length ?? 0);
+          browserHistory =
+            delta > 0
+              ? { type: 'push' }
+              : delta < 0
+                ? {
+                    type: 'pop',
+                    count: -delta,
+                    target: {
+                      navigatorKey: result.state.key,
+                      routeKey: result.state.routes[result.state.index]!.key,
+                    },
+                  }
+                : undefined;
+          if (
+            (action.type === 'PUSH' || action.type === 'NAVIGATE' || action.type === 'JUMP_TO') &&
+            (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+            state.routes[state.index]?.key !== result.state.routes[result.state.index]?.key
+          ) {
+            browserHistory = isDrawerInHistory(state) ? undefined : { type: 'push' };
+          }
+          break;
+        }
+      }
+      return { ...result, browserHistory };
+    },
   };
 }
 

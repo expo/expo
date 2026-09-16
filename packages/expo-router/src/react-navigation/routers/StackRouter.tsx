@@ -10,6 +10,8 @@ import type {
   ParamListBase,
   Route,
   Router,
+  RouterBrowserHistoryAction,
+  NavigationAction,
 } from './types';
 
 export type StackActionType =
@@ -107,6 +109,49 @@ function reconcileStackRoutes<ParamList extends ParamListBase>(
     index: activeRoutes.length - 1,
     routes: activeRoutes.concat(preloadedRoutes.filter((route) => !activeKeys.has(route.key))),
   };
+}
+
+/** Stack history counts active routes only; preloads and structural repairs never navigate. */
+export function getStackBrowserHistoryAction(
+  previous: NavigationState,
+  next: NavigationState,
+  action: NavigationAction
+): RouterBrowserHistoryAction | undefined {
+  switch (action.type) {
+    case 'PUSH':
+    case 'NAVIGATE': {
+      // Moving a singular route to the top is a new visit even when filtering keeps
+      // the stack the same size. NAVIGATE(pop) is an explicit traversal instead.
+      const isPop =
+        action.type === 'NAVIGATE' &&
+        action.payload &&
+        'pop' in action.payload &&
+        action.payload.pop;
+      if (!isPop) {
+        return next.routes[next.index]?.key !== previous.routes[previous.index]?.key
+          ? { type: 'push' }
+          : undefined;
+      }
+      break;
+    }
+    case 'POP':
+    case 'POP_TO':
+    case 'POP_TO_TOP':
+    case 'GO_BACK':
+      break;
+    default:
+      return undefined;
+  }
+  const delta = next.index - previous.index;
+  return delta > 0
+    ? { type: 'push' }
+    : delta < 0
+      ? {
+          type: 'pop',
+          count: -delta,
+          target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
+        }
+      : undefined;
 }
 
 export type StackActionHelpers<ParamList extends ParamListBase> = {
@@ -219,6 +264,10 @@ function stackRouterExtension({
     'shouldActionChangeFocus'
   > = {
     normalizeState: markPreloadedRoutes,
+
+    getBrowserHistoryForRouteFocus(previous, next) {
+      return getStackBrowserHistoryAction(previous, next, { type: 'POP' });
+    },
 
     getStateForDeclaredRoutes(state, routeNames) {
       const filteredState = baseRouter.getStateForDeclaredRoutes(state, routeNames);
@@ -672,7 +721,15 @@ function stackRouterExtension({
     actionCreators: StackActions,
   };
 
-  return router;
+  return {
+    ...router,
+    getStateForAction(state, action, options) {
+      const result = router.getStateForAction(state, action, options);
+      if (result === null) return null;
+      const browserHistory = getStackBrowserHistoryAction(state, result.state, action);
+      return { ...result, ...(browserHistory && { browserHistory }) };
+    },
+  } satisfies typeof router;
 }
 
 /**

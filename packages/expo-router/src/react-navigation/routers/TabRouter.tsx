@@ -11,6 +11,7 @@ import type {
   ParamListBase,
   Route,
   Router,
+  RouterBrowserHistoryAction,
 } from './types';
 
 export type TabActionType =
@@ -310,12 +311,39 @@ function tabRouterExtension({
   TabActionType | CommonNavigationAction,
   TabRouterOptions
 >) {
+  const getBrowserHistory = (
+    previous: TabNavigationState<ParamListBase>,
+    next: TabNavigationState<ParamListBase>,
+    forward: boolean
+  ): RouterBrowserHistoryAction | undefined => {
+    if (
+      forward &&
+      (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+      previous.routes[previous.index]?.key !== next.routes[next.index]?.key
+    ) {
+      return { type: 'push' };
+    }
+    const state = ensureStateHistory(previous, backBehavior, initialRouteName);
+    const delta = (next.history?.length ?? 0) - state.history.length;
+    return delta > 0
+      ? { type: 'push' }
+      : delta < 0
+        ? {
+            type: 'pop',
+            count: -delta,
+            target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
+          }
+        : undefined;
+  };
+
   // TODO: Simplify the action handling in this router.
   const router: Omit<
     Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>,
     'shouldActionChangeFocus' | 'getStateForDeclaredRoutes'
   > = {
     normalizeState: clearFocusedPreloadedRoute,
+
+    getBrowserHistoryForRouteFocus: (previous, next) => getBrowserHistory(previous, next, true),
 
     getStateForRouteFocus(inputState, key) {
       const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
@@ -724,7 +752,27 @@ function tabRouterExtension({
     actionCreators: TabActions,
   };
 
-  return router;
+  return {
+    ...router,
+    getStateForAction(state, action, options) {
+      const result = router.getStateForAction(state, action, options);
+      if (result === null) {
+        return null;
+      }
+
+      let browserHistory: RouterBrowserHistoryAction | undefined;
+      switch (action.type) {
+        case 'PUSH':
+        case 'NAVIGATE':
+        case 'JUMP_TO':
+        case 'GO_BACK': {
+          browserHistory = getBrowserHistory(state, result.state, action.type !== 'GO_BACK');
+          break;
+        }
+      }
+      return { ...result, state: result.state, ...(browserHistory && { browserHistory }) };
+    },
+  } satisfies typeof router;
 }
 
 /**

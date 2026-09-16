@@ -7,7 +7,12 @@ import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { warnIfScreenParam } from '../navigationParams';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
-import type { InitialState, NavigationAction, NavigationState } from '../react-navigation/routers';
+import type {
+  InitialState,
+  NavigationAction,
+  NavigationState,
+  RouterBrowserHistoryAction,
+} from '../react-navigation/routers';
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
 import {
@@ -38,7 +43,10 @@ type ReducerConfig = {
 };
 
 type TreeOperation =
-  | RoutingIntent
+  | Exclude<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
+  | (Extract<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
+      committed?: NavigationTreeResult;
+    })
   | {
       type: 'NAVIGATOR_UNMOUNTED';
       stateKey: string;
@@ -99,6 +107,7 @@ type NavigationTreeResult = {
   eventSeq: number;
   // Web only; the browser entries this app owns.
   history: BrowserHistory | undefined;
+  browserHistoryAction?: RouterBrowserHistoryAction;
 };
 
 const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
@@ -125,6 +134,12 @@ function navigationTreeReducer(
   config: ReducerConfig
 ): NavigationTreeResult {
   if (operation.type === 'BROWSER_HISTORY_CHANGED') {
+    if (operation.committed) {
+      // The browser moved from the committed UI, not a destination still suspended
+      // in a transition. Discard its speculative entries and report commands, while
+      // keeping event IDs monotonic so already-consumed events cannot be replayed.
+      result = { ...operation.committed, eventSeq: result.eventSeq };
+    }
     if (!result.history) {
       return result;
     }
@@ -138,7 +153,7 @@ function navigationTreeReducer(
     return appendReportEvents({ ...restored.result, history: restored.history }, restored.events);
   }
 
-  const next = reduceTree(result, operation, config);
+  const next = reduceTree({ ...result, browserHistoryAction: undefined }, operation, config);
   if (next.state === result.state || !next.history) {
     return next;
   }
@@ -146,7 +161,7 @@ function navigationTreeReducer(
   const projected =
     operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
       ? refreshBrowserHistory(next.history, next.state, config)
-      : projectBrowserHistory(next.history, result.state, next.state, config);
+      : projectBrowserHistory(next.history, next.state, config, next.browserHistoryAction);
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
 }
 
@@ -273,7 +288,10 @@ function reduceTree(
                 state: committedState,
               },
             ];
-      return appendReportEvents({ ...result, state: committedState }, eventsWithoutIds);
+      return appendReportEvents(
+        { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
+        eventsWithoutIds
+      );
     }
     case 'NAVIGATOR_UNMOUNTED': {
       // A still-registered key re-registered before this operation reduced, so it did not unmount.
@@ -417,6 +435,14 @@ export function useNavigationTreeReducer({
     reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
   });
 
+  const processIntent = useLatestCallback((intent: RoutingIntent) => {
+    // useLatestCallback updates at commit, so a browser traversal can supersede a
+    // suspended reduction without applying commands from a screen never shown.
+    reactDispatch(
+      intent.type === 'BROWSER_HISTORY_CHANGED' ? { ...intent, committed: result } : intent
+    );
+  });
+
   React.useInsertionEffect(() => {
     warnIfStaleState(result.state);
   }, [result.state]);
@@ -427,7 +453,7 @@ export function useNavigationTreeReducer({
     consumeReportEvents,
     resetNavigator,
     handleAction,
-    processIntent: reactDispatch,
+    processIntent,
   };
 }
 

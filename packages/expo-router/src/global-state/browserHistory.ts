@@ -1,6 +1,5 @@
-import type { NavigationState } from '../react-navigation/routers';
+import type { NavigationState, RouterBrowserHistoryAction } from '../react-navigation/routers';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
-import { getHistoryLength } from '../utils/stack';
 import type {
   BrowserHistory,
   BrowserHistoryConfig,
@@ -34,25 +33,37 @@ export function createBrowserHistory(
   };
 }
 
-/**
- * Applies a navigation state change to the owned browser entries. The focused navigator's
- * history growing is a push, shrinking is a traversal back, anything else refreshes the entry.
- */
+/** Applies the handling router's instruction to the owned browser entries. */
 export function projectBrowserHistory(
   history: BrowserHistory,
-  previousState: NavigationState,
   nextState: NavigationState,
-  config: BrowserHistoryConfig
+  config: BrowserHistoryConfig,
+  action?: RouterBrowserHistoryAction
 ): BrowserHistoryProjection {
   const path = getPathForState(nextState, config.linking);
-  const [previousFocused, focused] = findMatchingState(previousState, nextState);
-  const delta =
-    previousFocused && focused ? getHistoryLength(focused) - getHistoryLength(previousFocused) : 0;
-
-  if (delta > 0) {
+  if (action?.type === 'push') {
     return appendEntry(history, nextState, path, 'push');
   }
-  return refreshEntry(history, Math.max(0, history.index + delta), nextState, path);
+  let index = history.index;
+  if (action?.type === 'pop') {
+    index = Math.max(0, history.index - action.count);
+    if (action.target) {
+      const { navigatorKey, routeKey } = action.target;
+      // A single parent pop can remove several entries created by a nested stack.
+      // Match only the visible branch; a hidden navigator is not a browser destination.
+      for (let candidate = history.index - 1; candidate >= 0; candidate--) {
+        let state: NavigationState | undefined = history.entries[candidate]!.state;
+        while (state && state.key !== navigatorKey) {
+          state = state.routes[state.index]?.state as NavigationState | undefined;
+        }
+        if (state?.routes[state.index]?.key === routeKey) {
+          index = candidate;
+          break;
+        }
+      }
+    }
+  }
+  return refreshEntry(history, index, nextState, path);
 }
 
 /** Refreshes the current entry after a structural change that is not a navigation. */
@@ -217,33 +228,4 @@ function reset(state: NavigationState): ReducibleIntent {
 function stripHash(path: string): string {
   const hashIndex = path.indexOf('#');
   return hashIndex === -1 ? path : path.slice(0, hashIndex);
-}
-
-/** Find the matching navigation state that changed between two navigation states. */
-function findMatchingState<T extends NavigationState>(
-  a: T | undefined,
-  b: T | undefined
-): [T | undefined, T | undefined] {
-  if (a === undefined || b === undefined || a.key !== b.key) {
-    return [undefined, undefined];
-  }
-
-  const aHistoryLength = getHistoryLength(a);
-  const bHistoryLength = getHistoryLength(b);
-  const aRoute = a.routes[a.index]!;
-  const bRoute = b.routes[b.index]!;
-  const aChildState = aRoute.state as T | undefined;
-  const bChildState = bRoute.state as T | undefined;
-
-  if (
-    aHistoryLength !== bHistoryLength ||
-    aRoute.key !== bRoute.key ||
-    aChildState === undefined ||
-    bChildState === undefined ||
-    aChildState.key !== bChildState.key
-  ) {
-    return [a, b];
-  }
-
-  return findMatchingState(aChildState, bChildState);
 }

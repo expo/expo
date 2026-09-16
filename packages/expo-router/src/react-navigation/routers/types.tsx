@@ -190,6 +190,17 @@ export type Router<
   getStateForRouteFocus(state: State, key: string): State;
 
   /**
+   * Browser history instruction when focusing a child also changes this navigator.
+   * Ancestors may override the child's instruction, e.g. when dismissing a parent modal.
+   * Omit to preserve the child's instruction.
+   */
+  getBrowserHistoryForRouteFocus?(
+    previous: State,
+    next: State,
+    childAction?: RouterBrowserHistoryAction
+  ): RouterBrowserHistoryAction | undefined;
+
+  /**
    * Take the current state and action, and return a new state and the affected route key.
    * If the action cannot be handled, return `null`. Custom routers must explicitly handle
    * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
@@ -226,6 +237,18 @@ export type Router<
   actionCreators?: ActionCreators<Action>;
 };
 
+/** A router's instruction for synchronizing an accepted action with browser history. */
+export type RouterBrowserHistoryAction =
+  | { type: 'push' }
+  | { type: 'replace' }
+  | {
+      type: 'pop';
+      /** Fallback count for destinations without an owned browser entry (e.g. an initial anchor). */
+      count: number;
+      /** Find the destination among owned entries, including entries made by nested navigators. */
+      target?: { navigatorKey: string; routeKey: string };
+    };
+
 /**
  * The result of reducing a navigation action.
  */
@@ -238,4 +261,11 @@ export type RouterActionResult<State extends NavigationState> = {
    * The key of the route affected by the action.
    */
   affectedRouteKey: string | undefined;
+  /**
+   * Push one browser entry or traverse back by a positive number of entries. Omit to
+   * refresh the current entry. The handling router owns this decision; parent focus
+   * changes may supply their own instruction. Ignored for prevented actions and browser restores.
+   * This is action metadata, never part of the persisted navigation state.
+   */
+  browserHistory?: RouterBrowserHistoryAction;
 };

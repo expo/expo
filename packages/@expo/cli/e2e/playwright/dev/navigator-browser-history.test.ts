@@ -123,6 +123,54 @@ test.describe(inputDir, () => {
     expect(pageErrors.all).toEqual([]);
   });
 
+  test('keeps router.back aligned with browser back after batched nested pushes', async ({
+    page,
+  }) => {
+    const pageErrors = pageCollectErrors(page);
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-explore"]').click();
+    await expect(page).toHaveURL(/\/explore$/);
+    const initialLength = await page.evaluate(() => history.length);
+    await page.locator('[data-testid="push-details-and-final"]').click();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await expect.poll(() => page.evaluate(() => history.length)).toBe(initialLength + 2);
+
+    await page.locator('[data-testid="final-back"]').click();
+    await expect(page).toHaveURL(/\/explore\/details$/);
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.goForward();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await page.goBack();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.locator('[data-testid="details-back"]').click();
+    await expect(page).toHaveURL(/\/explore$/);
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+    await page.goForward();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.goBack();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('creates two visits when batched pushes open a previously unmounted tab stack', async ({
+    page,
+  }) => {
+    const pageErrors = pageCollectErrors(page);
+    await page.goto(`${expoStart.url}`);
+    await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
+    const initialLength = await page.evaluate(() => history.length);
+    await page.locator('[data-testid="push-unmounted-details-and-final"]').click();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await expect.poll(() => page.evaluate(() => history.length)).toBe(initialLength + 2);
+    await page.goBack();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.goForward();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await page.locator('[data-testid="final-back"]').click();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    expect(pageErrors.all).toEqual([]);
+  });
+
   test('deep links into an anchored stack and goes back to the anchor', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
 

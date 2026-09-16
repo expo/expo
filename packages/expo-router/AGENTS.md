@@ -262,8 +262,8 @@ const screenProps = MockedComponent.mock.calls[1][0];
 ### State Management
 
 - **Router state**: Use `RouterConfigContext`, `NavigationContainerRefContext`, and `RootNavigationStateContext` for in-tree reads, and `navigationRef` for the imperative `router.*` API
-- **Routing Queue** (`global-state/routingQueueContext.tsx`, `RoutingQueueDrainer.tsx`): Batches navigation intents and reduces them inside a transition
-- **Browser history (web)**: The navigation reducer (`useNavigationTreeReducer`) owns the browser entries (`browserHistory.ts`: `entries` + `index`) and emits `browser-history` report events (`push`, `replace`, `go`). `useNavigationTreeReportEvents` hands them to the adapter (`browserHistoryAdapter.ts`), the only code that writes `window.history`. `popstate` enters the reducer as a `BROWSER_HISTORY_CHANGED` intent (`BrowserHistorySync.tsx`). Native uses `.native.ts` no-ops.
+- **Routing Queue** (`global-state/routingQueueContext.tsx`, `RoutingQueueDrainer.tsx`): Queues navigation intents. Web commits one destination per transition so newly mounted routers register before the next intent; browser traversals and cancellation actions can supersede a suspended destination. Native retains batched transitions.
+- **Browser history (web)**: The navigation reducer (`useNavigationTreeReducer`) owns the browser entries (`browserHistory.ts`: `entries` + `index`) and applies the handling router's optional `RouterActionResult.browserHistory` instruction (`push`, `replace`, or `pop` with a target and fallback count; omission refreshes the current entry). `getBrowserHistoryForRouteFocus` lets ancestors contribute when a child action changes their focus. Routers own navigation semantics; the reducer does not infer history changes from focused state shapes. Accepted actions emit `browser-history` report events (`push`, `replace`, `go`). `useNavigationTreeReportEvents` hands them to the adapter (`browserHistoryAdapter.ts`), the only code that writes `window.history`. `popstate` enters the reducer as a `BROWSER_HISTORY_CHANGED` intent (`BrowserHistorySync.tsx`). Native uses `.native.ts` no-ops.
 
 ### Platform-Specific Code
 

@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Derive the browser history on web from the navigation reducer instead of a dispatch-time buffer, so the address bar stays in sync across transitions, blocked back navigation and hash links. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
+- Derive browser history on web from router action results in the navigation reducer, so batched pushes create separate entries and the address bar stays in sync across transitions, blocked back navigation and hash links. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
