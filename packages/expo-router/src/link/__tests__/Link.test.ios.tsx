@@ -619,7 +619,7 @@ test('can dynamically route using singular function', () => {
 });
 
 describe('prefetch', () => {
-  it('can preload the href', () => {
+  it('can prefetch the href', () => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -649,6 +649,7 @@ describe('prefetch', () => {
                 key: expect.any(String),
                 name: 'test',
                 params: {},
+                isPreloaded: true,
               },
             ],
             stale: false,
@@ -697,6 +698,7 @@ describe('prefetch', () => {
         key: expect.stringMatching(/^test:/),
         name: 'test',
         params: {},
+        isPreloaded: true,
       },
     ]);
   });

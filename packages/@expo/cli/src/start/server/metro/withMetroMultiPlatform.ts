@@ -26,10 +26,7 @@ import { env } from '../../../utils/env';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
 import type { ExpoMetroConfig } from './ExpoMetroConfig';
-import type {
-  AutolinkingModuleResolverInput,
-  AutolinkingPlatform,
-} from './createExpoAutolinkingResolver';
+import type { AutolinkingModuleResolverInput } from './createExpoAutolinkingResolver';
 import {
   createAutolinkingModuleResolverInput,
   createAutolinkingModuleResolver,
@@ -38,7 +35,11 @@ import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createTypescriptResolver } from './createTypescriptResolver';
 import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  isFailedToResolveNameError,
+  isFailedToResolvePathError,
+  isFailedToResolveUnsupportedError,
+} from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
@@ -278,11 +279,6 @@ export function withExtendedResolver(
     },
   };
 
-  const isExpoRouterInstalled = hasExpoRouterModule(
-    config.projectRoot,
-    autolinkingModuleResolverInput
-  );
-
   let _universalAliases: [RegExp, string][] | null;
 
   function getUniversalAliases() {
@@ -342,7 +338,9 @@ export function withExtendedResolver(
         // If the error is directly related to a resolver not being able to resolve a module, then
         // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
         const isResolutionError =
-          isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+          isFailedToResolveNameError(error) ||
+          isFailedToResolvePathError(error) ||
+          isFailedToResolveUnsupportedError(error);
         if (!isResolutionError) {
           throw error;
         }
@@ -456,9 +454,6 @@ export function withExtendedResolver(
 
   const skipMetroMainFieldOverride = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
-  const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
-  const disableNativeTabsMaterialSymbols = env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
-
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     function requestDevMockProdReact(
@@ -739,50 +734,6 @@ export function withExtendedResolver(
         });
       const doReplaceStrict = (from: string, to: string | undefined) =>
         doReplace(from, to, { throws: true });
-
-      if (disableNativeTabsMaterialSymbols && platform === 'android') {
-        const materialIconConverterModule = doReplace(
-          'expo-router/build/native-tabs/utils/materialIconConverter.android.js',
-          'expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js'
-        );
-        if (materialIconConverterModule) {
-          return materialIconConverterModule;
-        }
-      }
-
-      if (!disableReactNavigationCheck) {
-        // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
-        if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
-          const filePath = context.originModulePath;
-          if (!filePath.includes('node_modules')) {
-            if (
-              moduleName === '@react-navigation/native-stack' ||
-              moduleName === '@react-navigation/drawer'
-            ) {
-              throw new Error(
-                [
-                  'As of SDK 56, expo-router is no longer compatible with react-navigation.',
-                  '',
-                  `Instead of ${moduleName}, use Stack or Drawer from expo-router instead:`,
-                  '',
-                  "  import { Stack } from 'expo-router';",
-                  "  import { Drawer } from 'expo-router/drawer';",
-                  '',
-                  'For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/.',
-                  'You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.',
-                ].join('\n')
-              );
-            }
-            throw new Error(
-              'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
-            );
-          }
-          if (moduleName === '@react-navigation/core') {
-            // We already checked if expo-router resolves
-            return doResolve('expo-router/react-navigation');
-          }
-        }
-      }
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
@@ -1081,19 +1032,4 @@ export async function withMetroMultiPlatformAsync(
     isReactServerComponentsEnabled,
     getMetroBundler,
   });
-}
-
-function hasExpoRouterModule(
-  projectRoot: string,
-  autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined
-) {
-  if (autolinkingModuleResolverInput) {
-    // If we have autolinking enabled, we can skip resolution
-    const platform = Object.keys(autolinkingModuleResolverInput)[0] as AutolinkingPlatform;
-    return !!autolinkingModuleResolverInput[platform]?.resolvedModulePaths['expo-router'];
-  } else {
-    return !!resolveFrom(projectRoot, 'expo-router/package.json', {
-      skipNodePath: true,
-    });
-  }
 }

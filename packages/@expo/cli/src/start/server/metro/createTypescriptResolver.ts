@@ -13,7 +13,11 @@ import type Bundler from '@expo/metro/metro/Bundler';
 import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
 import path from 'path';
 
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  isFailedToResolveNameError,
+  isFailedToResolvePathError,
+  isFailedToResolveUnsupportedError,
+} from './metroErrors';
 import { event } from './resolveEvents';
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
@@ -236,7 +240,9 @@ function getOptionalResolve(
       // If the error is directly related to a resolver not being able to resolve a module, then
       // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
       const isResolutionError =
-        isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+        isFailedToResolveNameError(error) ||
+        isFailedToResolvePathError(error) ||
+        isFailedToResolveUnsupportedError(error);
       if (!isResolutionError) {
         throw error;
       }

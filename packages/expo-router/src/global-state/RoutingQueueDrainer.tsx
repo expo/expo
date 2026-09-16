@@ -4,19 +4,37 @@ import * as React from 'react';
 
 import type { RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
+import type { NavigationTransitionMode } from './types';
 
 type Props = {
-  ready: boolean;
   processIntent: (intent: RoutingIntent) => void;
 };
 
-export function RoutingQueueDrainer({ ready, processIntent }: Props) {
+export function shouldUseTransition(
+  intents: RoutingIntent[],
+  mode: NavigationTransitionMode
+): boolean {
+  if (mode === 'never') return false;
+  if (intents.some((intent) => intent.inTransition === false)) return false;
+
+  if (mode === 'always') return true;
+
+  mode satisfies 'preload-only';
+
+  return intents.every((intent) => intent.inTransition === true || isPreloadIntent(intent));
+}
+
+function isPreloadIntent(intent: RoutingIntent): boolean {
+  return intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.event === 'PRELOAD';
+}
+
+export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
-  const { dequeue, startTransition } = React.use(RoutingQueueApiContext)!;
+  const { dequeue, startTransition, transitionMode } = React.use(RoutingQueueApiContext)!;
   const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
-    if (!ready || intents.length === 0 || lastProcessed.current === intents) {
+    if (intents.length === 0 || lastProcessed.current === intents) {
       return;
     }
     // Strict Mode re-runs the mount effect with the same array before `dequeue` updates state.
@@ -26,7 +44,7 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
     // "Bundling..." toast for async routes). Design a fallback UX for pending navigation.
     // Dequeue urgently so a later enqueue is not rebased on a stale queue.
     dequeue(intents);
-    startTransition(() => {
+    const process = () => {
       for (const intent of intents) {
         // Only catches errors thrown while dispatching. The navigation reducer runs
         // during the next render, so errors from it surface there, not here.
@@ -46,8 +64,14 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
           );
         }
       }
-    });
-  }, [dequeue, intents, processIntent, ready, startTransition]);
+    };
+
+    if (shouldUseTransition(intents, transitionMode)) {
+      startTransition(process);
+    } else {
+      process();
+    }
+  }, [dequeue, intents, processIntent, startTransition, transitionMode]);
 
   return null;
 }

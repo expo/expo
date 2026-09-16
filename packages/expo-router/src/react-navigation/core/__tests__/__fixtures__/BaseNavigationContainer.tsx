@@ -2,7 +2,6 @@ import * as React from 'react';
 import { nanoid } from 'nanoid/non-secure';
 
 import { RemovalPreventionProvider } from '../../../../global-state/removalPrevention';
-import { RouterRegistryProvider } from '../../../../global-state/routerRegistry';
 import { RoutingQueueProvider } from '../../../../global-state/routingQueueContext';
 import useLatestCallback from '../../../../utils/useLatestCallback';
 import type { NavigationState, ParamListBase, PartialState } from '../../../routers';
@@ -157,15 +156,13 @@ export function BaseNavigationContainer(props: Props) {
 
   return (
     <RoutingQueueProvider>
-      <RouterRegistryProvider>
-        <RemovalPreventionProvider>
-          <BaseNavigationContainerImpl
-            {...rest}
-            ref={setRef}
-            initialState={completeState(rest.initialState, rest.children)}
-          />
-        </RemovalPreventionProvider>
-      </RouterRegistryProvider>
+      <RemovalPreventionProvider>
+        <BaseNavigationContainerImpl
+          {...rest}
+          ref={setRef}
+          initialState={completeState(rest.initialState, rest.children)}
+        />
+      </RemovalPreventionProvider>
     </RoutingQueueProvider>
   );
 }

@@ -4,16 +4,22 @@
 
 ### 🛠 Breaking changes
 
-- Remove the `validateProperty`, `validateName`, `validateSlug`, `validateSdkVersion`, and `validateIcon` methods ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
-- Drop `ajv`, `ajv-formats`, and `json-schema-traverse` for `@expo/schema-utils`. This may change internal outputs, such as error messages and metadata ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Resolve `$ref` before validating asset fields, so assets defined through refs such as iOS assets are validated properly ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 2.4.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- Remove the `validateProperty`, `validateName`, `validateSlug`, `validateSdkVersion`, and `validateIcon` methods ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
+- Drop `ajv`, `ajv-formats`, and `json-schema-traverse` for `@expo/schema-utils`. This may change internal outputs, such as error messages and metadata ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Resolve `$ref` before validating asset fields, so assets defined through refs such as iOS assets are validated properly ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
 
 ## 2.3.0 - 2026-06-25
 

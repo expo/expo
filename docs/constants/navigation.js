@@ -322,6 +322,7 @@ export const general = [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
       makePage('router/migrate/sdk-55-to-56.mdx'),
+      makePage('router/migrate/sdk-57-to-58.mdx'),
     ]),
   ]),
   makeSection(
@@ -614,21 +615,6 @@ export const eas = [
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
     ]),
   ]),
-  makeSection('EAS Metadata', [
-    makePage('eas/metadata/index.mdx'),
-    makePage('eas/metadata/getting-started.mdx'),
-    makeGroup(
-      'Reference',
-      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
-      { expanded: false }
-    ),
-  ]),
-  makeSection('EAS Insights', [
-    makePage('eas-insights/introduction.mdx'),
-    makePage('eas-insights/app-usage.mdx'),
-    makePage('eas-insights/workflows.mdx'),
-    makePage('eas-insights/maestro.mdx'),
-  ]),
   makeSection('EAS Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
@@ -649,6 +635,22 @@ export const eas = [
       makePage('eas/observe/reference/client-id.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
+  ]),
+  makeSection('EAS Metadata', [
+    makePage('eas/metadata/index.mdx'),
+    makePage('eas/metadata/getting-started.mdx'),
+    makeGroup(
+      'Reference',
+      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
+      { expanded: false }
+    ),
+  ]),
+  makeSection('EAS Insights', [
+    makePage('eas-insights/introduction.mdx'),
+    makePage('eas-insights/app-usage.mdx'),
+    makePage('eas-insights/workflows.mdx'),
+    makePage('eas-insights/maestro.mdx'),
+    makePage('eas-insights/eas-cli.mdx'),
   ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),

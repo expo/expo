@@ -4,9 +4,34 @@
 
 ### 🛠 Breaking changes
 
-- Removed libSQL support. `syncLibSQL()` and the `libSQLOptions` open option are gone, and the `useLibSQL` config plugin property is deprecated: it warns during prebuild and no longer has any effect. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.3 — 2026-09-15
 
 ### 🎉 New features
+
+- Ship an agent skill for SQLite queries, migrations, storage, and platform configuration in the npm package. ([#49867](https://github.com/expo/expo/pull/49867) by [@Kudo](https://github.com/Kudo))
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Built the vendored SQLite with `SQLITE_ENABLE_API_ARMOR` so misuse returns `SQLITE_MISUSE` instead of crashing. ([#49068](https://github.com/expo/expo/pull/49068) by [@kudo](https://github.com/kudo))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- Removed libSQL support. `syncLibSQL()` and the `libSQLOptions` open option are gone, and the `useLibSQL` config plugin property is deprecated: it warns during prebuild and no longer has any effect. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -14,6 +39,7 @@
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
 - Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
 - Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
+- Fixed reading a prepared statement result after the same statement ran again returning the later run's rows instead of throwing. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

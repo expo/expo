@@ -37,7 +37,7 @@ export async function writeStringsFile({
   project: XcodeProject;
 }) {
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
-    if (Object.entries(localizationObj).length === 0) return project;
+    if (Object.entries(localizationObj).length === 0) continue;
     const dir = path.join(supportingDirectory, `${lang}.lproj`);
     await fs.promises.mkdir(dir, { recursive: true });
 

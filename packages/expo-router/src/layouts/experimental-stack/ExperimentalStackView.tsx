@@ -2,22 +2,13 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
+import type { NavigatorDescriptor } from 'standard-navigation';
 
-import {
-  isRouteRemovalPrevented,
-  useRoutesWithRemovalPrevented,
-} from '../../global-state/removalPrevention';
-import {
-  type ParamListBase,
-  StackActions,
-  type StackNavigationState,
-} from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
-  ExperimentalStackDescriptor,
-  ExperimentalStackDescriptorMap,
-  ExperimentalStackNavigationHelpers,
   ExperimentalStackNavigationOptions,
+  ExperimentalStackViewEmit,
+  ExperimentalStackViewState,
 } from './types';
 
 const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>([
@@ -28,55 +19,65 @@ const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>(
 ]);
 
 type Props = {
-  state: StackNavigationState<ParamListBase>;
-  navigation: ExperimentalStackNavigationHelpers;
-  descriptors: ExperimentalStackDescriptorMap;
+  state: ExperimentalStackViewState;
+  emit: ExperimentalStackViewEmit;
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
+  pop: (count: number, sourceRouteKey: string) => void;
+  descriptors: Record<string, NavigatorDescriptor<ExperimentalStackNavigationOptions>>;
 };
 
-export function ExperimentalStackView({ state, navigation, descriptors }: Props) {
-  const { setNextDismissedKey } = useDismissedRouteError(state);
-  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
+export function ExperimentalStackView({
+  state,
+  emit,
+  pop,
+  descriptors,
+  isPreloaded,
+  isRemovalPrevented,
+}: Props) {
+  const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
 
   return (
     <View style={styles.container}>
       <ScreensStackV5.Host>
-        {state.routes.map((route, index) => {
+        {state.routes.map((route) => {
           const descriptor = descriptors[route.key]!;
-          const isPreloaded = index > state.index;
-          const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
-          const preventFromContext = isRouteRemovalPrevented(route, routesWithRemovalPrevented);
+          const routeIsPreloaded = isPreloaded(route.key);
+          const routeIsRemovalPrevented = isRemovalPrevented(route.key);
+          const options = descriptor.options;
 
           return (
             <ScreenView
               key={route.key}
               routeKey={route.key}
+              routeName={route.name}
               descriptor={descriptor}
               options={options}
-              isPreloaded={isPreloaded}
-              preventNativeDismiss={preventFromContext}
+              isPreloaded={routeIsPreloaded}
+              preventNativeDismiss={routeIsRemovalPrevented}
               onWillAppear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionStart',
                   data: { closing: false },
                   target: route.key,
                 });
               }}
               onWillDisappear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionStart',
                   data: { closing: true },
                   target: route.key,
                 });
               }}
               onDidAppear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionEnd',
                   data: { closing: false },
                   target: route.key,
                 });
               }}
               onDidDisappear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionEnd',
                   data: { closing: true },
                   target: route.key,
@@ -86,28 +87,20 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
                 // Native dismissal (e.g. swipe-to-dismiss). JS state still has the route —
                 // catch up by dispatching pop and arming useDismissedRouteError so a stale
                 // `usePreventRemove` surfaces an actionable console.error.
-                navigation.dispatchSync({
-                  ...StackActions.pop(),
-                  source: route.key,
-                  target: state.key,
-                });
+                pop(1, route.key);
                 setNextDismissedKey(route.key);
               }}
               onNativeDismissPrevented={() => {
-                if (preventFromContext) {
+                if (routeIsRemovalPrevented) {
                   // A real pop runs child-first prevention checks and notifies the nested route
                   // that owns the guard; emitting directly here would only reach this route.
-                  navigation.dispatchSync({
-                    ...StackActions.pop(),
-                    source: route.key,
-                    target: state.key,
-                  });
+                  pop(1, route.key);
                 } else {
                   console.warn(
                     `ExperimentalStack received \`onNativeDismissPrevented\` for route '${route.name}' without an active removal guard. The dismiss action was ignored because prevention context and native state are out of sync.`
                   );
                 }
-                navigation.emit({
+                emit({
                   type: 'gestureCancel',
                   data: undefined,
                   target: route.key,
@@ -123,7 +116,8 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
 
 type ScreenViewProps = {
   routeKey: string;
-  descriptor: ExperimentalStackDescriptor;
+  routeName: string;
+  descriptor: NavigatorDescriptor<ExperimentalStackNavigationOptions>;
   options: ExperimentalStackNavigationOptions;
   isPreloaded: boolean;
   preventNativeDismiss: boolean;
@@ -137,13 +131,14 @@ type ScreenViewProps = {
 
 function ScreenView({
   routeKey,
+  routeName,
   descriptor,
   options,
   isPreloaded,
   preventNativeDismiss,
   ...lifecycle
 }: ScreenViewProps) {
-  useUnsupportedOptionsWarning(options, descriptor.route.name);
+  useUnsupportedOptionsWarning(options, routeName);
 
   const headerConfigProps = {
     title: options.title,

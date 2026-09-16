@@ -4,6 +4,32 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.1 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- [web] Removed `FontResource.testString`. The CSS Font Loading API detects font loading without a test string. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
+
+### 🎉 New features
+
+- [android][ios] Select a face of a multi-face font family with the `fontWeight` and `fontStyle` style props. ([#49486](https://github.com/expo/expo/pull/49486) by [@vonovak](https://github.com/vonovak))
+- Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync` on Android, iOS, and web. Use `fontWeight` and `fontStyle` style props to select the correct face. ([#47939](https://github.com/expo/expo/pull/47939) by [@bryanmylee](https://github.com/bryanmylee))
+- [web] Accept a variable-font weight range, for example `weight: '100 900'`, on a font face. Android and iOS ignore a range and read the weight from the font file. ([#49487](https://github.com/expo/expo/pull/49487) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [web] Replaced the `fontfaceobserver` dependency with the CSS Font Loading API, so `loadAsync` also waits for the font on Safari and iOS browsers. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [ios] `getLoadedFonts()` no longer reports the PostScript name read out of a font loaded with `loadAsync`, only the name (the alias) it was loaded under. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
@@ -18,8 +44,6 @@
 - [iOS] Fixed `renderToImageAsync` reporting the main screen's scale rather than the scale the image was rendered at. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
 - [web] Fixed `isLoaded()` always returning `false` on Firefox, and on every engine for font families whose name needs quoting, by normalizing quotes when comparing family names against the CSSOM. This also stops `loadAsync()` from injecting a duplicate `@font-face` rule on every call and makes `unloadAsync()` and `getLoadedFonts()` behave consistently across engines. ([#49266](https://github.com/expo/expo/pull/49266) by [@irfanfandi](https://github.com/irfanfandi))
 - [web] Match `@font-face` rules by comparing the rule's bare family name against the caller's literal name, so families whose names contain quotes or padding resolve correctly, and fixed `unloadAsync()` deleting wrong rules when several rules match. ([#49379](https://github.com/expo/expo/pull/49379) by [@vonovak](https://github.com/vonovak))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

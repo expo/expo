@@ -1,21 +1,38 @@
-import { act, render } from '@testing-library/react-native';
-import { use, type ContextType } from 'react';
+import { act, render, renderHook } from '@testing-library/react-native';
+import { use, type ContextType, type PropsWithChildren } from 'react';
 
 import { router } from '../router';
 import type { RoutingIntent } from '../routingQueue';
 import {
+  ImperativeRoutingQueueBridge,
   NavigationPendingContext,
   PendingIntentsContext,
   RoutingQueueApiContext,
   RoutingQueueProvider,
   useEnqueueRoutingIntent,
 } from '../routingQueueContext';
+import { useRouterActions } from '../useRouterActions';
 
 function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
 }
 
-it('installs the module-level router after the provider commits', () => {
+afterEach(() => router.setTransitionMode('preload-only'));
+
+function RouterBridge() {
+  const api = use(RoutingQueueApiContext)!;
+  return (
+    <ImperativeRoutingQueueBridge enqueue={api.enqueue} setTransitionMode={api.setTransitionMode} />
+  );
+}
+
+it('does not install the module-level router from the provider', () => {
+  render(<RoutingQueueProvider />);
+
+  expect(() => router.push('/test')).toThrow('first render');
+});
+
+it('installs the module-level router after the bridge commits', () => {
   let pending: RoutingIntent[] = [];
 
   function Consumer() {
@@ -28,6 +45,7 @@ it('installs the module-level router after the provider commits', () => {
   render(
     <RoutingQueueProvider>
       <Consumer />
+      <RouterBridge />
     </RoutingQueueProvider>
   );
   act(() => router.push('/test'));
@@ -40,8 +58,37 @@ it('installs the module-level router after the provider commits', () => {
   ]);
 });
 
+it('updates the global transition mode from useRouterActions', () => {
+  const wrapper = ({ children }: PropsWithChildren) => (
+    <RoutingQueueProvider>{children}</RoutingQueueProvider>
+  );
+  const { result } = renderHook(
+    () => ({ api: use(RoutingQueueApiContext)!, router: useRouterActions() }),
+    { wrapper }
+  );
+  expect(result.current.api.transitionMode).toBe('preload-only');
+
+  act(() => result.current.router.setTransitionMode('never'));
+
+  expect(result.current.api.transitionMode).toBe('never');
+});
+
+it('uses a transition mode set before the router binds', () => {
+  router.setTransitionMode('never');
+
+  const { result } = renderHook(() => use(RoutingQueueApiContext)!, {
+    wrapper: RoutingQueueProvider,
+  });
+
+  expect(result.current.transitionMode).toBe('never');
+});
+
 it('restores the throwing router after the provider unmounts', () => {
-  const { unmount } = render(<RoutingQueueProvider />);
+  const { unmount } = render(
+    <RoutingQueueProvider>
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
 
   expect(() => act(() => router.push('/test'))).not.toThrow();
   unmount();
@@ -52,8 +99,16 @@ it('restores the throwing router after the provider unmounts', () => {
 it('warns when a second root binds the imperative router', () => {
   const error = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  const firstRoot = render(<RoutingQueueProvider />);
-  const secondRoot = render(<RoutingQueueProvider />);
+  const firstRoot = render(
+    <RoutingQueueProvider>
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
+  const secondRoot = render(
+    <RoutingQueueProvider>
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
 
   expect(error).toHaveBeenCalledTimes(1);
   expect(error).toHaveBeenCalledWith(expect.stringContaining('multiple'));

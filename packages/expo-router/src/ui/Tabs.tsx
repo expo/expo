@@ -54,8 +54,9 @@ export type UseTabsOptions = Omit<
     TabNavigationEventMap,
     any
   >,
-  'children' | 'initialRouteName'
+  'activityEnabled' | 'children' | 'initialRouteName'
 > & {
+  activityEnabled?: boolean;
   backBehavior?: TabRouterOptions['backBehavior'];
 };
 
@@ -63,6 +64,11 @@ export type TabsProps = ViewProps & {
   /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
   asChild?: boolean;
   options?: UseTabsOptions;
+  /**
+   * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
+   * @default false
+   */
+  activityEnabled?: boolean;
 };
 
 /**
@@ -80,7 +86,7 @@ export type TabsProps = ViewProps & {
  * ```
  */
 export function Tabs(props: TabsProps) {
-  const { children, asChild, options, ...rest } = props;
+  const { children, asChild, options, activityEnabled, ...rest } = props;
   const Comp = asChild ? ViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
@@ -94,6 +100,7 @@ export function Tabs(props: TabsProps) {
         ? (children.props.children as ReactNode)
         : children,
     ...options,
+    activityEnabled: activityEnabled ?? options?.activityEnabled,
   });
 
   return (
@@ -178,14 +185,18 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     TabActionHelpers<ParamListBase>,
     ExpoTabsScreenOptions,
     TabNavigationEventMap
-  >(ExpoTabRouter, {
-    children,
-    ...rest,
-    triggerMap,
-    id: contextKey,
-    initialRouteName,
-    backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
-  });
+  >(
+    ExpoTabRouter,
+    {
+      children,
+      ...rest,
+      triggerMap,
+      id: contextKey,
+      initialRouteName,
+      backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
+    },
+    { activityDefaultThreshold: 1 }
+  );
 
   const {
     state,
@@ -295,7 +306,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    const { href, name } = child.props;
+    const { href, name, activityEnabled } = child.props;
 
     if (!href) {
       if (process.env.NODE_ENV === 'development') {
@@ -325,7 +336,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    return screenTriggers.push({ type: 'internal', href: resolvedHref, name });
+    return screenTriggers.push({ type: 'internal', href: resolvedHref, name, activityEnabled });
   });
 
   return screenTriggers;

@@ -81,6 +81,10 @@ export type Route<
    * Usually present when the screen was opened from a deep link.
    */
   path?: string;
+  /**
+   * Set by the router while the route is rendered ahead of use and cleared when it becomes active.
+   */
+  isPreloaded?: true;
 }> &
   (undefined extends Params
     ? Readonly<{
@@ -129,6 +133,11 @@ export type DefaultRouterOptions<RouteName extends string = string> = {
   initialRouteName?: RouteName;
 };
 
+/**
+ * Two instantiations with different `State` types are not assignable to each other, because
+ * `Router` requires `type` conditionally on `State`. Annotate a factory that should accept any
+ * router as a function type instead, as `extendRouter` does.
+ */
 export type RouterFactory<
   State extends NavigationState,
   Action extends NavigationAction,
@@ -201,6 +210,15 @@ export type Router<
    * @param action Action object to check.
    */
   shouldActionChangeFocus(action: NavigationAction): boolean;
+
+  /**
+   * Restores router invariants, such as preload markers, on a returned state. `extendRouter`
+   * applies it to every state the router it creates returns; `useNavigationBuilder` does not
+   * call it. It must be idempotent and must not change the state's `type`.
+   *
+   * @param state State object to normalize.
+   */
+  normalizeState?(state: State): State;
 
   /**
    * Action creators for the router.

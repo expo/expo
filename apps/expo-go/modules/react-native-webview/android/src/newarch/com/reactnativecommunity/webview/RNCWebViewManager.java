@@ -403,6 +403,9 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
     public void setRefreshControlLightMode(RNCWebViewWrapper view, boolean value) {}
 
     @Override
+    public void setRemoveIosKeyboardObserver(RNCWebViewWrapper view, boolean value) {}
+
+    @Override
     public void setIndicatorStyle(RNCWebViewWrapper view, @Nullable String value) {}
 
     @Override

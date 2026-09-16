@@ -147,6 +147,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'NavigationStack component',
+    route: 'ui/navigationstack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationStackScreen'));
+    },
+  },
+  {
+    name: 'NavigationSplitView component',
+    route: 'ui/navigationsplitview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationSplitViewScreen'));
+    },
+  },
+  {
     name: 'Menu component',
     route: 'ui/menu',
     options: {},

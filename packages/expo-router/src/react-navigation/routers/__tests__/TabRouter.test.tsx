@@ -4,10 +4,13 @@ import { expectTypeOf } from 'expect-type';
 import { createInitialState } from '../../core/createInitialState';
 import {
   CommonActions,
+  type CommonNavigationAction,
+  extendRouterActions,
   type ParamListBase,
   type RouterConfigOptions,
   TabActions,
   type TabActionHelpers,
+  type TabActionType,
   type TabNavigationState,
   TabRouter,
 } from '../index';
@@ -352,7 +355,7 @@ test('PRELOAD mints an absent declared route without changing focus', () => {
 
   expect(result.state.routes).toEqual([
     { key: 'bar-test', name: 'bar' },
-    { key: 'baz:tab-0', name: 'baz', params: { value: 2 } },
+    { key: 'baz:tab-0', name: 'baz', params: { value: 2 }, isPreloaded: true },
   ]);
   expect(result.state.index).toBe(0);
   expect(result.state.history).toEqual(state.history);
@@ -406,6 +409,58 @@ test('PRELOAD rebuilds history when re-keying the focused route', () => {
 
   expect(result?.state.routes).toEqual([{ key: 'baz:tab-0', name: 'baz', params: { id: 'two' } }]);
   expect(result?.state.history).toEqual([{ type: 'route', key: 'baz:tab-0' }]);
+});
+
+test('PRELOAD marks a re-keyed unfocused route', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: { baz: ({ params }) => params?.id as string | undefined },
+  };
+  const state: TabNavigationState<ParamListBase> = {
+    ...createTabState(options),
+    routes: [
+      { key: 'bar-key', name: 'bar' },
+      { key: 'baz-one', name: 'baz', params: { id: 'one' } },
+    ],
+  };
+
+  const result = router.getStateForAction(
+    state,
+    CommonActions.preload('baz', { id: 'two' }),
+    options
+  )!;
+
+  const preloadedRoute = result.state.routes[1]!;
+  expect(preloadedRoute.key).toBe('baz:tab-0');
+  expect(preloadedRoute.isPreloaded).toBe(true);
+});
+
+test('focusing a preloaded tab clears its marker', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = { routeNames: ['bar', 'baz'], routeGetIdList: {} };
+  const preloaded = router.getStateForAction(
+    createTabState(options),
+    CommonActions.preload('baz'),
+    options
+  )!.state;
+
+  const focused = router.getStateForRouteFocus(preloaded, preloaded.routes[1]!.key);
+
+  expect(focused.routes[1]).toEqual({ key: 'baz:tab-0', name: 'baz' });
+});
+
+test('PRELOAD of the focused tab does not set the marker', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = { routeNames: ['bar'], routeGetIdList: {} };
+
+  const result = router.getStateForAction(
+    createTabState(options),
+    CommonActions.preload('bar'),
+    options
+  )!;
+
+  expect(result.state.routes[0]!.isPreloaded).toBeUndefined();
 });
 
 test.each<['history' | 'fullHistory']>([['history'], ['fullHistory']])(
@@ -2584,7 +2639,7 @@ test('handles screen preloading', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz-test', name: 'baz' },
-      { key: 'bar:0', name: 'bar', params: { answer: 43 } },
+      { key: 'bar:0', name: 'bar', params: { answer: 43 }, isPreloaded: true },
       { key: 'qux-test', name: 'qux' },
     ],
     history: [{ type: 'route', key: 'baz-test' }],
@@ -2622,7 +2677,7 @@ test('handles screen preloading', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz-test', name: 'baz' },
-      { key: 'bar:0', name: 'bar', params: { answer: 43 } },
+      { key: 'bar:0', name: 'bar', params: { answer: 43 }, isPreloaded: true },
       { key: 'qux-test', name: 'qux' },
     ],
     history: [{ type: 'route', key: 'baz-test' }],
@@ -2847,6 +2902,7 @@ test('handles screen preloading', () => {
         key: 'bar:0',
         name: 'bar',
         params: { answer: 43 },
+        isPreloaded: true,
       },
       { key: 'qux-test', name: 'qux' },
     ],
@@ -3042,5 +3098,46 @@ describe('state without history', () => {
     };
 
     expect(router.getStateForRouteFocus(state, 'missing').history).toEqual([]);
+  });
+});
+
+describe('extended tab router', () => {
+  const options: RouterConfigOptions = { routeNames: ['index', 'second'], routeGetIdList: {} };
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'tab',
+    key: 'navigator:root',
+    routeKeySeq: 2,
+    index: 1,
+    routeNames: ['index', 'second'],
+    routes: [
+      { key: 'index:0', name: 'index' },
+      { key: 'second:1', name: 'second' },
+    ],
+    history: [],
+  };
+
+  test('clears only the focused preload marker on the state returned by an extension', () => {
+    const router = extendRouterActions(
+      TabRouter,
+      (state, action: TabActionType | CommonNavigationAction | { type: 'CUSTOM' }) => {
+        if (action.type !== 'CUSTOM') {
+          return undefined;
+        }
+        return {
+          state: {
+            ...state,
+            routes: state.routes.map((route) => ({ ...route, isPreloaded: true as const })),
+          },
+          affectedRouteKey: state.routes[state.index]?.key,
+        };
+      }
+    )({});
+
+    const result = router.getStateForAction(state, { type: 'CUSTOM' }, options);
+
+    expect(result).not.toBeNull();
+    expect(result!.state.routes[0]?.isPreloaded).toBe(true);
+    expect(result!.state.routes[1]?.isPreloaded).toBeUndefined();
   });
 });

@@ -12,7 +12,10 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platforms      = {
     :ios => '16.4',
-    :osx => '13.4',
+    # This module depends on ExpoUI, which is iOS/tvOS only. CocoaPods' resolver walks
+    # `all_dependencies` and ignores the `.ios`/`.tvos` scoping below, so linking fails on macOS
+    # Restore :osx once ExpoUI supports macOS
+    # :osx => '13.4',
     :tvos => '16.4'
   }
   s.swift_version  = '6.0'
@@ -20,6 +23,8 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.ios.dependency 'ExpoUI'
+  s.tvos.dependency 'ExpoUI'
 
   s.source_files = "**/*.{h,m,swift}"
   s.pod_target_xcconfig = {
@@ -31,5 +36,9 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.{m,swift}'
+    # The test bundle links C++ code from ExpoModulesCore but does not inherit its
+    # user_target_xcconfig (-lc++). Clean builds fail on operator new and __cxa_* symbols
+    # without explicitly linking the C++ runtime here.
+    test_spec.libraries = 'c++'
   end
 end

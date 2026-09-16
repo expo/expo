@@ -74,8 +74,10 @@ describe('server-root-group', () => {
     // Has routes.json
     expect(files).toContain('server/_expo/routes.json');
 
-    // HTML
-    expect(files).toContain('server/(root)/index.html');
+    expect(files).toContain('server/_expo/server/render.js');
+
+    // Group routes render at request time
+    expect(files).not.toContain('server/(root)/index.html');
     expect(files).not.toContain('server/index.html');
   });
 });

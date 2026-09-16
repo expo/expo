@@ -43,7 +43,7 @@ test('same-route navigation preserves merge semantics without consuming another 
   });
   expect(result.state.routes[0]!.state).toBe(childState);
   expect(result.state.routes[result.state.index]!.state).toBeUndefined();
-  expect(result.state.routes).toContain(state.routes[1]);
+  expect(result.state.routes).toContainEqual({ ...state.routes[1], isPreloaded: true });
 });
 
 test('same-route navigation attaches fresh trusted state', () => {
@@ -85,4 +85,25 @@ test('same-route navigation attaches fresh trusted state', () => {
   expect(result.state.routes[result.state.index]!.state).toEqual({
     routes: [{ name: 'fresh' }],
   });
+});
+
+test('marks routes after the focused route as preloaded', () => {
+  const router = StackRouter({});
+  const state: StackNavigationState<{ index: undefined; '[id]': { id: string } }> = {
+    stale: false,
+    routeKeySeq: 2,
+    type: 'stack',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['index', '[id]'],
+    routes: [
+      { key: 'index:0', name: 'index' },
+      { key: '[id]:1', name: '[id]', params: { id: 'preloaded' } },
+    ],
+  };
+
+  const result = router.getStateForRouteFocus(state, 'index:0');
+
+  expect(result.routes[0]?.isPreloaded).toBeUndefined();
+  expect(result.routes[1]?.isPreloaded).toBe(true);
 });

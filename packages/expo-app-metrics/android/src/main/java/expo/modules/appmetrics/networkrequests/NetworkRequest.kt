@@ -43,25 +43,70 @@ data class NetworkRequest(
   val timings: Timings,
 
   /**
+   * How OkHttp satisfied the request, or `null` when nothing classified it (the request failed
+   * before a response). A cached response is byte-counted and timestamped like a download, so
+   * this is the only way to tell a disk read from a transfer.
+   */
+  val fetchType: FetchType? = null,
+
+  /**
    * Short human-readable error description if the request completed with an exception. Kept as a
    * string rather than carrying the throwable so the type stays serializable.
    */
   val errorDescription: String?,
 
   /**
+   * Whether the request ended because the caller canceled it (`Call.isCanceled()` at capture
+   * time). Cancellations are recorded as spans but are not errors, per the OTel conventions:
+   * RN apps abort requests routinely (`AbortController`, prefetch aborts).
+   */
+  val canceled: Boolean = false,
+
+  /**
+   * Fully qualified class name of the completion exception (e.g. `java.net.UnknownHostException`),
+   * or `null` when the request completed without one. Unlike `errorDescription`, which is
+   * localized free text, this stays constant across locales, so telemetry can group failures by
+   * it, because it feeds the low-cardinality `error.type` attribute of OpenTelemetry's semantic
+   * conventions. Mirrors the iOS `errorType` (`domain:code` there).
+   */
+  val errorType: String? = null,
+
+  /**
    * Ordered list of redirect hops that preceded the final response. Empty when the request landed
    * directly. Each entry's `fromUrl` is the URL that returned the redirect, `toUrl` is where the
-   * redirect pointed, and `statusCode` is the 3xx code that caused the hop.
+   * redirect pointed, `statusCode` is the 3xx code that caused the hop, and `respondedAtMs` is
+   * when that 3xx response arrived.
    */
   val redirects: List<Redirect>
 ) {
+  /**
+   * How a response was produced, derived from OkHttp's `cacheResponse` / `networkResponse` pair.
+   * Mirrors the iOS `NetworkRequest.FetchType`, which reports an HTTP/2 server push that OkHttp
+   * does not surface, and folds [VALIDATED] into [CACHE].
+   */
+  enum class FetchType(val attributeValue: String) {
+    /** Fetched over the network. */
+    NETWORK("network"),
+
+    /** Served from the OkHttp cache without touching the network. */
+    CACHE("cache"),
+
+    /** Revalidated with a conditional request, then served from the cache (a 304). */
+    VALIDATED("validated")
+  }
+
   data class Redirect(
     /** The URL that returned the redirect. */
     val fromUrl: String,
     /** The URL the request was redirected to. */
     val toUrl: String,
     /** The 3xx status code returned by `fromUrl` that caused this hop. */
-    val statusCode: Int
+    val statusCode: Int,
+    /**
+     * Unix-epoch milliseconds when the 3xx response headers arrived (OkHttp's
+     * `receivedResponseAtMillis`), or `null` when OkHttp did not report it.
+     */
+    val respondedAtMs: Long? = null
   )
 
   data class Timings(
@@ -98,8 +143,8 @@ data class NetworkRequest(
      * connection.
      *
      * Also what keeps cache hits out of the throughput ratio: OkHttp skips the response-body
-     * callbacks for a cached response, so this stays `null` and the request drops out. iOS needs an
-     * explicit flag for that, since `URLSession` timestamps a cache hit like any other response.
+     * callbacks for a cached response, so this stays `null` and the request drops out. See
+     * [fetchType] for how the response was produced, which both platforms report.
      */
     val measuredResponseEnd: Date?,
 

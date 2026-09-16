@@ -17,8 +17,10 @@ internal enum DatePickerStyleType: String, Enumerable {
       content.datePickerStyle(.compact)
     case .graphical:
       content.datePickerStyle(.graphical)
+#if !os(macOS)
     case .wheel:
       content.datePickerStyle(.wheel)
+#endif
     default:
       content.datePickerStyle(.automatic)
     }

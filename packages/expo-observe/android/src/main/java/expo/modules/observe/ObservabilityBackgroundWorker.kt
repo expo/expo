@@ -18,7 +18,7 @@ import androidx.work.workDataOf
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
- * Background worker that dispatches stored metrics and logs to EAS Observe.
+ * Background worker that dispatches stored metrics, logs, and spans to EAS Observe.
  */
 class ObservabilityBackgroundWorker(
   context: Context,
@@ -72,10 +72,11 @@ class ObservabilityBackgroundWorker(
       observabilityManager.cleanup()
       observabilityManager.dispatchUnsentMetrics()
       observabilityManager.dispatchUnsentLogs()
-      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics and logs")
+      observabilityManager.dispatchUnsentSpans()
+      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics, logs, and spans")
       Result.success()
     } catch (e: Exception) {
-      Log.e(OBSERVE_TAG, "Failed to dispatch metrics", e)
+      Log.e(OBSERVE_TAG, "Failed to dispatch metrics, logs, and spans", e)
       // Retry with exponential backoff
       Result.retry()
     }
@@ -108,7 +109,7 @@ class ObservabilityBackgroundWorker(
         .getInstance(context)
         .enqueueUniqueWork(
           WORK_NAME,
-          // Keep an in-flight dispatch; cancelling it can duplicate a request the server received.
+          // Keep an in-flight dispatch; canceling it can duplicate a request the server received.
           ExistingWorkPolicy.KEEP,
           periodicWork
         )

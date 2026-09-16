@@ -80,6 +80,10 @@ class Env {
   get EXPO_NO_CACHE() {
     return boolish('EXPO_NO_CACHE', false);
   }
+  /** Disable validating Metro's transform cache against inlined ambient values (e.g. `EXPO_PUBLIC_*` env vars). */
+  get EXPO_NO_CACHE_VARY() {
+    return boolish('EXPO_NO_CACHE_VARY', false);
+  }
   /** Disable the app select redirect page. */
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
@@ -283,20 +287,6 @@ class Env {
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
   get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
-  }
-
-  /** Disable @react-navigation checks for expo-router projects */
-  get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
-    return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
-  }
-
-  /**
-   * Disable Material Symbols (`md`) icon support in expo-router's NativeTabs on Android.
-   * When enabled, the Metro resolver swaps the Android-specific md icon converter for a no-op
-   * stub, so the `expo-symbols` dependency is tree-shaken out of the Android bundle.
-   */
-  get EXPO_ROUTER_DISABLE_NATIVE_TABS_MD(): boolean {
-    return boolish('EXPO_ROUTER_DISABLE_NATIVE_TABS_MD', false);
   }
 
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */

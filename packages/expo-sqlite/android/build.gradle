@@ -26,6 +26,7 @@ def getSQLiteBuildFlags() {
   def buildFlags = '-DSQLITE_ENABLE_BYTECODE_VTAB=1 -DSQLITE_TEMP_STORE=2'
   buildFlags <<= ' -DSQLITE_ENABLE_SESSION=1 -DSQLITE_ENABLE_PREUPDATE_HOOK=1'
   buildFlags <<= ' -DSQLITE_ENABLE_MATH_FUNCTIONS=1'
+  buildFlags <<= ' -DSQLITE_ENABLE_API_ARMOR=1'
   if (findProperty('expo.sqlite.enableFTS') != 'false') {
     buildFlags <<= ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   }
@@ -46,13 +47,13 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.4'
+version = '58.0.3'
 
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "56.0.4"
+    versionName "58.0.3"
     buildConfigField "boolean", "WITH_SQLITE_VEC", project.ext.WITH_SQLITE_VEC.toString()
 
     externalNativeBuild {

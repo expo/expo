@@ -2,8 +2,7 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { ensureStateType } from './ensureStateType';
-import { createRouteKeyMinter } from './stateKeys';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -69,6 +68,31 @@ export function getStackRoutes<ParamList extends ParamListBase>(
     activeRoutes: state.routes.slice(0, state.index + 1),
     preloadedRoutes: state.routes.slice(state.index + 1),
   };
+}
+
+function markPreloadedRoutes<ParamList extends ParamListBase>(
+  state: StackNavigationState<ParamList>
+) {
+  let changed = false;
+  const routes = state.routes.map((route, index) => {
+    if (index > state.index) {
+      if (route.isPreloaded) {
+        return route;
+      }
+      changed = true;
+      return { ...route, isPreloaded: true as const };
+    }
+
+    if (route.isPreloaded) {
+      changed = true;
+      const { isPreloaded, ...activeRoute } = route;
+      return activeRoute;
+    }
+
+    return route;
+  });
+
+  return changed ? { ...state, routes } : state;
 }
 
 function reconcileStackRoutes<ParamList extends ParamListBase>(
@@ -181,22 +205,23 @@ export const StackActions = {
   },
 };
 
-/**
- * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function StackRouter(options: StackRouterOptions) {
-  const { initialRouteName } = options;
-  const router: Router<
-    StackNavigationState<ParamListBase>,
-    CommonNavigationAction | StackActionType
+function stackRouterExtension({
+  baseRouter,
+  nextKey,
+  options: { initialRouteName },
+}: RouterExtensionContext<
+  StackNavigationState<ParamListBase>,
+  CommonNavigationAction | StackActionType,
+  StackRouterOptions
+>) {
+  const router: Omit<
+    Router<StackNavigationState<ParamListBase>, CommonNavigationAction | StackActionType>,
+    'shouldActionChangeFocus'
   > = {
-    ...BaseRouter,
-
-    // TODO: Keep this value in sync with the `ensureStateType` calls below.
-    type: 'stack',
+    normalizeState: markPreloadedRoutes,
 
     getStateForDeclaredRoutes(state, routeNames) {
-      const filteredState = BaseRouter.getStateForDeclaredRoutes(state, routeNames);
+      const filteredState = baseRouter.getStateForDeclaredRoutes(state, routeNames);
 
       if (filteredState === state || filteredState.routes.length === 0) {
         return filteredState;
@@ -212,8 +237,7 @@ export function StackRouter(options: StackRouterOptions) {
       return { ...filteredState, index: Math.max(0, survivingActiveCount - 1) };
     },
 
-    getStateForRouteFocus(inputState, key) {
-      const state = ensureStateType(inputState, 'stack');
+    getStateForRouteFocus(state, key) {
       const { activeRoutes } = getStackRoutes(state);
       const index = activeRoutes.findIndex((r) => r.key === key);
 
@@ -228,10 +252,8 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getStateForAction(inputState, action, options) {
-      const state = ensureStateType(inputState, 'stack');
+    getStateForAction(state, action, options) {
       const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
-      const minter = createRouteKeyMinter(state);
 
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
@@ -258,7 +280,7 @@ export function StackRouter(options: StackRouterOptions) {
             const fallbackRoute =
               preloadedIndex === -1
                 ? {
-                    key: minter.mint(fallbackName),
+                    key: nextKey(fallbackName),
                     name: fallbackName,
                   }
                 : filteredPreloadedRoutes[preloadedIndex]!;
@@ -268,7 +290,6 @@ export function StackRouter(options: StackRouterOptions) {
 
           const result = {
             ...reconcileStackRoutes(state, routes, filteredPreloadedRoutes),
-            routeKeySeq: minter.routeKeySeq,
             routeNames,
           };
           return { state: result, affectedRouteKey: result.routes[result.index]?.key };
@@ -298,7 +319,7 @@ export function StackRouter(options: StackRouterOptions) {
           );
 
           if (!route) {
-            route = createRouteFromAction({ action, key: minter.mint(action.payload.name) });
+            route = createRouteFromAction({ action, key: nextKey(action.payload.name) });
           }
           route = attachRouteState(route, action);
 
@@ -309,7 +330,6 @@ export function StackRouter(options: StackRouterOptions) {
                 activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
                 preloadedRoutes.filter((r) => r.key !== route.key)
               ),
-              routeKeySeq: minter.routeKeySeq,
             },
             affectedRouteKey: route.key,
           };
@@ -411,7 +431,7 @@ export function StackRouter(options: StackRouterOptions) {
               ...activeRoutes,
               attachRouteState(
                 {
-                  key: minter.mint(action.payload.name),
+                  key: nextKey(action.payload.name),
                   name: action.payload.name,
                   path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                   params,
@@ -429,7 +449,6 @@ export function StackRouter(options: StackRouterOptions) {
                 routes,
                 preloadedRoutes.filter((route) => affectedRouteKey !== route.key)
               ),
-              routeKeySeq: minter.routeKeySeq,
             },
             affectedRouteKey,
           };
@@ -532,7 +551,7 @@ export function StackRouter(options: StackRouterOptions) {
             );
 
             if (!route) {
-              route = createRouteFromAction({ action, key: minter.mint(action.payload.name) });
+              route = createRouteFromAction({ action, key: nextKey(action.payload.name) });
             }
             route = attachRouteState(route, action);
 
@@ -545,7 +564,6 @@ export function StackRouter(options: StackRouterOptions) {
                   routes,
                   preloadedRoutes.filter((r) => r.key !== route.key)
                 ),
-                routeKeySeq: minter.routeKeySeq,
               },
               affectedRouteKey: route.key,
             };
@@ -626,7 +644,7 @@ export function StackRouter(options: StackRouterOptions) {
             };
           } else {
             const preloadedRoute = attachRouteState(
-              createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+              createRouteFromAction({ action, key: nextKey(action.payload.name) }),
               action
             );
             return {
@@ -640,22 +658,14 @@ export function StackRouter(options: StackRouterOptions) {
                     )
                     .concat(preloadedRoute)
                 ),
-                routeKeySeq: minter.routeKeySeq,
               },
               affectedRouteKey: preloadedRoute.key,
             };
           }
         }
 
-        default: {
-          const result = BaseRouter.getStateForAction(state, action);
-
-          if (result === null) {
-            return result;
-          }
-
-          return { ...result, state: ensureStateType(result.state, 'stack') };
-        }
+        default:
+          return baseRouter.getStateForAction(state, action, options);
       }
     },
 
@@ -664,3 +674,8 @@ export function StackRouter(options: StackRouterOptions) {
 
   return router;
 }
+
+/**
+ * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export const StackRouter = extendRouter(BaseRouter, stackRouterExtension, { type: 'stack' });
