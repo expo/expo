@@ -129,22 +129,34 @@ BackgroundMotionActivityScreen.navigationOptions = {
   title: 'Background motion activity',
 };
 
+// Android can start more than one job for this task around the same time. Chaining each
+// append onto this queue keeps the read-modify-write cycle below from overlapping across
+// concurrent task invocations, which would otherwise let one write clobber another.
+let writeQueue: Promise<unknown> = Promise.resolve();
+
+function appendToLog(entry: LogEntry) {
+  writeQueue = writeQueue.then(async () => {
+    const log = await getSavedLog();
+    log.push(entry);
+
+    const trimmedLog = log.slice(-MAX_LOG_ENTRIES);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmedLog));
+
+    activityEventsEmitter.emit('update', trimmedLog);
+  });
+  return writeQueue;
+}
+
 TaskManager.defineTask(MOTION_ACTIVITY_TASK, async ({ data, error }: any) => {
   if (error) {
     console.log('Motion activity task error:', error);
     return;
   }
 
-  const log = await getSavedLog();
-  log.push({
+  await appendToLog({
     receivedAt: new Date().toISOString(),
     activities: data.activity.activities,
   });
-
-  const trimmedLog = log.slice(-MAX_LOG_ENTRIES);
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmedLog));
-
-  activityEventsEmitter.emit('update', trimmedLog);
 });
 
 const styles = StyleSheet.create({
