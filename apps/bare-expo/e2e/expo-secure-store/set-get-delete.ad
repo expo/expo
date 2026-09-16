@@ -1,0 +1,17 @@
+# expo-secure-store: store a value, read it back, delete it, and confirm it is gone.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/securestore"
+wait text "setItemAsync" 20000
+press label="setItemAsync: RUN"
+wait text "setItemAsync = undefined" 10000
+press label="getItemAsync: RUN"
+wait text "getItemAsync = hello" 10000
+# Results above push the delete demo below the fold. Amounts are fractions of the viewport.
+scroll down 0.3
+press label="deleteItemAsync: RUN"
+wait text "deleteItemAsync = undefined" 10000
+scroll top
+press label="getItemAsync: RUN"
+wait text "getItemAsync = null" 10000
+close
