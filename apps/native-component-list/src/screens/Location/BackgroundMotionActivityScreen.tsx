@@ -48,11 +48,12 @@ function BackgroundMotionActivityView() {
       const tracking = await Location.hasStartedMotionActivityUpdatesAsync(MOTION_ACTIVITY_TASK);
       const savedLog = await getSavedLog();
 
+      if (!isMounted) return;
+
       subscription = activityEventsEmitter.addListener('update', (nextLog: LogEntry[]) => {
         if (isMounted) setLog(nextLog);
       });
 
-      if (!isMounted) return;
       setIsTracking(tracking);
       setLog(savedLog);
     })();
