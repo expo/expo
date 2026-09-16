@@ -217,8 +217,14 @@ export function stripBaseUrl(
   baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
   if (process.env.NODE_ENV !== 'development') {
-    if (baseUrl) {
-      return path.replace(/^\/+/g, '/').replace(new RegExp(`^\\/?${escape(baseUrl)}`, 'g'), '');
+    // Trailing slashes are not part of the base URL segment, e.g. `/one/` is the same as `/one`.
+    const normalizedBaseUrl = baseUrl?.replace(/\/+$/, '');
+    if (normalizedBaseUrl) {
+      // The base URL must match whole path segments only, so `/m` is stripped from `/m/menu` and `/m`,
+      // but not from `/menu`.
+      return path
+        .replace(/^\/+/g, '/')
+        .replace(new RegExp(`^\\/?${escape(normalizedBaseUrl)}(?=[/?#]|$)`), '');
     }
   }
   return path;
