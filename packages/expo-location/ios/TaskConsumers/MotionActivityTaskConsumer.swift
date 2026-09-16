@@ -17,25 +17,7 @@ class MotionActivityTaskConsumer: NSObject, EXTaskConsumerInterface {
     Task {
       do {
         for try await activity in try streamer.streamMotionActivity() {
-          // CMMotionActivity reports one confidence value for the whole reading.
-          // Detected entries receive that confidence; undetected entries receive 0 (Low).
-          let confidence = activity.confidence.rawValue
-          func entry(_ detected: Bool) -> [String: Any] {
-            ["detected": detected, "confidence": detected ? confidence : 0]
-          }
-          self.task?.execute(withData: [
-            "activity": [
-              "activities": [
-                "automotive": entry(activity.automotive),
-                "cycling":    entry(activity.cycling),
-                "running":    entry(activity.running),
-                "walking":    entry(activity.walking),
-                "stationary": entry(activity.stationary),
-                "unknown":    entry(activity.unknown),
-              ],
-              "timestamp": activity.startDate.timeIntervalSince1970 * 1000
-            ]
-          ], withError: nil)
+          self.task?.execute(withData: ["activity": activity.toMotionActivityDict()], withError: nil)
         }
       } catch {
         self.task?.execute(withData: nil, withError: error as NSError)

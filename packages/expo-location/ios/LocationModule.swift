@@ -137,25 +137,9 @@ public final class LocationModule: Module {
       Task {
         do {
           for try await activity in try streamer.streamMotionActivity() {
-            // CMMotionActivity reports one confidence value for the whole reading.
-            // Detected entries receive that confidence; undetected entries receive 0 (Low).
-            let confidence = activity.confidence.rawValue
-            func entry(_ detected: Bool) -> [String: Any] {
-              ["detected": detected, "confidence": detected ? confidence : 0]
-            }
             sendEvent(EVENT_MOTION_ACTIVITY_CHANGED, [
               "watchId": watchId,
-              "activity": [
-                "activities": [
-                  "automotive": entry(activity.automotive),
-                  "cycling":    entry(activity.cycling),
-                  "running":    entry(activity.running),
-                  "walking":    entry(activity.walking),
-                  "stationary": entry(activity.stationary),
-                  "unknown":    entry(activity.unknown),
-                ],
-                "timestamp": activity.startDate.timeIntervalSince1970 * 1000
-              ]
+              "activity": activity.toMotionActivityDict()
             ])
           }
         } catch let exception as Exception {
