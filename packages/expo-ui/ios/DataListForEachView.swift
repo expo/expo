@@ -32,6 +32,21 @@ struct DataListForEachItemView: ExpoSwiftUI.View {
   }
 }
 
+final class DataListForEachPoolProps: ExpoSwiftUI.ViewProps {}
+
+// Holds the recycled slots, so mounting a slot never republishes the list's own props.
+struct DataListForEachPoolView: ExpoSwiftUI.View {
+  @ObservedObject var props: DataListForEachPoolProps
+
+  init(props: DataListForEachPoolProps) {
+    self.props = props
+  }
+
+  var body: some View {
+    EmptyView()
+  }
+}
+
 struct DataListForEachView: ExpoSwiftUI.View {
   @ObservedObject var props: DataListForEachProps
   @StateObject private var window = DataListForEachWindow()
@@ -42,16 +57,19 @@ struct DataListForEachView: ExpoSwiftUI.View {
 
   var body: some View {
     let revision = props.revision
-    ForEach(Array(props.itemKeys.enumerated()), id: \.element) { index, key in
-      DataListForEachRow(itemKey: key, index: index, listProps: props, window: window)
-        .tag(AnyHashable(key))
+    let pool = (props.children ?? []).lazy.compactMap { ($0.childView as? DataListForEachPoolView)?.props }.first
+    if let pool {
+      ForEach(Array(props.itemKeys.enumerated()), id: \.element) { index, key in
+        DataListForEachRow(itemKey: key, index: index, listProps: props, poolProps: pool, window: window)
+          .tag(AnyHashable(key))
+      }
+      .onDelete(perform: props.deleteEnabled ? { offsets in
+        props.onDelete(["indices": Array(offsets), "revision": revision])
+      } : nil)
+      .onMove(perform: props.moveEnabled ? { sources, destination in
+        props.onMove(["sourceIndices": Array(sources), "destination": destination, "revision": revision])
+      } : nil)
     }
-    .onDelete(perform: props.deleteEnabled ? { offsets in
-      props.onDelete(["indices": Array(offsets), "revision": revision])
-    } : nil)
-    .onMove(perform: props.moveEnabled ? { sources, destination in
-      props.onMove(["sourceIndices": Array(sources), "destination": destination, "revision": revision])
-    } : nil)
   }
 }
 
@@ -59,12 +77,15 @@ private struct DataListForEachRow: View {
   let itemKey: String
   let index: Int
   @ObservedObject var listProps: DataListForEachProps
+  @ObservedObject var poolProps: DataListForEachPoolProps
   let window: DataListForEachWindow
   @State private var appeared = false
   @State private var visibilityID = UUID()
 
+  // Slots are the pool's children; JS assigns item `index` to slot `index % count`.
+  // Reading them here, not in the parent, keeps the row current when the slot count changes.
   private var slot: DataListForEachItemView? {
-    guard let slots = listProps.children, !slots.isEmpty else {
+    guard let slots = poolProps.children, !slots.isEmpty else {
       return nil
     }
     return slots[index % slots.count].childView as? DataListForEachItemView
