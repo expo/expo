@@ -407,13 +407,13 @@ PODS:
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - hermes-engine (260318099.0.2):
-    - hermes-engine/cdp (= 260318099.0.2)
-    - hermes-engine/Hermes (= 260318099.0.2)
-    - hermes-engine/Public (= 260318099.0.2)
-  - hermes-engine/cdp (260318099.0.2)
-  - hermes-engine/Hermes (260318099.0.2)
-  - hermes-engine/Public (260318099.0.2)
+  - hermes-engine (260318099.0.3):
+    - hermes-engine/cdp (= 260318099.0.3)
+    - hermes-engine/Hermes (= 260318099.0.3)
+    - hermes-engine/Public (= 260318099.0.3)
+  - hermes-engine/cdp (260318099.0.3)
+  - hermes-engine/Hermes (260318099.0.3)
+  - hermes-engine/Public (260318099.0.3)
   - libavif/core (1.0.0)
   - libavif/libdav1d (1.0.0):
     - libavif/core
@@ -4925,7 +4925,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 004060f52fbbd160d7e47d44d3a0cd3e815c4164
+  hermes-engine: 2dc320af5370ab2e5bb183029dbe8612c3fe12d0
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33
