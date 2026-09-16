@@ -6,7 +6,8 @@
 **/.npmignore
 
 # Exclude TypeScript project configuration and incremental build caches
-**/tsconfig*.json
+**/tsconfig.json
+**/tsconfig.all.json
 **/*.tsbuildinfo
 
 # Exclude monorepo build configuration
