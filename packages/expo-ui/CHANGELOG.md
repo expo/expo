@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the SwiftUI `NavigationSplitView` component, together with the `navigationSplitViewStyle` and `navigationSplitViewColumnWidth` modifiers. ([#50075](https://github.com/expo/expo/pull/50075) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
