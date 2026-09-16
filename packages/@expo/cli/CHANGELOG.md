@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - Fix cache pollution in production by inlined environment variable values with a vary-cache approach ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+- Resolve Expo Updates runtime versions in development mode from the project root. ([#49508](https://github.com/expo/expo/pull/49508) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
