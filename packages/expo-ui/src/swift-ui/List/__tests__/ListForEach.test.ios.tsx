@@ -24,6 +24,7 @@ const data = Array.from({ length: 10_000 }, (_, index) => ({
 }));
 const keyExtractor = (item: { id: string }) => item.id;
 const nativeProps = () => mockList.mock.calls.at(-1)![0];
+const slotsOf = (props: any) => props.children.props.children;
 const requestWindow = (first: number, last: number, revision = nativeProps().revision) =>
   act(() => nativeProps().onWindowChange({ nativeEvent: { first, last, revision } }));
 
@@ -36,7 +37,7 @@ it('creates a bounded JSX window for 10,000 items and recenters after a distant 
   expect(nativeProps().itemKeys).toHaveLength(10_000);
   requestWindow(500, 510);
   expect(renderItem).toHaveBeenCalledTimes(42);
-  const indices = nativeProps().children.map((child: any) => child.props.index);
+  const indices = slotsOf(nativeProps()).map((child: any) => child.props.index);
   expect(indices).toHaveLength(31);
   for (let index = 500; index <= 510; index++) expect(indices).toContain(index);
 });
@@ -86,7 +87,7 @@ it('ignores stale events and updates same-key data without retaining old content
   expect(screen.getByText('Updated')).toBeTruthy();
   expect(nativeProps().revision).not.toBe(revision);
   requestWindow(500, 510, revision);
-  expect(nativeProps().children[0].props.index).toBe(0);
+  expect(slotsOf(nativeProps())[0].props.index).toBe(0);
 });
 
 it('clamps after shrinking, handles empty data, and rejects pre-resize requests', () => {
@@ -99,11 +100,11 @@ it('clamps after shrinking, handles empty data, and rejects pre-resize requests'
   screen.rerender(
     <ListForEach data={data.slice(0, 3)} keyExtractor={keyExtractor} renderItem={renderItem} />
   );
-  expect(nativeProps().children.map((child: any) => child.props.index)).toEqual([0, 1, 2]);
+  expect(slotsOf(nativeProps()).map((child: any) => child.props.index)).toEqual([0, 1, 2]);
   requestWindow(9900, 9905, oldRevision);
-  expect(nativeProps().children).toHaveLength(3);
+  expect(slotsOf(nativeProps())).toHaveLength(3);
   screen.rerender(<ListForEach data={[]} keyExtractor={keyExtractor} renderItem={renderItem} />);
-  expect(nativeProps().children).toHaveLength(0);
+  expect(slotsOf(nativeProps())).toHaveLength(0);
 });
 
 it('preserves the window anchor across insertion and keeps its buffer', () => {
@@ -112,7 +113,7 @@ it('preserves the window anchor across insertion and keeps its buffer', () => {
     <ListForEach data={data} keyExtractor={keyExtractor} renderItem={renderItem} />
   );
   requestWindow(500, 510);
-  const before = Math.min(...nativeProps().children.map((child: any) => child.props.index));
+  const before = Math.min(...slotsOf(nativeProps()).map((child: any) => child.props.index));
   screen.rerender(
     <ListForEach
       data={[{ id: 'new' }, ...data]}
@@ -121,8 +122,8 @@ it('preserves the window anchor across insertion and keeps its buffer', () => {
       overscanCount={10}
     />
   );
-  expect(nativeProps().children).toHaveLength(31);
-  expect(Math.min(...nativeProps().children.map((child: any) => child.props.index))).toBe(
+  expect(slotsOf(nativeProps())).toHaveLength(31);
+  expect(Math.min(...slotsOf(nativeProps()).map((child: any) => child.props.index))).toBe(
     before + 1
   );
 });
@@ -142,7 +143,7 @@ it('keeps pool assignments unique and covers demand across jumps and reversals',
 
 it('grows to cover 100 visible rows plus 10 on each side and keeps its capacity when the viewport shrinks', () => {
   render(<ListForEach data={data} keyExtractor={keyExtractor} renderItem={() => <View />} />);
-  const indices = () => nativeProps().children.map((row: any) => row.props.index);
+  const indices = () => slotsOf(nativeProps()).map((row: any) => row.props.index);
   const revision = nativeProps().revision;
   requestWindow(500, 599);
   expect(indices()).toHaveLength(120);
@@ -163,14 +164,14 @@ it('grows to cover 100 visible rows plus 10 on each side and keeps its capacity 
 
 it('keeps slot assignments stable while rows appear and disappear one at a time', () => {
   render(<ListForEach data={data} keyExtractor={keyExtractor} renderItem={() => <View />} />);
-  const assignments = (): number[] => nativeProps().children.map((row: any) => row.props.index);
+  const assignments = (): number[] => slotsOf(nativeProps()).map((row: any) => row.props.index);
   requestWindow(500, 509);
   requestWindow(500, 510); // A row appears at the bottom before the top row disappears.
   const grown = assignments();
-  expect(grown).toHaveLength(31);
+  expect(grown).toHaveLength(41); // Grows once, with overscan headroom, instead of on every row.;
   requestWindow(501, 510); // The top row disappears.
   const shifted = assignments();
-  expect(shifted).toHaveLength(31);
+  expect(shifted).toHaveLength(41);
   expect(shifted.filter((index, slot) => index !== grown[slot])).toHaveLength(1);
   requestWindow(501, 511); // The next row appears without moving any slot.
   expect(assignments()).toEqual(shifted);
@@ -194,8 +195,8 @@ it('updates overscan without resetting demand and supports zero extra rows', () 
       overscanCount={0}
     />
   );
-  expect(nativeProps().children).toHaveLength(100);
-  expect(Math.min(...nativeProps().children.map((row: any) => row.props.index))).toBe(500);
+  expect(slotsOf(nativeProps())).toHaveLength(100);
+  expect(Math.min(...slotsOf(nativeProps()).map((row: any) => row.props.index))).toBe(500);
   expect(nativeProps().revision).toBe(revision);
   screen.rerender(
     <ListForEach
@@ -205,7 +206,7 @@ it('updates overscan without resetting demand and supports zero extra rows', () 
       overscanCount={20}
     />
   );
-  expect(nativeProps().children).toHaveLength(140);
+  expect(slotsOf(nativeProps())).toHaveLength(140);
 });
 
 it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', (overscanCount) => {
@@ -301,14 +302,14 @@ it('maintains independent windows and revisions for separate groups', () => {
       nativeEvent: { first: 500, last: 502, revision: first.revision },
     })
   );
-  expect(nativeProps().children.some((row: any) => row.props.index === 500)).toBe(true);
-  expect(second.children.map((row: any) => row.props.index)).toEqual([0, 1]);
+  expect(slotsOf(nativeProps()).some((row: any) => row.props.index === 500)).toBe(true);
+  expect(slotsOf(second).map((row: any) => row.props.index)).toEqual([0, 1]);
   act(() =>
     second.onWindowChange({
       nativeEvent: { first: 15, last: 16, revision: second.revision },
     })
   );
-  expect(nativeProps().children.some((row: any) => row.props.index === 15)).toBe(true);
+  expect(slotsOf(nativeProps()).some((row: any) => row.props.index === 15)).toBe(true);
   expect(nativeProps().itemKeys).toHaveLength(20);
 });
 

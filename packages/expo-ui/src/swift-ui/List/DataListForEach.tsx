@@ -44,7 +44,7 @@ type NativeProps = CommonViewModifierProps &
     itemKeys: string[];
     revision: number;
     estimatedItemSize: number;
-    children: ReactElement[];
+    children: ReactElement;
   };
 type SlotProps = {
   itemKey: string;
@@ -55,6 +55,10 @@ type SlotProps = {
 
 const NativeList = requireNativeView<NativeProps>('ExpoUI', 'DataListForEachView');
 const NativeSlot = requireNativeView<SlotProps>('ExpoUI', 'DataListForEachItemView');
+const NativePool = requireNativeView<{ children: ReactElement[] }>(
+  'ExpoUI',
+  'DataListForEachPoolView'
+);
 
 // Skip unchanged rows when the window moves.
 const RecycledRow = memo(function RecycledRow<ItemT>({
@@ -200,23 +204,25 @@ export function DataListForEach<ItemT>({
             : { ...previous, first, last, capacity };
         });
       }}>
-      {indices.map((index, slot) => {
-        const item = data[index];
-        const itemKey = itemKeys[index];
-        if (item === undefined || itemKey === undefined) {
-          throw new Error(`List.ForEach could not resolve the item at index ${index}.`);
-        }
-        return (
-          <RecycledRow
-            key={slot}
-            item={item}
-            index={index}
-            itemKey={itemKey}
-            revision={current.revision}
-            renderItem={renderItem}
-          />
-        );
-      })}
+      <NativePool>
+        {indices.map((index, slot) => {
+          const item = data[index];
+          const itemKey = itemKeys[index];
+          if (item === undefined || itemKey === undefined) {
+            throw new Error(`List.ForEach could not resolve the item at index ${index}.`);
+          }
+          return (
+            <RecycledRow
+              key={slot}
+              item={item}
+              index={index}
+              itemKey={itemKey}
+              revision={current.revision}
+              renderItem={renderItem}
+            />
+          );
+        })}
+      </NativePool>
     </NativeList>
   );
 }
