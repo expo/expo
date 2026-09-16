@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS][Android] Added an `svgVariables` prop that substitutes values for the CSS custom properties an SVG source refers to with `var()`, so different parts of one document can be given different colors and the image stays a vector instead of being rasterized the way `tintColor` is. Values are not limited to colors. SVG sources that use `var()` now render with their fallback values even without the prop. ([#48663](https://github.com/expo/expo/pull/48663), [#50155](https://github.com/expo/expo/pull/50155) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [iOS][Android] Added an `svgVariables` prop that substitutes values for the CSS custom properties an SVG source refers to with `var()`, so different parts of one document can be given different colors and the image stays a vector instead of being rasterized the way `tintColor` is. Values are not limited to colors. SVG sources that use `var()` now render with their fallback values even without the prop. ([#48663](https://github.com/expo/expo/pull/48663), [#50155](https://github.com/expo/expo/pull/50155) by [@tsapeta](https://github.com/tsapeta))
 
 ## 58.0.1 — 2026-09-14
 

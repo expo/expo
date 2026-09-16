@@ -4,13 +4,24 @@
 
 ### 🛠 Breaking changes
 
+- `web.output: 'server'` now renders HTML pages on each request instead of prerendering them during export. ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
 
-- Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))
+- Enable data loaders by default for static and server output ([#50118](https://github.com/expo/expo/pull/50118) by [@hassankhan](https://github.com/hassankhan))
+- Enable server rendering by default for `web.output: "server"` ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.3 — 2026-09-15
+
+### 🎉 New features
+
+- Add controls for opting queued router operations out of React transitions. ([#50149](https://github.com/expo/expo/pull/50149) by [@Ubax](https://github.com/Ubax))
+- Export `attachRouteState` for custom router extensions. ([#49712](https://github.com/expo/expo/pull/49712) by [@Ubax](https://github.com/Ubax))
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
 
 ## 58.0.2 — 2026-09-14
 
@@ -86,6 +97,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Add `activityEnabled` to navigators and screens to hide deeply nested route content with React Activity. ([#49913](https://github.com/expo/expo/pull/49913) by [@Ubax](https://github.com/Ubax))
+- Support application-defined screen options in custom standard navigators. ([#49984](https://github.com/expo/expo/pull/49984) by [@Ubax](https://github.com/Ubax))
 - Export `createBaseTabProps`, `createNativeStackProps`, `createJSStackProps`, `createJSTabsProps`, `createJSTopTabsProps`, and `createNativeTabsProps` for integrating navigators with Expo Router. ([#49966](https://github.com/expo/expo/pull/49966) by [@Ubax](https://github.com/Ubax))
 - Export `createBaseStackProps` for integrating custom stack navigators with Expo Router. ([#49963](https://github.com/expo/expo/pull/49963) by [@Ubax](https://github.com/Ubax))
 - Expose route removal prevention state to custom navigators through `createProps`. ([#49962](https://github.com/expo/expo/pull/49962) by [@Ubax](https://github.com/Ubax))
@@ -118,6 +130,7 @@ _This version does not introduce any user-facing changes._
 
 - Mark routes after the focused one as preloaded in states returned by the singular `Stack` router. ([#49914](https://github.com/expo/expo/pull/49914) by [@Ubax](https://github.com/Ubax))
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
+- Test `createProps` dispatch timing. ([#49955](https://github.com/expo/expo/pull/49955) by [@Ubax](https://github.com/Ubax))
 - Re-export missing bottom tab types from `expo-router/js-tabs`. ([#49954](https://github.com/expo/expo/pull/49954) by [@Ubax](https://github.com/Ubax))
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))
 - Prevent Native Tabs from remounting the focused tab while preloading other tabs after a cold-start deep link. (by [@Ubax](https://github.com/Ubax)) ([#49811](https://github.com/expo/expo/pull/49811) by [@Ubax](https://github.com/Ubax))

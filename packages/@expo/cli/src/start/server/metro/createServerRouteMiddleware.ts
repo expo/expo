@@ -79,9 +79,8 @@ export function createRouteHandlerMiddleware(
           });
         }
 
-        const { exp } = options.config;
-
-        if (manifest && exp.extra?.router?.unstable_useServerDataLoaders === true) {
+        const output = options.config.exp.web?.output;
+        if (manifest && (output === 'static' || output === 'server')) {
           // In development, set `loader` property on all HTML routes. We can't know which routes
           // have loaders without bundling via Metro to detect exports. In production, this is
           // populated by `exportStaticAsync.ts` after bundling.
@@ -100,6 +99,7 @@ export function createRouteHandlerMiddleware(
               {
                 file: 'index.js',
                 page: '/index',
+                generated: true,
                 routeKeys: {},
                 namedRegex: /^\/(?:index)?\/?$/i,
               },
@@ -114,8 +114,7 @@ export function createRouteHandlerMiddleware(
       async getHtml(request, route) {
         try {
           const { exp } = options.config;
-          const isSSREnabled =
-            exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+          const isSSREnabled = exp.web?.output === 'server';
 
           const { content } = await options.getStaticPageAsync(
             request.url,
@@ -213,16 +212,6 @@ export function createRouteHandlerMiddleware(
       },
       async getMiddleware(route) {
         const { exp } = options.config;
-
-        if (!options.unstable_useServerMiddleware) {
-          return {
-            default: () => {
-              throw new CommandError(
-                'Server middleware is not enabled. Add unstable_useServerMiddleware: true to your `expo-router` plugin config.'
-              );
-            },
-          };
-        }
 
         if (exp.web?.output !== 'server') {
           warnInvalidMiddlewareOutput();

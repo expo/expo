@@ -39,7 +39,6 @@ function options(overrides: Partial<JsTransformOptions> = {}): JsTransformOption
 function fullConfig() {
   return {
     allowOptionalDependencies: false,
-    unstable_renameRequire: false,
     asyncRequireModulePath: 'metro-runtime',
     globalPrefix: '',
     unstable_compactOutput: false,
@@ -662,7 +661,6 @@ it('collects a Flow side-effect import in the complete Metro dependency graph', 
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -699,7 +697,6 @@ it('collects native lowering helpers in the complete Metro path', async () => {
     enableBabelRuntime: '7.24.0',
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -727,7 +724,6 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -973,7 +969,6 @@ it('completes production constant folding and DCE in native code', async () => {
     isDefaultExpoTransformer: true,
     enableBabelRuntime: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1065,7 +1060,6 @@ it('collects optional dependencies and lets required uses dominate duplicates', 
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1118,7 +1112,6 @@ it('collects and rewrites weak dependencies without conflating them with sync re
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1147,7 +1140,6 @@ it('does not treat a shadowed require.resolveWeak call as a dependency', async (
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1169,7 +1161,6 @@ it('collects and rewrites worker resolution through the Metro async runtime', as
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1198,7 +1189,6 @@ it('collects and rewrites Worker URL constructors through the Metro async runtim
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1226,7 +1216,6 @@ it('collects require.context parameters and keeps distinct contexts separate', a
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1261,7 +1250,6 @@ it('leaves require.context untouched when the Metro feature is disabled', async 
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1295,7 +1283,6 @@ it.each([
       options: options({ dev: true }),
       isDefaultExpoTransformer: true,
       config: {
-        unstable_renameRequire: false,
         allowOptionalDependencies: false,
         asyncRequireModulePath: 'metro-runtime',
         globalPrefix: '',
@@ -1324,7 +1311,6 @@ it('deduplicates the generated async runtime dependency across import kinds', as
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1351,7 +1337,6 @@ it('collects optional dynamic imports and lets a required duplicate dominate', a
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1400,7 +1385,6 @@ it.each([
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1426,7 +1410,6 @@ it('collects optional worker dependencies without making the runtime optional', 
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1458,7 +1441,6 @@ it('honors optional dependency exclusions for dynamic imports and workers', asyn
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: { exclude: ['excluded', 'excluded-worker'] },
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1486,7 +1468,6 @@ it('collects optional weak and context dependencies', async () => {
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1516,7 +1497,6 @@ it.each([`import(/* @metro-ignore */ 'one')`, `import(/* webpackIgnore: true */ 
       options: options({ dev: true }),
       isDefaultExpoTransformer: true,
       config: {
-        unstable_renameRequire: false,
         allowOptionalDependencies: true,
         asyncRequireModulePath: 'metro-runtime',
         globalPrefix: '',
@@ -1545,7 +1525,6 @@ it.each([
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2184,7 +2163,6 @@ it('lowers static ESM imports and exports through the full native path', async (
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2405,7 +2383,6 @@ it('preserves live imported references, direct-call semantics, and live local ex
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2520,7 +2497,6 @@ it('lowers named, namespace, and export-all re-exports with live getters', async
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',

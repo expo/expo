@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [iOS] Add a `JavaScriptRuntime.collectGarbage(passes:cause:until:)` overload that collects repeatedly until the given condition holds, for tests asserting on a release that a single collection doesn't always complete. ([#50188](https://github.com/expo/expo/pull/50188) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.1 — 2026-09-14
 
 _This version does not introduce any user-facing changes._

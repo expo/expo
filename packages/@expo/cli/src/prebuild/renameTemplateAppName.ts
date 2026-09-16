@@ -1,16 +1,26 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig, XML } from '@expo/config-plugins';
 import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
 import { debugEvent } from './events';
 
+// Android resource XML (strings.xml): aapt2 resolves XML entities before its
+// own escape rules, so only &, <, > take entities; the rest (quotes, @, ?,
+// whitespace) needs Android's backslash escapes from `escapeAndroidString`.
+function escapeAndroidResourceValue(original: string): string {
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  return XML.escapeAndroidString(noGt);
+}
+
 function escapeXMLCharacters(original: string): string {
-  const noAmps = original.replace('&', '&amp;');
-  const noLt = noAmps.replace('<', '&lt;');
-  const noGt = noLt.replace('>', '&gt;');
-  const noApos = noGt.replace('"', '\\"');
-  return noApos.replace("'", "\\'");
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  const noQuots = noGt.replace(/"/g, '&quot;');
+  return noQuots.replace(/'/g, '&apos;');
 }
 
 /**
@@ -114,6 +124,14 @@ export async function getTemplateFilesToRenameAsync(
   });
 }
 
+/**
+ * Substitutes the template's placeholder app name inside the given files. Only file
+ * contents are rewritten, and only three tokens: `Hello App Display Name`, `HelloWorld`
+ * and `helloworld`.
+ *
+ * File and directory names are renamed separately during template extraction, from the
+ * same `sanitizedName` call.
+ */
 export async function renameTemplateAppNameAsync(
   cwd: string,
   {
@@ -147,15 +165,20 @@ export async function renameTemplateAppNameAsync(
 
       debugEvent('rename_file', { path: debugEvent.path(absoluteFilePath) });
 
-      const safeName = ['.xml', '.plist'].includes(path.extname(file))
-        ? escapeXMLCharacters(name)
-        : name;
+      const extension = path.extname(file);
+      // `.xml` files in the rename config are Android resources; `.plist` is generic XML.
+      const escapedDisplayName =
+        extension === '.xml'
+          ? escapeAndroidResourceValue(name)
+          : extension === '.plist'
+            ? escapeXMLCharacters(name)
+            : name;
 
       try {
         const replacement = contents
-          .replace(/Hello App Display Name/g, safeName)
-          .replace(/HelloWorld/g, IOSConfig.XcodeUtils.sanitizedName(safeName))
-          .replace(/helloworld/g, IOSConfig.XcodeUtils.sanitizedName(safeName.toLowerCase()));
+          .replace(/Hello App Display Name/g, () => escapedDisplayName)
+          .replace(/HelloWorld/g, IOSConfig.XcodeUtils.sanitizedName(name))
+          .replace(/helloworld/g, IOSConfig.XcodeUtils.sanitizedName(name).toLowerCase());
 
         if (replacement === contents) {
           return;

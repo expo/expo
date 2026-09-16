@@ -16,6 +16,7 @@
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.0-preview.0 — 2026-09-10
 

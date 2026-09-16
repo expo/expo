@@ -4,13 +4,35 @@
 
 ### 🛠 Breaking changes
 
+- `web.output: 'server'` now renders HTML pages on each request instead of prerendering them during export. ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
+
+- Enable data loaders by default for static and server output ([#50118](https://github.com/expo/expo/pull/50118) by [@hassankhan](https://github.com/hassankhan))
+- Enable server rendering by default for `web.output: "server"` ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.2 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- Bundle source maps served by `expo start` and written by `expo export` are now [index maps](https://tc39.es/ecma426/#sec-index-source-map), as Metro now always emits them. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+### 🎉 New features
+
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 - Remove Expo Router compatibility checks for `@react-navigation` packages. ([#50176](https://github.com/expo/expo/pull/50176) by [@Ubax](https://github.com/Ubax))
+- Fix app names in prebuild templates: derive project identifiers from the raw name in XML and plists ('A & B' gave 'AampB' in plists but 'AB' elsewhere), and escape display names for Android resources and plists. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.1 — 2026-09-14
 

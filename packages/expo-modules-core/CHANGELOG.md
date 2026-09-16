@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Compile `expo-module-gradle-plugin` against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed native-backed `ArrayBuffer`s and `NativeArrayBuffer`s being copied instead of shared when passed back from JS on Hermes V1. ([#50132](https://github.com/expo/expo/pull/50132) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 58.0.2 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- [Android] Compile `expo-module-gradle-plugin` against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed native-backed `ArrayBuffer`s and `NativeArrayBuffer`s being copied instead of shared when passed back from JS on Hermes V1. ([#50132](https://github.com/expo/expo/pull/50132) by [@lukmccall](https://github.com/lukmccall))
 
 ## 58.0.1 — 2026-09-14
 
