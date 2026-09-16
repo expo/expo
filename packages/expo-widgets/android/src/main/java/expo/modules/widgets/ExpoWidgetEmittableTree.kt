@@ -1,7 +1,11 @@
+@file:SuppressLint("RestrictedApi")
+
 package expo.modules.widgets
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color as AndroidColor
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +26,8 @@ import expo.modules.ui.FillMaxHeightParams
 import expo.modules.ui.FillMaxSizeParams
 import expo.modules.ui.FillMaxWidthParams
 import expo.modules.ui.HeightParams
+import expo.modules.ui.graphics.ImageSource
+import expo.modules.ui.image.ImageContentScale
 import expo.modules.ui.LayoutProps
 import expo.modules.ui.LinearProgressIndicatorProps
 import expo.modules.ui.LoadingIndicatorProps
@@ -54,6 +60,9 @@ import expo.modules.ui.convertibles.VerticalArrangementDefault
 import androidx.compose.ui.graphics.Color
 import androidx.glance.Emittable
 import androidx.glance.EmittableButton
+import androidx.glance.EmittableImage
+import androidx.glance.ImageProvider
+import androidx.glance.TintColorFilterParams
 import androidx.glance.GlanceModifier
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckboxDefaults
@@ -67,6 +76,7 @@ import androidx.glance.appwidget.RadioButtonDefaults
 import androidx.glance.appwidget.SwitchDefaults
 import androidx.glance.background
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.EmittableBox
 import androidx.glance.layout.EmittableColumn
 import androidx.glance.layout.EmittableRow
@@ -80,6 +90,8 @@ import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.layout.wrapContentHeight
 import androidx.glance.layout.wrapContentWidth
+import androidx.glance.semantics.contentDescription
+import androidx.glance.semantics.semantics
 import androidx.glance.text.EmittableText
 import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
@@ -92,6 +104,7 @@ import androidx.glance.appwidget.lazy.EmittableLazyColumn
 import androidx.glance.appwidget.lazy.EmittableLazyListItem
 import androidx.glance.appwidget.lazy.ReservedItemIdRangeEnd
 import io.github.jakex7.peek.glance.determinateCircularProgressIndicatorEmittable
+import kotlin.math.roundToInt
 
 private val DefaultCheckedColor = ColorProvider(Color(0xff6750a4))
 private val DefaultUncheckedColor = ColorProvider(Color(0xff79747e))
@@ -99,13 +112,14 @@ private val DefaultCheckedTrackColor = ColorProvider(Color(0xffe8def8))
 private val DefaultUncheckedTrackColor = ColorProvider(Color(0xffe7e0ec))
 
 private class WidgetConverterContext(
-  override val applicationContext: Context
+  override val applicationContext: Context,
+  val widgetSize: DpSize
 ) : ConverterContext {
   override val runtime: Runtime? = null
 }
 
-internal fun ReadableMap.toPeekRoot(context: Context, source: String): Emittable {
-  val converterContext = WidgetConverterContext(context)
+internal fun ReadableMap.toPeekRoot(context: Context, source: String, size: DpSize): Emittable {
+  val converterContext = WidgetConverterContext(context, size)
   return EmittableColumn().also { root ->
     root.children += toPeekNodes(converterContext, source)
   }
@@ -120,12 +134,13 @@ private fun createErrorText(message: String): EmittableText {
   }
 }
 
-private fun ReadableMap.toPeekNodes(converterContext: ConverterContext, source: String): List<Emittable> {
+private fun ReadableMap.toPeekNodes(converterContext: WidgetConverterContext, source: String): List<Emittable> {
   return when (typeName()) {
     "BoxView" -> listOf(toPeekBox(converterContext, source))
     "CheckboxView" -> listOf(toPeekCheckBox(converterContext))
     "CircularProgressIndicatorView" -> listOf(toPeekCircularProgress(converterContext))
     "ColumnView" -> listOf(toPeekColumn(converterContext, source))
+    "ImageView" -> listOf(toPeekImage(converterContext))
     "LazyColumnView" -> listOf(toPeekLazyColumn(converterContext, source))
     "LinearProgressIndicatorView" -> listOf(toPeekLinearProgress(converterContext))
     "LoadingIndicatorView" -> listOf(toPeekLoadingIndicator(converterContext))
@@ -143,7 +158,7 @@ private fun ReadableMap.toPeekNodes(converterContext: ConverterContext, source: 
   }
 }
 
-private fun ReadableMap.toPeekBox(converterContext: ConverterContext, source: String): EmittableBox {
+private fun ReadableMap.toPeekBox(converterContext: WidgetConverterContext, source: String): EmittableBox {
   val props = props<LayoutProps>(converterContext)
   return EmittableBox().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -152,7 +167,7 @@ private fun ReadableMap.toPeekBox(converterContext: ConverterContext, source: St
   }
 }
 
-private fun ReadableMap.toPeekRow(converterContext: ConverterContext, source: String): EmittableRow {
+private fun ReadableMap.toPeekRow(converterContext: WidgetConverterContext, source: String): EmittableRow {
   val props = props<LayoutProps>(converterContext)
   return EmittableRow().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -162,7 +177,7 @@ private fun ReadableMap.toPeekRow(converterContext: ConverterContext, source: St
   }
 }
 
-private fun ReadableMap.toPeekColumn(converterContext: ConverterContext, source: String): EmittableColumn {
+private fun ReadableMap.toPeekColumn(converterContext: WidgetConverterContext, source: String): EmittableColumn {
   val props = props<LayoutProps>(converterContext)
   return EmittableColumn().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -172,7 +187,7 @@ private fun ReadableMap.toPeekColumn(converterContext: ConverterContext, source:
   }
 }
 
-private fun ReadableMap.toPeekLazyColumn(converterContext: ConverterContext, source: String): EmittableLazyColumn {
+private fun ReadableMap.toPeekLazyColumn(converterContext: WidgetConverterContext, source: String): EmittableLazyColumn {
   val props = props<LayoutProps>(converterContext)
   val alignment = props.toPeekHorizontalAlignment()
   return EmittableLazyColumn().also { lazyColumn ->
@@ -214,7 +229,68 @@ private fun ReadableMap.toPeekText(converterContext: ConverterContext): Emittabl
   }
 }
 
-private fun ReadableMap.toPeekButton(converterContext: ConverterContext, source: String): Emittable {
+private fun ReadableMap.toPeekImage(converterContext: WidgetConverterContext): Emittable {
+  val props = props<WidgetImageProps>(converterContext)
+  val source = props.source
+    ?: return createErrorText("Image has no source. Pass source={{ uri }} with a drawable resource name or a file URI.")
+  val provider = runCatching {
+    loadWidgetImage(converterContext.applicationContext, source, props.imageTarget(converterContext))
+  }.getOrElse { error ->
+    return createErrorText(error.message ?: "Image '${source.uri}' could not be loaded.")
+  }
+
+  return EmittableImage().also {
+    it.provider = provider
+    it.modifier = props.imageModifier(converterContext)
+    it.contentScale = props.contentScale.toGlanceContentScale()
+    it.colorFilterParams = props.tint.toGlanceColorProvider()?.let(::TintColorFilterParams)
+    it.alpha = props.alpha.coerceIn(0f, 1f)
+  }
+}
+
+private fun WidgetImageProps.imageModifier(converterContext: ConverterContext): GlanceModifier {
+  val modifier = modifiers.toPeekModifier(converterContext)
+  val description = contentDescription ?: return modifier
+  return modifier.semantics { contentDescription = description }
+}
+
+private fun WidgetImageProps.imageTarget(converterContext: WidgetConverterContext): WidgetImageTarget {
+  val metrics = converterContext.applicationContext.resources.displayMetrics
+  var widthDp = converterContext.widgetSize.width.value.takeIf { it.isFinite() && it > 0f }
+    ?: (metrics.widthPixels / metrics.density)
+  var heightDp = converterContext.widgetSize.height.value.takeIf { it.isFinite() && it > 0f }
+    ?: (metrics.heightPixels / metrics.density)
+
+  for (modifier in modifiers) {
+    when (modifier["\$type"]?.asString()) {
+      "size" -> modifier.asRecord<SizeParams>(converterContext)?.let {
+        widthDp = it.width.toFloat()
+        heightDp = it.height.toFloat()
+      }
+
+      "width" -> modifier.asRecord<WidthParams>(converterContext)?.let { widthDp = it.width.toFloat() }
+      "height" -> modifier.asRecord<HeightParams>(converterContext)?.let { heightDp = it.height.toFloat() }
+    }
+  }
+
+  return WidgetImageTarget(
+    widthPx = (widthDp * metrics.density).roundToInt().coerceAtLeast(1),
+    heightPx = (heightDp * metrics.density).roundToInt().coerceAtLeast(1)
+  )
+}
+
+private fun ImageContentScale.toGlanceContentScale(): ContentScale {
+  return when (this) {
+    ImageContentScale.FIT -> ContentScale.Fit
+    ImageContentScale.CROP -> ContentScale.Crop
+    ImageContentScale.FILL_BOUNDS -> ContentScale.FillBounds
+    // RemoteViews only offers fit, crop and stretch, so the remaining scales map to the nearest one.
+    ImageContentScale.INSIDE, ImageContentScale.NONE -> ContentScale.Fit
+    ImageContentScale.FILL_WIDTH, ImageContentScale.FILL_HEIGHT -> ContentScale.Crop
+  }
+}
+
+private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, source: String): Emittable {
   val props = props<WidgetButtonProps>(converterContext)
   val children = children()
   val action =
@@ -602,4 +678,14 @@ internal data class WidgetButtonProps(
   val label: String? = null,
   val modifiers: ModifierList = emptyList(),
   val target: String? = null
+) : ComposeProps
+
+@OptimizedComposeProps
+internal data class WidgetImageProps(
+  val source: ImageSource? = null,
+  val contentScale: ImageContentScale = ImageContentScale.FIT,
+  val contentDescription: String? = null,
+  val tint: AndroidColor? = null,
+  val alpha: Float = 1f,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps

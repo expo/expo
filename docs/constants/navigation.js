@@ -322,6 +322,7 @@ export const general = [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
       makePage('router/migrate/sdk-55-to-56.mdx'),
+      makePage('router/migrate/sdk-57-to-58.mdx'),
     ]),
   ]),
   makeSection(

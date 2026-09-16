@@ -31,6 +31,8 @@ function makeEmit() {
   return jest.fn((..._args: any[]) => ({ defaultPrevented: false }));
 }
 
+const isPreloaded = (key: string) => key === 'preview-key' || key === 'other-preloaded';
+
 describe('usePreviewTransition', () => {
   let mockSetOpenPreviewKey: jest.Mock;
 
@@ -52,10 +54,11 @@ describe('usePreviewTransition', () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     expect(result.current.computedState).toBe(state);
     expect(result.current.emit).toBe(emit);
+    expect(result.current.isPreloaded('preview-key')).toBe(true);
   });
 
   it('wraps emit when openPreviewKey is set', () => {
@@ -68,7 +71,7 @@ describe('usePreviewTransition', () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     expect(result.current.emit).not.toBe(emit);
   });
@@ -86,7 +89,7 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     // Fire transitionStart for the preview key
     act(() => {
@@ -101,6 +104,7 @@ describe('usePreviewTransition', () => {
     expect(result.current.computedState.routes).toHaveLength(2);
     expect(result.current.computedState.routes[1]!.key).toBe('preview-key');
     expect(result.current.computedState.index).toBe(1);
+    expect(result.current.isPreloaded('preview-key')).toBe(false);
 
     // Original emit should still have been called
     expect(emit).toHaveBeenCalledTimes(1);
@@ -119,7 +123,7 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     act(() => {
       result.current.emit({
@@ -135,6 +139,8 @@ describe('usePreviewTransition', () => {
       'other-preloaded',
     ]);
     expect(result.current.computedState.index).toBe(1);
+    expect(result.current.isPreloaded('preview-key')).toBe(false);
+    expect(result.current.isPreloaded('other-preloaded')).toBe(true);
   });
 
   it('intercepts transitionEnd and calls setOpenPreviewKey(undefined)', () => {
@@ -147,7 +153,7 @@ describe('usePreviewTransition', () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     act(() => {
       result.current.emit({
@@ -171,7 +177,7 @@ describe('usePreviewTransition', () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     act(() => {
       result.current.emit({
@@ -197,7 +203,7 @@ describe('usePreviewTransition', () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     act(() => {
       result.current.emit({
@@ -225,7 +231,7 @@ describe('usePreviewTransition', () => {
     const emit = makeEmit();
 
     const { result, rerender } = renderHook(
-      ({ state }: HookProps) => usePreviewTransition(state, emit),
+      ({ state }: HookProps) => usePreviewTransition(state, emit, isPreloaded),
       { initialProps: { state } as HookProps } as RenderHookOptions<HookProps>
     );
 
@@ -262,7 +268,7 @@ describe('usePreviewTransition', () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     act(() => {
       result.current.emit({
@@ -281,7 +287,7 @@ describe('usePreviewTransition', () => {
     const emit = makeEmit();
 
     const { result, rerender } = renderHook(
-      ({ state }: HookProps) => usePreviewTransition(state, emit),
+      ({ state }: HookProps) => usePreviewTransition(state, emit, isPreloaded),
       { initialProps: { state } as HookProps } as RenderHookOptions<HookProps>
     );
 
@@ -308,7 +314,7 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     // Start tracking
     act(() => {
@@ -336,7 +342,7 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     act(() => {
       result.current.emit({

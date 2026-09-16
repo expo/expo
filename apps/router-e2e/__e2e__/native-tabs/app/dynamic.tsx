@@ -1,4 +1,4 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 
