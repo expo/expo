@@ -16,22 +16,31 @@ import {
   updateVersionDerivedFilesAsync,
 } from '../changesets/Versioning';
 
+type CommandOptions = { force: boolean };
+
 export default (program: Command) => {
   program
     .command('version-packages')
+    .option(
+      '-f, --force',
+      'Publish despite pending changeset entries. Other release safeguards are not bypassed.',
+      false
+    )
     .description(
       'Consume pending changesets and update the checkout to the package release-PR state.'
     )
-    .asyncAction(async () => {
+    .asyncAction(async (options: CommandOptions) => {
       const branchName = await getReleaseBranchAsync();
-      await assertReleaseBranch(branchName, 'stable');
-      await assertCleanWorkingTreeAsync();
-      const changesets = await getPendingChangesetsAsync();
-      if (!changesets.length) {
-        logger.success('No pending changeset entries to version.');
-        return;
+      if (!options.force) {
+        await assertReleaseBranch(branchName, 'stable');
+        await assertCleanWorkingTreeAsync();
+        const changesets = await getPendingChangesetsAsync();
+        if (!changesets.length) {
+          logger.success('No pending changeset entries to version.');
+          return;
+        }
+        await assertNoMajorChangesetsAsync(changesets, branchName);
       }
-      await assertNoMajorChangesetsAsync(changesets, branchName);
       const before = await captureWorkspaceVersionsAsync();
       await runChangesetsAsync(['version']);
       const versionedPackages = await getVersionedPackagesAsync(before);
