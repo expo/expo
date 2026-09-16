@@ -40,6 +40,6 @@ CONTRIBUTING.md
 /DEVELOPMENT.md
 
 # Exclude native build output (pnpm pack ignores nested .gitignore files)
-.cxx/
-.gradle/
-/android/build/
+.cxx/**
+.gradle/**
+/android/build/**

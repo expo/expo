@@ -30,5 +30,5 @@ __tests__
 /internal/module_scripts/
 /android/src/androidTest/
 /android/src/test/
-/android/build/
+/android/build/**
 /example/
