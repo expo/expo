@@ -31,10 +31,6 @@ import type { ExpoCustomTransformOptions, ExpoJsTransformerConfig } from './type
 
 export interface TransformResponse {
   readonly dependencies: readonly Dependency[];
-  // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
-  // MetroSourceMapSegmentTuple[]`. Metro readers still see plain tuples
-  // because the `Bundler.transformFile` wrapper swaps the
-  // `SerializableSourceMap` for an `Array.isArray`-true Proxy first.
   readonly output: readonly ExpoJsOutput[];
 }
 

@@ -459,10 +459,65 @@ struct NetworkRequestPersistenceTests {
   }
 
   @Test
+  func `drops every request while recording is disabled`() throws {
+    try withTemporaryDatabase { database in
+      try insertSession(id: "s", into: database)
+      let persistence = NetworkRequestPersistence(
+        database: database,
+        configuration: NetworkTracesConfiguration(enabled: false)
+      ) {
+        return "s"
+      }
+      persistence.persist(makeRequest())
+      #expect(try database.getSpans(afterId: -1).isEmpty)
+    }
+  }
+
+  @Test
+  func `records only requests matching the configured filter`() throws {
+    try withTemporaryDatabase { database in
+      try insertSession(id: "s", into: database)
+      let persistence = NetworkRequestPersistence(
+        database: database,
+        configuration: NetworkTracesConfiguration(enabled: true, hosts: ["API.myapp.com"], methods: nil)
+      ) {
+        return "s"
+      }
+      persistence.persist(makeRequest(url: "https://api.example.com/skip"))
+      persistence.persist(makeRequest(url: "https://api.myapp.com/keep"))
+      let rows = try database.getSpans(afterId: -1)
+      #expect(rows.count == 1)
+      let attributes = try attributesDict(#require(rows.first))
+      #expect(attributes["url.full"] as? String == "https://api.myapp.com/keep")
+    }
+  }
+
+  @Test
+  func `applies a configuration change to subsequent requests only`() throws {
+    // "Applies forward": rows persisted before the change stay in the table and still dispatch.
+    try withTemporaryDatabase { database in
+      try insertSession(id: "s", into: database)
+      let persistence = NetworkRequestPersistence(
+        database: database,
+        configuration: NetworkTracesConfiguration(enabled: true)
+      ) {
+        return "s"
+      }
+      persistence.persist(makeRequest())
+      persistence.setConfiguration(NetworkTracesConfiguration(enabled: false))
+      persistence.persist(makeRequest())
+      #expect(try database.getSpans(afterId: -1).count == 1)
+    }
+  }
+
+  @Test
   func `persists a completed request as a span attributed to the provided session`() throws {
     try withTemporaryDatabase { database in
       try insertSession(id: "main-session", into: database)
-      let persistence = NetworkRequestPersistence(database: database) {
+      let persistence = NetworkRequestPersistence(
+        database: database,
+        configuration: NetworkTracesConfiguration(enabled: true)
+      ) {
         return "main-session"
       }
       persistence.persist(makeRequest())
@@ -479,7 +534,10 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "main-session", into: database)
       let monitor = NetworkRequestMonitor()
-      monitor.persistence = NetworkRequestPersistence(database: database) {
+      monitor.persistence = NetworkRequestPersistence(
+        database: database,
+        configuration: NetworkTracesConfiguration(enabled: true)
+      ) {
         return "main-session"
       }
       monitor.record(makeRequest(method: "GET"))
@@ -494,7 +552,10 @@ struct NetworkRequestPersistenceTests {
     // The sessions FK protects referential integrity; persistence must degrade to a dropped
     // row rather than throw into the monitor's record path.
     try withTemporaryDatabase { database in
-      let persistence = NetworkRequestPersistence(database: database) {
+      let persistence = NetworkRequestPersistence(
+        database: database,
+        configuration: NetworkTracesConfiguration(enabled: true)
+      ) {
         return "never-inserted"
       }
       persistence.persist(makeRequest())

@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { expectSourceMapSection } from '../../utils/sourceMap';
 import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
@@ -118,22 +119,26 @@ describe('exports static', () => {
       // Ensure the bundle does not contain a source map reference
       const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
       expect(sourceMap.version).toBe(3);
-      expect(sourceMap.sources).toEqual(
+      expect(sourceMap.sections).toEqual(
         expect.arrayContaining([
-          '__prelude__',
+          expectSourceMapSection('__prelude__'),
           // NOTE: No `/Users/evanbacon/`...
           // NOTE(@kitten): We can slot in our own runtime here
-          expect.pathMatching(
-            new RegExp(
-              [
-                '/node_modules/metro-runtime/src/polyfills/require.js',
-                '/@expo/cli/build/metro-require/require.js',
-              ].join('|')
+          expectSourceMapSection(
+            expect.pathMatching(
+              new RegExp(
+                [
+                  '/node_modules/metro-runtime/src/polyfills/require.js',
+                  '/@expo/cli/build/metro-require/require.js',
+                ].join('|')
+              )
             )
           ),
 
           // NOTE: relative to the server root for optimal source map support
-          expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),
+          expectSourceMapSection(
+            expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/)
+          ),
         ])
       );
     }
@@ -261,7 +266,7 @@ describe('exports static', () => {
   });
 
   it('statically extracts fonts', async () => {
-    // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07);font-display:auto}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
+    // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07)}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
     // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
     const indexHtml = await getPageHtml(outputDir, 'index.html');
 

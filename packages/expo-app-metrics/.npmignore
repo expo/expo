@@ -20,3 +20,8 @@ __rsc_tests__
 # Ensure native dirs aren't excluded by root .gitignore
 !/ios
 !/android
+
+# Exclude native build output (pnpm pack ignores nested .gitignore files)
+.cxx/
+.gradle/
+/android/build/
