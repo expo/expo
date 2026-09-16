@@ -28,6 +28,11 @@ type FromRuntimeManifestRouteOptions = {
   serverManifest: RoutesManifest<RegExp>;
 };
 
+/**
+ * For static routes that were generated from dynamic routes, we need to use the parent's
+ * context key to find the loader.
+ * @see expo-router/src/loadStaticParamsAsync.ts
+ */
 export function getLoaderRouteContextKey(route: RouteNode): string {
   return route.dynamic === null && route.parentContextKey
     ? route.parentContextKey
@@ -47,9 +52,6 @@ export function fromRuntimeManifestRoute(
     return null;
   }
 
-  // For static routes that were generated from dynamic routes, we need to use the parent's
-  // context key to find the loader
-  // @see expo-router/src/loadStaticParamsAsync.ts
   const contextKey = getLoaderRouteContextKey(route);
 
   if (!contextKey) {
