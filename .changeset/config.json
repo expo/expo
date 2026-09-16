@@ -20,6 +20,6 @@
   },
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
     "onlyUpdatePeerDependentsWhenOutOfRange": true,
-    "updateInternalDependents": "out-of-range"
+    "updateInternalDependents": "always"
   }
 }
