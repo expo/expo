@@ -5,31 +5,44 @@ import ExpoModulesCore
 
 /** A validated trigger URL. Separate from the POST so the SSRF guard is unit-testable. */
 internal struct FingerprintCheckRequest: Equatable {
+  private typealias Check = EmbeddedFingerprint.CheckProtocol
+
   let nonce: String
   let callback: URL
 
   internal static func parse(_ url: URL) -> FingerprintCheckRequest? {
-    // Matched on a reserved query parameter, not a host: hosts belong to the app's own routes.
     guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-          let queryItems = components.queryItems,
-          queryItems.contains(where: {
-            $0.name == EmbeddedFingerprint.CheckProtocol.markerParam
-              && $0.value == EmbeddedFingerprint.CheckProtocol.markerValue
-          }),
-          let nonce = queryItems.first(where: { $0.name == EmbeddedFingerprint.CheckProtocol.nonceParam })?.value,
-          !nonce.isEmpty,
-          let callbackString = queryItems.first(where: {
-            $0.name == EmbeddedFingerprint.CheckProtocol.callbackParam
-          })?.value,
-          let callback = URL(string: callbackString),
-          // The CLI never emits https, and https to an IP literal would fail TLS anyway.
-          callback.scheme == "http",
-          callback.path == EmbeddedFingerprint.CheckProtocol.callbackPath,
-          let callbackHost = callback.host,
-          isPrivateAddress(callbackHost) else {
+          let queryItems = components.queryItems else {
+      return nil
+    }
+    func query(_ name: String) -> String? {
+      return queryItems.first { $0.name == name }?.value
+    }
+
+    // Matched on a reserved query parameter, not a host: hosts belong to the app's own routes.
+    let marked = queryItems.contains { $0.name == Check.markerParam && $0.value == Check.markerValue }
+    guard marked else {
+      return nil
+    }
+    guard let nonce = query(Check.nonceParam), !nonce.isEmpty else {
+      return nil
+    }
+    guard let callbackValue = query(Check.callbackParam),
+          let callback = URL(string: callbackValue),
+          isReachableCallback(callback) else {
       return nil
     }
     return FingerprintCheckRequest(nonce: nonce, callback: callback)
+  }
+
+  private static func isReachableCallback(_ url: URL) -> Bool {
+    // The CLI never emits https, and https to an IP literal would fail TLS anyway.
+    guard url.scheme == "http",
+          url.path == Check.callbackPath,
+          let host = url.host else {
+      return false
+    }
+    return isPrivateAddress(host)
   }
 }
 
