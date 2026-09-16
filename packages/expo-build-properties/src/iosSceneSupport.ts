@@ -15,12 +15,14 @@ const NATIVE_SUPPORT_SDK_MAJOR = 58;
 const ORIGINAL_APP_DELEGATE = 'class AppDelegate: ExpoAppDelegate {';
 const SCENE_APP_DELEGATE = 'class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {';
 const FACTORY_ASSIGNMENT = '    reactNativeFactory = factory';
-const LEGACY_STARTUP = `    window = UIWindow(frame: UIScreen.main.bounds)
-    factory.startReactNative(
+const LEGACY_WINDOW = `    window = UIWindow(frame: UIScreen.main.bounds)
+`;
+const LEGACY_START = `    factory.startReactNative(
       withModuleName: "main",
       in: window,
       launchOptions: launchOptions)
 `;
+const LEGACY_STARTUP = `${LEGACY_WINDOW}${LEGACY_START}`;
 /** The published SDK 57 template wraps the startup in an `os()` check. */
 const LEGACY_STARTUP_WRAPPED = `#if os(iOS) || os(tvOS)
 ${LEGACY_STARTUP}#endif
@@ -28,6 +30,7 @@ ${LEGACY_STARTUP}#endif
 const WINDOW_STATEMENT = /^[ \t]*window = UIWindow\(frame: UIScreen\.main\.bounds\)\r?\n/m;
 const START_STATEMENT = /^[ \t]*factory\.startReactNative\([^)]*\)\r?\n/m;
 const EMPTY_OS_WRAPPER = /^[ \t]*#if os\(iOS\) \|\| os\(tvOS\)\r?\n[ \t]*#endif\r?\n/m;
+const OS_WRAPPER = /^([ \t]*#if os\(iOS\) \|\| os\(tvOS\)\r?\n)([\s\S]*?)(^[ \t]*#endif\r?\n)/m;
 const BLANK_LINES_AFTER_FACTORY = new RegExp(`(${FACTORY_ASSIGNMENT}\\r?\\n)(?:[ \\t]*\\r?\\n)+`);
 
 const SCENE_MANIFEST = {
@@ -128,7 +131,12 @@ function updateAppDelegate(contents: string, enabled: boolean): string {
       .replace(BLANK_LINES_AFTER_FACTORY, '$1\n');
   }
 
-  return contents
-    .replace(SCENE_APP_DELEGATE, ORIGINAL_APP_DELEGATE)
-    .replace(`${FACTORY_ASSIGNMENT}\n\n`, `${FACTORY_ASSIGNMENT}\n\n${LEGACY_STARTUP_WRAPPED}\n`);
+  const restored = contents.replace(SCENE_APP_DELEGATE, ORIGINAL_APP_DELEGATE);
+  if (OS_WRAPPER.test(restored)) {
+    return restored.replace(OS_WRAPPER, `$1${LEGACY_WINDOW}$2${LEGACY_START}$3`);
+  }
+  return restored.replace(
+    `${FACTORY_ASSIGNMENT}\n\n`,
+    `${FACTORY_ASSIGNMENT}\n\n${LEGACY_STARTUP_WRAPPED}\n`
+  );
 }

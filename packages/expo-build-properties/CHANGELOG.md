@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Let `ios.enableSceneSupport` adopt the scene lifecycle when another config plugin has inserted lines into the startup block, such as `@react-native-firebase/app`.
+- [iOS] Let `ios.enableSceneSupport` adopt the scene lifecycle when another config plugin has inserted lines into the startup block, such as `@react-native-firebase/app`. ([#50221](https://github.com/expo/expo/pull/50221) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

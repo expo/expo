@@ -219,6 +219,23 @@ describe(withIosSceneSupport, () => {
     expect(results.infoPlist).toEqual(BASE_INFO_PLIST);
   });
 
+  it('restores the startup statements around lines another plugin inserted', () => {
+    const appDelegate = LEGACY_APP_DELEGATE.replace(
+      '    factory.startReactNative(',
+      `${FIREBASE_LINES}    factory.startReactNative(`
+    );
+    const enabled = mockIosMods({ appDelegate, infoPlist: BASE_INFO_PLIST });
+    withIosSceneSupport(makeConfig('57.0.23'), { ios: { enableSceneSupport: true } });
+
+    const results = mockIosMods({
+      appDelegate: enabled.appDelegate!,
+      infoPlist: { ...BASE_INFO_PLIST, UIApplicationSceneManifest: SCENE_MANIFEST },
+    });
+    withIosSceneSupport(makeConfig('57.0.23'), { ios: { enableSceneSupport: false } });
+
+    expect(results.appDelegate).toBe(appDelegate);
+  });
+
   it('keeps a scene manifest the app owns when set to false', () => {
     const appManifest = { UIApplicationSupportsMultipleScenes: true };
     const results = mockIosMods({
