@@ -90,6 +90,9 @@ module.exports = {
         pageHeaders: process.env.E2E_ROUTER_PAGE_HEADERS
           ? JSON.parse(process.env.E2E_ROUTER_PAGE_HEADERS)
           : undefined,
+        apiRoutes: process.env.E2E_ROUTER_API_ROUTES
+          ? process.env.E2E_ROUTER_API_ROUTES === 'true'
+          : undefined,
       },
     ],
   ],

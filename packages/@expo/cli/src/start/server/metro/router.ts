@@ -90,6 +90,19 @@ export function getRouterDirectory(projectRoot: string): string {
   return 'app';
 }
 
+export function isApiRoutesEnabled(exp: ExpoConfig): boolean {
+  const apiRoutes = exp.extra?.router?.apiRoutes;
+  if (apiRoutes != null) {
+    return apiRoutes === true;
+  }
+
+  return (
+    exp.web?.output === 'server' ||
+    !!exp.experiments?.reactServerComponentRoutes ||
+    !!exp.experiments?.reactServerFunctions
+  );
+}
+
 export function isApiRouteConvention(name: string): boolean {
   return /\+api\.[tj]sx?$/.test(name);
 }
@@ -151,11 +164,11 @@ export function hasWarnedAboutMiddleware() {
   return hasWarnedAboutMiddlewareOutput;
 }
 
-export function warnInvalidWebOutput() {
+export function warnInvalidWebOutput(apiRoutes: string[] = []) {
   if (!hasWarnedAboutApiRouteOutput) {
     Log.warn(
-      chalk.yellow`Using API routes requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
-        'https://docs.expo.dev/router/reference/api-routes/'
+      chalk.yellow`API routes are disabled. Remove the API routes or set {bold apiRoutes: true} in the {bold expo-router} config plugin to enable them.${apiRoutes.length ? ` Routes: ${apiRoutes.join(', ')}.` : ''} ${learnMore(
+        'https://docs.expo.dev/router/web/api-routes/'
       )}`
     );
   }
@@ -166,7 +179,7 @@ export function warnInvalidWebOutput() {
 export function warnInvalidMiddlewareOutput() {
   if (!hasWarnedAboutMiddlewareOutput) {
     Log.warn(
-      chalk.yellow`Using middleware requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
+      chalk.yellow`Using middleware requires {bold web.output: "server"} or {bold apiRoutes: true} in the {bold expo-router} config plugin. ${learnMore(
         'https://docs.expo.dev/router/reference/api-routes/'
       )}`
     );

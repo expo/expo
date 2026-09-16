@@ -26,7 +26,11 @@ import {
   getLoaderRouteContextKey,
   SSG_LOADER_HEADER_ALLOWLIST,
 } from '../start/server/metro/resolveLoader';
-import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
+import {
+  getApiRoutesForDirectory,
+  getMiddlewareForDirectory,
+  warnInvalidWebOutput,
+} from '../start/server/metro/router';
 import {
   assetsRequiresSort,
   serialAssetsToStaticContentAssets,
@@ -736,18 +740,13 @@ async function exportApiRoutesAsync({
 function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
   const apiRoutes = getApiRoutesForDirectory(appDir);
   if (apiRoutes.length) {
-    // TODO: Allow API Routes for native-only.
-    Log.warn(
-      chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
-        .map((v) => path.relative(appDir, v))
-        .join(', ')}`
-    );
+    warnInvalidWebOutput(apiRoutes.map((route) => path.relative(appDir, route)));
   }
 
   const middlewareFile = getMiddlewareForDirectory(appDir, mode);
   if (middlewareFile) {
     Log.warn(
-      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
+      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server" and API routes are disabled. Set \`apiRoutes: true\` in the \`expo-router\` config plugin to enable them. You may want to remove ${path.relative(appDir, middlewareFile)}`
     );
   }
 }
