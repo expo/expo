@@ -40,7 +40,10 @@ const { resolveExpoModules, prebuiltMetadata, generateModulesProvider } = requir
 const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
 const {
   classifyUnsupported,
+  collectRootConflicts,
   collectUnmappedDependencies,
+  renderExtraPodsWarning,
+  renderRootConflictWarning,
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
   reportUnsupported,
@@ -61,23 +64,40 @@ const { readPodspecs } = require('./podspec');
 const { scriptPhasesForModules } = require('./script-phases');
 
 /**
+ * The module roots React Native resolved, keyed by npm package name, from the
+ * autolinking.json it passes as `context.autolinking`. React Native passes `{}`
+ * when it has no autolinking data, and a root it recorded can be gone after a
+ * reinstall, so only roots that are on disk are kept.
+ */
+function collectAutolinkedRoots(autolinking) {
+  const roots = new Map();
+  for (const [packageName, dependency] of Object.entries(autolinking?.dependencies ?? {})) {
+    if (dependency?.root != null && fs.existsSync(dependency.root)) {
+      roots.set(packageName, dependency.root);
+    }
+  }
+  return roots;
+}
+
+/**
  * A pod's identity — where its npm package lives, what its product is called,
  * and whether the Expo prebuild pipeline can build it into an XCFramework.
  *
- * The document covers only packages that ship an spm.config.json, so the
- * filesystem walk stays as the fallback. A documented root that is gone falls
- * back too — a stale entry is not identity — but its product name still holds.
+ * The document covers only packages that ship an spm.config.json; React Native's
+ * autolinked root answers for the rest, and the filesystem walk stays as the
+ * fallback for a sync that gets no autolinking data. A documented root that is
+ * gone falls back too — a stale entry is not identity — but its product name
+ * still holds.
  *
  * The pod name is NOT the product name — react-native-skia ships RNSkia — so
  * the product is what artifacts and prebuild diagnostics are named after.
  */
-function podIdentity(metadata, pod) {
+function podIdentity(metadata, pod, autolinkedRoot) {
   const entry = metadata[pod.podName];
+  const documentedRoot =
+    entry != null && fs.existsSync(entry.packageRoot) ? entry.packageRoot : null;
   return {
-    moduleRoot:
-      entry != null && fs.existsSync(entry.packageRoot)
-        ? entry.packageRoot
-        : findModuleRoot(pod.podspecDir),
+    moduleRoot: documentedRoot ?? autolinkedRoot ?? findModuleRoot(pod.podspecDir),
     productName: entry?.productName ?? pod.podName,
     prebuildProduct:
       entry != null ? { name: entry.productName, sourceOnly: entry.sourceOnly === true } : null,
@@ -116,7 +136,7 @@ function macroPluginFlags(coreModuleRoot) {
 }
 
 module.exports = function expoSpmPlugin(context) {
-  const { react, outputDir } = context;
+  const { autolinking, react, outputDir } = context;
   // `context.appRoot` is the Xcode project dir (`<app>/ios`); the autolinking
   // CLI's --app-root must be the app PACKAGE root, because
   // `generate-modules-provider` filters modules against that dir's package.json
@@ -124,8 +144,9 @@ module.exports = function expoSpmPlugin(context) {
   // provider, with no Expo modules registering at runtime. RN's contract hands
   // us that root directly.
   const appRoot = context.projectRoot;
-  const modules = resolveExpoModules(appRoot);
+  const { modules, extraDependencies } = resolveExpoModules(appRoot);
   const metadata = prebuiltMetadata(appRoot);
+  const autolinkedRoots = collectAutolinkedRoots(autolinking);
   const outDir = path.join(outputDir, 'expo');
   // The old contract generated mutable binaryTarget packages here. They are
   // invalid under automatic configuration selection and must never survive a
@@ -161,7 +182,11 @@ module.exports = function expoSpmPlugin(context) {
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
-      const { moduleRoot, productName } = podIdentity(metadata, pod);
+      const { moduleRoot, productName } = podIdentity(
+        metadata,
+        pod,
+        autolinkedRoots.get(mod.packageName)
+      );
       if (pod.podName === 'ExpoModulesCore') coreModuleRoot = moduleRoot;
       const needsReact = moduleNeedsReact(pod.podName, moduleRoot);
       const framework = resolveFlavoredFramework({
@@ -226,7 +251,7 @@ module.exports = function expoSpmPlugin(context) {
       const pods = mod.pods ?? [];
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
-      const { moduleRoot } = podIdentity(metadata, pod);
+      const { moduleRoot } = podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName));
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
         // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
@@ -317,7 +342,11 @@ module.exports = function expoSpmPlugin(context) {
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
-      const { moduleRoot, prebuildProduct } = podIdentity(metadata, pod);
+      const { moduleRoot, prebuildProduct } = podIdentity(
+        metadata,
+        pod,
+        autolinkedRoots.get(mod.packageName)
+      );
       pending.push({
         podName: pod.podName,
         packageName: mod.packageName,
@@ -352,6 +381,13 @@ module.exports = function expoSpmPlugin(context) {
   }
   if (xcconfigLinkage.length > 0) {
     console.warn(renderXcconfigLinkerWarning(xcconfigLinkage));
+  }
+  const rootConflicts = collectRootConflicts(modules, metadata, autolinkedRoots);
+  if (rootConflicts.length > 0) {
+    console.warn(renderRootConflictWarning(rootConflicts));
+  }
+  if (extraDependencies.length > 0) {
+    console.warn(renderExtraPodsWarning(extraDependencies));
   }
   if (react == null) {
     console.warn(
@@ -421,7 +457,7 @@ module.exports = function expoSpmPlugin(context) {
   const moduleRoots = new Set();
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
-      moduleRoots.add(podIdentity(metadata, pod).moduleRoot);
+      moduleRoots.add(podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName)).moduleRoot);
     }
   }
   // The registry's other inputs: app groups come from the entitlements file and

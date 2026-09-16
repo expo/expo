@@ -173,6 +173,45 @@ function collectUnmappedDependencies(podspecDir, satisfied) {
   return [...deps];
 }
 
+/**
+ * Two paths that name different real directories. A path that cannot be resolved
+ * — a broken symlink, an unreadable parent — counts as no difference: a symlinked
+ * layout is the normal case here, and a diagnostic is never worth failing on.
+ */
+function resolveToDifferentDirectories(left, right) {
+  try {
+    return fs.realpathSync(left) !== fs.realpathSync(right);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Modules whose documented package root and autolinked root are two different
+ * real directories: the package is installed twice, and the plugin builds the
+ * copy the app's JavaScript does not import. One directory reached by two paths
+ * — the routine pnpm and monorepo case — is not a conflict.
+ */
+function collectRootConflicts(modules, metadata, autolinkedRoots) {
+  const conflicts = [];
+  for (const mod of modules) {
+    const autolinkedRoot = autolinkedRoots.get(mod.packageName);
+    if (autolinkedRoot == null) continue;
+    // `plugin.js#podIdentity` resolves a root per POD, so the module conflicts as soon
+    // as ANY pod documents another copy, not only the first pod that documents one.
+    const moduleRoot = (mod.pods ?? [])
+      .map((pod) => metadata[pod.podName]?.packageRoot)
+      .find(
+        (root) =>
+          root != null && fs.existsSync(root) && resolveToDifferentDirectories(root, autolinkedRoot)
+      );
+    if (moduleRoot != null) {
+      conflicts.push({ packageName: mod.packageName, moduleRoot, autolinkedRoot });
+    }
+  }
+  return conflicts;
+}
+
 function renderMixedNoManifest({ podName, packageName, moduleRoot }) {
   return [
     `error: Expo module "${packageName}" (pod ${podName}) mixes Swift and Objective-C/C++ sources but ships neither a Package.swift nor an spm.config.json, so it cannot be built with Swift Package Manager.`,
@@ -334,6 +373,64 @@ function renderXcconfigLinkerWarning(entries) {
     .join('\n\n');
 }
 
+/**
+ * Two installed copies of one module. The sync does not fail: the plugin builds
+ * one copy while the app imports the other, so the warning is the only place the
+ * mismatch is visible.
+ */
+function renderRootConflictWarning(entries) {
+  if (!entries.length) return '';
+  return entries
+    .map(({ packageName, moduleRoot, autolinkedRoot }) =>
+      [
+        `warning: Expo module "${packageName}" is installed twice, so its native code and your JavaScript can come from different copies of the package:`,
+        `      built by this plugin: ${moduleRoot}`,
+        `      imported by your app: ${autolinkedRoot}`,
+        `  Both are real directories, not one directory reached through a symlink, so the copies can be different versions. The plugin builds the first one; your app's JavaScript imports the second. When the two disagree it usually surfaces at runtime, as a missing method or "Cannot find native module" — and two copies of different versions can fail the build instead.`,
+        `  Run \`npm ls ${packageName}\` (or \`yarn why\` / \`pnpm why\`) to find what pulls in the second copy, deduplicate it with \`npm dedupe\` (or \`yarn dedupe\` / \`pnpm dedupe\`), then re-run \`npx react-native spm update\`.`,
+      ].join('\n')
+    )
+    .join('\n\n');
+}
+
+// Most specific ref first: CocoaPods accepts only one, and a pod that somehow
+// carries two is best described by the one that pins a single commit.
+const GIT_REFS = ['commit', 'tag', 'branch'];
+
+// A pod's `source` is a custom spec repo, not the CocoaPods trunk. A git pod is
+// identified by its ref rather than a version, and a local path pod by neither:
+// CocoaPods takes that directory as it is.
+function extraPodOrigin(pod) {
+  const versioned = (origin) =>
+    pod.version != null ? `${origin}, version ${pod.version}` : origin;
+  if (pod.path != null) return `local path: ${pod.path}`;
+  if (pod.git != null) {
+    const ref = GIT_REFS.find((key) => pod[key] != null);
+    return ref != null ? `git: ${pod.git}, ${ref} ${pod[ref]}` : versioned(`git: ${pod.git}`);
+  }
+  if (pod.podspec != null) return versioned(`podspec: ${pod.podspec}`);
+  if (pod.source != null) return versioned(`spec repo: ${pod.source}`);
+  return versioned('published pod');
+}
+
+/**
+ * Pods the app adds for CocoaPods — `extraPods` in its config, which
+ * expo-build-properties writes into Podfile.properties.json. `pod install`
+ * installs them and this plugin does not, so this names them before the compile,
+ * link or runtime failure that would otherwise be their first sign.
+ */
+function renderExtraPodsWarning(pods) {
+  if (!pods.length) return '';
+  const one = pods.length === 1;
+  return [
+    `warning: This app declares ${pods.length} extra CocoaPods ${one ? 'dependency' : 'dependencies'}, and the Swift Package Manager plugin does not install ${one ? 'it' : 'them'}:`,
+    ...pods.map((pod) => `      ${pod.name} (${extraPodOrigin(pod)})`),
+    `  ${one ? 'It comes' : 'They come'} from \`extraPods\` in your app config, which expo-build-properties writes into ios/Podfile.properties.json. The plugin reads that file — that is how ${one ? 'the pod is' : 'these pods are'} named here — but it contributes no CocoaPods dependency to the Swift Package Manager graph, whatever ${one ? 'it is' : 'they are'} installed from.`,
+    `  Native code that imports ${one ? 'it' : 'one of them'} fails to compile or link. Code that reaches a pod at runtime instead — a class looked up by name, an Objective-C category, a bundled resource — builds and then fails on device, so a pod nothing imports is not necessarily unused.`,
+    `  There is no Swift Package Manager route for ${one ? 'it' : 'them'} today. Add a Swift package providing the same code to your Xcode project and drop the \`extraPods\` entry, or keep this app on CocoaPods.`,
+  ].join('\n');
+}
+
 /** Print the report and return the error to throw, or null when nothing is uncovered. */
 function reportUnsupported(entries) {
   if (!entries.length) return null;
@@ -349,8 +446,11 @@ module.exports = {
   podspecDependencies,
   unmappedPodDependencies,
   collectUnmappedDependencies,
+  collectRootConflicts,
   renderUnsupportedReport,
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
+  renderRootConflictWarning,
+  renderExtraPodsWarning,
   reportUnsupported,
 };
