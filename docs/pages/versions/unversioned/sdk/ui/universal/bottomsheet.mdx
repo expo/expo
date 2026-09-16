@@ -129,7 +129,20 @@ export default function BottomSheetNoIndicatorExample() {
 
 The sheet insets its content by default. Pass [`contentPadding`](#contentpadding) to change that inset — `0` lets a row, image, or divider reach the sheet's edges.
 
-```tsx BottomSheetContentPaddingExample.tsx
+<ComponentExample
+  title="BottomSheetContentPaddingExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-content-padding-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-content-padding-android-dark.webp',
+    alt: 'A bottom sheet whose blue banner reaches the sheet edge with no content padding',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-content-padding-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-content-padding-ios-dark.webp',
+    alt: 'A bottom sheet whose blue banner reaches the sheet edge with no content padding',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Column, Text } from '@expo/ui';
 
@@ -156,6 +169,8 @@ export default function BottomSheetContentPaddingExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Snap points
 

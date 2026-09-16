@@ -20,3 +20,8 @@ __rsc_tests__
 
 CLAUDE.md
 CONTRIBUTING.md
+
+# Exclude native build output (pnpm pack ignores nested .gitignore files)
+.cxx/
+.gradle/
+/android/build/

@@ -361,6 +361,30 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
+            "value": "Enable R8 in release builds to shrink, optimize and obfuscate the Java/Kotlin code.",
+          },
+          {
+            "type": "comment",
+            "value": "The app is optimized using the \`proguard-android-optimize.txt\` preset.",
+          },
+          {
+            "type": "comment",
+            "value": "Add custom keep rules to android/app/proguard-rules.pro.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://developer.android.com/topic/performance/app-optimization/enable-app-optimization",
+          },
+          {
+            "key": "android.enableMinifyInReleaseBuilds",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
             "value": "Use this property to specify which architecture you want to build.",
           },
           {

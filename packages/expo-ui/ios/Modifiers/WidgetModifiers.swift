@@ -13,7 +13,7 @@ internal enum WidgetAccentedRenderingModeOptions: String, Enumerable {
   case fullColor
 
 #if !os(tvOS)
-  @available(iOS 18.0, *)
+  @available(iOS 18.0, macOS 15.0, *)
   var toWidgetAccentedRenderingMode: WidgetAccentedRenderingMode {
     switch self {
     case .accented: return .accented
@@ -34,7 +34,7 @@ internal struct WidgetAccentedRenderingModeModifier: Record {
   @ViewBuilder
   func apply(to image: Image) -> some View {
 #if !os(tvOS)
-    if #available(iOS 18.0, *), renderingMode != nil {
+    if #available(iOS 18.0, macOS 15.0, *), renderingMode != nil {
       image.widgetAccentedRenderingMode(renderingMode?.toWidgetAccentedRenderingMode)
     } else {
       image

@@ -28,7 +28,6 @@ test.describe('server rendering with async routes in production', () => {
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     });
     console.timeEnd('expo export');

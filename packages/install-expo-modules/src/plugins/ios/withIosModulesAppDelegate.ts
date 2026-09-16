@@ -178,6 +178,44 @@ export function updateModulesAppDelegateSwift(
     bridge.bundleURL ?? bundleURL()`
   );
 
+  if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
+    contents = updateModulesAppDelegateSwiftSceneLifecycle(contents);
+  }
+
+  return contents;
+}
+
+/**
+ * SDK 58+ starts React Native from `ExpoAppSceneDelegate`, so the app delegate only creates the factory.
+ */
+function updateModulesAppDelegateSwiftSceneLifecycle(contents: string): string {
+  const startReactNativeRegExp =
+    /^[ \t]*factory\.startReactNative\(\s*withModuleName:\s*"([^"]+)"[\s\S]*?\n[ \t]*\)\n\n?/m;
+  const moduleName = contents.match(startReactNativeRegExp)?.[1];
+  if (!moduleName) {
+    return contents;
+  }
+
+  contents = contents.replace(startReactNativeRegExp, '');
+  contents = contents.replace(
+    /^[ \t]*window = UIWindow\(frame: UIScreen\.main\.bounds\)\n\n?/m,
+    ''
+  );
+
+  if (!contents.match(/\bExpoReactNativeFactoryProvider\b/)) {
+    contents = contents.replace(
+      /^(class\s+AppDelegate\s*:\s*ExpoAppDelegate)(\s*\{)/m,
+      '$1, ExpoReactNativeFactoryProvider$2'
+    );
+  }
+
+  if (!contents.match(/\breactNativeFactoryModuleName\b/)) {
+    contents = contents.replace(
+      /^([ \t]*)(var reactNativeFactory: RCTReactNativeFactory\?\n)/m,
+      `$1$2$1let reactNativeFactoryModuleName = "${moduleName}"\n`
+    );
+  }
+
   return contents;
 }
 

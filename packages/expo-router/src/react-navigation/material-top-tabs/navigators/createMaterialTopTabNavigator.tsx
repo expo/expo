@@ -14,6 +14,8 @@ import type {
 import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
 export interface MaterialTopTabNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
   preload: (name: string) => void;
   navigateToTabSync: (name: string, params: object | undefined) => void;
@@ -34,6 +36,8 @@ function MaterialTopTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   routeNames,
   preload,
   navigateToTabSync,
