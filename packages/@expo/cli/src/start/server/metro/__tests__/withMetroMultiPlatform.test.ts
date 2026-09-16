@@ -35,6 +35,10 @@ class FailedToResolveNameError extends Error {
     super('Failed to resolve name');
   }
 }
+
+class FailedToResolveUnsupportedError extends Error {
+  readonly name = 'FailedToResolveUnsupportedError';
+}
 jest.mock('@expo/metro/metro-resolver', () => {
   const resolve = jest.fn(() => ({ type: 'empty' }));
   return {
@@ -164,6 +168,38 @@ describe(withExtendedResolver, () => {
       'react-native',
       platform
     );
+  });
+
+  it.each([
+    '@react-navigation/core',
+    '@react-navigation/native',
+    '@react-navigation/native-stack',
+    '@react-navigation/drawer',
+  ])('resolves %s without Expo Router compatibility checks', (moduleName) => {
+    mockMinFs();
+    jest.mocked(getResolveFunc()).mockReturnValueOnce({
+      type: 'sourceFile',
+      filePath: `/root/node_modules/${moduleName}/lib/module/index.js`,
+    });
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    expect(
+      modified.resolver.resolveRequest!(
+        getResolverContext({
+          originModulePath: '/root/node_modules/example/index.js',
+        }),
+        moduleName,
+        'ios'
+      )
+    ).toEqual({
+      type: 'sourceFile',
+      filePath: `/root/node_modules/${moduleName}/lib/module/index.js`,
+    });
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
   });
 
   it(`resolves to react-native-web on web`, async () => {
@@ -420,6 +456,28 @@ describe(withExtendedResolver, () => {
       'node:path',
       platform
     );
+  });
+
+  it(`resolves a node.js built-in as a shim on web when its URI scheme is unsupported`, async () => {
+    mockMinFs();
+
+    // Metro rejects a `node:` specifier with no registered scheme resolver
+    jest.mocked(getResolveFunc()).mockImplementationOnce(() => {
+      throw new FailedToResolveUnsupportedError(
+        "No resolver is registered for the 'node:' URI scheme."
+      );
+    });
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    expect(
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'node:async_hooks', 'web')
+    ).toEqual({
+      type: 'empty',
+    });
   });
 
   it(`resolves a node.js built-in as a an installed module on web`, async () => {

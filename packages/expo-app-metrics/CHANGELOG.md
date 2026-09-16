@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-15
+
+### 💡 Others
+
+- Add an internal `setNetworkTracesConfig` to gate and filter network span recording at capture time. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes

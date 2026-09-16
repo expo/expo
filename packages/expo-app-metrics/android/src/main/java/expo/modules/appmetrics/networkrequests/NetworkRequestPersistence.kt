@@ -23,16 +23,37 @@ private const val TAG = "ExpoAppMetrics"
 class NetworkRequestPersistence(
   private val database: MetricsDatabase,
   private val scope: CoroutineScope,
+  initialConfiguration: NetworkTracesConfiguration = NetworkTracesConfiguration(),
   // A plain value rather than a provider: the id is constant for an instance, and resolving it
   // eagerly keeps the monitor's record path off module state a teardown could have invalidated.
   private val sessionId: String
 ) {
   /**
+   * Capture-time recording policy. Volatile because the monitor reads it from OkHttp dispatcher
+   * threads while reconfigures land on the modules queue.
+   */
+  @Volatile
+  private var configuration: NetworkTracesConfiguration = initialConfiguration
+
+  /**
+   * Applies a new recording policy. Affects future requests only; rows already written stay.
+   */
+  fun setConfiguration(configuration: NetworkTracesConfiguration) {
+    this.configuration = configuration
+  }
+
+  /**
    * Records one completed request as a span.
    */
   fun persist(request: NetworkRequest) {
-    // Converts and inserts on `scope`, so OkHttp dispatcher threads pay neither the URL parsing
-    // and JSON building nor the database write. Matches `persistBuffered`.
+    // Checked before dispatching: a request the policy excludes costs nothing beyond this. A
+    // `hosts` list does parse the URL here, on the dispatcher thread, which is the price of
+    // deciding before the hop.
+    if (!configuration.allows(request.url, request.method)) {
+      return
+    }
+    // Converts and inserts on `scope`, so past the gate the dispatcher threads pay neither the
+    // span building nor the database write. Matches `persistBuffered`.
     scope.launch {
       val span = request.toSpan(sessionId) ?: return@launch
       try {
@@ -60,7 +81,15 @@ class NetworkRequestPersistence(
     // with the session INSERT and crash-report processing, so converting up to 200 requests
     // there would be the most expensive place to do it.
     scope.launch {
+      // Snapshotted once, unlike `persist`, which samples the policy per request. Everything in
+      // this batch was observed before the install that triggered the drain, so one policy keeps
+      // their treatment from depending on how far the loop happened to get before a reconfigure
+      // landed.
+      val policy = configuration
       for (request in requests) {
+        if (!policy.allows(request.url, request.method)) {
+          continue
+        }
         val span = request.toSpan(sessionId) ?: continue
         try {
           database.spanDao().insert(span)

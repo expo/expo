@@ -1,5 +1,10 @@
 import type { NativeModule } from 'expo';
-import type { LogAttributeValue, LogEventOptions, MetricAttributes } from 'expo-app-metrics';
+import type {
+  LogAttributeValue,
+  LogEventOptions,
+  MetricAttributes,
+  NetworkRequestFilter,
+} from 'expo-app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the
@@ -81,6 +86,33 @@ export type ObserveConfig = {
    * [integrate your own package](/eas/observe/integrations/third-party/).
    */
   integrations?: ObserveIntegrationsConfig;
+  /**
+   * Whether network requests are recorded as trace spans. Pass `true` to record every request,
+   * or an object to record only the ones matching a filter.
+   *
+   * Off by default, because each recorded span counts toward your event quota. This controls
+   * recording, not just export: a request that's turned off or filtered out never reaches the
+   * local database. It applies to future requests only, so anything recorded earlier in the
+   * launch still gets sent. The setting persists across launches.
+   *
+   * @default false
+   */
+  networkTraces?: boolean | ObserveNetworkTracesConfig;
+};
+
+export type ObserveNetworkTracesConfig = {
+  /**
+   * Whether network requests are recorded at all. Set it to `false` to keep a filter configured
+   * while recording nothing.
+   *
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted field matches every request; an
+   * empty array matches none.
+   */
+  filter?: NetworkRequestFilter | null;
 };
 
 export type ObserveNavigationIntegrationConfig = {

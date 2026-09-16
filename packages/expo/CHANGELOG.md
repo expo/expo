@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template. ([#50108](https://github.com/expo/expo/pull/50108) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
 - [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
@@ -20,6 +22,7 @@
 
 - [iOS] Bring the `Package.swift` the SwiftPM autolinking plugin generates up to what CocoaPods already carries: a module's build settings, its declared iOS deployment floor and its `PrivacyInfo.xcprivacy`, plus `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target. Modules the plugin cannot place are now reported with the reason and the fix, including one whose `Package.swift` depends on a target the generated package cannot declare. The podspec reader no longer mistakes a `test_spec`'s linkage for the module's own. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.0-preview.0 — 2026-09-10
 
