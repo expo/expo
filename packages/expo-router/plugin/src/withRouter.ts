@@ -99,7 +99,10 @@ export type Props = {
    * @deprecated
    */
   unstable_useServerMiddleware?: boolean;
-  /** Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config. */
+  /**
+   * Data loaders no longer require an opt-in as of SDK 58. This option has no effect.
+   * @deprecated
+   */
   unstable_useServerDataLoaders?: boolean;
   /** Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time. */
   unstable_useServerRendering?: boolean;
@@ -115,6 +118,12 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   if (Object.hasOwn(props, 'unstable_useServerMiddleware')) {
     warnOnce(
       '`unstable_useServerMiddleware` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
+    );
+  }
+
+  if (Object.hasOwn(props, 'unstable_useServerDataLoaders')) {
+    warnOnce(
+      '`unstable_useServerDataLoaders` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
     );
   }
 

@@ -22,7 +22,10 @@ import type {
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import { SSG_LOADER_HEADER_ALLOWLIST } from '../start/server/metro/resolveLoader';
+import {
+  getLoaderRouteContextKey,
+  SSG_LOADER_HEADER_ALLOWLIST,
+} from '../start/server/metro/resolveLoader';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
@@ -244,12 +247,12 @@ export async function exportFromServerAsync(
     routes: inspect(manifest, { colors: true, depth: null }),
   });
 
-  const loaderReferenceCount = new Set(
+  const loaderReferences = new Set(
     resources.artifacts?.flatMap((artifact) => artifact.metadata?.loaderReferences ?? [])
-  ).size;
+  );
   event('static:routes', {
     total: getHtmlFiles({ manifest, includeGroupVariations: false }).length,
-    withLoaders: loaderReferenceCount,
+    withLoaders: loaderReferences.size,
   });
 
   // Group variations prerender several pathnames from one loader file, so these maps can differ
@@ -266,33 +269,34 @@ export async function exportFromServerAsync(
       const normalizedPathname =
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
-      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
       const renderOpts: GetStaticContentOptions = {};
 
-      if (useServerLoaders) {
-        const loaderResponse = await executeLoaderAsync(normalizedPathname, route);
+      const contextKey = getLoaderRouteContextKey(route);
 
-        if (loaderResponse !== undefined) {
-          const data = await loaderResponse.json();
-          // Transforms a `route.contextKey` into a normalized path. For example,
-          // `./nested/[id]/index.tsx` becomes `/nested/[id]/index`
-          const loaderKey = getContextKey(route.contextKey);
-          const fileSystemPath = `_expo/loaders${loaderKey}`;
-          files.set(fileSystemPath, {
-            contents: JSON.stringify(data, null, 2),
-            targetDomain: 'client',
-            loaderId: loaderKey,
-          });
+      const loaderResponse = loaderReferences.has(path.resolve(appDir, contextKey))
+        ? await executeLoaderAsync(normalizedPathname, route)
+        : undefined;
 
-          const loaderHeaders = deriveStaticLoaderHeaders(loaderResponse.headers);
-          loaderHeadersByPage.set(normalizedPathname, loaderHeaders);
-          // NOTE(@hassankhan): Last-write-wins when concurrent group
-          // variations share a loader file; fine for SSG as loaders don't get
-          // a `request` and will produce identical headers.
-          loaderHeadersByFile.set(`/${fileSystemPath}`, loaderHeaders);
+      if (loaderResponse !== undefined) {
+        const data = await loaderResponse.json();
+        // Transforms a `route.contextKey` into a normalized path. For example,
+        // `./nested/[id]/index.tsx` becomes `/nested/[id]/index`
+        const loaderKey = getContextKey(route.contextKey);
+        const fileSystemPath = `_expo/loaders${loaderKey}`;
+        files.set(fileSystemPath, {
+          contents: JSON.stringify(data, null, 2),
+          targetDomain: 'client',
+          loaderId: loaderKey,
+        });
 
-          renderOpts.loader = { data, key: loaderKey };
-        }
+        const loaderHeaders = deriveStaticLoaderHeaders(loaderResponse.headers);
+        loaderHeadersByPage.set(normalizedPathname, loaderHeaders);
+        // NOTE(@hassankhan): Last-write-wins when concurrent group
+        // variations share a loader file; fine for SSG as loaders don't get
+        // a `request` and will produce identical headers.
+        loaderHeadersByFile.set(`/${fileSystemPath}`, loaderHeaders);
+
+        renderOpts.loader = { data, key: loaderKey };
       }
 
       renderOpts.hydrate = true;
@@ -377,16 +381,12 @@ export async function exportFromServerAsync(
       files.set(route, contents);
     }
 
-    const useServerLoaders = !!exp?.extra?.router?.unstable_useServerDataLoaders;
-    if (useServerLoaders || defaultLoaderRules.length || declaredLoaderRules.length) {
+    if (loaderReferences.size || defaultLoaderRules.length || declaredLoaderRules.length) {
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
           manifest.pageHeaders = buildLoaderPageHeaderRules(manifest.pageHeaders, {
-            defaults: [
-              ...(useServerLoaders ? [SERVER_LOADER_DEFAULT_HEADER_RULE] : []),
-              ...defaultLoaderRules,
-            ],
+            defaults: [SERVER_LOADER_DEFAULT_HEADER_RULE, ...defaultLoaderRules],
             declared: declaredLoaderRules,
           });
         },
@@ -402,21 +402,14 @@ export async function exportFromServerAsync(
       });
 
       // Export loader bundles for routes that have loader exports
-      if (useServerLoaders) {
-        // Get `loaderReferences` from client bundle metadata to determine which routes have loaders
-        const loaderReferences = resources.artifacts?.flatMap(
-          (artifact) => artifact.metadata?.loaderReferences ?? []
-        );
-
-        await exportLoadersAsync({
-          devServer,
-          serverManifest,
-          appDir,
-          files,
-          platform: 'web',
-          loaderReferences,
-        });
-      }
+      await exportLoadersAsync({
+        devServer,
+        serverManifest,
+        appDir,
+        files,
+        platform: 'web',
+        loaderReferences,
+      });
 
       const toAssetUrl = (filename: string) =>
         baseUrl ? `${baseUrl}/${filename}` : `/${filename}`;
@@ -779,7 +772,7 @@ async function exportLoadersAsync({
   files: ExportAssetMap;
   platform: string;
   /** File paths of modules with loader exports from client bundle metadata */
-  loaderReferences: string[];
+  loaderReferences: ReadonlySet<string>;
 }): Promise<void> {
   const entryPoints: { file: string; page: string }[] = [];
 
@@ -791,7 +784,7 @@ async function exportLoadersAsync({
 
     const filePath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
 
-    if (loaderReferences.includes(filePath)) {
+    if (loaderReferences.has(filePath)) {
       entryPoints.push({
         file: filePath,
         page: route.page,
