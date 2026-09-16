@@ -8,6 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -276,6 +277,25 @@ export default function TabLayout() {
 </Step>
 
 <Step label="5">
+
+## @expo/vector-icons をインストールする
+
+`@expo/vector-icons` ライブラリをインストールするには、ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押して開発サーバーを停止してから、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo/vector-icons'],
+    yarn: ['$ yarn expo install @expo/vector-icons'],
+    pnpm: ['$ pnpm expo install @expo/vector-icons'],
+    bun: ['$ bun expo install @expo/vector-icons'],
+  }}
+/>
+
+インストールが完了したら、`npx expo start` を実行して開発サーバーを再起動します。
+
+</Step>
+
+<Step label="6">
 
 ## ボトムタブナビゲーターの外観を更新する
 

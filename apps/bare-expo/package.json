@@ -87,7 +87,7 @@
   },
   "codegenConfig": {
     "name": "LocalModules",
-    "type": "all",
+    "type": "modules",
     "jsSrcsDir": "./modules"
   },
   "expo": {
