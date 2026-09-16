@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Deliver the JS `url` event for deep links and universal links that arrive under the UIKit scene life cycle.
+- [iOS] Deliver the JS `url` event for deep links and universal links that arrive under the UIKit scene life cycle. ([#50232](https://github.com/expo/expo/pull/50232) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
 
