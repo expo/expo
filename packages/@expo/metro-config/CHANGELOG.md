@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Look up chunk entry modules by path instead of matching every module in the graph against a regex, speeding up chunk splitting for exports with async routes and no longer merging chunks for file names containing `*` ([#50245](https://github.com/expo/expo/pull/50245) by [@tahakocal](https://github.com/tahakocal))
+
 ## 58.0.2 — 2026-09-15
 
 ### 🎉 New features
