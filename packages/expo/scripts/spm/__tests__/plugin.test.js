@@ -28,7 +28,12 @@ jest.mock('../flavored-frameworks', () => ({
   prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
 }));
 
-const { resolveExpoModules, prebuiltMetadata, generateModulesProvider, runDumpPackage } = require('../cli');
+const {
+  resolveExpoModules,
+  prebuiltMetadata,
+  generateModulesProvider,
+  runDumpPackage,
+} = require('../cli');
 const { resolveAppTarget } = require('../app-target');
 const { UnsupportedModulesError } = require('../diagnostics');
 const {
@@ -1052,9 +1057,7 @@ describe('a package whose first pod alone is precompiled', () => {
   // before this change. The warning is what must not double.
   it('fails only on the sibling pod SwiftPM cannot build', () => {
     expect(thrown).toBeInstanceOf(UnsupportedModulesError);
-    expect(thrown.unsupported).toEqual([
-      expect.objectContaining({ podName: 'ExpoMultiHelper' }),
-    ]);
+    expect(thrown.unsupported).toEqual([expect.objectContaining({ podName: 'ExpoMultiHelper' })]);
   });
 
   it('warns about its unmapped dependencies once, not once per pass', () => {
