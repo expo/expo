@@ -18,6 +18,19 @@ jest.mock('expo/config-plugins', () => {
   };
 });
 
+describe('ios.enableSceneSupport', () => {
+  it('should run the scene support plugin', () => {
+    const config = { sdkVersion: '58.0.0' } as any;
+
+    withBuildProperties(config, { ios: { enableSceneSupport: true } });
+
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'ios.enableSceneSupport',
+      expect.stringContaining('no longer required')
+    );
+  });
+});
+
 // These two mocks are for the internal imports in `createBuildGradlePropsConfigPlugin`
 jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
