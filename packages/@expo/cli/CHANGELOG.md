@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - `web.output: 'server'` now renders HTML pages on each request instead of prerendering them during export. ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+- Remove the fallback resolver for packages importing themselves by name. Metro now resolves self-references natively, but, like Node.js, only for packages that declare `exports`. ([#50238](https://github.com/expo/expo/pull/50238) by [@robhogan](https://github.com/robhogan))
 
 ### 🎉 New features
 
