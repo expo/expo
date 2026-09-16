@@ -28,8 +28,8 @@
     "expo-symbols": "workspace:*",
     "expo-system-ui": "workspace:*",
     "expo-web-browser": "workspace:*",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.0-rc.1",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-reanimated": "4.6.0",
@@ -39,7 +39,7 @@
     "react-native-worklets": "0.12.2"
   },
   "devDependencies": {
-    "@types/react": "~19.2.2",
+    "@types/react": "~19.3.0",
     "typescript": "~6.0.3"
   }
 }

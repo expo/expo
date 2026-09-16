@@ -125,8 +125,8 @@
     "moment": "^2.29.4",
     "path": "^0.12.7",
     "pixi.js": "^4.6.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.0-rc.1",
     "react-native-dropdown-picker": "^5.3.0",
     "react-native-gesture-handler": "~3.2.1",
@@ -153,12 +153,12 @@
     "@types/fbemitter": "^2.0.32",
     "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "@types/three": "^0.137.0",
     "babel-jest": "^29.2.1",
     "expo-module-scripts": "workspace:*",
     "jest": "^29.2.1",
-    "react-test-renderer": "19.2.3"
+    "react-test-renderer": "19.3.0"
   },
   "expo": {
     "autolinking": {

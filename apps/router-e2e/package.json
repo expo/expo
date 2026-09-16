@@ -59,8 +59,8 @@
     "expo-splash-screen": "workspace:*",
     "expo-sqlite": "workspace:*",
     "jose": "^5",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.0-rc.1",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-pager-view": "^8.0.2",
@@ -71,7 +71,7 @@
     "react-native-webview": "14.0.1"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "compression": "^1.8.0",
     "esbuild": "^0.28.1",
     "express": "^5.1.0",

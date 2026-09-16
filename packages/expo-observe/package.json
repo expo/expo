@@ -60,7 +60,7 @@
   "devDependencies": {
     "@react-navigation/native": "^7.1.33",
     "@testing-library/react-native": "^13.3.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },

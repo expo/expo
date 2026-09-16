@@ -40,15 +40,15 @@
     "expo-system-ui": "workspace:*",
     "expo-updates": "workspace:*",
     "expo-web-browser": "workspace:*",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.0-rc.1",
     "react-native-safe-area-context": "~5.9.1",
     "react-native-screens": "4.27.0"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
-    "@types/react": "~19.2.10",
+    "@types/react": "~19.3.0",
     "tsx": "^4.20.6"
   }
 }

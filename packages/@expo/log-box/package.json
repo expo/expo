@@ -81,13 +81,13 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.8.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "@types/react-dom": "^19.1.7",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
     "npm-run-all2": "^8.0.4",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.0-rc.1",
     "react-native-web": "^0.21.0",
     "rimraf": "^6.1.2"

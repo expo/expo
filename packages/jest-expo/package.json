@@ -46,20 +46,20 @@
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
-    "react-test-renderer": "19.2.3",
+    "react-test-renderer": "19.3.0",
     "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
     "@react-native/jest-preset": "0.88.0-rc.1",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
     "@react-native/jest-preset": "^0.88.0-rc.1",
     "expo": "*",
     "react-native": "*",
-    "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
+    "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4 || ~19.3.0"
   },
   "peerDependenciesMeta": {
     "expo": {
