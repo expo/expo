@@ -1,10 +1,17 @@
-export function getWindow(count: number, first: number, last: number, overscanCount: number) {
+export function getWindow(
+  count: number,
+  first: number,
+  last: number,
+  overscanCount: number,
+  minCapacity = 0
+) {
   if (count === 0) return { start: 0, capacity: 0 };
   first = Math.max(0, Math.min(first, count - 1));
   last = Math.max(first, Math.min(last, count - 1));
   const start = Math.max(0, first - overscanCount);
   const end = Math.min(count, last + 1 + overscanCount);
-  return { start, capacity: end - start };
+  const capacity = Math.min(count, Math.max(end - start, minCapacity));
+  return { start: Math.min(start, count - capacity), capacity };
 }
 
 export function getSlotIndices(start: number, capacity: number): number[] {

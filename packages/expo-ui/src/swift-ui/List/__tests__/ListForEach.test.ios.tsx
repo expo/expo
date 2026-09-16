@@ -140,22 +140,43 @@ it('keeps pool assignments unique and covers demand across jumps and reversals',
   }
 });
 
-it('grows to cover 100 visible rows plus 10 on each side and shrinks with the viewport', () => {
+it('grows to cover 100 visible rows plus 10 on each side and keeps its capacity when the viewport shrinks', () => {
   render(<ListForEach data={data} keyExtractor={keyExtractor} renderItem={() => <View />} />);
+  const indices = () => nativeProps().children.map((row: any) => row.props.index);
   const revision = nativeProps().revision;
   requestWindow(500, 599);
-  const indices = nativeProps().children.map((row: any) => row.props.index);
-  expect(indices).toHaveLength(120);
-  expect([...indices].sort((a, b) => a - b)).toEqual(
+  expect(indices()).toHaveLength(120);
+  expect([...indices()].sort((a, b) => a - b)).toEqual(
     Array.from({ length: 120 }, (_, index) => index + 490)
   );
   expect(nativeProps().revision).toBe(revision);
   requestWindow(500, 509);
-  expect(nativeProps().children).toHaveLength(30);
+  expect(indices()).toHaveLength(120);
+  expect(Math.min(...indices())).toBe(490);
   requestWindow(0, 99);
-  expect(nativeProps().children).toHaveLength(110);
+  expect(indices()).toHaveLength(120);
+  expect(Math.min(...indices())).toBe(0);
   requestWindow(9900, 9999);
-  expect(nativeProps().children).toHaveLength(110);
+  expect(indices()).toHaveLength(120);
+  expect(Math.max(...indices())).toBe(9999);
+});
+
+it('keeps slot assignments stable while rows appear and disappear one at a time', () => {
+  render(<ListForEach data={data} keyExtractor={keyExtractor} renderItem={() => <View />} />);
+  const assignments = (): number[] => nativeProps().children.map((row: any) => row.props.index);
+  requestWindow(500, 509);
+  requestWindow(500, 510); // A row appears at the bottom before the top row disappears.
+  const grown = assignments();
+  expect(grown).toHaveLength(31);
+  requestWindow(501, 510); // The top row disappears.
+  const shifted = assignments();
+  expect(shifted).toHaveLength(31);
+  expect(shifted.filter((index, slot) => index !== grown[slot])).toHaveLength(1);
+  requestWindow(501, 511); // The next row appears without moving any slot.
+  expect(assignments()).toEqual(shifted);
+  requestWindow(502, 511);
+  expect(assignments().filter((index, slot) => index !== shifted[slot])).toHaveLength(1);
+  for (let index = 492; index <= 521; index++) expect(assignments()).toContain(index);
 });
 
 it('updates overscan without resetting demand and supports zero extra rows', () => {

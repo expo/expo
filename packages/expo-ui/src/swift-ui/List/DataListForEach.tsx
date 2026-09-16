@@ -114,20 +114,32 @@ export function DataListForEach<ItemT>({
     first: 0,
     last: 0,
     revision: 0,
+    capacity: 0,
+    overscanCount,
   });
   let current = state;
   if (state.keys !== itemKeys) {
     const previousKey = state.keys[state.first];
     const anchor = previousKey === undefined ? 0 : Math.max(0, itemKeys.indexOf(previousKey));
     current = {
+      ...state,
       keys: itemKeys,
       first: Math.min(anchor, Math.max(0, data.length - 1)),
       last: Math.min(anchor + state.last - state.first, Math.max(0, data.length - 1)),
       revision: state.revision + 1,
     };
-    setState(current);
   }
-  const { start, capacity } = getWindow(data.length, current.first, current.last, overscanCount);
+  if (current.overscanCount !== overscanCount) {
+    current = { ...current, overscanCount, capacity: 0 };
+  }
+  if (current !== state) setState(current);
+  const { start, capacity } = getWindow(
+    data.length,
+    current.first,
+    current.last,
+    overscanCount,
+    current.capacity
+  );
   const committedRevision = useRef(current.revision);
   useLayoutEffect(() => {
     committedRevision.current = current.revision;
@@ -174,9 +186,18 @@ export function DataListForEach<ItemT>({
           const maximum = Math.max(0, previous.keys.length - 1);
           const first = Math.max(0, Math.min(event.first, maximum));
           const last = Math.max(first, Math.min(event.last, maximum));
-          return first === previous.first && last === previous.last
+          const { capacity } = getWindow(
+            previous.keys.length,
+            first,
+            last,
+            previous.overscanCount,
+            previous.capacity
+          );
+          return first === previous.first &&
+            last === previous.last &&
+            capacity === previous.capacity
             ? previous
-            : { ...previous, first, last };
+            : { ...previous, first, last, capacity };
         });
       }}>
       {indices.map((index, slot) => {
