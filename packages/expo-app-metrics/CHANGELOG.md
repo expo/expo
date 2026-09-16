@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] [Android] Stop attributing native crash stack frames to unrelated functions, and keep enough detail in the report to symbolicate them off-device. ([#49921](https://github.com/expo/expo/pull/49921) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 57.0.21 — 2026-09-24
