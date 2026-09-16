@@ -198,6 +198,28 @@ export const Frameworks = {
   },
 
   /**
+   * Returns the path a target's resource bundle takes within an xcframework slice.
+   * The bundle belongs inside the product's `.framework` because consumers embed a framework by
+   * copying that directory as a whole — a bundle placed beside it never reaches the app. It is
+   * also where the Expo runtime looks for it: `Bundle(for:).resourceURL` of a framework-bound
+   * class is the framework directory itself.
+   *
+   * @param xcframeworkPath Path to the .xcframework
+   * @param slice Slice name (e.g. 'ios-arm64_x86_64-simulator')
+   * @param productName SPM product name, which is also the framework name
+   * @param bundleName Resource bundle name, as produced by SPM
+   * @returns Full path to the resource bundle inside the slice
+   */
+  getResourceBundlePathInSlice: (
+    xcframeworkPath: string,
+    slice: string,
+    productName: string,
+    bundleName: string
+  ): string => {
+    return path.join(xcframeworkPath, slice, `${productName}.framework`, bundleName);
+  },
+
+  /**
    * Finds an xcframework at either a non-versioned or versioned output path.
    * Versioned paths have the format:
    * output/<packageVersion>/<rnVersion>/<hermesVersion>/<flavor>/xcframeworks/
@@ -392,8 +414,8 @@ const processXCFrameworkSlices = async (
 /**
  * Copies resource bundles from SPM build output into each xcframework slice.
  * SPM produces resource bundles named {packageName}_{targetName}.bundle in the
- * build output directory. These need to be placed alongside the .framework in
- * each slice of the xcframework so consumers can find them.
+ * build output directory. These are placed inside the product's .framework in
+ * each slice — see `Frameworks.getResourceBundlePathInSlice`.
  *
  * @param pkg Package information
  * @param product SPM product
@@ -401,7 +423,7 @@ const processXCFrameworkSlices = async (
  * @param slices Array of slice names in the xcframework
  * @param xcframeworkOutputPath Path to the xcframework
  */
-const copyResourceBundlesIntoXCFrameworkAsync = async (
+export const copyResourceBundlesIntoXCFrameworkAsync = async (
   pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
@@ -447,12 +469,16 @@ const copyResourceBundlesIntoXCFrameworkAsync = async (
         continue;
       }
 
-      // Copy bundle into the xcframework slice (alongside the .framework)
-      const destBundlePath = path.join(xcframeworkOutputPath, slice, bundleName);
+      const destBundlePath = Frameworks.getResourceBundlePathInSlice(
+        xcframeworkOutputPath,
+        slice,
+        product.name,
+        bundleName
+      );
       await fs.copy(buildOutputPath, destBundlePath, { overwrite: true });
 
       spinner.info(
-        `Copied resource bundle ${chalk.cyan(bundleName)} → ${chalk.cyan(slice + '/' + bundleName)}`
+        `Copied resource bundle ${chalk.cyan(bundleName)} → ${chalk.cyan(path.relative(xcframeworkOutputPath, destBundlePath))}`
       );
     }
   }

@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "58.0.0",
+  "version": "58.0.2",
   "description": "The Babel preset for Expo projects",
   "keywords": [
     "babel",
@@ -86,7 +86,7 @@
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.26.0",
     "@expo/config": "workspace:*",
-    "@expo/metro": "~56.1.0",
+    "@expo/metro": "~58.0.0-rc.0",
     "@expo/metro-config": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/babel__code-frame": "^7.0.1",

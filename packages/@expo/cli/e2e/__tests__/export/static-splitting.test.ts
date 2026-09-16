@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
+import { expectSourceMapSection } from '../../utils/sourceMap';
 import {
   expectChunkPathMatching,
   findProjectFiles,
@@ -117,13 +118,12 @@ describe('exports static with bundle splitting', () => {
 
       // Common chunk
       if (file!.match(/__common/)) {
-        const sources: string[] = sourceMap.sources;
-        expect(
-          sources.every(
-            (source) => source.startsWith('/packages/') || source.startsWith('/node_modules/')
-          )
-        ).toBe(true);
-        expect(sources.some((source) => source.includes('router-e2e/__e2e__/'))).toBe(false);
+        expect(sourceMap.sections.length).toBeGreaterThan(0);
+        for (const section of sourceMap.sections) {
+          expect(section).toEqual(
+            expectSourceMapSection(expect.stringMatching(/^\/(packages|node_modules)\//))
+          );
+        }
       } else {
         // expect(sourceMap.sources).toEqual(
         //   expect.arrayContaining([
@@ -246,7 +246,7 @@ describe('exports static with bundle splitting', () => {
   });
 
   it('statically extracts fonts', async () => {
-    // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/__e2e__/static-rendering/sweet.ttf);font-display:auto}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
+    // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/__e2e__/static-rendering/sweet.ttf)}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
     // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
     const indexHtml = await getPageHtml(outputDir, 'index.html');
 
