@@ -184,18 +184,22 @@
             }
           }
         },
+        "apiRoutes": {
+          "description": "Enable API routes with static or server output. Defaults to `true` for server output and `false` for static output.",
+          "type": "boolean"
+        },
         "unstable_useServerMiddleware": {
-          "description": "Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config.",
+          "description": "Deprecated as of SDK 58. Server middleware no longer requires an opt-in; this option has no effect.",
           "type": "boolean",
           "default": false
         },
         "unstable_useServerDataLoaders": {
-          "description": "Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config.",
+          "description": "Deprecated as of SDK 58. Data loaders no longer require an opt-in; this option has no effect.",
           "type": "boolean",
           "default": false
         },
         "unstable_useServerRendering": {
-          "description": "Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time.",
+          "description": "Deprecated as of SDK 58. Server rendering no longer requires an opt-in; this option has no effect.",
           "type": "boolean",
           "default": false
         },

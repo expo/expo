@@ -22,8 +22,6 @@ for (const outputMode of outputModes) {
       env: {
         EXPO_USE_STATIC: outputMode,
         E2E_ROUTER_SRC: 'server-loader',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
-        E2E_ROUTER_SERVER_RENDERING: outputMode === 'server' ? 'true' : 'false',
 
         // Ensure CI is disabled otherwise the file watcher won't run.
         CI: '0',

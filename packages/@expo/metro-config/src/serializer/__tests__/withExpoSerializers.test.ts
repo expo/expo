@@ -123,9 +123,9 @@ describe('serializes', () => {
         expect(artifact.source.startsWith('testPreModule;')).toBeTruthy();
       });
       mapArtifacts.forEach((artifact: SerialAsset) => {
-        // Assert each map artifact has __testPreModule in sources
+        // Assert each map artifact has __testPreModule in the sources of its first (indexed) section
         const map = JSON.parse(artifact.source);
-        expect(map.sources[0]).toEqual('__testPreModule');
+        expect(map.sections[0].map.sources[0]).toEqual('__testPreModule');
       });
     });
     it(`generated async import paths match generated artifacts`, async () => {
