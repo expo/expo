@@ -62,7 +62,7 @@ jobs:
     timeout-minutes: 30
     concurrency:
       group: publish-packages-version-${{ github.ref_name }}
-      cancel-in-progress: false
+      cancel-in-progress: true
     permissions:
       contents: write
       pull-requests: write
