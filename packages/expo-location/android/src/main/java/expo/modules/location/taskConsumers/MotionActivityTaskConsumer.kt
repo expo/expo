@@ -22,13 +22,14 @@ import expo.modules.interfaces.taskManager.TaskInterface
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
 import expo.modules.location.AppForegroundedSingleton
 import expo.modules.location.LocationHelpers
+import expo.modules.location.services.BaseForegroundTaskService
+import expo.modules.location.services.BaseForegroundTaskService.ServiceBinder
 import expo.modules.location.services.MotionActivityTaskService
-import expo.modules.location.services.MotionActivityTaskService.ServiceBinder
 
 class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?) : TaskConsumer(context, taskManagerUtils), TaskConsumerInterface {
   private var mTask: TaskInterface? = null
   private var mPendingIntent: PendingIntent? = null
-  private var mService: MotionActivityTaskService? = null
+  private var mService: BaseForegroundTaskService? = null
 
   //region TaskConsumerInterface
   override fun taskType(): String {
