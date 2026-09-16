@@ -41,17 +41,10 @@ struct DataListForEachView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    let slots = (props.children ?? []).compactMap { $0.childView as? DataListForEachItemView }
     let revision = props.revision
     ForEach(Array(props.itemKeys.enumerated()), id: \.element) { index, key in
-      DataListForEachRow(
-        itemKey: key,
-        index: index,
-        listProps: props,
-        slot: slots.isEmpty ? nil : slots[index % slots.count],
-        window: window
-      )
-      .tag(AnyHashable(key))
+      DataListForEachRow(itemKey: key, index: index, listProps: props, window: window)
+        .tag(AnyHashable(key))
     }
     .onDelete(perform: props.deleteEnabled ? { offsets in
       props.onDelete(["indices": Array(offsets), "revision": revision])
@@ -66,10 +59,16 @@ private struct DataListForEachRow: View {
   let itemKey: String
   let index: Int
   @ObservedObject var listProps: DataListForEachProps
-  let slot: DataListForEachItemView?
   let window: DataListForEachWindow
   @State private var appeared = false
   @State private var visibilityID = UUID()
+
+  private var slot: DataListForEachItemView? {
+    guard let slots = listProps.children, !slots.isEmpty else {
+      return nil
+    }
+    return slots[index % slots.count].childView as? DataListForEachItemView
+  }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -83,7 +82,9 @@ private struct DataListForEachRow: View {
           window: window
         )
       } else {
-        Color.clear.frame(height: listProps.estimatedItemSize).accessibilityHidden(true)
+        Color.clear
+          .frame(height: window.height(for: itemKey, fallback: listProps.estimatedItemSize))
+          .accessibilityHidden(true)
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -193,7 +194,7 @@ private final class DataListForEachWindow: ObservableObject {
   }
 
   func measure(_ height: CGFloat, for key: String, revision: Int) {
-    guard revision == self.revision, height.isFinite, height >= 0 else {
+    guard revision == self.revision, height.isFinite, height > 0 else {
       return
     }
     heights[key] = height
