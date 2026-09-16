@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Allow `getDefaultCalendarSync`, `getCalendars` and `ExpoCalendar.get` to work with write-only calendar access. ([#48186](https://github.com/expo/expo/pull/48186) by [@Wenszel](https://github.com/Wenszel))
-
 ### 💡 Others
+
+## 57.0.4 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] Allow `getDefaultCalendarSync`, `getCalendars` and `ExpoCalendar.get` to work with write-only calendar access. ([#48186](https://github.com/expo/expo/pull/48186) by [@Wenszel](https://github.com/Wenszel))
 
 ## 57.0.3 — 2026-09-08
 
