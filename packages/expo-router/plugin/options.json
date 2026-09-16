@@ -195,7 +195,7 @@
           "default": false
         },
         "unstable_useServerRendering": {
-          "description": "Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time.",
+          "description": "Deprecated as of SDK 58. Server rendering no longer requires an opt-in; this option has no effect.",
           "type": "boolean",
           "default": false
         },

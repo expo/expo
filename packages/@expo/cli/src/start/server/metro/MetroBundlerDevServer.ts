@@ -101,6 +101,7 @@ import {
   getRouterDirectoryModuleIdWithManifest,
   hasWarnedAboutApiRoutes,
   isApiRouteConvention,
+  isExpoRouterApp,
   warnInvalidWebOutput,
 } from './router';
 import { serialAssetsToStaticContentAssets } from './serializeHtml';
@@ -514,9 +515,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     const { exp } = getConfig(this.projectRoot);
-    const useServerRendering = exp.extra?.router?.unstable_useServerRendering ?? false;
-    const isExportingWithSSR =
-      exp.web?.output === 'server' && useServerRendering && !this.isReactServerComponentsEnabled;
+    const isExportingWithSSR = exp.web?.output === 'server' && !this.isReactServerComponentsEnabled;
 
     const serverManifest = await getBuildTimeServerManifestAsync({
       ...exp.extra?.router,
@@ -694,8 +693,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bytecode: false,
     });
 
-    const isSSREnabled =
-      exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+    const isSSREnabled = exp.web?.output === 'server';
     const location = new URL(pathname, this.getDevServerUrlOrAssert());
 
     if (isSSREnabled) {
@@ -1261,7 +1259,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
 
-    const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+    const useServerRendering =
+      isExpoRouterApp(config.pkg) && ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
@@ -1531,9 +1530,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 }
                 // Only pass the request in SSR mode (server output with SSR enabled).
                 // In static mode, loaders should not receive request data.
-                const isSSREnabled =
-                  exp.web?.output === 'server' &&
-                  exp.extra?.router?.unstable_useServerRendering === true;
+                const isSSREnabled = exp.web?.output === 'server';
                 return this.executeServerDataLoaderAsync(
                   url,
                   resolvedLoaderRoute,
@@ -1872,7 +1869,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     request?: ImmutableRequest
   ): Promise<Response | undefined> {
     const { exp } = getConfig(this.projectRoot);
-    const unstable_useServerRendering = exp.extra?.router?.unstable_useServerRendering;
 
     const { routerRoot } = this.instanceMetroOptions;
     assert(
@@ -1900,7 +1896,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         let headers: Headers | undefined;
         if (maybeResponse instanceof Response) {
           // In SSR, preserve `Response` from the loader
-          if (exp.web?.output === 'server' && unstable_useServerRendering) {
+          if (exp.web?.output === 'server') {
             return maybeResponse;
           }
 
