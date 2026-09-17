@@ -85,6 +85,7 @@ import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
+import expo.modules.webview.DomWebViewModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 
@@ -152,6 +153,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ContactsNextModule::class.java to null,
     DeviceModule::class.java to null,
     DocumentPickerModule::class.java to null,
+    DomWebViewModule::class.java to null,
     EASClientModule::class.java to null,
     ExpoFetchModule::class.java to null,
     FontUtilsModule::class.java to null,
