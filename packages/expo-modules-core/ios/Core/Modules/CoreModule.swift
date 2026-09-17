@@ -27,6 +27,10 @@ internal final class CoreModule: Module {
       FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
     }
 
+    Function("isRunningOnQuest") {
+      false
+    }
+
     Function("installOnUIRuntime") { (uiRuntimeHolder: JavaScriptValue) in
       guard let appContext else {
         throw Exceptions.AppContextLost()
