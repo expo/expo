@@ -14,16 +14,16 @@ function notRunning() {
 /** Mock `pgrep` as "not running" for the first `misses` probes, then "running"; `open` always succeeds. */
 function mockProbes(misses: number, openImplementation?: () => Promise<any>) {
   let probes = 0;
-  jest.mocked(spawnAsync).mockImplementation(async (command: string) => {
+  jest.mocked(spawnAsync).mockImplementation((async (command: string) => {
     if (command === 'pgrep') {
       probes += 1;
       if (probes <= misses) {
         throw notRunning();
       }
-      return { stdout: '422\n' } as any;
+      return { stdout: '422\n' };
     }
-    return openImplementation ? openImplementation() : ({} as any);
-  });
+    return openImplementation ? openImplementation() : {};
+  }) as any);
 }
 
 function openCalls() {
@@ -46,7 +46,9 @@ it('should activate the window when Simulator.app is not running', async () => {
   await ensureSimulatorAppRunningAsync({ udid: '123' });
 
   expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening the iOS simulator/));
-  expect(openCalls()).toEqual([['open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', '123']]]);
+  expect(openCalls()).toEqual([
+    ['open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', '123']],
+  ]);
 });
 
 it('should open DeviceHub focused on the device via deep link when Simulator.app is unavailable', async () => {
