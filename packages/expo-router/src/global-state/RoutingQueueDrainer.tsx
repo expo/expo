@@ -5,9 +5,18 @@ import * as React from 'react';
 import type { RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
 import type { NavigationTransitionMode } from './types';
+import { useRoutingQueueBatch } from './useRoutingQueueBatch';
 
 type Props = {
   processIntent: (intent: RoutingIntent) => void;
+};
+
+export type RoutingQueueBatch = {
+  intents: RoutingIntent[];
+  // May also include a suspended intent superseded by this batch.
+  intentsToDequeue: RoutingIntent[];
+  inTransition: boolean;
+  dequeueBeforeProcessing: boolean;
 };
 
 export function shouldUseTransition(
@@ -31,21 +40,22 @@ function isPreloadIntent(intent: RoutingIntent): boolean {
 export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
   const { dequeue, startTransition, transitionMode } = React.use(RoutingQueueApiContext)!;
-  const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
+  const selectBatch = useRoutingQueueBatch();
 
   React.useEffect(() => {
-    if (intents.length === 0 || lastProcessed.current === intents) {
+    const batch = selectBatch(intents, shouldUseTransition(intents, transitionMode));
+    if (!batch) {
       return;
     }
-    // Strict Mode re-runs the mount effect with the same array before `dequeue` updates state.
-    lastProcessed.current = intents;
     // TODO(@ubax): Navigation runs in a transition, so a destination that suspends keeps the
     // current screen visible and never renders `SuspenseFallback` (including the web dev
     // "Bundling..." toast for async routes). Design a fallback UX for pending navigation.
-    // Dequeue urgently so a later enqueue is not rebased on a stale queue.
-    dequeue(intents);
+    if (batch.dequeueBeforeProcessing) {
+      // Native dequeues urgently so a later enqueue is not rebased on a stale queue.
+      dequeue(batch.intentsToDequeue);
+    }
     const process = () => {
-      for (const intent of intents) {
+      for (const intent of batch.intents) {
         // Only catches errors thrown while dispatching. The navigation reducer runs
         // during the next render, so errors from it surface there, not here.
         try {
@@ -60,14 +70,19 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
           );
         }
       }
+      if (!batch.dequeueBeforeProcessing) {
+        // Web dequeues in the destination's update, so the next intent waits for its
+        // commit and the layout effects that register newly mounted navigators.
+        dequeue(batch.intentsToDequeue);
+      }
     };
 
-    if (shouldUseTransition(intents, transitionMode)) {
+    if (batch.inTransition) {
       startTransition(process);
     } else {
       process();
     }
-  }, [dequeue, intents, processIntent, startTransition, transitionMode]);
+  }, [dequeue, intents, processIntent, selectBatch, startTransition, transitionMode]);
 
   return null;
 }
