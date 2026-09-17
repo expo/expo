@@ -115,3 +115,19 @@ test('replaces an open drawer entry when child navigation closes the drawer', ()
     type: 'replace',
   });
 });
+
+test.each(['tab', 'drawer'])('reconstructs missing %s history before comparing visits', (type) => {
+  const router = type === 'tab' ? TabRouter({}) : DrawerRouter({});
+  const initial = {
+    ...stack,
+    type: undefined,
+    index: 1,
+    routes: options.routeNames.map((name) => ({ key: name, name })),
+  };
+  expect(
+    router.getStateForAction(initial, CommonActions.navigate('details'), options)?.browserHistory
+  ).toBeUndefined();
+  expect(
+    router.getStateForAction(initial, CommonActions.goBack(), options)?.browserHistory
+  ).toMatchObject({ type: 'pop', count: 1 });
+});

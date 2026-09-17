@@ -264,6 +264,7 @@ function stackRouterExtension({
     'shouldActionChangeFocus'
   > = {
     normalizeState: markPreloadedRoutes,
+    getBrowserHistoryForAction: getStackBrowserHistoryAction,
 
     getBrowserHistoryForRouteFocus(previous, next) {
       return getStackBrowserHistoryAction(previous, next, { type: 'POP' });
@@ -721,15 +722,7 @@ function stackRouterExtension({
     actionCreators: StackActions,
   };
 
-  return {
-    ...router,
-    getStateForAction(state, action, options) {
-      const result = router.getStateForAction(state, action, options);
-      if (result === null) return null;
-      const browserHistory = getStackBrowserHistoryAction(state, result.state, action);
-      return { ...result, ...(browserHistory && { browserHistory }) };
-    },
-  } satisfies typeof router;
+  return router;
 }
 
 /**

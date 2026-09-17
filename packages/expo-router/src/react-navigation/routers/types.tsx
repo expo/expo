@@ -190,9 +190,9 @@ export type Router<
   getStateForRouteFocus(state: State, key: string): State;
 
   /**
-   * Browser history instruction when focusing a child also changes this navigator.
-   * Ancestors may override the child's instruction, e.g. when dismissing a parent modal.
-   * Omit to preserve the child's instruction.
+   * Adjusts browser history when navigation inside a child also changes its parent.
+   * For example, pushing Details inside an open drawer closes the drawer: return `replace`
+   * to reuse the drawer's browser entry for Details. Return `undefined` to keep the child's choice.
    */
   getBrowserHistoryForRouteFocus?(
     previous: State,
@@ -232,6 +232,18 @@ export type Router<
   normalizeState?(state: State): State;
 
   /**
+   * Chooses how an accepted action changes browser history. For example, Stack PUSH returns
+   * `{ type: 'push' }`, so browser Back can return to the previous screen.
+   * `extendRouter` calls this after `normalizeState`. Its return value replaces any instruction
+   * from the base router; `undefined` updates the current browser entry without adding one.
+   */
+  getBrowserHistoryForAction?(
+    previous: State,
+    next: State,
+    action: Action
+  ): RouterBrowserHistoryAction | undefined;
+
+  /**
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;
@@ -262,10 +274,10 @@ export type RouterActionResult<State extends NavigationState> = {
    */
   affectedRouteKey: string | undefined;
   /**
-   * Push one browser entry or traverse back by a positive number of entries. Omit to
-   * refresh the current entry. The handling router owns this decision; parent focus
-   * changes may supply their own instruction. Ignored for prevented actions and browser restores.
-   * This is action metadata, never part of the persisted navigation state.
+   * How this action changes browser history: `push` adds an entry, `pop` goes back,
+   * and `replace` (or omission) updates the current entry.
+   * For example, pushing Details returns `{ type: 'push' }`; Back returns `{ type: 'pop', count: 1 }`.
+   * Applied only if navigation succeeds. Restoring a browser entry does not add another entry.
    */
   browserHistory?: RouterBrowserHistoryAction;
 };

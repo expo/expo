@@ -4,6 +4,7 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -311,29 +312,35 @@ function tabRouterExtension({
   TabActionType | CommonNavigationAction,
   TabRouterOptions
 >) {
-  const getBrowserHistory = (
+  const getBrowserHistoryForAction = (
     previous: TabNavigationState<ParamListBase>,
     next: TabNavigationState<ParamListBase>,
-    forward: boolean
+    action: Pick<TabActionType | CommonNavigationAction, 'type'>
   ): RouterBrowserHistoryAction | undefined => {
-    if (
-      forward &&
-      (backBehavior === 'history' || backBehavior === 'fullHistory') &&
-      previous.routes[previous.index]?.key !== next.routes[next.index]?.key
-    ) {
-      return { type: 'push' };
+    switch (action.type) {
+      case 'PUSH':
+      case 'NAVIGATE':
+      case 'JUMP_TO':
+        // Selecting another tab is a new browser visit even if tab history removes a duplicate.
+        // For example, Home -> Search -> Home still needs three browser entries.
+        if (
+          (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+          previous.routes[previous.index]?.key !== next.routes[next.index]?.key
+        ) {
+          return { type: 'push' };
+        }
+        break;
+      case 'GO_BACK':
+        break;
+      default:
+        return undefined;
     }
-    const state = ensureStateHistory(previous, backBehavior, initialRouteName);
-    const delta = (next.history?.length ?? 0) - state.history.length;
-    return delta > 0
-      ? { type: 'push' }
-      : delta < 0
-        ? {
-            type: 'pop',
-            count: -delta,
-            target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
-          }
-        : undefined;
+    // URL-derived state may have no history yet. Action/focus handling already fills in `next`.
+    // Reconstruct `previous` too, so that initialization is not counted as a new browser visit.
+    return getBrowserHistoryForHistoryChange(
+      ensureStateHistory(previous, backBehavior, initialRouteName),
+      next
+    );
   };
 
   // TODO: Simplify the action handling in this router.
@@ -343,7 +350,10 @@ function tabRouterExtension({
   > = {
     normalizeState: clearFocusedPreloadedRoute,
 
-    getBrowserHistoryForRouteFocus: (previous, next) => getBrowserHistory(previous, next, true),
+    getBrowserHistoryForAction,
+
+    getBrowserHistoryForRouteFocus: (previous, next) =>
+      getBrowserHistoryForAction(previous, next, { type: 'JUMP_TO' }),
 
     getStateForRouteFocus(inputState, key) {
       const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
@@ -752,27 +762,7 @@ function tabRouterExtension({
     actionCreators: TabActions,
   };
 
-  return {
-    ...router,
-    getStateForAction(state, action, options) {
-      const result = router.getStateForAction(state, action, options);
-      if (result === null) {
-        return null;
-      }
-
-      let browserHistory: RouterBrowserHistoryAction | undefined;
-      switch (action.type) {
-        case 'PUSH':
-        case 'NAVIGATE':
-        case 'JUMP_TO':
-        case 'GO_BACK': {
-          browserHistory = getBrowserHistory(state, result.state, action.type !== 'GO_BACK');
-          break;
-        }
-      }
-      return { ...result, ...(browserHistory && { browserHistory }) };
-    },
-  } satisfies typeof router;
+  return router;
 }
 
 /**
