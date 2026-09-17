@@ -6,6 +6,12 @@ internal final class LiveActivitiesNotSupportedException: Exception, @unchecked 
   }
 }
 
+internal final class ScheduledLiveActivitiesNotSupportedException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Scheduling Live Activities requires iOS 26.0 or later"
+  }
+}
+
 internal final class StartLiveActivityException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Failed to start live activity: \(param)"
