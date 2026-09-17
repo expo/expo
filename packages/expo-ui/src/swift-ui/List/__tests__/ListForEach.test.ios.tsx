@@ -2,8 +2,8 @@ import { act, render } from '@testing-library/react-native';
 import { createContext, useContext, useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { getSlotIndices, getWindow } from '../../../recycling/window';
 import { ListForEach, type ListForEachProps } from '../ListForEach';
-import { getSlotIndices, getWindow } from '../window';
 
 const mockList = jest.fn();
 const mockSlot = jest.fn();
