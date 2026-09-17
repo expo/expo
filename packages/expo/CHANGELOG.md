@@ -21,7 +21,7 @@
 - [iOS] Emit JavaScript `url` events for deep links delivered to a running app under the UIKit scene life cycle. ([#50235](https://github.com/expo/expo/pull/50235) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Import `Foundation` in `ResponseSink`, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] The SwiftPM autolinking plugin now loads the Expo Swift macro plugin when it compiles a module from source, the way `pod install` does. A module using `@Field`, `@Record` or `@OptimizedFunction` no longer fails to build with "external macro implementation could not be found".
-- [iOS] The SwiftPM autolinking plugin now links the SwiftPM packages a precompiled module bundles, such as expo-image's SDWebImage. It also warns about a precompiled module's pod dependencies that the SwiftPM graph does not provide.
+- [iOS] The SwiftPM autolinking plugin now links the SwiftPM packages a precompiled module bundles, such as expo-image's SDWebImage. It also warns about a precompiled module's pod dependencies that the SwiftPM graph does not provide. ([#50177](https://github.com/expo/expo/pull/50177) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
