@@ -79,6 +79,22 @@ it.each([
     'This browser does not expose the Prompt API. Use a browser that supports it.',
   ],
   ['browser-model-unavailable', 'This browser exposes the Prompt API but has no model available.'],
+  [
+    'unsupported-os',
+    'Apple Foundation Models requires iOS 26 or macOS 26, and this operating system is older. Update the device or test on a supported OS version.',
+  ],
+  [
+    'unsupported-device',
+    'This device does not support Apple Intelligence, which the on-device model requires. Test on a device that supports Apple Intelligence.',
+  ],
+  [
+    'intelligence-disabled',
+    'This device supports Apple Intelligence, but it is turned off. Ask the user to turn Apple Intelligence on in system settings.',
+  ],
+  [
+    'unsupported-language',
+    'The on-device model does not support a language this request asked for. Request a language the model supports in inputLanguages and outputLanguage.',
+  ],
   ['unknown', 'The provider did not report a recognised cause.'],
   ['apple-intelligence-siesta', 'The provider did not report a recognised cause.'],
   // Reasons come from the provider as free-form strings, so they can collide with

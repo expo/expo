@@ -15,6 +15,7 @@
 
 ### Bug fixes
 
+- Explain the Apple unavailability reasons instead of reporting an unrecognised cause on iOS and macOS.
 - Report why a model is unavailable in plain language, keeping the provider's own reason instead of replacing it with an unmet feature requirement. ([#50001](https://github.com/expo/expo/pull/50001) by [@chrfalch](https://github.com/chrfalch))
 - Keep source imports compatible with released Expo versions that do not export the event subscription type. ([#49997](https://github.com/expo/expo/pull/49997) by [@chrfalch](https://github.com/chrfalch))
 - Prepare compiled output for publishing and exclude tests and local build caches from the package. ([#49997](https://github.com/expo/expo/pull/49997) by [@chrfalch](https://github.com/chrfalch))
