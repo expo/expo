@@ -1,27 +1,28 @@
 import * as React from 'react';
 
 export function usePreventBeforeUnload(preventBeforeUnload: boolean) {
-  const preventBeforeUnloadRef = React.useRef(preventBeforeUnload);
+  const isDisabledRef = React.useRef(false);
+  const preventUnload = React.useEffectEvent((event: BeforeUnloadEvent) => {
+    if (preventBeforeUnload && !isDisabledRef.current) {
+      event.preventDefault();
+      event.returnValue = true;
+    }
+  });
 
   React.useEffect(() => {
-    preventBeforeUnloadRef.current = preventBeforeUnload;
+    isDisabledRef.current = false;
 
     if (!preventBeforeUnload) {
       return;
     }
 
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (preventBeforeUnloadRef.current) {
-        event.preventDefault();
-        event.returnValue = true;
-      }
-    };
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => preventUnload(event);
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [preventBeforeUnload]);
 
   return React.useCallback(() => {
-    preventBeforeUnloadRef.current = false;
+    isDisabledRef.current = true;
   }, []);
 }
