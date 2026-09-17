@@ -10,6 +10,8 @@
 
 - [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
 
+- Re-exported `isRunningOnQuest()` from `expo-modules-core`. ([#50284](https://github.com/expo/expo/pull/50284) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))

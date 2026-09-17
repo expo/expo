@@ -15,6 +15,7 @@ export {
   CodedError,
 
   // Methods
+  isRunningOnQuest,
   requireNativeModule,
   requireOptionalNativeModule,
   requireNativeViewManager as requireNativeView,
