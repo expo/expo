@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- NativeTabs now honors layout `unstable_settings.initialRouteName` instead of always selecting the first Trigger. ([#49900](https://github.com/expo/expo/pull/49900) by [@terijaki](https://github.com/terijaki))
+
 ### 💡 Others
 
 ## 57.0.21 — 2026-09-11
