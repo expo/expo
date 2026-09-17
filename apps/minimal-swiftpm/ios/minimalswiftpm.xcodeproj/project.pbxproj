@@ -138,14 +138,6 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				645431F597264DF0B767FFFF /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
 				708C4700668F67C0665B08ED /* Generate Expo app.config */,
-			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "minimalswiftpm" */;
-			buildPhases = (
-				13B07F871A680F5B00A75B9A /* Sources */,
-				13B07F8C1A680F5B00A75B9A /* Frameworks */,
-				13B07F8E1A680F5B00A75B9A /* Resources */,
-				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				645431F597264DF0B767FFFF /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
 			);
 			buildRules = (
 			);
@@ -774,7 +766,6 @@
 		A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/ios;};
 /* End XCLocalSwiftPackageReference section */
 
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
