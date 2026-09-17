@@ -38,15 +38,26 @@ class SFSymbolLoader: NSObject, SDImageLoader {
     // This loader is mainly used for prefetching where weight isn't critical.
     let configuration = UIImage.SymbolConfiguration(pointSize: 100, weight: .regular)
 
+    #if os(macOS)
+    guard let baseImage = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil) else {
+      let error = makeNSError(description: "Unable to create SF Symbol image for '\(symbolName)'")
+      completedBlock?(nil, nil, error, false)
+      return nil
+    }
+    let image = baseImage.withSymbolConfiguration(configuration) ?? baseImage
+    // `NSImage` uses `isTemplate` instead of `withRenderingMode(.alwaysTemplate)`.
+    image.isTemplate = true
+    completedBlock?(image, nil, nil, true)
+    #else
     guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
       let error = makeNSError(description: "Unable to create SF Symbol image for '\(symbolName)'")
       completedBlock?(nil, nil, error, false)
       return nil
     }
-
     // Return as template image so tintColor prop works correctly
     let templateImage = image.withRenderingMode(.alwaysTemplate)
     completedBlock?(templateImage, nil, nil, true)
+    #endif
     return nil
   }
 

@@ -95,22 +95,32 @@ public final class ImageModule: Module {
       }
 
       Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
-        #if !os(tvOS)
+        #if !os(tvOS) && !os(macOS)
         view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
         #endif
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
+        #if os(macOS)
+        view.sdImageView.setAccessibilityElement(accessible ?? false)
+        #else
         view.sdImageView.isAccessibilityElement = accessible ?? false
+        #endif
       }
 
       Prop("accessibilityLabel") { (view, label: String?) in
+        #if os(macOS)
+        view.sdImageView.setAccessibilityLabel(label)
+        #else
         view.sdImageView.accessibilityLabel = label
+        #endif
       }
 
       Prop("accessibilityElementsHidden") { (view, hidden: Bool?) in
+        #if !os(macOS)
         view.accessibilityElementsHidden = hidden ?? false
         view.sdImageView.accessibilityElementsHidden = hidden ?? false
+        #endif
       }
 
       Prop("recyclingKey") { (view, key: String?) in
@@ -146,16 +156,22 @@ public final class ImageModule: Module {
       }
 
       Prop("preferHighDynamicRange", false) { (view, preferHighDynamicRange: Bool) in
+        #if !os(macOS)
         if #available(iOS 17.0, macCatalyst 17.0, tvOS 17.0, *) {
           view.sdImageView.preferredImageDynamicRange = preferHighDynamicRange ? .constrainedHigh : .unspecified
         }
+        #endif
       }
 
       AsyncFunction("startAnimating") { (view: ImageView) in
         if view.isSFSymbolSource {
           view.startSymbolAnimation()
         } else {
+          #if os(macOS)
+          view.sdImageView.animates = true
+          #else
           view.sdImageView.startAnimating()
+          #endif
         }
       }
 
@@ -163,7 +179,11 @@ public final class ImageModule: Module {
         if view.isSFSymbolSource {
           view.stopSymbolAnimation()
         } else {
+          #if os(macOS)
+          view.sdImageView.animates = false
+          #else
           view.sdImageView.stopAnimating()
+          #endif
         }
       }
 
@@ -316,8 +336,8 @@ public final class ImageModule: Module {
       // the whole module to be Sendable.
       appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
         url: source.uri?.absoluteString ?? "",
-        width: image.size.width * image.scale,
-        height: image.size.height * image.scale
+        width: image.size.width * imageScale(image),
+        height: image.size.height * imageScale(image)
       )
       return Image(image)
     }
@@ -325,7 +345,7 @@ public final class ImageModule: Module {
     Class(Image.self) {
       Property("width", \.ref.size.width)
       Property("height", \.ref.size.height)
-      Property("scale", \.ref.scale)
+      Property("scale", \.scale)
       Property("isAnimated", \.isAnimated)
       Property("mediaType") { image in
         return imageFormatToMediaType(image.ref.sd_imageFormat)
@@ -378,7 +398,9 @@ public final class ImageModule: Module {
   static func registerLoaders() {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
+    #if !os(macOS)
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
+    #endif
     SDImageLoadersManager.shared.addLoader(SFSymbolLoader())
   }
 

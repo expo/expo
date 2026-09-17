@@ -1,4 +1,5 @@
 import Foundation
+import ExpoModulesCore
 
 // Blurhash implementation thanks to @evanw work
 // https://github.com/evanw/thumbhash
@@ -456,8 +457,6 @@ func thumbHashToApproximateAspectRatio(hash: Data) -> Float32 {
   return Float32(lx) / Float32(ly)
 }
 
-#if os(iOS) || os(tvOS)
-import UIKit
 
 func thumbHash(fromImage: UIImage) -> Data {
   let size = fromImage.size
@@ -466,8 +465,18 @@ func thumbHash(fromImage: UIImage) -> Data {
   let h = max(1, Int(round(100 * size.height / max(size.width, size.height))))
   var rgba = Data(count: w * h * 4)
   rgba.withUnsafeMutableBytes { rgba in
+    #if os(macOS)
+    var imageRect = CGRect(origin: .zero, size: size)
+    guard let cgImage = fromImage.cgImage(forProposedRect: &imageRect, context: nil, hints: nil),
+      let space = cgImage.colorSpace else {
+      return
+    }
+    #else
+    guard let cgImage = fromImage.cgImage, let space = cgImage.colorSpace else {
+      return
+    }
+    #endif
     if
-      let space = fromImage.cgImage?.colorSpace,
       let context = CGContext(
         data: rgba.baseAddress,
         width: w,
@@ -480,9 +489,15 @@ func thumbHash(fromImage: UIImage) -> Data {
     {
       // EXIF orientation only works if you draw the UIImage, not the CGImage
       context.concatenate(CGAffineTransform(1, 0, 0, -1, 0, CGFloat(h)))
+      #if os(macOS)
+      // On macOS NSImage doesn't carry per-instance EXIF orientation the way UIImage does;
+      // images loaded by SDWebImage are already orientation-normalized by the decoder.
+      context.draw(cgImage, in: CGRect(x: 0, y: 0, width: w, height: h))
+      #else
       UIGraphicsPushContext(context)
       fromImage.draw(in: CGRect(x: 0, y: 0, width: w, height: h))
       UIGraphicsPopContext()
+      #endif
 
       // Convert from premultiplied alpha to unpremultiplied alpha
       var rgba = rgba.baseAddress!.bindMemory(to: UInt8.self, capacity: rgba.count)
@@ -546,6 +561,9 @@ func image(fromThumbhash: Data) -> UIImage {
     shouldInterpolate: true,
     intent: .perceptual
   )
+  #if os(macOS)
+  return UIImage(cgImage: image!, size: NSSize(width: w, height: h))
+  #else
   return UIImage(cgImage: image!)
+  #endif
 }
-#endif

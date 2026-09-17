@@ -33,7 +33,16 @@ internal final class ImageLoader {
     }
       
     if let tintColor = options.tintColor {
+      #if os(macOS)
+      // `NSImage` has no equivalent to `UIImage.withTintColor(_:)`. Mark the image as a template so
+      // it picks up `contentTintColor` from the hosting view. Callers that pin the tint outside of a
+      // view (e.g. asset rasterization) won't see the color baked in on macOS — acceptable for v1.
+      image.isTemplate = true
+      _ = tintColor
+      return image
+      #else
       return image.withTintColor(tintColor)
+      #endif
     }
     return image
   }

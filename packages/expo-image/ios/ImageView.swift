@@ -4,7 +4,7 @@ internal import SDWebImage
 internal import SDWebImageSVGCoder
 import ExpoModulesCore
 import Symbols
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
 import VisionKit
 #endif
 
@@ -132,6 +132,16 @@ public final class ImageView: ExpoView {
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
+    #if os(macOS)
+    wantsLayer = true
+    layer?.masksToBounds = true // macOS equivalent of `clipsToBounds = true` on UIView.
+    sdImageView.imageScaling = contentFit.toImageScaling()
+    sdImageView.autoresizingMask = [.width, .height]
+    // We deliberately don't set `sdImageView.wantsLayer = true` on macOS: explicit layer backing
+    // pushes `NSImageView` into a CALayer `.contents` rendering path that bypasses
+    // `contentTintColor` for template images, breaking SF Symbol / tint props. Keeping the inner
+    // view in its default rendering mode preserves tinting (matches the `expo-symbols` pattern).
+    #else
     clipsToBounds = true
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -140,6 +150,7 @@ public final class ImageView: ExpoView {
     // Apply trilinear filtering to smooth out mis-sized images.
     sdImageView.layer.magnificationFilter = .trilinear
     sdImageView.layer.minificationFilter = .trilinear
+    #endif
 
     addSubview(sdImageView)
   }
@@ -149,6 +160,13 @@ public final class ImageView: ExpoView {
     cancelPendingOperation()
   }
 
+  #if os(macOS)
+  public override func viewDidChangeEffectiveAppearance() {
+    super.viewDidChangeEffectiveAppearance()
+    // Mirror the iOS appearance-change hook so the layer mask geometry stays in sync after dark/light flips.
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
+  }
+  #else
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
     if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -157,6 +175,7 @@ public final class ImageView: ExpoView {
       applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     }
   }
+  #endif
 
   // MARK: - Implementation
 
@@ -180,7 +199,7 @@ public final class ImageView: ExpoView {
     isSFSymbolSource = source.isSFSymbol
 
     if sdImageView.image == nil {
-      sdImageView.contentMode = contentFit.toContentMode()
+      applyContentFit(contentFit)
     }
     var context = createBaseImageContext(source: source)
 
@@ -304,7 +323,7 @@ public final class ImageView: ExpoView {
     cacheType: SDImageCacheType,
     imageUrl: URL?
   ) {
-    let scale = original.scale
+    let scale = imageScale(original)
     let thumbnailPixelSize = thumbnailPixelSize(for: bestSource)
 
     pendingSVGVariablesTask = Task { [weak self] in
@@ -361,13 +380,13 @@ public final class ImageView: ExpoView {
 
     appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
       url: imageUrl?.absoluteString ?? "",
-      width: image.size.width * image.scale,
-      height: image.size.height * image.scale
+      width: image.size.width * imageScale(image),
+      height: image.size.height * imageScale(image)
     )
 
-    let scale = window?.screen.scale ?? UIScreen.main.scale
+    let scale = displayScale
     imageLayoutSize = idealSize(
-      contentPixelSize: image.size * image.scale,
+      contentPixelSize: image.size * imageScale(image),
       containerSize: frame.size,
       scale: scale,
       contentFit: contentFit
@@ -390,7 +409,7 @@ public final class ImageView: ExpoView {
     let weight = parseSymbolWeight(symbolWeight)
     let pointSize = symbolSize ?? 100
     let configuration = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
-    guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
+    guard let image = systemSymbolImage(named: symbolName, configuration: configuration) else {
       onError(["error": "Unable to create SF Symbol image for '\(symbolName)'"])
       return
     }
@@ -406,9 +425,9 @@ public final class ImageView: ExpoView {
       ]
     ])
 
-    let scale = window?.screen.scale ?? UIScreen.main.scale
+    let scale = displayScale
     imageLayoutSize = idealSize(
-      contentPixelSize: image.size * image.scale,
+      contentPixelSize: image.size * imageScale(image),
       containerSize: frame.size,
       scale: scale,
       contentFit: contentFit
@@ -421,13 +440,12 @@ public final class ImageView: ExpoView {
   private func renderSFSymbolImage(_ image: UIImage) {
     sourceImage = image
 
-    sdImageView.contentMode = contentFit.toContentMode()
+    applyContentFit(contentFit)
 
-    let templateImage = image.withRenderingMode(.alwaysTemplate)
-    if let imageTintColor {
-      sdImageView.tintColor = imageTintColor
-    }
+    let templateImage = makeTemplateImage(from: image)
 
+    #if !os(macOS)
+    applyImageTint(imageTintColor)
     // Use replace content transition for sf:replace effects
     if #available(iOS 17.0, tvOS 17.0, *), let effect = transition?.effect, effect.isSFReplaceEffect {
       applyReplaceTransition(image: templateImage, effect: effect)
@@ -439,6 +457,19 @@ public final class ImageView: ExpoView {
     if #available(iOS 17.0, tvOS 17.0, *), autoplay {
       applySymbolEffect()
     }
+    #else
+    // SF Symbol content transitions and effects require macOS 14+; for v1 on macOS we set the
+    // image directly and skip replace transitions and symbol effects (sf:replace, .bounce, .pulse,
+    // etc.). `SDAnimatedImageView`'s macOS rendering writes CGImages straight to `layer.contents`,
+    // bypassing `contentTintColor`, so when a tint is requested we composite it into the bitmap
+    // here instead. See `tintedImage(_:with:)`.
+    if let imageTintColor {
+      sdImageView.image = tintedImage(templateImage, with: imageTintColor)
+    } else {
+      sdImageView.image = templateImage
+    }
+    applyImageTint(nil)
+    #endif
 
     onDisplay()
   }
@@ -568,7 +599,9 @@ public final class ImageView: ExpoView {
         sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
         return image
       }
-      return resize(image: image, toSize: idealSize, scale: scale)
+      // Module-qualify the call because `NSView` ships an instance method named `resize` on macOS,
+      // which otherwise wins overload resolution over the module-level `resize(image:toSize:scale:)`.
+      return ExpoImage.resize(image: image, toSize: idealSize, scale: scale)
     }
     return image
   }
@@ -580,7 +613,15 @@ public final class ImageView: ExpoView {
    */
   private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
     let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
-    if sdImageView.layer.mask != nil {
+    // `NSView.layer` is optional on macOS, but `UIView.layer` is non-optional on iOS/tvOS.
+    #if os(macOS)
+    guard let imageLayer = sdImageView.layer else {
+      return
+    }
+    #else
+    let imageLayer = sdImageView.layer
+    #endif
+    if imageLayer.mask != nil {
       // In New Architecture mode, React Native adds a mask layer to image subviews.
       // When moving the layer frame, we must move the mask layer with a compensation value.
       // This prevents the layer from being cropped.
@@ -588,11 +629,11 @@ public final class ImageView: ExpoView {
       // and https://github.com/facebook/react-native/blob/c72d4c5ee97/packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm#L1066-L1076
       CATransaction.begin()
       CATransaction.setDisableActions(true)
-      sdImageView.layer.frame.origin = offset
-      sdImageView.layer.mask?.frame.origin = CGPoint(x: -offset.x, y: -offset.y)
+      imageLayer.frame.origin = offset
+      imageLayer.mask?.frame.origin = CGPoint(x: -offset.x, y: -offset.y)
       CATransaction.commit()
     } else {
-      sdImageView.layer.frame.origin = offset
+      imageLayer.frame.origin = offset
     }
   }
 
@@ -602,6 +643,7 @@ public final class ImageView: ExpoView {
     // Update the source image before it gets rendered or transitioned to.
     sourceImage = image
 
+    #if !os(macOS)
     // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
     let isSFReplaceEffect = transition?.effect.isSFReplaceEffect == true && isSFSymbolSource
 
@@ -618,10 +660,14 @@ public final class ImageView: ExpoView {
     } else {
       setImage(image, contentFit: contentFit, isPlaceholder: false)
     }
+    #else
+    // macOS doesn't get UIView-style cross-fade transitions in v1 — set the image directly.
+    setImage(image, contentFit: contentFit, isPlaceholder: false)
+    #endif
   }
 
   private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
-    sdImageView.contentMode = contentFit.toContentMode()
+    applyContentFit(contentFit)
 
     if isPlaceholder {
       sdImageView.autoPlayAnimatedImage = true
@@ -629,14 +675,17 @@ public final class ImageView: ExpoView {
       sdImageView.autoPlayAnimatedImage = autoplay
     }
 
+    #if !os(macOS)
     // Remove any existing symbol effects before setting new image
     if #available(iOS 17.0, tvOS 17.0, *) {
       sdImageView.removeAllSymbolEffects()
     }
+    #endif
 
     if let imageTintColor, !isPlaceholder {
-      sdImageView.tintColor = imageTintColor
-      let templateImage = image?.withRenderingMode(.alwaysTemplate)
+      let templateImage = image.map { makeTemplateImage(from: $0) }
+      #if !os(macOS)
+      applyImageTint(imageTintColor)
       // Use replace content transition for SF Symbols when sf:replace effect is set
       if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, let effect = transition?.effect, effect.isSFReplaceEffect, let templateImage {
         let duration = (transition?.duration ?? 300) / 1000
@@ -644,8 +693,19 @@ public final class ImageView: ExpoView {
       } else {
         sdImageView.image = templateImage
       }
+      #else
+      // On macOS the layer-backed rendering ignores `contentTintColor`; bake the tint into the
+      // bitmap instead. See `tintedImage(_:with:)` for the why.
+      if let templateImage {
+        sdImageView.image = tintedImage(templateImage, with: imageTintColor)
+      } else {
+        sdImageView.image = nil
+      }
+      applyImageTint(nil)
+      #endif
     } else {
-      sdImageView.tintColor = nil
+      #if !os(macOS)
+      applyImageTint(nil)
       // Use replace content transition for SF Symbols when sf:replace effect is set
       if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, let effect = transition?.effect, effect.isSFReplaceEffect, let image {
         let duration = (transition?.duration ?? 300) / 1000
@@ -653,20 +713,26 @@ public final class ImageView: ExpoView {
       } else {
         sdImageView.image = image
       }
+      #else
+      sdImageView.image = image
+      applyImageTint(nil)
+      #endif
     }
 
+    #if !os(macOS)
     // Apply symbol effect if this is an SF Symbol and autoplay is enabled
     if #available(iOS 17.0, tvOS 17.0, *) {
       if !isPlaceholder && isSFSymbolSource && autoplay {
         applySymbolEffect()
       }
     }
+    #endif
 
     if !isPlaceholder {
       onDisplay()
     }
 
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
     if enableLiveTextInteraction {
       analyzeImage()
     }
@@ -674,6 +740,10 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Symbol Effects
+  // SF Symbol effects rely on UIImageView's `addSymbolEffect`/`setSymbolImage` extensions and
+  // require macOS 14+. For the v1 macOS port the symbol-effects machinery is gated out; symbols
+  // still render and tint, just without animated effects (.bounce, .pulse, sf:replace, etc.).
+  #if !os(macOS)
 
   @available(iOS 17.0, tvOS 17.0, *)
   func applySymbolEffect() {
@@ -823,8 +893,32 @@ public final class ImageView: ExpoView {
     }
   }
 
+  #else
+  // No-op stubs on macOS so callers (e.g. `startAnimating` / `stopAnimating` async functions in
+  // `ImageModule`) keep a consistent surface across platforms.
+  func startSymbolAnimation() {}
+  func stopSymbolAnimation() {}
+  #endif // !os(macOS)
+
   // MARK: - Helpers
 
+  #if os(macOS)
+  // `NSImage.SymbolWeight` does not exist; macOS configures symbol weight via `NSFont.Weight`.
+  private func parseSymbolWeight(_ fontWeight: String?) -> NSFont.Weight {
+    switch fontWeight {
+    case "100": return .ultraLight
+    case "200": return .thin
+    case "300": return .light
+    case "400", "normal": return .regular
+    case "500": return .medium
+    case "600": return .semibold
+    case "700", "bold": return .bold
+    case "800": return .heavy
+    case "900": return .black
+    default: return .regular
+    }
+  }
+  #else
   private func parseSymbolWeight(_ fontWeight: String?) -> UIImage.SymbolWeight {
     switch fontWeight {
     case "100": return .ultraLight
@@ -839,6 +933,7 @@ public final class ImageView: ExpoView {
     default: return .regular
     }
   }
+  #endif
 
   func cancelPendingOperation() {
     pendingOperation?.cancel()
@@ -852,8 +947,96 @@ public final class ImageView: ExpoView {
    or the main scale if the view is not mounted yet.
    */
   var screenScale: Double {
-    return window?.screen.scale as? Double ?? UIScreen.main.scale
+    return displayScale
   }
+
+  /**
+   Cross-platform display scale (UIScreen on iOS/tvOS, backingScaleFactor on macOS).
+   */
+  var displayScale: Double {
+    #if os(macOS)
+    return Double(window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1)
+    #else
+    return window?.screen.scale as? Double ?? UIScreen.main.scale
+    #endif
+  }
+
+  // MARK: - Platform Bridges
+
+  /**
+   Applies the given content fit to the underlying image view using the right platform property.
+   */
+  private func applyContentFit(_ fit: ContentFit) {
+    #if os(macOS)
+    sdImageView.imageScaling = fit.toImageScaling()
+    #else
+    sdImageView.contentMode = fit.toContentMode()
+    #endif
+  }
+
+  /**
+   Applies the given tint color to the underlying image view using the right platform property.
+   When `color` is nil, the tint is cleared.
+   */
+  private func applyImageTint(_ color: UIColor?) {
+    #if os(macOS)
+    sdImageView.contentTintColor = color
+    #else
+    sdImageView.tintColor = color
+    #endif
+  }
+
+  /**
+   Returns a template-rendering version of the image so it can be tinted by the hosting view.
+   */
+  private func makeTemplateImage(from image: UIImage) -> UIImage {
+    #if os(macOS)
+    image.isTemplate = true
+    return image
+    #else
+    return image.withRenderingMode(.alwaysTemplate)
+    #endif
+  }
+
+  /**
+   Cross-platform SF Symbol image creation. `UIImage(systemName:withConfiguration:)` doesn't exist
+   on `NSImage`; macOS uses `init(systemSymbolName:accessibilityDescription:)` plus
+   `withSymbolConfiguration(_:)`.
+   */
+  private func systemSymbolImage(named name: String, configuration: UIImage.SymbolConfiguration) -> UIImage? {
+    #if os(macOS)
+    guard let image = NSImage(systemSymbolName: name, accessibilityDescription: nil) else {
+      return nil
+    }
+    return image.withSymbolConfiguration(configuration) ?? image
+    #else
+    return UIImage(systemName: name, withConfiguration: configuration)
+    #endif
+  }
+
+  #if os(macOS)
+  /**
+   Bakes a tint color into a template image. `SDAnimatedImageView`'s macOS `setImage:` unconditionally
+   routes through a `CALayerDelegate` `displayLayer:` that writes the CGImage straight to
+   `layer.contents`, bypassing `NSImageView.contentTintColor`. We work around that by rendering a
+   new image where the tint is composited onto the template alpha (source-in), then ship the result
+   as a non-template raster so the layer-based path renders it as-is.
+   */
+  private func tintedImage(_ image: NSImage, with color: NSColor) -> NSImage {
+    let size = image.size
+    guard size.width > 0, size.height > 0 else {
+      return image
+    }
+    let tinted = NSImage(size: size, flipped: false) { rect in
+      image.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1.0)
+      color.set()
+      rect.fill(using: .sourceAtop)
+      return true
+    }
+    tinted.isTemplate = false
+    return tinted
+  }
+  #endif
 
   /**
    The image source that fits best into the view bounds.
@@ -887,9 +1070,11 @@ public final class ImageView: ExpoView {
     )
 
     // Decode to HDR if the `preferHighDynamicRange` prop is on (in this case `preferredImageDynamicRange` is set to high).
+    #if !os(macOS)
     if #available(iOS 17.0, macCatalyst 17.0, tvOS 17.0, *) {
       context[.imageDecodeToHDR] = sdImageView.preferredImageDynamicRange == .constrainedHigh || sdImageView.preferredImageDynamicRange == .high
     }
+    #endif
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
     context[ImageView.screenScaleKey] = screenScale
@@ -898,7 +1083,7 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Live Text Interaction
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
   @available(iOS 16.0, macCatalyst 17.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 

@@ -2,6 +2,7 @@
 
 internal import SDWebImage
 internal import SDWebImageWebPCoder
+import ExpoModulesCore
 
 internal let imageCoderOptionUseAppleWebpCodec = SDImageCoderOption(rawValue: "useAppleWebpCodec")
 

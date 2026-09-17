@@ -4,7 +4,12 @@
 // - https://github.com/woltapp/blurhash/blob/master/Swift/BlurHashEncode.swift
 // See https://blurha.sh for more details about the blurhash.
 
+import ExpoModulesCore
+#if os(macOS)
+import AppKit
+#else
 import UIKit
+#endif
 
 // swiftlint:disable force_unwrapping
 
@@ -97,7 +102,7 @@ internal func image(fromBlurhash blurhash: String, size: CGSize, punch: Float = 
 
 internal func blurhash(fromImage image: UIImage, numberOfComponents components: (Int, Int)) -> String? {
   let size = image.size
-  let scale = image.scale
+  let scale = imageScale(image)
 
   let pixelWidth = Int(round(size.width * scale))
   let pixelHeight = Int(round(size.height * scale))
@@ -114,9 +119,16 @@ internal func blurhash(fromImage image: UIImage, numberOfComponents components: 
   context.scaleBy(x: scale, y: -scale)
   context.translateBy(x: 0, y: -size.height)
 
+  #if os(macOS)
+  var imageRect = CGRect(origin: .zero, size: size)
+  if let cgImage = image.cgImage(forProposedRect: &imageRect, context: nil, hints: nil) {
+    context.draw(cgImage, in: CGRect(origin: .zero, size: size))
+  }
+  #else
   UIGraphicsPushContext(context)
   image.draw(at: .zero)
   UIGraphicsPopContext()
+  #endif
 
   guard let cgImage = context.makeImage(),
     let dataProvider = cgImage.dataProvider,

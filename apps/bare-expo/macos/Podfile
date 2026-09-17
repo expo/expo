@@ -41,6 +41,18 @@ target 'BareExpo-macOS' do
       end
     end
 
+    min_deployment_target = '14.0'
+    if installer.pods_project
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          current = config.build_settings['MACOSX_DEPLOYMENT_TARGET']
+          if current.to_s =~ /\A\d/ && Gem::Version.new(current) < Gem::Version.new(min_deployment_target)
+            config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = min_deployment_target
+          end
+        end
+      end
+    end
+
     react_native_post_install(installer)
   end
 end

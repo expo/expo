@@ -1,3 +1,14 @@
+import Foundation
+
+/**
+ Returns a bool value whether the given url references the Photo Library asset. The Photos
+ framework isn't available on macOS, so `ph://` URLs always resolve to `false` there.
+ */
+internal func isPhotoLibraryAssetUrl(_ url: URL?) -> Bool {
+  return url?.scheme == "ph"
+}
+
+#if !os(macOS)
 import Photos
 import Dispatch
 internal import SDWebImage
@@ -55,13 +66,6 @@ final class PhotoLibraryAssetLoader: NSObject, SDImageLoader {
     // the permission might be granted later and then the retry should be possible.
     return isPhotoLibraryStatusAuthorized()
   }
-}
-
-/**
- Returns a bool value whether the given url references the Photo Library asset.
- */
-internal func isPhotoLibraryAssetUrl(_ url: URL?) -> Bool {
-  return url?.scheme == "ph"
 }
 
 /**
@@ -151,3 +155,5 @@ private class PhotoLibraryAssetLoaderOperation: NSObject, SDWebImageOperation {
     canceled = true
   }
 }
+
+#endif // !os(macOS)

@@ -193,6 +193,8 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   /**
    * Describes how the image view should transition the contents when switching the image source.\
    * If provided as a number, it is the duration in milliseconds of the `'cross-dissolve'` effect.
+   *
+   * > **Note**: On macOS this prop is currently ignored — images change without a cross-fade.
    */
   transition?: ImageTransition | number | null;
 
@@ -329,6 +331,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * @default true
    * @platform android
    * @platform ios
+   * @platform macos
    */
   autoplay?: boolean;
 
@@ -492,6 +495,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * @default true
    * @platform ios
+   * @platform macos
    */
   useAppleWebpCodec?: boolean;
 
@@ -502,6 +506,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * @default false
    * @platform ios
+   * @platform macos
    */
   enforceEarlyResizing?: boolean;
 

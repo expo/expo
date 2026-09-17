@@ -36,6 +36,7 @@ enum ContentFit: String, Enumerable {
    */
   case scaleDown = "scale-down"
 
+  #if !os(macOS)
   /**
    `ContentFit` cases can be directly translated to the native `UIView.ContentMode`
    except `scaleDown` that needs to be handled differently at the later step of rendering.
@@ -52,4 +53,21 @@ enum ContentFit: String, Enumerable {
       return .center
     }
   }
+  #else
+  /**
+   On macOS the image view uses `NSImageScaling` rather than `UIView.ContentMode`. `cover` has no
+   direct `NSImageScaling` analog, so we map it to `.scaleProportionallyUpOrDown` (≈ contain) and
+   rely on `applyContentPosition` plus the layer mask to clip overflow.
+   */
+  func toImageScaling() -> NSImageScaling {
+    switch self {
+    case .contain, .cover, .scaleDown:
+      return .scaleProportionallyUpOrDown
+    case .fill:
+      return .scaleAxesIndependently
+    case .none:
+      return .scaleNone
+    }
+  }
+  #endif
 }

@@ -134,10 +134,31 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
     // Keep the image unscaled for infinite sizes.
     return false
   }
-  let imageSize = image.size * image.scale
+  let imageSize = image.size * imageScale(image)
   return imageSize.width > (size.width * scale) && imageSize.height > (size.height * scale)
 }
 
+#if os(macOS)
+/**
+ Resizes a static image to fit in the given size and scale.
+ */
+func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
+  let pixelSize = NSSize(width: size.width * scale, height: size.height * scale)
+  let resized = NSImage(size: size)
+  resized.lockFocus()
+  defer { resized.unlockFocus() }
+  image.draw(
+    in: NSRect(origin: .zero, size: size),
+    from: .zero,
+    operation: .copy,
+    fraction: 1.0,
+    respectFlipped: true,
+    hints: [.interpolation: NSImageInterpolation.high.rawValue]
+  )
+  _ = pixelSize // NSImage on macOS doesn't expose a per-image backing scale; the view's `backingScaleFactor` handles HiDPI rendering.
+  return resized
+}
+#else
 /**
  Resizes a static image to fit in the given size and scale.
  */
@@ -148,6 +169,20 @@ func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
   return UIGraphicsImageRenderer(size: size, format: format).image { _ in
     image.draw(in: CGRect(origin: .zero, size: size))
   }
+}
+#endif
+
+/**
+ Returns the backing scale of an image. On iOS this is `UIImage.scale`; on macOS, `NSImage` has no
+ per-image scale, so we treat it as 1.0 — HiDPI rendering is driven by the hosting view's
+ `backingScaleFactor`.
+ */
+func imageScale(_ image: UIImage) -> Double {
+  #if os(macOS)
+  return 1.0
+  #else
+  return image.scale
+  #endif
 }
 
 /**

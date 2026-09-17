@@ -1,6 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 internal import SDWebImage
+import ExpoModulesCore
 
 internal final class PSDCoder: NSObject, SDImageCoder {
   nonisolated(unsafe) static let shared = PSDCoder()
@@ -20,11 +21,13 @@ internal final class PSDCoder: NSObject, SDImageCoder {
     guard let data else {
       return nil
     }
-    
+
+    #if !os(macOS)
     if let scale = options?[SDImageCoderOption.decodeScaleFactor] as? CGFloat {
       return UIImage(data: data, scale: scale)
     }
-    
+    #endif
+
     // UIImage is able to directly handle PSD data
     return UIImage(data: data)
   }

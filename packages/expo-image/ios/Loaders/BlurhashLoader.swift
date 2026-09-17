@@ -38,7 +38,12 @@ class BlurhashLoader: NSObject, SDImageLoader {
 
       await MainActor.run {
         if let image {
+          #if !os(macOS)
           completedBlock?(UIImage(cgImage: image), nil, nil, true)
+          #else
+          // `NSImage(cgImage:)` requires an explicit size — UIImage's single-arg init has no macOS analog.
+          completedBlock?(NSImage(cgImage: image, size: size), nil, nil, true)
+          #endif
         } else {
           let error = makeNSError(description: "Unable to generate an image from the given blurhash")
           completedBlock?(nil, nil, error, false)

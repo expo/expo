@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added minimal macOS support.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

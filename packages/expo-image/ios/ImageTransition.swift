@@ -9,6 +9,7 @@ enum ImageTransitionTiming: String, Enumerable {
   case easeOut = "ease-out"
   case linear = "linear"
 
+  #if !os(macOS)
   func toAnimationOption() -> UIView.AnimationOptions {
     switch self {
     case .easeInOut:
@@ -21,6 +22,7 @@ enum ImageTransitionTiming: String, Enumerable {
       return .curveLinear
     }
   }
+  #endif
 }
 
 enum ImageTransitionEffect: String, Enumerable {
@@ -46,6 +48,7 @@ enum ImageTransitionEffect: String, Enumerable {
     }
   }
 
+  #if !os(macOS)
   func toAnimationOption() -> UIView.AnimationOptions {
     switch self {
     case .crossDissolve:
@@ -66,6 +69,7 @@ enum ImageTransitionEffect: String, Enumerable {
       return .transitionCrossDissolve
     }
   }
+  #endif
 }
 
 enum ImageTransitionCacheSkip: String, Enumerable {
@@ -98,9 +102,11 @@ struct ImageTransition: Record {
   @Field
   var skipOnCacheHit: ImageTransitionCacheSkip = .none
 
+  #if !os(macOS)
   func toAnimationOptions() -> UIView.AnimationOptions {
     return [timing.toAnimationOption(), effect.toAnimationOption()]
   }
+  #endif
 
   func shouldPlay(forCacheType cacheType: ImageCacheType, isInitialDisplay: Bool) -> Bool {
     guard isInitialDisplay else {
