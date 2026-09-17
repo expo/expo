@@ -151,7 +151,7 @@ class SQLiteModule : Module() {
       Function("interruptSync") { database: NativeDatabase ->
         // Do not block the JS thread or touch a connection being closed on another thread.
         if (!database.closeLock.tryLock()) {
-          throw AccessClosedResourceException()
+          throw DatabaseClosingException()
         }
         try {
           maybeThrowForClosedDatabase(database)

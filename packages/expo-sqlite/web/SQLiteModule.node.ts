@@ -1,6 +1,6 @@
 // expo-sqlite is not supported on server runtime, this file contains a dummy implementation for the server runtime
 
-import { registerWebModule, NativeModule, UnavailabilityError } from 'expo';
+import { registerWebModule, NativeModule } from 'expo';
 
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
 import { type Changeset, type NativeChangeset } from '../src/NativeSession';
@@ -32,9 +32,7 @@ class NativeDatabase {
   }
 
   async closeAsync(): Promise<void> {}
-  interruptSync(): void {
-    throw new UnavailabilityError('expo-sqlite', 'interruptSync');
-  }
+  interruptSync(): void {}
 
   closeSync(): void {}
 

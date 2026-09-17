@@ -1004,6 +1004,49 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       }
     });
 
+    for (const exclusive of [false, true]) {
+      it(`preserves interruption errors in ${exclusive ? 'exclusive' : 'regular'} transaction helpers`, async () => {
+        // The exclusive helper opens another connection, so both must use the same file.
+        const databaseName = `interrupt-transaction-${exclusive}.db`;
+        const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
+        try {
+          await db.execAsync(
+            'DROP TABLE IF EXISTS interrupt_test; CREATE TABLE interrupt_test (value)'
+          );
+          const write = async (txn: SQLite.SQLiteDatabase) => {
+            await txn.execAsync('INSERT INTO interrupt_test VALUES (1)');
+            const timer = setInterval(() => txn.interruptSync(), 10);
+            try {
+              await txn.execAsync('INSERT INTO interrupt_test ' + longQuery);
+            } finally {
+              // Stop interrupting before the helper rolls back or closes its connection.
+              clearInterval(timer);
+            }
+          };
+          let error = null;
+          try {
+            if (exclusive) {
+              await db.withExclusiveTransactionAsync(write);
+            } else {
+              await db.withTransactionAsync(() => write(db));
+            }
+          } catch (e) {
+            error = e;
+          }
+          expect(String(error)).toMatch(/interrupted/);
+          expect(await db.isInTransactionAsync()).toBe(false);
+          expect(await db.getFirstAsync('SELECT count(*) AS count FROM interrupt_test')).toEqual({
+            count: 0,
+          });
+          await db.execAsync('INSERT INTO interrupt_test VALUES (42)');
+          expect(await db.getFirstAsync('SELECT * FROM interrupt_test')).toEqual({ value: 42 });
+        } finally {
+          await db.closeAsync();
+          await SQLite.deleteDatabaseAsync(databaseName);
+        }
+      });
+    }
+
     it('does nothing while idle and rejects a closed connection', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
       try {
