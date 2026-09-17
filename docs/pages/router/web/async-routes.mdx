@@ -6,7 +6,7 @@ description: Learn how to speed up development with async bundling in Expo Route
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** Async routes is in [alpha](/more/release-statuses/#alpha).
+> **important** Async routes remains experimental. In SDK 58 and later, it is enabled by default on web in development and production. Native async routes remain opt-in and are supported only in development. See [Caveats](#caveats) for current limitations.
 
 <ContentSpotlight file="expo-router/async-routes.mp4" loop={false} />
 
@@ -42,7 +42,11 @@ Configure `asyncRoutes` in the Expo Router config plugin of your [app config](/w
 }
 ```
 
-You can also use `"development"` or `"production"` to enable async routes only in that mode, or an object with platform-specific settings (`default`, `android`, `ios`, or `web`). An explicit platform value takes precedence over `default`. Setting `{ "default": false }` disables async routes on web unless `web` explicitly enables them. A configuration containing only native platform settings retains the web default in SDK 58 and later.
+You can also use `"development"` or `"production"` to enable async routes only in that mode, or an object with platform-specific settings (`default`, `android`, `ios`, or `web`):
+
+- An explicit platform value takes precedence over `default`.
+- Setting `{ "default": false }` disables async routes on web unless `web` explicitly enables them.
+- In SDK 58 and later, setting only native platforms keeps the web default. For example, `{ "android": true }` behaves as `{ "android": true, "web": true }`. Native production builds still load routes synchronously.
 
 For example, this configuration enables async routes on web in both modes and on iOS in development, while disabling them on Android. It also works as an explicit opt-in in SDK 57 and earlier:
 
@@ -91,4 +95,4 @@ Async Routes represents an early preview of how we plan to support [React Server
 
 - Async routes do not support native production apps yet.
 - In development, the runtime JavaScript is lazily bundled so you may encounter cases where the HTML doesn't match the available JavaScript.
-- Custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports do not work with async routes.
+- Custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports do not work with async routes. In SDK 58 and later, web apps use the default loading fallback unless async routes are disabled. To keep a custom fallback, set `asyncRoutes: { web: false }` in the `expo-router` config plugin. See the [migration guide](/router/migrate/sdk-57-to-58/#review-async-route-defaults) for an app config example.
