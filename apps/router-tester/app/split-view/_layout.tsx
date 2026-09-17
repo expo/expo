@@ -1,12 +1,13 @@
-import { Button, Toolbar } from '@expo/ui/swift-ui';
-import { Link, router, Slot, usePathname } from 'expo-router';
-import React from 'react';
-import { PlatformColor, Pressable, ScrollView, Text, View } from 'react-native';
+import { Link, usePathname } from 'expo-router';
+import { setSplitViewImplementation, SplitView } from 'expo-router/unstable-split-view';
+import React, { useEffect, useRef } from 'react';
+import { PlatformColor, Pressable, ScrollView, Text } from 'react-native';
 // Available starting from react-native-screens@4.17.0
 // import { SafeAreaView } from 'react-native-screens/experimental';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { SplitHostCommands } from 'react-native-screens/experimental';
 
-import { RouterSplitView } from '../../components/router-split-view';
+setSplitViewImplementation('expo-ui');
 
 const passkeys = ['Github', 'Google', 'Facebook', 'Twitter', 'Apple', 'Microsoft', 'Amazon'];
 const security = ['Admin1234', 'Root'];
@@ -21,66 +22,47 @@ const typeTitles: Record<string, string> = {
 };
 
 export default function Layout() {
+  const ref = useRef<SplitHostCommands>(null);
   const { type, id } = useSplitViewPath();
-  // `preferredCompactColumn` is available on iOS 17 and newer.
-  const compactColumn = id ? 'detail' : type ? 'content' : 'sidebar';
+
+  // On iPhone the split view collapses to one column, so follow the route depth.
+  useEffect(() => {
+    ref.current?.show(id ? 'secondary' : type ? 'supplementary' : 'primary');
+  }, [type, id]);
 
   return (
-    <RouterSplitView
-      compactColumn={compactColumn}
-      onCompactColumnChange={(column) => {
-        if (column === 'sidebar') {
-          router.navigate('/split-view');
-        } else if (column === 'content') {
-          router.navigate(`/split-view/${type ?? 'all'}`);
-        }
+    <SplitView
+      ref={ref}
+      preferredDisplayMode="twoBesideSecondary"
+      preferredSplitBehavior="tile"
+      columnMetrics={{
+        minimumSupplementaryColumnWidth: 280,
+        preferredSupplementaryColumnWidthOrFraction: 320,
+        maximumSupplementaryColumnWidth: 400,
       }}
-      sidebar={{
-        title: 'Passwords',
-        children: (
-          <SafeAreaView
-            // edges={{ top: true, left: true }}
-            edges={['left', 'top']}
-            style={{
-              flex: 1,
-              flexWrap: 'wrap',
-              gap: 8,
-              flexDirection: 'row',
-              padding: 8,
-            }}>
-            <PasscodeCard title="All" param="all" />
-            <PasscodeCard title="Passkeys" param="passkeys" />
-            <PasscodeCard title="Codes" param="codes" />
-            <PasscodeCard title="Security" param="security" />
-            <PasscodeCard title="Deleted" param="deleted" />
-          </SafeAreaView>
-        ),
-      }}
-      content={{
-        title: type ? (typeTitles[type] ?? type) : 'All',
-        titleDisplayMode: 'inline',
-        children: <PasswordElementList />,
-      }}
-      detail={{
-        title: id ?? 'Detail',
-        backButtonHidden: true,
-        toolbarItems: id ? (
-          <Toolbar.Item placement="topBarLeading">
-            <Button
-              systemImage="chevron.left"
-              label="Back"
-              testID="split-view-back"
-              onPress={() => router.navigate(`/split-view/${type ?? 'all'}`)}
-            />
-          </Toolbar.Item>
-        ) : undefined,
-        children: (
-          <View>
-            <Slot />
-          </View>
-        ),
-      }}
-    />
+      screenOptions={{ title: 'Detail', headerLargeTitle: false }}>
+      <SplitView.Column title="Passwords" headerShown={false}>
+        <SafeAreaView
+          // edges={{ top: true, left: true }}
+          edges={['left', 'top']}
+          style={{
+            flex: 1,
+            flexWrap: 'wrap',
+            gap: 8,
+            flexDirection: 'row',
+            padding: 8,
+          }}>
+          <PasscodeCard title="All" param="all" />
+          <PasscodeCard title="Passkeys" param="passkeys" />
+          <PasscodeCard title="Codes" param="codes" />
+          <PasscodeCard title="Security" param="security" />
+          <PasscodeCard title="Deleted" param="deleted" />
+        </SafeAreaView>
+      </SplitView.Column>
+      <SplitView.Column title={type ? (typeTitles[type] ?? type) : 'All'} headerLargeTitle={false}>
+        <PasswordElementList />
+      </SplitView.Column>
+    </SplitView>
   );
 }
 

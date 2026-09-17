@@ -8,8 +8,7 @@ name: Split view
 - assertVisible: "Github"
 - tapOn: "Github"
 - assertVisible: "ID: Github"
-- tapOn:
-    id: "split-view-back"
-    optional: true
+# On iPhone this is the back button of the detail column. On iPad it is the sidebar card.
+- tapOn: "Passkeys"
 - assertNotVisible: "ID: Github"
 - assertVisible: "Github"
