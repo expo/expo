@@ -202,7 +202,22 @@ it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', (overscanCount)
         />
       </LazyColumn>
     )
-  ).toThrow('overscanCount must be a non-negative integer');
+  ).toThrow('LazyColumn.Items overscanCount must be a non-negative integer');
+});
+
+it('names LazyRow.Items in its own errors', () => {
+  expect(() =>
+    render(
+      <LazyRow>
+        <LazyRow.Items
+          data={data}
+          keyExtractor={keyExtractor}
+          renderItem={() => <View />}
+          overscanCount={-1}
+        />
+      </LazyRow>
+    )
+  ).toThrow('LazyRow.Items overscanCount must be a non-negative integer');
 });
 
 it('maintains independent windows for a LazyColumn and a LazyRow block', () => {
