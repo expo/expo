@@ -111,22 +111,17 @@ function reconcileStackRoutes<ParamList extends ParamListBase>(
   };
 }
 
-/** Stack history counts active routes only; preloads and structural repairs never navigate. */
+/** Uses the active index change, except NAVIGATE can create a visit without growing the stack. */
 export function getStackBrowserHistoryAction(
   previous: NavigationState,
   next: NavigationState,
   action: NavigationAction
 ): RouterBrowserHistoryAction | undefined {
   switch (action.type) {
-    case 'PUSH':
     case 'NAVIGATE': {
       // Moving a singular route to the top is a new visit even when filtering keeps
       // the stack the same size. NAVIGATE(pop) is an explicit traversal instead.
-      const isPop =
-        action.type === 'NAVIGATE' &&
-        action.payload &&
-        'pop' in action.payload &&
-        action.payload.pop;
+      const isPop = action.payload && 'pop' in action.payload && action.payload.pop;
       if (!isPop) {
         return next.routes[next.index]?.key !== previous.routes[previous.index]?.key
           ? { type: 'push' }
@@ -134,24 +129,19 @@ export function getStackBrowserHistoryAction(
       }
       break;
     }
-    case 'POP':
-    case 'POP_TO':
-    case 'POP_TO_TOP':
-    case 'GO_BACK':
-      break;
-    default:
-      return undefined;
   }
   const delta = next.index - previous.index;
-  return delta > 0
-    ? { type: 'push' }
-    : delta < 0
-      ? {
-          type: 'pop',
-          count: -delta,
-          target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
-        }
-      : undefined;
+  if (delta > 0) {
+    return { type: 'push' };
+  }
+  if (delta < 0) {
+    return {
+      type: 'pop',
+      count: -delta,
+      target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
+    };
+  }
+  return undefined;
 }
 
 export type StackActionHelpers<ParamList extends ParamListBase> = {

@@ -255,7 +255,7 @@ test('defaults to replacing when a custom router grows its state without request
   );
 });
 
-test('replaces the browser entry for RESET even when the stack grows', () => {
+test('pushes a browser entry for RESET when the stack index increases', () => {
   const result = renderReducer();
   act(() =>
     result.result.current.handleAction({
@@ -268,7 +268,7 @@ test('replaces the browser entry for RESET even when the stack grows', () => {
     })
   );
   expect(browserEvents(result)?.at(-1)).toEqual(
-    expect.objectContaining({ op: 'replace', path: '/second' })
+    expect.objectContaining({ op: 'push', path: '/second' })
   );
 });
 

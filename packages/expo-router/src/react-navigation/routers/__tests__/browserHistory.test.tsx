@@ -7,6 +7,9 @@ import {
   TabRouter,
 } from '..';
 import type { NavigationState } from '..';
+import type { StackActionType } from '../StackRouter';
+import { extendRouterActions } from '../extendRouter';
+import type { CommonNavigationAction } from '../types';
 
 const options = { routeNames: ['index', 'details', 'final'], routeGetIdList: {} };
 const stack = {
@@ -33,6 +36,13 @@ test('stack pushes and pops describe browser traversal, excluding preloads and r
   expect(
     router.getStateForAction(second.state, CommonActions.goBack(), options)?.browserHistory
   ).toMatchObject({ type: 'pop', count: 1 });
+  expect(
+    router.getStateForAction(
+      second.state,
+      CommonActions.navigate({ name: 'index', pop: true }),
+      options
+    )?.browserHistory
+  ).toMatchObject({ type: 'pop', count: 2 });
   expect(
     router.getStateForAction(second.state, StackActions.replace('details'), options)?.browserHistory
   ).toBeUndefined();
@@ -71,19 +81,60 @@ test('drawer open and back share a browser history entry even at the same URL', 
   ).toMatchObject({ type: 'pop', count: 1 });
 });
 
-test('promoting a singular stack route pushes even when the active route count is unchanged', () => {
+test.each([
+  [StackActions.push('index'), undefined],
+  [CommonActions.navigate('index'), { type: 'push' }],
+] as const)('promoting a singular stack route with %j returns %j', (action, browserHistory) => {
   const router = StackRouter({});
   const state = {
     ...stack,
     index: 2,
     routes: options.routeNames.map((name) => ({ key: name, name })),
   };
-  const result = router.getStateForAction(state, StackActions.push('index'), {
+  const result = router.getStateForAction(state, action, {
     ...options,
     routeGetIdList: { index: () => 'singular' },
   })!;
   expect(result.state.routes.map((route) => route.name)).toEqual(['details', 'final', 'index']);
-  expect(result.browserHistory).toEqual({ type: 'push' });
+  expect(result.browserHistory).toEqual(browserHistory);
+});
+
+test.each([
+  [0, { type: 'pop', count: 1, target: { navigatorKey: stack.key, routeKey: 'index' } }],
+  [1, undefined],
+  [2, { type: 'push' }],
+] as const)('custom stack actions use the index change when moving to %i', (index, expected) => {
+  type CustomAction = { type: 'CUSTOM'; payload: { index: number } };
+  const router = extendRouterActions(
+    StackRouter,
+    (state, action: StackActionType | CommonNavigationAction | CustomAction) => {
+      if (action.type !== 'CUSTOM') return undefined;
+      return {
+        state: {
+          ...state,
+          index: action.payload.index,
+          routes: options.routeNames
+            .slice(0, action.payload.index + 1)
+            .map((name) => ({ key: name, name })),
+        },
+        affectedRouteKey: options.routeNames[action.payload.index],
+      };
+    }
+  )({});
+  const previous = {
+    ...stack,
+    index: 1,
+    routes: options.routeNames.slice(0, 2).map((name) => ({ key: name, name })),
+  };
+
+  const result = router.getStateForAction(
+    previous,
+    { type: 'CUSTOM', payload: { index } },
+    options
+  );
+
+  expect(result?.state.index).toBe(index);
+  expect(result?.browserHistory).toEqual(expected);
 });
 
 test('deduplicated tab history treats returning to an earlier tab as a forward visit', () => {
