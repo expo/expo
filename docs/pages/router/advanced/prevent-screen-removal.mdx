@@ -3,35 +3,36 @@ title: Prevent screen removal
 description: Learn how to confirm navigation before Expo Router removes a screen.
 ---
 
-import { Tab, Tabs } from '~/ui/components/Tabs';
-
 Use `usePreventRemove()` to keep a screen open while it contains unsaved changes. The hook runs your callback when navigation tries to remove the screen.
-
-The confirmation interface differs between Android, iOS, and web:
-
-<Tabs>
-
-<Tab label="Android and iOS">
 
 ```tsx src/app/edit-profile.tsx
 import { usePreventRemove } from 'expo-router';
 import { useState } from 'react';
-import { Alert, TextInput } from 'react-native';
+import { Alert, Platform, TextInput } from 'react-native';
 
 export default function EditProfile() {
   const [name, setName] = useState('');
   const hasUnsavedChanges = name.length > 0;
 
   usePreventRemove(hasUnsavedChanges, ({ repeat }) => {
+    const discardChanges = () => {
+      setName('');
+      repeat();
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm('Discard your unsaved changes?')) {
+        discardChanges();
+      }
+      return;
+    }
+
     Alert.alert('Discard changes?', 'You have unsaved changes.', [
       { text: 'Keep editing', style: 'cancel' },
       {
         text: 'Discard',
         style: 'destructive',
-        onPress: () => {
-          setName('');
-          repeat();
-        },
+        onPress: discardChanges,
       },
     ]);
   });
@@ -39,34 +40,6 @@ export default function EditProfile() {
   return <TextInput value={name} onChangeText={setName} placeholder="Name" />;
 }
 ```
-
-</Tab>
-
-<Tab label="Web">
-
-```tsx src/app/edit-profile.tsx
-import { usePreventRemove } from 'expo-router';
-import { useState } from 'react';
-import { TextInput } from 'react-native';
-
-export default function EditProfile() {
-  const [name, setName] = useState('');
-  const hasUnsavedChanges = name.length > 0;
-
-  usePreventRemove(hasUnsavedChanges, ({ repeat }) => {
-    if (window.confirm('Discard your unsaved changes?')) {
-      setName('');
-      repeat();
-    }
-  });
-
-  return <TextInput value={name} onChangeText={setName} placeholder="Name" />;
-}
-```
-
-</Tab>
-
-</Tabs>
 
 Set the value passed to `usePreventRemove()` to `false` before calling `repeat()`. This keeps your state synchronized with removal prevention.
 

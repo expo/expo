@@ -1,6 +1,5 @@
 'use client';
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 import { ScreenRemovalPreventionSetterContext } from '../../global-state/removalPrevention';
 import useLatestCallback from '../../utils/useLatestCallback';
@@ -9,6 +8,7 @@ import { IsPreloadedContext } from './IsPreloadedContext';
 import type { EventListenerCallback, EventMapCore } from './types';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useNavigation } from './useNavigation';
+import { usePreventBeforeUnload } from './usePreventBeforeUnload';
 
 const NOOP = () => {};
 
@@ -89,9 +89,9 @@ export function usePreventRemove(
   const setPreventRemove = React.use(ScreenRemovalPreventionSetterContext);
   const isPreloaded = React.use(IsPreloadedContext);
   const markDisabled = useWarnOnStalePreventRemove(preventRemove);
-  const preventBeforeUnloadRef = React.useRef(preventRemove);
   const preventInPreloadedRoutes = options?.preventInPreloadedRoutes ?? false;
   const shouldPreventBeforeUnload = preventRemove && (!isPreloaded || preventInPreloadedRoutes);
+  const disableBeforeUnload = usePreventBeforeUnload(shouldPreventBeforeUnload);
 
   if (setPreventRemove === undefined) {
     throw new Error(
@@ -100,36 +100,18 @@ export function usePreventRemove(
   }
 
   useClientLayoutEffect(() => {
-    preventBeforeUnloadRef.current = shouldPreventBeforeUnload;
     setPreventRemove(id, preventRemove, preventInPreloadedRoutes);
     return () => {
-      preventBeforeUnloadRef.current = false;
       setPreventRemove(id, false, preventInPreloadedRoutes);
     };
-  }, [id, preventInPreloadedRoutes, preventRemove, setPreventRemove, shouldPreventBeforeUnload]);
+  }, [id, preventInPreloadedRoutes, preventRemove, setPreventRemove]);
 
   // TODO(@ubax): use standard useCallback if possible
   const disablePrevention = useLatestCallback(() => {
-    preventBeforeUnloadRef.current = false;
+    disableBeforeUnload();
     setPreventRemove(id, false, preventInPreloadedRoutes);
     markDisabled();
   });
-
-  React.useEffect(() => {
-    if (Platform.OS !== 'web' || typeof window === 'undefined' || !shouldPreventBeforeUnload) {
-      return;
-    }
-
-    const preventBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (preventBeforeUnloadRef.current) {
-        event.preventDefault();
-        event.returnValue = true;
-      }
-    };
-
-    window.addEventListener('beforeunload', preventBeforeUnload);
-    return () => window.removeEventListener('beforeunload', preventBeforeUnload);
-  }, [shouldPreventBeforeUnload]);
 
   const removePreventedListener = useLatestCallback<
     EventListenerCallback<EventMapCore<any>, 'removePrevented'>
