@@ -77,7 +77,6 @@
     "@expo/dom-webview": "workspace:^",
     "@expo/log-box-utils": "workspace:^",
     "anser": "^1.4.9",
-    "expo-modules-core": "workspace:~",
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
