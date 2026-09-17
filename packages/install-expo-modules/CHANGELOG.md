@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Migrate iOS projects to the UIKit scene-based life cycle when installing SDK 58 or newer. ([#50174](https://github.com/expo/expo/pull/50174) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.18.0 — 2026-09-15
+
+### 🎉 New features
+
+- Migrate iOS projects to the UIKit scene-based life cycle when installing SDK 58 or newer. ([#50174](https://github.com/expo/expo/pull/50174) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.17.0 — 2026-09-10
 

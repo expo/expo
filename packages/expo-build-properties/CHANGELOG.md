@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] Let `ios.enableSceneSupport` adopt the scene lifecycle when another config plugin has inserted lines into the startup block, such as `@react-native-firebase/app`. ([#50221](https://github.com/expo/expo/pull/50221) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Add `ios.enableSceneSupport` to adopt the UIKit scene lifecycle in SDK 57 projects. The property is a no-op on SDK 58 and newer. ([#50205](https://github.com/expo/expo/pull/50205) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.1 — 2026-09-14
 
 _This version does not introduce any user-facing changes._

@@ -8,6 +8,7 @@ import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';
 import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
+import { createRouteHandlerMiddleware } from '../createServerRouteMiddleware';
 import { instantiateMetroAsync } from '../instantiateMetro';
 import { warnInvalidWebOutput } from '../router';
 import { observeAnyFileChanges, observeFileChanges } from '../waitForMetroToObserveTypeScriptFile';
@@ -46,6 +47,10 @@ jest.mock('../instantiateMetro', () => ({
     middleware: { use: jest.fn() },
     server: { listen: jest.fn(), close: jest.fn() },
   })),
+}));
+
+jest.mock('../createServerRouteMiddleware', () => ({
+  createRouteHandlerMiddleware: jest.fn(() => jest.fn()),
 }));
 
 jest.mock('../../middleware/mutations');
@@ -104,6 +109,44 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
 }
 
 describe('startAsync', () => {
+  it.each([
+    { output: 'static', pkg: {}, routeHandlerCalls: 0 },
+    { output: 'server', pkg: {}, routeHandlerCalls: 0 },
+    {
+      output: 'static',
+      pkg: { dependencies: { 'expo-router': '*' } },
+      routeHandlerCalls: 1,
+    },
+    {
+      output: 'server',
+      pkg: { main: 'custom-entry.js', dependencies: { 'expo-router': '*' } },
+      routeHandlerCalls: 1,
+    },
+    {
+      output: 'server',
+      pkg: { devDependencies: { 'expo-router': '*' } },
+      routeHandlerCalls: 1,
+    },
+    {
+      output: 'single',
+      pkg: { dependencies: { 'expo-router': '*' } },
+      routeHandlerCalls: 0,
+    },
+  ] as const)(
+    'uses the Router handler $routeHandlerCalls times for $output output and $pkg',
+    async ({ output, pkg, routeHandlerCalls }) => {
+      jest.mocked(getConfig).mockReturnValue({
+        pkg,
+        exp: { name: 'test', slug: 'test', web: { output } },
+      } as ReturnType<typeof getConfig>);
+      jest.mocked(createRouteHandlerMiddleware).mockClear();
+
+      await getStartedDevServer();
+
+      expect(createRouteHandlerMiddleware).toHaveBeenCalledTimes(routeHandlerCalls);
+    }
+  );
+
   it(`starts metro`, async () => {
     const devServer = await getStartedDevServer();
 
@@ -193,6 +236,7 @@ describe('API Route output warning', () => {
           output: 'static',
         },
       },
+      pkg: { dependencies: { 'expo-router': '*' } },
     });
   }
   async function setupDevServer() {
@@ -302,16 +346,11 @@ describe('getStaticPageAsync', () => {
         web: {
           output: 'server',
         },
-        extra: {
-          router: {
-            unstable_useServerRendering: true,
-          },
-        },
       },
     } as unknown as ReturnType<typeof getConfig>);
   });
 
-  it('returns a ReadableStream for non-RSC development SSR', async () => {
+  it('returns a ReadableStream for server output', async () => {
     const devServer = createDevServerForStaticPageTests();
     const stream = new ReadableStream<Uint8Array>();
     const getStreamingContent = jest.fn(async () => stream);
@@ -368,7 +407,7 @@ describe('getStaticPageAsync', () => {
     });
   });
 
-  it('preserves the string HTML path when SSR streaming is disabled', async () => {
+  it('preserves the string HTML path for static output', async () => {
     jest.mocked(getConfig).mockReturnValue({
       pkg: {},
       exp: {
@@ -376,11 +415,6 @@ describe('getStaticPageAsync', () => {
         slug: 'test',
         web: {
           output: 'static',
-        },
-        extra: {
-          router: {
-            unstable_useServerRendering: false,
-          },
         },
       },
     } as unknown as ReturnType<typeof getConfig>);
@@ -414,12 +448,6 @@ describe('getStaticPageAsync', () => {
         slug: 'test',
         web: {
           output: 'server',
-        },
-        extra: {
-          router: {
-            unstable_useServerDataLoaders: true,
-            unstable_useServerRendering: true,
-          },
         },
       },
     } as unknown as ReturnType<typeof getConfig>);
@@ -474,11 +502,6 @@ describe('executeServerDataLoaderAsync', () => {
         slug: 'test',
         web: {
           output: 'static',
-        },
-        extra: {
-          router: {
-            unstable_useServerDataLoaders: true,
-          },
         },
       },
     } as unknown as ReturnType<typeof getConfig>);

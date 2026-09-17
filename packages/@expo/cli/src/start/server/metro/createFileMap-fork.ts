@@ -13,8 +13,7 @@ import { composeMetroIgnorePatterns } from '../../../utils/composeMetroIgnorePat
 import type { ExpoMetroConfig } from './ExpoMetroConfig';
 
 function getIgnorePattern(config: ExpoMetroConfig): RegExp {
-  const { blockList, blacklistRE } = config.resolver;
-  return composeMetroIgnorePatterns(blacklistRE || blockList);
+  return composeMetroIgnorePatterns(config.resolver.blockList);
 }
 
 interface CreateFileMapOptions {

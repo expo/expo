@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "58.0.3",
+  "version": "58.0.5",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "keywords": [
     "expo",
@@ -85,7 +85,7 @@
     "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "@vercel/ncc": "^0.38.3",
     "expo-dev-client": "workspace:*",
     "expo-module-scripts": "workspace:*",

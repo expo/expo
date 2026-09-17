@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 58.0.1 — 2026-09-15
+
+### 💡 Others
+
 - Stopped passing `testString` to `expo-font`, which removed the option; font loading no longer needs one. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.0 — 2026-09-10

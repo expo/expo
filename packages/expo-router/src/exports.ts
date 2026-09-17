@@ -15,7 +15,7 @@ export {
   useCurrentRouteInfo,
 } from './hooks';
 
-export { router, type ImperativeRouter } from './imperative-api';
+export { router, type ImperativeRouter, type NavigationTransitionMode } from './imperative-api';
 export { useIsNavigating as unstable_useIsNavigating } from './global-state/useIsNavigating';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
@@ -98,6 +98,7 @@ export type { RouteSource } from './react-navigation/native';
 // Router factories for use with `createStandardRouterNavigator` / `integrateWithRouter`,
 // and the helpers for customizing them.
 export {
+  attachRouteState,
   extendRouter,
   extendRouterActions,
   StackRouter,

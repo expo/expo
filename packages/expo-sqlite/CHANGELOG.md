@@ -13,6 +13,12 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-15
+
+### 🎉 New features
+
+- Ship an agent skill for SQLite queries, migrations, storage, and platform configuration in the npm package. ([#49867](https://github.com/expo/expo/pull/49867) by [@Kudo](https://github.com/Kudo))
+
 ## 58.0.2 — 2026-09-14
 
 _This version does not introduce any user-facing changes._

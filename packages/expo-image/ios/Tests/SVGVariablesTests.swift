@@ -18,6 +18,15 @@ struct SVGVariablesTests {
     }
 
     @Test
+    func `matches an uppercase var reference`() {
+      // CSS function names are case-insensitive, so a browser resolves these the same as `var(`.
+      #expect(substitute(##"<rect fill="VAR(--a, #000)"/>"##, ["--a": "red"])
+        == ##"<rect fill="red"/>"##)
+      #expect(substitute(##"<rect fill="Var(--a, #000)"/>"##, [:])
+        == ##"<rect fill="#000"/>"##)
+    }
+
+    @Test
     func `uses the fallback when the variable is not supplied`() {
       #expect(substitute(##"<svg><rect fill="var(--a, #000)"/></svg>"##, ["--b": "red"])
         == ##"<svg><rect fill="#000"/></svg>"##)
@@ -281,6 +290,23 @@ struct SVGVariablesTests {
     }
 
     @Test
+    func `rejects a value that refers to another custom property`() {
+      // A `var()` inside a value would survive into the document, where no renderer resolves it.
+      #expect(substitute(##"<rect fill="var(--a)"/>"##, ["--a": "var(--b, blue)"])
+        == ##"<rect/>"##)
+      // A rejected value is unresolved, like any other, so the attribute is dropped rather than
+      // falling back to the document's own default.
+      #expect(substitute(##"<rect fill="var(--a, green)"/>"##, ["--a": "VAR(--b)"])
+        == ##"<rect/>"##)
+    }
+
+    @Test
+    func `allows a value that merely contains the letters var`() {
+      #expect(substitute(##"<rect fill="var(--a)"/>"##, ["--a": "harvard"])
+        == ##"<rect fill="harvard"/>"##)
+    }
+
+    @Test
     func `rejects a value that could add declarations to a style attribute`() {
       // A `style` attribute is a declaration list too, so `;` would let the value set other properties.
       #expect(substitute(##"<rect style="fill: var(--a); stroke: black"/>"##, ["--a": "red; stroke: none"])
@@ -294,6 +320,19 @@ struct SVGVariablesTests {
     func `escapes metacharacters inside a style body`() {
       #expect(substitute(##"<style>.a { fill: var(--a) }</style>"##, ["--a": "A & B"])
         == ##"<style>.a { fill: A &amp; B }</style>"##)
+    }
+
+    @Test
+    func `does not escape metacharacters inside a CDATA style body`() {
+      // Entities are not decoded inside CDATA, so escaping would reach the CSS as literal `A &amp; B`.
+      #expect(substitute("<style><![CDATA[.a { fill: var(--a) }]]></style>", ["--a": "A & B"])
+        == "<style><![CDATA[.a { fill: A & B }]]></style>")
+    }
+
+    @Test
+    func `still rejects a CDATA style value that could escape its rule`() {
+      #expect(substitute("<style><![CDATA[.a { fill: var(--a) }]]></style>", ["--a": "red } .b { fill: blue"])
+        == "<style><![CDATA[.a { fill:  }]]></style>")
     }
   }
 

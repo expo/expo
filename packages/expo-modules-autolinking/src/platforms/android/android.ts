@@ -120,7 +120,6 @@ export async function resolveModuleAsync(
       name: project.name,
       sourceDir: projectPath,
       modules: project.modules ?? [],
-      modulesV2: project.modulesV2 ?? [],
       services: project.services ?? [],
       packages: [...packages].sort((a, b) => a.localeCompare(b)),
       ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
