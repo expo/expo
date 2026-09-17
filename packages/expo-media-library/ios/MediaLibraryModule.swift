@@ -383,18 +383,28 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
     let livePhotoOptions = PHLivePhotoRequestOptions()
     livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
+    // `PHLivePhotoRequestOptions` defaults to `.opportunistic`, which invokes the result handler
+    // more than once: first with a degraded placeholder, then with the full-quality Live Photo.
+    // Every pass reaches `promise.resolve`, and settling twice traps in `JavaScriptPromise`
+    // ("Cannot settle a promise more than once"). Ask for a single high-quality delivery instead.
+    livePhotoOptions.deliveryMode = .highQualityFormat
+
     var updatedResult = result
-      updatedResult["pairedVideoAsset"] = nil
+    updatedResult["pairedVideoAsset"] = nil
 
     PHImageManager.default()
-      .requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, _ in
-      guard let livePhoto = livePhoto,
-        let videoResource = PHAssetResource.assetResources(for: livePhoto)
-        .first(where: { $0.type == .pairedVideo }) else {
-        promise.resolve(updatedResult)
-        return
-      }
-      self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
+      .requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, info in
+        // Belt and braces: never settle on a degraded pass, in case Photos delivers one anyway.
+        if let isDegraded = info?[PHImageResultIsDegradedKey] as? Bool, isDegraded {
+          return
+        }
+        guard let livePhoto = livePhoto,
+          let videoResource = PHAssetResource.assetResources(for: livePhoto)
+          .first(where: { $0.type == .pairedVideo }) else {
+          promise.resolve(updatedResult)
+          return
+        }
+        self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
       }
   }
 
