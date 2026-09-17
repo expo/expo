@@ -14,6 +14,7 @@ export function installExpoGlobalPolyfill() {
     SharedObject,
     SharedRef,
     modules: globalThis.ExpoDomWebView?.expoModulesProxy ?? {},
+    isRunningOnQuest: () => false,
     uuidv4: uuid.v4,
     uuidv5: uuid.v5,
     getViewConfig: () => {

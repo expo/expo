@@ -27,6 +27,7 @@ export * from './Refs';
 export * from './hooks/useReleasingSharedObject';
 export * from './hooks/useReleasingSharedObjectWithLifecycle';
 export * from './reload';
+export * from './isRunningOnQuest';
 
 // Errors
 export { CodedError } from './errors/CodedError';
