@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import type { BrowserHistoryAdapter } from './browserHistoryTypes';
+import type { BrowserHistoryAdapter } from './browserHistory.types';
 import { useEnqueueRoutingIntent } from './routingQueueContext';
 
 // Browser back, forward and hash links enter the navigation reducer like any other intent.

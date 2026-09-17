@@ -8,7 +8,7 @@ import {
   restoreNavigationFromBrowser,
   updateCurrentHistoryEntry,
 } from '../browserHistory';
-import type { BrowserHistory, ReducibleIntent } from '../browserHistoryTypes';
+import type { BrowserHistory, ReducibleIntent } from '../browserHistory.types';
 import { completeParsedState } from '../createSeededNavigationState';
 import { getRouteInfoFromState } from '../getRouteInfoFromState';
 

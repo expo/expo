@@ -5,7 +5,7 @@ import * as React from 'react';
 import { unstable_navigationEvents } from '../navigationEvents';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { NavigationAction } from '../react-navigation/routers';
-import type { BrowserHistoryAdapter } from './browserHistoryTypes';
+import type { BrowserHistoryAdapter } from './browserHistory.types';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 

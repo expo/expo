@@ -9,7 +9,7 @@ import type {
   BrowserHistoryProjection,
   BrowserHistoryRestore,
   ReducibleIntent,
-} from './browserHistoryTypes';
+} from './browserHistory.types';
 import { completeParsedState, createSeededRootState } from './createSeededNavigationState';
 import { getPathForState, resolvePathLinking } from './getPathForState';
 import { getRouteInfoFromState } from './getRouteInfoFromState';

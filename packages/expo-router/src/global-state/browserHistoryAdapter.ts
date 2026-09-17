@@ -4,7 +4,7 @@ import type {
   BrowserHistoryAdapter,
   BrowserHistoryChange,
   BrowserHistoryEvent,
-} from './browserHistoryTypes';
+} from './browserHistory.types';
 
 function readChange(): BrowserHistoryChange {
   const id = window.history.state?.id;

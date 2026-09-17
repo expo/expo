@@ -21,7 +21,7 @@ import {
   restoreNavigationFromBrowser,
   updateCurrentHistoryEntry,
 } from './browserHistory';
-import type { BrowserHistory, BrowserHistoryEvent } from './browserHistoryTypes';
+import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types';
 import {
   completeNavigationState,
   createSeededNavigationState,
@@ -444,11 +444,14 @@ export function useNavigationTreeReducer({
   });
 
   const processIntent = useLatestCallback((intent: RoutingIntent) => {
-    // useLatestCallback updates at commit, so a browser traversal can supersede a
-    // suspended reduction without applying commands from a screen never shown.
-    reactDispatch(
-      intent.type === 'BROWSER_HISTORY_CHANGED' ? { ...intent, commitedTreeResult: result } : intent
-    );
+    if (intent.type === 'BROWSER_HISTORY_CHANGED') {
+      // Example: A is visible while a push to B is suspended. Browser Back starts from A,
+      // so restore from A's committed result, not the reducer's pending B state.
+      // useLatestCallback keeps `result` at the last commit; the browser's ID and URL still pass through.
+      reactDispatch({ ...intent, commitedTreeResult: result });
+      return;
+    }
+    reactDispatch(intent);
   });
 
   React.useInsertionEffect(() => {

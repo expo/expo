@@ -6,6 +6,7 @@ import {
   type StackNavigationState,
   type ParamListBase,
   StackRouter,
+  TabRouter,
 } from '../../react-navigation/routers';
 import type { RouterRegistry, RouterRegistryEntry } from '../routerRegistry';
 import { useNavigationTreeReducer } from '../useNavigationTreeReducer';
@@ -36,6 +37,87 @@ function renderReducer() {
 function browserEvents(result: ReturnType<typeof renderReducer>) {
   return result.result.current.report?.events.filter((event) => event.type === 'browser-history');
 }
+
+describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBehavior) => {
+  function renderTabs() {
+    const state = {
+      ...initialState,
+      type: 'tab' as const,
+      routes: initialState.routeNames.map((name) => ({ name, key: name })),
+    };
+    const registry: RouterRegistry = new Map([
+      ['root', entry(TabRouter({ backBehavior }), state.routeNames)],
+    ]);
+    return renderHook(() => useNavigationTreeReducer({ initialState: state, registry }));
+  }
+
+  test('adds browser visits for tab switches and traverses back for GO_BACK', () => {
+    const result = renderTabs();
+    expect(result.result.current.state.index).toBe(0);
+    expect(browserEvents(result)).toEqual([
+      expect.objectContaining({ op: 'replace', path: '/first' }),
+    ]);
+
+    act(() => {
+      result.result.current.handleAction({ type: 'NAVIGATE', payload: { name: 'second' } });
+      result.result.current.handleAction({ type: 'NAVIGATE', payload: { name: 'first' } });
+    });
+    expect(result.result.current.state.index).toBe(0);
+    expect(browserEvents(result)?.slice(1)).toEqual([
+      expect.objectContaining({ op: 'push', path: '/second' }),
+      expect.objectContaining({ op: 'push', path: '/first' }),
+    ]);
+
+    act(() => result.result.current.handleAction({ type: 'GO_BACK' }));
+    expect(result.result.current.state.index).toBe(1);
+    expect(browserEvents(result)?.slice(-2)).toEqual([
+      expect.objectContaining({ op: 'go', delta: -1 }),
+      expect.objectContaining({ op: 'replace', path: '/second' }),
+    ]);
+  });
+
+  test('restores tabs on browser Back and Forward without creating more visits', () => {
+    const result = renderTabs();
+    const first = browserEvents(result)![0]!;
+    expect(first).toMatchObject({ op: 'replace', path: '/first' });
+
+    act(() => result.result.current.handleAction({ type: 'JUMP_TO', payload: { name: 'second' } }));
+    const second = browserEvents(result)!.at(-1)!;
+    expect(second).toMatchObject({ op: 'push', path: '/second' });
+    const count = browserEvents(result)!.length;
+
+    for (const [event, index] of [
+      [first, 0],
+      [second, 1],
+    ] as const) {
+      if (event.op === 'go') throw new Error('Expected an entry ID and path.');
+      act(() =>
+        result.result.current.processIntent({
+          type: 'BROWSER_HISTORY_CHANGED',
+          payload: { id: event.entryId, path: event.path },
+        })
+      );
+      expect(result.result.current.state.index).toBe(index);
+      expect(browserEvents(result)).toHaveLength(count);
+    }
+  });
+
+  test('updates the current entry when changing tab params', () => {
+    const result = renderTabs();
+    expect(browserEvents(result)).toHaveLength(1);
+
+    act(() =>
+      result.result.current.handleAction({
+        type: 'SET_PARAMS',
+        payload: { params: { sort: 'recent' } },
+      })
+    );
+    expect(result.result.current.state.routes[0]?.params).toEqual({ sort: 'recent' });
+    expect(browserEvents(result)?.slice(1)).toEqual([
+      expect.objectContaining({ op: 'replace', path: '/first' }),
+    ]);
+  });
+});
 
 test('seeds the report with a replace for the initial entry', () => {
   const result = renderReducer();
@@ -115,6 +197,15 @@ test('restores a tracked entry on a browser change without browser commands', ()
   expect(result.result.current.state.routes).toEqual([{ key: 'first', name: 'first' }]);
   const newEvents = result.result.current.report!.events.slice(eventsBefore);
   expect(newEvents.map((event) => event.type)).toEqual(['removed-routes', 'action-dispatched']);
+
+  act(() =>
+    result.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'PUSH', payload: { name: 'third' } } },
+    })
+  );
+  expect(result.result.current.state.routes.map((route) => route.name)).toEqual(['first', 'third']);
+  expect(browserEvents(result)?.at(-1)).toMatchObject({ op: 'push', path: '/third' });
 });
 
 test('prunes consumed browser history events', () => {

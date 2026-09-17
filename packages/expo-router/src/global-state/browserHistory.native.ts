@@ -3,7 +3,7 @@ import type {
   BrowserHistory,
   BrowserHistoryProjection,
   BrowserHistoryRestore,
-} from './browserHistoryTypes';
+} from './browserHistory.types';
 
 // Native has no browser history. `createBrowserHistory` returns none, so the reducer never calls
 // the other functions; they exist so the path computation stays out of the native bundle.
