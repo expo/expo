@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `CameraView` leaking its barcode scanner, metadata delegate and capture session on every mount, by no longer having the delegate retain the scanner it reports to. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix all barcode scanning stopping when the optional `ExpoCameraBarcodeScanning` companion pod is not linked. The AVFoundation scanner now runs on its own, so QR codes and every other natively supported symbology keep scanning; the ZXing provider is once again only the fallback for `pdf417`, `code39`, and `codabar`. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 57.0.5 — 2026-09-11
