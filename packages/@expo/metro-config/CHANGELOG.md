@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
 
 - Look up chunk entry modules by path instead of matching every module in the graph against a regex, speeding up chunk splitting for exports with async routes and no longer merging chunks for file names containing `*` ([#50245](https://github.com/expo/expo/pull/50245) by [@tahakocal](https://github.com/tahakocal))
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
 
 ## 58.0.2 — 2026-09-15
 
