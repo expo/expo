@@ -233,6 +233,9 @@ importers:
       expo-app-metrics:
         specifier: workspace:*
         version: link:../../packages/expo-app-metrics
+      expo-audio:
+        specifier: workspace:*
+        version: link:../../packages/expo-audio
       expo-background-fetch:
         specifier: workspace:*
         version: link:../../packages/expo-background-fetch
