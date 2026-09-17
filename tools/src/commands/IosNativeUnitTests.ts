@@ -17,12 +17,25 @@ const BARE_EXPO_IOS_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'ios'
 const WORKSPACE_PATH = path.join(BARE_EXPO_IOS_DIR, 'BareExpo.xcworkspace');
 const RESULTS_DIR = '/tmp/ios-unit-tests-results';
 
+// Benchmarks run natively on the Mac through the Mac Catalyst destination: no simulator boot, and
+// run-to-run spreads of a few percent instead of the 10-25% a simulator shows. The prebuilt React
+// Native xcframeworks ship Catalyst slices, so the regular iOS pods build for it unchanged.
+const CATALYST_DESTINATION = 'platform=macOS,variant=Mac Catalyst';
+
+// A package's benchmarks live in a test spec named `Benchmarks`, separate from its unit tests, so
+// unit test runs neither build nor run them and `--benchmarks` runs nothing else.
+const BENCHMARK_TEST_SPEC_NAME = 'Benchmarks';
+
 // Computes the Xcode unit-test target names for a package by scanning every podspec it
 // declares — a package like expo-modules-core ships several (ExpoModulesCore,
 // ExpoModulesWorklets, …), each potentially with its own test specs. Each test spec becomes
 // `<PodName>-Unit-<TestSpecName>`, named after the podspec that owns it (not the package's
-// primary podspec), which is how CocoaPods generates the targets.
-function getUnitTestTargets(pkg: Packages.Package): string[] {
+// primary podspec), which is how CocoaPods generates the targets. The `Benchmarks` spec is
+// included only when running benchmarks, and is the only one included then.
+function getUnitTestTargets(
+  pkg: Packages.Package,
+  { benchmarks }: { benchmarks: boolean }
+): string[] {
   const targets: string[] = [];
   for (const podspecRelPath of pkg.podspecPaths) {
     const podspecAbsPath = path.join(pkg.path, podspecRelPath);
@@ -32,7 +45,9 @@ function getUnitTestTargets(pkg: Packages.Package): string[] {
     const podName = path.basename(podspecRelPath, '.podspec');
     const contents = fs.readFileSync(podspecAbsPath, 'utf8');
     for (const match of contents.matchAll(/test_spec\s'([^']*)'/g)) {
-      targets.push(`${podName}-Unit-${match[1]}`);
+      if ((match[1] === BENCHMARK_TEST_SPEC_NAME) === benchmarks) {
+        targets.push(`${podName}-Unit-${match[1]}`);
+      }
     }
   }
   return targets;
@@ -195,7 +210,12 @@ const INFRA_PATH_PATTERNS = [
   /^Gemfile(\.lock)?$/,
 ];
 
-async function runTestsAsync(scheme: string, destination: string, useXcbeautify: boolean) {
+async function runTestsAsync(
+  scheme: string,
+  destination: string,
+  useXcbeautify: boolean,
+  { benchmarks }: { benchmarks: boolean }
+) {
   const args = [
     'test',
     '-workspace',
@@ -203,25 +223,56 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
     '-scheme',
     scheme,
     '-configuration',
-    'Debug',
+    // Benchmark numbers are meaningless without optimizations.
+    benchmarks ? 'Release' : 'Debug',
     '-destination',
     destination,
-    // Spread parallelizable testables across multiple simulator clones. Without an explicit
-    // worker count, xcodebuild tends to stick to a single clone for this kind of load.
-    '-parallel-testing-enabled',
-    'YES',
-    '-parallel-testing-worker-count',
-    '3',
     '-resultBundlePath',
     path.join(RESULTS_DIR, `${scheme}.xcresult`),
     'CODE_SIGN_IDENTITY=',
     'CODE_SIGNING_REQUIRED=NO',
   ];
+  if (benchmarks) {
+    args.push(
+      // Coverage instrumentation puts profile counters inside the measured code.
+      '-enableCodeCoverage',
+      'NO',
+      // The suites `@testable import` the pod under test, which a Release build allows only with
+      // testability kept on.
+      'ENABLE_TESTABILITY=YES',
+      // The test bundles carry no macOS deployment target and would default to the SDK version,
+      // which xcodebuild refuses to launch on a Mac running an older macOS.
+      'MACOSX_DEPLOYMENT_TARGET=14.0',
+      // Release builds every architecture by default; the benchmarks run only on this Mac.
+      'ONLY_ACTIVE_ARCH=YES'
+    );
+  } else {
+    // Spread parallelizable testables across multiple simulator clones. Without an explicit
+    // worker count, xcodebuild tends to stick to a single clone for this kind of load.
+    args.push('-parallel-testing-enabled', 'YES', '-parallel-testing-worker-count', '3');
+  }
   const cwd = Directories.getExpoRepositoryRootDir();
 
   // Without NSUnbufferedIO, xcodebuild buffers its output when writing to a pipe, so test
   // results would show up in delayed bursts instead of streaming line by line.
   const env = { ...process.env, NSUnbufferedIO: 'YES' };
+
+  if (benchmarks) {
+    // Print only the `[benchmark]` result lines, errors and the verdict, and keep the full
+    // xcodebuild output in a log file. xcbeautify would drop the result lines, which the test
+    // process prints to stdout. The Catalyst test host logs a CoreData XPC error on every
+    // launch that has nothing to do with the tests.
+    const logPath = path.join(RESULTS_DIR, `${scheme}.log`);
+    await fs.ensureDir(RESULTS_DIR);
+    const command =
+      ['xcodebuild', ...args].map((arg) => `'${arg.replace(/'/g, `'\\''`)}'`).join(' ') +
+      ` 2>&1 | tee '${logPath}'` +
+      ` | grep --line-buffered -E '\\[benchmark\\]|error:|\\*\\* TEST'` +
+      ` | grep --line-buffered -v 'CoreData: error: Failed to create NSXPCConnection'`;
+    console.log(`Full xcodebuild output: ${logPath}\n`);
+    await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, env, stdio: 'inherit' });
+    return;
+  }
 
   if (useXcbeautify) {
     // The github-actions renderer emits `::error`/`::warning` annotations with file and line
@@ -242,10 +293,12 @@ export async function iosNativeUnitTests({
   packages,
   affected,
   since = 'main',
+  benchmarks = false,
 }: {
   packages?: string;
   affected?: boolean;
   since?: string;
+  benchmarks?: boolean;
 }) {
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
@@ -294,8 +347,17 @@ export async function iosNativeUnitTests({
       continue;
     }
 
-    const pkgTargets = getUnitTestTargets(pkg);
+    const pkgTargets = getUnitTestTargets(pkg, { benchmarks });
     if (!pkgTargets.length) {
+      if (benchmarks) {
+        // Most packages have unit tests and no benchmarks. Only an explicit request is an error.
+        if (packageNamesFilter.includes(pkg.packageName)) {
+          throw new Error(
+            `The package ${pkg.packageName} does not include iOS benchmarks (a \`${BENCHMARK_TEST_SPEC_NAME}\` test spec in its podspec).`
+          );
+        }
+        continue;
+      }
       throw new Error(
         `Failed to test package ${pkg.packageName}: no test specs were found in its podspec file(s).`
       );
@@ -313,6 +375,10 @@ export async function iosNativeUnitTests({
     }
     if (affectedFilter) {
       console.log('✅ No affected packages provide iOS unit tests — nothing to run.');
+      return;
+    }
+    if (benchmarks) {
+      console.log('✅ No packages provide iOS benchmarks — nothing to run.');
       return;
     }
     // Without this guard, an empty target list would generate a scheme with no testables and
@@ -334,23 +400,24 @@ export async function iosNativeUnitTests({
   // invocation.
   const scheme = targetsToTest.length === 1 ? targetsToTest[0] : generateMergedScheme(schemeFiles);
 
-  const destination = await findSimulatorDestinationAsync();
-  const useXcbeautify = await isXcbeautifyAvailableAsync();
-  if (!useXcbeautify) {
+  const destination = benchmarks ? CATALYST_DESTINATION : await findSimulatorDestinationAsync();
+  const useXcbeautify = !benchmarks && (await isXcbeautifyAvailableAsync());
+  if (!benchmarks && !useXcbeautify) {
     console.log(chalk.yellow('xcbeautify not found, falling back to raw xcodebuild output.\n'));
   }
 
-  console.log(`Running tests for targets:\n- ${targetsToTest.join('\n- ')}\n`);
+  const what = benchmarks ? 'benchmarks' : 'tests';
+  console.log(`Running ${what} for targets:\n- ${targetsToTest.join('\n- ')}\n`);
 
   try {
-    await runTestsAsync(scheme, destination, useXcbeautify);
+    await runTestsAsync(scheme, destination, useXcbeautify, { benchmarks });
   } catch {
     if (isGithubActions) {
-      console.log(`::error title=iOS unit tests::Unit tests failed, see the log for details`);
+      console.log(`::error title=iOS unit tests::Unit ${what} failed, see the log for details`);
     }
-    throw new Error(`iOS unit tests failed for packages: ${packagesToTest.join(', ')}`);
+    throw new Error(`iOS unit ${what} failed for packages: ${packagesToTest.join(', ')}`);
   }
-  console.log('✅ All unit tests passed for the following packages:', packagesToTest.join(', '));
+  console.log(`✅ All unit ${what} passed for the following packages:`, packagesToTest.join(', '));
 }
 
 export default (program: any) => {
@@ -369,6 +436,11 @@ export default (program: any) => {
       '-s, --since <ref>',
       '[optional] Git ref to diff against for `--affected`. Defaults to `main`.',
       'main'
+    )
+    .option(
+      '--benchmarks',
+      "[optional] Run the packages' `Benchmarks` test specs instead of their unit tests: Release configuration, natively on the Mac through the Mac Catalyst destination.",
+      false
     )
     .description('Runs iOS native unit tests for each package that provides them.')
     .asyncAction(iosNativeUnitTests);
