@@ -75,7 +75,7 @@ export type Props = {
   platformRoutes?: boolean;
   /** Enable or disable automatically generated routes. Defaults to `true`. */
   sitemap?: boolean;
-  /** Enable experimental async routes. In SDK 58 and later, web defaults to true and native defaults to false. Production async routes are web-only. */
+  /** Enable async routes. Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native. */
   asyncRoutes?:
     | AsyncRouteOption
     | {
