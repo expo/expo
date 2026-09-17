@@ -46,7 +46,7 @@
           "type": "boolean"
         },
         "asyncRoutes": {
-          "description": "Enable experimental async routes. In SDK 58 and later, web defaults to true and native defaults to false. Production async routes are web-only.",
+          "description": "Enable async routes. Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native.",
           "oneOf": [
             {
               "$ref": "#/definitions/AsyncRouteOption"

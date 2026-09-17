@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Enable experimental async routes by default on web in SDK 58. Native defaults remain unchanged. ([#48327](https://github.com/expo/expo/pull/48327) by [@hassankhan](https://github.com/hassankhan))
+- Stabilize async routes on web and enable them by default. Native async routes remain experimental and opt-in. ([#48327](https://github.com/expo/expo/pull/48327) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 

@@ -75,9 +75,8 @@ If you are using the [default](/more/create-expo/#--template) template to create
     {
       name: 'asyncRoutes',
       description:
-        'Enable async routes (lazy loading). In SDK 58 and later, this is enabled by default on web in development and production, and disabled by default on native. Can be a boolean, a string (`"development"` or `"production"`), or an object with platform-specific values (`{ android, ios, web, default }`). Explicit platform values take precedence over `default`. Production async routes are web-only.',
+        'Enable async routes (lazy loading). Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native. Can be a boolean, a string (`"development"` or `"production"`), or an object with platform-specific values (`{ android, ios, web, default }`). Explicit platform values take precedence over `default`. Production async routes are web-only.',
       default: '{ web: true }',
-      experimental: true,
     },
     {
       name: 'platformRoutes',
