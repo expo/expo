@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] `isSideLoadingEnabledAsync` no longer surfaces a raw `SecurityException` when the app does not declare `REQUEST_INSTALL_PACKAGES` - it now throws a coded error explaining the requirement.
+- [Android] `isSideLoadingEnabledAsync` no longer surfaces a raw `SecurityException` when the app does not declare `REQUEST_INSTALL_PACKAGES` - it now throws a coded error explaining the requirement. ([#50265](https://github.com/expo/expo/pull/50265) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
