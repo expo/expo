@@ -27,7 +27,8 @@ export interface LazyItemsProps<ItemT> {
   overscanCount?: number;
   /**
    * Placeholder size in dp along the scroll axis, until a row is measured. Must be positive.
-   * Measurements reset when the data or the list width changes.
+   * Measurements reset when the data changes. In `LazyColumn.Items` they also reset when the list
+   * width changes.
    * @default 64
    */
   estimatedItemSize?: number;
@@ -57,30 +58,40 @@ const LazyItemsPoolNativeView: React.ComponentType<{ children: ReactElement[] }>
  * single items, so static and recycled content can be mixed in order.
  * @platform android
  */
-export function LazyItems<ItemT>({
-  data,
-  keyExtractor,
-  renderItem,
-  overscanCount,
-  estimatedItemSize = 64,
-}: LazyItemsProps<ItemT>) {
-  const { itemKeys, revision, rows, onWindowChange } = useRecycledRows({
-    componentName: 'LazyColumn.Items',
-    Slot: LazyItemsSlotNativeView,
+export const LazyItems = createLazyItems('LazyColumn.Items');
+
+/**
+ * @hidden
+ * Creates the `Items` component of one lazy list, so its errors name that list.
+ */
+export function createLazyItems(componentName: string) {
+  function Items<ItemT>({
     data,
     keyExtractor,
     renderItem,
     overscanCount,
-    estimatedItemSize,
-  });
+    estimatedItemSize = 64,
+  }: LazyItemsProps<ItemT>) {
+    const { itemKeys, revision, rows, onWindowChange } = useRecycledRows({
+      componentName,
+      Slot: LazyItemsSlotNativeView,
+      data,
+      keyExtractor,
+      renderItem,
+      overscanCount,
+      estimatedItemSize,
+    });
 
-  return (
-    <LazyItemsNativeView
-      itemKeys={itemKeys}
-      revision={revision}
-      estimatedItemSize={estimatedItemSize}
-      onWindowChange={({ nativeEvent }) => onWindowChange(nativeEvent)}>
-      <LazyItemsPoolNativeView>{rows}</LazyItemsPoolNativeView>
-    </LazyItemsNativeView>
-  );
+    return (
+      <LazyItemsNativeView
+        itemKeys={itemKeys}
+        revision={revision}
+        estimatedItemSize={estimatedItemSize}
+        onWindowChange={({ nativeEvent }) => onWindowChange(nativeEvent)}>
+        <LazyItemsPoolNativeView>{rows}</LazyItemsPoolNativeView>
+      </LazyItemsNativeView>
+    );
+  }
+  Items.displayName = componentName;
+  return Items;
 }
