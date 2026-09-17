@@ -7,6 +7,7 @@ description: Enable your project to accept bundle diffs when available.
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 With bundle diffing, EAS Update delivers a **bundle patch** when possible. When you publish a new update, EAS Update can generate a smaller file containing only the differences between the bundle currently running on the device and the new bundle. This often reduces update download size significantly.
 
@@ -16,7 +17,7 @@ With bundle diffing, EAS Update delivers a **bundle patch** when possible. When 
 
 ## Enable bundle diffing
 
-Bundle diffing works in two situations. By default, devices already running a published update get a patch when a newer one is available. Opt in (experimental) and devices on a fresh install can also get a patch on their very first update check, instead of downloading the full new bundle.
+Bundle diffing works in two situations. Devices already running a published update get a patch when a newer one is available. Devices on a fresh install can also get a patch on their very first update check, instead of downloading the full new bundle, when the embedded bundle from the build has been uploaded. Both are enabled by default on recent SDK versions.
 
 ### Patches between updates
 
@@ -36,23 +37,53 @@ To disable on SDK 56 and later, set `enableBsdiffPatchSupport` to `false`.
 
 ### Patches from the embedded bundle
 
-> **info** This mode is [experimental](/more/release-statuses/#experimental) and opt-in. The flag and behavior may change.
+<Tabs>
 
-To enable, set the `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variable under `env` in a build profile in **eas.json**:
+<Tab label="SDK 58 and later">
+
+EAS Build uploads the embedded bundle when the build completes. Updates published later to the same channel can then be served as patches against it. No configuration is required.
+
+To disable the upload, set the `EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE` environment variable to `0` under `env` in a build profile in **eas.json**:
 
 ```json eas.json
 {
   "build": {
     "production": {
       "env": {
-        "EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE": "1"
+        "EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE": "0"
       }
     }
   }
 }
 ```
 
-When the build completes, EAS uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it. If you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` at the JavaScript bundle and `--manifest` at the **app.manifest** produced by the native build:
+</Tab>
+
+<Tab label="SDK 57 and below">
+
+> **info** On SDK 57 and below, this mode is [experimental](/more/release-statuses/#experimental) and opt-in. The behavior may change.
+
+To enable, set the `EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE` environment variable to `1` under `env` in a build profile in **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "env": {
+        "EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE": "1"
+      }
+    }
+  }
+}
+```
+
+When the build completes, EAS Build uploads the embedded bundle. Updates published later to the same channel can then be served as patches against it.
+
+</Tab>
+
+</Tabs>
+
+If you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` at the JavaScript bundle and `--manifest` at the **app.manifest** produced by the native build:
 
 <Terminal
   cmd={[
@@ -104,6 +135,6 @@ A patch is served only when:
 
 ## Current limitations
 
-- **Fresh installs receive the full bundle on their first update unless you opt in to [patches from the embedded bundle](#patches-from-the-embedded-bundle).**
+- **Fresh installs receive the full bundle on their first update unless the build's embedded bundle was uploaded.** This happens by default on SDK 58 and later. See [patches from the embedded bundle](#patches-from-the-embedded-bundle).
 - **Patches aren't guaranteed for every possible update pair immediately.** When an update is published, EAS Update precomputes a patch only against the second-newest update on the channel. If a device requests the new update while running a different published update, it will initially receive the full bundle. A patch for that specific base update is then generated on demand and served to future similar requests.
 - **Patches are generated shortly after publishing.** It can take a few minutes between publishing an update and the patch being ready. During that window, devices may receive the full bundle.
