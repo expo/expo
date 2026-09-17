@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Import `UIKit` in the `UIFont` extension, which relied on another file in the module importing it.
+- [iOS] Import `UIKit` in the `UIFont` extension, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
