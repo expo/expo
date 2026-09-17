@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] `build:ios --package` now always emits the aggregate `.library` product, instead of only emitting it when precompiled modules are in use. ([#49XXX](https://github.com/expo/expo/pull/49XXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

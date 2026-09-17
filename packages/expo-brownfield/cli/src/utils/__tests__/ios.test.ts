@@ -28,6 +28,27 @@ const makeConfig = (overrides: Partial<IosConfig> = {}): IosConfig => ({
   ...overrides,
 });
 
+/**
+ * Pull the `products: [...]` entries out of a generated `Package.swift`. Only the products block
+ * is scanned, so the identically-shaped `.binaryTarget` declarations below it are ignored.
+ */
+const parseProducts = (manifest: string): { name: string; targets: string[] }[] => {
+  const block = manifest.match(/products: \[\n([\s\S]*?)\n {4}\],/)?.[1];
+  if (!block) {
+    return [];
+  }
+  const products: { name: string; targets: string[] }[] = [];
+  const entry = /\.library\(\s*name: "([^"]+)",\s*targets: \[([^\]]*)\],/g;
+  let match: RegExpExecArray | null;
+  while ((match = entry.exec(block)) !== null) {
+    products.push({
+      name: match[1] ?? '',
+      targets: (match[2] ?? '').split(',').map((target) => target.trim().replace(/^"|"$/g, '')),
+    });
+  }
+  return products;
+};
+
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brownfield-ios-'));
   mockSpawn.mockReset();
@@ -140,6 +161,84 @@ describe('generatePackageMetadataFile', () => {
     const manifest = fs.readFileSync(path.join(tmpDir, 'Package.swift'), 'utf8');
     const targetDeclarations = manifest.match(/name: "TestKit"/g) ?? [];
     expect(targetDeclarations).toHaveLength(1);
+  });
+
+  it('emits the aggregate product when prebuilds are off', async () => {
+    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const config = makeConfig({
+      scheme: 'MyKit',
+      usePrebuilds: false,
+      output: { packageName: 'MyKitArtifacts' },
+    });
+    await iosUtils.generatePackageMetadataFile(config, tmpDir);
+
+    const products = parseProducts(fs.readFileSync(path.join(tmpDir, 'Package.swift'), 'utf8'));
+    const aggregate = products.find(({ name }) => name === 'MyKitArtifacts');
+    expect(aggregate).toBeDefined();
+    // The aggregate links every binary target, so `import MyKitArtifacts` is enough.
+    expect(aggregate?.targets).toEqual(expect.arrayContaining(['MyKit', 'hermesvm']));
+  });
+
+  it('keeps the per-framework products alongside the aggregate when prebuilds are off', async () => {
+    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const config = makeConfig({
+      scheme: 'MyKit',
+      usePrebuilds: false,
+      output: { packageName: 'MyKitArtifacts' },
+    });
+    await iosUtils.generatePackageMetadataFile(config, tmpDir);
+
+    const products = parseProducts(fs.readFileSync(path.join(tmpDir, 'Package.swift'), 'utf8'));
+    // Existing consumers reference the individual frameworks — they must keep resolving.
+    expect(products.map(({ name }) => name)).toEqual(
+      expect.arrayContaining(['MyKitArtifacts', 'MyKit', 'hermesvm'])
+    );
+    expect(products.find(({ name }) => name === 'MyKit')?.targets).toEqual(['MyKit']);
+  });
+
+  it('emits only the aggregate product when prebuilds are on', async () => {
+    const podDir = path.join(tmpDir, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(path.join(podDir, 'ExpoImage.xcframework'), { recursive: true });
+    fs.mkdirSync(path.join(podDir, 'artifacts'), { recursive: true });
+    fs.writeFileSync(path.join(podDir, 'artifacts', 'ExpoImage-release.tar.gz'), '');
+    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const config = makeConfig({
+      scheme: 'MyKit',
+      usePrebuilds: true,
+      output: { packageName: 'MyKitArtifacts-release' },
+    });
+    await iosUtils.generatePackageMetadataFile(config, tmpDir);
+
+    const products = parseProducts(fs.readFileSync(path.join(tmpDir, 'Package.swift'), 'utf8'));
+    expect(products.map(({ name }) => name)).toEqual(['MyKitArtifacts-release']);
+    expect(products[0]?.targets).toEqual(expect.arrayContaining(['MyKit', 'ExpoImage']));
+  });
+
+  it('does not emit a duplicate product when a framework name matches the package name', async () => {
+    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // `--package MyKit` on a `MyKit` scheme: the aggregate and the per-framework product would
+    // collide, and SPM rejects duplicate product names.
+    const config = makeConfig({
+      scheme: 'MyKit',
+      usePrebuilds: false,
+      output: { packageName: 'MyKit' },
+    });
+    await iosUtils.generatePackageMetadataFile(config, tmpDir);
+
+    const products = parseProducts(fs.readFileSync(path.join(tmpDir, 'Package.swift'), 'utf8'));
+    expect(products.filter(({ name }) => name === 'MyKit')).toHaveLength(1);
+    // The surviving product is the aggregate, so it still links every target.
+    expect(products.find(({ name }) => name === 'MyKit')?.targets).toEqual(
+      expect.arrayContaining(['MyKit', 'hermesvm'])
+    );
   });
 });
 

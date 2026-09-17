@@ -494,17 +494,33 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
     }
   );
 
-  // With prebuilds the module graph is large; expose a single aggregate library so consumers
-  // `import <PackageName>` once and Xcode links every underlying binary target automatically.
-  // Without prebuilds keep one `.library` per framework for backwards compatibility.
+  // The aggregate library is ALWAYS emitted: consumers `import <PackageName>` once and Xcode
+  // links every underlying binary target automatically. `usePrebuilds` is inferred from whether
+  // `ios/Pods/` holds precompiled xcframeworks (see `resolveBuildConfigIos`), i.e. from
+  // expo-build-properties' `ios.usePrecompiledModules` — a build-time size/speed setting. Gating
+  // the aggregate product on it made that unrelated setting silently rewrite the published
+  // package's public API, breaking consumers that only referenced the aggregate.
+  //
+  // Without prebuilds we additionally keep one `.library` per framework, so packages that were
+  // published before this change keep resolving for existing consumers. A per-framework product
+  // is skipped when its name would collide with the aggregate — SPM rejects duplicate product
+  // names outright.
+
+  // Hoisted: TypeScript drops the `config.output !== 'frameworks'` narrowing inside the callback
+  // below, since `config` is a parameter it can't prove is unmutated.
+  const { packageName } = config.output;
+  const aggregateProduct = libraryProduct(
+    packageName,
+    xcframeworks.map(({ name }) => name)
+  );
   const products = config.usePrebuilds
-    ? [
-        libraryProduct(
-          config.output.packageName,
-          xcframeworks.map(({ name }) => name)
-        ),
-      ]
-    : xcframeworks.map(({ name, targets }) => libraryProduct(name, targets));
+    ? [aggregateProduct]
+    : [
+        aggregateProduct,
+        ...xcframeworks
+          .filter(({ name }) => name !== packageName)
+          .map(({ name, targets }) => libraryProduct(name, targets)),
+      ];
 
   const contents = `// swift-tools-version:5.9
 import PackageDescription
