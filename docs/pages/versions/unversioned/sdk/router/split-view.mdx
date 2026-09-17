@@ -26,6 +26,41 @@ import { FileTree } from '~/ui/components/FileTree';
 
 Split View is only available on iOS. On other platforms, the `SplitView` component automatically falls back to rendering as a standard `Slot` navigator, ensuring your app works across all platforms without conditional code.
 
+## Choosing the implementation
+
+`SplitView` can be rendered by one of two native libraries:
+
+- `rns` (default) uses `Split.Host` from `react-native-screens`, which wraps `UISplitViewController`.
+- `expo-ui` uses `NavigationSplitView` from `@expo/ui/swift-ui`, which wraps the SwiftUI split view. It requires `@expo/ui` to be installed and supports the [header options](#header-options) described below.
+
+Call `setSplitViewImplementation` before the first `SplitView` renders, for example at the top level of your root layout module:
+
+```tsx app/_layout.tsx
+import { SplitView, setSplitViewImplementation } from 'expo-router/unstable-split-view';
+
+setSplitViewImplementation('expo-ui');
+
+export default function Layout() {
+  return (
+    <SplitView>
+      <SplitView.Column>{/* ... */}</SplitView.Column>
+    </SplitView>
+  );
+}
+```
+
+The `SplitView` API is the same for both implementations. With `expo-ui`, the props map to SwiftUI as follows:
+
+| Prop                     | Effect with `expo-ui`                                                                                                                              |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `topColumnForCollapsing` | Sets the column shown when the split view is collapsed. `primary`, `supplementary` and `secondary` map to the sidebar, content and detail columns. |
+| `preferredDisplayMode`   | Sets the visible columns. `secondaryOnly` shows the detail column, `one*` modes show two columns and `two*` modes show all columns.                |
+| `preferredSplitBehavior` | `tile` uses the balanced style. `overlay` and `displace` use the prominent detail style.                                                           |
+| `columnMetrics`          | Sets the minimum, preferred and maximum width of the sidebar and content columns. Widths given as fractions are ignored.                           |
+| `ref.show(column)`       | Shows the column, both when the split view is collapsed and when it is expanded.                                                                   |
+
+Other props of `SplitView` and `SplitView.Inspector` are ignored by the `expo-ui` implementation.
+
 ## iPhone support
 
 On iPhone, `SplitView` automatically collapses all columns into a single view. Only one column is visible at a time.
@@ -67,6 +102,74 @@ export default function Layout() {
 }
 ```
 
+### Following the route on iPhone
+
+Navigating with `Link` or `router` changes the route rendered in the detail column, but does not change the visible column. Call `show` when the route changes to move the user to the matching column:
+
+```tsx
+import { useEffect, useRef } from 'react';
+import { useSegments } from 'expo-router';
+import { SplitView } from 'expo-router/unstable-split-view';
+import type { SplitHostCommands } from 'react-native-screens/experimental';
+
+export default function Layout() {
+  const ref = useRef<SplitHostCommands>(null);
+  const depth = useSegments().length;
+
+  useEffect(() => {
+    ref.current?.show(depth > 1 ? 'secondary' : depth === 1 ? 'supplementary' : 'primary');
+  }, [depth]);
+
+  return <SplitView ref={ref}>{/* ... */}</SplitView>;
+}
+```
+
+## Header options
+
+> **info** Header options are applied only by the `expo-ui` implementation. The `rns` implementation ignores them and logs a warning in development.
+
+Each column has a navigation bar. Configure it with these options:
+
+| Option              | Description                                                                              |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| `title`             | The title shown in the navigation bar.                                                   |
+| `headerShown`       | Whether the navigation bar is shown. Defaults to `true`.                                 |
+| `headerLargeTitle`  | Whether the title uses the large style. When not set, the system decides.                |
+| `headerBackVisible` | Whether the back button is visible when the split view is collapsed. Defaults to `true`. |
+
+Pass them as props to `SplitView.Column`:
+
+```tsx
+<SplitView.Column title="Mailboxes" headerLargeTitle>
+  {/* ... */}
+</SplitView.Column>
+```
+
+The detail column shows the route content, so its header is configured per route with `SplitView.Screen`. Use it in the layout with a `name`, or inside a page without one. The `screenOptions` prop of `SplitView` sets the defaults for all routes:
+
+```tsx app/_layout.tsx
+<SplitView screenOptions={{ headerLargeTitle: false }}>
+  <SplitView.Column title="Mailboxes">{/* ... */}</SplitView.Column>
+  <SplitView.Screen name="index" options={{ title: 'Inbox' }} />
+</SplitView>
+```
+
+```tsx app/[id].tsx
+import { useLocalSearchParams } from 'expo-router';
+import { SplitView } from 'expo-router/unstable-split-view';
+
+export default function Message() {
+  const { id } = useLocalSearchParams();
+
+  return (
+    <>
+      <SplitView.Screen options={{ title: String(id) }} />
+      {/* ... */}
+    </>
+  );
+}
+```
+
 ## Known limitations
 
 <Collapsible summary="Cannot be nested">
@@ -75,21 +178,27 @@ There can only be one `SplitView` in the navigation hierarchy. Attempting to nes
 
 </Collapsible>
 
-<Collapsible summary="Cannot be used inside other navigators">
+<Collapsible summary="Cannot be used inside other navigators with the rns implementation">
 
-`SplitView` cannot be used inside another navigator (except for `Slot`). It must be used at the root layout level.
+With the `rns` implementation, `SplitView` cannot be used inside another native navigator such as `Stack` or `NativeTabs`. Use it at the root layout level or under `Slot`. The `expo-ui` implementation renders a plain view and can be nested.
 
 </Collapsible>
 
 <Collapsible summary="Only specific children allowed">
 
-`SplitView` only accepts `SplitView.Column` and `SplitView.Inspector` as direct children. Other components will be ignored with a warning.
+`SplitView` only accepts `SplitView.Column`, `SplitView.Inspector` and `SplitView.Screen` as direct children. Other components will be ignored with a warning.
 
 </Collapsible>
 
-<Collapsible summary="Header cannot be customized yet">
+<Collapsible summary="Header options require the expo-ui implementation">
 
-The header (navigation bar) within split view columns cannot be customized. Custom header configurations are not yet supported.
+The `rns` implementation does not render a navigation bar for the columns, so the [header options](#header-options) only apply after calling `setSplitViewImplementation('expo-ui')`.
+
+</Collapsible>
+
+<Collapsible summary="Inspector requires the rns implementation">
+
+`SplitView.Inspector` has no SwiftUI counterpart yet. The `expo-ui` implementation ignores it with a warning.
 
 </Collapsible>
 
