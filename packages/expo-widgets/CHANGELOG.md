@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `schedule` option to `LiveActivityFactory.start()` to start a Live Activity at a future date, and return scheduled Live Activities from `getInstances()`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
