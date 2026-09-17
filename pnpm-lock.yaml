@@ -817,11 +817,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/expo-constants
       react:
-        specifier: 19.2.3
-        version: 19.2.3
+        specifier: 19.3.0
+        version: 19.3.0
       react-native:
-        specifier: 0.88.0-rc.0
-        version: 0.88.0-rc.0(@babel/core@7.29.7)(@types/react@19.2.14)(react@19.2.3)
+        specifier: 0.88.0-rc.1
+        version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
 
   apps/minimal-tester:
     dependencies:
