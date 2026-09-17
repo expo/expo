@@ -306,9 +306,7 @@ it('logs an error for stale focused state after commit', () => {
     } as unknown as NavigationState;
     return { state: staleState, affectedRouteKey: state.routes[0]!.key };
   });
-  const result = renderReducer({
-    registry: new Map([['root', entry(reduce)]]),
-  });
+  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
 
   act(() => result.result.current.handleAction({ type: 'STALE' }));
 
@@ -340,7 +338,9 @@ it('logs an error for focused state without an index after commit', () => {
     } as unknown as NavigationState;
     return { state: incompleteState, affectedRouteKey: state.routes[0]!.key };
   });
-  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  const result = renderReducer({
+    registry: new Map([['root', entry(reduce)]]),
+  });
 
   act(() => result.result.current.handleAction({ type: 'INCOMPLETE' }));
 
@@ -506,19 +506,38 @@ it('warns for direct navigation actions carrying a screen param', () => {
   warn.mockRestore();
 });
 
-it('logs an error when an action is dispatched before its router registers', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+it('reports an action dispatched before its router registers as unhandled', () => {
   const result = renderReducer({ registry: new Map() });
+  const action = { type: 'TEST' };
 
-  act(() => result.result.current.handleAction({ type: 'TEST' }));
+  act(() => result.result.current.handleAction(action));
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'TEST'"));
+  expect(result.result.current.report?.events).toEqual([
+    { id: 0, type: 'unhandled-action', action },
+  ]);
   expect(result.result.current.state).toBe(initialState);
-  error.mockRestore();
 });
 
-it('logs an error for a later action after a same-batch reset changes the registered state key', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+it('does not report an unhandled action in production', () => {
+  const nodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  try {
+    const result = renderReducer({ registry: new Map() });
+
+    act(() => result.result.current.handleAction({ type: 'TEST' }));
+
+    expect(result.result.current.report).toBeUndefined();
+    expect(result.result.current.state).toBe(initialState);
+  } finally {
+    if (nodeEnv === undefined) {
+      Reflect.deleteProperty(process.env, 'NODE_ENV');
+    } else {
+      process.env.NODE_ENV = nodeEnv;
+    }
+  }
+});
+
+it('reports a later action as unhandled after a same-batch reset changes the state key', () => {
   const registryEntry = entry((state, action) =>
     action.type === 'RESET_KEY'
       ? {
@@ -536,9 +555,11 @@ it('logs an error for a later action after a same-batch reset changes the regist
     result.result.current.handleAction({ type: 'NEXT' });
   });
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'NEXT'"));
+  expect(result.result.current.report?.events).toEqual([
+    expect.objectContaining({ id: 0, type: 'action-dispatched', action: { type: 'RESET_KEY' } }),
+    { id: 1, type: 'unhandled-action', action: { type: 'NEXT' } },
+  ]);
   expect(result.result.current.state.key).toBe('next-root');
-  error.mockRestore();
 });
 
 it('resets a state slice when its router unregisters', () => {

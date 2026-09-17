@@ -357,7 +357,7 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
-      initialSelectedDateMillis = initialDate,
+      initialSelectedDateMillis = props.initialDate,
       initialDisplayedMonthMillis = initialDate,
       yearRange = yearRange,
       selectableDates = selectableDates
@@ -371,7 +371,7 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
   DatePickerDialog(
     onDismissRequest = { onDismissRequest() },
     confirmButton = {
-      TextButton(onClick = { onDateSelected(DatePickerResult(date = state.selectedDateMillis)) }, colors = buttonColors) {
+      TextButton(onClick = { onDateSelected(DatePickerResult(date = state.selectedDateMillis)) }, enabled = state.selectedDateMillis != null, colors = buttonColors) {
         Text(props.confirmButtonLabel ?: stringResource(android.R.string.ok))
       }
     },

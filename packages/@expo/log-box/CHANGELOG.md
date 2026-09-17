@@ -8,6 +8,28 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.3 — 2026-09-16
+
+### 💡 Others
+
+- [Internal] Drop `expo-modules-core` dependency ([#50228](https://github.com/expo/expo/pull/50228) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - Fix the web overlay bundle printing a `Deep imports from the 'react-native' package are deprecated` warning on every load. ([#47772](https://github.com/expo/expo/pull/47772) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Resolve development server requests from the URL the bundle was loaded from, instead of the default Metro address ([#48276](https://github.com/expo/expo/pull/48276) by [@kitten](https://github.com/kitten))
 - Stop the iOS webview wrapper printing `Unknown message type` for DOM runtime messages that LogBox does not handle, matching Android. ([#48813](https://github.com/expo/expo/pull/48813) by [@kudo](https://github.com/Kudo))
@@ -16,6 +38,7 @@
 
 ### 💡 Others
 
+- [iOS] Split the mixed Swift/Objective-C++ sources into `ExpoLogBox` and `ExpoLogBoxObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#47651](https://github.com/expo/expo/pull/47651) by [@chrfalch](https://github.com/chrfalch))
 - Get the development server address from the loaded bundle. ([#48722](https://github.com/expo/expo/pull/48722) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 57.0.2 - 2026-07-29

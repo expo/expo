@@ -60,6 +60,10 @@ export type NavigationTreeReport = {
 
 type NavigationTreeReportEventData =
   | {
+      type: 'unhandled-action';
+      action: NavigationAction;
+    }
+  | {
       type: 'removed-routes';
       routeKeys: readonly string[];
       action: NavigationAction;
@@ -85,7 +89,6 @@ type NavigationTreeResult = {
   eventSeq: number;
 };
 
-const warnedActions = new WeakSet<NavigationAction>();
 const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
 
 function warnIfStaleState(state: NavigationState) {
@@ -101,46 +104,6 @@ function warnIfStaleState(state: NavigationState) {
     }
     focusedState = focusedState.routes[focusedState.index]?.state as NavigationState | undefined;
   }
-}
-
-function warnUnhandledAction(action: NavigationAction) {
-  if (process.env.NODE_ENV === 'production' || warnedActions.has(action)) {
-    return;
-  }
-  warnedActions.add(action);
-
-  const payload =
-    typeof action.payload === 'object' && action.payload !== null ? action.payload : undefined;
-  let message = `The action '${action.type}'${
-    payload ? ` with payload ${JSON.stringify(payload)}` : ''
-  } was not handled by any navigator.`;
-
-  switch (action.type) {
-    case 'NAVIGATE':
-    case 'PUSH':
-    case 'REPLACE':
-    case 'JUMP_TO':
-      if (payload && 'name' in payload && typeof payload.name === 'string') {
-        message += `\n\nDo you have a route named '${payload.name}'?`;
-      } else {
-        message += '\n\nYou need to pass the name of the screen to navigate to. This may be a bug.';
-      }
-      break;
-    case 'GO_BACK':
-    case 'POP':
-    case 'POP_TO_TOP':
-      message += '\n\nIs there any screen to go back to?';
-      break;
-    case 'OPEN_DRAWER':
-    case 'CLOSE_DRAWER':
-    case 'TOGGLE_DRAWER':
-      message += '\n\nIs your screen inside a Drawer navigator?';
-      break;
-  }
-
-  console.error(
-    `${message}\n\nThis is a development-only warning and won't be shown in production.`
-  );
 }
 
 function navigationTreeReducer(
@@ -219,10 +182,7 @@ function navigationTreeReducer(
         operation.payload.originKey
       );
       if (!origin) {
-        // TODO(@ubax): move console side effects out of the reducer and restore `onUnhandledAction`.
-        // https://linear.app/expo/issue/ENG-26123
-        warnUnhandledAction(operation.payload.action);
-        return result;
+        return reportUnhandledAction(result, operation.payload.action);
       }
 
       const reduction = reduceNavigationTree(operation.payload.action, config.registry, {
@@ -230,10 +190,7 @@ function navigationTreeReducer(
         tree,
       });
       if (!reduction.handled) {
-        // TODO(@ubax): move console side effects out of the reducer and restore `onUnhandledAction`.
-        // https://linear.app/expo/issue/ENG-26123
-        warnUnhandledAction(operation.payload.action);
-        return result;
+        return reportUnhandledAction(result, operation.payload.action);
       }
       const nextState = config.routeNode
         ? completeNavigationState(reduction.nextState, config.routeNode)
@@ -273,19 +230,7 @@ function navigationTreeReducer(
                 state: committedState,
               },
             ];
-      const events: NavigationTreeReportEvent[] = eventsWithoutIds.map((event, index) => ({
-        ...event,
-        id: result.eventSeq + index,
-      }));
-      const report: NavigationTreeReport = {
-        events: result.report ? [...result.report.events, ...events] : events,
-      };
-
-      return {
-        state: committedState,
-        report,
-        eventSeq: result.eventSeq + events.length,
-      };
+      return appendReportEvents({ ...result, state: committedState }, eventsWithoutIds);
     }
     case 'NAVIGATOR_UNMOUNTED': {
       // A still-registered key re-registered before this operation reduced, so it did not unmount.
@@ -327,6 +272,32 @@ function navigationTreeReducer(
       return { ...result, report: events.length > 0 ? { events } : undefined };
     }
   }
+}
+
+function reportUnhandledAction(
+  result: NavigationTreeResult,
+  action: NavigationAction
+): NavigationTreeResult {
+  return process.env.NODE_ENV === 'production'
+    ? result
+    : appendReportEvents(result, [{ type: 'unhandled-action', action }]);
+}
+
+function appendReportEvents(
+  result: NavigationTreeResult,
+  events: NavigationTreeReportEventData[]
+): NavigationTreeResult {
+  const eventsWithIds: NavigationTreeReportEvent[] = events.map((event, index) => ({
+    ...event,
+    id: result.eventSeq + index,
+  }));
+  return {
+    ...result,
+    report: {
+      events: result.report ? [...result.report.events, ...eventsWithIds] : eventsWithIds,
+    },
+    eventSeq: result.eventSeq + eventsWithIds.length,
+  };
 }
 
 export function useNavigationTreeReducer({

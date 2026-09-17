@@ -1,6 +1,6 @@
 {
   "name": "expo-server",
-  "version": "57.0.1",
+  "version": "58.0.0",
   "description": "Server API for Expo Router projects",
   "keywords": [
     "expo"
@@ -94,7 +94,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo-module-scripts": "workspace:*",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.1.2"

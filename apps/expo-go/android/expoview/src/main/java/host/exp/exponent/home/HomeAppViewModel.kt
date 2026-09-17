@@ -30,6 +30,7 @@ import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.home.auth.AuthRequestType
 import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.network.LocalNetworkPermission
 import host.exp.exponent.nsd.NsdDiscovery
 import host.exp.exponent.nsd.NsdPreferences
 import host.exp.exponent.nsd.PackagerInfo
@@ -229,6 +230,16 @@ class HomeAppViewModel(
   val feedbackState = MutableStateFlow(FeedbackState())
 
   private val nsdDiscovery = NsdDiscovery(application, client)
+
+  private val _isLocalNetworkPermissionGranted =
+    MutableStateFlow(LocalNetworkPermission.isGranted(application))
+
+  /** False only on Android 17+ until the user grants local network access, which NSD and dev-server loads need. */
+  val isLocalNetworkPermissionGranted: StateFlow<Boolean> = _isLocalNetworkPermissionGranted
+
+  fun refreshLocalNetworkPermission() {
+    _isLocalNetworkPermissionGranted.value = LocalNetworkPermission.isGranted(getApplication<Application>())
+  }
   val nsdPreferences = NsdPreferences(application)
 
   // Reactive trigger that re-emits whenever NSD preferences change
@@ -419,9 +430,15 @@ class HomeAppViewModel(
       updateUserReviewState(appsList.size, snacksList.size)
     }.launchIn(viewModelScope)
 
-    // Start NSD discovery and enable health checks
-    nsdDiscovery.start()
-    nsdDiscovery.resumeHealthCheck()
+    // NSD needs the local network permission on Android 17, so start discovery once it is granted.
+    isLocalNetworkPermissionGranted
+      .onEach { isGranted ->
+        if (isGranted) {
+          nsdDiscovery.start()
+          nsdDiscovery.resumeHealthCheck()
+        }
+      }
+      .launchIn(viewModelScope)
 
     // Re-filter when NSD preferences change
     nsdPreferences.addOnChangeListener(nsdPreferencesListener)

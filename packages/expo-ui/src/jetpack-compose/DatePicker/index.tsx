@@ -325,6 +325,10 @@ export function DateRangePicker(props: DateRangePickerProps) {
 // -- Dialog views (used internally by the compat layer) ---------------------
 
 export interface DatePickerDialogProps {
+  /**
+   * The initially selected date. When omitted, the dialog opens on the current month with no
+   * selection and the confirm button stays disabled until a date is picked.
+   */
   initialDate?: string | null;
   variant?: AndroidVariant;
   showVariantToggle?: boolean;

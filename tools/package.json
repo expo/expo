@@ -60,7 +60,7 @@
     "strip-ansi": "^6.0.0",
     "tar": "^7.5.22",
     "terminal-link": "^2.1.1",
-    "typedoc": "^0.28.19"
+    "typedoc": "^0.28.20"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

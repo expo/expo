@@ -8,6 +8,28 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] Let `ios.enableSceneSupport` adopt the scene lifecycle when another config plugin has inserted lines into the startup block, such as `@react-native-firebase/app`. ([#50221](https://github.com/expo/expo/pull/50221) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Add `ios.enableSceneSupport` to adopt the UIKit scene lifecycle in SDK 57 projects. The property is a no-op on SDK 58 and newer. ([#50205](https://github.com/expo/expo/pull/50205) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - [Android] Make `buildReactNativeFromSource` idempotent so repeated prebuilds no longer append a duplicate `includeBuild(expoAutolinking.reactNative)` block to `settings.gradle` (and toggling it off removes the block). ([#46713](https://github.com/expo/expo/pull/46713) by [@ahmdshrif](https://github.com/ahmdshrif))
 - [Android] Make the precompiled header reusable by passing `-Xclang -fno-pch-timestamp`, so ccache can reuse it across builds. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Pin the C++ dialect of PCH consumer targets to `-std=c++20`. ([#47788](https://github.com/expo/expo/pull/47788) by [@gabrieldonadel](https://github.com/gabrieldonadel))

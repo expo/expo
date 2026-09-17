@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 💡 Others
+
 - [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
 - [Internal] Read the development server URL from `expo/internal/bundle-origin` instead of duplicating its accessor ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 

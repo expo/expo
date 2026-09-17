@@ -212,7 +212,7 @@ export const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps> = Icon;
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * export default Layout(){
@@ -264,7 +264,7 @@ export interface NativeTabsBottomAccessoryProps {
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default Layout(){
  *   return (

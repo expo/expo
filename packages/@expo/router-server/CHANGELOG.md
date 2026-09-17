@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
-- Compile `pageHeaders` rules into the routes manifest ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [Internal] Use a relative import in `node/render.js` instead of a self-reference. ([#50238](https://github.com/expo/expo/pull/50238) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.1 — 2026-09-14
 
 ### 🐛 Bug fixes
+
+- Fix JavaScript chunk execution order during streaming server rendering ([#50077](https://github.com/expo/expo/pull/50077) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
+- Compile `pageHeaders` rules into the routes manifest ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 

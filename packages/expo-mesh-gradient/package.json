@@ -1,6 +1,6 @@
 {
   "name": "expo-mesh-gradient",
-  "version": "57.0.1",
+  "version": "58.0.0",
   "description": "A module that exposes MeshGradient view from SwiftUI to React Native",
   "keywords": [
     "expo",
@@ -41,7 +41,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },

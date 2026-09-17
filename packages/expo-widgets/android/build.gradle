@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'expo.modules.widgets'
-version = '56.0.15'
+version = '58.0.3'
 
 def expoWidgetsPackageDirFile = project.projectDir.parentFile
 def expoWidgetsPackageDir = expoWidgetsPackageDirFile.absolutePath
@@ -39,7 +39,7 @@ android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
-    versionName '56.0.15'
+    versionName '58.0.3'
 
     externalNativeBuild {
       cmake {
@@ -108,7 +108,7 @@ def generateExpoWidgetsLayoutRegistry = tasks.register("generateExpoWidgetsLayou
   inputs.file file("$expoWidgetsPackageDir/metro.config.js")
   inputs.file file("$expoWidgetsPackageDir/scripts/build-layout-registry.mjs")
   inputs.file file("$expoWidgetsPackageDir/bundle/layout-registry-entry.js")
-  inputs.file(expoWidgetsLayoutRegistryConfigFile).optional()
+  inputs.files(expoWidgetsLayoutRegistryConfigFile)
   outputs.file(expoWidgetsLayoutRegistryOutput)
 
   def command = [
@@ -143,6 +143,6 @@ dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.react:hermes-android'
   implementation expoModule.getExpoDependency("expo-ui")
-  api 'io.github.jakex7.peek:peek-emittables:0.2.0'
-  implementation "androidx.glance:glance:1.2.0-rc01"
+  api 'io.github.jakex7.peek:peek-emittables:0.3.0'
+  implementation "androidx.glance:glance:1.2.0"
 }

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.7 - 2026-07-29
 
 _This version does not introduce any user-facing changes._

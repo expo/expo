@@ -1,4 +1,4 @@
-# Expo Documentation
+# Expo documentation
 
 This is the public documentation for **Expo**, its SDK, client, and services (**EAS**). This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 

@@ -26,8 +26,10 @@ import { withPackageLocalBuildPath } from '../PackageLocalBuild';
 import type { BuildFlavor } from '../Prebuilder.types';
 import { buildSharedSPMDependencyAsync } from '../SPMBuild';
 import type { SPMPackageDependencyConfig, SPMProduct, SPMTarget } from '../SPMConfig.types';
+import { getTargetExcludePatterns } from '../SPMGenerator';
 import {
   getVersionsInfoAsync,
+  resolveFrameworkTargetPath,
   setForceNonInteractive,
   validateAllPodNamesAsync,
   verifyAllPackagesAsync,
@@ -279,7 +281,7 @@ function getFrameworkMtimeMs(frameworkPath: string): number {
 
 function getSourceTargetPath(pkg: SPMPackageSource, target: SPMTarget): string | null {
   if (target.type === 'framework') {
-    return path.resolve(pkg.path, target.path);
+    return resolveFrameworkTargetPath(pkg.path, target);
   }
 
   const isBuildArtifact = target.path.startsWith('.build/');
@@ -301,7 +303,7 @@ function collectTargetInputPaths(pkg: SPMPackageSource, target: SPMTarget): stri
   return glob
     .sync('**/*', {
       cwd: targetSourcePath,
-      ignore: target.exclude ?? [],
+      ignore: getTargetExcludePatterns(target),
       nodir: true,
     })
     .map((file) => path.join(targetSourcePath, file));

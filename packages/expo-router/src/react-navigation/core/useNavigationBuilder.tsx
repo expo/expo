@@ -250,7 +250,8 @@ export function useNavigationBuilder<
     EventMap,
     any
   > &
-    RouterOptions
+    RouterOptions,
+  { activityDefaultThreshold = 1 }: { activityDefaultThreshold?: number } = {}
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
@@ -258,6 +259,7 @@ export function useNavigationBuilder<
 
   const {
     children,
+    activityEnabled,
     layout,
     screenOptions,
     screenLayout,
@@ -283,6 +285,7 @@ export function useNavigationBuilder<
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);
 
+      // TODO(@ubax): Remove the UNSTABLE_router prop
       return {
         ...original,
         ...overrides,
@@ -497,6 +500,8 @@ export function useNavigationBuilder<
     routes: state.routes,
     routeNames: state.routeNames,
     screens,
+    activityEnabled,
+    activityDefaultThreshold,
     navigation,
     screenOptions,
     screenLayout,

@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "57.0.4",
+  "version": "58.0.3",
   "description": "Create and open deep links universally",
   "keywords": [
     "expo",
@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@types/invariant": "^2.2.33",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

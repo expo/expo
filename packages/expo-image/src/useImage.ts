@@ -61,12 +61,16 @@ export function useImage(
     // We're doing some asynchronous action in this effect, so we should keep track
     // if the effect was already cleaned up. In that case, the async action shouldn't change the state.
     let isEffectValid = true;
+    let loadedImage: ImageRef | null = null;
 
     function loadImage() {
       Image.loadAsync(resolvedSource, options)
         .then((image) => {
           if (isEffectValid) {
+            loadedImage = image;
             setImage(image);
+          } else {
+            image.release();
           }
         })
         .catch((error) => {
@@ -90,7 +94,7 @@ export function useImage(
     return () => {
       // Invalidate the effect and release the shared object to free up memory.
       isEffectValid = false;
-      image?.release();
+      loadedImage?.release();
     };
   }, [resolvedSource.uri, ...dependencies]);
 
