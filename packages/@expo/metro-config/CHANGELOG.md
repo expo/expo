@@ -8,10 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
 - Fix `Worker chunk not found` assertion when serving a web worker from a lazy development bundle with `web.output` set to `static` or `server` ([#50244](https://github.com/expo/expo/pull/50244) by [@tahakocal](https://github.com/tahakocal))
 
 ### 💡 Others
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
 
 ## 58.0.2 — 2026-09-15
 
