@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `setSplitViewImplementation` to `expo-router/unstable-split-view` to render `SplitView` with `NavigationSplitView` from `@expo/ui`, and add header options to `SplitView.Column` and `SplitView.Screen`. ([#50107](https://github.com/expo/expo/pull/50107) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Mock `react-native-worklets` in `expo-router/testing-library` so `react-native-gesture-handler` and `react-native-reanimated` load in Jest. ([#50013](https://github.com/expo/expo/pull/50013) by [@brentvatne](https://github.com/brentvatne))

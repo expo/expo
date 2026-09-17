@@ -120,3 +120,40 @@ it('renders a SplitView nested under a JavaScript navigator', () => {
   expect(screen.getByTestId('Split.Host')).toBeVisible();
   expect(screen.getByTestId('child')).toBeVisible();
 });
+
+it('passes SplitView.Screen options to the detail routes', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Screen name="index" options={{ title: 'Home' }} />
+        </SplitView>
+      ),
+      index: () => <Text testID="child">Child</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(screen.getByTestId('child')).toBeVisible();
+});
+
+it('warns that header options are ignored', () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column title="Inbox" />
+        </SplitView>
+      ),
+      index: () => <Text>Child</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(warn).toHaveBeenCalledWith(
+    "SplitView header options are ignored by the react-native-screens implementation. Call setSplitViewImplementation('expo-ui') to use them."
+  );
+});

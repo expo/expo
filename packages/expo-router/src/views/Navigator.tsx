@@ -146,7 +146,7 @@ function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
   return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
 
-const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter, {
+export const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter, {
   activityDefaultThreshold: 1,
 });
 
