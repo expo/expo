@@ -246,6 +246,51 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
+  func `notifies React Native through the injected notifier for a warm URL`() {
+    let spy = SpyAppDelegate()
+    let url = URL(string: "bareexpo://scene-delegate/warm-open-url")!
+    let recorder = OpenURLNotificationRecorder()
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:]) {
+      notifications += 1
+    }
+    #expect(spy.openedURLs.first?.url == url)
+    #expect(notifications == 1)
+    #expect(recorder.count(of: url) == 0)
+  }
+
+  @Test
+  @MainActor
+  func `does not notify React Native when the app delegate already notified for a URL`() {
+    let delegate = LegacyLinkingAppDelegate()
+    let url = URL(string: "bareexpo://scene-delegate/warm-legacy-open-url")!
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { delegate }).open(url: url, options: [:]) {
+      notifications += 1
+    }
+    #expect(delegate.openedURLs == [url])
+    #expect(notifications == 0)
+  }
+
+  @Test
+  @MainActor
+  func `notifies React Native through the injected notifier for a warm user activity`() {
+    let spy = SpyAppDelegate()
+    let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
+    let webpageURL = URL(string: "https://expo.dev/scene-delegate/warm-activity")!
+    userActivity.webpageURL = webpageURL
+    let recorder = OpenURLNotificationRecorder()
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { spy }).continue(userActivity) {
+      notifications += 1
+    }
+    #expect(spy.continuedUserActivities.first === userActivity)
+    #expect(notifications == 1)
+    #expect(recorder.count(of: webpageURL) == 0)
+  }
+
+  @Test
+  @MainActor
   func `does not notify subscribers without an ExpoAppDelegate`() {
     let subscriber = URLRecordingSubscriber()
     ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
