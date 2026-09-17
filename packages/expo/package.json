@@ -23,6 +23,8 @@
   },
   "files": [
     "android",
+    "!android/.gitignore",
+    "!android/build/**",
     "bin",
     "build",
     "internal",
