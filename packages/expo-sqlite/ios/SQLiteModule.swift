@@ -243,61 +243,7 @@ public final class SQLiteModule: Module {
 
     // MARK: - NativeSession
 
-    // swiftlint:disable:next closure_body_length
-    Class(NativeSession.self) {
-      Constructor {
-        return NativeSession()
-      }
-
-      AsyncFunction("attachAsync") { (session: NativeSession, database: NativeDatabase, table: String?) in
-        try sessionAttach(database: database, session: session, table: table)
-      }.runOnQueue(moduleQueue)
-      Function("attachSync") { (session: NativeSession, database: NativeDatabase, table: String?) in
-        try sessionAttach(database: database, session: session, table: table)
-      }
-
-      AsyncFunction("enableAsync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
-        try sessionEnable(database: database, session: session, enabled: enabled)
-      }.runOnQueue(moduleQueue)
-      Function("enableSync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
-        try sessionEnable(database: database, session: session, enabled: enabled)
-      }
-
-      AsyncFunction("closeAsync") { (session: NativeSession, database: NativeDatabase) in
-        try sessionClose(database: database, session: session)
-      }.runOnQueue(moduleQueue)
-      Function("closeSync") { (session: NativeSession, database: NativeDatabase) in
-        try sessionClose(database: database, session: session)
-      }
-
-      AsyncFunction("createChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateChangeset(database: database, session: session)
-      }.runOnQueue(moduleQueue)
-      Function("createChangesetSync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateChangeset(database: database, session: session)
-      }
-
-      AsyncFunction("createInvertedChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateInvertedChangeset(database: database, session: session)
-      }.runOnQueue(moduleQueue)
-      Function("createInvertedChangesetSync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateInvertedChangeset(database: database, session: session)
-      }
-
-      AsyncFunction("applyChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) in
-        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
-      }.runOnQueue(moduleQueue)
-      Function("applyChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) in
-        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
-      }
-
-      AsyncFunction("invertChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) -> ArrayBuffer in
-        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
-      }.runOnQueue(moduleQueue)
-      Function("invertChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) -> ArrayBuffer in
-        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
-      }
-    }
+    NativeSession._synthesizedClassDefinition()
   }
 
   private func ensureDatabasePathExists(path: String) throws -> URL {
@@ -338,7 +284,7 @@ public final class SQLiteModule: Module {
     let flags = UInt32(SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE)
     let ret = exsqlite3_deserialize(db, "main", buffer.assumingMemoryBound(to: UInt8.self), size, size, flags)
     if ret != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+      throw SQLiteErrorException(sqliteErrorMessage(for: db))
     }
     return db
   }
@@ -501,14 +447,8 @@ public final class SQLiteModule: Module {
     statement.isFinalized = true
   }
 
-  private func convertSqlLiteErrorToString(_ db: OpaquePointer?) -> String {
-    let code = exsqlite3_errcode(db)
-    let message = String(cString: exsqlite3_errmsg(db), encoding: .utf8) ?? ""
-    return "Error code \(code): \(message)"
-  }
-
   private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
-    return convertSqlLiteErrorToString(db.pointer)
+    return db.lastErrorMessage()
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
@@ -670,9 +610,7 @@ public final class SQLiteModule: Module {
   }
 
   private func maybeThrowForClosedDatabase(_ database: NativeDatabase) throws {
-    if database.isClosed {
-      throw AccessClosedResourceException()
-    }
+    try database.ensureOpen()
   }
 
   private func maybeThrowForFinalizedStatement(_ statement: NativeStatement) throws {
@@ -760,84 +698,6 @@ public final class SQLiteModule: Module {
     let db = dbName.cString(using: .utf8)
     if exsqlite3session_create(database.pointer, db, &session.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-  }
-
-  private func sessionAttach(database: NativeDatabase, session: NativeSession, table: String?) throws {
-    try maybeThrowForClosedDatabase(database)
-    let tableName = table?.cString(using: .utf8)
-    if exsqlite3session_attach(session.pointer, tableName) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-  }
-
-  private func sessionEnable(database: NativeDatabase, session: NativeSession, enabled: Bool) throws {
-    try maybeThrowForClosedDatabase(database)
-    exsqlite3session_enable(session.pointer, enabled ? 1 : 0)
-  }
-
-  private func sessionClose(database: NativeDatabase, session: NativeSession) throws {
-    try maybeThrowForClosedDatabase(database)
-    exsqlite3session_delete(session.pointer)
-  }
-
-  private func sessionCreateChangeset(database: NativeDatabase, session: NativeSession) throws -> ArrayBuffer {
-    try maybeThrowForClosedDatabase(database)
-    var size: Int32 = 0
-    var buffer: UnsafeMutableRawPointer?
-    if exsqlite3session_changeset(session.pointer, &size, &buffer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    guard let buffer else {
-      return ArrayBuffer(size: 0)
-    }
-    defer { exsqlite3_free(buffer) }
-    return ArrayBuffer.copy(of: buffer, count: Int(size))
-  }
-
-  private func sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession) throws -> ArrayBuffer {
-    do {
-      let changeset = try sessionCreateChangeset(database: database, session: session)
-      return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
-    } catch {
-      throw error
-    }
-  }
-
-  private func sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: some AnyArrayBuffer) throws {
-    try maybeThrowForClosedDatabase(database)
-    try changeset.withUnsafeBytes {
-      let buffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
-      if exsqlite3changeset_apply(
-        database.pointer,
-        Int32(changeset.byteLength),
-        buffer,
-        nil,
-        { _, _, _ -> Int32 in
-          return SQLITE_CHANGESET_REPLACE
-        },
-        nil
-      ) != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-      }
-    }
-  }
-
-  private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: some AnyArrayBuffer) throws -> ArrayBuffer {
-    try maybeThrowForClosedDatabase(database)
-    return try changeset.withUnsafeBytes {
-      let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
-      var outSize: Int32 = 0
-      var outBuffer: UnsafeMutableRawPointer?
-
-      if exsqlite3changeset_invert(Int32(changeset.byteLength), inBuffer, &outSize, &outBuffer) != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-      }
-      guard let outBuffer else {
-        return ArrayBuffer(size: 0)
-      }
-      defer { exsqlite3_free(outBuffer) }
-      return ArrayBuffer.copy(of: outBuffer, count: Int(outSize))
     }
   }
 }
