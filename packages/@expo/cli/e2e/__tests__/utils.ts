@@ -144,14 +144,16 @@ export async function createFromFixtureAsync(
         scripts: Object.assign({}, fixturePkg.scripts, pkg.scripts),
       });
 
+      const minimumReleaseAgeExclude = ['@react-native/*', 'react-native'];
+      let workspaceConfig = `\nminimumReleaseAgeExclude:\n${minimumReleaseAgeExclude
+        .map((name) => `  - ${JSON.stringify(name)}`)
+        .join('\n')}\n`;
       if (Object.keys(overrides).length > 0) {
-        await fs.promises.appendFile(
-          path.join(projectRoot, 'pnpm-workspace.yaml'),
-          `\noverrides:\n${Object.entries(overrides)
-            .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
-            .join('\n')}\n`
-        );
+        workspaceConfig += `\noverrides:\n${Object.entries(overrides)
+          .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
+          .join('\n')}\n`;
       }
+      await fs.promises.appendFile(path.join(projectRoot, 'pnpm-workspace.yaml'), workspaceConfig);
     }
 
     // Add additional modifications to the Expo config
