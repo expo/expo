@@ -48,7 +48,7 @@
     "expo-image-loader": "workspace:~"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },

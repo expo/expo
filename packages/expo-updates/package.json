@@ -85,7 +85,7 @@
     "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "@vercel/ncc": "^0.38.3",
     "expo-dev-client": "workspace:*",
     "expo-module-scripts": "workspace:*",
