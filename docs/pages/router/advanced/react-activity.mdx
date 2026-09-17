@@ -1,0 +1,64 @@
+---
+title: Manage inactive routes with React Activity
+description: Learn how to release resources from inactive routes while preserving their state.
+---
+
+> **important** This is an [experimental](/more/release-statuses/#experimental) feature.
+
+React Activity can hide inactive route content while preserving its React state. Hidden content cleans up effects and releases resources until it becomes visible again.
+
+Enable activity handling on a navigator:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return <Stack activityEnabled />;
+}
+```
+
+## Configure when routes hide
+
+For a `Stack`, `activityEnabled` hides a route when two screens are above it. Pass a positive number to change this threshold:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return <Stack activityEnabled={1} />;
+}
+```
+
+JavaScript tabs, native tabs, headless tabs, and drawers hide a route when it loses focus. You can override inherited behavior for one route:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack activityEnabled>
+      <Stack.Screen name="editor" activityEnabled={false} />
+    </Stack>
+  );
+}
+```
+
+## Wrap route content manually
+
+Use `NavigationAwareActivity` when you need to wrap only part of a route:
+
+```tsx src/app/details.tsx
+import { NavigationAwareActivity } from 'expo-router';
+
+import { Details } from '../components/details';
+
+export default function DetailsScreen() {
+  return (
+    <NavigationAwareActivity hideWhenNestedAtLevel={1}>
+      <Details />
+    </NavigationAwareActivity>
+  );
+}
+```
+
+`NavigationAwareActivity` must render inside a route screen. See the [Expo Router API reference](/versions/latest/sdk/router/) for all activity options.
