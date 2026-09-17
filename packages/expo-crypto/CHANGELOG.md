@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Import `Foundation` in the AES `Data` extension, which relied on another file in the module importing it.
+- [iOS] Import `Foundation` in the AES `Data` extension, which relied on another file in the module importing it. ([#50280](https://github.com/expo/expo/pull/50280) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
