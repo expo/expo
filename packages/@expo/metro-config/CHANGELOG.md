@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Worker chunk not found` assertion when serving a web worker from a lazy development bundle with `web.output` set to `static` or `server` ([#50244](https://github.com/expo/expo/pull/50244) by [@tahakocal](https://github.com/tahakocal))
+
 ### 💡 Others
 
 - Look up chunk entry modules by path instead of matching every module in the graph against a regex, speeding up chunk splitting for exports with async routes and no longer merging chunks for file names containing `*` ([#50245](https://github.com/expo/expo/pull/50245) by [@tahakocal](https://github.com/tahakocal))

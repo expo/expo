@@ -719,6 +719,9 @@ function gatherChunks(
         // Workers require standalone bundles even when ordinary chunk splitting is disabled.
         (isWorker || splitChunks)
       ) {
+        if (isWorker && options.includeAsyncPaths) {
+          continue;
+        }
         const asyncChunks = gatherChunks(
           runtimePremodules,
           chunks,

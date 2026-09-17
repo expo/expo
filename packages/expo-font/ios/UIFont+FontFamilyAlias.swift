@@ -1,4 +1,6 @@
 #if !os(macOS)
+import UIKit
+
 /**
  An extension to ``UIFont`` that adds a custom implementation of `fontNames(forFamilyName:)` that supports aliasing font families.
  */

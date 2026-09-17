@@ -1,0 +1,73 @@
+---
+title: Prevent screen removal
+description: Learn how to confirm navigation before Expo Router removes a screen.
+---
+
+> **important** `usePreventRemove()` is available in **Expo SDK 58** and later.
+
+Use `usePreventRemove()` to keep a screen open while it contains unsaved changes. The hook runs your callback when navigation tries to remove the screen.
+
+```tsx src/app/edit-profile.tsx
+import { usePreventRemove } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Platform, TextInput } from 'react-native';
+
+export default function EditProfile() {
+  const [name, setName] = useState('');
+  const hasUnsavedChanges = name.length > 0;
+
+  usePreventRemove(hasUnsavedChanges, ({ repeat }) => {
+    const discardChanges = () => {
+      setName('');
+      repeat();
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm('Discard your unsaved changes?')) {
+        discardChanges();
+      }
+      return;
+    }
+
+    Alert.alert('Discard changes?', 'You have unsaved changes.', [
+      { text: 'Keep editing', style: 'cancel' },
+      {
+        text: 'Discard',
+        style: 'destructive',
+        onPress: discardChanges,
+      },
+    ]);
+  });
+
+  return <TextInput value={name} onChangeText={setName} placeholder="Name" />;
+}
+```
+
+Set the value passed to `usePreventRemove()` to `false` before calling `repeat()`. This keeps your state synchronized with removal prevention.
+
+## Disable removal prevention
+
+The hook also returns a function that disables prevention. Use it when you want to cancel the blocked action and navigate somewhere else.
+
+```tsx src/app/edit-profile.tsx
+import { router, usePreventRemove } from 'expo-router';
+import { useState } from 'react';
+import { Button } from 'react-native';
+
+export default function EditProfile() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
+  const disablePrevention = usePreventRemove(hasUnsavedChanges);
+
+  function leaveForm() {
+    setHasUnsavedChanges(false);
+    disablePrevention();
+    router.replace('/profile');
+  }
+
+  return <Button title="Leave without saving" onPress={leaveForm} />;
+}
+```
+
+> **info** On web, `usePreventRemove()` also requests browser confirmation before a refresh, closing the tab, or external navigation. The browser controls whether a dialog appears and its message.
+
+See the [Expo Router API reference](/versions/latest/sdk/router/) for all removal prevention options.
