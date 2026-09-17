@@ -1,10 +1,10 @@
-import { getPackageBuildDir } from 'expo-modules-autolinking/prebuiltArtifactPaths';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
 import { getExpoRepositoryRootDir, getExternalPackagesDir } from '../Directories';
 import { Package } from '../Packages';
+import { getPackageBuildDir } from './MonorepoLayout';
 import { SPMConfig } from './SPMConfig.types';
 import { resolvePackagePath } from './resolvePackage';
 

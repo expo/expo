@@ -38,13 +38,18 @@ export function buildVersionPrefix(
   return path.posix.join(packageVersion, reactNativeVersion, hermesVersion);
 }
 
-/** Directory the monorepo builds every precompiled package under. */
-export function getMonorepoBuildDir(repoRoot: string): string {
+/**
+ * Directory the monorepo builds every precompiled package under. Deliberately not exported:
+ * the published surface describes the artifact grammar, and where a package's build directory
+ * sits is the producer's business. `tools/src/prebuilds/MonorepoLayout.ts` holds the producer's
+ * copy; this one only backs the monorepo candidate of the base lists below.
+ */
+function getMonorepoBuildDir(repoRoot: string): string {
   return path.join(repoRoot, 'packages', 'precompile', PRECOMPILE_BUILD_DIR);
 }
 
-/** Build path of one package within the monorepo build directory. */
-export function getPackageBuildDir(repoRoot: string, npmPackage: string): string {
+/** Build path of one package within the monorepo build directory. Private, as above. */
+function getPackageBuildDir(repoRoot: string, npmPackage: string): string {
   return path.join(getMonorepoBuildDir(repoRoot), npmPackage);
 }
 
@@ -167,8 +172,11 @@ export function getSharedSpmDepBases(
   return bases;
 }
 
-/** Directory the producer writes every shared SPM dependency of the monorepo into. */
-export function getSharedSpmDepsRoot(repoRoot: string): string {
+/**
+ * Directory the producer writes every shared SPM dependency of the monorepo into. Private for
+ * the same reason as getMonorepoBuildDir.
+ */
+function getSharedSpmDepsRoot(repoRoot: string): string {
   return path.join(getMonorepoBuildDir(repoRoot), SHARED_SPM_DEPS_SOURCE_DIR);
 }
 

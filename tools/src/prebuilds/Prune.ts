@@ -24,13 +24,13 @@
 
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { getMonorepoBuildDir } from 'expo-modules-autolinking/prebuiltArtifactPaths';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
 import { getExpoRepositoryRootDir, getPackagesDir } from '../Directories';
 import logger from '../Logger';
+import { getMonorepoBuildDir } from './MonorepoLayout';
 import { verifyAllPackagesAsync } from './Utils';
 
 export type PruneOptions = {

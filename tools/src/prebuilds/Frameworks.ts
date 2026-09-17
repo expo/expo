@@ -5,7 +5,6 @@ import {
   getArtifactBase,
   getArtifactDirSuffix,
   getArtifactSuffixes,
-  getSharedSpmDepsRoot,
   getSharedSpmDepSuffix,
   type PrebuiltFlavor,
 } from 'expo-modules-autolinking/prebuiltArtifactPaths';
@@ -16,6 +15,7 @@ import path from 'path';
 import { getExpoRepositoryRootDir } from '../Directories';
 import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
+import { getSharedSpmDepsRoot } from './MonorepoLayout';
 import { usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import {

@@ -4,12 +4,9 @@ import {
   getArtifactBases,
   getArtifactDirSuffix,
   getArtifactSuffixes,
-  getPackageBuildDir,
   getRemoteArtifactKey,
   getSharedSpmDepBases,
-  getSharedSpmDepsRoot,
   getSharedSpmDepSuffix,
-  getMonorepoBuildDir,
   PREBUILT_FLAVORS,
   type PrebuiltFlavor,
 } from '../prebuiltArtifactPaths';
@@ -43,37 +40,6 @@ describe(buildVersionPrefix, () => {
 
   it.each(missingVersionCases)('returns null when the %s is missing', (_label, pkg, rn, hermes) => {
     expect(buildVersionPrefix(pkg, rn, hermes)).toBeNull();
-  });
-});
-
-describe(getMonorepoBuildDir, () => {
-  it('is the precompile build directory of a repo checkout', () => {
-    expect(getMonorepoBuildDir(REPO_ROOT)).toBe('/repo/packages/precompile/.build');
-  });
-});
-
-describe(getPackageBuildDir, () => {
-  it('is the directory the monorepo builds one package under', () => {
-    expect(getPackageBuildDir(REPO_ROOT, 'expo-image')).toBe(
-      '/repo/packages/precompile/.build/expo-image'
-    );
-  });
-
-  it('keeps both segments of a scoped package name', () => {
-    expect(getPackageBuildDir(REPO_ROOT, '@expo/ui')).toBe(
-      '/repo/packages/precompile/.build/@expo/ui'
-    );
-  });
-
-  it('is the build path the monorepo candidate of getArtifactBases resolves artifacts under', () => {
-    expect(
-      getArtifactBases({
-        type: 'internal',
-        npmPackage: '@expo/ui',
-        packageRoot: '/repo/packages/expo-ui',
-        repoRoot: REPO_ROOT,
-      })
-    ).toContain('/repo/packages/precompile/.build/@expo/ui/output');
   });
 });
 
@@ -246,19 +212,6 @@ describe(getRemoteArtifactKey, () => {
     const key = getRemoteArtifactKey('@expo/ui', VERSION_PREFIX, 'ExpoUI', 'release');
     expect(key).toBe(`@expo/ui/output/${VERSION_PREFIX}/release/xcframeworks/ExpoUI.tar.gz`);
     expect(key).not.toContain('\\');
-  });
-});
-
-describe(getSharedSpmDepsRoot, () => {
-  it('is the shared dependency directory of the monorepo build dir', () => {
-    expect(getSharedSpmDepsRoot(REPO_ROOT)).toBe(`${MONOREPO_BASE}/.spm-deps`);
-  });
-
-  it('is the monorepo candidate of getSharedSpmDepBases without the dep name', () => {
-    expect(getSharedSpmDepsRoot(REPO_ROOT)).toBe(`${MONOREPO_BASE}/.spm-deps`);
-    expect(getSharedSpmDepBases('SDWebImage', { repoRoot: REPO_ROOT })).toEqual([
-      `${MONOREPO_BASE}/.spm-deps/SDWebImage`,
-    ]);
   });
 });
 

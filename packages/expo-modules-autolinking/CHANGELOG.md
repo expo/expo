@@ -14,7 +14,7 @@
 
 - [iOS] Add a single pure description of the precompiled xcframework artifact layout, so the producer, the CocoaPods integrator and the artifact cache can stop each encoding their own copy. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Derive the precompiled artifact version prefix from each third-party package's own version, so every external package is located under the directory it is published to instead of sharing one package version. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Describe the precompiled artifact base, flavor directory and shared SPM dependency root as their own path builders, and export them so `et prebuild` writes the layout this package reads. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Describe the precompiled artifact base, flavor directory and shared SPM dependency paths as their own path builders, so callers compose them instead of spelling out each path segment. ([#50109](https://github.com/expo/expo/pull/50109) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.2 — 2026-09-15
 

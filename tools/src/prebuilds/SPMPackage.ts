@@ -5,7 +5,6 @@
  * native SPM declarations that are easier to read and understand.
  */
 
-import { getPackageBuildDir } from 'expo-modules-autolinking/prebuiltArtifactPaths';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
@@ -16,6 +15,7 @@ import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getPackageBuildDir } from './MonorepoLayout';
 import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import {
