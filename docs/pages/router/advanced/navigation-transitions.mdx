@@ -3,7 +3,7 @@ title: Configure navigation transitions
 description: Learn how to use React transitions for navigation in Expo Router.
 ---
 
-> **important** This is an [experimental](/more/release-statuses/#experimental) feature.
+> **important** This is an [experimental](/more/release-statuses/#experimental) feature available in **Expo SDK 58** and later.
 
 Expo Router can process navigation inside a [React transition](https://react.dev/reference/react/startTransition). A transition keeps the current screen visible while the next screen suspends.
 
@@ -23,19 +23,20 @@ export default function RootLayout() {
 
 Use these modes to configure when Expo Router starts transitions:
 
-| Mode           | Behavior                                               |
-| -------------- | ------------------------------------------------------ |
-| `preload-only` | Uses transitions for preloading. This is the default.  |
-| `always`       | Uses transitions for all queued navigation operations. |
+| Mode           | Behavior                                                            |
+| -------------- | ------------------------------------------------------------------- |
+| `preload-only` | Uses transitions for preloading. This is the default.               |
+| `always`       | Uses transitions for all queued navigation operations.              |
+| `never`        | Never uses transitions. Individual operations cannot override this. |
 
-You can override `preload-only` and `always` for an individual operation with `inTransition`:
+Use `inTransition` to override the mode for an individual operation. The `never` mode cannot be overridden.
 
 ```tsx
 router.push('/details', { inTransition: true });
 router.back({ inTransition: false });
 ```
 
-> **note** When Expo Router batches operations, every operation must allow transitions for the batch to use one.
+> **info** When Expo Router batches operations, every operation must allow transitions for the batch to use one.
 
 ## Show pending navigation
 

@@ -1,15 +1,15 @@
-import * as React from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef } from 'react';
 
 export function usePreventBeforeUnload(preventBeforeUnload: boolean) {
-  const isDisabledRef = React.useRef(false);
-  const preventUnload = React.useEffectEvent((event: BeforeUnloadEvent) => {
+  const isDisabledRef = useRef(false);
+  const preventUnload = useEffectEvent((event: BeforeUnloadEvent) => {
     if (preventBeforeUnload && !isDisabledRef.current) {
       event.preventDefault();
       event.returnValue = true;
     }
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     isDisabledRef.current = false;
 
     if (!preventBeforeUnload) {
@@ -22,7 +22,7 @@ export function usePreventBeforeUnload(preventBeforeUnload: boolean) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [preventBeforeUnload]);
 
-  return React.useCallback(() => {
+  return useCallback(() => {
     isDisabledRef.current = true;
   }, []);
 }
