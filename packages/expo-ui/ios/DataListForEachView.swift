@@ -134,20 +134,30 @@ private struct DataListForEachSlotContent: View {
   let revision: Int
   let estimatedHeight: CGFloat
   let window: DataListForEachWindow
+  // we use this state so swiftui re-layouts when the slot is reused for a different item
+  @State private var showsContent = false
+
+  private var matches: Bool {
+    props.itemKey == itemKey && props.index == index && props.revision == revision
+  }
 
   var body: some View {
-    if props.itemKey == itemKey && props.index == index && props.revision == revision {
-      DataListForEachItemView(props: props)
-        .id(itemKey)
-        .onGeometryChange(for: CGFloat.self, of: { $0.size.height }, action: { height in
-          window.measure(height, for: itemKey, revision: revision)
-        })
-    } else {
-      // Hide the previous item while JS updates this slot.
-      Color.clear
-        .frame(height: window.height(for: itemKey, fallback: Double(estimatedHeight)))
-        .accessibilityHidden(true)
+    Group {
+      if showsContent {
+        DataListForEachItemView(props: props)
+          .id(itemKey)
+          .onGeometryChange(for: CGFloat.self, of: { $0.size.height }, action: { height in
+            window.measure(height, for: itemKey, revision: revision)
+          })
+      } else {
+        // Hide the previous item while JS updates this slot.
+        Color.clear
+          .frame(height: window.height(for: itemKey, fallback: Double(estimatedHeight)))
+          .accessibilityHidden(true)
+      }
     }
+    .onAppear { showsContent = matches }
+    .onChange(of: matches) { showsContent = $0 }
   }
 }
 
