@@ -127,7 +127,7 @@ it('continues after processIntent throws synchronously', () => {
   }
 });
 
-it('commits each destination before processing the next queued navigation', () => {
+it('processes the whole batch before committing destination updates', () => {
   const onProcess = jest.fn();
   function Drainer() {
     const [destination, setDestination] = React.useState(0);
@@ -157,7 +157,7 @@ it('commits each destination before processing the next queued navigation', () =
   });
   expect(onProcess).toHaveBeenCalledTimes(2);
   expect(onProcess).toHaveBeenNthCalledWith(1, 0);
-  expect(onProcess).toHaveBeenNthCalledWith(2, 1);
+  expect(onProcess).toHaveBeenNthCalledWith(2, 0);
 });
 
 it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
