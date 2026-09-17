@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] `isSideLoadingEnabledAsync` no longer surfaces a raw `SecurityException` when the app does not declare `REQUEST_INSTALL_PACKAGES` - it now throws a coded error explaining the requirement.
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
