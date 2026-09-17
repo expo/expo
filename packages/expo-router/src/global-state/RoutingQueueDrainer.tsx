@@ -4,7 +4,6 @@ import * as React from 'react';
 
 import type { RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
-
 import type { NavigationTransitionMode } from './types';
 
 type Props = {
@@ -33,14 +32,23 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
   const { dequeue, startTransition, transitionMode } = React.use(RoutingQueueApiContext)!;
   const processed = React.useRef(new WeakSet<RoutingIntent>());
+  const urgentIntents = React.useRef(new WeakSet<RoutingIntent>());
 
   React.useEffect(() => {
+    // Keep the batch's opt-out after the action that requested it has been dequeued.
+    const inTransition =
+      shouldUseTransition(intents, transitionMode) &&
+      !intents.some((intent) => urgentIntents.current.has(intent));
+    if (!inTransition) {
+      for (const intent of intents) urgentIntents.current.add(intent);
+    }
     let index = 0;
     if (intents[0] && processed.current.has(intents[0])) {
-      // A browser traversal or cancellation must be able to supersede a destination
+      // An urgent action, browser traversal, or cancellation can supersede a destination
       // that has not committed (for example, an async route still loading).
       index = intents.findIndex(
-        (intent) => !processed.current.has(intent) && interruptsPendingNavigation(intent)
+        (intent) =>
+          !processed.current.has(intent) && (!inTransition || interruptsPendingNavigation(intent))
       );
     }
     const intent = intents[index];
@@ -62,11 +70,11 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
           `An error occurred when trying to handle navigation action ${JSON.stringify(intent)}: ${message}`
         );
       }
-      // Dequeue in the same transition: the next intent becomes available only once
+      // Dequeue in the same update: the next intent becomes available only once
       // the destination commits, including its layout effects that register routers.
       dequeue(intents.slice(0, index + 1));
     };
-    if (shouldUseTransition([intent], transitionMode)) {
+    if (inTransition) {
       startTransition(process);
     } else {
       process();

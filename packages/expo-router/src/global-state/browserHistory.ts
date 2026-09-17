@@ -114,6 +114,8 @@ function selectAndUpdateHistoryEntry(
   const updatedHistory = updateHistoryEntry(history, index, state, path);
   const events: BrowserHistoryEvent[] = [];
   if (index !== history.index) {
+    // A router pop selected an earlier entry. Move the browser there before updating its URL;
+    // replacing the current entry alone would leave the browser's Back/Forward position unchanged.
     events.push({ type: 'browser-history', op: 'go', delta: index - history.index });
   }
   events.push(createReplaceEvent(updatedHistory.entries[index]!.id, path));
@@ -152,12 +154,6 @@ export function updateCurrentHistoryEntry(
 /**
  * Restores navigation after browser back or forward. Known entries reuse their saved state;
  * unknown entries are rebuilt from the URL and added to the tracked history.
- *
- * @param history Entries tracked by this page, including their navigation snapshots.
- * @param result Current navigation reducer result.
- * @param change Entry ID and URL selected by the browser.
- * @param config Linking and route configuration used to parse the URL.
- * @param reduce Applies the navigation intent produced by the restore.
  */
 export function restoreNavigationFromBrowser<Result extends { state: NavigationState }>(
   history: BrowserHistory,

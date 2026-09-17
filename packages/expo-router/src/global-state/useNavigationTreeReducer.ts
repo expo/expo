@@ -33,6 +33,9 @@ import type { RoutingIntent } from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
 
+// React IDs can repeat after a reload; the session prefix keeps old browser entries distinct.
+const browserHistorySessionId = nanoid();
+
 type ReducerConfig = {
   registry: RouterRegistry;
   routesWithRemovalPrevented: ReadonlySet<string>;
@@ -49,7 +52,7 @@ type TreeOperation =
        * Browser traversal may interrupt a suspended transition. Restore from the last committed
        * result so commands from the abandoned transition are not applied later.
        */
-      committed?: NavigationTreeResult;
+      commitedTreeResult?: NavigationTreeResult;
     })
   | {
       type: 'NAVIGATOR_UNMOUNTED';
@@ -139,9 +142,9 @@ function navigationTreeReducer(
   config: ReducerConfig
 ): NavigationTreeResult {
   if (operation.type === 'BROWSER_HISTORY_CHANGED') {
-    if (operation.committed) {
+    if (operation.commitedTreeResult) {
       // Discard the interrupted transition while keeping event IDs monotonic.
-      result = { ...operation.committed, eventSeq: result.eventSeq };
+      result = { ...operation.commitedTreeResult, eventSeq: result.eventSeq };
     }
     if (!result.history) {
       return result;
@@ -377,7 +380,7 @@ export function useNavigationTreeReducer({
   linking,
   redirects,
 }: Options) {
-  const [browserHistoryIdPrefix] = React.useState(() => nanoid());
+  const browserHistoryIdPrefix = `${browserHistorySessionId}:${React.useId()}`;
   const config: ReducerConfig = {
     registry,
     routesWithRemovalPrevented,
@@ -444,7 +447,7 @@ export function useNavigationTreeReducer({
     // useLatestCallback updates at commit, so a browser traversal can supersede a
     // suspended reduction without applying commands from a screen never shown.
     reactDispatch(
-      intent.type === 'BROWSER_HISTORY_CHANGED' ? { ...intent, committed: result } : intent
+      intent.type === 'BROWSER_HISTORY_CHANGED' ? { ...intent, commitedTreeResult: result } : intent
     );
   });
 

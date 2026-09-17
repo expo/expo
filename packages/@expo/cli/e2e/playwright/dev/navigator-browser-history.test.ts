@@ -49,6 +49,13 @@ test.describe(inputDir, () => {
     // behavior changes
     await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
 
+    // Reloading the same React tree must not reuse an ID stored by the previous page session.
+    await expect.poll(() => page.evaluate(() => history.state?.id)).toEqual(expect.any(String));
+    const previousEntryId = await page.evaluate(() => history.state.id);
+    await page.reload();
+    await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
+    await expect.poll(() => page.evaluate(() => history.state?.id)).not.toBe(previousEntryId);
+
     await page.locator('[data-testid="go-explore"]').click();
 
     await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
@@ -168,6 +175,43 @@ test.describe(inputDir, () => {
     await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
     await page.locator('[data-testid="final-back"]').click();
     await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('keeps the browser tab title in sync after router and browser back', async ({
+    page,
+    context,
+  }) => {
+    const pageErrors = pageCollectErrors(page);
+    const session = await context.newCDPSession(page);
+    const expectTitle = async (title: string) => {
+      await expect(page).toHaveTitle(title);
+      // Check Chrome's browser-side target title too: the old workaround addressed a stale
+      // tab title even when document.title already contained the correct value.
+      await expect
+        .poll(async () => (await session.send('Target.getTargetInfo')).targetInfo.title)
+        .toBe(title);
+    };
+
+    await page.goto(`${expoStart.url}`);
+    await page.getByTestId('go-explore').click();
+    await expectTitle('/explore');
+    await page.getByTestId('go-details').click();
+    await expectTitle('/explore/details');
+    await page.getByTestId('go-final').click();
+    await expectTitle('/explore/final');
+
+    await page.getByTestId('final-back').click();
+    await expect(page).toHaveURL(/\/explore\/details$/);
+    await expectTitle('/explore/details');
+    await page.goForward();
+    await expectTitle('/explore/final');
+    await page.goBack();
+    await expectTitle('/explore/details');
+    await page.getByTestId('details-back').click();
+    await expect(page).toHaveURL(/\/explore$/);
+    await expectTitle('/explore');
+    await session.detach();
     expect(pageErrors.all).toEqual([]);
   });
 

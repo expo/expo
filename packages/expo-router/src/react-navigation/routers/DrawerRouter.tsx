@@ -236,8 +236,7 @@ function drawerRouterExtension({
         return { type: 'replace' };
       }
       const delta =
-        (next.history?.length ?? 0) -
-        (ensureDrawerStateHistory(previous).history?.length ?? 0);
+        (next.history?.length ?? 0) - (ensureDrawerStateHistory(previous).history?.length ?? 0);
       return delta > 0
         ? { type: 'push' }
         : delta < 0

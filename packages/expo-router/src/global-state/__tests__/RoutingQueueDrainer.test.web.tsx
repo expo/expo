@@ -3,7 +3,11 @@ import * as React from 'react';
 
 import { RoutingQueueDrainer } from '../RoutingQueueDrainer';
 import type { RoutingIntent } from '../routingQueue';
-import { RoutingQueueProvider, useEnqueueRoutingIntent } from '../routingQueueContext';
+import {
+  RoutingQueueApiContext,
+  RoutingQueueProvider,
+  useEnqueueRoutingIntent,
+} from '../routingQueueContext';
 
 function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
@@ -167,7 +171,7 @@ it('commits each destination before processing the next queued navigation', () =
   expect(committed).toEqual([0, 1]);
 });
 
-it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED'] as const)(
+it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
   'allows %s to interrupt a suspended destination',
   (type) => {
     const calls: string[] = [];
@@ -199,10 +203,12 @@ it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED'] as const)(
         <Consumer />
       </RoutingQueueProvider>
     );
-    act(() => enqueue(actionIntent('FIRST')));
+    act(() => enqueue({ ...actionIntent('FIRST'), inTransition: true }));
     act(() =>
       enqueue(
-        type === 'GO_BACK' ? actionIntent(type) : { type, payload: { id: 'first', path: '/' } }
+        type === 'BROWSER_HISTORY_CHANGED'
+          ? { type, payload: { id: 'first', path: '/' } }
+          : { ...actionIntent(type), inTransition: false }
       )
     );
     expect(calls).toEqual(['FIRST', type]);
@@ -218,4 +224,33 @@ it('processes each occurrence of a reused intent object', () => {
     result.enqueue(intent);
   });
   expect(processIntent).toHaveBeenCalledTimes(2);
+});
+
+it.each([0, 1])('opts the entire queued batch out when intent %i opts out', (urgentIndex) => {
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
+  const startTransition = jest.fn(React.startTransition);
+  const processIntent = jest.fn();
+
+  function Consumer() {
+    const api = React.use(RoutingQueueApiContext)!;
+    enqueue = api.enqueue;
+    return (
+      <RoutingQueueApiContext value={{ ...api, transitionMode: 'always', startTransition }}>
+        <RoutingQueueDrainer processIntent={processIntent} />
+      </RoutingQueueApiContext>
+    );
+  }
+  render(
+    <RoutingQueueProvider>
+      <Consumer />
+    </RoutingQueueProvider>
+  );
+  act(() => {
+    for (let index = 0; index < 2; index++) {
+      enqueue({ ...actionIntent('PUSH'), inTransition: index === urgentIndex ? false : undefined });
+    }
+  });
+
+  expect(processIntent).toHaveBeenCalledTimes(2);
+  expect(startTransition).not.toHaveBeenCalled();
 });

@@ -770,7 +770,7 @@ function tabRouterExtension({
           break;
         }
       }
-      return { ...result, state: result.state, ...(browserHistory && { browserHistory }) };
+      return { ...result, ...(browserHistory && { browserHistory }) };
     },
   } satisfies typeof router;
 }

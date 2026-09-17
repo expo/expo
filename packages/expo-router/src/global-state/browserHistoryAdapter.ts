@@ -23,6 +23,8 @@ export function createBrowserHistoryAdapter(): BrowserHistoryAdapter {
   const push = (id: string, path: string) => {
     // The browser is already on this entry when React replays a batch after an urgent update.
     if (window.history.state?.id === id) {
+      // The replay may resolve to a different URL for the same entry. Replace updates that URL
+      // without adding a duplicate; returning here would keep the earlier URL.
       window.history.replaceState({ id }, '', path);
       return;
     }
@@ -56,19 +58,6 @@ export function createBrowserHistoryAdapter(): BrowserHistoryAdapter {
         if (index > -1) {
           pending.splice(index, 1);
         }
-
-        // There seems to be a bug in Chrome regarding updating the title
-        // If we set a title just before calling `history.go`, the title gets lost
-        // However the value of `document.title` is still what we set it to
-        // It's just not displayed in the tab bar
-        // To update the tab bar, we need to reset the title to something else first (e.g. '')
-        // And set the title to what it was before so it gets applied
-        // It won't work without setting it to empty string coz otherwise title isn't changing
-        // Which means that the browser won't do anything after setting the title
-        const { title } = window.document;
-
-        window.document.title = '';
-        window.document.title = title;
 
         resolve();
       };
@@ -105,9 +94,9 @@ export function createBrowserHistoryAdapter(): BrowserHistoryAdapter {
     });
   };
 
-  // The `popstate` event is triggered when history changes, except `pushState` and `replaceState`
-  // If we call `history.go(n)` ourselves, we don't want it to trigger the listener
-  // Here we normalize it so that only external changes (e.g. user pressing back/forward) trigger the listener
+  // Browsers emit `popstate` when selecting a history entry, including Back/Forward and `go`.
+  // `pushState` and `replaceState` only write an entry; the browser API emits no `popstate` for them.
+  // Ignore our own `go` calls so their already-reduced navigation is not applied a second time.
   const listen = (listener: (change: BrowserHistoryChange) => void) => {
     const onPopState = () => {
       if (pending.length) {
