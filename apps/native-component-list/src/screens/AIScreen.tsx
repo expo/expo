@@ -10,6 +10,7 @@ import {
   type GenerationResult,
   type LanguageModelSession,
   type ModelAvailability,
+  type ModelRequirements,
 } from 'expo-ai';
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -18,6 +19,7 @@ import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
+import TitledSwitch from '../components/TitledSwitch';
 import Colors from '../constants/Colors';
 
 const SOURCE_TEXT =
@@ -34,6 +36,22 @@ const TRIP_SCHEMA = schema.object({
   highlights: schema.array(schema.string({ description: 'One place to visit' }), { maxItems: 3 }),
   rainGearAdvised: schema.optional(schema.boolean()),
 });
+
+type RequiredFeature = NonNullable<ModelRequirements['requires']>[number];
+
+const REQUIRED_FEATURES = [
+  'constrainedOutput',
+  'runtimeToolDeclarations',
+  'images',
+  'imageTools',
+] as const satisfies readonly RequiredFeature[];
+
+const NO_FEATURES: Record<RequiredFeature, boolean> = {
+  constrainedOutput: false,
+  runtimeToolDeclarations: false,
+  images: false,
+  imageTools: false,
+};
 
 const SESSION_INSTRUCTIONS = 'You are terse. Answer in one short sentence.';
 const FIRST_TURN = 'My favourite colour is teal. Acknowledge it.';
@@ -53,6 +71,13 @@ type Action =
   | 'stream-session';
 
 type ErrorReport = { code: string | null; message: string };
+
+type RequirementControls = {
+  provider: boolean;
+  features: Record<RequiredFeature, boolean>;
+  inputLanguages: string;
+  outputLanguage: string;
+};
 
 /** Tracks enough to tell "onProgress never ran" apart from "onProgress reported null". */
 type ProgressReport = { calls: number; last: { value: number | null; at: number } | null };
@@ -109,6 +134,33 @@ function describeAvailability(availability: ModelAvailability): string {
     default:
       return `status: ${availability.status}\nprogress: ${formatNullable(availability.progress)}`;
   }
+}
+
+/** Every unset control is omitted, so the echoed object is what the two calls receive. */
+function buildRequirements({
+  provider,
+  features,
+  inputLanguages,
+  outputLanguage,
+}: RequirementControls): ModelRequirements {
+  const requires = REQUIRED_FEATURES.filter((feature) => features[feature]);
+  // A blank language is rejected with ERR_OPTIONS_INVALID, so a trailing comma must not survive.
+  const languages = inputLanguages
+    .split(',')
+    .map((language) => language.trim())
+    .filter((language) => language.length > 0);
+  const output = outputLanguage.trim();
+  return {
+    ...(provider ? { provider: 'system' as const } : {}),
+    ...(languages.length > 0 ? { inputLanguages: languages } : {}),
+    ...(output.length > 0 ? { outputLanguage: output } : {}),
+    // An empty requires list behaves like no list at all, so omitting it is the honest echo.
+    ...(requires.length > 0 ? { requires } : {}),
+  };
+}
+
+function describeRequirements(requirements: ModelRequirements): string {
+  return JSON.stringify(requirements, null, 2);
 }
 
 function describeProgress({ calls, last }: ProgressReport): string {
@@ -210,6 +262,10 @@ export default function AIScreen() {
   const [progress, setProgress] = useState<ProgressReport | null>(null);
   const [session, setSession] = useState<LanguageModelSession | null>(null);
   const [input, setInput] = useState(SOURCE_TEXT);
+  const [provider, setProvider] = useState(false);
+  const [features, setFeatures] = useState(NO_FEATURES);
+  const [inputLanguages, setInputLanguages] = useState('');
+  const [outputLanguage, setOutputLanguage] = useState('');
   const [preview, setPreview] = useState<string | null>(null);
   const [stream, setStream] = useState<StreamReport | null>(null);
   const isMounted = useRef(true);
@@ -245,8 +301,13 @@ export default function AIScreen() {
     }
   };
 
+  const requirements = buildRequirements({ provider, features, inputLanguages, outputLanguage });
+
+  const setFeature = (feature: RequiredFeature, value: boolean) =>
+    setFeatures((current) => ({ ...current, [feature]: value }));
+
   const checkAvailability = () =>
-    run('availability', async () => describeAvailability(await getAvailabilityAsync()));
+    run('availability', async () => describeAvailability(await getAvailabilityAsync(requirements)));
 
   useEffect(() => {
     checkAvailability();
@@ -256,6 +317,7 @@ export default function AIScreen() {
     run(allowDownload ? 'prepare' : 'prepare-offline', async () => {
       setProgress({ calls: 0, last: null });
       const availability = await prepareAsync({
+        ...requirements,
         allowDownload,
         onProgress: (value) =>
           setProgress((previous) => ({
@@ -431,6 +493,78 @@ export default function AIScreen() {
         Gemini Nano on Android, and the browser's Prompt API on web. Each step below is its own
         button, so a failure points at a single call.
       </BodyText>
+
+      <HeadingText style={styles.heading}>Requirements</HeadingText>
+
+      <BodyText color="secondary" style={styles.description}>
+        The controls below build one ModelRequirements object, which is checked during the
+        availability check and during preparation. It reaches those two calls only, so the three
+        buttons under Availability and Preparation read it and every other call on this screen runs
+        without requirements.
+      </BodyText>
+
+      <BodyText color="secondary" style={styles.description}>
+        Each switch adds one capability to the requires list. A capability the provider does not
+        report as "supported" makes availability come back "unavailable" with reason
+        "unsupported-feature". A provider that already reports "unavailable" keeps its own reason,
+        so this one appears only when the provider has not already refused.
+      </BodyText>
+
+      {REQUIRED_FEATURES.map((feature) => (
+        <TitledSwitch
+          key={feature}
+          title={feature}
+          value={features[feature]}
+          setValue={(value) => setFeature(feature, value)}
+        />
+      ))}
+
+      <BodyText color="secondary" style={styles.description}>
+        provider has exactly one legal value, "system". The library validates the key and nothing
+        more, because there is no second provider to choose between, so the switch below changes the
+        object without changing any answer.
+      </BodyText>
+
+      <TitledSwitch title="provider: system" value={provider} setValue={setProvider} />
+
+      <BodyText color="secondary" style={styles.description}>
+        Input languages are comma separated, for example: en-GB, ja. Naming any input or output
+        language on Android returns "unavailable" with reason "language-support-unknown", because ML
+        Kit's Prompt API has no public supported-locale query. A device that cannot run the backend
+        at all answers first with its own reason instead, such as "unsupported-os-version" below
+        Android 8.0.
+      </BodyText>
+
+      <TextInput
+        style={styles.languageInput}
+        placeholder="inputLanguages, comma separated"
+        placeholderTextColor={Colors.secondaryText}
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={inputLanguages}
+        onChangeText={setInputLanguages}
+      />
+
+      <TextInput
+        style={styles.languageInput}
+        placeholder="outputLanguage"
+        placeholderTextColor={Colors.secondaryText}
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={outputLanguage}
+        onChangeText={setOutputLanguage}
+      />
+
+      <BodyText color="secondary" style={styles.description}>
+        The report below is the object those two calls receive, printed exactly as it is sent. A
+        control you leave unset is left out of it rather than sent empty, so an empty object means
+        both calls run on the provider's own defaults.
+      </BodyText>
+
+      <View style={styles.resultContainer}>
+        <Text style={styles.resultLabel}>Requirements:</Text>
+        <MonoText containerStyle={styles.resultText}>{describeRequirements(requirements)}</MonoText>
+      </View>
 
       <HeadingText style={styles.heading}>Availability</HeadingText>
 
@@ -636,6 +770,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 10,
     minHeight: 96,
+    borderColor: Colors.border,
+    borderWidth: 1,
+    borderRadius: 3,
+  },
+  languageInput: {
+    marginBottom: 12,
+    padding: 10,
     borderColor: Colors.border,
     borderWidth: 1,
     borderRadius: 3,
