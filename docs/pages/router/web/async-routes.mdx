@@ -20,7 +20,7 @@ Apps using the Hermes Engine will not benefit as much from bundle splitting as t
 
 All Routes are wrapped inside a suspense boundary and are loaded asynchronously. This means that the first time you navigate to a route, it will take a little longer to load. However, once it is loaded, it will be cached and subsequent visits will be instant.
 
-{/* The [Suspense fallback](https://react.dev/reference/react/Suspense#displaying-a-fallback-while-content-is-loading) or loading state **cannot be customized** at this time. We plan to add support in the future via a **route+loading.js** file. */}
+The loading state can be customized by exporting a `SuspenseFallback` component from a layout file or by passing the `suspenseFallback` prop to a navigator. See [Loading states with Suspense fallback](/router/error-handling/#loading-states-with-suspense-fallback). A layout's exported fallback applies once the layout module has loaded. While the layout module is loading, the nearest parent's fallback is shown.
 
 Loading errors are handled in the parent route, via the [`ErrorBoundary`](/router/error-handling/#error-handling) export.
 
@@ -100,4 +100,3 @@ Async Routes represents an early preview of how we plan to support [React Server
 
 - Async routes do not support native production apps yet.
 - In development, the runtime JavaScript is lazily bundled so you may encounter cases where the HTML doesn't match the available JavaScript.
-- Custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports do not work with async routes.

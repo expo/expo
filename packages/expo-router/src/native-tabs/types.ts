@@ -16,6 +16,7 @@ import type {
 } from '../react-navigation/native';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
+import type { SuspenseFallbackProps } from '../views/SuspenseFallback';
 import type { ErrorBoundaryProps } from '../views/Try';
 
 /**
@@ -305,6 +306,12 @@ export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 export interface NativeTabsProps extends PropsWithChildren {
   /** A component to render when an individual tab screen throws an error. */
   unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  /**
+   * A component to render while an individual tab screen is loading or suspended.
+   * Overrides the `SuspenseFallback` export of the enclosing layout for these screens and their
+   * descendants. Pass `null` to stop inheriting a fallback and use the built-in one.
+   */
+  suspenseFallback?: React.ComponentType<SuspenseFallbackProps> | null;
   /**
    * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
    * @default false

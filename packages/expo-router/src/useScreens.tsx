@@ -5,6 +5,7 @@ import React, { use, useEffect, useMemo } from 'react';
 import type { LoadedRoute, RouteNode } from './Route';
 import {
   getValidInitialRouteName,
+  LocalRouteParamsContext,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -210,13 +211,25 @@ function fromImport(
     component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
   }
 
+  const isLayout = value.type === 'layout';
   const screenErrorBoundary = unstable_settings?.screenErrorBoundary;
 
-  if (process.env.NODE_ENV !== 'production' && screenErrorBoundary && value.type !== 'layout') {
+  if (process.env.NODE_ENV !== 'production' && screenErrorBoundary && !isLayout) {
     console.warn(
       `Route "${value.contextKey}" exports unstable_settings.screenErrorBoundary. This setting is only supported in layout routes; use export const ErrorBoundary instead.`
     );
   }
+
+  if (process.env.NODE_ENV !== 'production' && SuspenseFallback && !isLayout) {
+    console.warn(
+      `Route "${value.contextKey}" exports SuspenseFallback. This export is only supported in layout routes; export it from the nearest _layout file or pass the suspenseFallback prop to the navigator instead.`
+    );
+  }
+
+  // A layout's exported fallback is applied from inside the loaded module, so it becomes
+  // available as soon as the layout has loaded in both sync and lazy mode. While the module
+  // itself is loading, the layout's own boundary uses the fallback inherited from its parent.
+  const LayoutSuspenseFallback = isLayout ? SuspenseFallback : undefined;
 
   if (
     process.env.NODE_ENV !== 'production' &&
@@ -224,12 +237,13 @@ function fromImport(
     component.default &&
     Object.keys(component.default).length === 0
   ) {
-    return { default: EmptyRoute, SuspenseFallback };
+    return { default: EmptyRoute };
   }
 
-  if (ErrorBoundary || (value.type === 'layout' && screenErrorBoundary !== undefined)) {
+  if (ErrorBoundary || LayoutSuspenseFallback || (isLayout && screenErrorBoundary !== undefined)) {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
       const inheritedScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+      const params = use(LocalRouteParamsContext);
       let children = React.createElement(component.default || EmptyRoute, {
         ...props,
         ref,
@@ -237,7 +251,25 @@ function fromImport(
       if (ErrorBoundary) {
         children = <Try catch={ErrorBoundary}>{children}</Try>;
       }
-      if (value.type === 'layout' && screenErrorBoundary !== undefined) {
+      if (LayoutSuspenseFallback) {
+        // Child screens read the export through context. The inner boundary applies it to the
+        // layout component itself when it suspends on data after its module has loaded.
+        children = (
+          <SuspenseFallbackContext value={LayoutSuspenseFallback}>
+            <React.Suspense
+              name={`Layout(${value.route})`}
+              fallback={
+                <LayoutSuspenseFallback
+                  route={value.contextKey}
+                  params={(params ?? {}) as SuspenseFallbackProps['params']}
+                />
+              }>
+              {children}
+            </React.Suspense>
+          </SuspenseFallbackContext>
+        );
+      }
+      if (isLayout && screenErrorBoundary !== undefined) {
         children = (
           <ScreenErrorBoundaryContext value={screenErrorBoundary ?? undefined}>
             {children}
@@ -251,15 +283,14 @@ function fromImport(
     });
 
     if (__DEV__) {
-      Wrapped.displayName = `ErrorBoundary(${value.contextKey})`;
+      Wrapped.displayName = `${
+        ErrorBoundary || screenErrorBoundary !== undefined ? 'ErrorBoundary' : 'SuspenseFallback'
+      }(${value.contextKey})`;
     }
 
-    return {
-      default: Wrapped,
-      SuspenseFallback,
-    };
+    return { default: Wrapped };
   }
-  return { default: component.default!, SuspenseFallback };
+  return { default: component.default! };
 }
 
 // TODO: Maybe there's a more React-y way to do this?
@@ -273,7 +304,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   }
 
   let ScreenComponent: React.ComponentType<any>;
-  let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
@@ -299,9 +329,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     }
   } else {
     const res = value.loadRoute() as LoadedRoute;
-    const result = fromImport(value, res);
-    ScreenComponent = result.default!;
-    LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;
+    ScreenComponent = fromImport(value, res).default;
   }
   const WrappedScreenComponent: typeof ScreenComponent = (props: object) => {
     useColorSchemeChangesIfNeeded();
@@ -348,14 +376,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       return resolveLoaderPath(getContextKey(value.contextKey), routeInfo);
     }, [isGuarded, isRouteType, routeInfo]);
 
-    const ResolvedSuspenseFallback =
-      EXPO_ROUTER_IMPORT_MODE === 'lazy'
-        ? DefaultSuspenseFallback
-        : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
-    const providedSuspenseFallback =
-      value.type === 'layout'
-        ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
-        : InheritedSuspenseFallback;
+    // The nearest navigator `suspenseFallback` prop or layout export wins. A layout module that
+    // is still loading cannot supply its own export, so this boundary uses an ancestor's fallback.
+    const ResolvedSuspenseFallback = InheritedSuspenseFallback ?? DefaultSuspenseFallback;
 
     useEffect(() => {
       return navigation.addListener('transitionEnd', (e) => {
@@ -411,37 +434,35 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     return (
       <Route node={value} params={route?.params}>
-        <SuspenseFallbackContext value={providedSuspenseFallback}>
-          {/* This committed-shell signal is intentionally best-effort. A navigator may unmount a
-              retained route shell, which aborts pending work and causes a later visit to refetch.
-              Activity visibility and transition-attempt ownership need explicit lifecycle APIs. */}
-          {resolvedLoaderPath && <LoaderRouteLifecycle path={resolvedLoaderPath} />}
-          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
-            <AnalyticsListeners navigation={navigation} screenId={route.key} />
-          )}
-          <ZoomTransitionTargetContextProvider route={route}>
-            <ZoomTransitionEnabler route={route} />
-            <React.Suspense
-              name={route ? `Route(${route.name})` : undefined}
-              fallback={
-                // `ResolvedSuspenseFallback` only selects between statically defined
-                // components; nothing is created during render.
-                // oxlint-disable-next-line react/static-components
-                <ResolvedSuspenseFallback
-                  route={value.contextKey}
-                  params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
-                />
-              }>
-              {isRouteType && typeof activityThreshold === 'number' ? (
-                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
-                  {screenContent}
-                </NavigationAwareActivity>
-              ) : (
-                screenContent
-              )}
-            </React.Suspense>
-          </ZoomTransitionTargetContextProvider>
-        </SuspenseFallbackContext>
+        {/* This committed-shell signal is intentionally best-effort. A navigator may unmount a
+            retained route shell, which aborts pending work and causes a later visit to refetch.
+            Activity visibility and transition-attempt ownership need explicit lifecycle APIs. */}
+        {resolvedLoaderPath && <LoaderRouteLifecycle path={resolvedLoaderPath} />}
+        {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
+          <AnalyticsListeners navigation={navigation} screenId={route.key} />
+        )}
+        <ZoomTransitionTargetContextProvider route={route}>
+          <ZoomTransitionEnabler route={route} />
+          <React.Suspense
+            name={route ? `Route(${route.name})` : undefined}
+            fallback={
+              // `ResolvedSuspenseFallback` only selects between statically defined
+              // components; nothing is created during render.
+              // oxlint-disable-next-line react/static-components
+              <ResolvedSuspenseFallback
+                route={value.contextKey}
+                params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
+              />
+            }>
+            {isRouteType && typeof activityThreshold === 'number' ? (
+              <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
+                {screenContent}
+              </NavigationAwareActivity>
+            ) : (
+              screenContent
+            )}
+          </React.Suspense>
+        </ZoomTransitionTargetContextProvider>
       </Route>
     );
   }

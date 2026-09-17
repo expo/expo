@@ -14,7 +14,10 @@ export type FileStub =
     })
   | ReactComponent;
 
-export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
+/** A route module that loads asynchronously, as with async routes. Requires lazy import mode. */
+export type AsyncFileStub = PromiseLike<FileStub>;
+
+export type MemoryContext = Record<string, FileStub | AsyncFileStub | NativeIntentStub> & {
   '+native-intent'?: NativeIntentStub;
 };
 

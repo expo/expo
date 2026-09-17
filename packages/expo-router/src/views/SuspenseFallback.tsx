@@ -1,7 +1,8 @@
 import { Toast, ToastWrapper } from './Toast';
 
 /**
- * Props passed to a route's `SuspenseFallback` export.
+ * Props passed to a layout's `SuspenseFallback` export and to the component passed as a
+ * navigator's `suspenseFallback` prop.
  */
 export type SuspenseFallbackProps = {
   /**
@@ -24,6 +25,10 @@ export type SuspenseFallbackProps = {
   params: Record<string, string | string[]>;
 };
 
+/**
+ * The built-in fallback rendered while a route loads or suspends when no custom fallback is
+ * configured. Shows a bundling toast in development and renders nothing in production.
+ */
 export function SuspenseFallback({ route }: SuspenseFallbackProps) {
   if (__DEV__) {
     return (

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support custom Suspense fallbacks with async routes and add the `suspenseFallback` navigator prop. ([#50256](https://github.com/expo/expo/pull/50256) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

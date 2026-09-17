@@ -4,7 +4,12 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
+import {
+  getValidInitialRouteName,
+  ScreenErrorBoundaryContext,
+  SuspenseFallbackContext,
+  useRouteNode,
+} from '../Route';
 import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
@@ -173,7 +178,7 @@ export function integrateWithRouter<
   >;
 
   function StandardRouterNavigator(allProps: NavPropsType) {
-    const { unstable_screenErrorBoundary, ...rest } = allProps;
+    const { unstable_screenErrorBoundary, suspenseFallback, ...rest } = allProps;
     const props = rest as NavPropsType;
     const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
@@ -229,7 +234,7 @@ export function integrateWithRouter<
       emitter: useStandardEmitter(navigation),
     };
 
-    const content = (
+    let content = (
       <NavigationContent>
         <NavigatorContent
           // `extraProps` is everything that is not a `useNavigationBuilder` option, which is the
@@ -247,13 +252,23 @@ export function integrateWithRouter<
       </NavigationContent>
     );
 
-    return unstable_screenErrorBoundary ? (
-      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-        {content}
-      </ScreenErrorBoundaryContext>
-    ) : (
-      content
-    );
+    if (suspenseFallback !== undefined) {
+      content = (
+        <SuspenseFallbackContext value={suspenseFallback ?? undefined}>
+          {content}
+        </SuspenseFallbackContext>
+      );
+    }
+
+    if (unstable_screenErrorBoundary) {
+      content = (
+        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+          {content}
+        </ScreenErrorBoundaryContext>
+      );
+    }
+
+    return content;
   }
 
   return withLayoutContext<NavigatorOptions, typeof StandardRouterNavigator, State, EventMap>(

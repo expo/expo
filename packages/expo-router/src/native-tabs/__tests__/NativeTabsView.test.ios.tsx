@@ -4,6 +4,7 @@ import { Button, Text, View } from 'react-native';
 import { Tabs, type TabsHostProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
+import type { SuspenseFallbackProps } from '../../views/SuspenseFallback';
 import type { ErrorBoundaryProps } from '../../views/Try';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabsProps } from '../types';
@@ -44,6 +45,30 @@ it('uses a navigator error boundary for an individual tab screen', () => {
   });
 
   expect(screen.getByTestId('error-boundary')).toBeVisible();
+});
+
+it('uses the navigator `suspenseFallback` for an individual tab screen', () => {
+  const pending = new Promise<string>(() => {});
+  function SuspendingRoute() {
+    const value = React.use(pending);
+    return <Text testID="route-content">{value}</Text>;
+  }
+  function Fallback({ route }: SuspenseFallbackProps) {
+    return <Text testID="suspense-fallback">Loading {route}...</Text>;
+  }
+
+  renderRouter({
+    _layout: () => (
+      <NativeTabs suspenseFallback={Fallback}>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: SuspendingRoute,
+  });
+
+  expect(screen.getByTestId('suspense-fallback')).toBeVisible();
+  expect(screen.getByText('Loading ./index.js...')).toBeVisible();
+  expect(screen.queryByTestId('route-content')).toBeNull();
 });
 
 it.each([

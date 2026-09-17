@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getValidInitialRouteName,
   ScreenErrorBoundaryContext,
+  SuspenseFallbackContext,
   useContextKey,
   useRouteNode,
 } from '../Route';
@@ -18,6 +19,7 @@ import { useNavigationBuilder } from '../react-navigation/native';
 import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
+import type { SuspenseFallbackProps } from './SuspenseFallback';
 import type { ErrorBoundaryProps } from './Try';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
@@ -47,6 +49,12 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
   /** A component to render when an individual screen in this navigator throws an error. */
   unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  /**
+   * A component to render while an individual screen in this navigator is loading or suspended.
+   * Overrides the `SuspenseFallback` export of the enclosing layout for these screens and their
+   * descendants. Pass `null` to stop inheriting a fallback and use the built-in one.
+   */
+  suspenseFallback?: React.ComponentType<SuspenseFallbackProps> | null;
 };
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
@@ -64,6 +72,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   router,
   routerOptions,
   unstable_screenErrorBoundary,
+  suspenseFallback,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
@@ -102,11 +111,27 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     return null;
   }
 
-  const content = (
+  let content = (
     <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
       {nonScreenChildren}
     </GuardContextProvider>
   );
+
+  if (suspenseFallback !== undefined) {
+    content = (
+      <SuspenseFallbackContext value={suspenseFallback ?? undefined}>
+        {content}
+      </SuspenseFallbackContext>
+    );
+  }
+
+  if (unstable_screenErrorBoundary) {
+    content = (
+      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+        {content}
+      </ScreenErrorBoundaryContext>
+    );
+  }
 
   return (
     <NavigatorContext.Provider
@@ -115,13 +140,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {unstable_screenErrorBoundary ? (
-        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-          {content}
-        </ScreenErrorBoundaryContext>
-      ) : (
-        content
-      )}
+      {content}
     </NavigatorContext.Provider>
   );
 }
