@@ -19,10 +19,10 @@ class ExpoRootProjectPlugin : Plugin<Project> {
     val libs = versionCatalogs.find("expoLibs")
 
     with(rootProject) {
-      defineDefaultProperties(libs)
+      val defaultProperties = defineDefaultProperties(libs)
       maybeOverrideCmakeVersion()
       setDefaultCmakeObjectPathMax()
-      maybeOverrideNdkVersion()
+      maybeOverrideNdkVersion(defaultProperties.ndkVersion)
       disableLinkedModulesLintWhenRequested()
     }
   }
@@ -120,19 +120,11 @@ private const val CMAKE_OBJECT_PATH_MAX_PROPERTY = "expo.android.cmakeObjectPath
 private const val DEFAULT_CMAKE_OBJECT_PATH_MAX = 1024
 
 /**
- * Maybe override the `android.ndkVersion` of all Android library subprojects with the version the
- * root project defines, so the app and the modules it links build with one NDK instead of AGP's
- * default.
+ * Maybe override the `android.ndkVersion` of all Android library subprojects, so the app and the
+ * modules it links build with one NDK instead of AGP's default.
  * A module that declares its own `ndkVersion` keeps it.
  */
-private fun Project.maybeOverrideNdkVersion() {
-  val ndkVersion = (findProperty("ndkVersion") as? String)?.takeIf { it.isNotBlank() }
-    ?: return
-
-  logger.quiet(
-    "${"[ExpoRootProject]".withColor(Colors.GREEN)} Overriding NDK version: ${ndkVersion.withColor(Colors.GREEN)}"
-  )
-
+private fun Project.maybeOverrideNdkVersion(ndkVersion: String) {
   val applyNdkVersion = { subproject: Project ->
     val android = subproject.extensions.getByType(LibraryExtension::class.java)
     android.ndkVersion = ndkVersion
@@ -194,7 +186,20 @@ private fun Project.disableLintVitalAnalysis() {
   }
 }
 
-fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
+/**
+ * The versions that the root project shares with the app and all of its modules.
+ */
+private data class DefaultProperties(
+  val buildToolsVersion: String,
+  val minSdkVersion: Int,
+  val compileSdkVersion: Int,
+  val targetSdkVersion: Int,
+  val ndkVersion: String,
+  val kotlinVersion: String,
+  val kspVersion: String
+)
+
+private fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>): DefaultProperties {
   // Android related
   val buildTools = extra.setIfNotExist("buildToolsVersion") { versionCatalogs.getVersionOrDefault("buildTools", "37.0.0") }
   val minSdk = extra.setIfNotExist("minSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("minSdk", "24")) }
@@ -225,18 +230,30 @@ fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
     }
   }
 
+  val defaultProperties = DefaultProperties(
+    buildToolsVersion = buildTools.toString(),
+    minSdkVersion = minSdk.toString().toInt(),
+    compileSdkVersion = compileSdk.toString().toInt(),
+    targetSdkVersion = targetSdk.toString().toInt(),
+    ndkVersion = ndk.toString(),
+    kotlinVersion = kotlin.toString(),
+    kspVersion = ksp.toString()
+  )
+
   project.logger.quiet(
     """
     ${"[ExpoRootProject]".withColor(Colors.GREEN)} Using the following versions:
-      - buildTools:  ${buildTools.withColor(Colors.GREEN)}
-      - minSdk:      ${minSdk.withColor(Colors.GREEN)}
-      - compileSdk:  ${compileSdk.withColor(Colors.GREEN)}
-      - targetSdk:   ${targetSdk.withColor(Colors.GREEN)}
-      - ndk:         ${ndk.withColor(Colors.GREEN)}
-      - kotlin:      ${kotlin.withColor(Colors.GREEN)}
-      - ksp:         ${ksp.withColor(Colors.GREEN)}
+      - buildTools:  ${defaultProperties.buildToolsVersion.withColor(Colors.GREEN)}
+      - minSdk:      ${defaultProperties.minSdkVersion.withColor(Colors.GREEN)}
+      - compileSdk:  ${defaultProperties.compileSdkVersion.withColor(Colors.GREEN)}
+      - targetSdk:   ${defaultProperties.targetSdkVersion.withColor(Colors.GREEN)}
+      - ndk:         ${defaultProperties.ndkVersion.withColor(Colors.GREEN)}
+      - kotlin:      ${defaultProperties.kotlinVersion.withColor(Colors.GREEN)}
+      - ksp:         ${defaultProperties.kspVersion.withColor(Colors.GREEN)}
   """.trimIndent()
   )
+
+  return defaultProperties
 }
 
 inline fun ExtraPropertiesExtension.setIfNotExist(name: String, value: () -> Any): Any? {
