@@ -67,7 +67,11 @@ export type RouteNode = {
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
-/** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
+/**
+ * This context carries the Suspense fallback for the screens below a layout or navigator. It is
+ * provided by a layout's `SuspenseFallback` export once the layout module has loaded, and by a
+ * navigator's `suspenseFallback` prop. `undefined` means the built-in fallback is used.
+ */
 export const SuspenseFallbackContext = createContext<
   ComponentType<SuspenseFallbackProps> | undefined
 >(undefined);

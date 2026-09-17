@@ -130,9 +130,9 @@ React Native LogBox needs to be presented less aggressively to develop with erro
 
 ## Loading states with Suspense fallback
 
-> **important** Custom suspense fallbacks are available in SDK 56 and later.
+> **important** Custom suspense fallbacks are available in SDK 56 and later. The `suspenseFallback` navigator prop and support for [async routes](/router/web/async-routes) are available in SDK 58 and later.
 
-Expo Router wraps each route in a [React Suspense](https://react.dev/reference/react/Suspense) boundary. You can export a [`SuspenseFallback`](/versions/latest/sdk/router/#suspensefallback) component from a layout file to customize the loading UI shown while any child route is suspended:
+Expo Router wraps each route in a [React Suspense](https://react.dev/reference/react/Suspense) boundary. The fallback is shown while the route module loads with async routes, and while the route suspends on data. You can export a [`SuspenseFallback`](/versions/latest/sdk/router/#suspensefallback) component from a layout file to customize the loading UI shown for the screens in that layout:
 
 ```tsx src/app/_layout.tsx
 import { ActivityIndicator, View } from 'react-native';
@@ -151,7 +151,51 @@ export default function RootLayout() {
 }
 ```
 
-> When multiple parent layouts define a fallback, the nearest parent takes precedence.
+Nested layouts inherit the fallback from the nearest parent layout that exports one. Only layout files can export `SuspenseFallback`. A `SuspenseFallback` export in a route file is ignored and logs a warning in development.
+
+### Configuring the fallback on a navigator
+
+Alternatively, pass the `suspenseFallback` prop to the navigator. The prop applies to the screens rendered by that navigator and to nested layouts that do not configure their own fallback. It takes precedence over the layout's `SuspenseFallback` export for the same screens:
+
+```tsx src/app/_layout.tsx
+import { ActivityIndicator, View } from 'react-native';
+import { Stack } from 'expo-router';
+
+function ScreenFallback() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+}
+
+export default function RootLayout() {
+  return <Stack suspenseFallback={ScreenFallback} />;
+}
+```
+
+Pass `null` to stop inheriting a fallback and use the built-in one for the screens in that navigator:
+
+```tsx src/app/(modals)/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function ModalsLayout() {
+  return <Stack suspenseFallback={null} />;
+}
+```
+
+The `suspenseFallback` prop is available on `Stack`, `Tabs`, `NativeTabs`, `Drawer`, `Slot`, and custom navigators built with `Navigator`.
+
+### Precedence
+
+Expo Router resolves the fallback for a screen in the following order:
+
+1. `suspenseFallback` prop on the navigator that renders the screen
+2. `SuspenseFallback` exported from the layout file that renders that navigator
+3. The fallback inherited from the nearest parent layout or navigator
+4. The built-in fallback
+
+A layout's `SuspenseFallback` export also applies to the layout component itself when it suspends on data. With async routes, the export becomes available once the layout module has loaded. While the layout module is loading, its screen shows the fallback inherited from the parent, or the built-in fallback for the root layout.
 
 ### Accessing route parameters
 
@@ -174,7 +218,3 @@ export default function AppLayout() {
   return <Stack />;
 }
 ```
-
-### Limitations
-
-- [Async routes](/router/web/async-routes) do not support custom Suspense fallbacks.

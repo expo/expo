@@ -17,6 +17,7 @@ import type {
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
 import type { ScreenProps } from '../useScreens';
+import type { SuspenseFallbackProps } from '../views/SuspenseFallback';
 import type { ErrorBoundaryProps } from '../views/Try';
 
 export type StandardNavigatorEventMapBase = Record<
@@ -247,4 +248,10 @@ export type StandardRouterNavigatorProps<
   Omit<RouterOptions, 'initialRouteName'> & {
     /** A component to render when an individual screen in this navigator throws an error. */
     unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+    /**
+     * A component to render while an individual screen in this navigator is loading or suspended.
+     * Overrides the `SuspenseFallback` export of the enclosing layout for these screens and their
+     * descendants. Pass `null` to stop inheriting a fallback and use the built-in one.
+     */
+    suspenseFallback?: React.ComponentType<SuspenseFallbackProps> | null;
   };
