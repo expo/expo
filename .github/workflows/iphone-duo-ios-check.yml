@@ -72,13 +72,31 @@ jobs:
         run: pod install
         working-directory: apps/bare-expo/ios
 
-      - name: 🧪 Build + run native iOS unit tests for expo-display-features
+      # expo-display-features has no packages/expo-display-features/ios/Tests/
+      # (no native unit tests were written), so `et native-unit-tests` has
+      # nothing to run. It was just added as a bare-expo dependency above,
+      # so building the app itself is what actually compiles the new Swift
+      # module against a real iOS SDK + ExpoModulesCore.
+      - name: 🧪 Build BareExpo for iOS Simulator (compiles DisplayFeaturesModule.swift)
         timeout-minutes: 45
-        run: pnpm expotools native-unit-tests --platform ios --packages expo-display-features
+        working-directory: apps/bare-expo/ios
+        run: |
+          xcodebuild \
+            -workspace BareExpo.xcworkspace \
+            -scheme BareExpo \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            build 2>&1 | tee /tmp/xcodebuild.log
+          if grep -qE "^\*\* BUILD FAILED \*\*|error:" /tmp/xcodebuild.log; then
+            echo "::error::xcodebuild failed — see log above, especially any errors in DisplayFeaturesModule.swift."
+            exit 1
+          fi
+          echo "BareExpo (Debug, iphonesimulator) built cleanly, including expo-display-features."
 
-      - name: 📤 Upload xcresult
+      - name: 📤 Upload build log
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: iphone-duo-ios-unit-test-results
-          path: /tmp/ios-unit-tests-results
+          name: iphone-duo-ios-build-log
+          path: /tmp/xcodebuild.log
