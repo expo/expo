@@ -8,8 +8,11 @@ private let MEMORY_DB_NAME = ":memory:"
 
 private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
 
+// `@unchecked Sendable`: the `@JS(.concurrent)` members send the module off the JavaScript thread, which
+// Swift 6 mode allows only for a `Sendable` module. The mutable state is either guarded by `lockQueue` or
+// only read off the JavaScript thread (`hasListeners`).
 @ExpoModule("ExpoSQLite")
-public final class SQLiteModule: Module {
+public final class SQLiteModule: Module, @unchecked Sendable {
   // Store unmanaged (SQLiteModule, Database) pairs for sqlite callbacks,
   // will release the pair when `closeDatabase` is called.
   private var contextPairs = [Unmanaged<AnyObject>]()
@@ -58,43 +61,64 @@ public final class SQLiteModule: Module {
     }
   }
 
+  // MARK: - Module functions
+
+  @JS(.concurrent)
+  func deleteDatabaseAsync(databasePath: String) async throws {
+    try deleteDatabase(databasePath: databasePath)
+  }
+
+  @JS
+  func deleteDatabaseSync(databasePath: String) throws {
+    try deleteDatabase(databasePath: databasePath)
+  }
+
+  @JS(.concurrent)
+  func importAssetDatabaseAsync(databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) async throws {
+    try importAssetDatabase(databasePath: databasePath, assetDatabasePath: assetDatabasePath, forceOverwrite: forceOverwrite)
+  }
+
+  @JS(.concurrent)
+  func ensureDatabasePathExistsAsync(databasePath: String) async throws {
+    _ = try ensureDatabasePathExists(path: databasePath)
+  }
+
+  @JS
+  func ensureDatabasePathExistsSync(databasePath: String) throws {
+    _ = try ensureDatabasePathExists(path: databasePath)
+  }
+
+  @JS(.concurrent)
+  func backupDatabaseAsync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: String,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: String
+  ) async throws {
+    try backupDatabase(
+      destDatabase: destDatabase,
+      destDatabaseName: destDatabaseName,
+      sourceDatabase: sourceDatabase,
+      sourceDatabaseName: sourceDatabaseName
+    )
+  }
+
+  @JS
+  func backupDatabaseSync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: String,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: String
+  ) throws {
+    try backupDatabase(
+      destDatabase: destDatabase,
+      destDatabaseName: destDatabaseName,
+      sourceDatabase: sourceDatabase,
+      sourceDatabaseName: sourceDatabaseName
+    )
+  }
+
   public func definition() -> ModuleDefinition {
-    AsyncFunction("deleteDatabaseAsync") { (databasePath: String) in
-      try deleteDatabase(databasePath: databasePath)
-    }.runOnQueue(moduleQueue)
-    Function("deleteDatabaseSync") { (databasePath: String) in
-      try deleteDatabase(databasePath: databasePath)
-    }
-
-    AsyncFunction("importAssetDatabaseAsync") { (databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) in
-      let path = try ensureDatabasePathExists(path: databasePath)
-      let fileManager = FileManager.default
-      if fileManager.fileExists(atPath: path.toFilePath()) && !forceOverwrite {
-        return
-      }
-      guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
-        fileManager.fileExists(atPath: assetPath) else {
-        throw DatabaseNotFoundException(assetDatabasePath)
-      }
-      try? fileManager.removeItem(atPath: path.absoluteString)
-      try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
-    }.runOnQueue(moduleQueue)
-
-    AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
-      try ensureDatabasePathExists(path: databasePath)
-    }.runOnQueue(moduleQueue)
-    Function("ensureDatabasePathExistsSync") { (databasePath: String) in
-      try ensureDatabasePathExists(path: databasePath)
-    }
-
-    // swiftlint:disable:next line_length
-    AsyncFunction("backupDatabaseAsync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
-      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
-    }.runOnQueue(moduleQueue)
-    Function("backupDatabaseSync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
-      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
-    }
-
     // MARK: - NativeDatabase
 
     // swiftlint:disable:next closure_body_length
@@ -324,17 +348,19 @@ public final class SQLiteModule: Module {
     let ret = exsqlite3_close(db.pointer)
     db.isClosed = true
 
-    if let index = contextPairs.firstIndex(where: {
-      guard let pair = $0.takeUnretainedValue() as? (SQLiteModule, NativeDatabase) else {
-        return false
+    Self.lockQueue.sync {
+      if let index = contextPairs.firstIndex(where: {
+        guard let pair = $0.takeUnretainedValue() as? (SQLiteModule, NativeDatabase) else {
+          return false
+        }
+        if pair.1.sharedObjectId != db.sharedObjectId {
+          return false
+        }
+        $0.release()
+        return true
+      }) {
+        contextPairs.remove(at: index)
       }
-      if pair.1.sharedObjectId != db.sharedObjectId {
-        return false
-      }
-      $0.release()
-      return true
-    }) {
-      contextPairs.remove(at: index)
     }
 
     if ret != SQLITE_OK {
@@ -354,6 +380,20 @@ public final class SQLiteModule: Module {
     try DatabaseFileUtils.deleteDatabaseFiles(atPath: path)
   }
 
+  private func importAssetDatabase(databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) throws {
+    let path = try ensureDatabasePathExists(path: databasePath)
+    let fileManager = FileManager.default
+    if fileManager.fileExists(atPath: path.toFilePath()) && !forceOverwrite {
+      return
+    }
+    guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
+      fileManager.fileExists(atPath: assetPath) else {
+      throw DatabaseNotFoundException(assetDatabasePath)
+    }
+    try? fileManager.removeItem(atPath: path.absoluteString)
+    try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
+  }
+
   private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {
     try maybeThrowForClosedDatabase(destDatabase)
     try maybeThrowForClosedDatabase(sourceDatabase)
@@ -368,7 +408,9 @@ public final class SQLiteModule: Module {
 
   private func addUpdateHook(_ database: NativeDatabase) {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
-    contextPairs.append(contextPair)
+    Self.lockQueue.sync {
+      contextPairs.append(contextPair)
+    }
     // swiftlint:disable:next multiline_arguments
     exsqlite3_update_hook(database.pointer, { obj, action, databaseName, tableName, rowId in
       guard let obj,

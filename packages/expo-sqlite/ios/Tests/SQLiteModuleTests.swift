@@ -61,4 +61,56 @@ struct SQLiteModuleTests {
     #expect(dictionary["databaseName"] as? String == "main")
     #expect(dictionary["tableName"] as? String == "test")
   }
+
+  @Test
+  func `ensuring the in-memory database path needs no file system`() throws {
+    try module.ensureDatabasePathExistsSync(databasePath: ":memory:")
+  }
+
+  @Test
+  func `ensuring a file database path creates its directory`() throws {
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer {
+      try? FileManager.default.removeItem(at: directory)
+    }
+    try module.ensureDatabasePathExistsSync(databasePath: directory.appendingPathComponent("test.db").path)
+    #expect(FileManager.default.fileExists(atPath: directory.path))
+  }
+
+  @Test
+  func `deleting the in-memory database does nothing`() throws {
+    try module.deleteDatabaseSync(databasePath: ":memory:")
+  }
+
+  @Test
+  func `backs up one database into another`() throws {
+    var sourcePointer: OpaquePointer?
+    var destinationPointer: OpaquePointer?
+    #expect(exsqlite3_open(":memory:", &sourcePointer) == SQLITE_OK)
+    #expect(exsqlite3_open(":memory:", &destinationPointer) == SQLITE_OK)
+    defer {
+      exsqlite3_close(sourcePointer)
+      exsqlite3_close(destinationPointer)
+    }
+    let source = NativeDatabase(sourcePointer, databasePath: ":memory:", openOptions: OpenDatabaseOptions())
+    let destination = NativeDatabase(destinationPointer, databasePath: ":memory:", openOptions: OpenDatabaseOptions())
+    try source.execSync(source: "CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL); INSERT INTO test (id) VALUES (7);")
+    try module.backupDatabaseSync(
+      destDatabase: destination,
+      destDatabaseName: "main",
+      sourceDatabase: source,
+      sourceDatabaseName: "main"
+    )
+    let statement = NativeStatement()
+    try destination.prepareSync(statement: statement, source: "SELECT id FROM test")
+    #expect(exsqlite3_step(statement.pointer) == SQLITE_ROW)
+    #expect(exsqlite3_column_int(statement.pointer, 0) == 7)
+    exsqlite3_finalize(statement.pointer)
+  }
+
+  @Test
+  func `async members run the same operations`() async throws {
+    try await module.ensureDatabasePathExistsAsync(databasePath: ":memory:")
+    try await module.deleteDatabaseAsync(databasePath: ":memory:")
+  }
 }
