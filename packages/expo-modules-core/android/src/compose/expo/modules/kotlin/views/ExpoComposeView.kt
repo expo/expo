@@ -15,6 +15,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.annotation.UiThread
+import androidx.compose.ui.R as ComposeUiR
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
@@ -221,10 +222,10 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   private fun addComposeView() {
     val composeView = ComposeView(context).also {
-      // Give each Host a unique id so its rememberSaveable state gets its own key.
-      // All Hosts share the Activity's SavedStateRegistry (set below), so without an id
-      // they'd collide on one key and only the first could save/restore state.
-      it.id = generateViewId()
+      // Give each Host a unique rememberSaveable namespace. All Hosts share the Activity's
+      // SavedStateRegistry (set below), so without one they'd collide on a single key and only
+      // the first could save/restore state.
+      HostingViewSaveableState.assignNamespace(it, ComposeUiR.id.compose_view_saveable_id_tag)
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       // Pin the composition to the Activity lifecycle so it survives
       // react-native-screens detaching inactive screens on every switch.
