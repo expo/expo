@@ -18,6 +18,7 @@
 - [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] The SwiftPM autolinking plugin now takes module identity from `expo-modules-autolinking prebuilt-metadata` instead of re-deriving it from the filesystem, so a module whose product name differs from its pod name resolves its XCFramework (`react-native-skia` ships `RNSkia.xcframework`). ([#50095](https://github.com/expo/expo/pull/50095) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] The SwiftPM autolinking plugin now takes each module's iOS deployment floor from `expo-modules-autolinking prebuilt-metadata` and raises it to ExpoModulesCore's, matching `use_expo_modules!`. A module declaring a lower floor than the core it links against no longer builds below it. ([#50096](https://github.com/expo/expo/pull/50096) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Emit JavaScript `url` events for deep links delivered to a running app under the UIKit scene life cycle. ([#50235](https://github.com/expo/expo/pull/50235) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 

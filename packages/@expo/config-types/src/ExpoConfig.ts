@@ -45,7 +45,7 @@ export interface ExpoConfig {
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
   /**
-   * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/build-reference/app-versions/). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
   version?: string;
   /**
@@ -77,7 +77,7 @@ export interface ExpoConfig {
    */
   icon?: string;
   /**
-   * Configuration for the status bar on Android. For more details navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
+   * Configuration for the status bar on Android. For more details navigate to [Configuring StatusBar](https://docs.expo.dev/develop/user-interface/system-bars/).
    * @deprecated Use the `expo-status-bar` plugin configuration instead
    */
   androidStatusBar?: {
@@ -112,7 +112,7 @@ export interface ExpoConfig {
    */
   scheme?: string | string[];
   /**
-   * Any extra fields you want to pass to your experience. Values are accessible via `Constants.expoConfig.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
+   * Any extra fields you want to pass to your experience. Values are accessible via `Constants.expoConfig.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants))
    */
   extra?: {
     [k: string]: any;
@@ -181,9 +181,7 @@ export interface ExpoConfig {
      */
     enableBsdiffPatchSupport?: boolean;
     /**
-     * Whether to exclude the expo-updates directory from device backups (iCloud). Defaults to false. When set to true, downloaded updates are not included in backups, which can significantly shrink backup size for apps with large updates. On restore the device has no cached update and runs the embedded update until the latest update is downloaded again.
-     *
-     * @platform ios
+     * iOS only. Whether to exclude the expo-updates directory from device backups (iCloud). Defaults to false. When set to true, downloaded updates are not included in backups, which can significantly shrink backup size for apps with large updates. On restore the device has no cached update and runs the embedded update until the latest update is downloaded again.
      */
     excludeFromBackup?: boolean;
   };
@@ -202,7 +200,7 @@ export interface ExpoConfig {
    */
   assetBundlePatterns?: string[];
   /**
-   * Config plugins for adding extra functionality to your project. [Learn more](https://docs.expo.dev/guides/config-plugins/).
+   * Config plugins for adding extra functionality to your project. [Learn more](https://docs.expo.dev/config-plugins/introduction/).
    */
   plugins?: (string | [] | [string] | [string, any])[];
   /**
@@ -466,7 +464,7 @@ export interface IOS {
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
   /**
-   * Your iOS app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `ios.buildNumber` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `CFBundleShortVersionString`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   * Your iOS app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `ios.buildNumber` — read more about how to version your app [here](https://docs.expo.dev/build-reference/app-versions/). This corresponds to `CFBundleShortVersionString`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
   version?: string;
 }
@@ -601,7 +599,7 @@ export interface Android {
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
   /**
-   * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+   * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/build-reference/app-versions/). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
   version?: string;
   /**
