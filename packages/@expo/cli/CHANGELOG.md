@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Support Device Hub as Simulator replacement for Xcode 27+ ([#46757](https://github.com/expo/expo/pull/46757) by [@byCedric](https://github.com/byCedric), [@GersonRocha9](https://github.com/GersonRocha9))
+- Focus the booted device in Device Hub using its `devices://` deep link instead of only bringing the app forward. ([#46809](https://github.com/expo/expo/pull/46809) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
