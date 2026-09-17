@@ -52,6 +52,60 @@ if (!Platform.isTV || Platform.OS !== 'ios') {
   };
 }
 
+export function processLockScreenMetadata(metadata: any): any {
+  if (!metadata || metadata.artworkUrl === undefined || metadata.artworkUrl === null) {
+    return metadata;
+  }
+
+  let artworkUrl = metadata.artworkUrl;
+
+  if (typeof artworkUrl !== 'string') {
+    const resolved = resolveSource(artworkUrl);
+    if (
+      resolved &&
+      typeof resolved === 'object' &&
+      'uri' in resolved &&
+      typeof resolved.uri === 'string'
+    ) {
+      artworkUrl = resolved.uri;
+    }
+  }
+
+  const isString = typeof artworkUrl === 'string';
+  const isSupportedProtocol =
+    isString &&
+    (artworkUrl.startsWith('http://') ||
+      artworkUrl.startsWith('https://') ||
+      artworkUrl.startsWith('file://'));
+
+  if (!isString || !isSupportedProtocol) {
+    const typeStr = typeof metadata.artworkUrl;
+    const valueStr = isString ? `"${artworkUrl}"` : String(metadata.artworkUrl);
+    console.warn(
+      `[expo-audio] Invalid or unsupported data provided for 'artworkUrl': ${valueStr} (type: ${typeStr}).\n` +
+        `Please use a remote HTTP/HTTPS URL, or a local 'file://' URL (e.g. from require() or expo-file-system).`
+    );
+  }
+
+  if (isString && isSupportedProtocol) {
+    return { ...metadata, artworkUrl };
+  } else {
+    const updated = { ...metadata };
+    delete updated.artworkUrl;
+    return updated;
+  }
+}
+
+const setActiveForLockScreen = AudioModule.AudioPlayer.prototype.setActiveForLockScreen;
+AudioModule.AudioPlayer.prototype.setActiveForLockScreen = function (
+  active: boolean,
+  metadata?: any,
+  options?: any
+) {
+  const processedMetadata = active ? processLockScreenMetadata(metadata) : metadata;
+  return setActiveForLockScreen.call(this, active, processedMetadata, options);
+};
+
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.
  *
