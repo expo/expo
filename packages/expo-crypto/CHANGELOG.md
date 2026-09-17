@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Import `Foundation` in the AES `Data` extension, which relied on another file in the module importing it.
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-14
