@@ -5,31 +5,9 @@ description: Learn how to release resources from inactive routes while preservin
 
 > **important** This is an [experimental](/more/release-statuses/#experimental) feature.
 
-React Activity can hide inactive route content while preserving its React state. Hidden content cleans up effects and releases resources until it becomes visible again.
+[React Activity](https://react.dev/reference/react/Activity) can hide inactive route content while preserving its React state. Hidden content cleans up effects and releases resources until it becomes visible again.
 
-Enable activity handling on a navigator:
-
-```tsx src/app/_layout.tsx
-import { Stack } from 'expo-router';
-
-export default function RootLayout() {
-  return <Stack activityEnabled />;
-}
-```
-
-## Configure when routes hide
-
-For a `Stack`, `activityEnabled` hides a route when two screens are above it. Pass a positive number to change this threshold:
-
-```tsx src/app/_layout.tsx
-import { Stack } from 'expo-router';
-
-export default function RootLayout() {
-  return <Stack activityEnabled={1} />;
-}
-```
-
-JavaScript tabs, native tabs, headless tabs, and drawers hide a route when it loses focus. You can override inherited behavior for one route:
+Enable activity handling on a navigator and override it for individual routes:
 
 ```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -37,11 +15,22 @@ import { Stack } from 'expo-router';
 export default function RootLayout() {
   return (
     <Stack activityEnabled>
-      <Stack.Screen name="editor" activityEnabled={false} />
+      {/* Keep this route active while another screen covers it. */}
+      <Stack.Screen name="music" activityEnabled={false} />
+      {/* Hide this route as soon as another screen covers it. */}
+      <Stack.Screen name="editor" activityEnabled={1} />
+      {/* Hide this route when three screens are above it. */}
+      <Stack.Screen name="feed" activityEnabled={3} />
     </Stack>
   );
 }
 ```
+
+## Configure when routes hide
+
+For a `Stack`, `activityEnabled` hides a route when two screens are above it. A positive number changes this threshold. Setting it to `1` hides the route as soon as it loses focus.
+
+JavaScript tabs, native tabs, headless tabs, and drawers hide a route when it loses focus.
 
 ## Wrap route content manually
 
@@ -49,8 +38,18 @@ Use `NavigationAwareActivity` when you need to wrap only part of a route:
 
 ```tsx src/app/details.tsx
 import { NavigationAwareActivity } from 'expo-router';
+import { useEffect } from 'react';
+import { Text } from 'react-native';
 
-import { Details } from '../components/details';
+function Details() {
+  useEffect(() => {
+    console.log('Details became visible');
+
+    return () => console.log('Details became hidden');
+  }, []);
+
+  return <Text>Details</Text>;
+}
 
 export default function DetailsScreen() {
   return (
@@ -60,5 +59,7 @@ export default function DetailsScreen() {
   );
 }
 ```
+
+The effect cleanup runs when the route hides. React preserves the component's state, so the component does not unmount.
 
 `NavigationAwareActivity` must render inside a route screen. See the [Expo Router API reference](/versions/latest/sdk/router/) for all activity options.

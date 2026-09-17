@@ -1,9 +1,11 @@
 'use client';
 import * as React from 'react';
+import { Platform } from 'react-native';
 
 import { ScreenRemovalPreventionSetterContext } from '../../global-state/removalPrevention';
 import useLatestCallback from '../../utils/useLatestCallback';
 import type { NavigationAction } from '../routers';
+import { IsPreloadedContext } from './IsPreloadedContext';
 import type { EventListenerCallback, EventMapCore } from './types';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useNavigation } from './useNavigation';
@@ -52,6 +54,9 @@ const useWarnOnStalePreventRemove: (preventRemove: boolean) => () => void =
  * callback's `repeat` function. To navigate somewhere else, set `preventRemove` to `false`, call
  * the returned `disablePrevention` function, and then navigate.
  *
+ * On web, this hook also prevents the browser from unloading the page while `preventRemove` is
+ * `true`.
+ *
  * @example
  * ```tsx
  * const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
@@ -82,8 +87,11 @@ export function usePreventRemove(
   const id = React.useId();
   const navigation = useNavigation();
   const setPreventRemove = React.use(ScreenRemovalPreventionSetterContext);
+  const isPreloaded = React.use(IsPreloadedContext);
   const markDisabled = useWarnOnStalePreventRemove(preventRemove);
+  const preventBeforeUnloadRef = React.useRef(preventRemove);
   const preventInPreloadedRoutes = options?.preventInPreloadedRoutes ?? false;
+  const shouldPreventBeforeUnload = preventRemove && (!isPreloaded || preventInPreloadedRoutes);
 
   if (setPreventRemove === undefined) {
     throw new Error(
@@ -92,17 +100,36 @@ export function usePreventRemove(
   }
 
   useClientLayoutEffect(() => {
+    preventBeforeUnloadRef.current = shouldPreventBeforeUnload;
     setPreventRemove(id, preventRemove, preventInPreloadedRoutes);
     return () => {
+      preventBeforeUnloadRef.current = false;
       setPreventRemove(id, false, preventInPreloadedRoutes);
     };
-  }, [id, preventInPreloadedRoutes, preventRemove, setPreventRemove]);
+  }, [id, preventInPreloadedRoutes, preventRemove, setPreventRemove, shouldPreventBeforeUnload]);
 
   // TODO(@ubax): use standard useCallback if possible
   const disablePrevention = useLatestCallback(() => {
+    preventBeforeUnloadRef.current = false;
     setPreventRemove(id, false, preventInPreloadedRoutes);
     markDisabled();
   });
+
+  React.useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined' || !shouldPreventBeforeUnload) {
+      return;
+    }
+
+    const preventBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (preventBeforeUnloadRef.current) {
+        event.preventDefault();
+        event.returnValue = true;
+      }
+    };
+
+    window.addEventListener('beforeunload', preventBeforeUnload);
+    return () => window.removeEventListener('beforeunload', preventBeforeUnload);
+  }, [shouldPreventBeforeUnload]);
 
   const removePreventedListener = useLatestCallback<
     EventListenerCallback<EventMapCore<any>, 'removePrevented'>

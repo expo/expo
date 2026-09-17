@@ -72,6 +72,25 @@ Set the value passed to `usePreventRemove()` to `false` before calling `repeat()
 
 The hook also returns a function that disables prevention. Use it when you want to cancel the blocked action and navigate somewhere else.
 
-On web, `usePreventRemove()` protects Expo Router navigation. It does not prevent a browser refresh, closing the tab, or visiting an external URL.
+```tsx src/app/edit-profile.tsx
+import { router, usePreventRemove } from 'expo-router';
+import { useState } from 'react';
+import { Button } from 'react-native';
+
+export default function EditProfile() {
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
+  const disablePrevention = usePreventRemove(hasUnsavedChanges);
+
+  function leaveForm() {
+    setHasUnsavedChanges(false);
+    disablePrevention();
+    router.replace('/profile');
+  }
+
+  return <Button title="Leave without saving" onPress={leaveForm} />;
+}
+```
+
+> **note** On web, `usePreventRemove()` also requests browser confirmation before a refresh, closing the tab, or external navigation. The browser controls whether a dialog appears and its message.
 
 See the [Expo Router API reference](/versions/latest/sdk/router/) for all removal prevention options.

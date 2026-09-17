@@ -21,13 +21,12 @@ export default function RootLayout() {
 
 ## Choose a transition mode
 
-`router.setTransitionMode()` accepts these modes:
+Use these modes to configure when Expo Router starts transitions:
 
 | Mode           | Behavior                                               |
 | -------------- | ------------------------------------------------------ |
 | `preload-only` | Uses transitions for preloading. This is the default.  |
 | `always`       | Uses transitions for all queued navigation operations. |
-| `never`        | Disables transitions for navigation operations.        |
 
 You can override `preload-only` and `always` for an individual operation with `inTransition`:
 
@@ -36,7 +35,7 @@ router.push('/details', { inTransition: true });
 router.back({ inTransition: false });
 ```
 
-The `never` mode cannot be overridden. When Expo Router batches operations, every operation must allow transitions for the batch to use one.
+> **note** When Expo Router batches operations, every operation must allow transitions for the batch to use one.
 
 ## Show pending navigation
 

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Prevent browser unloads on web while `usePreventRemove` is active.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
