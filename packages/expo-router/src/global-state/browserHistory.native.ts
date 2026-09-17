@@ -11,15 +11,15 @@ export function createBrowserHistory(): BrowserHistoryProjection {
   return { history: undefined, events: [] };
 }
 
-export function projectBrowserHistory(history: BrowserHistory): BrowserHistoryProjection {
+export function applyRouterHistoryAction(history: BrowserHistory): BrowserHistoryProjection {
   return { history, events: [] };
 }
 
-export function refreshBrowserHistory(history: BrowserHistory): BrowserHistoryProjection {
+export function updateCurrentHistoryEntry(history: BrowserHistory): BrowserHistoryProjection {
   return { history, events: [] };
 }
 
-export function restoreBrowserHistory<Result extends { state: NavigationState }>(
+export function restoreNavigationFromBrowser<Result extends { state: NavigationState }>(
   history: BrowserHistory,
   result: Result
 ): BrowserHistoryRestore<Result> {

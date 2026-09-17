@@ -16,10 +16,10 @@ import type {
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
 import {
+  applyRouterHistoryAction,
   createBrowserHistory,
-  projectBrowserHistory,
-  refreshBrowserHistory,
-  restoreBrowserHistory,
+  restoreNavigationFromBrowser,
+  updateCurrentHistoryEntry,
 } from './browserHistory';
 import type { BrowserHistory, BrowserHistoryEvent } from './browserHistoryTypes';
 import {
@@ -146,7 +146,7 @@ function navigationTreeReducer(
     if (!result.history) {
       return result;
     }
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       result.history,
       result,
       operation.payload,
@@ -163,8 +163,8 @@ function navigationTreeReducer(
   // Structural repairs are not navigations, so they never move the browser.
   const projected =
     operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
-      ? refreshBrowserHistory(next.history, next.state, config)
-      : projectBrowserHistory(next.history, next.state, config, next.browserHistoryAction);
+      ? updateCurrentHistoryEntry(next.history, next.state, config)
+      : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
 }
 

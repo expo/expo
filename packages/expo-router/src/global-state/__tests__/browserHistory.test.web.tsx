@@ -3,10 +3,10 @@ import type { NavigationState } from '../../react-navigation/routers';
 import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import { getMockConfig } from '../../testing-library/mock-config';
 import {
+  applyRouterHistoryAction,
   createBrowserHistory,
-  projectBrowserHistory,
-  refreshBrowserHistory,
-  restoreBrowserHistory,
+  restoreNavigationFromBrowser,
+  updateCurrentHistoryEntry,
 } from '../browserHistory';
 import type { BrowserHistory, ReducibleIntent } from '../browserHistoryTypes';
 import { completeParsedState } from '../createSeededNavigationState';
@@ -86,7 +86,7 @@ test('pushes an entry and drops forward entries when instructed to push', () => 
   const next = stack(['a', 'c']);
   const current = history([previous, stack(['a', 'b'])], 0);
 
-  const result = projectBrowserHistory(current, next, config, { type: 'push' });
+  const result = applyRouterHistoryAction(current, next, config, { type: 'push' });
 
   expect(result.history).toEqual({
     entries: [current.entries[0], { id: 'p:2', path: '/c', state: next }],
@@ -104,7 +104,7 @@ test('goes back and refreshes the entry when instructed to pop', () => {
   const next = stack(['a']);
   const current = history([stack(['a']), stack(['a', 'b']), previous]);
 
-  const result = projectBrowserHistory(current, next, config, { type: 'pop', count: 2 });
+  const result = applyRouterHistoryAction(current, next, config, { type: 'pop', count: 2 });
 
   expect(result.history?.index).toBe(0);
   expect(result.history?.entries[0]).toEqual({ id: 'p:0', path: '/a', state: next });
@@ -120,7 +120,7 @@ test('clamps a traversal at the first tracked entry', () => {
   const next = stack(['a']);
   const current = history([previous]);
 
-  const result = projectBrowserHistory(current, next, config, { type: 'pop', count: 2 });
+  const result = applyRouterHistoryAction(current, next, config, { type: 'pop', count: 2 });
 
   expect(result.history?.index).toBe(0);
   expect(result.events).toEqual([
@@ -136,7 +136,7 @@ test('replaces the current entry without a history instruction', () => {
   };
   const current = history([stack(['a']), previous]);
 
-  const result = projectBrowserHistory(current, next, config);
+  const result = applyRouterHistoryAction(current, next, config);
 
   expect(result.history?.index).toBe(1);
   expect(result.history?.entries[1]).toEqual({ id: 'p:1', path: '/b', state: next });
@@ -150,7 +150,7 @@ test('does not push for a preloaded route', () => {
   const next = stack(['a', 'b'], 0);
   const current = history([previous]);
 
-  const result = projectBrowserHistory(current, next, config);
+  const result = applyRouterHistoryAction(current, next, config);
 
   expect(result.events).toEqual([
     { type: 'browser-history', op: 'replace', entryId: 'p:0', path: '/a' },
@@ -162,11 +162,20 @@ test('replaces when the root navigator changed identity', () => {
   const next = stack(['a', 'b'], 1, 'other-root');
   const current = history([previous]);
 
-  const result = projectBrowserHistory(current, next, config);
+  const result = applyRouterHistoryAction(current, next, config);
 
   expect(result.events).toEqual([
     { type: 'browser-history', op: 'replace', entryId: 'p:0', path: '/b' },
   ]);
+});
+
+test.each([-1, 1, 0.5, NaN])('rejects an invalid tracked entry index: %s', (index) => {
+  const state = stack(['a']);
+  const current = history([state], index);
+
+  expect(() => updateCurrentHistoryEntry(current, state, config)).toThrow(
+    `Invalid browser history index ${index} for 1 entries.`
+  );
 });
 
 test('refreshes without moving the browser after a structural change', () => {
@@ -174,7 +183,7 @@ test('refreshes without moving the browser after a structural change', () => {
   const next = stack(['a']);
   const current = history([stack(['a']), stack(['a', 'b']), previous]);
 
-  const result = refreshBrowserHistory(current, next, config);
+  const result = updateCurrentHistoryEntry(current, next, config);
 
   expect(result.history?.index).toBe(2);
   expect(result.history?.entries[2]).toEqual({ id: 'p:2', path: '/a', state: next });
@@ -189,7 +198,7 @@ describe('restore', () => {
     const second = stack(['a', 'b']);
     const current = history([first, second]);
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: second },
       { id: 'p:0', path: '/a' },
@@ -214,7 +223,7 @@ describe('restore', () => {
     const redirected = stack(['c']);
     const reduce = jest.fn(() => ({ state: redirected }));
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: second },
       { id: 'p:0', path: '/a' },
@@ -235,7 +244,7 @@ describe('restore', () => {
     const result = { state: second };
     const reduce = jest.fn(() => result);
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       result,
       { id: 'p:0', path: '/a' },
@@ -252,7 +261,7 @@ describe('restore', () => {
     const current = history([first]);
     const result = { state: first };
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       result,
       { id: 'p:0', path: '/a' },
@@ -273,7 +282,7 @@ describe('restore', () => {
     };
     const reduce = jest.fn(() => ({ state: withHash }));
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: second },
       { id: 'p:0', path: '/a#section' },
@@ -307,7 +316,7 @@ describe('restore', () => {
     };
     const reduce = jest.fn(() => ({ state: withHash }));
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: first },
       { id: null, path: '/a#section' },
@@ -339,7 +348,7 @@ describe('restore', () => {
     const current = history([first, second]);
     const getStateFromPath = jest.fn(() => ({ routes: [{ name: '__root' }] }));
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: second },
       { id: 'old:3', path: '/c' },
@@ -376,7 +385,7 @@ describe('restore', () => {
       entrySeq: 1,
     };
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: currentState },
       { id: 'old:3', path: '/shared' },
@@ -395,7 +404,7 @@ describe('restore', () => {
     const second = stack(['a', 'b']);
     const current = history([first, second]);
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: second },
       { id: 'old:3', path: '/nope' },
@@ -418,7 +427,7 @@ describe('restore', () => {
     const second = stack(['a', 'b']);
     const current = history([first, second]);
 
-    const restored = restoreBrowserHistory(
+    const restored = restoreNavigationFromBrowser(
       current,
       { state: second },
       { id: 'old:3', path: '/nope' },
@@ -451,7 +460,7 @@ test('pops to the tracked target instead of counting nested entries as parent ro
     routes: [first.routes[0]!, { ...nested.routes[1]!, state: stack(['a', 'b'], 1, 'child') }],
   };
   const current = history([first, nested, details]);
-  const result = projectBrowserHistory(current, first, config, {
+  const result = applyRouterHistoryAction(current, first, config, {
     type: 'pop',
     count: 1,
     target: { navigatorKey: 'root', routeKey: 'a' },
