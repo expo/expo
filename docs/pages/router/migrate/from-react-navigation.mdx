@@ -372,11 +372,11 @@ Use the `useNavigationContainerRef()` hook instead.
 
 ### Migrate a custom navigator
 
-> **info** The stable APIs in this section are available in **SDK 58 and later**. In SDK 56 and SDK 57, use the `unstable_` aliases.
+> **info** The stable APIs in this section are available in **SDK 58 and later**. In SDK 56 and SDK 57, use `unstable_createStandardRouterNavigator` and `unstable_integrateWithRouter` instead.
 
 Use `createStandardRouterNavigator` when the navigator belongs to your app:
 
-```tsx components/CustomTabs.tsx
+```tsx src/components/CustomTabs.tsx
 import { createStandardRouterNavigator, TabRouter } from 'expo-router';
 import { CustomTabsContent } from './CustomTabsContent';
 

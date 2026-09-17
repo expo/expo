@@ -134,7 +134,7 @@ function TabsContent({ activeRouteKey, preload }: TabsContentProps) {
 }
 ```
 
-> **info** `createProps` receives the processed Expo Router state and low-level navigation helpers. These APIs may have small breaking changes between releases. Prefer the standard `state` and `actions` when they provide what you need. If something is missing, [open an issue on GitHub](https://github.com/expo/expo/issues).
+> **info** `createProps` receives the processed Expo Router `state` and raw `dispatch`. These are internal and may have small breaking changes between releases, so prefer the `state` and `actions` passed to `NavigatorContent` when they suffice. If something you need is missing from the standard `state`, `actions`, or `emitter`, [open an issue on GitHub](https://github.com/expo/expo/issues).
 
 ## Integrate an existing navigator (library authors)
 
@@ -197,52 +197,6 @@ export const Stack = integrateWithRouter(navigator, StackRouter, {
 
 For a lower-level implementation, use `createBaseStackProps` or `createBaseTabProps` from `expo-router` and add the behavior your navigator needs.
 
-### Customize router behavior
-
-> **info** `extendRouter` and `extendRouterActions` are available in **SDK 58 and later**.
-
-Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `null` to reject it, or `undefined` to let the base router handle it.
-
-Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router.
-
-The following example adds a `CLEAR` action and an action creator for it:
-
-```tsx src/router.ts
-import {
-  extendRouter,
-  extendRouterActions,
-  StackRouter,
-  type CommonNavigationAction,
-  type StackActionType,
-} from 'expo-router';
-
-type ClearAction = { type: 'CLEAR' };
-
-const RouterWithClearAction = extendRouterActions(
-  StackRouter,
-  (state, action: CommonNavigationAction | StackActionType | ClearAction, { nextKey }) => {
-    if (action.type !== 'CLEAR') {
-      return undefined;
-    }
-
-    const route = { key: nextKey('index'), name: 'index' };
-    return {
-      state: { ...state, index: 0, routes: [route] },
-      affectedRouteKey: route.key,
-    };
-  }
-);
-
-export const Router = extendRouter(RouterWithClearAction, ({ baseRouter }) => ({
-  actionCreators: {
-    ...baseRouter.actionCreators,
-    clear: (): ClearAction => ({ type: 'CLEAR' }),
-  },
-}));
-```
-
-Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to delegate existing behavior and `nextKey` when adding a route to the state.
-
 ### Library entry points
 
 Keep the navigator content and the standard navigator framework-agnostic, then expose one entry point per framework so consumers import the integration that matches their app:
@@ -286,3 +240,49 @@ Consumers then import the integration for their framework (for example, `import 
   description="Learn how to integrate the same standard navigator with React Navigation, and read the contract that defines the state, descriptors, actions, and emitter your NavigatorContent receives."
   Icon={BookOpen02Icon}
 />
+
+## Customize router behavior
+
+> **info** `extendRouter` and `extendRouterActions` are available in **SDK 58 and later**.
+
+Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `null` to reject it, or `undefined` to let the base router handle it.
+
+Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router.
+
+The following example adds a `CLEAR` action and an action creator for it:
+
+```tsx src/router.ts
+import {
+  extendRouter,
+  extendRouterActions,
+  StackRouter,
+  type CommonNavigationAction,
+  type StackActionType,
+} from 'expo-router';
+
+type ClearAction = { type: 'CLEAR' };
+
+const RouterWithClearAction = extendRouterActions(
+  StackRouter,
+  (state, action: CommonNavigationAction | StackActionType | ClearAction, { nextKey }) => {
+    if (action.type !== 'CLEAR') {
+      return undefined;
+    }
+
+    const route = { key: nextKey('index'), name: 'index' };
+    return {
+      state: { ...state, index: 0, routes: [route] },
+      affectedRouteKey: route.key,
+    };
+  }
+);
+
+export const Router = extendRouter(RouterWithClearAction, ({ baseRouter }) => ({
+  actionCreators: {
+    ...baseRouter.actionCreators,
+    clear: (): ClearAction => ({ type: 'CLEAR' }),
+  },
+}));
+```
+
+Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to delegate existing behavior, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state.
