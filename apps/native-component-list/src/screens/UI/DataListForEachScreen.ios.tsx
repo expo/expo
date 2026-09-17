@@ -99,6 +99,16 @@ export default function DataListForEachScreen() {
           />
         </HStack>
         <Text modifiers={[font({ textStyle: 'body' })]}>{item.text}</Text>
+        {saved.has(item.id) && (
+          <Label
+            title="Saved for later"
+            systemImage="bookmark.fill"
+            modifiers={[
+              font({ textStyle: 'caption' }),
+              foregroundStyle(PlatformColor('systemOrange')),
+            ]}
+          />
+        )}
         {item.index % 5 === 0 && (
           <Label
             title="Weekend itinerary.pdf · 248 KB"
