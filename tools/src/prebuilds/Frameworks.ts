@@ -1341,23 +1341,20 @@ const copySwiftModuleInterfacesAsync = async (
 };
 
 /**
- * Post-processes a .swiftinterface file to:
- * 1. Remap internal SPM target names to their product names
- *    (e.g., ExpoModulesCore_ios_objc -> ExpoModulesCore)
+ * Rewrites references to internal SPM target modules in a `.swiftinterface` so they name the
+ * product module instead (e.g., ExpoModulesCore_ios_objc -> ExpoModulesCore). Internal targets
+ * only exist while the product is built; consumers can only see the product module.
  *
- * @param swiftInterfaceFilePath Path to the .swiftinterface file
+ * @param content Contents of the .swiftinterface file
  * @param spmConfig SPM configuration containing product/target mappings
+ * @returns The rewritten contents, or `content` unchanged when nothing matched
  */
-const fixSwiftInterfaceModuleReferencesAsync = async (
-  swiftInterfaceFilePath: string,
+export function rewriteInternalTargetModuleReferences(
+  content: string,
   spmConfig: SPMConfig
-): Promise<void> => {
-  // Read the swiftinterface file
-  let content = await fs.readFile(swiftInterfaceFilePath, 'utf8');
-  let modified = false;
+): string {
+  let rewritten = content;
 
-  // Remap internal SPM target imports to product names
-  // e.g., @_exported import ExpoModulesCore_ios_objc -> @_exported import ExpoModulesCore
   for (const product of spmConfig.products) {
     for (const target of product.targets) {
       if (target.name === product.name) {
@@ -1366,37 +1363,38 @@ const fixSwiftInterfaceModuleReferencesAsync = async (
 
       // Replace @_exported import statements
       const exportedImportPattern = new RegExp(`^@_exported import ${target.name}\\s*$`, 'gm');
-      const exportedReplaced = content.replace(
-        exportedImportPattern,
-        `@_exported import ${product.name}`
-      );
-      if (exportedReplaced !== content) {
-        content = exportedReplaced;
-        modified = true;
-      }
+      rewritten = rewritten.replace(exportedImportPattern, `@_exported import ${product.name}`);
 
       // Replace regular import statements
       const importPattern = new RegExp(`^import ${target.name}\\s*$`, 'gm');
-      const importReplaced = content.replace(importPattern, `import ${product.name}`);
-      if (importReplaced !== content) {
-        content = importReplaced;
-        modified = true;
-      }
+      rewritten = rewritten.replace(importPattern, `import ${product.name}`);
 
-      // Replace module-qualified type references
-      // e.g., ExpoModulesCore_ios_objc.TypeName -> ExpoModulesCore.TypeName
-      const qualifiedPattern = new RegExp(`\\b${target.name}\\.`, 'g');
-      const qualifiedReplaced = content.replace(qualifiedPattern, `${product.name}.`);
-      if (qualifiedReplaced !== content) {
-        content = qualifiedReplaced;
-        modified = true;
-      }
+      // Replace module-qualified type references, in both the `Target.TypeName` form and the
+      // `Target::TypeName` module selector Swift 6.4 prints. The matched separator is echoed
+      // back so the rewritten reference keeps the form the rest of the interface uses.
+      const qualifiedPattern = new RegExp(`\\b${target.name}(::|\\.)`, 'g');
+      rewritten = rewritten.replace(qualifiedPattern, `${product.name}$1`);
     }
   }
 
-  // Write back if modified
-  if (modified) {
-    await fs.writeFile(swiftInterfaceFilePath, content, 'utf8');
+  return rewritten;
+}
+
+/**
+ * Rewrites a .swiftinterface file in place, writing it back only when something changed.
+ *
+ * @param swiftInterfaceFilePath Path to the .swiftinterface file
+ * @param spmConfig SPM configuration containing product/target mappings
+ */
+const fixSwiftInterfaceModuleReferencesAsync = async (
+  swiftInterfaceFilePath: string,
+  spmConfig: SPMConfig
+): Promise<void> => {
+  const content = await fs.readFile(swiftInterfaceFilePath, 'utf8');
+  const rewritten = rewriteInternalTargetModuleReferences(content, spmConfig);
+
+  if (rewritten !== content) {
+    await fs.writeFile(swiftInterfaceFilePath, rewritten, 'utf8');
   }
 };
 
