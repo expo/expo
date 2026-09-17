@@ -24,7 +24,12 @@ jest.mock('../flavored-frameworks', () => ({
   prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
 }));
 
-const { resolveExpoModules, prebuiltMetadata, generateModulesProvider, runDumpPackage } = require('../cli');
+const {
+  resolveExpoModules,
+  prebuiltMetadata,
+  generateModulesProvider,
+  runDumpPackage,
+} = require('../cli');
 const { resolveAppTarget } = require('../app-target');
 const { UnsupportedModulesError } = require('../diagnostics');
 const { resolveFlavoredFramework } = require('../flavored-frameworks');
