@@ -75,6 +75,8 @@ describe(getCodeSigningInfoForPbxproj, () => {
       '13B07F861A680F5B00A75B9A': {
         developmentTeams: [],
         provisioningProfiles: [],
+        configurations: ['Debug', 'Release'],
+        manualSigningConfigurations: [],
       },
     });
   });
@@ -93,6 +95,35 @@ describe(getCodeSigningInfoForPbxproj, () => {
       '13B07F861A680F5B00A75B9A': {
         developmentTeams: ['QQ57RJ5UTD', 'QQ57RJ5UTD'],
         provisioningProfiles: [],
+        configurations: ['Debug', 'Release'],
+        manualSigningConfigurations: [],
+      },
+    });
+  });
+  it(`returns the configurations that use manual code signing`, () => {
+    const team = 'DEVELOPMENT_TEAM = QQ57RJ5UTD;';
+    const [beforeDebug, debugToRelease, afterRelease] = originalFs
+      .readFileSync(path.join(__dirname, 'fixtures/signed-project.pbxproj'), 'utf-8')
+      .split(team);
+    vol.fromJSON(
+      {
+        'ios/testproject.xcodeproj/project.pbxproj': [
+          beforeDebug,
+          `${team}\n\t\t\t\tCODE_SIGN_STYLE = Automatic;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "";`,
+          debugToRelease,
+          `${team}\n\t\t\t\tCODE_SIGN_STYLE = Manual;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "match AppStore com.example";`,
+          afterRelease,
+        ].join(''),
+      },
+      projectRoot
+    );
+
+    expect(getCodeSigningInfoForPbxproj(projectRoot)).toStrictEqual({
+      '13B07F861A680F5B00A75B9A': {
+        developmentTeams: ['QQ57RJ5UTD', 'QQ57RJ5UTD'],
+        provisioningProfiles: ['"match AppStore com.example"'],
+        configurations: ['Debug', 'Release'],
+        manualSigningConfigurations: ['Release'],
       },
     });
   });
