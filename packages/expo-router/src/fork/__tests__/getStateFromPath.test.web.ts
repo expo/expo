@@ -115,11 +115,12 @@ describe('baseUrl', () => {
     expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe('/expo/bar');
   });
 
-  it('does not strip baseUrl that is only a string prefix of the first segment', () => {
-    process.env.EXPO_BASE_URL = '/m';
-    const config = getMockConfig(['_layout.tsx', 'menu.tsx', 'index.tsx']);
+  it.each(['/menu', '/m/menu'])(
+    'does not strip baseUrl that is only a string prefix of the first segment: %s',
+    (path) => {
+      process.env.EXPO_BASE_URL = '/m';
+      const config = getMockConfig(['_layout.tsx', 'menu.tsx', 'index.tsx']);
 
-    for (const path of ['/menu', '/m/menu']) {
       expect(getStateFromPath<object>(path, config)).toEqual({
         routes: [
           {
@@ -137,7 +138,7 @@ describe('baseUrl', () => {
       });
       expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe('/m/menu');
     }
-  });
+  );
 });
 
 describe(getUrlWithReactNavigationConcessions, () => {
