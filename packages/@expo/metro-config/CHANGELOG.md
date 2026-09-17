@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Worker chunk not found` assertion when serving a web worker from a lazy development bundle with `web.output` set to `static` or `server` ([#50244](https://github.com/expo/expo/pull/50244) by [@tahakocal](https://github.com/tahakocal))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-16
