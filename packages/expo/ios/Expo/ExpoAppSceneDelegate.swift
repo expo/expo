@@ -108,7 +108,11 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     // reaches JS through the scene API. It reads a single context, hence one call per context.
     URLContexts.forEach { context in
       forwarder.open(url: context.url, options: Self.openURLOptions(from: context.options)) {
-        RCTLinkingManager.scene(scene, openURLContexts: [context])
+        // TODO: Remove this when bumping react-native-tvos to 0.88
+        let selector = NSSelectorFromString("scene:openURLContexts:")
+        if RCTLinkingManager.responds(to: selector) {
+          _ = RCTLinkingManager.perform(selector, with: scene, with: Set([context]))
+        }
       }
     }
   }
@@ -119,7 +123,10 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     forwarder.continue(userActivity) {
-      RCTLinkingManager.scene(scene, continue: userActivity)
+      let selector = NSSelectorFromString("scene:continueUserActivity:")
+      if RCTLinkingManager.responds(to: selector) {
+        _ = RCTLinkingManager.perform(selector, with: scene, with: userActivity)
+      }
     }
   }
 
