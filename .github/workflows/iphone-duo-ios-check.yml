@@ -81,6 +81,11 @@ jobs:
         timeout-minutes: 45
         working-directory: apps/bare-expo/ios
         run: |
+          # Use xcodebuild's own exit code, not log-text grepping — a "error:"
+          # substring shows up harmlessly in retry/warning noise (npm fetch
+          # retries, Xcode's own internal cache messages) even on a build
+          # that ultimately succeeds.
+          set -o pipefail
           xcodebuild \
             -workspace BareExpo.xcworkspace \
             -scheme BareExpo \
@@ -88,10 +93,6 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             build 2>&1 | tee /tmp/xcodebuild.log
-          if grep -qE "^\*\* BUILD FAILED \*\*|error:" /tmp/xcodebuild.log; then
-            echo "::error::xcodebuild failed — see log above, especially any errors in DisplayFeaturesModule.swift."
-            exit 1
-          fi
           echo "BareExpo (Debug, iphonesimulator) built cleanly, including expo-display-features."
 
       - name: 📤 Upload build log
