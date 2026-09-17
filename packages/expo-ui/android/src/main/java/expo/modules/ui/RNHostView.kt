@@ -43,7 +43,7 @@ internal data class RNHostViewProps(
   val matchContents: MutableState<Boolean?> = mutableStateOf(null),
   //  Adds LeafNode and MeasurableYogaNode trait in Shadow node
   val expoInternalSizeFromChildren: MutableState<Boolean?> = mutableStateOf(null),
-  val modifiers: ModifierList = emptyList()
+  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -159,7 +159,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       // Origin last: a chain applies outside-in, so a caller `padding` or `offset` has to shift the
       // content before it is read.
       val modifiers = sizingModifier
-        .then(ModifierRegistry.applyModifiers(props.modifiers, appContext, scope, globalEventDispatcher))
+        .then(ModifierRegistry.applyModifiers(props.modifiers.value, appContext, scope, globalEventDispatcher))
         .then(publishContentOriginModifier())
 
       AndroidView(

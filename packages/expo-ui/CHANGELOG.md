@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `modifiers` passed to `RNHostView` being ignored.
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-16
