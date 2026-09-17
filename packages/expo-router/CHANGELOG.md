@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Improve standard-navigation types for `createProps`. ([#47825](https://github.com/expo/expo/pull/47825) by [@Ubax](https://github.com/Ubax))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.2.21 — 2026-09-17
+
+### 🎉 New features
+
+- Improve standard-navigation types for `createProps`. ([#47825](https://github.com/expo/expo/pull/47825) by [@Ubax](https://github.com/Ubax))
 
 ## 56.2.20 — 2026-08-28
 

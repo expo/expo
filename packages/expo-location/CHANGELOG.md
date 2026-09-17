@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `startLocationUpdatesAsync` requiring `FOREGROUND_SERVICE_LOCATION` (Android 14+) even when no `foregroundService` option is passed. ([#49641](https://github.com/expo/expo/issues/49641) by [@aamagda](https://github.com/aamagda))
-
 ### 💡 Others
+
+## 56.0.26 — 2026-09-17
+
+### 🐛 Bug fixes
+
+- [Android] Fix `startLocationUpdatesAsync` requiring `FOREGROUND_SERVICE_LOCATION` (Android 14+) even when no `foregroundService` option is passed. ([#49641](https://github.com/expo/expo/issues/49641) by [@aamagda](https://github.com/aamagda))
 
 ## 56.0.25 — 2026-08-28
 

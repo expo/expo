@@ -1870,7 +1870,7 @@ importers:
         specifier: workspace:^56.1.7
         version: link:../require-utils
       '@expo/router-server':
-        specifier: workspace:^56.0.18
+        specifier: workspace:^56.0.19
         version: link:../router-server
       '@expo/schema-utils':
         specifier: workspace:^56.0.2
@@ -2923,7 +2923,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-constants:
-        specifier: workspace:^56.0.25
+        specifier: workspace:^56.0.26
         version: link:../../expo-constants
       expo-font:
         specifier: workspace:^56.0.7
@@ -3491,7 +3491,7 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^56.1.25
+        specifier: workspace:^56.1.26
         version: link:../@expo/cli
       '@expo/config':
         specifier: workspace:~56.0.14
@@ -3530,7 +3530,7 @@ importers:
         specifier: workspace:~56.0.24
         version: link:../expo-asset
       expo-constants:
-        specifier: workspace:~56.0.25
+        specifier: workspace:~56.0.26
         version: link:../expo-constants
       expo-file-system:
         specifier: workspace:~56.0.11
@@ -3545,7 +3545,7 @@ importers:
         specifier: workspace:~56.0.23
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~56.0.25
+        specifier: workspace:~56.0.26
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3679,7 +3679,7 @@ importers:
         specifier: workspace:^0.10.5
         version: link:../@expo/image-utils
       expo-constants:
-        specifier: workspace:~56.0.25
+        specifier: workspace:~56.0.26
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -3738,13 +3738,13 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.25
+        specifier: workspace:~56.0.26
         version: link:../expo-constants
       expo-crypto:
         specifier: workspace:~56.0.5
         version: link:../expo-crypto
       expo-linking:
-        specifier: workspace:~56.0.17
+        specifier: workspace:~56.0.18
         version: link:../expo-linking
       expo-web-browser:
         specifier: workspace:~56.0.6
@@ -4149,7 +4149,7 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~56.0.27
+        specifier: workspace:~56.0.28
         version: link:../expo-dev-launcher
       expo-dev-menu:
         specifier: workspace:~56.0.23
@@ -4640,7 +4640,7 @@ importers:
   packages/expo-linking:
     dependencies:
       expo-constants:
-        specifier: workspace:~56.0.25
+        specifier: workspace:~56.0.26
         version: link:../expo-constants
       invariant:
         specifier: ^2.2.4
@@ -5047,7 +5047,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.25
+        specifier: workspace:~56.0.26
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -5174,13 +5174,13 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       expo-constants:
-        specifier: workspace:^56.0.25
+        specifier: workspace:^56.0.26
         version: link:../expo-constants
       expo-glass-effect:
         specifier: workspace:^56.0.4
         version: link:../expo-glass-effect
       expo-linking:
-        specifier: workspace:^56.0.17
+        specifier: workspace:^56.0.18
         version: link:../expo-linking
       expo-server:
         specifier: workspace:^56.0.6
@@ -9867,11 +9867,6 @@ packages:
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
-
-  agent-cli-detector@0.1.6:
-    resolution: {integrity: sha512-vKrPeEVN3upDF3GjWxsWBbwQgMtNJ8VB1cduPvK3svmmz4ENpS7yaPxbogsbe3w+xp9xp2Cu+0Ar41rjAR4+lA==}
-    engines: {node: '>=18.18'}
-    hasBin: true
 
   agent-cli-detector@0.1.7:
     resolution: {integrity: sha512-d8OWDVdZMgjhLUT9ZPgSv/BdFFF9pVuscC0JdUSz3bjwE15gcp6u/o0/JooM2yyAWC49KThFhXlgTXRa9B7yng==}
@@ -20074,8 +20069,6 @@ snapshots:
       - supports-color
 
   agent-base@7.1.4: {}
-
-  agent-cli-detector@0.1.6: {}
 
   agent-cli-detector@0.1.7: {}
 

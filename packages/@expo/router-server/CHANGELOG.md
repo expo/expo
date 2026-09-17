@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix JavaScript chunk execution order during streaming server rendering.
-
 ### 💡 Others
+
+## 56.0.19 — 2026-09-17
+
+### 🐛 Bug fixes
+
+- Fix JavaScript chunk execution order during streaming server rendering.
 
 ## 56.0.18 — 2026-08-17
 
