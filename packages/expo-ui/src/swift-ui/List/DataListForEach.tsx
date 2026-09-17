@@ -106,13 +106,17 @@ export function DataListForEach<ItemT>({
   if (!Number.isFinite(estimatedItemSize) || estimatedItemSize <= 0) {
     throw new Error('List.ForEach estimatedItemSize must be a positive finite number.');
   }
+  // Keys follow `data` only. An inline `keyExtractor` changes identity on every parent render, and
+  // recomputing keys for it would bump the revision and re-render every pooled row.
+  const keyExtractorRef = useRef(keyExtractor);
+  keyExtractorRef.current = keyExtractor;
   const itemKeys = useMemo(() => {
-    const keys = data.map(keyExtractor);
+    const keys = data.map((item, index) => keyExtractorRef.current(item, index));
     if (keys.some((key) => typeof key !== 'string') || new Set(keys).size !== keys.length) {
       throw new Error('List.ForEach keyExtractor must return a unique string for every item.');
     }
     return keys;
-  }, [data, keyExtractor]);
+  }, [data]);
   const [state, setState] = useState({
     keys: itemKeys,
     first: 0,
