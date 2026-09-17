@@ -2,7 +2,7 @@ import { act, render } from '@testing-library/react-native';
 import { createContext, useContext, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { ListForEach } from '../ListForEach';
+import { ListForEach, type ListForEachProps } from '../ListForEach';
 import { getSlotIndices, getWindow } from '../window';
 
 const mockList = jest.fn();
@@ -220,6 +220,30 @@ it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', (overscanCount)
       />
     )
   ).toThrow('overscanCount must be a non-negative integer');
+});
+
+it('keeps the group when only the keyExtractor identity changes', () => {
+  const renderItem = jest.fn(() => <View />);
+  const screen = render(
+    <ListForEach data={data} keyExtractor={(item) => item.id} renderItem={renderItem} />
+  );
+  requestWindow(500, 510);
+  const { revision, itemKeys } = nativeProps();
+  const calls = renderItem.mock.calls.length;
+  screen.rerender(
+    <ListForEach data={data} keyExtractor={(item) => item.id} renderItem={renderItem} />
+  );
+  expect(nativeProps().revision).toBe(revision);
+  expect(nativeProps().itemKeys).toBe(itemKeys);
+  expect(renderItem).toHaveBeenCalledTimes(calls);
+});
+
+it('keeps ListForEachProps extendable as an interface', () => {
+  interface Extended extends ListForEachProps {
+    extra: string;
+  }
+  const props: Extended = { children: null, extra: 'ok' };
+  expect(props.extra).toBe('ok');
 });
 
 it('forwards full group editing indices and rejects events from old revisions', () => {

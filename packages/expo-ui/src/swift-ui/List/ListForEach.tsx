@@ -19,11 +19,11 @@ type NativeListForEachProps = CommonViewModifierProps &
     moveEnabled: boolean;
   };
 
-export interface ChildrenListForEachProps extends CommonViewModifierProps {
+export interface ListForEachProps extends CommonViewModifierProps {
   data?: never;
   keyExtractor?: never;
   renderItem?: never;
-  windowSize?: never;
+  overscanCount?: never;
   estimatedItemSize?: never;
   /**
    * The children elements to be rendered inside the `List.ForEach`.
@@ -45,21 +45,17 @@ export interface ChildrenListForEachProps extends CommonViewModifierProps {
   onMove?: (sourceIndices: number[], destination: number) => void;
 }
 
-export type ListForEachProps<ItemT = unknown> =
-  | ChildrenListForEachProps
-  | DataListForEachProps<ItemT>;
-
 /**
  * A group of rows inside List, with optional deletion and reordering.
  * Pass `children`, or `data` with `keyExtractor` and `renderItem`.
  * The `data` and `renderItem` form recycles rows and is experimental (SwiftUI/iOS only).
  */
-export function ListForEach<ItemT>(props: ListForEachProps<ItemT>) {
+export function ListForEach<ItemT>(props: ListForEachProps | DataListForEachProps<ItemT>) {
   if (props.data !== undefined) return <DataListForEach {...props} />;
   return <ChildrenListForEach {...props} />;
 }
 
-function ChildrenListForEach({ children, onDelete, onMove, ...props }: ChildrenListForEachProps) {
+function ChildrenListForEach({ children, onDelete, onMove, ...props }: ListForEachProps) {
   return (
     <ListForEachNativeView
       {...props}
