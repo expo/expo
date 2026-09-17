@@ -220,11 +220,15 @@ export function stripBaseUrl(
     // Trailing slashes are not part of the base URL segment, e.g. `/one/` is the same as `/one`.
     const normalizedBaseUrl = baseUrl?.replace(/\/+$/, '');
     if (normalizedBaseUrl) {
-      // The base URL must match whole path segments only, so `/m` is stripped from `/m/menu` and `/m`,
-      // but not from `/menu`.
-      return path
-        .replace(/^\/+/g, '/')
-        .replace(new RegExp(`^\\/?${escape(normalizedBaseUrl)}(?=[/?#]|$)`), '');
+      const baseUrlRegexp = new RegExp(
+        // Start of the path, with an optional leading slash
+        '^\\/?' +
+          // The base URL, with regex special characters escaped
+          escape(normalizedBaseUrl) +
+          // Must be followed by "/", "?", "#" or the end of the path, so `/m` matches `/m/menu` but not `/menu`
+          '(?=[/?#]|$)'
+      );
+      return path.replace(/^\/+/g, '/').replace(baseUrlRegexp, '');
     }
   }
   return path;
