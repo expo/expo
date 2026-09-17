@@ -311,9 +311,7 @@ public final class SQLiteModule: Module {
       throw Exceptions.FileSystemModuleNotFound()
     }
 
-    guard let pathUrl = URL(string: path) else {
-      throw DatabaseInvalidPathException(path)
-    }
+    let pathUrl = URL(fileURLWithPath: path)
     fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().toFilePath())
 
     return pathUrl
