@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Register optional worklet argument converters before exporting functions that accept serializable values.
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-28
