@@ -1,4 +1,5 @@
 import { ExpoWebGLRenderingContext, GLView } from 'expo-gl';
+import { Renderer } from 'expo-three';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -15,7 +16,6 @@ import {
   PerspectiveCamera,
   PlaneBufferGeometry,
   Scene,
-  WebGLRenderer,
 } from 'three';
 
 export default function GLThreeDepthStencilBuffer() {
@@ -30,9 +30,7 @@ export default function GLThreeDepthStencilBuffer() {
   }, []);
 
   const onContextCreate = React.useCallback(async (gl: ExpoWebGLRenderingContext) => {
-    const renderer = new WebGLRenderer({
-      context: gl,
-    });
+    const renderer = new Renderer({ gl });
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = BasicShadowMap;
 
