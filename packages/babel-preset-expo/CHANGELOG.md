@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Record inlined `EXPO_PUBLIC_*` env vars in `cacheVary` metadata so the value is invalidating when it changes ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+- Inline `EXPO_PUBLIC_USE_RN_FETCH` as `undefined` inside `node_modules` when the flag is unset to allow cache invaliation as intended ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-15

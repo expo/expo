@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import Foundation
+import SwiftUI
 import Testing
 
 @testable import ExpoModulesCore
@@ -15,9 +16,18 @@ private final class Marker: Record {
   init() {}
 }
 
-private final class TestViewProps: ExpoSwiftUI.ViewProps {
+private final class TestViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.HostingViewAware {
   @Field var marker: Marker?
   @Field var title: String?
+  weak var hostingView: UIView?
+}
+
+private struct TestView: ExpoSwiftUI.View {
+  @ObservedObject var props: TestViewProps
+
+  var body: some SwiftUI.View {
+    Text(props.title ?? "")
+  }
 }
 
 // swiftlint:disable legacy_objc_type
@@ -57,5 +67,16 @@ struct SwiftUIViewPropsTests {
 
     #expect(props.marker !== firstMarker)
     #expect(props.marker?.text == "other")
+  }
+
+  /// Layouts such as `Host`'s viewport measurement resolve the window from the view that asks, so
+  /// a host outside the key window (or in a second window) measures its own window, not a global one.
+  @MainActor
+  @Test
+  func `hands the hosting view to props that adopt HostingViewAware`() {
+    let props = TestViewProps()
+    let hostingView = ExpoSwiftUI.HostingView(viewType: TestView.self, props: props, appContext: appContext)
+
+    #expect(props.hostingView === hostingView)
   }
 }
