@@ -251,6 +251,9 @@ importers:
       expo-dev-menu:
         specifier: workspace:*
         version: link:../../packages/expo-dev-menu
+      expo-display-features:
+        specifier: workspace:*
+        version: link:../../packages/expo-display-features
       expo-font:
         specifier: workspace:*
         version: link:../../packages/expo-font
