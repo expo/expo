@@ -124,7 +124,7 @@
           "enableBackgroundPlayback": true,
           "enableBackgroundRecording": true
         }
-      ]
+      ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
     ],
