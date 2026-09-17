@@ -104,7 +104,13 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   open func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    URLContexts.forEach { forwarder.open(url: $0.url, options: Self.openURLOptions(from: $0.options)) }
+    // React Native ignores the app-delegate URL API under the scene life cycle, so a warm link only
+    // reaches JS through the scene API. It reads a single context, hence one call per context.
+    URLContexts.forEach { context in
+      forwarder.open(url: context.url, options: Self.openURLOptions(from: context.options)) {
+        RCTLinkingManager.scene(scene, openURLContexts: [context])
+      }
+    }
   }
 
   open func scene(_ scene: UIScene, willContinueUserActivityWithType userActivityType: String) {
@@ -112,7 +118,9 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-    forwarder.continue(userActivity)
+    forwarder.continue(userActivity) {
+      RCTLinkingManager.scene(scene, continue: userActivity)
+    }
   }
 
   open func scene(
