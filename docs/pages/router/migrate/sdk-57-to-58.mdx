@@ -54,6 +54,8 @@ Async routes use the default loading fallback instead of custom [`SuspenseFallba
 
 This restores synchronous route loading and support for custom loading fallbacks on web. Existing explicit `asyncRoutes` settings continue to take precedence over the defaults. See [Async routes](/router/web/async-routes/) for configuration options and limitations.
 
+After upgrading or changing `asyncRoutes`, clear the Metro cache with `expo start --clear` or `expo export --clear`.
+
 ### Prefer `useRouter` in components
 
 Prefer the router returned by `useRouter()` over `useNavigation().navigate()` or the module-level `router` for href-based navigation from a component. The hook is bound to the Expo Router root that rendered the component.
