@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Throw a JavaScript error instead of aborting when returning a shared object whose JavaScript instance is no longer available.
+
 ### 💡 Others
 
 ## 58.0.7 — 2026-09-25

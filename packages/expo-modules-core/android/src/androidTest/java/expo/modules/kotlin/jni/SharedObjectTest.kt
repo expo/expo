@@ -15,6 +15,29 @@ import org.junit.Test
 
 class SharedObjectTest {
   @Test
+  fun returning_stale_shared_object_throws_instead_of_aborting() = withSingleModule({
+    Function("staleSharedObject") {
+      SharedObjectExampleClass().apply {
+        sharedObjectId = SharedObjectId(Int.MAX_VALUE)
+      }
+    }
+  }) {
+    val message = evaluateScript(
+      """
+      (() => {
+        try {
+          $moduleRef.staleSharedObject();
+          return 'No error';
+        } catch (error) {
+          return error.message;
+        }
+      })()
+      """.trimIndent()
+    ).getString()
+    Truth.assertThat(message).contains("its JavaScript instance is no longer available")
+  }
+
+  @Test
   fun shared_object_class_should_exists() = withJSIInterop {
     val sharedObjectClass = evaluateScript("expo.SharedObject")
     Truth.assertThat(sharedObjectClass.isFunction()).isTrue()
