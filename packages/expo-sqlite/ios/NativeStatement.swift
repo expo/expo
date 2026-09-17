@@ -9,7 +9,9 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
   var pointer: OpaquePointer?
   var isFinalized = false
   var extraPointer: OpaquePointer?
-  internal let lock = DispatchSemaphore(value: 1)
+  /// Serializes the native calls that touch the statement. It is stateful and may be reached from several
+  /// threads at once, so every call that touches it runs inside this lock.
+  internal let lock = Mutex(())
 
   @JS
   nonisolated override init() {
@@ -61,15 +63,10 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
     try database.ensureOpen()
     try ensureNotFinalized()
 
-    // The statement is stateful and may be reached from several threads at once, so every call that
-    // touches it takes the same critical section.
-    lock.wait()
-    defer {
-      lock.signal()
-    }
-
-    if exsqlite3_reset(pointer) != SQLITE_OK {
-      throw SQLiteErrorException(database.lastErrorMessage())
+    try lock.withLock { _ in
+      if exsqlite3_reset(pointer) != SQLITE_OK {
+        throw SQLiteErrorException(database.lastErrorMessage())
+      }
     }
   }
 
@@ -87,16 +84,12 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
     try database.ensureOpen()
     try ensureNotFinalized()
 
-    // Guard the stateful statement, see `reset` above.
-    lock.wait()
-    defer {
-      lock.signal()
+    try lock.withLock { _ in
+      if exsqlite3_finalize(pointer) != SQLITE_OK {
+        throw SQLiteErrorException(database.lastErrorMessage())
+      }
+      isFinalized = true
     }
-
-    if exsqlite3_finalize(pointer) != SQLITE_OK {
-      throw SQLiteErrorException(database.lastErrorMessage())
-    }
-    isFinalized = true
   }
 }
 

@@ -259,36 +259,33 @@ public final class SQLiteModule: Module, @unchecked Sendable {
 
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    exsqlite3_reset(statement.pointer)
-    exsqlite3_clear_bindings(statement.pointer)
-    for (key, param) in bindParams {
-      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
-      if index > 0 {
-        try bindStatementParam(statement: statement, with: param, at: index)
+    return try statement.lock.withLock { _ -> [String: Any] in
+      exsqlite3_reset(statement.pointer)
+      exsqlite3_clear_bindings(statement.pointer)
+      for (key, param) in bindParams {
+        let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+        if index > 0 {
+          try bindStatementParam(statement: statement, with: param, at: index)
+        }
       }
-    }
-    for (key, param) in bindBlobParams {
-      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
-      if index > 0 {
-        try bindStatementParam(statement: statement, with: param, at: index)
+      for (key, param) in bindBlobParams {
+        let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+        if index > 0 {
+          try bindStatementParam(statement: statement, with: param, at: index)
+        }
       }
-    }
 
-    let ret = exsqlite3_step(statement.pointer)
-    if ret != SQLITE_ROW && ret != SQLITE_DONE {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      let ret = exsqlite3_step(statement.pointer)
+      if ret != SQLITE_ROW && ret != SQLITE_DONE {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+      let firstRowValues: SQLiteColumnValues = (ret == SQLITE_ROW) ? try getColumnValues(statement: statement) : []
+      return [
+        "lastInsertRowId": Int(exsqlite3_last_insert_rowid(database.pointer)),
+        "changes": Int(exsqlite3_changes(database.pointer)),
+        "firstRowValues": firstRowValues
+      ]
     }
-    let firstRowValues: SQLiteColumnValues = (ret == SQLITE_ROW) ? try getColumnValues(statement: statement) : []
-    return [
-      "lastInsertRowId": Int(exsqlite3_last_insert_rowid(database.pointer)),
-      "changes": Int(exsqlite3_changes(database.pointer)),
-      "firstRowValues": firstRowValues
-    ]
   }
 
   // swiftlint:enable line_length
@@ -298,19 +295,16 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     try maybeThrowForFinalizedStatement(statement)
 
     // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
+    return try statement.lock.withLock { _ -> SQLiteColumnValues? in
+      let ret = exsqlite3_step(statement.pointer)
+      if ret == SQLITE_ROW {
+        return try getColumnValues(statement: statement)
+      }
+      if ret != SQLITE_DONE {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+      return nil
     }
-
-    let ret = exsqlite3_step(statement.pointer)
-    if ret == SQLITE_ROW {
-      return try getColumnValues(statement: statement)
-    }
-    if ret != SQLITE_DONE {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    return nil
   }
 
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
@@ -318,24 +312,21 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     try maybeThrowForFinalizedStatement(statement)
 
     // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    var columnValuesList: [SQLiteColumnValues] = []
-    while true {
-      let ret = exsqlite3_step(statement.pointer)
-      if ret == SQLITE_ROW {
-        columnValuesList.append(try getColumnValues(statement: statement))
-        continue
+    return try statement.lock.withLock { _ -> [SQLiteColumnValues] in
+      var columnValuesList: [SQLiteColumnValues] = []
+      while true {
+        let ret = exsqlite3_step(statement.pointer)
+        if ret == SQLITE_ROW {
+          columnValuesList.append(try getColumnValues(statement: statement))
+          continue
+        }
+        if ret == SQLITE_DONE {
+          break
+        }
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
-      if ret == SQLITE_DONE {
-        break
-      }
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      return columnValuesList
     }
-    return columnValuesList
   }
 
   private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
