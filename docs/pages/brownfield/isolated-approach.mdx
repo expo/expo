@@ -275,6 +275,17 @@ startActivity(Intent(this, ExpoActivity::class.java))
 
 `BrownfieldActivity` extends `AppCompatActivity` and handles forwarding configuration changes to Expo modules. The `showReactNativeFragment()` extension also sets up native back button handling automatically.
 
+`showReactNativeFragment()` also accepts an optional `launchOptions` bundle, which is passed to the root component as its initial props:
+
+```kotlin
+showReactNativeFragment(
+  rootComponent = "main",
+  launchOptions = bundleOf("userId" to "123")
+)
+```
+
+> **info** On iOS, `initialProps` and `launchOptions` are separate parameters. On Android, React Native passes the single `launchOptions` bundle to the root component as its initial props.
+
 </Step>
 
 </Tab>

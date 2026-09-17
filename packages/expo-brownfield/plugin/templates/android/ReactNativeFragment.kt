@@ -18,11 +18,13 @@ class ReactNativeFragment : Fragment() {
       savedInstanceState: Bundle?,
   ): FrameLayout {
     val rootComponent = arguments?.getString("rootComponentName") ?: "main"
+    val launchOptions = arguments?.getBundle("launchOptions")
     val surface =
         ReactNativeViewFactory.createSurface(
             requireContext(),
             requireActivity(),
             rootComponent,
+            launchOptions,
         )
     this.surface = surface
     return surface.view
@@ -40,7 +42,11 @@ class ReactNativeFragment : Fragment() {
   companion object {
     private const val TAG = "ReactNativeFragment"
 
-    fun createFragmentHost(activity: Activity, rootComponent: String = "main"): ViewGroup {
+    fun createFragmentHost(
+        activity: Activity,
+        rootComponent: String = "main",
+        launchOptions: Bundle? = null,
+    ): ViewGroup {
       val layout =
           object : FrameLayout(activity) {
             init {
@@ -48,7 +54,7 @@ class ReactNativeFragment : Fragment() {
             }
           }
 
-      val fragment = createAndCommit(activity, layout, rootComponent)
+      val fragment = createAndCommit(activity, layout, rootComponent, launchOptions)
 
       return layout
     }
@@ -57,11 +63,18 @@ class ReactNativeFragment : Fragment() {
         activity: Activity,
         container: ViewGroup,
         rootComponent: String = "main",
+        launchOptions: Bundle? = null,
     ): ReactNativeFragment {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
 
+      // Held in `arguments` rather than a field: the system recreates the fragment on a
+      // configuration change or after process death, and `arguments` is the only state that
+      // survives to rebuild the surface with the same launch options.
       val fragment = ReactNativeFragment().apply {
-        arguments = Bundle().apply { putString("rootComponentName", rootComponent) }
+        arguments = Bundle().apply {
+          putString("rootComponentName", rootComponent)
+          putBundle("launchOptions", launchOptions)
+        }
       }
 
       fragmentManager.commit(true) {

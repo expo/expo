@@ -1,8 +1,7 @@
 diff --git a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
-index a9fbbe7d70..f7561327e7 100644
 --- a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
 +++ b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
-@@ -13,6 +13,16 @@
+@@ -14,6 +14,16 @@
  import com.facebook.react.modules.core.DeviceEventManagerModule
  import expo.modules.ExpoReactHostFactory
  import expo.modules.brownfield.BrownfieldNavigationState
@@ -19,7 +18,7 @@ index a9fbbe7d70..f7561327e7 100644
  
  class ReactNativeHostManager {
    companion object {
-@@ -68,13 +78,44 @@
+@@ -69,6 +79,16 @@
        packageList = PackageList(application).packages + additionalPackages,
        useDevSupport = BuildConfig.DEBUG
      )
@@ -36,9 +35,11 @@ index a9fbbe7d70..f7561327e7 100644
    }
  }
  
- fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList()) {
+@@ -77,8 +97,30 @@
+ // are separate arguments, whereas React Native's Android `ReactDelegate` has the one bundle.
+ fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList(), launchOptions: Bundle? = null) {
    ReactNativeHostManager.shared.initialize(this.application, additionalPackages)
--  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
+-  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent, launchOptions)
 -  setContentView(fragment)
 +
 +  if (BuildConfig.DEBUG) {
@@ -51,7 +52,8 @@ index a9fbbe7d70..f7561327e7 100644
 +      val reactNativeView = ReactNativeViewFactory.createFrameLayout(
 +        this,
 +        this as androidx.fragment.app.FragmentActivity,
-+        rootComponent
++        rootComponent,
++        launchOptions
 +      )
 +      fragmentHost.addView(reactNativeView, ViewGroup.LayoutParams.MATCH_PARENT)
 +      setContentView(fragmentHost)
@@ -59,14 +61,14 @@ index a9fbbe7d70..f7561327e7 100644
 +    }
 +  } else {
 +    setContentView(
-+      ReactNativeFragment.createFragmentHost(this, rootComponent)
++      ReactNativeFragment.createFragmentHost(this, rootComponent, launchOptions)
 +    )
 +  }
 +
    setUpNativeBackHandling()
  }
  
-@@ -104,3 +145,30 @@
+@@ -108,3 +150,30 @@
  
    componentActivity.onBackPressedDispatcher?.addCallback(componentActivity, backCallback)
  }

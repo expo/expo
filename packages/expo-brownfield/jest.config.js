@@ -1,1 +1,4 @@
-module.exports = require('expo-module-scripts/createCompositeJestPreset')(__dirname, ['cli']);
+module.exports = require('expo-module-scripts/createCompositeJestPreset')(__dirname, [
+  'cli',
+  'plugin',
+]);

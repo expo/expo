@@ -2,6 +2,7 @@ package ${{packageId}}
 
 import android.app.Activity
 import android.app.Application
+import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import com.facebook.react.PackageList
@@ -71,9 +72,12 @@ class ReactNativeHostManager {
   }
 }
 
-fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList()) {
+// `launchOptions` reaches `ReactDelegate`, which hands it to the root component as its initial
+// properties. Note the Android/iOS naming difference: on iOS `initialProps` and `launchOptions`
+// are separate arguments, whereas React Native's Android `ReactDelegate` has the one bundle.
+fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList(), launchOptions: Bundle? = null) {
   ReactNativeHostManager.shared.initialize(this.application, additionalPackages)
-  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
+  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent, launchOptions)
   setContentView(fragment)
   setUpNativeBackHandling()
 }

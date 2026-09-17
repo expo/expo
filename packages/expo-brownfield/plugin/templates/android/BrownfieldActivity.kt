@@ -3,6 +3,7 @@ package ${{packageId}}
 import android.app.Activity
 import android.app.Application
 import android.content.res.Configuration
+import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.ReactPackage
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
@@ -32,8 +33,9 @@ open class BrownfieldActivity : AppCompatActivity(), DefaultHardwareBackBtnHandl
   open fun showReactNativeFragment(
     rootComponent: String = "main",
     additionalPackages: List<ReactPackage> = emptyList(),
+    launchOptions: Bundle? = null,
   ) {
-    (this as Activity).showReactNativeFragment(rootComponent, additionalPackages)
+    (this as Activity).showReactNativeFragment(rootComponent, additionalPackages, launchOptions)
   }
 
   // React Native calls this when JS has no back handler. Don't call

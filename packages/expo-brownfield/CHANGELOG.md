@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [android] `BrownfieldActivity.showReactNativeFragment` takes a new trailing `launchOptions` parameter. Calls are unaffected, but subclasses that `override` the method must add the parameter. ([#49XXX](https://github.com/expo/expo/pull/49XXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
+
+- [android] Add a `launchOptions` parameter to `showReactNativeFragment`, `ReactNativeFragment.createFragmentHost` and `BrownfieldActivity.showReactNativeFragment`, matching the iOS entry points. ([#49XXX](https://github.com/expo/expo/pull/49XXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
