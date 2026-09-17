@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `baseUrl` being stripped as a string prefix instead of a path segment in production web builds. ([#50226](https://github.com/expo/expo/issues/50226) by [@mrljsh](https://github.com/mrljsh))
+- Fix `baseUrl` being stripped as a string prefix instead of a path segment in production web builds. ([#50226](https://github.com/expo/expo/pull/50226) by [@mrljsh](https://github.com/mrljsh))
 
 ### 💡 Others
 
