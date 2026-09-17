@@ -30,6 +30,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.ViewEvent
 import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.viewevent.ViewEventDelegate
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KProperty
 
 /**
@@ -49,6 +50,21 @@ inline fun <T : ComposableScope> T.withIf(
 ): T {
   return if (condition) block() else this
 }
+
+/**
+ * View ids for the hosting ComposeView of every Host.
+ *
+ * The id must be unique per Host, but it cannot come from [android.view.View.generateViewId]:
+ * inside a React Native process that range (0x00000001..0x00FFFFFF) already has other writers.
+ * The renderer assigns react tags by hand, and react-native-screens draws the ids it resolves
+ * with findViewById (for example its tab fragment container) from the same low integers.
+ * A hosting ComposeView that takes one of those ids gets found first, and the next tab switch
+ * attaches a fragment to it and crashes (https://github.com/expo/expo/issues/49964).
+ * Allocating above generateViewId's ceiling (0x00FFFFFF) and below the range aapt assigns to
+ * resources (0x7F000000) keeps these ids out of every other allocator's window. The id is only
+ * used to key rememberSaveable state; the view is held by reference and never looked up by id.
+ */
+private val nextHostingViewId = AtomicInteger(0x01000000)
 
 /**
  * A base class that should be used by compose views.
@@ -224,7 +240,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
       // Give each Host a unique id so its rememberSaveable state gets its own key.
       // All Hosts share the Activity's SavedStateRegistry (set below), so without an id
       // they'd collide on one key and only the first could save/restore state.
-      it.id = generateViewId()
+      it.id = nextHostingViewId.getAndIncrement()
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       // Pin the composition to the Activity lifecycle so it survives
       // react-native-screens detaching inactive screens on every switch.
