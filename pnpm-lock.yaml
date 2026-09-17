@@ -2710,9 +2710,6 @@ importers:
       expo:
         specifier: '*'
         version: link:../../expo
-      expo-modules-core:
-        specifier: workspace:~
-        version: link:../../expo-modules-core
       stacktrace-parser:
         specifier: ^0.1.10
         version: 0.1.11
@@ -3881,7 +3878,7 @@ importers:
   packages/expo-app-intents:
     dependencies:
       '@expo/ui':
-        specifier: workspace:^58.0.2
+        specifier: workspace:^58.0.3
         version: link:../expo-ui
       commander:
         specifier: ^12.1.0

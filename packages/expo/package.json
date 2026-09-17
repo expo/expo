@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.0-preview.2",
+  "version": "58.0.0-preview.3",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -23,6 +23,8 @@
   },
   "files": [
     "android",
+    "!android/.gitignore",
+    "!android/build/**",
     "bin",
     "build",
     "internal",
@@ -201,7 +203,8 @@
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest",
+    "test": "jest && jest --config scripts/spm/jest.config.js",
+    "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"

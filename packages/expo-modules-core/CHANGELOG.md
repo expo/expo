@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.2 — 2026-09-15
 
 ### 🛠 Breaking changes
@@ -45,6 +49,7 @@
 ### 🎉 New features
 
 - [macOS] Added `UIColor`, `UIGestureRecognizer` and `UITextContentType` to the AppKit compatibility aliases in `Platform.swift`. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added `ExpoSwiftUI.HostingViewAware`, an opt-in protocol for view props that receive the view hosting their SwiftUI view, so a view can resolve its own window instead of a process-global one. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))

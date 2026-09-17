@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-16
+
+### 💡 Others
+
+- [Internal] Drop `expo-modules-core` dependency ([#50228](https://github.com/expo/expo/pull/50228) by [@kitten](https://github.com/kitten))
+
 ## 58.0.2 — 2026-09-15
 
 _This version does not introduce any user-facing changes._

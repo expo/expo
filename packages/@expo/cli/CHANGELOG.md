@@ -4,7 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.3 — 2026-09-16
+
+### 🛠 Breaking changes
+
 - `web.output: 'server'` now renders HTML pages on each request instead of prerendering them during export. ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+- Remove the fallback resolver for packages importing themselves by name. Metro now resolves self-references natively, but, like Node.js, only for packages that declare `exports`. ([#50238](https://github.com/expo/expo/pull/50238) by [@robhogan](https://github.com/robhogan))
 
 ### 🎉 New features
 
@@ -14,7 +25,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix cache pollution in production by inlined environment variable values with a vary-cache approach ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
 
 ## 58.0.2 — 2026-09-15
 

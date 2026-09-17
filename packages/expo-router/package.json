@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "58.0.3",
+  "version": "58.0.4",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",
@@ -20,12 +20,13 @@
   "files": [
     "link",
     "android",
+    "!android/.gitignore",
+    "!android/build/**",
     "local-maven-repo",
     "assets",
     "build",
     "internal",
     "vendor",
-    "!src",
     "_ctx-html.js",
     "_ctx-shared.js",
     "_ctx.*",
