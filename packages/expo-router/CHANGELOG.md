@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `baseUrl` being stripped as a string prefix instead of a path segment in production web builds, e.g. with `baseUrl: "/m"` navigating to `/menu` resolved to `/m/enu`. ([#50022](https://github.com/expo/expo/issues/50022) by [@mrljsh](https://github.com/mrljsh))
+- Fix `baseUrl` being stripped as a string prefix instead of a path segment in production web builds. ([#50226](https://github.com/expo/expo/issues/50226) by [@mrljsh](https://github.com/mrljsh))
 
 ### 💡 Others
 
