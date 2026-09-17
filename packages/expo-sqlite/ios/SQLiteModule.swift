@@ -8,6 +8,7 @@ private let MEMORY_DB_NAME = ":memory:"
 
 private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
 
+@ExpoModule("ExpoSQLite")
 public final class SQLiteModule: Module {
   // Store unmanaged (SQLiteModule, Database) pairs for sqlite callbacks,
   // will release the pair when `closeDatabase` is called.
@@ -15,48 +16,49 @@ public final class SQLiteModule: Module {
 
   private static let lockQueue = DispatchQueue(label: "expo.modules.sqlite.lockQueue")
   private var cachedDatabases = [NativeDatabase]()
-  private var hasListeners = false
+  private(set) var hasListeners = false
+
+  @JS
+  var defaultDatabaseDirectory: String? {
+    #if os(tvOS)
+    return appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
+    #else
+    return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+    #endif
+  }
+
+  @JS
+  var bundledExtensions: [String: [String: String?]] {
+    var bundledExtensions: [String: [String: String?]] = [:]
+    #if WITH_SQLITE_VEC
+    bundledExtensions["sqlite-vec"] = [
+      "libPath": Bundle(identifier: "sqlite-vec")?.path(forResource: "vec", ofType: ""),
+      "entryPoint": "sqlite3_vec_init"
+    ]
+    #endif
+    return bundledExtensions
+  }
+
+  @Event("onDatabaseChange")
+  var onDatabaseChange: (DatabaseChangeEvent) -> Void
+
+  public override func didStartListening(event: String) {
+    hasListeners = true
+  }
+
+  public override func didStopListening(event: String) {
+    hasListeners = false
+  }
+
+  public override func willDestroy() {
+    removeAllCachedDatabases().forEach {
+      do {
+        try closeDatabase($0)
+      } catch {}
+    }
+  }
 
   public func definition() -> ModuleDefinition {
-    Name("ExpoSQLite")
-
-    Constant("defaultDatabaseDirectory") {
-      #if os(tvOS)
-      return appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
-      #else
-      return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
-      #endif
-    }
-
-    Constant("bundledExtensions") {
-      var bundledExtensions: [String: [String: String?]] = [:]
-      #if WITH_SQLITE_VEC
-      bundledExtensions["sqlite-vec"] = [
-        "libPath": Bundle(identifier: "sqlite-vec")?.path(forResource: "vec", ofType: ""),
-        "entryPoint": "sqlite3_vec_init"
-      ]
-      #endif
-      return bundledExtensions
-    }
-
-    Events("onDatabaseChange")
-
-    OnStartObserving {
-      hasListeners = true
-    }
-
-    OnStopObserving {
-      hasListeners = false
-    }
-
-    OnDestroy {
-      removeAllCachedDatabases().forEach {
-        do {
-          try closeDatabase($0)
-        } catch {}
-      }
-    }
-
     AsyncFunction("deleteDatabaseAsync") { (databasePath: String) in
       try deleteDatabase(databasePath: databasePath)
     }.runOnQueue(moduleQueue)
@@ -378,13 +380,13 @@ public final class SQLiteModule: Module {
       let database = pair.1
       let databaseFilePath = exsqlite3_db_filename(database.pointer, databaseName)
       if selfInstance.hasListeners, let databaseName, let databaseFilePath {
-        selfInstance.sendEvent("onDatabaseChange", [
-          "databaseName": String(cString: UnsafePointer(databaseName)),
-          "databaseFilePath": String(cString: UnsafePointer(databaseFilePath)),
-          "tableName": String(cString: UnsafePointer(tableName)),
-          "rowId": rowId,
-          "typeId": SQLAction.fromCode(value: action)
-        ])
+        selfInstance.onDatabaseChange(DatabaseChangeEvent(
+          databaseName: String(cString: UnsafePointer(databaseName)),
+          databaseFilePath: String(cString: UnsafePointer(databaseFilePath)),
+          tableName: String(cString: UnsafePointer(tableName)),
+          rowId: Int(rowId),
+          typeId: SQLAction.fromCode(value: action)
+        ))
       }
     },
     contextPair.toOpaque())
