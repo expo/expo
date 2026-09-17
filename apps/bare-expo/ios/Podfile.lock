@@ -4070,7 +4070,7 @@ SPEC CHECKSUMS:
   ExpoAppIntents: 2029b86d0cdd6e2f9c2d73aa34e1a977f1f58d64
   ExpoAppleAuthentication: 7919e8d2780c50d6740afd328c00691da0b642a8
   ExpoApplication: d2634e14dd0f9ab9b3bfae4426182f411e067b38
-  ExpoAppMetrics: 367321bdde8c5487d6a6b082f4a3894992db9d8a
+  ExpoAppMetrics: 5f922d89709d1b8005cc8b53dfd1b9a930b47402
   ExpoAsset: 7aae92b33294d01c9c0a864be22971442e69ef72
   ExpoAudio: 1dcb3125338ed6e4351b91cb6cf3ceda5aeab6a2
   ExpoBackgroundFetch: 4545a825128466d0503824a7f28dfe67a0c3558a
@@ -4115,7 +4115,7 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: cfe8d76b876f05ecc7ac59d50b6facacc9de058c
   ExpoModulesTestCore: 3cc8a12b33949004062f6f3918f448e57ea1c269
   ExpoModulesWorklets: 9686fddd3a4ac5c48a913c0dd252a5db58e7a294
-  ExpoModulesWorkletsAdapter: 08bb12321bf156f9e58e8246c3a11ce1b3b3d689
+  ExpoModulesWorkletsAdapter: a9bf370713154ba15e0c266aeb6cd03eab6adbc3
   ExpoNetwork: 48f8a1742e936ca9acf2138e7e9c82ecee44c6c1
   ExpoNotifications: 317fcbf876231306d48bc3009e7531cad776ef3f
   ExpoObserve: 33ed38cd33aedcd064305c3b106ffa8ba9ba6241
