@@ -163,7 +163,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       Function("interruptSync") { (database: NativeDatabase) in
         // Do not block the JS thread or touch a connection being closed on another thread.
         guard database.closeLock.try() else {
-          throw AccessClosedResourceException()
+          throw DatabaseClosingException()
         }
         defer { database.closeLock.unlock() }
         try maybeThrowForClosedDatabase(database)
