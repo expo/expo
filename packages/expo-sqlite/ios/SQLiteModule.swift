@@ -2,7 +2,6 @@
 
 import ExpoModulesCore
 
-private typealias SQLiteColumnNames = [String]
 private typealias SQLiteColumnValues = [Any]
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 private let MEMORY_DB_NAME = ":memory:"
@@ -188,12 +187,7 @@ public final class SQLiteModule: Module {
 
     // MARK: - NativeStatement
 
-    // swiftlint:disable:next closure_body_length
     Class(NativeStatement.self) {
-      Constructor {
-        return NativeStatement()
-      }
-
       // swiftlint:disable line_length
 
       AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: ArrayBuffer], shouldPassAsArray: Bool) -> [String: Any] in
@@ -217,27 +211,6 @@ public final class SQLiteModule: Module {
       }.runOnQueue(moduleQueue)
       Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database)
-      }
-
-      AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
-        try reset(statement: statement, database: database)
-      }.runOnQueue(moduleQueue)
-      Function("resetSync") { (statement: NativeStatement, database: NativeDatabase) in
-        try reset(statement: statement, database: database)
-      }
-
-      AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> SQLiteColumnNames in
-        return try getColumnNames(statement: statement)
-      }.runOnQueue(moduleQueue)
-      Function("getColumnNamesSync") { (statement: NativeStatement) -> SQLiteColumnNames in
-        return try getColumnNames(statement: statement)
-      }
-
-      AsyncFunction("finalizeAsync") { (statement: NativeStatement, database: NativeDatabase) in
-        try finalize(statement: statement, database: database)
-      }.runOnQueue(moduleQueue)
-      Function("finalizeSync") { (statement: NativeStatement, database: NativeDatabase) in
-        try finalize(statement: statement, database: database)
       }
     }
 
@@ -416,37 +389,6 @@ public final class SQLiteModule: Module {
     return columnValuesList
   }
 
-  private func reset(statement: NativeStatement, database: NativeDatabase) throws {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
-    // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    if exsqlite3_reset(statement.pointer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-  }
-
-  private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
-    // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    statement.isFinalized = true
-  }
-
   private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
     return db.lastErrorMessage()
   }
@@ -537,16 +479,6 @@ public final class SQLiteModule: Module {
     }
   }
 
-  private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
-    try maybeThrowForFinalizedStatement(statement)
-    let columnCount = Int(exsqlite3_column_count(statement.pointer))
-    var columnNames: SQLiteColumnNames = Array(repeating: "", count: columnCount)
-    for i in 0..<columnCount {
-      columnNames[i] = String(cString: exsqlite3_column_name(statement.pointer, Int32(i)))
-    }
-    return columnNames
-  }
-
   private func getColumnValues(statement: NativeStatement) throws -> SQLiteColumnValues {
     try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(exsqlite3_column_count(statement.pointer))
@@ -614,9 +546,7 @@ public final class SQLiteModule: Module {
   }
 
   private func maybeThrowForFinalizedStatement(_ statement: NativeStatement) throws {
-    if statement.isFinalized {
-      throw AccessClosedResourceException()
-    }
+    try statement.ensureNotFinalized()
   }
 
   @inline(__always)
