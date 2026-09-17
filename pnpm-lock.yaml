@@ -2725,9 +2725,6 @@ importers:
       expo:
         specifier: '*'
         version: link:../../expo
-      expo-modules-core:
-        specifier: workspace:~
-        version: link:../../expo-modules-core
       stacktrace-parser:
         specifier: ^0.1.10
         version: 0.1.11
