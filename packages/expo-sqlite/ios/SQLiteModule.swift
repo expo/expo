@@ -127,15 +127,6 @@ public final class SQLiteModule: Module {
         try initDb(database: database)
       }
 
-      AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
-        try maybeThrowForClosedDatabase(database)
-        return exsqlite3_get_autocommit(database.pointer) == 0
-      }.runOnQueue(moduleQueue)
-      Function("isInTransactionSync") { (database: NativeDatabase) -> Bool in
-        try maybeThrowForClosedDatabase(database)
-        return exsqlite3_get_autocommit(database.pointer) == 0
-      }
-
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
         try maybeThrowForClosedDatabase(database)
         if let db = removeCachedDatabase(of: database) {
@@ -147,41 +138,6 @@ public final class SQLiteModule: Module {
         if let db = removeCachedDatabase(of: database) {
           try closeDatabase(db)
         }
-      }
-
-      AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
-        try exec(database: database, source: source)
-      }.runOnQueue(moduleQueue)
-      Function("execSync") { (database: NativeDatabase, source: String) in
-        try exec(database: database, source: source)
-      }
-
-      AsyncFunction("serializeAsync") { (database: NativeDatabase, databaseName: String) in
-        try serialize(database: database, databaseName: databaseName)
-      }.runOnQueue(moduleQueue)
-      Function("serializeSync") { (database: NativeDatabase, databaseName: String) in
-        try serialize(database: database, databaseName: databaseName)
-      }
-
-      AsyncFunction("prepareAsync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
-        try prepareStatement(database: database, statement: statement, source: source)
-      }.runOnQueue(moduleQueue)
-      Function("prepareSync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
-        try prepareStatement(database: database, statement: statement, source: source)
-      }
-
-      AsyncFunction("createSessionAsync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
-        try sessionCreate(database: database, session: session, dbName: dbName)
-      }.runOnQueue(moduleQueue)
-      Function("createSessionSync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
-        try sessionCreate(database: database, session: session, dbName: dbName)
-      }
-
-      AsyncFunction("loadExtensionAsync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
-        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
-      }.runOnQueue(moduleQueue)
-      Function("loadExtensionSync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
-        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
       }
     }
 
@@ -266,39 +222,6 @@ public final class SQLiteModule: Module {
     try maybeThrowForClosedDatabase(database)
     if database.openOptions.enableChangeListener {
       addUpdateHook(database)
-    }
-  }
-
-  private func exec(database: NativeDatabase, source: String) throws {
-    try maybeThrowForClosedDatabase(database)
-    var error: UnsafeMutablePointer<CChar>?
-    let ret = exsqlite3_exec(database.pointer, source, nil, nil, &error)
-    if ret != SQLITE_OK, let error = error {
-      let errorString = String(cString: error)
-      exsqlite3_free(error)
-      throw SQLiteErrorException(errorString)
-    }
-  }
-
-  private func serialize(database: NativeDatabase, databaseName: String) throws -> Data {
-    try maybeThrowForClosedDatabase(database)
-
-    var size: sqlite3_int64 = 0
-    guard let bytes = exsqlite3_serialize(database.pointer, databaseName, &size, 0) else {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-
-    let serializedData = Data(bytes: bytes, count: Int(size))
-    exsqlite3_free(bytes)
-    return serializedData
-  }
-
-  private func prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) throws {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-    let sourceString = source.cString(using: .utf8)
-    if exsqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 
@@ -467,18 +390,6 @@ public final class SQLiteModule: Module {
     contextPair.toOpaque())
   }
 
-  private func loadExtension(database: NativeDatabase, libPath: String, entryPoint: String?) throws {
-    try maybeThrowForClosedDatabase(database)
-    exsqlite3_enable_load_extension(database.pointer, 1)
-    var error: UnsafeMutablePointer<CChar>?
-    let ret = exsqlite3_load_extension(database.pointer, libPath.cString(using: .utf8), entryPoint, &error)
-    if ret != SQLITE_OK, let error = error {
-      let errorString = String(cString: error)
-      exsqlite3_free(error)
-      throw SQLiteErrorException(errorString)
-    }
-  }
-
   private func getColumnValues(statement: NativeStatement) throws -> SQLiteColumnValues {
     try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(exsqlite3_column_count(statement.pointer))
@@ -618,16 +529,6 @@ public final class SQLiteModule: Module {
         ExpoModulesCore.log.warn("exsqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
       }
       stmt = nextStmt
-    }
-  }
-
-  // MARK: - Session Extension
-
-  private func sessionCreate(database: NativeDatabase, session: NativeSession, dbName: String) throws {
-    try maybeThrowForClosedDatabase(database)
-    let db = dbName.cString(using: .utf8)
-    if exsqlite3session_create(database.pointer, db, &session.pointer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 }
