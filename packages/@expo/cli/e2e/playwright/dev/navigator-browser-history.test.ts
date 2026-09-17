@@ -162,6 +162,10 @@ test.describe(inputDir, () => {
   test('creates two visits when batched pushes open a previously unmounted tab stack', async ({
     page,
   }) => {
+    // The first push creates nested state, but the navigator registers its router only after
+    // mounting. Before that commit, the second push replaces the nested state instead of
+    // appending to its stack, losing the first destination and its browser history entry.
+    // https://linear.app/expo/issue/ENG-26883/fix-state-synchronization-for-unmounted-navigators
     test.fail(
       true,
       'Batched pushes replace nested state until the destination navigator registers its router.'
