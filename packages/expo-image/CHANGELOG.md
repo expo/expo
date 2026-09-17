@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed native crashes when decoding and clearing some animated GIFs. ([#49533](https://github.com/expo/expo/pull/49533) by [@MangelSpec](https://github.com/MangelSpec))
+- [Android] Avoid reporting an image load error when displaying a placeholder without a source.
 
 ### 💡 Others
 
