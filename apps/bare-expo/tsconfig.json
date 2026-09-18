@@ -9,7 +9,8 @@
       "expo-v2-demo": ["./modules/expo-v2-demo"],
       "benchmarking": ["./modules/benchmarking"],
       "worklets-tester": ["./modules/worklets-tester"],
-      "test-expo-ui": ["./modules/test-expo-ui"]
+      "test-expo-ui": ["./modules/test-expo-ui"],
+      "callback-test": ["./modules/callback-test"]
     }
   }
 }
