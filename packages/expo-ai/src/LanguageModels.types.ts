@@ -35,7 +35,6 @@ type RequiredKeys<S> = S extends {
 
 /**
  * Infers the validated result of a literal schema, including optional fields.
- * @hidden
  */
 export type InferSchema<S> = S extends { readonly enum: readonly (infer V)[] }
   ? V
@@ -114,7 +113,6 @@ export type ToolCall = ToolContext & {
  * handlers are supported. Honor the signal when possible; cancellation cannot
  * undo completed effects.
  * @experimental
- * @hidden
  */
 export type ToolDefinition<S extends ObjectSchema = ObjectSchema> = S extends ObjectSchema
   ? {
@@ -125,7 +123,7 @@ export type ToolDefinition<S extends ObjectSchema = ObjectSchema> = S extends Ob
     }
   : never;
 
-/** Schema-derived definitions preserve the arguments of each tool in a list. @hidden */
+/** Schema-derived definitions preserve the arguments of each tool in a list. */
 export type ToolDefinitions<Schemas extends readonly ObjectSchema[]> = {
   readonly [K in keyof Schemas]: ToolDefinition<Schemas[K]>;
 };
