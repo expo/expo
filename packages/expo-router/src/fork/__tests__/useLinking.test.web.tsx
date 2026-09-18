@@ -10,23 +10,16 @@ jest.mock('../../global-state/utils', () => ({
 }));
 
 const mockRouteNode = node('root');
-const locationDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'location');
 
 beforeEach(() => {
   setNavigationState(undefined);
   setRouteNode(mockRouteNode);
-  Object.defineProperty(globalThis, 'location', {
-    configurable: true,
-    value: { pathname: '/home', search: '', hash: '' },
-  });
+  // `window.location` is unforgeable in jsdom 26+ (Jest 30), so navigate instead of redefining it.
+  window.history.replaceState(null, '', '/home');
 });
 
 afterEach(() => {
-  if (locationDescriptor) {
-    Object.defineProperty(globalThis, 'location', locationDescriptor);
-  } else {
-    Reflect.deleteProperty(globalThis, 'location');
-  }
+  window.history.replaceState(null, '', '/');
   jest.restoreAllMocks();
 });
 
