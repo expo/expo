@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read.
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
