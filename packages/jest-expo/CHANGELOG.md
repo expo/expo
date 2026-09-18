@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Upgrade to Jest 30 and declare `jest@^30` as a peer dependency. `jest-expo` now depends on the Jest 30 versions of `babel-jest`, `jest-environment-jsdom`, `jest-snapshot`, `@jest/globals` and `@jest/create-cache-key-function`. ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
