@@ -6648,6 +6648,9 @@ importers:
       jest-environment-jsdom:
         specifier: ^30.0.0
         version: 30.5.1
+      jest-environment-node:
+        specifier: ^30.0.0
+        version: 30.5.1
       jest-snapshot:
         specifier: ^30.0.0
         version: 30.5.1

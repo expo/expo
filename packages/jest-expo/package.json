@@ -41,6 +41,7 @@
     "@jest/globals": "^30.0.0",
     "babel-jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
+    "jest-environment-node": "^30.0.0",
     "jest-snapshot": "^30.0.0",
     "jest-watch-select-projects": "^2.0.0",
     "jest-watch-typeahead": "^3.0.1",
