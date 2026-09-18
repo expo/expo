@@ -23,6 +23,7 @@ class NetworkRequestObserverWeb extends SharedObject<NetworkRequestObserverEvent
 class WebSession extends globalThis.expo.SharedObject {
   readonly id = 'web-session';
   readonly startDate = new Date().toISOString();
+  readonly logs: LogRecord[] = [];
 
   constructor(readonly type: SessionType = 'main') {
     super();
@@ -38,7 +39,7 @@ class WebSession extends globalThis.expo.SharedObject {
     return [];
   }
   async getLogs(): Promise<LogRecord[]> {
-    return [];
+    return [...this.logs];
   }
   async addMetric(_metric: MetricInput): Promise<void> {}
 }
@@ -49,23 +50,47 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   Session = WebSession as unknown as typeof Session;
 
   private mainSession: WebSession | null = null;
+  private globalAttributes: Record<string, LogAttributeValue> = {};
 
   async markFirstRender() {}
   async markInteractive(attributes?: MetricAttributes) {}
-  logEvent(name: string, options?: LogEventOptions) {}
-  setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null) {}
+  logEvent(name: string, options?: LogEventOptions) {
+    const attributes = {
+      ...this.globalAttributes,
+      ...options?.attributes,
+      // Native keeps the display name as a reserved attribute; store the same record shape here.
+      ...(options?.displayName != null ? { 'expo.log.display_name': options.displayName } : {}),
+    };
+    this.getWebMainSession().logs.push({
+      timestamp: new Date().toISOString(),
+      name,
+      body: options?.body ?? null,
+      attributes: Object.keys(attributes).length > 0 ? attributes : null,
+      severity: options?.severity ?? 'info',
+    });
+  }
+  setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null) {
+    this.globalAttributes = { ...attributes };
+  }
   setNetworkTracesConfig() {}
-  async clearStoredEntries() {}
+  async clearStoredEntries() {
+    this.getWebMainSession().logs.length = 0;
+  }
   async getInactiveSessions() {
     return [];
   }
   reportError() {}
   getMainSession(): Session {
-    this.mainSession ??= new WebSession('main');
-    return this.mainSession as unknown as Session;
+    // `WebSession` mirrors the native shared object's surface without extending the declared class.
+    return this.getWebMainSession() as unknown as Session;
   }
   async getForegroundSession() {
     return null;
+  }
+
+  private getWebMainSession(): WebSession {
+    this.mainSession ??= new WebSession('main');
+    return this.mainSession;
   }
 }
 

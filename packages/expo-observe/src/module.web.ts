@@ -1,6 +1,8 @@
 import { NativeModule, registerWebModule } from 'expo';
 import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
 
+import { applyConfig } from './applyConfig';
+import { registerIntegrationImpl } from './registerIntegration';
 import { reportCaughtError } from './reportCaughtError';
 import type {
   ObserveConfig,
@@ -11,20 +13,27 @@ import type {
 } from './types';
 
 class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
+  private lastIntegrations: ObserveIntegrationsConfig = {};
+
   get clientId(): string | null {
     // The EAS client id is stored in native preferences, which web has no equivalent of.
     return null;
   }
   async dispatchEvents() {}
-  configure(config: ObserveConfig): void {}
+  configure(config: ObserveConfig): void {
+    applyConfig(config);
+    // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
+    this.lastIntegrations = config.integrations ?? {};
+    this.emit('configure', { integrations: this.lastIntegrations });
+  }
   getIntegrations(): ObserveIntegrationsConfig {
-    return {};
+    return this.lastIntegrations;
   }
   registerIntegration<K extends keyof ObserveIntegrationsConfig>(
     name: K,
     callback: (config: ObserveIntegrationsConfig[K]) => void
   ): void {
-    // Web does not provide integration configuration or emit `configure` events.
+    registerIntegrationImpl(this, name, callback);
   }
   logEvent(name: string, options?: LogEventOptions): void {
     AppMetrics.logEvent(name, options);
