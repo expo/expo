@@ -34,11 +34,7 @@ export declare class NativeSession extends SharedObject<NativeSessionEvents> {
   /** Discards an unaccepted result, or cancels matching work that could still produce one. */
   discardResult(requestId: string): void;
   cancel(requestId: string): void;
-  /**
-   * Cancels any in-flight generation and tears down the provider-side session, unlike the
-   * inherited `release()`, which only detaches the JS object from its native counterpart.
-   * Releasing a session calls `dispose()` first and `release()` second.
-   */
+  /** Cancels in-flight generation and tears down the provider-side session immediately, without waiting for release. */
   dispose(): void;
   resolveTool(callId: string, output: string | null): boolean;
 }
