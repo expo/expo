@@ -85,6 +85,14 @@ export function validateRequestOptions(options: InternalRequestOptions) {
 /**
  * A local language model conversation. One generation may run at a time.
  * Always dispose a session when its owning screen or task ends.
+ *
+ * > **Note:** Compatibility mode re-sends the whole retained conversation in every prompt, and that
+ * > history is never capped. A request enters it when it declares tools the provider cannot declare
+ * > natively, or asks for a schema the provider cannot constrain output to.
+ * > `capabilities.contextTokens` reports the model's limit, but the session does not enforce it, so
+ * > a long-lived conversation grows turn by turn until generation fails with
+ * > `ERR_CONTEXT_WINDOW_EXCEEDED`. A long-running conversation needs a fresh session periodically.
+ *
  * @platform ios 26.0+
  * @platform macos 26.0+
  * @platform android
