@@ -28,14 +28,14 @@ On web, the browser must expose the modern `LanguageModel` API. The [Chrome Prom
 
 The table compares capabilities after a platform is eligible; it is not a device-support guarantee. Apple entries require Apple Intelligence-capable hardware with a ready model. Android entries require an app with `minSdk` 26 or later, a device that supports the Prompt API, and a ready Gemini Nano model.
 
-| Feature                       | Apple                                                              | Android (minSdk 26 or later)             | Web                                         |
-| ----------------------------- | ------------------------------------------------------------------ | ---------------------------------------- | ------------------------------------------- |
-| Text generation and streaming | Supported on Apple Intelligence-capable devices                    | Supported on compatible devices          | Supported in compatible desktop browsers    |
-| Runtime schemas               | Native constrained output on supported devices                     | Library validation and bounded repairs   | Native constrained output                   |
-| Application tools             | Native orchestration on supported devices                          | Library orchestration and validation     | Library orchestration and validation        |
-| Model preparation             | Managed by system settings on supported devices                    | Explicit download with optional progress | Explicit preparation with optional progress |
+| Feature                                               | Apple                                                              | Android (minSdk 26 or later)             | Web                                         |
+| ----------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------- | ------------------------------------------- |
+| Text generation and streaming                         | Supported on Apple Intelligence-capable devices                    | Supported on compatible devices          | Supported in compatible desktop browsers    |
+| Runtime schemas                                       | Native constrained output on supported devices                     | Library validation and bounded repairs   | Native constrained output                   |
+| Application tools                                     | Native orchestration on supported devices                          | Library orchestration and validation     | Library orchestration and validation        |
+| Model preparation                                     | Managed by system settings on supported devices                    | Explicit download with optional progress | Explicit preparation with optional progress |
 | Optical character recognition (OCR) and barcode tools | iOS 26 and macOS 26 or later on supported devices                  | Not included                             | Not included                                |
-| Model image understanding     | iOS 27 and macOS 27 on vision-capable models and supported devices | Not included                             | Not included                                |
+| Model image understanding                             | iOS 27 and macOS 27 on vision-capable models and supported devices | Not included                             | Not included                                |
 
 Importing the package and checking availability is safe on unsupported platforms. A successful availability check does not guarantee that a later generation will succeed. Downloadable third-party model backends are not included in this preview. A newer operating system does not automatically enable model image understanding: it also requires a compatible SDK and the selected model's vision capability.
 
