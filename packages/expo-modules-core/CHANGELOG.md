@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.12.0`. ([#50286](https://github.com/expo/expo/pull/50286) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.3 — 2026-09-16
 
 _This version does not introduce any user-facing changes._

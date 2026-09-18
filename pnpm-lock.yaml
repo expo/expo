@@ -5336,8 +5336,8 @@ importers:
   packages/expo-modules-core:
     dependencies:
       '@expo/expo-modules-macros-plugin':
-        specifier: 0.10.0
-        version: 0.10.0
+        specifier: 0.12.0
+        version: 0.12.0
       expo-modules-jsi:
         specifier: workspace:~
         version: link:../expo-modules-jsi
@@ -7962,8 +7962,8 @@ packages:
   '@expo/devcert@1.2.1':
     resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
 
-  '@expo/expo-modules-macros-plugin@0.10.0':
-    resolution: {integrity: sha512-wwwymYWtlTyn9nDcn39/HkbZvFd9eBGBJezJaz+WW+f9HU8K/Ps669PUYCwCNy0Ry1d42eP5qPth33sQRoGFtQ==}
+  '@expo/expo-modules-macros-plugin@0.12.0':
+    resolution: {integrity: sha512-5oKf2sj/cqiVJdZraEaEfsHENCtzIsbIjyo3cw8zN3djbevMq3EZqXjmYuPiWzvF4xv2UDXgeAwEJ6XwbXLFfQ==}
 
   '@expo/material-symbols@0.1.1':
     resolution: {integrity: sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg==}
@@ -16763,7 +16763,7 @@ snapshots:
       '@expo/sudo-prompt': 9.3.2
       debug: 3.2.7
 
-  '@expo/expo-modules-macros-plugin@0.10.0': {}
+  '@expo/expo-modules-macros-plugin@0.12.0': {}
 
   '@expo/material-symbols@0.1.1': {}
 
