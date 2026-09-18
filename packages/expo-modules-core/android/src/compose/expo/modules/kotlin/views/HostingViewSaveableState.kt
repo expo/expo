@@ -1,6 +1,7 @@
 package expo.modules.kotlin.views
 
 import android.view.View
+import androidx.compose.ui.R as ComposeUiR
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger
 internal object HostingViewSaveableState {
   private val nextNamespace = AtomicInteger()
 
-  fun assignNamespace(view: View, tagKey: Int) {
-    view.setTag(tagKey, "Host:${nextNamespace.getAndIncrement()}")
+  fun assignNamespace(view: View) {
+    view.setTag(ComposeUiR.id.compose_view_saveable_id_tag, "Host:${nextNamespace.getAndIncrement()}")
   }
 }
