@@ -12,7 +12,4 @@ module.exports = withWatchPlugins({
     createJestPreset(require('jest-expo/web/jest-preset')),
     createJestPreset(require('jest-expo/node/jest-preset')),
   ],
-
-  // See: https://jestjs.io/docs/configuration#prettierpath-string
-  prettierPath: require.resolve('jest-snapshot-prettier'),
 });

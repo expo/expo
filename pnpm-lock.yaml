@@ -5319,9 +5319,6 @@ importers:
       jest-expo:
         specifier: workspace:~
         version: link:../jest-expo
-      jest-snapshot-prettier:
-        specifier: npm:prettier@^2
-        version: prettier@2.8.8
       jest-watch-typeahead:
         specifier: ^3.0.1
         version: 3.0.1(jest@30.5.1(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))
@@ -14258,11 +14255,6 @@ packages:
   prettier-linter-helpers@1.0.1:
     resolution: {integrity: sha512-SxToR7P8Y2lWmv/kTzVLC1t/GDI2WGjMwNhLLE9qtH8Q13C+aEmuRlzDst4Up4s0Wc8sF2M+J57iB3cMLqftfg==}
     engines: {node: '>=6.0.0'}
-
-  prettier@2.8.8:
-    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
-    engines: {node: '>=10.13.0'}
-    hasBin: true
 
   prettier@3.8.3:
     resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
@@ -23972,8 +23964,6 @@ snapshots:
   prettier-linter-helpers@1.0.1:
     dependencies:
       fast-diff: 1.3.0
-
-  prettier@2.8.8: {}
 
   prettier@3.8.3: {}
 
