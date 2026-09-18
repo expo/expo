@@ -8,6 +8,7 @@ import type {
   NavigationAction,
   NavigationState,
   RouterActionResult,
+  RouterBrowserHistoryAction,
 } from '../react-navigation/routers';
 
 export type RouterRegistryEntry = {
@@ -17,6 +18,11 @@ export type RouterRegistryEntry = {
   ) => RouterActionResult<NavigationState> | null;
   shouldActionChangeFocus?: (action: NavigationAction) => boolean;
   getStateForRouteFocus?: (state: NavigationState, routeKey: string) => NavigationState;
+  getBrowserHistoryForRouteFocus?: (
+    previous: NavigationState,
+    next: NavigationState,
+    childAction?: RouterBrowserHistoryAction
+  ) => RouterBrowserHistoryAction | undefined;
   routeNode?: RouteNode;
 };
 
