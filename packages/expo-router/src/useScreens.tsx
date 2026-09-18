@@ -108,11 +108,9 @@ function getSortedChildren<
   routeSource: RouteSource;
 }[] {
   if (!order?.length) {
-    return children.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
-      route,
-      props: {},
-      routeSource: 'filesystem' as const,
-    }));
+    return children
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));
   }
   const entries = [...children];
 
@@ -168,11 +166,9 @@ function getSortedChildren<
 
   // Add any remaining children
   ordered.push(
-    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
-      route,
-      props: {},
-      routeSource: 'filesystem' as const,
-    }))
+    ...entries
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }))
   );
 
   return ordered;
@@ -191,7 +187,8 @@ export function useSortedScreens<
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const children = node && isLayoutRouteNode(node) ? node.children : [];
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
+  const children = isLayoutRouteNode(node) ? node.children : [];
   const sorted = children.length
     ? getSortedChildren(children, order, getValidInitialRouteName(node))
     : [];
@@ -217,7 +214,7 @@ function fromImport(
 
   const screenErrorBoundary = unstable_settings?.screenErrorBoundary;
 
-  if (process.env.NODE_ENV !== 'production' && screenErrorBoundary && value.type !== 'layout') {
+  if (process.env.NODE_ENV !== 'production' && screenErrorBoundary && !isLayoutRouteNode(value)) {
     console.warn(
       `Route "${value.contextKey}" exports unstable_settings.screenErrorBoundary. This setting is only supported in layout routes; use export const ErrorBoundary instead.`
     );
@@ -232,7 +229,7 @@ function fromImport(
     return { default: EmptyRoute, SuspenseFallback };
   }
 
-  if (ErrorBoundary || (value.type === 'layout' && screenErrorBoundary !== undefined)) {
+  if (ErrorBoundary || (isLayoutRouteNode(value) && screenErrorBoundary !== undefined)) {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
       const inheritedScreenErrorBoundary = use(ScreenErrorBoundaryContext);
       let children = React.createElement(component.default || EmptyRoute, {
@@ -242,7 +239,7 @@ function fromImport(
       if (ErrorBoundary) {
         children = <Try catch={ErrorBoundary}>{children}</Try>;
       }
-      if (value.type === 'layout' && screenErrorBoundary !== undefined) {
+      if (isLayoutRouteNode(value) && screenErrorBoundary !== undefined) {
         children = (
           <ScreenErrorBoundaryContext value={screenErrorBoundary ?? undefined}>
             {children}
@@ -306,7 +303,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const res = value.loadRoute() as LoadedRoute;
     const result = fromImport(value, res);
     ScreenComponent = result.default!;
-    LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;
+    LayoutSuspenseFallback = isLayoutRouteNode(value) ? result.SuspenseFallback : undefined;
   }
   const WrappedScreenComponent: typeof ScreenComponent = (props: object) => {
     useColorSchemeChangesIfNeeded();
@@ -343,7 +340,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
-    const isRouteType = value.type === 'route';
+    const isRouteType = isScreenRouteNode(value);
     const resolvedLoaderPath = useMemo(() => {
       if (!isRouteType || isGuarded) {
         return null;
@@ -357,10 +354,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy'
         ? DefaultSuspenseFallback
         : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
-    const providedSuspenseFallback =
-      value.type === 'layout'
-        ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
-        : InheritedSuspenseFallback;
+    const providedSuspenseFallback = isLayoutRouteNode(value)
+      ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
+      : InheritedSuspenseFallback;
 
     useEffect(() => {
       return navigation.addListener('transitionEnd', (e) => {

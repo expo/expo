@@ -1,12 +1,16 @@
 import {
   getValidInitialRoute,
+  isApiRouteNode,
   isLayoutRouteNode,
+  isRedirectRouteNode,
+  isScreenRouteNode,
   type DynamicConvention,
   type LayoutRouteNode,
   type MiddlewareNode,
   type RedirectRouteNode,
   type RewriteRouteNode,
   type RouteNode,
+  type RouteNodeBase,
 } from './Route';
 import {
   matchArrayGroupName,
@@ -51,6 +55,7 @@ export type Options = {
   preserveRedirectAndRewrites?: boolean;
 
   /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
+  // TODO(@ubax): Type the return value from the request's `type` and remove `asSystemRouteType`.
   getSystemRoute: (route: SystemRouteRequest) => RouteNode;
 };
 
@@ -60,7 +65,7 @@ export type Options = {
  */
 export type SystemRouteRequest = {
   type: RouteNode['type'];
-  route: string;
+  route: RouteNode['route'];
   defaults?: RedirectRouteNode | RewriteRouteNode;
   redirectConfig?: RedirectConfig;
   rewriteConfig?: RewriteConfig;
@@ -123,6 +128,7 @@ export type PageHeadersConfig = {
  *      - If multiple routes have the same name, the most specific route is used
  */
 export function getRoutes(contextModule: RequireContext, options: Options): LayoutRouteNode | null {
+  // TODO(@ubax): Split route construction into functions that return complete nodes without mutation.
   const middleware = getMiddleware(contextModule, options);
   const directoryTree = getDirectoryTree(contextModule, options);
 
@@ -374,7 +380,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       continue;
     }
 
-    const base = {
+    const base: RouteNodeBase = {
       loadRoute() {
         let routeModule: any;
 
@@ -471,18 +477,17 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
         // A real file at the redirect source keeps its own `loadRoute`. Only a
         // source with no file behind it gets the generated redirect module.
-        const resolved =
-          node.type === 'route'
-            ? asSystemRouteType(
-                options.getSystemRoute({
-                  type: 'redirect',
-                  route: redirect.destination,
-                  defaults,
-                  redirectConfig: redirect,
-                }),
-                'redirect'
-              )
-            : defaults;
+        const resolved = isScreenRouteNode(node)
+          ? asSystemRouteType(
+              options.getSystemRoute({
+                type: 'redirect',
+                route: redirect.destination,
+                defaults,
+                redirectConfig: redirect,
+              }),
+              'redirect'
+            )
+          : defaults;
 
         node = redirect.methods ? { ...resolved, methods: redirect.methods } : resolved;
       }
@@ -507,18 +512,17 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
         // A real file at the rewrite source keeps its own `loadRoute`. Only a
         // source with no file behind it gets the generated rewrite module.
-        const resolved =
-          node.type === 'route'
-            ? asSystemRouteType(
-                options.getSystemRoute({
-                  type: 'rewrite',
-                  route: rewrite.destination,
-                  defaults,
-                  rewriteConfig: rewrite,
-                }),
-                'rewrite'
-              )
-            : defaults;
+        const resolved = isScreenRouteNode(node)
+          ? asSystemRouteType(
+              options.getSystemRoute({
+                type: 'rewrite',
+                route: rewrite.destination,
+                defaults,
+                rewriteConfig: rewrite,
+              }),
+              'rewrite'
+            )
+          : defaults;
 
         node = rewrite.methods ? { ...resolved, methods: rewrite.methods } : resolved;
       }
@@ -729,7 +733,7 @@ function flattenDirectoryTreeToRoutes(
 }
 
 function validateRouteTreeExports(node: RouteNode) {
-  if (process.env.NODE_ENV !== 'development' || node.type === 'api') {
+  if (process.env.NODE_ENV !== 'development' || isApiRouteNode(node)) {
     return;
   }
 
@@ -962,11 +966,11 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
   options: Options,
   entryPoints: string[] = []
 ) {
-  if (node.type === 'route') {
+  if (isScreenRouteNode(node)) {
     node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
-  } else if (node.type === 'redirect') {
+  } else if (isRedirectRouteNode(node)) {
     node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey])];
-  } else if (node.type === 'layout') {
+  } else if (isLayoutRouteNode(node)) {
     // Every node below this layout will have it as an entryPoint
     entryPoints = [...entryPoints, node.contextKey];
 

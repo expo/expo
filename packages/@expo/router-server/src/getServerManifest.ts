@@ -1,6 +1,10 @@
 import {
   getContextKey,
+  isApiRouteNode,
   isLayoutRouteNode,
+  isRedirectRouteNode,
+  isRewriteRouteNode,
+  isScreenRouteNode,
   sortRoutes,
   type LayoutRouteNode,
   type RedirectRouteNode,
@@ -70,7 +74,7 @@ export function getServerManifest(
     // An HTML route can be different based on parent segments due to layout routes, therefore multiple
     // copies should be rendered. However, an API route is always the same regardless of parent segments.
     let key: string;
-    if (route.type.includes('api')) {
+    if (isApiRouteNode(route)) {
       key = getNormalizedContextKey(route.contextKey);
     } else {
       key = getNormalizedContextKey(absoluteRoute);
@@ -93,21 +97,22 @@ export function getServerManifest(
     : [];
 
   const apiRoutes = uniqueBy(
-    flat.filter(({ route }) => route.type === 'api'),
+    flat.filter(({ route }) => isApiRouteNode(route)),
     ({ normalizedContextKey }) => normalizedContextKey
   );
 
   const otherRoutes = uniqueBy(
     flat.filter(
       ({ route }) =>
-        route.type === 'route' ||
-        (route.type === 'rewrite' && (route.methods === undefined || route.methods.includes('GET')))
+        isScreenRouteNode(route) ||
+        (isRewriteRouteNode(route) &&
+          (route.methods === undefined || route.methods.includes('GET')))
     ),
     ({ normalizedContextKey }) => normalizedContextKey
   );
 
   const redirects = uniqueBy(
-    flat.filter((node): node is FlatNode<RedirectRouteNode> => node.route.type === 'redirect'),
+    flat.filter((node): node is FlatNode<RedirectRouteNode> => isRedirectRouteNode(node.route)),
     ({ normalizedContextKey }) => normalizedContextKey
   )
     .map((redirect) => {
@@ -126,7 +131,7 @@ export function getServerManifest(
     .reverse();
 
   const rewrites = uniqueBy(
-    flat.filter((node): node is FlatNode<RewriteRouteNode> => node.route.type === 'rewrite'),
+    flat.filter((node): node is FlatNode<RewriteRouteNode> => isRewriteRouteNode(node.route)),
     ({ normalizedContextKey }) => normalizedContextKey
   )
     .map((rewrite) => {
@@ -190,11 +195,11 @@ function getMatchableManifestForPaths(paths: FlatNode[]): RouteInfo<string>[] {
       matcher.generated = true;
     }
 
-    if (route.type === 'redirect' && route.permanent) {
+    if (isRedirectRouteNode(route) && route.permanent) {
       matcher.permanent = true;
     }
 
-    if ((route.type === 'redirect' || route.type === 'rewrite') && route.methods) {
+    if ((isRedirectRouteNode(route) || isRewriteRouteNode(route)) && route.methods) {
       matcher.methods = route.methods;
     }
 

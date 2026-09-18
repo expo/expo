@@ -95,9 +95,10 @@ async function registerRouteTree(api: CreatePagesApi, route: RouteNode): Promise
     render: layoutSettings.render ?? 'static',
   });
 
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
   await Promise.all(
     (isLayoutRouteNode(route) ? route.children : []).sort(sortRoutes).map(async (child) => {
-      if (child.type === 'layout') {
+      if (isLayoutRouteNode(child)) {
         await registerRouteTree(api, child);
         return;
       }

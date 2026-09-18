@@ -83,8 +83,6 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.5 — 2026-09-21
 
-- Split `RouteNode` into a discriminated union on `type`, so each kind of node only declares the properties it can carry. Non-layout nodes no longer have a `children` array. Affects `expo-router/internal/routing`. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@jakub-agent](https://github.com/jakub-agent)) ([#50171](https://github.com/expo/expo/pull/50171) by [@Ubax](https://github.com/Ubax))
-
 ### 🎉 New features
 
 - Prevent browser unloads on web while `usePreventRemove` is active. ([#50260](https://github.com/expo/expo/pull/50260) by [@Ubax](https://github.com/Ubax))
@@ -98,6 +96,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Split `RouteNode` into a discriminated union on `type`, so each kind of node only declares the properties it can carry. ([#50171](https://github.com/expo/expo/pull/50171) by [@Ubax](https://github.com/Ubax))
 - Deprecate `withLayoutContext`. Use `integrateWithRouter` instead. ([#50337](https://github.com/expo/expo/pull/50337) by [@Ubax](https://github.com/Ubax))
 
 ## 58.0.4 — 2026-09-16
