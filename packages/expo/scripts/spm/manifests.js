@@ -452,6 +452,26 @@ function renderPlatforms(iosDeploymentTarget) {
   return iosDeploymentTarget != null ? `[.iOS("${iosDeploymentTarget}")]` : '[.iOS(.v15)]';
 }
 
+/**
+ * The higher of two iOS floors, or null when neither side declares one.
+ *
+ * CocoaPods raises every Expo pod to ExpoModulesCore's deployment target after
+ * install (`reconcile_expo_module_deployment_targets`). Under SwiftPM the
+ * generated manifest is the only place to do that, because importing a module
+ * built for a higher floor than the importer is a compile error.
+ */
+function raiseFloor(declared, minimum) {
+  if (declared == null) return minimum ?? null;
+  if (minimum == null) return declared;
+  const components = (version) => version.split('.').map(Number);
+  const [left, right] = [components(declared), components(minimum)];
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const delta = (left[i] ?? 0) - (right[i] ?? 0);
+    if (delta !== 0) return delta > 0 ? declared : minimum;
+  }
+  return declared;
+}
+
 // ---------------------------------------------------------------------------
 // I/O: emit a package dir (write manifest + `root` symlink) and return deps
 // ---------------------------------------------------------------------------
@@ -542,12 +562,23 @@ function sourceDependencies(react, codegenPkgPath) {
  * sources cannot be located — the module is then skipped and diagnosed rather than
  * emitted broken.
  */
-function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDir, codegenPkgPath) {
+function emitSourceManifestPackage(
+  moduleRoot,
+  react,
+  frameworkSearchPath,
+  outDir,
+  codegenPkgPath,
+  minimumIosDeploymentTarget = null
+) {
   const { unsupportedTargetDeps, ...dumped } = parseDumpedManifest(runDumpPackage(moduleRoot));
   if (unsupportedTargetDeps.length) return { unsupportedTargetDeps };
   const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
   if (unresolvedTargets.length) return { unresolvedTargets };
-  const manifest = { ...dumped, targets };
+  const manifest = {
+    ...dumped,
+    targets,
+    iosDeploymentTarget: raiseFloor(dumped.iosDeploymentTarget, minimumIosDeploymentTarget),
+  };
   const pkgDir = path.join(outDir, 'expo-source', manifest.name);
   fs.mkdirSync(pkgDir, { recursive: true });
   linkRoot(pkgDir, moduleRoot);
@@ -614,6 +645,7 @@ module.exports = {
   resolveTargetPaths,
   renderSourceManifest,
   renderPureSwiftManifest,
+  raiseFloor,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
 };

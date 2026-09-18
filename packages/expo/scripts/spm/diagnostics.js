@@ -67,24 +67,6 @@ class UnsupportedModulesError extends Error {
 }
 
 /**
- * The `spm.config.json` product declaring `podName`, or null. A module with one
- * can be built into an XCFramework by the Expo prebuild pipeline, which compiles
- * mixed Swift/ObjC/C++ targets — so it needs no SwiftPM manifest at all. A
- * `sourceOnly` product declares the opposite: it never produces an artifact.
- */
-function spmConfigProduct(moduleRoot, podName) {
-  let config;
-  try {
-    config = JSON.parse(fs.readFileSync(path.join(moduleRoot, 'spm.config.json'), 'utf8'));
-  } catch {
-    return null;
-  }
-  const product = (config.products ?? []).find((p) => (p.podName ?? p.name) === podName);
-  if (product == null) return null;
-  return { name: product.name, sourceOnly: product.sourceOnly === true };
-}
-
-/**
  * Why each uncovered pod is uncovered. A missing interface tree is a single
  * project-level fault that would otherwise be reported once per module, so it
  * collapses into one entry naming the modules it took down.
@@ -103,19 +85,6 @@ function classifyUnsupported({ pending, coreAvailable }) {
         packageName: p.packageName,
         moduleRoot: p.moduleRoot,
         productName: p.prebuildProduct.name,
-      };
-    }
-    if (p.podspecError != null) {
-      const { file, line, snippet, reason } = p.podspecError;
-      return {
-        reason: 'unsupported-podspec-syntax',
-        podName: p.podName,
-        packageName: p.packageName,
-        moduleRoot: p.moduleRoot,
-        file,
-        line,
-        snippet,
-        problem: reason,
       };
     }
     if (p.podspecLinkage != null) {
@@ -284,31 +253,6 @@ function renderUnsupportedTargetDependency({ podName, packageName, moduleRoot, d
   ].join('\n');
 }
 
-/**
- * The floor the podspec states is not an exact literal. Reading a computed one means
- * running Ruby, and a guessed floor builds the module against APIs the deployment
- * target may not have — so the module is skipped and the line is quoted back.
- */
-function renderUnsupportedPodspecSyntax({
-  podName,
-  packageName,
-  moduleRoot,
-  file,
-  line,
-  snippet,
-  problem,
-}) {
-  return [
-    `error: Expo module "${packageName}" (pod ${podName}) states its iOS deployment floor in a form the Swift Package Manager plugin cannot read, so it was skipped.`,
-    `  ${file}:${line} states it as ${problem}:`,
-    `      ${snippet}`,
-    `  The plugin reads the floor as text, and only as an exact literal: \`s.platforms = { :ios => '16.4' }\` or \`s.ios.deployment_target = '16.4'\`. Anything computed would need the podspec to be run, and a guessed floor compiles the module against APIs the deployment target may not have.`,
-    `  Write the floor as a literal, or declare it in a Package.swift for the module — \`platforms: [.iOS("16.4")]\` — which the plugin mirrors.`,
-    `  If you do not own ${packageName}, persist the edit with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
-    `  Module path: ${moduleRoot}`,
-  ].join('\n');
-}
-
 function renderNeedsManifestForLinkage({ podName, packageName, moduleRoot, file, line, snippet }) {
   return [
     `error: Expo module "${packageName}" (pod ${podName}) declares native linkage in its podspec, which the Swift Package Manager plugin does not read, so it was skipped.`,
@@ -338,7 +282,6 @@ const RENDERERS = {
   'no-apple-sources': renderNoAppleSources,
   'unresolvable-target-path': renderUnresolvableTargetPath,
   'unsupported-target-dependency': renderUnsupportedTargetDependency,
-  'unsupported-podspec-syntax': renderUnsupportedPodspecSyntax,
   'needs-manifest-for-linkage': renderNeedsManifestForLinkage,
   'core-unavailable': renderCoreUnavailable,
 };
@@ -397,7 +340,6 @@ module.exports = {
   COVERED_POD_PREFIXES,
   UNMAPPED_POD_ALLOWLIST,
   classifyUnsupported,
-  spmConfigProduct,
   podspecDependencies,
   unmappedPodDependencies,
   collectUnmappedDependencies,

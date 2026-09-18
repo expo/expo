@@ -15,6 +15,12 @@ export interface PrebuiltMetadataEntry {
   packageRoot: string;
   podspecDir: string;
   productName: string;
+  /** The product is built from source only — the prebuild pipeline never
+   * produces an XCFramework for it. Absent where it does. */
+  sourceOnly?: boolean;
+  /** The product's iOS deployment floor as a plain version string ("16.4").
+   * Absent where the config declares none this can read. */
+  iosDeploymentTarget?: string;
 }
 
 export type PrebuiltMetadataDocument = Record<string, PrebuiltMetadataEntry>;
@@ -110,6 +116,29 @@ function readJsonFile(filePath: string): any | null {
   }
 }
 
+const IOS_PLATFORM_RX = /^iOS\(\s*(?:["']([\d.]+)["']|\.v(\d+))\s*\)$/;
+
+/**
+ * The iOS floor of an spm.config.json `platforms` array, as a plain version
+ * string: `iOS(.v15)` and `iOS("15.0")` are the same floor to every consumer, and
+ * only a Package.swift can spell the case form. A declaration this cannot read is
+ * no floor at all — a guessed deployment target is a compile error in someone
+ * else's module.
+ */
+function readIosDeploymentTarget(platforms: unknown): string | undefined {
+  if (!Array.isArray(platforms)) {
+    return undefined;
+  }
+  for (const platform of platforms) {
+    if (typeof platform !== 'string' || !platform.trim().startsWith('iOS(')) {
+      continue;
+    }
+    const match = IOS_PLATFORM_RX.exec(platform.trim());
+    return match == null ? undefined : (match[1] ?? `${match[2]}.0`);
+  }
+  return undefined;
+}
+
 function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: string) {
   const configPath = path.join(packageRoot, 'spm.config.json');
   const config = readJsonFile(configPath);
@@ -130,12 +159,15 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
       if (podName == null) {
         continue;
       }
+      const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
       entries[podName] = {
         type: 'internal',
         npmPackage,
         packageRoot,
         podspecDir: resolvePodspecDir(packageRoot, podName),
         productName: product.name || podName,
+        ...(product.sourceOnly === true && { sourceOnly: true }),
+        ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
       };
     }
   } catch (error) {
@@ -172,12 +204,15 @@ async function scanExternalConfigsAsync(
         if (podName == null) {
           continue;
         }
+        const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
         entries[podName] = {
           type: 'external',
           npmPackage,
           packageRoot,
           podspecDir: packageRoot,
           productName: product.name || podName,
+          ...(product.sourceOnly === true && { sourceOnly: true }),
+          ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
         };
       }
     } catch (error) {

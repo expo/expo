@@ -7,7 +7,7 @@ const path = require('path');
 jest.mock('child_process', () => ({ execFileSync: jest.fn(() => '') }));
 
 const { execFileSync } = require('child_process');
-const { generateModulesProvider } = require('../cli');
+const { generateModulesProvider, prebuiltMetadata } = require('../cli');
 
 function argvFor(options) {
   execFileSync.mockClear();
@@ -76,5 +76,27 @@ describe('generateModulesProvider', () => {
 
     expect(generateModulesProvider({ appRoot, outDir, moduleNames: [] })).toBeNull();
     expect(execFileSync).not.toHaveBeenCalled();
+  });
+});
+
+describe('prebuiltMetadata', () => {
+  const document = {
+    ExpoModulesCore: {
+      type: 'internal',
+      npmPackage: 'expo-modules-core',
+      packageRoot: '/app/node_modules/expo-modules-core',
+      podspecDir: '/app/node_modules/expo-modules-core/ios',
+      productName: 'ExpoModulesCore',
+    },
+  };
+
+  it('asks the autolinking CLI for the metadata document, from the app root', () => {
+    execFileSync.mockClear();
+    execFileSync.mockReturnValue(JSON.stringify(document));
+
+    expect(prebuiltMetadata('/app')).toEqual(document);
+    const [, argv, options] = execFileSync.mock.calls[0];
+    expect(argv.slice(1)).toEqual(['prebuilt-metadata', '--json']);
+    expect(options).toMatchObject({ cwd: '/app', encoding: 'utf8' });
   });
 });

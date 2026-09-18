@@ -1,9 +1,5 @@
 'use strict';
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-
 const {
   UnsupportedModulesError,
   UNMAPPED_POD_ALLOWLIST,
@@ -13,20 +9,7 @@ const {
   renderUnsupportedReport,
   reportUnsupported,
   renderUnmappedDependencyWarning,
-  spmConfigProduct,
 } = require('../diagnostics');
-
-function withModuleDir(files, run) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-diag-'));
-  try {
-    for (const [name, contents] of Object.entries(files)) {
-      fs.writeFileSync(path.join(dir, name), contents);
-    }
-    return run(dir);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-}
 
 describe('classifyUnsupported', () => {
   it('reports a missing interface tree once, not per module', () => {
@@ -107,113 +90,6 @@ describe('classifyUnsupported', () => {
   });
 });
 
-describe('spmConfigProduct', () => {
-  const config = JSON.stringify({
-    products: [
-      { name: 'ExpoModulesCore', podName: 'ExpoModulesCore' },
-      { name: 'ExpoModulesWorklets', podName: 'ExpoModulesWorklets' },
-      {
-        name: 'ExpoModulesWorkletsAdapter',
-        podName: 'ExpoModulesWorkletsAdapter',
-        sourceOnly: true,
-      },
-    ],
-  });
-
-  it('finds the product declaring a pod', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoModulesWorklets')).toEqual({
-        name: 'ExpoModulesWorklets',
-        sourceOnly: false,
-      });
-    });
-  });
-
-  it('reports a source-only product as such', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoModulesWorkletsAdapter')).toEqual({
-        name: 'ExpoModulesWorkletsAdapter',
-        sourceOnly: true,
-      });
-    });
-  });
-
-  it('falls back to the product name when podName is absent', () => {
-    withModuleDir(
-      { 'spm.config.json': JSON.stringify({ products: [{ name: 'ExpoFoo' }] }) },
-      (dir) => {
-        expect(spmConfigProduct(dir, 'ExpoFoo')).toEqual({ name: 'ExpoFoo', sourceOnly: false });
-      }
-    );
-  });
-
-  it('returns null for an undeclared pod, a missing file, and malformed JSON', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull();
-    });
-    withModuleDir({}, (dir) => expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull());
-    withModuleDir({ 'spm.config.json': '{ not json' }, (dir) =>
-      expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull()
-    );
-  });
-});
-
-describe('unsupported podspec syntax', () => {
-  const podspecError = {
-    file: '/m/expo-bad/ios/ExpoBad.podspec',
-    line: 12,
-    snippet: 's.platforms = { :ios => MIN_IOS }',
-    reason: "`MIN_IOS` where a version literal like '16.4' belongs",
-  };
-
-  it('classifies a module whose podspec the reader refused', () => {
-    expect(
-      classifyUnsupported({
-        pending: [
-          {
-            podName: 'ExpoBad',
-            packageName: 'expo-bad',
-            moduleRoot: '/m/expo-bad',
-            podspecError,
-          },
-        ],
-        coreAvailable: true,
-      })
-    ).toEqual([
-      {
-        reason: 'unsupported-podspec-syntax',
-        podName: 'ExpoBad',
-        packageName: 'expo-bad',
-        moduleRoot: '/m/expo-bad',
-        file: podspecError.file,
-        line: podspecError.line,
-        snippet: podspecError.snippet,
-        problem: podspecError.reason,
-      },
-    ]);
-  });
-
-  it('reports the file, line and snippet, and how to fix it', () => {
-    const report = renderUnsupportedReport(
-      classifyUnsupported({
-        pending: [
-          { podName: 'ExpoBad', packageName: 'expo-bad', moduleRoot: '/m/expo-bad', podspecError },
-        ],
-        coreAvailable: true,
-      })
-    );
-    expect(report).toContain('error: Expo module "expo-bad" (pod ExpoBad)');
-    expect(report).toContain('iOS deployment floor');
-    expect(report).toContain('/m/expo-bad/ios/ExpoBad.podspec:12');
-    expect(report).toContain('s.platforms = { :ios => MIN_IOS }');
-    expect(report).toContain("{ :ios => '16.4' }");
-    expect(report).toContain("s.ios.deployment_target = '16.4'");
-    expect(report).toContain('platforms: [.iOS("16.4")]');
-    expect(report).toContain('patch-package expo-bad');
-    expect(report).not.toContain('linkage');
-  });
-});
-
 describe('diagnostic priority', () => {
   it('asks for the prebuild first, even when the podspec also needs attention', () => {
     expect(
@@ -230,7 +106,6 @@ describe('diagnostic priority', () => {
               line: 19,
               snippet: "s.frameworks = 'Photos'",
             },
-            podspecError: null,
           },
         ],
         coreAvailable: true,
@@ -257,21 +132,11 @@ describe('diagnostic priority order', () => {
   });
   const reasonFor = (extra) =>
     classifyUnsupported({ pending: [pending(extra)], coreAvailable: true })[0].reason;
-  const podspecError = {
-    file: '/m/expo-bad/ios/ExpoBad.podspec',
-    line: 12,
-    snippet: 's.platforms = { :ios => MIN_IOS }',
-    reason: 'a computed floor',
-  };
   const podspecLinkage = {
     file: '/m/expo-bad/ios/ExpoBad.podspec',
     line: 19,
     snippet: "s.frameworks = 'Photos'",
   };
-
-  it('reports the unreadable floor before the linkage the same podspec declares', () => {
-    expect(reasonFor({ podspecError, podspecLinkage })).toBe('unsupported-podspec-syntax');
-  });
 
   it('reports the linkage before targets whose sources it could not find', () => {
     expect(reasonFor({ podspecLinkage, unresolvedTargets: ['Main'] })).toBe(

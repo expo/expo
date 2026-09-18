@@ -13,6 +13,7 @@ const {
   renderPureSwiftManifest,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
+  raiseFloor,
 } = require('../manifests');
 
 describe('parseDumpedManifest', () => {
@@ -863,6 +864,77 @@ describe('deployment target', () => {
     );
     expect(manifest).toContain('platforms: [.iOS("16.4")],');
     expect(manifest).not.toContain('linkerSettings:');
+  });
+});
+
+describe('raiseFloor', () => {
+  it('keeps the higher of the two floors', () => {
+    expect(raiseFloor('15.0', '16.4')).toBe('16.4');
+    expect(raiseFloor('17.0', '16.4')).toBe('17.0');
+  });
+
+  it('keeps the declared floor when both are the same', () => {
+    expect(raiseFloor('16.4', '16.4')).toBe('16.4');
+  });
+
+  it('compares components numerically, not as text', () => {
+    expect(raiseFloor('16.10', '16.9')).toBe('16.10');
+    expect(raiseFloor('16.9', '16.10')).toBe('16.10');
+  });
+
+  it('reads a missing component as zero', () => {
+    expect(raiseFloor('16', '16.0')).toBe('16');
+    expect(raiseFloor('16', '16.4')).toBe('16.4');
+  });
+
+  it('falls back to whichever floor is present', () => {
+    expect(raiseFloor(null, '16.4')).toBe('16.4');
+    expect(raiseFloor('16.4', null)).toBe('16.4');
+    expect(raiseFloor(undefined, '16.4')).toBe('16.4');
+    expect(raiseFloor('16.4', undefined)).toBe('16.4');
+  });
+
+  it('has no floor to report when neither side declares one', () => {
+    expect(raiseFloor(null, null)).toBeNull();
+    expect(raiseFloor(undefined, undefined)).toBeNull();
+  });
+});
+
+describe('the minimum floor a checked-in manifest is raised to', () => {
+  const dumpWithIos = (version) =>
+    JSON.stringify({
+      name: 'TestModule',
+      platforms: [{ options: [], platformName: 'ios', version }],
+      products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
+      targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [] }],
+    });
+
+  let moduleRoot;
+  let outDir;
+
+  beforeEach(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-minimum-'));
+    moduleRoot = path.join(tmp, 'module');
+    outDir = path.join(tmp, 'out');
+    fs.mkdirSync(moduleRoot, { recursive: true });
+  });
+
+  const emitted = (declared, minimum) => {
+    runDumpPackage.mockReturnValue(dumpWithIos(declared));
+    emitSourceManifestPackage(moduleRoot, null, '/abs/interfaces', outDir, null, minimum);
+    return fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
+  };
+
+  it('raises a module declaring less than the minimum', () => {
+    expect(emitted('15.0', '16.4')).toContain('platforms: [.iOS("16.4")],');
+  });
+
+  it('leaves a module declaring more than the minimum alone', () => {
+    expect(emitted('17.0', '16.4')).toContain('platforms: [.iOS("17.0")],');
+  });
+
+  it('keeps the declared floor when there is no minimum', () => {
+    expect(emitted('16.4', null)).toContain('platforms: [.iOS("16.4")],');
   });
 });
 
