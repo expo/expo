@@ -211,6 +211,16 @@ export const alpha = (alpha: number) => createModifier('alpha', { alpha });
  */
 export const blur = (radius: number) => createModifier('blur', { radius });
 
+/**
+ * Adds rounded corners for the current view.
+ *
+ * Note: Works only inside the Widgets on Android S+.
+ * Jetpack Compose has no equivalent of Glance's `cornerRadius`, so Expo UI ignores this
+ * modifier. Use `clip(Shapes.RoundedCorner(radius))` to round corners in an app.
+ * @param radius - Corner radius in dp.
+ */
+export const cornerRadius = (radius: number) => createModifier('cornerRadius', { radius });
+
 // =============================================================================
 // Transform Modifiers
 // =============================================================================
