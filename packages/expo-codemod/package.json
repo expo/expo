@@ -33,7 +33,7 @@
     "format": "expo-module format",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "jest",
+    "test": "vitest run",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
@@ -42,6 +42,7 @@
     "tinyglobby": "^0.2.15"
   },
   "devDependencies": {
+    "@expo/vitest": "workspace:*",
     "@types/jscodeshift": "^17.0.0",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"

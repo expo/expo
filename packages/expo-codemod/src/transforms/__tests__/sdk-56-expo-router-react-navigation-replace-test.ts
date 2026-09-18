@@ -1,14 +1,15 @@
 import { applyTransform } from 'jscodeshift/dist/testUtils';
+import type { MockInstance } from 'vitest';
 
 import transform from '../sdk-56-expo-router-react-navigation-replace';
 
-let errorSpy: jest.SpyInstance<void, Parameters<typeof console.error>>;
+let errorSpy: MockInstance<typeof console.error>;
 beforeEach(() => {
-  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 // Default parser (babel): covers plain JS and syntactically-unambiguous TS.

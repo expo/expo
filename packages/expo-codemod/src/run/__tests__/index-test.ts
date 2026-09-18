@@ -1,21 +1,25 @@
+import { glob } from 'tinyglobby';
+
+import * as Log from '../../log';
+import { runTransformAsync } from '../../utils/runner';
 import { parseAndValidateArgs, resolveAndDispatch } from '../index';
 
-jest.mock('../../transforms', () => ({
-  listTransformsAsync: jest.fn().mockResolvedValue(['sdk-56-expo-router-react-navigation-replace']),
+vi.mock('../../transforms', () => ({
+  listTransformsAsync: vi.fn().mockResolvedValue(['sdk-56-expo-router-react-navigation-replace']),
   transformFilePath: (name: string) => `/fake/${name}.js`,
 }));
 
-jest.mock('../../utils/runner', () => ({
-  runTransformAsync: jest.fn(),
+vi.mock('../../utils/runner', () => ({
+  runTransformAsync: vi.fn(),
 }));
 
 // `Log.exit` calls `process.exit` in production. The tests replace it with a
 // thrower so expectations can assert that exit was reached without terminating
 // the test runner.
-jest.mock('../../log', () => ({
-  log: jest.fn(),
-  error: jest.fn(),
-  exit: jest.fn((message: string | Error, code: number = 1): never => {
+vi.mock('../../log', () => ({
+  log: vi.fn(),
+  error: vi.fn(),
+  exit: vi.fn((message: string | Error, code: number = 1): never => {
     const text = message instanceof Error ? message.message : message;
     const err = new Error(text) as Error & { exitCode?: number };
     err.exitCode = code;
@@ -23,13 +27,12 @@ jest.mock('../../log', () => ({
   }),
 }));
 
-jest.mock('tinyglobby', () => ({ glob: jest.fn() }));
+vi.mock('tinyglobby', () => ({ glob: vi.fn() }));
 
-const Log = jest.requireMock<jest.Mocked<typeof import('../../log')>>('../../log');
-const { runTransformAsync: runMock } =
-  jest.requireMock<jest.Mocked<typeof import('../../utils/runner')>>('../../utils/runner');
-const { glob: globMock } = jest.requireMock<jest.Mocked<typeof import('tinyglobby')>>('tinyglobby');
-const exitMock = Log.exit;
+// The modules above are replaced by the hoisted `vi.mock` factories, so the imports are the mocks.
+const runMock = vi.mocked(runTransformAsync);
+const globMock = vi.mocked(glob);
+const exitMock = vi.mocked(Log.exit);
 
 const TRANSFORM = 'sdk-56-expo-router-react-navigation-replace';
 

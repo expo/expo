@@ -40,7 +40,7 @@
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "jest",
+    "test": "vitest run",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
@@ -49,8 +49,8 @@
     "json5": "^2.2.3"
   },
   "devDependencies": {
+    "@expo/vitest": "workspace:*",
     "@types/babel__code-frame": "^7.27.0",
-    "@types/jest": "^29.2.1",
     "@types/json5": "^2.2.0",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",

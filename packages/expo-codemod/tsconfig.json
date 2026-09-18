@@ -4,6 +4,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "noEmit": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["node", "vitest/globals"]
   }
 }

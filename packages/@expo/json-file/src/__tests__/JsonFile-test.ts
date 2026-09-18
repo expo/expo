@@ -4,10 +4,19 @@ import path from 'node:path';
 
 import JsonFile from '../JsonFile';
 
-jest.setTimeout(20 * 1000);
+vi.setConfig({ testTimeout: 20 * 1000 });
 
-jest.mock('fs', () => require('memfs').fs);
-jest.mock('node:fs', () => require('memfs').fs);
+// Vitest mock factories return the module's exports, so `default` must be provided for
+// `import fs from 'node:fs'` alongside the named exports. `vi.mock` is hoisted above imports,
+// so the factory cannot reference variables declared in this file.
+vi.mock('fs', async () => {
+  const { fs } = await import('memfs');
+  return { ...fs, default: fs };
+});
+vi.mock('node:fs', async () => {
+  const { fs } = await import('memfs');
+  return { ...fs, default: fs };
+});
 
 afterEach(() => vol.reset());
 
@@ -353,7 +362,7 @@ describe('sync', () => {
 });
 
 function loadFixture(filename: string) {
-  return jest
-    .requireActual('node:fs')
-    .readFileSync(path.join(__dirname, '..', '__fixtures__', filename), 'utf8');
+  // Bypass the memfs mock above and read the fixture from the real file system.
+  const realFs = process.getBuiltinModule('node:fs');
+  return realFs.readFileSync(path.join(__dirname, '..', '__fixtures__', filename), 'utf8');
 }
