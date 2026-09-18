@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `pod install` failing when the Command Line Tools SDK is newer than the selected Xcode.
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-15
