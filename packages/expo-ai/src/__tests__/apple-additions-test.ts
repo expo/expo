@@ -177,7 +177,7 @@ it('waits for approval before executing Vision and serializes ordinary native da
   decide(true);
   await flush();
   expect(executeBuiltinToolAsync).toHaveBeenCalledWith('read-1', 'ocr', 'receipt');
-  expect(native.resolveTool).toHaveBeenCalledWith('read-1', '{"text":"Total 42"}', null);
+  expect(native.resolveTool).toHaveBeenCalledWith('read-1', '{"text":"Total 42"}');
   respond(nativeResult('42'));
   await expect(request).resolves.toMatchObject({ value: '42' });
 });

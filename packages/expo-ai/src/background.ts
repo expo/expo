@@ -1,16 +1,12 @@
+import type { EventSubscription } from 'expo';
+
 import ExpoAI from './ExpoAI';
 import { LanguageModelError } from './LanguageModelError';
 import type { Operation } from './Operation';
 
 /** Interrupts JS approval/handler work even between native model calls. */
-export function observeBackground(operation: Operation) {
+export function observeBackground(operation: Operation): EventSubscription | undefined {
   if (!ExpoAI?.supportsBackgroundEvents) return undefined;
-  if (!ExpoAI.addListener) {
-    throw new LanguageModelError(
-      'ERR_PROVIDER_RESPONSE_INVALID',
-      'The native background interruption bridge is incomplete.'
-    );
-  }
   return ExpoAI.addListener('onBackground', () => {
     operation.abort(
       new LanguageModelError(

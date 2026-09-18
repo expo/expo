@@ -1,5 +1,5 @@
 import NativeModule from '../ExpoAI';
-import type { NativeSession } from '../NativeLanguageModels.types';
+import type { NativeSession, NativeSessionEvents } from '../NativeLanguageModels.types';
 import { createSessionAsync, generateAsync, LanguageModelError, schema } from '../index';
 import { availableModel, FakeSession } from './fixtures/FakeSession';
 
@@ -57,12 +57,12 @@ it('attempts every subscription removal and native release when one removal thro
     code: 'ERR_SESSION_DISPOSED',
   });
   await flush();
-  expect(native.listenerCount).toBe(2);
+  expect(native.totalListenerCount()).toBe(2);
   expect(() => session.dispose()).toThrow(expect.objectContaining({ cause }));
   await rejected;
   expect(removals).toHaveLength(2);
   for (const remove of removals) expect(remove).toHaveBeenCalledTimes(1);
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   expect(native.dispose).toHaveBeenCalledTimes(1);
   expect(native.release).toHaveBeenCalledTimes(1);
 });
@@ -141,7 +141,7 @@ it('removes the first listener if registration of the second listener fails', as
   const remove = jest.fn();
   jest.spyOn(native, 'addListener').mockImplementation((event, listener) => {
     if (event === 'onToolCall') throw cause;
-    const subscription = addListener(event, listener);
+    const subscription = addListener(event as keyof NativeSessionEvents, listener);
     remove.mockImplementation(() => subscription.remove());
     return { remove };
   });
@@ -151,7 +151,7 @@ it('removes the first listener if registration of the second listener fails', as
     cause,
   });
   expect(remove).toHaveBeenCalledTimes(1);
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   expect(native.generateAsync).not.toHaveBeenCalled();
   session.dispose();
   expect(remove).toHaveBeenCalledTimes(1);
@@ -172,5 +172,5 @@ it('preserves a one-shot generation error when its owned session also fails disp
   });
   expect(native.dispose).toHaveBeenCalledTimes(1);
   expect(native.release).toHaveBeenCalledTimes(1);
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
 });

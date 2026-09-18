@@ -84,7 +84,7 @@ it('accepts a completed turn only after listeners have been removed and reuses i
   const { native, history, contexts } = fixture;
   const accept = native.acceptResult.getMockImplementation()!;
   native.acceptResult.mockImplementation((id) => {
-    expect(native.listenerCount).toBe(0);
+    expect(native.totalListenerCount()).toBe(0);
     expect(removeBackground).toHaveBeenCalled();
     return accept(id);
   });
@@ -257,15 +257,5 @@ it('rejects failed native acceptance without recording a successful shared turn'
   expect(
     JSON.parse(JSON.parse(completion.generateAsync.mock.calls[0]![1]).task).previousTurns
   ).toEqual([]);
-  session.dispose();
-});
-
-it('rejects an incomplete acceptance bridge before running the model', async () => {
-  Object.assign(fixture.native, { acceptResult: undefined });
-  const session = await createSessionAsync();
-  await expect(session.generateAsync('task')).rejects.toMatchObject({
-    code: 'ERR_PROVIDER_RESPONSE_INVALID',
-  });
-  expect(fixture.native.generateAsync).not.toHaveBeenCalled();
   session.dispose();
 });

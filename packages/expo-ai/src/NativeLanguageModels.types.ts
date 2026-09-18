@@ -1,5 +1,4 @@
-/** A removable bridge listener. @hidden */
-export type NativeEventSubscription = { remove(): void };
+import type { NativeModule, SharedObject } from 'expo';
 
 export type NativeTextEvent = { requestId: string; text: string };
 export type NativePreparationEvent = {
@@ -7,8 +6,8 @@ export type NativePreparationEvent = {
   progress: number | null;
 };
 export type NativeModuleEvents = {
-  onPreparationProgress: NativePreparationEvent;
-  onBackground: Record<string, never>;
+  onPreparationProgress: (event: NativePreparationEvent) => void;
+  onBackground: () => void;
 };
 export type NativeToolEvent = {
   requestId: string;
@@ -16,9 +15,13 @@ export type NativeToolEvent = {
   name: string;
   argumentsJSON: string;
 };
+export type NativeSessionEvents = {
+  onText: (event: NativeTextEvent) => void;
+  onToolCall: (event: NativeToolEvent) => void;
+};
 
 /** @hidden */
-export interface NativeSession {
+export declare class NativeSession extends SharedObject<NativeSessionEvents> {
   /** JSON-encoded `{ text, usage }` generation result. */
   generateAsync(requestId: string, prompt: string, optionsJSON: string): Promise<string>;
   executeBuiltinToolAsync?(
@@ -31,18 +34,17 @@ export interface NativeSession {
   /** Discards an unaccepted result, or cancels matching work that could still produce one. */
   discardResult(requestId: string): void;
   cancel(requestId: string): void;
+  /**
+   * Cancels any in-flight generation and tears down the provider-side session, unlike the
+   * inherited `release()`, which only detaches the JS object from its native counterpart.
+   * Releasing a session calls `dispose()` first and `release()` second.
+   */
   dispose(): void;
-  release(): void;
-  resolveTool(callId: string, output: string | null, error: string | null): boolean;
-  addListener(event: 'onText', listener: (event: NativeTextEvent) => void): NativeEventSubscription;
-  addListener(
-    event: 'onToolCall',
-    listener: (event: NativeToolEvent) => void
-  ): NativeEventSubscription;
+  resolveTool(callId: string, output: string | null): boolean;
 }
 
 /** @hidden */
-export interface NativeLanguageModels {
+export declare class NativeLanguageModels extends NativeModule<NativeModuleEvents> {
   readonly supportsBackgroundEvents?: boolean;
   readonly supportsSessionLanguages?: boolean;
   getAvailabilityAsync(
@@ -57,8 +59,4 @@ export interface NativeLanguageModels {
     outputLanguage: string | null
   ): Promise<string>;
   cancelPreparation?(requestId: string): void;
-  addListener?<E extends keyof NativeModuleEvents>(
-    event: E,
-    listener: (event: NativeModuleEvents[E]) => void
-  ): NativeEventSubscription;
 }

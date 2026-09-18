@@ -76,8 +76,8 @@ public final class ExpoAIModule: Module, @unchecked Sendable {
       Function("dispose") { (session: LanguageModelSession) in session.dispose() }
 
       Function("resolveTool") {
-        (session: LanguageModelSession, callId: String, output: String?, error: String?) -> Bool in
-        session.resolveTool(callId: callId, output: output, error: error)
+        (session: LanguageModelSession, callId: String, output: String?) -> Bool in
+        session.resolveTool(callId: callId, output: output)
       }
     }
 

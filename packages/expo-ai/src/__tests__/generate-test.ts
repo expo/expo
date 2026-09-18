@@ -52,7 +52,7 @@ it('generates directly without a prior availability call and disposes its indepe
     expect(session.generateAsync).toHaveBeenCalledTimes(1);
     expect(session.dispose).toHaveBeenCalledTimes(1);
     expect(session.release).toHaveBeenCalledTimes(1);
-    expect(session.listenerCount).toBe(0);
+    expect(session.totalListenerCount()).toBe(0);
   }
 });
 
@@ -249,7 +249,7 @@ it('rejects an invalid final result after a provisional update and cleans up', a
     code: 'ERR_RESPONSE_INVALID',
   });
   expect(onUpdate).toHaveBeenCalledTimes(1);
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   expect(native.release).toHaveBeenCalledTimes(1);
 });
 
@@ -399,7 +399,7 @@ it('serializes ordinary tool data for the native provider and denies before exec
   await expect(generateAsync('task', { tools: [tool] })).resolves.toMatchObject({
     value: 'answer',
   });
-  expect(native.resolveTool).toHaveBeenCalledWith('one', '{"matches":["local note"]}', null);
+  expect(native.resolveTool).toHaveBeenCalledWith('one', '{"matches":["local note"]}');
   tool.execute.mockClear();
   await expect(
     generateAsync('task', { tools: [tool], beforeTool: () => false })

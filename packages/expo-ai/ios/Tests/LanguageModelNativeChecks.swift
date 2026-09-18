@@ -33,8 +33,8 @@ internal enum LanguageModelNativeChecks {
         session.addListener('onToolCall', event => {
           globalThis.last = event;
           checks.push(event.requestId === 'roundtrip' && event.name === 'lookup' && JSON.parse(event.argumentsJSON).query === 'note');
-          checks.push(session.resolveTool(event.callId, 'from JavaScript', null));
-          checks.push(!session.resolveTool(event.callId, 'duplicate', null));
+          checks.push(session.resolveTool(event.callId, 'from JavaScript'));
+          checks.push(!session.resolveTool(event.callId, 'duplicate'));
         });
         return session.generateAsync('roundtrip', 'tool', '{"stream":true,"maximumToolCalls":1}');
       }).then(value => { globalThis.result = value; }, error => { globalThis.failure = String(error); });
@@ -96,7 +96,7 @@ internal enum LanguageModelNativeChecks {
       """)
     try await fixture.wait("globalThis.failure !== null")
     try require(try fixture.string("failure") == "ERR_REQUEST_CANCELLED", "Cancellation did not reject the JS promise")
-    try require(try fixture.boolean("!session.resolveTool(last.callId, 'late', null)"), "Late cancellation reply was accepted")
+    try require(try fixture.boolean("!session.resolveTool(last.callId, 'late')"), "Late cancellation reply was accepted")
 
     // A delayed reply from an old request must not resolve the active request.
     try fixture.evaluate("""
@@ -104,8 +104,8 @@ internal enum LanguageModelNativeChecks {
       globalThis.oldCallId = last.callId;
       globalThis.result = null;
       session.addListener('onToolCall', event => {
-        globalThis.oldRejected = !session.resolveTool(oldCallId, 'stale', null);
-        session.resolveTool(event.callId, 'fresh', null);
+        globalThis.oldRejected = !session.resolveTool(oldCallId, 'stale');
+        session.resolveTool(event.callId, 'fresh');
       });
       session.generateAsync('next-request', 'tool', '{"maximumToolCalls":1}').then(value => { globalThis.result = value; });
       """)
@@ -296,7 +296,7 @@ internal enum LanguageModelNativeChecks {
     try require(request.pendingCount == 1, "A paused scheduler lost the pending tool continuation")
 
     fixture.resumeScheduler()
-    try fixture.evaluate("session.resolveTool(last.callId, 'resumed reply', null);")
+    try fixture.evaluate("session.resolveTool(last.callId, 'resumed reply');")
     try await fixture.wait("globalThis.result !== undefined || globalThis.failure !== undefined")
     try require(try fixture.boolean("JSON.parse(result).text === 'resumed reply' && globalThis.failure === undefined"), "Resuming the scheduler did not complete the tool reply")
     try await fixture.verifySessionReuse()
@@ -330,7 +330,7 @@ internal enum LanguageModelNativeChecks {
     fixture.resumeScheduler()
     try await fixture.wait("globalThis.failure !== undefined")
     try require(try fixture.string("failure") == expected, "Cancellation while paused returned the wrong JS error")
-    try require(try fixture.boolean("!session.resolveTool(last.callId, 'late reply', null)"), "Cancellation while paused accepted a late tool reply")
+    try require(try fixture.boolean("!session.resolveTool(last.callId, 'late reply')"), "Cancellation while paused accepted a late tool reply")
     if !dispose { try await fixture.verifySessionReuse() }
   }
 
@@ -353,7 +353,7 @@ internal enum LanguageModelNativeChecks {
     fixture.resumeScheduler()
     try await fixture.wait("globalThis.failure !== undefined")
     try require(try fixture.string("failure") == "ERR_SESSION_DISPOSED", "Module teardown did not dispose the request")
-    try require(try fixture.boolean("!session.resolveTool(last.callId, 'late reply', null)"), "Module teardown accepted a late tool reply")
+    try require(try fixture.boolean("!session.resolveTool(last.callId, 'late reply')"), "Module teardown accepted a late tool reply")
   }
 
   @MainActor
@@ -609,7 +609,7 @@ private final class BridgeFixture {
   func verifySessionReuse() async throws {
     try evaluate("""
       session.removeAllListeners('onToolCall');
-      session.addListener('onToolCall', event => session.resolveTool(event.callId, 'next reply', null));
+      session.addListener('onToolCall', event => session.resolveTool(event.callId, 'next reply'));
       globalThis.result = undefined;
       globalThis.failure = undefined;
       session.generateAsync('after-pause', '', '{"maximumToolCalls":1}')

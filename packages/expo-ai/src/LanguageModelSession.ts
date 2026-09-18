@@ -1,3 +1,5 @@
+import type { EventSubscription } from 'expo';
+
 import { LanguageModelError, normalizeError } from './LanguageModelError';
 import type {
   GenerationEvent,
@@ -10,11 +12,7 @@ import type {
   StructuredRequest,
   TextRequestOptions,
 } from './LanguageModels.types';
-import type {
-  NativeEventSubscription,
-  NativeSession,
-  NativeToolEvent,
-} from './NativeLanguageModels.types';
+import type { NativeSession, NativeToolEvent } from './NativeLanguageModels.types';
 import { createOperation, type Operation } from './Operation';
 import { withAppleToolContext } from './appleTools';
 import { observeBackground } from './background';
@@ -96,7 +94,7 @@ export function validateRequestOptions(options: InternalRequestOptions) {
 export class LanguageModelSession {
   private active?: ActiveRequest;
   private disposed = false;
-  private subscriptions = new Set<NativeEventSubscription>();
+  private subscriptions = new Set<EventSubscription>();
   private history: { prompt: string; value: unknown }[] = [];
   private pendingNativeTurns: { prompt: string; value: unknown }[] = [];
 
@@ -236,15 +234,6 @@ export class LanguageModelSession {
       throw new LanguageModelError('ERR_SESSION_DISPOSED', 'The session was disposed.');
     if (this.active)
       throw new LanguageModelError('ERR_SESSION_BUSY', 'Only one generation may run in a session.');
-    if (
-      typeof this.native.acceptResult !== 'function' ||
-      typeof this.native.discardResult !== 'function'
-    ) {
-      throw new LanguageModelError(
-        'ERR_PROVIDER_RESPONSE_INVALID',
-        'The native session result acceptance bridge is incomplete.'
-      );
-    }
     if (typeof prompt !== 'string' || !options || typeof options !== 'object')
       throw new LanguageModelError(
         'ERR_OPTIONS_INVALID',
@@ -289,7 +278,7 @@ export class LanguageModelSession {
     const cancel = () => this.native.cancel(id);
     operation.signal.addEventListener('abort', cancel, { once: true });
     let value: unknown;
-    let backgroundSubscription: NativeEventSubscription | undefined;
+    let backgroundSubscription: EventSubscription | undefined;
     let failed = false;
     let operationClosed = false;
     let accepted = false;
@@ -431,7 +420,7 @@ export class LanguageModelSession {
         emit({ type: 'text', text: event.text });
     });
     this.subscriptions.add(textSubscription);
-    let toolSubscription: NativeEventSubscription;
+    let toolSubscription: EventSubscription;
     try {
       toolSubscription = native.addListener('onToolCall', (event) => {
         if (event.requestId !== id || operation.signal.aborted) return;
@@ -478,7 +467,7 @@ export class LanguageModelSession {
           if (typeof output !== 'string')
             throw new LanguageModelError('ERR_TOOL_FAILED', 'Tool handlers must return text.');
           operation.check();
-          native.resolveTool(event.callId, output, null);
+          native.resolveTool(event.callId, output);
           completedTools?.push({
             type: 'completed-tool',
             id: event.callId,

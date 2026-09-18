@@ -70,7 +70,7 @@ struct LanguageModelAppleAdditionsTests {
     request.cancel()
     #expect(cancellations.count == 1)
     await #expect(throws: LanguageModelException.self) { try await result.value }
-    #expect(!request.resolve(callId: callId, output: "late", error: nil))
+    #expect(!request.resolve(callId: callId, output: "late"))
     #expect(throws: LanguageModelException.self) { try request.checkBuiltin(callId: callId) }
   }
 
@@ -93,7 +93,7 @@ struct LanguageModelAppleAdditionsTests {
     #expect(throws: LanguageModelException.self) {
       try request.beginBuiltin(callId: callId, kind: .ocr, imageLabel: "receipt", cancel: {})
     }
-    #expect(request.resolve(callId: callId, output: "ordinary handler", error: nil))
+    #expect(request.resolve(callId: callId, output: "ordinary handler"))
     #expect(try await result.value == "ordinary handler")
   }
 

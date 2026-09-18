@@ -1,8 +1,6 @@
-import type {
-  NativeSession,
-  NativeTextEvent,
-  NativeToolEvent,
-} from '../../NativeLanguageModels.types';
+import { SharedObject } from 'expo';
+
+import type { NativeSessionEvents } from '../../NativeLanguageModels.types';
 import type { ModelCapabilities } from '../../LanguageModels.types';
 
 export function availableModel(overrides: Partial<ModelCapabilities> = {}) {
@@ -28,9 +26,7 @@ export function nativeResult(
   return JSON.stringify({ text, usage });
 }
 
-type Event = NativeTextEvent | NativeToolEvent;
-export class FakeSession implements NativeSession {
-  listeners = new Map<string, Set<(event: never) => void>>();
+export class FakeSession extends SharedObject<NativeSessionEvents> {
   generateAsync = jest
     .fn<Promise<string>, [string, string, string]>()
     .mockResolvedValue(nativeResult('ready'));
@@ -38,18 +34,9 @@ export class FakeSession implements NativeSession {
   discardResult = jest.fn<void, [string]>();
   cancel = jest.fn();
   dispose = jest.fn();
-  release = jest.fn();
+  release = jest.fn<void, []>(() => super.release());
   resolveTool = jest.fn().mockReturnValue(true);
-  addListener(event: string, callback: (event: never) => void) {
-    const listeners = this.listeners.get(event) ?? new Set();
-    listeners.add(callback);
-    this.listeners.set(event, listeners);
-    return { remove: () => listeners.delete(callback) };
-  }
-  emit(event: string, value: Event) {
-    this.listeners.get(event)?.forEach((listener) => listener(value as never));
-  }
-  get listenerCount() {
-    return [...this.listeners.values()].reduce((count, values) => count + values.size, 0);
+  totalListenerCount() {
+    return this.listenerCount('onText') + this.listenerCount('onToolCall');
   }
 }

@@ -1,5 +1,7 @@
+import { NativeModule } from 'expo';
+
 import { LanguageModelError } from '../LanguageModelError';
-import type { NativeLanguageModels, NativePreparationEvent } from '../NativeLanguageModels.types';
+import type { NativeModuleEvents, NativePreparationEvent } from '../NativeLanguageModels.types';
 import { createOperation, type Operation } from '../Operation';
 import type {
   BrowserLanguageModelAPI,
@@ -54,21 +56,9 @@ async function availability(
     : { status, progress: null, capabilities };
 }
 
-export class BrowserLanguageModels implements NativeLanguageModels {
+export class BrowserLanguageModels extends NativeModule<NativeModuleEvents> {
   readonly supportsSessionLanguages = true;
   private preparations = new Map<string, Operation>();
-  private listeners = new Map<string, Set<(event: never) => void>>();
-
-  addListener(event: string, listener: (event: never) => void) {
-    const listeners = this.listeners.get(event) ?? new Set();
-    listeners.add(listener);
-    this.listeners.set(event, listeners);
-    return {
-      remove: () => {
-        listeners.delete(listener);
-      },
-    };
-  }
 
   async getAvailabilityAsync(
     inputLanguages: readonly string[],
@@ -109,9 +99,7 @@ export class BrowserLanguageModels implements NativeLanguageModels {
                 const progress =
                   event.lengthComputable && event.total > 0 ? event.loaded / event.total : null;
                 const update: NativePreparationEvent = { requestId, progress };
-                this.listeners
-                  .get('onPreparationProgress')
-                  ?.forEach((listener) => listener(update as never));
+                this.emit('onPreparationProgress', update);
               }),
           })
           .then((model) => {

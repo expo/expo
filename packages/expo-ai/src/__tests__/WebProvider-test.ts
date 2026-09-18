@@ -1,3 +1,4 @@
+import { NativeModule, SharedObject } from 'expo';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import type { ModelSchema } from '../LanguageModels.types';
@@ -116,6 +117,16 @@ afterEach(() => {
     else Reflect.deleteProperty(globalThis, key);
   });
   jest.useRealTimers();
+});
+
+it('builds the browser provider and its sessions on the shared core classes', async () => {
+  expect(provider).toBeInstanceOf(NativeModule);
+  const session = await open();
+  expect(session).toBeInstanceOf(SharedObject);
+  session.addListener('onText', jest.fn());
+  expect(session.listenerCount('onText')).toBe(1);
+  session.dispose();
+  expect(session.listenerCount('onText')).toBe(0);
 });
 
 it.each(['window', 'LanguageModel', 'isSecureContext'] as const)(

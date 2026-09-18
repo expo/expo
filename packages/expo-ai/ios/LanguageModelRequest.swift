@@ -99,19 +99,17 @@ internal final class LanguageModelRequest: @unchecked Sendable {
     }
   }
 
-  func resolve(callId: String, output: String?, error: String?) -> Bool {
+  func resolve(callId: String, output: String?) -> Bool {
     lock.withLock {
       guard terminalError == nil, !isFinished,
         let tool = pending.removeValue(forKey: callId)
       else { return false }
       tool.cancelExecution?()
       let continuation = tool.continuation
-      if let error {
-        continuation.resume(throwing: LanguageModelException("ERR_TOOL_EXECUTION", error))
-      } else if let output {
+      if let output {
         continuation.resume(returning: output)
       } else {
-        continuation.resume(throwing: LanguageModelException.invalid("A tool reply needs output or error."))
+        continuation.resume(throwing: LanguageModelException.invalid("A tool reply needs output."))
       }
       return true
     }

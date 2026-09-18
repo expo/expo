@@ -1,11 +1,13 @@
+import { SharedObject } from 'expo';
+
 import { LanguageModelError } from '../LanguageModelError';
-import type { NativeSession, NativeTextEvent } from '../NativeLanguageModels.types';
+import type { NativeSessionEvents, NativeTextEvent } from '../NativeLanguageModels.types';
 import { createOperation, type Operation } from '../Operation';
 import { compileSchema, parseResponse } from '../schema';
 import type { BrowserLanguageModel } from './BrowserLanguageModel.types';
 import { browserError, destroyModel, readOptions } from './utils';
 
-export class BrowserLanguageModelSession implements NativeSession {
+export class BrowserLanguageModelSession extends SharedObject<NativeSessionEvents> {
   private active?: {
     id: string;
     operation: Operation;
@@ -13,19 +15,9 @@ export class BrowserLanguageModelSession implements NativeSession {
   };
   private pending?: { id: string; model: BrowserLanguageModel };
   private disposed = false;
-  private listeners = new Map<string, Set<(event: never) => void>>();
 
-  constructor(private model: BrowserLanguageModel) {}
-
-  addListener(event: string, listener: (event: never) => void) {
-    const listeners = this.listeners.get(event) ?? new Set();
-    listeners.add(listener);
-    this.listeners.set(event, listeners);
-    return {
-      remove: () => {
-        listeners.delete(listener);
-      },
-    };
+  constructor(private model: BrowserLanguageModel) {
+    super();
   }
 
   async generateAsync(requestId: string, prompt: string, optionsJSON: string): Promise<string> {
@@ -91,7 +83,7 @@ export class BrowserLanguageModelSession implements NativeSession {
                 );
               text += chunk.value;
               const event: NativeTextEvent = { requestId, text };
-              this.listeners.get('onText')?.forEach((listener) => listener(event as never));
+              this.emit('onText', event);
             }
           } finally {
             if (operation.signal.aborted) reader.cancel().catch(() => {});
@@ -158,12 +150,10 @@ export class BrowserLanguageModelSession implements NativeSession {
     );
     if (this.pending) this.discardResult(this.pending.id);
     destroyModel(this.model);
-    this.listeners.clear();
+    this.removeAllListeners('onText');
+    this.removeAllListeners('onToolCall');
   }
 
-  release(): void {
-    this.dispose();
-  }
   resolveTool(): boolean {
     return false;
   }

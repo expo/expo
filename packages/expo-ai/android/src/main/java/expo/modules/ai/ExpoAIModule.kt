@@ -107,7 +107,7 @@ class ExpoAIModule : Module() {
       Function("acceptResult") { session: LanguageModelSession, requestId: String -> session.acceptResult(requestId) }
       Function("discardResult") { session: LanguageModelSession, requestId: String -> session.discardResult(requestId) }
       Function("dispose") { session: LanguageModelSession -> session.dispose() }
-      Function("resolveTool") { _: LanguageModelSession, _: String, _: String?, _: String? -> false }
+      Function("resolveTool") { _: LanguageModelSession, _: String, _: String? -> false }
     }
 
     OnActivityEntersForeground { foreground = true }

@@ -147,7 +147,7 @@ export async function prepareAsync(
       !nativeModule?.prepareAsync
     )
       return availability;
-    if (!nativeModule.cancelPreparation || !nativeModule.addListener) {
+    if (!nativeModule.cancelPreparation) {
       throw new LanguageModelError(
         'ERR_PROVIDER_RESPONSE_INVALID',
         'The native preparation bridge is incomplete.'

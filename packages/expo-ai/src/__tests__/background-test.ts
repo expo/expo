@@ -22,9 +22,12 @@ jest.mock('../ExpoAI', () => ({
   },
 }));
 const nativeModule = jest.mocked(NativeModule!);
-const listeners = new Map<string, Set<(value: never) => void>>();
-const emit = <E extends keyof NativeModuleEvents>(event: E, value: NativeModuleEvents[E]) => {
-  listeners.get(event)?.forEach((listener) => listener(value as never));
+const listeners = new Map<string, Set<(...args: never[]) => void>>();
+const emit = <E extends keyof NativeModuleEvents>(
+  event: E,
+  ...args: Parameters<NativeModuleEvents[E]>
+) => {
+  listeners.get(event)?.forEach((listener) => (listener as (...args: unknown[]) => void)(...args));
 };
 const flush = async () => {
   for (let index = 0; index < 100; index++) await Promise.resolve();
@@ -93,7 +96,7 @@ it('interrupts one-shot setup before availability returns without opening a late
     code: 'ERR_APP_BACKGROUND',
   });
   await flush();
-  emit('onBackground', {});
+  emit('onBackground');
   await rejected;
   ready.resolve(available());
   await flush();
@@ -108,7 +111,7 @@ it('interrupts native text work and leaves session disposal to its owner', async
     code: 'ERR_APP_BACKGROUND',
   });
   await flush();
-  emit('onBackground', {});
+  emit('onBackground');
   await rejected;
   expect(owner.cancel).toHaveBeenCalledTimes(1);
   expect(owner.dispose).not.toHaveBeenCalled();
@@ -151,7 +154,7 @@ it.each(['approval', 'handler'] as const)(
     await flush();
     expect(beforeTool).toHaveBeenCalledTimes(1);
     expect(execute).toHaveBeenCalledTimes(phase === 'handler' ? 1 : 0);
-    emit('onBackground', {});
+    emit('onBackground');
     await rejected;
     expect(beforeTool.mock.calls[0]![0].signal.aborted).toBe(true);
     pending.resolve(true);
@@ -184,7 +187,7 @@ it('interrupts preparation while an asynchronous progress callback is pending', 
   const id = nativeModule.prepareAsync!.mock.calls[0]![0];
   emit('onPreparationProgress', { requestId: id, progress: 0.5 });
   await flush();
-  emit('onBackground', {});
+  emit('onBackground');
   await rejected;
   expect(nativeModule.cancelPreparation).toHaveBeenCalledWith(id);
   ready.resolve(available());

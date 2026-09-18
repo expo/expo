@@ -127,7 +127,7 @@ it('rejects unknown schema constraints before native generation and validates fi
   await expect(session.generateAsync('test', { schema })).rejects.toMatchObject({
     code: 'ERR_RESPONSE_INVALID',
   });
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   native.generateAsync.mockResolvedValue(nativeResult('{"category":"work"}'));
   await expect(session.generateAsync('test', { schema })).resolves.toMatchObject({
     value: { category: 'work' },
@@ -150,7 +150,7 @@ it('rejects overlapping requests and aborts uncooperative native work', async ()
   controller.abort();
   await aborted;
   expect(native.cancel).toHaveBeenCalledTimes(1);
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   session.dispose();
 });
 
@@ -162,11 +162,11 @@ it('disposes pending work and releases native ownership exactly once', async () 
     code: 'ERR_SESSION_DISPOSED',
   });
   await flush();
-  expect(native.listenerCount).toBe(2);
+  expect(native.totalListenerCount()).toBe(2);
   session.dispose();
   session.dispose();
   await disposed;
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   expect(native.dispose).toHaveBeenCalledTimes(1);
   expect(native.release).toHaveBeenCalledTimes(1);
   await expect(session.generateAsync('later')).rejects.toMatchObject({
@@ -198,7 +198,7 @@ it('streams snapshots and one validated result; early return aborts the request'
     break;
   }
   expect(native.cancel).toHaveBeenCalledTimes(1);
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   session.dispose();
 });
 
@@ -229,7 +229,7 @@ it('closing a stream cancels immediately while its first next is still waiting',
   await expect(iterator.return!()).resolves.toMatchObject({ done: true });
   await expect(waiting).resolves.toMatchObject({ done: true });
   expect(native.cancel).toHaveBeenCalledTimes(1);
-  expect(native.listenerCount).toBe(0);
+  expect(native.totalListenerCount()).toBe(0);
   session.dispose();
 });
 
@@ -282,8 +282,8 @@ it('validates and intercepts a native tool call before replying asynchronously',
       signal: expect.any(AbortSignal),
     })
   );
-  expect(native.resolveTool).toHaveBeenCalledWith('call-1', 'local result', null);
-  expect(native.listenerCount).toBe(0);
+  expect(native.resolveTool).toHaveBeenCalledWith('call-1', 'local result');
+  expect(native.totalListenerCount()).toBe(0);
   session.dispose();
 });
 

@@ -126,9 +126,9 @@ internal final class LanguageModelSession: SharedObject, @unchecked Sendable {
     }
   }
 
-  func resolveTool(callId: String, output: String?, error: String?) -> Bool {
+  func resolveTool(callId: String, output: String?) -> Bool {
     let request = lock.withLock { active }
-    return request?.resolve(callId: callId, output: output, error: error) ?? false
+    return request?.resolve(callId: callId, output: output) ?? false
   }
 
   func executeBuiltinTool(callId: String, kind: String, imageLabel: String) async throws -> String {
