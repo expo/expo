@@ -304,7 +304,13 @@ function renderFileRules(target) {
 }
 
 /** Source-with-manifest: mirror the parsed targets/products, inject the given deps. */
-function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) {
+function renderSourceManifest(
+  manifest,
+  pkgDeps,
+  injected,
+  frameworkSearchPath,
+  extraSwiftFlags = []
+) {
   const targetsSwift = manifest.targets
     .map((t) => {
       if (t.path == null) {
@@ -324,7 +330,7 @@ function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) 
       return `        .target(
             name: "${t.name}",
             dependencies: [${depsSwift}],
-            path: "root/${t.path}",${renderFileRules(t)}${headers}${renderTargetSettings(frameworkSearchPath, t.settings, t.name)}
+            path: "root/${t.path}",${renderFileRules(t)}${headers}${renderTargetSettings(frameworkSearchPath, t.settings, t.name, extraSwiftFlags)}
         )`;
     })
     .join(',\n');
@@ -376,7 +382,8 @@ function renderPureSwiftManifest(
   frameworkSearchPath,
   excludes = [],
   iosDeploymentTarget = null,
-  hasPrivacyManifest = false
+  hasPrivacyManifest = false,
+  extraSwiftFlags = []
 ) {
   const packageDepsSwift = pkgDeps.length
     ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
@@ -409,7 +416,7 @@ let package = Package(
         .target(
             name: "${product}",
             dependencies: [${targetDepsSwift}],
-            path: "root/${srcRel}",${excludeSwift}${resourcesSwift}${renderTargetSettings(frameworkSearchPath, [], product)}
+            path: "root/${srcRel}",${excludeSwift}${resourcesSwift}${renderTargetSettings(frameworkSearchPath, [], product, extraSwiftFlags)}
         ),
     ],
     swiftLanguageModes: [.v5],
@@ -426,8 +433,12 @@ function escapeSwiftString(value) {
  * A target's `*Settings:` arguments: Expo's binary-free interface tree first, then
  * whatever the module itself declared, in its own order.
  */
-function renderTargetSettings(frameworkSearchPath, settings, targetName) {
-  const interfaceFlags = `.unsafeFlags(["-F", "${escapeSwiftString(frameworkSearchPath)}"])`;
+function renderTargetSettings(frameworkSearchPath, settings, targetName, extraSwiftFlags = []) {
+  const unsafeFlags = (flags) =>
+    `.unsafeFlags([${flags.map((f) => `"${escapeSwiftString(f)}"`).join(', ')}])`;
+  const interfaceFlags = unsafeFlags(['-F', frameworkSearchPath]);
+  // `-Xfrontend` is a Swift driver flag; clang rejects it, so it stays out of c/cxxSettings.
+  const swiftInterfaceFlags = unsafeFlags(['-F', frameworkSearchPath, ...extraSwiftFlags]);
   for (const setting of settings ?? []) {
     if (!SETTING_TOOLS.has(setting.tool)) {
       throw new Error(
@@ -442,7 +453,8 @@ function renderTargetSettings(frameworkSearchPath, settings, targetName) {
     const own = (settings ?? [])
       .filter((s) => s.tool === tool)
       .map((s) => renderSetting(s, targetName));
-    const values = tool === 'linker' ? own : [interfaceFlags, ...own];
+    const injected = tool === 'swift' ? swiftInterfaceFlags : interfaceFlags;
+    const values = tool === 'linker' ? own : [injected, ...own];
     return values.length ? `\n            ${label}: [${values.join(', ')}],` : '';
   }).join('');
 }
@@ -568,7 +580,8 @@ function emitSourceManifestPackage(
   frameworkSearchPath,
   outDir,
   codegenPkgPath,
-  minimumIosDeploymentTarget = null
+  minimumIosDeploymentTarget = null,
+  macroFlags = []
 ) {
   const { unsupportedTargetDeps, ...dumped } = parseDumpedManifest(runDumpPackage(moduleRoot));
   if (unsupportedTargetDeps.length) return { unsupportedTargetDeps };
@@ -586,7 +599,7 @@ function emitSourceManifestPackage(
   const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
   fs.writeFileSync(
     path.join(pkgDir, 'Package.swift'),
-    renderSourceManifest(manifest, pkgDeps, targetDeps, frameworkSearchPath)
+    renderSourceManifest(manifest, pkgDeps, targetDeps, frameworkSearchPath, macroFlags)
   );
 
   return {
@@ -608,7 +621,8 @@ function emitPureSwiftSourcePackage(
   frameworkSearchPath,
   outDir,
   codegenPkgPath,
-  iosDeploymentTarget = null
+  iosDeploymentTarget = null,
+  macroFlags = []
 ) {
   const srcDir = ['ios', 'apple']
     .map((s) => path.join(moduleRoot, s))
@@ -630,7 +644,8 @@ function emitPureSwiftSourcePackage(
       frameworkSearchPath,
       collectIgnoredDirs(srcDir),
       iosDeploymentTarget,
-      fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST))
+      fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST)),
+      macroFlags
     )
   );
 

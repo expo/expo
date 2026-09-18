@@ -1,5 +1,9 @@
 'use strict';
 
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
 const {
   UnsupportedModulesError,
   UNMAPPED_POD_ALLOWLIST,
@@ -9,6 +13,9 @@ const {
   renderUnsupportedReport,
   reportUnsupported,
   renderUnmappedDependencyWarning,
+  collectRootConflicts,
+  renderRootConflictWarning,
+  renderExtraPodsWarning,
 } = require('../diagnostics');
 
 describe('classifyUnsupported', () => {
@@ -241,6 +248,15 @@ describe('unmappedPodDependencies', () => {
   it('drops pods that are already known to resolve without a podspec', () => {
     expect(UNMAPPED_POD_ALLOWLIST.has('sqlite3')).toBe(true);
     expect(unmappedPodDependencies(['sqlite3', 'SDWebImage'])).toEqual(['SDWebImage']);
+  });
+
+  it('drops a dependency whose full name or root name is a resolved SwiftPM dependency', () => {
+    expect(
+      unmappedPodDependencies(
+        ['SDWebImage', 'libavif', 'libavif/libdav1d', 'ZXingObjC/OneD'],
+        new Set(['SDWebImage', 'libavif'])
+      )
+    ).toEqual(['ZXingObjC/OneD']);
   });
 });
 
@@ -500,5 +516,165 @@ describe('dependencies on targets the generated package cannot declare', () => {
     expect(report).toContain('"FooKit"');
     expect(report).toContain('"FooMacros"');
     expect(report).toContain('macro target');
+  });
+});
+
+describe('a module installed twice', () => {
+  let tmp;
+  const dir = (...segments) => {
+    const created = path.join(tmp, ...segments);
+    fs.mkdirSync(created, { recursive: true });
+    return created;
+  };
+  const modules = [{ packageName: 'expo-camera', pods: [{ podName: 'ExpoCamera' }] }];
+
+  beforeAll(() => {
+    tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-roots-')));
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('finds no conflict when both roots are the same directory through a symlink', () => {
+    const packageRoot = dir('node_modules', 'expo-camera');
+    const link = path.join(dir('links'), 'expo-camera');
+    fs.symlinkSync(packageRoot, link, 'dir');
+
+    expect(
+      collectRootConflicts(
+        modules,
+        { ExpoCamera: { packageRoot } },
+        new Map([['expo-camera', link]])
+      )
+    ).toEqual([]);
+  });
+
+  it('finds a conflict when the two roots are different directories', () => {
+    const packageRoot = dir('node_modules', 'expo-camera');
+    const autolinkedRoot = dir('node_modules', 'some-lib', 'node_modules', 'expo-camera');
+
+    expect(
+      collectRootConflicts(
+        modules,
+        { ExpoCamera: { packageRoot } },
+        new Map([['expo-camera', autolinkedRoot]])
+      )
+    ).toEqual([{ packageName: 'expo-camera', moduleRoot: packageRoot, autolinkedRoot }]);
+  });
+
+  it('finds no conflict for a documented root that is gone', () => {
+    expect(
+      collectRootConflicts(
+        modules,
+        { ExpoCamera: { packageRoot: path.join(tmp, 'vanished') } },
+        new Map([['expo-camera', dir('node_modules', 'expo-camera')]])
+      )
+    ).toEqual([]);
+  });
+
+  // A path that cannot be resolved cannot be compared, and a diagnostic is never
+  // worth failing a sync over.
+  it('reports nothing, and does not throw, when a root cannot be resolved', () => {
+    const packageRoot = dir('node_modules', 'expo-camera');
+    jest.spyOn(fs, 'realpathSync').mockImplementation(() => {
+      throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+    });
+
+    expect(
+      collectRootConflicts(
+        modules,
+        { ExpoCamera: { packageRoot } },
+        new Map([['expo-camera', path.join(tmp, 'elsewhere')]])
+      )
+    ).toEqual([]);
+  });
+
+  it('names both directories, what uses each, and how to deduplicate', () => {
+    const report = renderRootConflictWarning([
+      {
+        packageName: 'expo-camera',
+        moduleRoot: '/app/node_modules/expo-camera',
+        autolinkedRoot: '/app/node_modules/some-lib/node_modules/expo-camera',
+      },
+    ]);
+    expect(report).toMatch(/^warning: Expo module "expo-camera"/);
+    expect(report).toContain('/app/node_modules/expo-camera');
+    expect(report).toContain('/app/node_modules/some-lib/node_modules/expo-camera');
+    expect(report).toContain('npm ls expo-camera');
+    expect(report).toContain('dedupe');
+  });
+
+  // The copies can be different versions, so the mismatch is not confined to runtime.
+  it('names both failure modes, without pseudo-code for the import', () => {
+    const report = renderRootConflictWarning([
+      {
+        packageName: 'expo-camera',
+        moduleRoot: '/app/node_modules/expo-camera',
+        autolinkedRoot: '/app/node_modules/some-lib/node_modules/expo-camera',
+      },
+    ]);
+    expect(report).toContain("your app's JavaScript imports the second");
+    expect(report).toContain('usually surfaces at runtime');
+    expect(report).toContain('can fail the build');
+  });
+
+  it('renders nothing when no module is installed twice', () => {
+    expect(renderRootConflictWarning([])).toBe('');
+  });
+});
+
+describe('extra CocoaPods dependencies', () => {
+  const pods = [
+    { name: 'MyLocalPod', path: '../vendor/MyLocalPod' },
+    { name: 'Firebase', git: 'https://github.com/firebase/firebase-ios-sdk.git' },
+    { name: 'AppCenter' },
+  ];
+
+  it('names every pod and where it comes from', () => {
+    const report = renderExtraPodsWarning(pods);
+    expect(report).toContain('MyLocalPod (local path: ../vendor/MyLocalPod)');
+    expect(report).toContain('Firebase (git: https://github.com/firebase/firebase-ios-sdk.git)');
+    expect(report).toContain('AppCenter (published pod)');
+  });
+
+  it('names a custom spec repo as its own origin, and gives the version', () => {
+    const report = renderExtraPodsWarning([
+      { name: 'InternalSDK', source: 'https://specs.example.com/private.git', version: '2.1.0' },
+      { name: 'AppCenter', version: '5.0.0' },
+    ]);
+    expect(report).toContain(
+      'InternalSDK (spec repo: https://specs.example.com/private.git, version 2.1.0)'
+    );
+    expect(report).toContain('AppCenter (published pod, version 5.0.0)');
+  });
+
+  it('names the git ref, the only thing that says which code a git pod means', () => {
+    const report = renderExtraPodsWarning([
+      { name: 'Firebase', git: 'https://github.com/firebase/firebase-ios-sdk.git', tag: '10.0.0' },
+      { name: 'Sentry', git: 'https://github.com/getsentry/sentry-cocoa.git', branch: 'main' },
+      { name: 'Lottie', git: 'https://github.com/airbnb/lottie-ios.git', commit: 'a1b2c3d' },
+    ]);
+    expect(report).toContain(
+      'Firebase (git: https://github.com/firebase/firebase-ios-sdk.git, tag 10.0.0)'
+    );
+    expect(report).toContain(
+      'Sentry (git: https://github.com/getsentry/sentry-cocoa.git, branch main)'
+    );
+    expect(report).toContain(
+      'Lottie (git: https://github.com/airbnb/lottie-ios.git, commit a1b2c3d)'
+    );
+  });
+
+  it('says what declared them, how they fail, and what to do instead', () => {
+    const report = renderExtraPodsWarning(pods);
+    expect(report).toMatch(/^warning: /);
+    expect(report).toContain('extraPods');
+    expect(report).toContain('Podfile.properties.json');
+    expect(report).toContain('fails to compile or link');
+    expect(report).toContain('at runtime');
+    expect(report).toContain('keep this app on CocoaPods');
+  });
+
+  it('renders nothing when the app declares none', () => {
+    expect(renderExtraPodsWarning([])).toBe('');
   });
 });

@@ -13,6 +13,7 @@
 - [Android] Enforce `ndkVersion` for Android library projects. ([#50240](https://github.com/expo/expo/pull/50240) by [@kudo](https://github.com/kudo))
 - [iOS] Mark source-only products with `sourceOnly` in the `prebuilt-metadata` document, so consumers can tell a product that never produces an XCFramework from one the prebuild pipeline can build. ([#50095](https://github.com/expo/expo/pull/50095) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Publish each product's iOS deployment floor as `iosDeploymentTarget` in the `prebuilt-metadata` document, so consumers outside CocoaPods can read it from the product's own config instead of its podspec. ([#50096](https://github.com/expo/expo/pull/50096) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Publish each product's SPM package dependencies as `spmDependencies` in the `prebuilt-metadata` document, so consumers can find the XCFrameworks that ship beside a precompiled product without reading its config. ([#50152](https://github.com/expo/expo/pull/50152) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.2 — 2026-09-15
 
