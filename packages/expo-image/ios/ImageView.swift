@@ -106,6 +106,15 @@ public final class ImageView: ExpoView {
    */
   var imageLayoutSize: CGSize = .zero
 
+  /**
+   Watches for the clipping mask on `sdImageView` being replaced. On the New Architecture,
+   `RCTViewComponentView.invalidateLayer` recreates that mask at a zero origin — including in
+   layout-only commits (e.g. driven by an orientation change round-trip) that give this view
+   no other callback. That drops the mask compensation applied in `applyContentPosition`,
+   visually shifting the cropped image, so it needs to be re-applied whenever the mask changes.
+   */
+  private var maskObservation: NSKeyValueObservation?
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -142,6 +151,15 @@ public final class ImageView: ExpoView {
     sdImageView.layer.minificationFilter = .trilinear
 
     addSubview(sdImageView)
+
+    maskObservation = sdImageView.layer.observe(\.mask) { [weak self] _, _ in
+      MainActor.assumeIsolated {
+        guard let self, self.imageLayoutSize != .zero else {
+          return
+        }
+        self.applyContentPosition(contentSize: self.imageLayoutSize, containerSize: self.frame.size)
+      }
+    }
   }
 
   deinit {
