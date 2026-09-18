@@ -379,7 +379,7 @@ describe('native events before React commits the preview key', () => {
     const { result } = renderHook(
       () => ({
         context: actual.useLinkPreviewContext(),
-        transition: usePreviewTransition(state, makeEmit()),
+        transition: usePreviewTransition(state, makeEmit(), isPreloaded),
       }),
       { wrapper: actual.LinkPreviewContextProvider }
     );
@@ -398,7 +398,7 @@ describe('native events before React commits the preview key', () => {
     const { result } = renderHook(
       () => ({
         context: actual.useLinkPreviewContext(),
-        transition: usePreviewTransition(makeState(), makeEmit()),
+        transition: usePreviewTransition(makeState(), makeEmit(), isPreloaded),
       }),
       { wrapper: actual.LinkPreviewContextProvider }
     );
