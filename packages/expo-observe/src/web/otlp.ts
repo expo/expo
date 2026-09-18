@@ -1,7 +1,9 @@
 import type { LogRecord, LogSeverity } from 'expo-app-metrics';
 
+import type { OTAnyValue, OTKeyValue, OTLogRecord, OTLogsRequestBody } from './types';
+
 // Bumping this signals that the attribute keys follow a newer revision of the OpenTelemetry
-// semantic conventions; audit the keys used here and in `module.web.ts` against the SemConv
+// semantic conventions; audit the keys used here and in `dispatch.ts` against the SemConv
 // changelog first.
 const semConvSchemaUrl = 'https://opentelemetry.io/schemas/1.27.0';
 
@@ -13,34 +15,6 @@ const severityNumbers: Record<LogSeverity, number> = {
   warn: 13,
   error: 17,
   fatal: 21,
-};
-
-type OTAnyValue =
-  | { stringValue: string }
-  | { intValue: number }
-  | { doubleValue: number }
-  | { boolValue: boolean }
-  | { arrayValue: { values: OTAnyValue[] } }
-  | { kvlistValue: { values: OTKeyValue[] } };
-
-type OTKeyValue = { key: string; value: OTAnyValue };
-
-export type OTLogRecord = {
-  timeUnixNano: number;
-  observedTimeUnixNano: number;
-  severityNumber: number;
-  severityText: string;
-  body: { stringValue: string };
-  attributes: OTKeyValue[];
-  droppedAttributesCount?: number;
-};
-
-export type OTLogsRequestBody = {
-  resourceLogs: {
-    resource: { attributes: OTKeyValue[] };
-    scopeLogs: { scope: { name: string; version: string }; logRecords: OTLogRecord[] }[];
-    schemaUrl: string;
-  }[];
 };
 
 /**

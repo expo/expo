@@ -67,6 +67,14 @@ export type ObserveConfig = {
    */
   sampleRate?: number;
   /**
+   * Whether the web implementation is enabled. When `true`, `configure` on web initializes the
+   * navigation integrations and emits the `configure` event, and log events are dispatched to
+   * EAS Observe. When `false`, Observe stays a no-op on web. Has no effect on Android and iOS.
+   *
+   * @default false
+   */
+  web?: boolean;
+  /**
    * Whether to record unhandled JavaScript errors as `exception` log events.
    *
    * When `false`, unhandled errors are no longer recorded. React Native's own handling is
