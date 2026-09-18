@@ -1,5 +1,5 @@
 import {
-  getChildren,
+  isLayoutRouteNode,
   type DynamicConvention,
   type LayoutRouteNode,
   type RouteNode,
@@ -44,7 +44,7 @@ async function loadStaticParamsRecursive(
   route: RouteNode,
   props: { parentParams: any }
 ): Promise<RouteNode[]> {
-  const children = getChildren(route);
+  const children = isLayoutRouteNode(route) ? route.children : [];
   if (!route?.dynamic && !children.length) {
     return [route];
   }
@@ -56,7 +56,7 @@ async function loadStaticParamsRecursive(
 
   const traverseForNode = async (nextParams: Record<string, string | string[]>) => {
     const nextChildren: RouteNode[] = [];
-    for (const child of getChildren(route)) {
+    for (const child of isLayoutRouteNode(route) ? route.children : []) {
       const children = await loadStaticParamsRecursive(child, {
         ...props,
         parentParams: nextParams,
@@ -72,7 +72,7 @@ async function loadStaticParamsRecursive(
       ...props.parentParams,
     };
 
-    if (route.type === 'layout') {
+    if (isLayoutRouteNode(route)) {
       route.children = await traverseForNode(nextParams);
     }
 
@@ -119,7 +119,11 @@ async function loadStaticParamsRecursive(
         route.type === 'layout'
           ? { ...generated, type: 'layout', children: dynamicChildren }
           : route.type === 'route'
-            ? { ...generated, type: 'route', parentContextKey: route.contextKey }
+            ? {
+                ...generated,
+                type: 'route',
+                parentContextKey: route.contextKey,
+              }
             : generated;
 
       return generatedRoute;

@@ -106,9 +106,11 @@ function getSortedChildren<
   routeSource: RouteSource;
 }[] {
   if (!order?.length) {
-    return children
-      .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));
+    return children.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
+      route,
+      props: {},
+      routeSource: 'filesystem' as const,
+    }));
   }
   const entries = [...children];
 
@@ -164,9 +166,11 @@ function getSortedChildren<
 
   // Add any remaining children
   ordered.push(
-    ...entries
-      .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }))
+    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
+      route,
+      props: {},
+      routeSource: 'filesystem' as const,
+    }))
   );
 
   return ordered;
@@ -185,7 +189,7 @@ export function useSortedScreens<
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const children = node ? getChildren(node) : [];
+  const children = node && isLayoutRouteNode(node) ? node.children : [];
   const sorted = children.length
     ? getSortedChildren(children, order, getValidInitialRouteName(node))
     : [];
@@ -595,7 +599,7 @@ export function screenOptionsFactory<TOptions extends object = Record<string, an
     };
 
     // Prevent generated screens from showing up in the tab bar.
-    if (isInternal(route) || isGuarded) {
+    if ((isScreenRouteNode(route) && route.internal) || isGuarded) {
       // TODO(@ubax): Document migrating withLayoutContext navigators to standard navigation,
       // where processScreens can map hidden to navigator-specific options.
       output.hidden = true;

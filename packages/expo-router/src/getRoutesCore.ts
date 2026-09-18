@@ -742,8 +742,10 @@ function validateRouteTreeExports(node: RouteNode) {
   }
 
   runtimeValidateRouteNode(node);
-  for (const child of getChildren(node)) {
-    validateRouteTreeExports(child);
+  if (isLayoutRouteNode(node)) {
+    for (const child of node.children) {
+      validateRouteTreeExports(child);
+    }
   }
 }
 

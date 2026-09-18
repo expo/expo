@@ -1,7 +1,7 @@
 import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { injectAssetsIntoHtml } from '@expo/router-server/build/utils/html';
-import { getEntryPoints, type RouteNode } from 'expo-router/build/Route';
+import { isRedirectRouteNode, isScreenRouteNode, type RouteNode } from 'expo-router/build/Route';
 import type { AssetInfo } from 'expo-server/private';
 
 import { event } from './ssrEvents';
@@ -80,9 +80,16 @@ export function serialAssetsToStaticContentAssets(
       // where CSS is linked from standalone files. In development, we inline CSS into the HTML
       // document directly for HMR
       if (isExporting) {
-        return { type: 'css' as const, href: combineUrlPath(baseUrl, asset.filename) };
+        return {
+          type: 'css' as const,
+          href: combineUrlPath(baseUrl, asset.filename),
+        };
       }
-      return { type: 'inline' as const, source: asset.source, hmrId: asset.metadata.hmrId };
+      return {
+        type: 'inline' as const,
+        source: asset.source,
+        hmrId: asset.metadata.hmrId,
+      };
     });
 
   if (bundleUrl) {

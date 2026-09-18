@@ -117,7 +117,9 @@ function findDefaultRedirectRouteInNavigator(
   guardedRedirects: GuardedRedirects
 ): RouteNode | undefined {
   const anchor = getValidInitialRoute(node);
-  const children = [...getChildren(node)].sort(sortRoutesWithInitial(anchor?.route));
+  const children = [...(isLayoutRouteNode(node) ? node.children : [])].sort(
+    sortRoutesWithInitial(anchor?.route)
+  );
 
   if (anchor && !isRouteGuarded(anchor.route, guardedRedirects)) {
     return anchor;

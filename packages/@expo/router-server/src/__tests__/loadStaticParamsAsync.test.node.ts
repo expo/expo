@@ -1,5 +1,5 @@
 import type { RequireContext } from 'expo-router';
-import { getExactRoutes, type RouteNode } from 'expo-router/internal/routing';
+import { getExactRoutes, isLayoutRouteNode, type RouteNode } from 'expo-router/internal/routing';
 
 import { loadStaticParamsAsync, assertStaticParams } from '../loadStaticParamsAsync';
 
@@ -13,8 +13,10 @@ function createMockContextModule(map: Record<string, Record<string, any>> = {}) 
   return contextModule as unknown as RequireContext;
 }
 
-function dropFunctions({ loadRoute, ...node }: RouteNode): unknown {
-  return node.type === 'layout' ? { ...node, children: node.children.map(dropFunctions) } : node;
+function dropFunctions(routeNode: RouteNode): unknown {
+  const children = isLayoutRouteNode(routeNode) ? routeNode.children.map(dropFunctions) : undefined;
+  const { loadRoute, ...node } = routeNode;
+  return children ? { ...node, children } : node;
 }
 
 describe(assertStaticParams, () => {
