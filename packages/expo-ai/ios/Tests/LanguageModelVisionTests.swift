@@ -13,7 +13,7 @@ import Testing
 @Suite(
   "Vision extraction with generated images",
   .serialized,
-  .enabled(if: ProcessInfo.processInfo.environment["EXPO_LOCAL_LANGUAGE_MODELS_VISION_TESTS"] == "1")
+  .enabled(if: ProcessInfo.processInfo.environment["EXPO_AI_VISION_TESTS"] == "1")
 )
 struct LanguageModelVisionTests {
   @Test
