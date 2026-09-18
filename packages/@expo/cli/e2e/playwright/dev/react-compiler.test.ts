@@ -48,13 +48,13 @@ test.describe(baseDir, () => {
     });
 
     test('bundle contains live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const commonChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
       }).filter((file) => /^__common-.*\.js$/.test(path.basename(file.path)));
-      expect(jsFiles).toHaveLength(1);
+      expect(commonChunkJsFiles).toHaveLength(1);
 
       // The fixture's shared hooks are emitted in the common chunk.
-      const bundleContent = fs.readFileSync(jsFiles[0].path, 'utf8');
+      const bundleContent = fs.readFileSync(commonChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
       expect(bundleContent).toMatch(
@@ -112,13 +112,13 @@ test.describe(baseDir, () => {
     });
 
     test('bundle does not have live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const commonChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
       }).filter((file) => /^__common-.*\.js$/.test(path.basename(file.path)));
-      expect(jsFiles).toHaveLength(1);
+      expect(commonChunkJsFiles).toHaveLength(1);
 
       // The fixture's shared hooks are emitted in the common chunk.
-      const bundleContent = fs.readFileSync(jsFiles[0].path, 'utf8');
+      const bundleContent = fs.readFileSync(commonChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which causes the application to crash uses static bindings.
       expect(bundleContent).not.toMatch(
