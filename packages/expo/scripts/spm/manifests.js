@@ -370,6 +370,60 @@ ${targetsSwift}
 // Apple requires this manifest in shipping apps; CocoaPods ships it as a resource bundle.
 const PRIVACY_MANIFEST = 'PrivacyInfo.xcprivacy';
 
+const SPM_VERSION_REQUIREMENTS = ['exact', 'from', 'branch', 'revision'];
+
+/**
+ * The requirement argument of a `.package(url:)` declaration, from the version an
+ * spm.config.json entry declares. A version this cannot spell throws: the
+ * alternative is a declaration SwiftPM fails to parse, far from the config.
+ */
+function spmVersionRequirement(version, url) {
+  // Mirrors readSpmVersion in expo-modules-autolinking, which drops an ambiguous
+  // version rather than publishing it: neither end may pick one of several.
+  const declared =
+    typeof version === 'object' && version !== null
+      ? SPM_VERSION_REQUIREMENTS.filter((key) => key in version)
+      : [];
+  if (declared.length > 1) {
+    throw new Error(
+      `Cannot declare the Swift package "${url}": its spm.config.json entry names more than one version ` +
+        `requirement (${declared.join(', ')}), and SwiftPM resolves a package at exactly one. Keep the ` +
+        'requirement the package should resolve at and remove the others.'
+    );
+  }
+  const value = declared.length === 1 ? version[declared[0]] : undefined;
+  if (typeof value !== 'string') {
+    throw new Error(
+      `Cannot declare the Swift package "${url}": its spm.config.json entry names no version requirement ` +
+        'this renderer supports, so SwiftPM has nothing to resolve the package at. Declare the entry with ' +
+        'an exact, from, branch or revision version, written as a string.'
+    );
+  }
+  return `${declared[0]}: "${escapeSwiftString(value)}"`;
+}
+
+/**
+ * The identity SwiftPM resolves a package URL to: its last path component, without
+ * trailing slashes or a `.git` suffix. It is the repository name, which differs
+ * from the product where a repository ships one under another name, as
+ * `libavif-Xcode` ships `libavif`.
+ */
+function spmPackageIdentity(pkg) {
+  return pkg.url
+    .replace(/\/+$/, '')
+    .split('/')
+    .pop()
+    .replace(/\.git$/, '');
+}
+
+function spmPackageDeclaration(pkg) {
+  return `.package(url: "${escapeSwiftString(pkg.url)}", ${spmVersionRequirement(pkg.version, pkg.url)})`;
+}
+
+function spmProductDependency(pkg) {
+  return `.product(name: "${escapeSwiftString(pkg.productName)}", package: "${escapeSwiftString(spmPackageIdentity(pkg))}")`;
+}
+
 /**
  * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources, on
  * the deployment floor the plugin read from the module's podspec.
@@ -622,7 +676,8 @@ function emitPureSwiftSourcePackage(
   outDir,
   codegenPkgPath,
   iosDeploymentTarget = null,
-  macroFlags = []
+  macroFlags = [],
+  spmPackages = []
 ) {
   const srcDir = ['ios', 'apple']
     .map((s) => path.join(moduleRoot, s))
@@ -639,8 +694,8 @@ function emitPureSwiftSourcePackage(
     renderPureSwiftManifest(
       product,
       srcRel,
-      pkgDeps,
-      targetDeps,
+      [...pkgDeps, ...spmPackages.map((pkg) => spmPackageDeclaration(pkg))],
+      [...targetDeps, ...spmPackages.map((pkg) => spmProductDependency(pkg))],
       frameworkSearchPath,
       collectIgnoredDirs(srcDir),
       iosDeploymentTarget,
@@ -660,6 +715,9 @@ module.exports = {
   resolveTargetPaths,
   renderSourceManifest,
   renderPureSwiftManifest,
+  spmPackageIdentity,
+  spmPackageDeclaration,
+  spmProductDependency,
   raiseFloor,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
