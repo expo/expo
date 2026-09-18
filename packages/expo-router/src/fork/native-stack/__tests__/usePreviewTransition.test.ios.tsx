@@ -42,7 +42,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: false,
       openPreviewKey: undefined,
-      openPreviewKeyRef: { current: undefined },
+      getOpenPreviewKey: () => undefined,
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
   });
@@ -66,7 +66,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -82,7 +82,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -117,7 +117,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -151,7 +151,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -176,7 +176,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -203,7 +203,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -229,7 +229,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -270,7 +270,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -314,7 +314,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
-      openPreviewKeyRef: { current: 'preview-key' },
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -343,7 +343,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'index-key',
-      openPreviewKeyRef: { current: 'index-key' },
+      getOpenPreviewKey: () => 'index-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -375,7 +375,9 @@ describe('native events before React commits the preview key', () => {
   beforeEach(() => mockUseLinkPreviewContext.mockImplementation(actual.useLinkPreviewContext));
 
   it('handles transitionStart in the same batch as the native tap', () => {
-    const state = makeState({ routes: [makeRoute('index-key'), makeRoute('preview-key')] });
+    const state = makeState({
+      routes: [makeRoute('index-key'), makeRoute('preview-key')],
+    });
     const { result } = renderHook(
       () => ({
         context: actual.useLinkPreviewContext(),
@@ -406,7 +408,11 @@ describe('native events before React commits the preview key', () => {
     const oldEmit = result.current.transition.emit;
     act(() => {
       result.current.context.setOpenPreviewKey('new-key');
-      oldEmit({ type: 'transitionEnd', target: 'old-key', data: { closing: false } });
+      oldEmit({
+        type: 'transitionEnd',
+        target: 'old-key',
+        data: { closing: false },
+      });
     });
     expect(result.current.context.openPreviewKey).toBe('new-key');
   });

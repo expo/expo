@@ -23,14 +23,14 @@ export function findPreviewActivationPath(
     ) {
       return undefined;
     }
-    return [{ key: route.key, name: route.name }];
+    return [{ key: route.key }];
   }
 
   for (const route of state.routes) {
     if (route.state?.stale === false) {
       const childPath = findPreviewActivationPath(route.state, routeKey, previewId);
       if (childPath) {
-        return [{ key: route.key, name: route.name }, ...childPath];
+        return [{ key: route.key }, ...childPath];
       }
     }
   }

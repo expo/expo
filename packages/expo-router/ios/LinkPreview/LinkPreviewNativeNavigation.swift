@@ -94,8 +94,11 @@ internal class LinkPreviewNativeNavigation {
   private var selection: LinkPreviewActivation?
   private weak var committedActivation: LinkPreviewActivation?
   private let pathWalker = LinkPreviewPathWalker()
+  private let logger: ExpoModulesCore.Logger?
 
-  init(logger: ExpoModulesCore.Logger?) {}
+  init(logger: ExpoModulesCore.Logger?) {
+    self.logger = logger
+  }
 
   func beginInteraction() {
     committedActivation?.cancel()
@@ -113,6 +116,11 @@ internal class LinkPreviewNativeNavigation {
 
   func updatePreloadedView(path: [PreviewActivationRoute], responder: UIView) {
     let result = pathWalker.walk(path: path, responder: responder)
+    if !result.resolved {
+      logger?.warn(
+        "[expo-router] No preloaded screen view to push. Link.Preview transition is only supported inside a native stack or native tabs navigator."
+      )
+    }
     selection = LinkPreviewActivation(
       screen: result.preloadedScreenView as? RNSScreenView,
       stack: result.preloadedStackView as? RNSScreenStackView,

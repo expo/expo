@@ -44,7 +44,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
       return
     }
     linkPreviewNativeNavigation.updatePreloadedView(
-      path: path.map { PreviewActivationRoute(key: $0.key, name: $0.name) },
+      path: path.map { PreviewActivationRoute(key: $0.key) },
       responder: self
     )
   }

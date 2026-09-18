@@ -2,13 +2,13 @@ import UIKit
 
 struct PreviewActivationRoute {
   let key: String
-  let name: String
 }
 
 struct LinkPreviewPathWalkResult {
   let preloadedScreenView: UIView?
   let preloadedStackView: UIView?
   let tabChangeCommands: [TabChangeCommand]
+  let resolved: Bool
 }
 
 final class LinkPreviewPathWalker {
@@ -28,17 +28,18 @@ final class LinkPreviewPathWalker {
       return LinkPreviewPathWalkResult(
         preloadedScreenView: nil,
         preloadedStackView: nil,
-        tabChangeCommands: []
+        tabChangeCommands: [],
+        resolved: false
       )
     }
 
     var commands: [TabChangeCommand] = []
     let match = descend(view: anchorView, cursor: cursor, path: path, commands: &commands)
-    // A match contains the screen to activate and any tab changes needed to reach it.
     return LinkPreviewPathWalkResult(
       preloadedScreenView: match?.screenView,
       preloadedStackView: match?.stackView,
-      tabChangeCommands: match == nil ? [] : commands
+      tabChangeCommands: match == nil ? [] : commands,
+      resolved: match != nil
     )
   }
 
@@ -97,7 +98,6 @@ final class LinkPreviewPathWalker {
           screenId(from: $0) == path[routeIndex].key
         })
       else {
-        // This stack does not contain the next route in the activation path.
         return nil
       }
 
@@ -106,7 +106,6 @@ final class LinkPreviewPathWalker {
           // The path matched, but its terminal screen is already active.
           return (nil, nil)
         }
-        // The terminal route is a preloaded screen in this stack.
         return (screenView, view)
       }
 
@@ -123,11 +122,9 @@ final class LinkPreviewPathWalker {
           // A deeper active route matched, so activate its nearest preloaded ancestor instead.
           return (screenView, view)
         }
-        // A descendant found the screen to activate or completed a tab-only path.
         return match
       }
 
-      // No descendant of the matched screen contains the remaining path.
       return nil
     }
 
@@ -146,10 +143,8 @@ final class LinkPreviewPathWalker {
           commands.append(TabChangeCommand(tabBarController: tabBarController, tabIndex: tabIndex))
         }
         if routeIndex == path.index(before: path.endIndex) {
-          // The path ends at a tab, so applying the collected tab changes completes activation.
           return (nil, nil)
         }
-        // Continue inside the matched tab to resolve the rest of the path.
         return descendChildren(
           of: tabViews[tabIndex],
           cursor: path.index(after: routeIndex),
@@ -157,11 +152,9 @@ final class LinkPreviewPathWalker {
           commands: &commands
         )
       }
-      // This tab controller does not contain any remaining route in the path.
       return nil
     }
 
-    // This view is not a stack or tab host, so search through its children.
     return descendChildren(of: view, cursor: cursor, path: path, commands: &commands)
   }
 
@@ -175,11 +168,9 @@ final class LinkPreviewPathWalker {
       var branchCommands = commands
       if let match = descend(view: child, cursor: cursor, path: path, commands: &branchCommands) {
         commands = branchCommands
-        // Keep only the tab changes collected along the successful child branch.
         return match
       }
     }
-    // None of this view's child branches can resolve the remaining path.
     return nil
   }
 
@@ -190,25 +181,20 @@ final class LinkPreviewPathWalker {
 
   private func screenId(from view: UIView) -> String? {
     guard view.responds(to: Self.screenIdSelector) else {
-      // Views without `screenId` cannot represent a stack screen.
       return nil
     }
-    // The screen ID maps a native screen back to its keyed navigation route.
     return view.value(forKey: Self.screenIdName) as? String
   }
 
   private func screenIds(from view: UIView) -> [String]? {
     guard view.responds(to: Self.screenIdsSelector) else {
-      // Views without `screenIds` cannot represent a screen stack.
       return nil
     }
-    // The IDs identify every route currently rendered by this screen stack.
     return view.value(forKey: Self.screenIdsName) as? [String]
   }
 
   private func activityState(from view: UIView) -> Int? {
     guard view.responds(to: Self.activityStateSelector) else {
-      // A missing activity state means the view cannot be classified as active or preloaded.
       return nil
     }
     // React Native Screens uses `0` for a preloaded screen that can be activated.
@@ -217,7 +203,6 @@ final class LinkPreviewPathWalker {
 
   private func children(of view: UIView) -> [UIView] {
     guard view.responds(to: Self.reactSubviewsSelector) else {
-      // Plain UIKit views expose their traversable children through `subviews`.
       return view.subviews
     }
     // Prefer React-managed children while falling back to UIKit's hierarchy.

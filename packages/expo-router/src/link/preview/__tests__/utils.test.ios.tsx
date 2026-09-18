@@ -56,7 +56,11 @@ function tabsState(): NavigationState {
                 routeNames: ['index', 'details'],
                 routes: [
                   { key: 'settings-index-key', name: 'index' },
-                  { key: 'details-key', name: 'details', params: previewParams },
+                  {
+                    key: 'details-key',
+                    name: 'details',
+                    params: previewParams,
+                  },
                 ],
               },
             },
@@ -69,15 +73,15 @@ function tabsState(): NavigationState {
 
 it('returns the ancestor path to a preloaded route in the focused stack', () => {
   expect(findPreviewActivationPath(stackState(), 'details-key', previewId)).toEqual([
-    { key: 'details-key', name: 'details' },
+    { key: 'details-key' },
   ]);
 });
 
 it('returns the ancestor path to a preloaded route in another tab', () => {
   expect(findPreviewActivationPath(tabsState(), 'details-key', previewId)).toEqual([
-    { key: 'root-key', name: '__root' },
-    { key: 'settings-key', name: 'settings' },
-    { key: 'details-key', name: 'details' },
+    { key: 'root-key' },
+    { key: 'settings-key' },
+    { key: 'details-key' },
   ]);
 });
 
@@ -105,7 +109,7 @@ it('returns the preloaded route when a focused sibling has different public para
   };
 
   expect(findPreviewActivationPath(state, 'details-key', previewId)).toEqual([
-    { key: 'details-key', name: 'details' },
+    { key: 'details-key' },
   ]);
 });
 

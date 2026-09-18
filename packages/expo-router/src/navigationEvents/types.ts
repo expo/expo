@@ -38,11 +38,7 @@ export interface ActionDispatchedEvent {
   state: ReactNavigationState;
 }
 
-/**
- * Fires after navigation state commits once for each `PRELOAD` action that changes it. Unlike
- * `pagePreloaded`, which fires when an unfocused screen mounts, this event reports the route
- * affected by the preload action.
- */
+/** Fires after navigation state commits for each `PRELOAD` action that changes it. */
 export interface RoutePreloadedEvent {
   type: 'routePreloaded';
   routeKey: string;

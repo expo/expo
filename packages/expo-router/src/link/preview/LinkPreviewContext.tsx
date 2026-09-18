@@ -1,5 +1,5 @@
-import type { PropsWithChildren, RefObject } from 'react';
-import { createContext, use, useState, useRef, useCallback, useEffect } from 'react';
+import type { PropsWithChildren } from 'react';
+import { createContext, use, useState, useCallback, useEffect, useSyncExternalStore } from 'react';
 
 import type { ReactNavigationState } from '../../global-state/types';
 import { unstable_navigationEvents } from '../../navigationEvents';
@@ -17,24 +17,49 @@ const LinkPreviewContext = createContext<
   | {
       isStackAnimationDisabled: boolean;
       openPreviewKey: string | undefined;
-      openPreviewKeyRef: RefObject<string | undefined>;
+      getOpenPreviewKey: () => string | undefined;
       setOpenPreviewKey: (openPreviewKey: string | undefined) => void;
     }
   | undefined
 >(undefined);
 
+function createOpenPreviewKeyStore() {
+  let key: string | undefined;
+  const listeners = new Set<() => void>();
+
+  return {
+    getSnapshot: () => key,
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    set: (nextKey: string | undefined) => {
+      if (key === nextKey) return;
+      key = nextKey;
+      listeners.forEach((listener) => listener());
+    },
+  };
+}
+
 export function LinkPreviewContextProvider({ children }: PropsWithChildren) {
-  const [openPreviewKey, setRenderedPreviewKey] = useState<string | undefined>(undefined);
-  const openPreviewKeyRef = useRef<string | undefined>(undefined);
-  const setOpenPreviewKey = useCallback((key: string | undefined) => {
-    // Native transition events can arrive before the state update is rendered.
-    openPreviewKeyRef.current = key;
-    setRenderedPreviewKey(key);
-  }, []);
+  const [store] = useState(createOpenPreviewKeyStore);
+  const openPreviewKey = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getSnapshot
+  );
+  const setOpenPreviewKey = useCallback(
+    (key: string | undefined) => {
+      store.set(key);
+    },
+    [store]
+  );
   useEffect(
     () =>
       unstable_navigationEvents.addListener('actionDispatched', ({ payload, state }) => {
-        const key = openPreviewKeyRef.current;
+        const key = store.getSnapshot();
         if (
           key !== undefined &&
           payload &&
@@ -47,12 +72,17 @@ export function LinkPreviewContextProvider({ children }: PropsWithChildren) {
           setOpenPreviewKey(undefined);
         }
       }),
-    [setOpenPreviewKey]
+    [setOpenPreviewKey, store]
   );
   const isStackAnimationDisabled = openPreviewKey !== undefined;
   return (
     <LinkPreviewContext.Provider
-      value={{ isStackAnimationDisabled, openPreviewKey, openPreviewKeyRef, setOpenPreviewKey }}>
+      value={{
+        isStackAnimationDisabled,
+        openPreviewKey,
+        getOpenPreviewKey: store.getSnapshot,
+        setOpenPreviewKey,
+      }}>
       {children}
     </LinkPreviewContext.Provider>
   );

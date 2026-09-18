@@ -73,7 +73,6 @@ export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
 // #region Preview View
 export interface PreviewActivationRoute {
   key: string;
-  name: string;
 }
 export interface NativeLinkPreviewProps extends ViewProps {
   previewActivationPath:

@@ -19,7 +19,7 @@ export function usePreviewTransition(
   originalEmit: NativeStackViewEmit,
   isPreloaded: (key: string) => boolean
 ) {
-  const { openPreviewKeyRef, setOpenPreviewKey } = useLinkPreviewContext();
+  const { getOpenPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
 
   // Track the preview screen currently transitioning on the native side
   const [previewTransitioningScreenId, setPreviewTransitioningScreenId] = React.useState<
@@ -42,7 +42,7 @@ export function usePreviewTransition(
   const emit = React.useCallback<NativeStackViewEmit>(
     (event) => {
       const { target, type, data } = event;
-      const key = openPreviewKeyRef.current;
+      const key = getOpenPreviewKey();
       if (key !== undefined && target === key && data && 'closing' in data && !data.closing) {
         if (type === 'transitionStart') {
           setPreviewTransitioningScreenId(key);
@@ -52,7 +52,7 @@ export function usePreviewTransition(
       }
       return originalEmit(event);
     },
-    [openPreviewKeyRef, originalEmit, setOpenPreviewKey]
+    [getOpenPreviewKey, originalEmit, setOpenPreviewKey]
   );
 
   const computedState: NativeStackViewState = React.useMemo(() => {

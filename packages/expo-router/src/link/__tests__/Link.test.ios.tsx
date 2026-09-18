@@ -762,9 +762,15 @@ describe('Preview', () => {
       test: () => null,
     });
 
-    act(() => emitters['link-onPreviewTapped']({ nativeEvent: { screenId: 'test-key' } }));
+    act(() =>
+      emitters['link-onPreviewTapped']({
+        nativeEvent: { screenId: 'test-key' },
+      })
+    );
 
-    expect(navigate).toHaveBeenCalledWith('/test', { __internal__PreviewKey: 'test-key' });
+    expect(navigate).toHaveBeenCalledWith('/test', {
+      __internal__PreviewKey: 'test-key',
+    });
   });
   it('navigates without a preview key when native reports no preloaded screen', () => {
     const emitters = require('../preview/native').__EVENTS__;
@@ -783,7 +789,9 @@ describe('Preview', () => {
 
     act(() => emitters['link-onPreviewTapped']({ nativeEvent: {} }));
 
-    expect(navigate).toHaveBeenCalledWith('/test', { __internal__PreviewKey: undefined });
+    expect(navigate).toHaveBeenCalledWith('/test', {
+      __internal__PreviewKey: undefined,
+    });
   });
   it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
     expect(() => {
@@ -1175,10 +1183,9 @@ describe('Preview', () => {
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       await waitFor(() =>
         expect(
-          NativeLinkPreview.mock.calls[
-            NativeLinkPreview.mock.calls.length - 1
-          ][0].previewActivationPath?.path.map(({ name }: { name: string }) => name)
-        ).toEqual(['__root', 'slotB'])
+          NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0]
+            .previewActivationPath?.path
+        ).toHaveLength(2)
       );
       const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
       expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB:[-\w]+/);
@@ -1228,10 +1235,9 @@ describe('Preview', () => {
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       await waitFor(() =>
         expect(
-          NativeLinkPreview.mock.calls[
-            NativeLinkPreview.mock.calls.length - 1
-          ][0].previewActivationPath?.path.map(({ name }: { name: string }) => name)
-        ).toEqual(['__root', 'slotB/[xyz]'])
+          NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0]
+            .previewActivationPath?.path
+        ).toHaveLength(2)
       );
       const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
       expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB\/\[xyz\]:[-\w]+/);
@@ -1263,11 +1269,12 @@ describe('Preview', () => {
       act(() => emitters['link-onWillPreviewOpen']());
       await waitFor(() =>
         expect(
-          NativeLinkPreview.mock.calls[
-            NativeLinkPreview.mock.calls.length - 1
-          ][0].previewActivationPath?.path.map(({ name }: { name: string }) => name)
-        ).toEqual(['__root', 'second'])
+          NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0]
+            .previewActivationPath?.path
+        ).toHaveLength(2)
       );
+      const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/second:[-\w]+/);
     });
   });
   describe('external links in preview', () => {

@@ -41,7 +41,7 @@ struct LinkPreviewPathWalkerTests {
     let responder = attachResponder(to: rootStack)
 
     let result = walker.walk(
-      path: path(("root", "root"), ("details", "details")),
+      path: path("root", "details"),
       responder: responder
     )
 
@@ -54,7 +54,7 @@ struct LinkPreviewPathWalkerTests {
   func `does not match an enclosing JS tab by the inner native tab name`() {
     let tabs = tabHost(selectedIndex: 0, tabs: [tab(name: "index"), tab(name: "settings")])
     let result = walker.walk(
-      path: path(("outer-settings-key", "settings")),
+      path: path("outer-settings-key"),
       responder: attachResponder(to: tabs.host)
     )
     #expect(result.tabChangeCommands.isEmpty)
@@ -76,7 +76,7 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["root"], children: [rootScreen])
 
     let result = walker.walk(
-      path: path(("root", "root"), ("settings-key", "settings"), ("details", "details")),
+      path: path("root", "settings-key", "details"),
       responder: attachResponder(to: rootStack)
     )
 
@@ -102,7 +102,7 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["root"], children: [rootScreen])
 
     let result = walker.walk(
-      path: path(("root", "root"), ("settings-key", "settings"), ("details", "details")),
+      path: path("root", "settings-key", "details"),
       responder: attachResponder(to: rootStack)
     )
 
@@ -130,7 +130,7 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["root"], children: [rootScreen])
 
     let result = walker.walk(
-      path: path(("root", "root"), ("account-key", "account"), ("profile-key", "profile")),
+      path: path("root", "account-key", "profile-key"),
       responder: attachResponder(to: rootStack)
     )
 
@@ -148,7 +148,7 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["root"], children: [rootScreen])
 
     let result = walker.walk(
-      path: path(("root", "root"), ("settings-key", "settings")),
+      path: path("root", "settings-key"),
       responder: attachResponder(to: rootStack)
     )
 
@@ -159,12 +159,28 @@ struct LinkPreviewPathWalkerTests {
   }
 
   @Test
+  func `resolves an already selected terminal tab without a command`() {
+    let tabs = tabHost(selectedIndex: 1, tabs: [tab(name: "home"), tab(name: "settings")])
+    let rootScreen = screen(id: "root", children: [tabs.host])
+    let rootStack = stack(ids: ["root"], children: [rootScreen])
+
+    let result = walker.walk(
+      path: path("root", "settings-key"),
+      responder: attachResponder(to: rootStack)
+    )
+
+    #expect(result.resolved)
+    #expect(result.preloadedScreenView == nil)
+    #expect(result.tabChangeCommands.isEmpty)
+  }
+
+  @Test
   func `selects a tab without an enclosing stack`() throws {
     let tabs = tabHost(selectedIndex: 0, tabs: [tab(name: "home"), tab(name: "second")])
     let responder = attachResponder(to: tabs.controller.viewControllers![0].view)
 
     let result = walker.walk(
-      path: path(("root", "__root"), ("second-key", "second")),
+      path: path("root", "second-key"),
       responder: responder
     )
 
@@ -185,7 +201,7 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["root"], children: [rootScreen])
 
     let result = walker.walk(
-      path: path(("root", "root"), ("js-layout", "js-layout"), ("details", "details")),
+      path: path("root", "js-layout", "details"),
       responder: attachResponder(to: rootStack)
     )
 
@@ -198,12 +214,13 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["details"], children: [target])
 
     let result = walker.walk(
-      path: path(("details", "details")),
+      path: path("details"),
       responder: attachResponder(to: rootStack)
     )
 
     #expect(result.preloadedScreenView == nil)
     #expect(result.preloadedStackView == nil)
+    #expect(result.resolved)
   }
 
   @Test
@@ -214,7 +231,7 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["index", "l1"], children: [screen(id: "index"), l1])
 
     let result = walker.walk(
-      path: path(("l1", "l1"), ("l2", "l2")),
+      path: path("l1", "l2"),
       responder: attachResponder(to: rootStack)
     )
 
@@ -238,7 +255,7 @@ struct LinkPreviewPathWalkerTests {
     let rootStack = stack(ids: ["parent"], children: [preloadedParent])
 
     let result = walker.walk(
-      path: path(("parent", "parent"), ("settings-key", "settings"), ("child", "child")),
+      path: path("parent", "settings-key", "child"),
       responder: attachResponder(to: rootStack)
     )
 
@@ -251,22 +268,23 @@ struct LinkPreviewPathWalkerTests {
   }
 
   @Test
-  func `ignores unknown keys and names`() {
+  func `ignores unknown keys`() {
     let tabs = tabHost(selectedIndex: 0, tabs: [tab(name: "home")])
     let rootScreen = screen(id: "root", children: [tabs.host])
     let rootStack = stack(ids: ["root"], children: [rootScreen])
 
     let result = walker.walk(
-      path: path(("root", "root"), ("missing-key", "missing-name")),
+      path: path("root", "missing-key"),
       responder: attachResponder(to: rootStack)
     )
 
     #expect(result.preloadedScreenView == nil)
     #expect(result.tabChangeCommands.isEmpty)
+    #expect(!result.resolved)
   }
 
-  private func path(_ routes: (String, String)...) -> [PreviewActivationRoute] {
-    routes.map { PreviewActivationRoute(key: $0.0, name: $0.1) }
+  private func path(_ keys: String...) -> [PreviewActivationRoute] {
+    keys.map { PreviewActivationRoute(key: $0) }
   }
 
   private func screen(

@@ -177,7 +177,6 @@ struct PreviewActivationPathPayload: Record {
 
 struct PreviewActivationRouteRecord: Record {
   @Field var key: String
-  @Field var name: String
 }
 
 struct LinkSourceAlignmentRect: Record {
