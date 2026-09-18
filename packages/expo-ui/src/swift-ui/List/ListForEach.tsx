@@ -48,7 +48,7 @@ export interface ListForEachProps extends CommonViewModifierProps {
 /**
  * A group of rows inside List, with optional deletion and reordering.
  * Pass `children`, or `data` with `keyExtractor` and `renderItem`.
- * The `data` and `renderItem` form recycles rows and is experimental (SwiftUI/iOS only).
+ * The `data` and `renderItem` form recycles rows.
  */
 export function ListForEach<ItemT>(props: ListForEachProps | DataListForEachProps<ItemT>) {
   if (props.data !== undefined) return <DataListForEach {...props} />;

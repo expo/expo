@@ -1,5 +1,6 @@
 import {
   Button,
+  type DataListForEachProps,
   Host,
   HStack,
   Label,
@@ -25,7 +26,7 @@ import {
   shapes,
   tint,
 } from '@expo/ui/swift-ui/modifiers';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type Dispatch, type SetStateAction } from 'react';
 import { PlatformColor } from 'react-native';
 
 const MESSAGES = Array.from({ length: 10_000 }, (_, index) => ({
@@ -39,6 +40,40 @@ const MESSAGES = Array.from({ length: 10_000 }, (_, index) => ({
   ][index % 4],
 }));
 const keyExtractor = (item: (typeof MESSAGES)[number]) => item.id;
+type Message = (typeof MESSAGES)[number];
+
+function MessageGroup({
+  data,
+  onChange,
+  renderItem,
+  overscanCount,
+}: {
+  data: Message[];
+  onChange: Dispatch<SetStateAction<Message[]>>;
+  renderItem: DataListForEachProps<Message>['renderItem'];
+  overscanCount: number;
+}) {
+  return (
+    <List.ForEach
+      data={data}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      overscanCount={overscanCount}
+      estimatedItemSize={110}
+      onDelete={(indices) =>
+        onChange((previous) => previous.filter((_, i) => !indices.includes(i)))
+      }
+      onMove={(sources, destination) =>
+        onChange((previous) => {
+          const moved = sources.map((index) => previous[index]);
+          const remaining = previous.filter((_, index) => !sources.includes(index));
+          const adjusted = destination - sources.filter((index) => index < destination).length;
+          return [...remaining.slice(0, adjusted), ...moved, ...remaining.slice(adjusted)];
+        })
+      }
+    />
+  );
+}
 
 export default function DataListForEachScreen() {
   const [saved, setSaved] = useState<ReadonlySet<string>>(() => new Set());
@@ -48,24 +83,6 @@ export default function DataListForEachScreen() {
   const [archive, setArchive] = useState(() => MESSAGES.slice(5000));
   const [selection, setSelection] = useState<(string | number)[]>([]);
   const [editing, setEditing] = useState(false);
-  const group = (data: typeof MESSAGES, update: typeof setItems) => (
-    <List.ForEach
-      data={data}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      overscanCount={largeBuffer ? 20 : 10}
-      estimatedItemSize={110}
-      onDelete={(indices) => update((previous) => previous.filter((_, i) => !indices.includes(i)))}
-      onMove={(sources, destination) =>
-        update((previous) => {
-          const moved = sources.map((index) => previous[index]);
-          const remaining = previous.filter((_, index) => !sources.includes(index));
-          const adjusted = destination - sources.filter((index) => index < destination).length;
-          return [...remaining.slice(0, adjusted), ...moved, ...remaining.slice(adjusted)];
-        })
-      }
-    />
-  );
   const renderItem = useCallback(
     ({ item }: { item: (typeof MESSAGES)[number] }) => (
       <VStack alignment="leading" spacing={10} modifiers={[padding({ vertical: 6 })]}>
@@ -188,7 +205,12 @@ export default function DataListForEachScreen() {
           <Section
             title={`Inbox · ${items.length.toLocaleString()}`}
             footer={<Text>Swipe to delete. Use Edit to select messages or drag to reorder.</Text>}>
-            {group(items, setItems)}
+            <MessageGroup
+              data={items}
+              onChange={setItems}
+              renderItem={renderItem}
+              overscanCount={largeBuffer ? 20 : 10}
+            />
           </Section>
           <Text
             modifiers={[
@@ -198,7 +220,12 @@ export default function DataListForEachScreen() {
             Inbox and Archive each keep their own scroll buffer.
           </Text>
           <Section title={`Archive · ${archive.length.toLocaleString()}`}>
-            {group(archive, setArchive)}
+            <MessageGroup
+              data={archive}
+              onChange={setArchive}
+              renderItem={renderItem}
+              overscanCount={largeBuffer ? 20 : 10}
+            />
           </Section>
           <Section
             footer={
