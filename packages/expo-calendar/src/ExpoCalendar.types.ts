@@ -229,6 +229,10 @@ export declare class ExpoCalendar {
 
   /**
    * Gets a calendar by its ID. Throws an error if the calendar with the given ID does not exist.
+   *
+   * > **iOS 17+:** With write-only calendar access, only the virtual calendar's ID can be
+   * > resolved - real calendars require full calendar access.
+   *
    * @param calendarId The ID of the calendar to get.
    * @returns An [`ExpoCalendar`](#expocalendar) object representing the calendar.
    */
@@ -371,18 +375,14 @@ export declare class ExpoCalendarEvent {
    * @return A promise which resolves with information about the dialog result.
    * @header systemProvidedUI
    */
-  openInCalendar(
-    params?: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
-  ): Promise<OpenEventDialogResult>;
+  openInCalendar(params?: CalendarDialogOpenParamsNext): Promise<OpenEventDialogResult>;
 
   /**
    * Launches the calendar UI provided by the OS to edit or delete an event.
    * @return A promise which resolves with information about the dialog result.
    * @header systemProvidedUI
    */
-  editInCalendar(
-    params?: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
-  ): Promise<DialogEventResult>;
+  editInCalendar(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
 
   /**
    * Returns an event instance for a given event (or instance of a recurring event).

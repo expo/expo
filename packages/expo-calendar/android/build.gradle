@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.0'
+version = '58.0.2'
 
 android {
   namespace "expo.modules.calendar"
   defaultConfig {
     versionCode 17
-    versionName '58.0.0'
+    versionName '58.0.2'
   }
 }
 

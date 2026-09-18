@@ -428,8 +428,10 @@ async function testRemovedSdkRedirectsAsync(): Promise<void> {
 
   const cases = [
     { from: '/versions/latest/sdk/av', to: '/versions/latest/sdk/audio' },
+    { from: '/versions/latest/sdk/av.md', to: '/versions/latest/sdk/audio.md' },
     { from: '/versions/latest/sdk/audio-av', to: '/versions/latest/sdk/audio' },
     { from: '/versions/latest/sdk/video-av', to: '/versions/latest/sdk/video' },
+    { from: '/versions/v54.0.0', to: '/versions/latest' },
     { from: '/versions/v54.0.0/sdk/camera', to: '/versions/latest/sdk/camera' },
   ];
 

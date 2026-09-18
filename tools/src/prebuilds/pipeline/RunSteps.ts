@@ -29,6 +29,7 @@ import type { SPMPackageDependencyConfig, SPMProduct, SPMTarget } from '../SPMCo
 import { getTargetExcludePatterns } from '../SPMGenerator';
 import {
   getVersionsInfoAsync,
+  resolveFrameworkTargetPath,
   setForceNonInteractive,
   validateAllPodNamesAsync,
   verifyAllPackagesAsync,
@@ -280,7 +281,7 @@ function getFrameworkMtimeMs(frameworkPath: string): number {
 
 function getSourceTargetPath(pkg: SPMPackageSource, target: SPMTarget): string | null {
   if (target.type === 'framework') {
-    return path.resolve(pkg.path, target.path);
+    return resolveFrameworkTargetPath(pkg.path, target);
   }
 
   const isBuildArtifact = target.path.startsWith('.build/');

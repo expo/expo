@@ -151,7 +151,7 @@ export default function TintedToggleExample() {
   const [isOn, setIsOn] = useState(true);
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents>
       <Toggle
         isOn={isOn}
         onIsOnChange={setIsOn}

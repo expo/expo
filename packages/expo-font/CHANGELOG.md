@@ -8,7 +8,25 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Import `UIKit` in the `UIFont` extension, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 58.0.1 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- [web] Removed `FontResource.testString`. The CSS Font Loading API detects font loading without a test string. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
+
+### 🎉 New features
+
+- [android][ios] Select a face of a multi-face font family with the `fontWeight` and `fontStyle` style props. ([#49486](https://github.com/expo/expo/pull/49486) by [@vonovak](https://github.com/vonovak))
+- Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync` on Android, iOS, and web. Use `fontWeight` and `fontStyle` style props to select the correct face. ([#47939](https://github.com/expo/expo/pull/47939) by [@bryanmylee](https://github.com/bryanmylee))
+- [web] Accept a variable-font weight range, for example `weight: '100 900'`, on a font face. Android and iOS ignore a range and read the weight from the font file. ([#49487](https://github.com/expo/expo/pull/49487) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [web] Replaced the `fontfaceobserver` dependency with the CSS Font Loading API, so `loadAsync` also waits for the font on Safari and iOS browsers. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.0 — 2026-09-10
 

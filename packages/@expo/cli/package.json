@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "58.0.0",
+  "version": "58.0.3",
   "description": "The Expo CLI",
   "keywords": [
     "cli",
@@ -64,7 +64,7 @@
     "@expo/json-file": "workspace:^",
     "@expo/log-box": "workspace:^",
     "@expo/log-box-utils": "workspace:^",
-    "@expo/metro": "~56.1.0",
+    "@expo/metro": "~58.0.0-rc.0",
     "@expo/metro-config": "workspace:~",
     "@expo/metro-file-map": "workspace:^",
     "@expo/osascript": "workspace:^",
@@ -77,8 +77,8 @@
     "@expo/spawn-async": "^1.8.0",
     "@expo/ws-tunnel": "^2.0.0",
     "@expo/xcpretty": "^4.4.4",
-    "@react-native/dev-middleware": "0.87.1",
-    "@react-native/js-polyfills": "0.87.1",
+    "@react-native/dev-middleware": "0.88.0-rc.1",
+    "@react-native/js-polyfills": "0.88.0-rc.1",
     "accepts": "^1.3.8",
     "agent-cli-detector": "0.1.7",
     "arg": "^5.0.2",
@@ -136,7 +136,7 @@
     "@types/picomatch": "^4.0.2",
     "@types/progress": "^2.0.5",
     "@types/prompts": "^2.0.6",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "@types/react-test-renderer": "^19.1.0",
     "@types/resolve": "^1.20.2",
     "@types/semver": "^7.5.8",
@@ -161,7 +161,7 @@
     "playwright": "^1.59.0",
     "react": "*",
     "react-refresh": "^0.14.2",
-    "react-test-renderer": "19.2.3",
+    "react-test-renderer": "19.3.0",
     "tree-kill": "^1.2.2"
   },
   "peerDependencies": {

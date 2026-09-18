@@ -4,7 +4,9 @@ import { use } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { findFocusedRoute } from '../../fork/findFocusedRoute';
+import { BrowserHistorySync } from '../../global-state/BrowserHistorySync';
 import { RoutingQueueDrainer } from '../../global-state/RoutingQueueDrainer';
+import { createBrowserHistoryAdapter } from '../../global-state/browserHistoryAdapter';
 import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
@@ -101,7 +103,8 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       linking: routerConfig?.linking,
       redirects: routerConfig?.redirects,
     });
-  useNavigationTreeReportEvents(report, consumeReportEvents);
+  const [browserHistory] = React.useState(createBrowserHistoryAdapter);
+  useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
     () => ({
       register(stateKey, entry) {
@@ -310,8 +313,12 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
                   <ThemeProvider value={theme}>{children}</ThemeProvider>
                 </EnsureSingleNavigator>
               </RouterRegistrySettersContext.Provider>
-              <ImperativeRoutingQueueBridge enqueue={routingQueue.enqueue} />
+              <ImperativeRoutingQueueBridge
+                enqueue={routingQueue.enqueue}
+                setTransitionMode={routingQueue.setTransitionMode}
+              />
               <RoutingQueueDrainer processIntent={processIntent} />
+              <BrowserHistorySync adapter={browserHistory} />
             </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>

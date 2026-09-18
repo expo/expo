@@ -6,6 +6,24 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [Android] Add support for the `Image` component. ([#50116](https://github.com/expo/expo/pull/50116) by [@jakex7](https://github.com/jakex7))
+
+## 58.0.1 — 2026-09-14
+
+### 🎉 New features
+
 - [iOS] Add support for `Overlay`, `Background`, and `Mask` in widgets and Live Activities. ([#49810](https://github.com/expo/expo/pull/49810) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
@@ -14,6 +32,8 @@
 - [Android] Fix Gradle build failure when no Android widget is configured. ([#50038](https://github.com/expo/expo/pull/50038) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.0 — 2026-09-10
 

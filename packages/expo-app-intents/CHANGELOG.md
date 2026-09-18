@@ -6,11 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fix the duplicate setup check in `init` reporting Windows-style paths, which also made its tests fail on Windows. ([#50175](https://github.com/expo/expo/pull/50175) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 0.4.1 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2026-09-14
+
+### 🎉 New features
+
 - [iOS] Add `AppEntityView`, a UIKit wrapper for associating React Native content with an App Entity. ([#49663](https://github.com/expo/expo/pull/49663) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Drop macOS from the podspec platforms to fix `pod install` failing with "Unable to find a specification for `ExpoUI`". ([#50065](https://github.com/expo/expo/pull/50065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.2.0 — 2026-09-10
 

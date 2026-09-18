@@ -157,10 +157,7 @@ void JavaCallback::invokeFloat(float result) {
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  JNIEnv *env = jni::Environment::current();
-  const char *rawValue = env->GetStringUTFChars(result.get(), nullptr);
-  std::string parsedResult = rawValue;
-  env->ReleaseStringUTFChars(result.get(), rawValue);
+  std::string parsedResult = jstringToUtf8(jni::Environment::current(), result);
   invokeWithResolver(
     [parsedResult = std::move(parsedResult)](jsi::Runtime &rt, jsi::Function &jsFunction) {
       jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, parsedResult));

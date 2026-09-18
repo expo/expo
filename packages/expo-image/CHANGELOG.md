@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [iOS][Android] Added an `svgVariables` prop that substitutes values for the CSS custom properties an SVG source refers to with `var()`, so different parts of one document can be given different colors and the image stays a vector instead of being rasterized the way `tintColor` is. Values are not limited to colors. SVG sources that use `var()` now render with their fallback values even without the prop. ([#48663](https://github.com/expo/expo/pull/48663), [#50155](https://github.com/expo/expo/pull/50155) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
@@ -21,6 +31,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed useImage not releasing loaded images when the source changes or the component unmounts. ([#49857](https://github.com/expo/expo/pull/49857) by [@hirbod](https://github.com/hirbod))
 - [Android] Fixed a URL staying permanently broken after the server answered an image request with `200 OK` and a non-image body, such as an HTML error page. ([#48442](https://github.com/expo/expo/issues/48442) by [@julian-dueck](https://github.com/julian-dueck), [#48456](https://github.com/expo/expo/pull/48456) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
 - [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))

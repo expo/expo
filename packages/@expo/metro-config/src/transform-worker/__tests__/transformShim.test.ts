@@ -14,15 +14,10 @@ it(`wraps an empty body as an empty Metro module factory`, () => {
   expect(result.output).toHaveLength(1);
   expect(result.output[0]!.type).toBe('js/module');
   expect(result.output[0]!.data.functionMap).toBeNull();
-  expect(result.output[0]!.data.map).toEqual({
-    __version: 1,
-    __count: 0,
-    __names: [],
-    __packed: [],
-  });
+  expect(result.output[0]!.data.map).toEqual({ mappings: expect.any(String), names: [] });
   // The body is empty, so the factory body is empty too.
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(
-    `"__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {});"`
+    `"__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {});"`
   );
   expect(result.output[0]!.data.lineCount).toBe(1);
 });
@@ -71,19 +66,6 @@ it(`names the dependency map parameter from config when provided`, () => {
     ''
   );
   expect(result.output[0]!.data.code).toContain('__depMap');
-});
-
-it(`skips renaming \`require\` when unstable_renameRequire is false`, () => {
-  // With renaming disabled, the wrapper's `require` parameter keeps its name.
-  const result = transformShim(
-    { ...baseConfig, unstable_renameRequire: false } as JsTransformerConfig,
-    '/acme.css',
-    ''
-  );
-  // The default path renames `require` to `_$$_REQUIRE` (see the empty-body
-  // snapshot above); with renaming disabled the parameter stays `require`.
-  expect(result.output[0]!.data.code).toContain('global, require');
-  expect(result.output[0]!.data.code).not.toContain('_$$_REQUIRE');
 });
 
 it(`counts lines correctly for multi-line bodies`, () => {

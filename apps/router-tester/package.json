@@ -8,6 +8,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "eas:build": "./scripts/eas-build.sh",
     "lint": "expo lint",
     "test:e2e": "./maestro/test.sh"
   },
@@ -23,9 +24,9 @@
     "expo-status-bar": "workspace:*",
     "expo-symbols": "workspace:*",
     "expo-system-ui": "workspace:*",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native": "0.87.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.88.0-rc.1",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-pager-view": "^8.0.2",
     "react-native-reanimated": "4.6.0",
@@ -36,6 +37,6 @@
     "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
-    "@types/react": "~19.2.10"
+    "@types/react": "~19.3.0"
   }
 }

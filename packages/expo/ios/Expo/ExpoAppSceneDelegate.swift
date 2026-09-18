@@ -104,11 +104,42 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   open func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    URLContexts.forEach { forwarder.open(url: $0.url, options: Self.openURLOptions(from: $0.options)) }
+    // React Native ignores the app-delegate URL API under the scene life cycle, so a warm link only
+    // reaches JS through the scene API. It reads a single context, hence one call per context.
+    URLContexts.forEach { context in
+      forwarder.open(url: context.url, options: Self.openURLOptions(from: context.options)) {
+        // TODO: Remove this when bumping react-native-tvos to 0.88
+        let selector = NSSelectorFromString("scene:openURLContexts:")
+        if RCTLinkingManager.responds(to: selector) {
+          _ = RCTLinkingManager.perform(selector, with: scene, with: Set([context]))
+        }
+      }
+    }
+  }
+
+  open func scene(_ scene: UIScene, willContinueUserActivityWithType userActivityType: String) {
+    forwarder.willContinueUserActivity(withType: userActivityType)
   }
 
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-    forwarder.continue(userActivity)
+    forwarder.continue(userActivity) {
+      let selector = NSSelectorFromString("scene:continueUserActivity:")
+      if RCTLinkingManager.responds(to: selector) {
+        _ = RCTLinkingManager.perform(selector, with: scene, with: userActivity)
+      }
+    }
+  }
+
+  open func scene(
+    _ scene: UIScene,
+    didFailToContinueUserActivityWithType userActivityType: String,
+    error: Error
+  ) {
+    forwarder.didFailToContinueUserActivity(withType: userActivityType, error: error)
+  }
+
+  open func scene(_ scene: UIScene, didUpdate userActivity: NSUserActivity) {
+    forwarder.didUpdate(userActivity)
   }
 
 #if os(iOS)

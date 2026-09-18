@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Import `Foundation` in the AES `Data` extension, which relied on another file in the module importing it. ([#50280](https://github.com/expo/expo/pull/50280) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- [iOS] Migrate the main module to the Expo Modules API 2.0 macros. ([#49894](https://github.com/expo/expo/pull/49894) by [@tsapeta](https://github.com/tsapeta))
 
 ## 58.0.0 — 2026-09-10
 

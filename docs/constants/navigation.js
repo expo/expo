@@ -284,12 +284,15 @@ export const general = [
       makePage('router/advanced/web-modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/protected.mdx'),
+      makePage('router/advanced/prevent-screen-removal.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
+      makePage('router/advanced/navigation-transitions.mdx'),
+      makePage('router/advanced/react-activity.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
       makePage('router/advanced/custom-navigators.mdx'),
       makePage('router/advanced/stack-toolbar.mdx'),
@@ -322,6 +325,7 @@ export const general = [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
       makePage('router/migrate/sdk-55-to-56.mdx'),
+      makePage('router/migrate/sdk-57-to-58.mdx'),
     ]),
   ]),
   makeSection(

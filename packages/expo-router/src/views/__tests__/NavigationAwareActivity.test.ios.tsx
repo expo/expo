@@ -9,7 +9,7 @@ import Tabs from '../../layouts/Tabs';
 import { NativeTabs } from '../../native-tabs';
 import { CommonActions, StackRouter, useNavigation, useRoute } from '../../react-navigation/native';
 import {
-  unstable_createStandardRouterNavigator,
+  createStandardRouterNavigator,
   type NavigatorContentProps,
 } from '../../standard-navigation';
 import { renderRouter, screen } from '../../testing-library';
@@ -72,7 +72,7 @@ function expectActivityModes(expected: Record<string, ActivityMode[]>) {
   }
 }
 
-const ActivityStack = unstable_createStandardRouterNavigator(
+const ActivityStack = createStandardRouterNavigator(
   ({ state, descriptors }: NavigatorContentProps<object>) =>
     state.routes.map((route) => (
       <React.Fragment key={route.key}>{descriptors[route.key]?.render()}</React.Fragment>

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 58.0.4 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
@@ -18,6 +34,7 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed `release()` not releasing image manipulation resources. ([#49831](https://github.com/expo/expo/pull/49831) by [@mozzius](https://github.com/mozzius))
 - Fixed `ImageManipulator.Image` being typed as an `ImageRef` instance rather than the class it holds at runtime, which rejected `instanceof` checks and made instance members appear to exist on it. ([#48613](https://github.com/expo/expo/pull/48613) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others

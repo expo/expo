@@ -41,6 +41,16 @@ private final class MacroGreeter: Module, @unchecked Sendable {
     return MacroOptions(label: options.label, count: options.count + 1)
   }
 
+  // An `Either` argument and return. The return is an `EitherOfThree`, which conforms through the
+  // conformance inherited from `Either`.
+  @JS
+  func describe(value: Either<String, Int>) -> EitherOfThree<String, Int, Bool> {
+    if let string: String = value.get() {
+      return EitherOfThree(string.uppercased())
+    }
+    return EitherOfThree(value.is(Int.self))
+  }
+
   // A throwing function, whose coded error surfaces to JS.
   @JS
   func fail() throws {
@@ -185,6 +195,13 @@ private struct MacroModuleTests {
     let result = try runtime.eval("expo.modules.MacroGreeter.repeated({ label: 'a', count: 2 })").asObject()
     #expect(try result.getProperty("label").asString() == "a")
     #expect(try result.getProperty("count").asInt() == 3)
+  }
+
+  @Test
+  func `decodes and encodes an Either across a @JS function`() throws {
+    register(MacroGreeter(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroGreeter.describe('expo')").asString() == "EXPO")
+    #expect(try runtime.eval("expo.modules.MacroGreeter.describe(42)").asBool() == true)
   }
 
   // MARK: - Error propagation

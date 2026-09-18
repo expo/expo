@@ -19,6 +19,14 @@ extension ExpoSwiftUI {
   }
 
   /**
+   Protocol for view props that receive the view hosting their SwiftUI view, so they can resolve
+   their own window. Declare the property `weak`.
+   */
+  public protocol HostingViewAware: AnyObject {
+    var hostingView: UIView? { get set }
+  }
+
+  /**
    Base implementation of the view props object for SwiftUI views.
    It's a record that can be observed by SwiftUI to re-render on its changes.
    */

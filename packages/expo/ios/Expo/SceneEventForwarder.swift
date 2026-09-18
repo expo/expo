@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
 import Foundation
 import React
 
@@ -19,18 +20,33 @@ import React
 struct SceneEventForwarder {
   var appDelegate: () -> ExpoAppDelegate? = { UIApplication.shared.delegate as? ExpoAppDelegate }
 
-  func open(url: URL, options: [UIApplication.OpenURLOptionsKey: Any]) {
+  func open(
+    url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any],
+    notifyReactNative: (() -> Void)? = nil
+  ) {
     let application = UIApplication.shared
     let delegate = appDelegate()
+
+#if DEBUG
+    if EmbeddedFingerprint.CheckProtocol.isCheckURL(url) {
+      _ = delegate?.application(application, open: url, options: options)
+      return
+    }
+#endif
 
     notifyLinkingManagerUnlessAlreadyNotified(of: url) {
       _ = delegate?.application(application, open: url, options: options)
     } notify: {
-      RCTLinkingManager.application(application, open: url, options: options)
+      if let notifyReactNative {
+        notifyReactNative()
+      } else {
+        RCTLinkingManager.application(application, open: url, options: options)
+      }
     }
   }
 
-  func `continue`(_ userActivity: NSUserActivity) {
+  func `continue`(_ userActivity: NSUserActivity, notifyReactNative: (() -> Void)? = nil) {
     let application = UIApplication.shared
     let delegate = appDelegate()
 
@@ -39,8 +55,33 @@ struct SceneEventForwarder {
     notifyLinkingManagerUnlessAlreadyNotified(of: userActivity.webpageURL) {
       _ = delegate?.application(application, continue: userActivity, restorationHandler: { _ in })
     } notify: {
-      RCTLinkingManager.application(application, continue: userActivity, restorationHandler: { _ in })
+      if let notifyReactNative {
+        notifyReactNative()
+      } else {
+        RCTLinkingManager.application(application, continue: userActivity, restorationHandler: { _ in })
+      }
     }
+  }
+
+  func willContinueUserActivity(withType userActivityType: String) {
+    // The scene callback has no return value, unlike its app-delegate counterpart. Calling the app
+    // delegate still lets every subscriber prepare; its aggregated result is intentionally ignored.
+    _ = appDelegate()?.application(
+      UIApplication.shared,
+      willContinueUserActivityWithType: userActivityType
+    )
+  }
+
+  func didFailToContinueUserActivity(withType userActivityType: String, error: Error) {
+    appDelegate()?.application(
+      UIApplication.shared,
+      didFailToContinueUserActivityWithType: userActivityType,
+      error: error
+    )
+  }
+
+  func didUpdate(_ userActivity: NSUserActivity) {
+    appDelegate()?.application(UIApplication.shared, didUpdate: userActivity)
   }
 
   func didBecomeActive() {

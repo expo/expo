@@ -9,17 +9,13 @@ interface NavigateToHrefIntent {
     href: string;
     originalHref?: string;
   };
-  metadata?: RoutingIntentMetadata;
-  onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
 }
 
-interface RoutingIntentMetadata {
-  history?: {
-    path: string;
-  };
-}
+type RoutingIntentOptions = {
+  inTransition?: boolean;
+};
 
-export type RoutingIntent =
+export type RoutingIntent = (
   | NavigateToHrefIntent
   | {
       type: 'COMPUTED_ACTION';
@@ -27,12 +23,16 @@ export type RoutingIntent =
         compute: (state: NavigationState, registry: RouterRegistry) => NavigationAction | undefined;
         originKey?: string;
       };
-      metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
     }
   | {
       type: 'ACTION';
       payload: { action: NavigationAction; originKey?: string };
-      metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
-    };
+    }
+  | {
+      // The browser moved on its own (back, forward, hash link); `id` is the entry id stored in
+      // `history.state`, `null` when the browser created the entry without the router.
+      type: 'BROWSER_HISTORY_CHANGED';
+      payload: { id: string | null; path: string };
+    }
+) &
+  RoutingIntentOptions;

@@ -32,14 +32,15 @@ import {
 } from '../transform-worker/metro-transform-worker';
 import type { ExpoJsOutput } from './jsOutput';
 import { isExpoJsOutput } from './jsOutput';
-import {
-  countLinesAndTerminateSourceMap,
-  installPackedMap,
-  packRawMappings,
-  type SerializableSourceMap,
-} from './packedMap';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { type BabelSourceMapSegment } from './sourceMap';
+import {
+  vlqMapFromDecodedMap,
+  vlqMapFromEncodedMap,
+  type BabelDecodedMap,
+  type BabelSourceMapSegment,
+  type EncodedMappings,
+  type VlqMap,
+} from './sourceMap';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -259,7 +260,7 @@ export async function reconcileTransformSerializerPlugin(
       reconcile.importAll,
       dependencyMapName,
       reconcile.globalPrefix,
-      reconcile.unstable_renameRequire === false
+      { unstable_useStaticHermesModuleFactory: reconcile.unstable_useStaticHermesModuleFactory }
     );
 
     const reserved: string[] = [];
@@ -289,16 +290,18 @@ export async function reconcileTransformSerializerPlugin(
       outputItem.data.code
     );
 
-    // `rawMappings` is omitted from `@types/babel__generator`'s
-    // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
-    const rawMappings = (result as { rawMappings?: BabelSourceMapSegment[] }).rawMappings ?? [];
     let code = result.code;
-    let sourceMap: SerializableSourceMap;
+    let lineCount: number;
+    let map: VlqMap;
 
     if (reconcile.minify) {
       const source = value.getSource().toString('utf-8');
+      // `rawMappings` is omitted from `@types/babel__generator`'s
+      // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
+      const rawMappings = (result as { rawMappings?: BabelSourceMapSegment[] }).rawMappings ?? [];
 
-      ({ sourceMap, code } = await minifyCode(
+      let minifiedMap: EncodedMappings;
+      ({ map: minifiedMap, code } = await minifyCode(
         reconcile.minify,
         value.path,
         result.code,
@@ -306,17 +309,19 @@ export async function reconcileTransformSerializerPlugin(
         rawMappings,
         reserved
       ));
+      ({ lineCount, map } = vlqMapFromEncodedMap(minifiedMap, code));
     } else {
-      sourceMap = packRawMappings(rawMappings);
+      ({ lineCount, map } = vlqMapFromDecodedMap(
+        (result as { decodedMap?: BabelDecodedMap }).decodedMap,
+        code
+      ));
     }
-
-    let lineCount;
-    ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
     const newData = {
       ...outputItem.data,
       code,
       lineCount,
+      map,
       functionMap:
         // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
         ast.metadata?.metro?.functionMap ??
@@ -325,11 +330,6 @@ export async function reconcileTransformSerializerPlugin(
         outputItem.data.functionMap ??
         null,
     };
-    // Reconcile runs post-graph-build, so it bypasses the
-    // `Bundler.transformFile` wrapper that normally installs the packed
-    // shape from worker output. Install it here directly so the encoder
-    // fast path stays live for reconciled modules.
-    installPackedMap(newData, sourceMap);
     return { ...outputItem, data: newData };
   }
 }

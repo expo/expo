@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
+- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.3 — 2026-09-16
+
+### 💡 Others
+
+- [iOS] Ship `PrivacyInfo.xcprivacy` from the `EXConstants` target so apps built with Swift Package Manager carry the privacy manifest, as CocoaPods builds already do. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

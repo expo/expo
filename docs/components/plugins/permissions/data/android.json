@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "https://developer.android.com/reference/android/Manifest.permission",
-    "scrapedAt": "2026-08-29T08:11:31.357Z"
+    "scrapedAt": "2026-09-17T08:14:07.333Z"
   },
   "data": {
     "ACCEPT_HANDOVER": {
@@ -3114,6 +3114,17 @@
       "description": "Allows an application to access the Settings Preference services to read settings exposed by the system Settings app and system apps that contribute settings surfaced by the Settings app.",
       "explanation": null,
       "constant": "android.permission.READ_SYSTEM_PREFERENCES",
+      "protection": null,
+      "warning": null
+    },
+    "READ_UPDATE_ENGINE_LOGS": {
+      "apiAdded": 1,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "READ_UPDATE_ENGINE_LOGS",
+      "description": "Allows an application to read the update_engine logs",
+      "explanation": null,
+      "constant": "android.permission.READ_UPDATE_ENGINE_LOGS",
       "protection": null,
       "warning": null
     },

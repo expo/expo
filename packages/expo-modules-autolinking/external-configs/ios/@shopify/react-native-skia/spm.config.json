@@ -11,42 +11,50 @@
         {
           "type": "framework",
           "name": "libskia",
-          "path": "libs/ios/libskia.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libskia.xcframework"
         },
         {
           "type": "framework",
           "name": "libsvg",
-          "path": "libs/ios/libsvg.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libsvg.xcframework"
         },
         {
           "type": "framework",
           "name": "libskshaper",
-          "path": "libs/ios/libskshaper.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libskshaper.xcframework"
         },
         {
           "type": "framework",
           "name": "libskparagraph",
-          "path": "libs/ios/libskparagraph.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libskparagraph.xcframework"
         },
         {
           "type": "framework",
           "name": "libskunicode_core",
-          "path": "libs/ios/libskunicode_core.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libskunicode_core.xcframework"
         },
         {
           "type": "framework",
           "name": "libskunicode_libgrapheme",
-          "path": "libs/ios/libskunicode_libgrapheme.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libskunicode_libgrapheme.xcframework"
         },
         {
           "type": "framework",
           "name": "libskottie",
-          "path": "libs/ios/libskottie.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libskottie.xcframework"
         },
         {
           "type": "framework",
           "name": "libsksg",
-          "path": "libs/ios/libsksg.xcframework"
+          "package": "react-native-skia-apple-ios",
+          "path": "libs/libsksg.xcframework"
         },
         {
           "type": "objc",

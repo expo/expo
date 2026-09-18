@@ -7,7 +7,7 @@ import Testing
 
 #if os(iOS) || os(tvOS)
 
-@Suite
+@Suite(.serialized)
 struct ExpoAppSceneDelegateTests {
   @Test
   func `extends UIResponder`() {
@@ -22,6 +22,23 @@ struct ExpoAppSceneDelegateTests {
     // The iOS 27 SDK asserts at launch unless the app's scene delegate adopts the scene life cycle.
     // Conforming to `UIWindowSceneDelegate` is what makes the class usable as the scene delegate.
     #expect(ExpoAppSceneDelegate.self is UIWindowSceneDelegate.Type)
+  }
+
+  @Test
+  @MainActor
+  func `exposes scene user activity callbacks to UIKit`() {
+    let sceneDelegate = ExpoAppSceneDelegate()
+    #expect(
+      sceneDelegate.responds(
+        to: #selector(UISceneDelegate.scene(_:willContinueUserActivityWithType:))
+      )
+    )
+    #expect(sceneDelegate.responds(to: #selector(UISceneDelegate.scene(_:didUpdate:))))
+    #expect(
+      sceneDelegate.responds(
+        to: #selector(UISceneDelegate.scene(_:didFailToContinueUserActivityWithType:error:))
+      )
+    )
   }
 
   @Test
@@ -72,11 +89,80 @@ struct ExpoAppSceneDelegateTests {
   @MainActor
   func `routes a continued user activity through the app delegate`() {
     let spy = SpyAppDelegate()
+    let subscriber = UserActivityRecordingSubscriber()
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
     let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
     userActivity.webpageURL = URL(string: "https://expo.dev/scene-delegate")!
     SceneEventForwarder(appDelegate: { spy }).continue(userActivity)
     #expect(spy.continuedUserActivities.count == 1)
     #expect(spy.continuedUserActivities.first === userActivity)
+    #expect(subscriber.continuations.filter { $0 === userActivity }.count == 1)
+  }
+
+  @Test
+  @MainActor
+  func `asks every subscriber to prepare for a scene user activity`() {
+    let activityType = "dev.expo.scene-delegate.prepare.\(UUID().uuidString)"
+    let firstSubscriber = UserActivityRecordingSubscriber(willContinueResult: false)
+    let handlingSubscriber = UserActivityRecordingSubscriber(willContinueResult: true)
+    let lastSubscriber = UserActivityRecordingSubscriber(willContinueResult: false)
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(firstSubscriber)
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(handlingSubscriber)
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(lastSubscriber)
+
+    let spy = SpyAppDelegate()
+    SceneEventForwarder(appDelegate: { spy }).willContinueUserActivity(withType: activityType)
+
+    #expect(spy.preparations.count == 1)
+    #expect(isSharedApplication(spy.preparations.first?.application))
+    #expect(spy.preparations.first?.activityType == activityType)
+    #expect(spy.continuedUserActivities.isEmpty)
+    for subscriber in [firstSubscriber, handlingSubscriber, lastSubscriber] {
+      let preparations = subscriber.preparations.filter { $0.activityType == activityType }
+      #expect(preparations.count == 1)
+      #expect(isSharedApplication(preparations.first?.application))
+      #expect(subscriber.continuations.isEmpty)
+    }
+  }
+
+  @Test
+  @MainActor
+  func `forwards scene user activity updates and failures without continuing`() {
+    let activityType = "dev.expo.scene-delegate.failure.\(UUID().uuidString)"
+    let userActivity = NSUserActivity(
+      activityType: "dev.expo.scene-delegate.update.\(UUID().uuidString)"
+    )
+    let error = NSError(
+      domain: "dev.expo.scene-delegate.handoff",
+      code: 17,
+      userInfo: [NSLocalizedDescriptionKey: "Handoff transfer failed"]
+    )
+    let subscriber = UserActivityRecordingSubscriber()
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(subscriber)
+
+    let spy = SpyAppDelegate()
+    let forwarder = SceneEventForwarder(appDelegate: { spy })
+    forwarder.didUpdate(userActivity)
+    forwarder.didFailToContinueUserActivity(withType: activityType, error: error)
+
+    #expect(spy.updatedUserActivities.count == 1)
+    #expect(isSharedApplication(spy.updatedUserActivities.first?.application))
+    #expect(spy.updatedUserActivities.first?.userActivity === userActivity)
+    #expect(spy.userActivityFailures.count == 1)
+    #expect(isSharedApplication(spy.userActivityFailures.first?.application))
+    #expect(spy.userActivityFailures.first?.activityType == activityType)
+    #expect((spy.userActivityFailures.first?.error as NSError?) === error)
+    #expect(spy.preparations.isEmpty)
+    #expect(spy.continuedUserActivities.isEmpty)
+    #expect(subscriber.updates.count == 1)
+    #expect(isSharedApplication(subscriber.updates.first?.application))
+    #expect(subscriber.updates.first?.userActivity === userActivity)
+    #expect(subscriber.failures.count == 1)
+    #expect(isSharedApplication(subscriber.failures.first?.application))
+    #expect(subscriber.failures.first?.activityType == activityType)
+    #expect((subscriber.failures.first?.error as NSError?) === error)
+    #expect(subscriber.preparations.isEmpty)
+    #expect(subscriber.continuations.isEmpty)
   }
 
   @Test
@@ -136,6 +222,25 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
+  func `keeps a fingerprint-check trigger away from RCTLinkingManager so JS does not see it`() {
+    let url = URL(string: "bareexpo://?__expo_fingerprint_check=1&__expo_fingerprint_nonce=abc")!
+    let recorder = OpenURLNotificationRecorder()
+    let spy = SpyAppDelegate()
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:])
+    #expect(recorder.count(of: url) == 0)
+  }
+
+  @Test
+  @MainActor
+  func `still hands a fingerprint-check trigger to the app delegate`() {
+    let url = URL(string: "bareexpo://?__expo_fingerprint_check=1&__expo_fingerprint_nonce=def")!
+    let delegate = LegacyLinkingAppDelegate()
+    SceneEventForwarder(appDelegate: { delegate }).open(url: url, options: [:])
+    #expect(delegate.openedURLs == [url])
+  }
+
+  @Test
+  @MainActor
   func `notifies RCTLinkingManager once when the delegate notifies it too`() {
     let delegate = LegacyLinkingAppDelegate()
     let url = URL(string: "bareexpo://scene-delegate/legacy-open-url")!
@@ -156,6 +261,51 @@ struct ExpoAppSceneDelegateTests {
     SceneEventForwarder(appDelegate: { delegate }).continue(userActivity)
     #expect(delegate.continuedUserActivities.count == 1)
     #expect(recorder.count(of: webpageURL) == 1)
+  }
+
+  @Test
+  @MainActor
+  func `notifies React Native through the injected notifier for a warm URL`() {
+    let spy = SpyAppDelegate()
+    let url = URL(string: "bareexpo://scene-delegate/warm-open-url")!
+    let recorder = OpenURLNotificationRecorder()
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:]) {
+      notifications += 1
+    }
+    #expect(spy.openedURLs.first?.url == url)
+    #expect(notifications == 1)
+    #expect(recorder.count(of: url) == 0)
+  }
+
+  @Test
+  @MainActor
+  func `does not notify React Native when the app delegate already notified for a URL`() {
+    let delegate = LegacyLinkingAppDelegate()
+    let url = URL(string: "bareexpo://scene-delegate/warm-legacy-open-url")!
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { delegate }).open(url: url, options: [:]) {
+      notifications += 1
+    }
+    #expect(delegate.openedURLs == [url])
+    #expect(notifications == 0)
+  }
+
+  @Test
+  @MainActor
+  func `notifies React Native through the injected notifier for a warm user activity`() {
+    let spy = SpyAppDelegate()
+    let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
+    let webpageURL = URL(string: "https://expo.dev/scene-delegate/warm-activity")!
+    userActivity.webpageURL = webpageURL
+    let recorder = OpenURLNotificationRecorder()
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { spy }).continue(userActivity) {
+      notifications += 1
+    }
+    #expect(spy.continuedUserActivities.first === userActivity)
+    #expect(notifications == 1)
+    #expect(recorder.count(of: webpageURL) == 0)
   }
 
   @Test
@@ -200,6 +350,75 @@ struct ExpoAppSceneDelegateTests {
   func `forwards to the app delegate of the running application`() {
     let forwarder = ExpoAppSceneDelegate().forwarder
     #expect(forwarder.appDelegate() === UIApplication.shared.delegate as? ExpoAppDelegate)
+  }
+}
+
+@MainActor
+private func isSharedApplication(_ application: UIApplication?) -> Bool {
+  // A hostless XCTest runner can bridge `UIApplication.shared` as nil despite its nonoptional
+  // Swift declaration. Evaluate identity outside `#expect` so the macro does not capture it.
+  let sharedApplication: UIApplication? = UIApplication.shared
+  return application === sharedApplication
+}
+
+/// Records user-activity callbacks delivered through the app-delegate subscriber compatibility
+/// layer. Subscribers cannot be unregistered, so tests use unique activity types and retain these
+/// instances for the remainder of the test process.
+private final class UserActivityRecordingSubscriber: NSObject, ExpoAppDelegateSubscriberProtocol {
+  struct Preparation {
+    let application: UIApplication?
+    let activityType: String
+  }
+
+  struct ActivityUpdate {
+    let application: UIApplication?
+    let userActivity: NSUserActivity
+  }
+
+  struct Failure {
+    let application: UIApplication?
+    let activityType: String
+    let error: Error
+  }
+
+  let willContinueResult: Bool
+  var preparations: [Preparation] = []
+  var continuations: [NSUserActivity] = []
+  var updates: [ActivityUpdate] = []
+  var failures: [Failure] = []
+
+  init(willContinueResult: Bool = false) {
+    self.willContinueResult = willContinueResult
+  }
+
+  func application(
+    _ application: UIApplication,
+    willContinueUserActivityWithType userActivityType: String
+  ) -> Bool {
+    preparations.append(Preparation(application: application, activityType: userActivityType))
+    return willContinueResult
+  }
+
+  func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
+    continuations.append(userActivity)
+    restorationHandler(nil)
+    return false
+  }
+
+  func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
+    updates.append(ActivityUpdate(application: application, userActivity: userActivity))
+  }
+
+  func application(
+    _ application: UIApplication,
+    didFailToContinueUserActivityWithType userActivityType: String,
+    error: Error
+  ) {
+    failures.append(Failure(application: application, activityType: userActivityType, error: error))
   }
 }
 
@@ -268,8 +487,27 @@ private final class SpyAppDelegate: ExpoAppDelegate {
     let options: [UIApplication.OpenURLOptionsKey: Any]
   }
 
+  struct Preparation {
+    let application: UIApplication?
+    let activityType: String
+  }
+
+  struct ActivityUpdate {
+    let application: UIApplication?
+    let userActivity: NSUserActivity
+  }
+
+  struct UserActivityFailure {
+    let application: UIApplication?
+    let activityType: String
+    let error: Error
+  }
+
   var openedURLs: [OpenedURL] = []
   var continuedUserActivities: [NSUserActivity] = []
+  var preparations: [Preparation] = []
+  var updatedUserActivities: [ActivityUpdate] = []
+  var userActivityFailures: [UserActivityFailure] = []
   var lifeCycleEvents: [String] = []
   var shortcutItemTypes: [String] = []
 
@@ -284,11 +522,39 @@ private final class SpyAppDelegate: ExpoAppDelegate {
 
   override func application(
     _ application: UIApplication,
+    willContinueUserActivityWithType userActivityType: String
+  ) -> Bool {
+    preparations.append(Preparation(application: application, activityType: userActivityType))
+    return super.application(application, willContinueUserActivityWithType: userActivityType)
+  }
+
+  override func application(
+    _ application: UIApplication,
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
     continuedUserActivities.append(userActivity)
     return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+  }
+
+  override func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
+    updatedUserActivities.append(ActivityUpdate(application: application, userActivity: userActivity))
+    super.application(application, didUpdate: userActivity)
+  }
+
+  override func application(
+    _ application: UIApplication,
+    didFailToContinueUserActivityWithType userActivityType: String,
+    error: Error
+  ) {
+    userActivityFailures.append(
+      UserActivityFailure(application: application, activityType: userActivityType, error: error)
+    )
+    super.application(
+      application,
+      didFailToContinueUserActivityWithType: userActivityType,
+      error: error
+    )
   }
 
   override func applicationDidBecomeActive(_ application: UIApplication) {

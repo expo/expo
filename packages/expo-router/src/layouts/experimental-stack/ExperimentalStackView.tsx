@@ -4,7 +4,6 @@ import { StyleSheet, View } from 'react-native';
 import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 import type { NavigatorDescriptor } from 'standard-navigation';
 
-import { useRoutesWithRemovalPrevented } from '../../global-state/removalPrevention';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
   ExperimentalStackNavigationOptions,
@@ -22,20 +21,29 @@ const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>(
 type Props = {
   state: ExperimentalStackViewState;
   emit: ExperimentalStackViewEmit;
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   descriptors: Record<string, NavigatorDescriptor<ExperimentalStackNavigationOptions>>;
 };
 
-export function ExperimentalStackView({ state, emit, pop, descriptors }: Props) {
-  const { setNextDismissedKey } = useDismissedRouteError(state);
-  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
+export function ExperimentalStackView({
+  state,
+  emit,
+  pop,
+  descriptors,
+  isPreloaded,
+  isRemovalPrevented,
+}: Props) {
+  const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
 
   return (
     <View style={styles.container}>
       <ScreensStackV5.Host>
-        {state.routes.map((route, index) => {
+        {state.routes.map((route) => {
           const descriptor = descriptors[route.key]!;
-          const isPreloaded = index > state.index;
+          const routeIsPreloaded = isPreloaded(route.key);
+          const routeIsRemovalPrevented = isRemovalPrevented(route.key);
           const options = descriptor.options;
 
           return (
@@ -45,8 +53,8 @@ export function ExperimentalStackView({ state, emit, pop, descriptors }: Props) 
               routeName={route.name}
               descriptor={descriptor}
               options={options}
-              isPreloaded={isPreloaded}
-              preventNativeDismiss={routesWithRemovalPrevented.has(route.key)}
+              isPreloaded={routeIsPreloaded}
+              preventNativeDismiss={routeIsRemovalPrevented}
               onWillAppear={() => {
                 emit({
                   type: 'transitionStart',
@@ -83,7 +91,7 @@ export function ExperimentalStackView({ state, emit, pop, descriptors }: Props) 
                 setNextDismissedKey(route.key);
               }}
               onNativeDismissPrevented={() => {
-                if (routesWithRemovalPrevented.has(route.key)) {
+                if (routeIsRemovalPrevented) {
                   // A real pop runs child-first prevention checks and notifies the nested route
                   // that owns the guard; emitting directly here would only reach this route.
                   pop(1, route.key);

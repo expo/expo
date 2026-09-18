@@ -8,7 +8,27 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+## 58.0.3 — 2026-09-16
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `NavigationSplitView` component, together with the `navigationSplitViewStyle` and `navigationSplitViewColumnWidth` modifiers. ([#50075](https://github.com/expo/expo/pull/50075) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [macOS] Added minimal macOS support. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Update the native tabs import path in the `TabView` API reference. ([#50119](https://github.com/expo/expo/pull/50119) by [@Ubax](https://github.com/Ubax))
 
 ## 58.0.0 — 2026-09-10
 
