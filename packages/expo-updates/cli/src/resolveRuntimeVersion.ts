@@ -5,6 +5,7 @@ import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
+import { getConfigEnvMode } from './utils/nodeEnv';
 import { withConsoleDisabledAsync } from './utils/withConsoleDisabledAsync';
 
 export const resolveRuntimeVersion: Command = async (argv) => {
@@ -68,6 +69,7 @@ Resolve expo-updates runtime version
         },
         {
           workflowOverride: workflow,
+          mode: getConfigEnvMode('production'),
         }
       );
     } catch (e: any) {

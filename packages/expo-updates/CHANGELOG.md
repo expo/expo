@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Use production mode by default when resolving runtime versions, syncing native config, and configuring code signing. ([#49508](https://github.com/expo/expo/pull/49508) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Load env files for the selected mode before reading app config. ([#49508](https://github.com/expo/expo/pull/49508) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
