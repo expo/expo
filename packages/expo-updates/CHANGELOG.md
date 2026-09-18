@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Log a warning when the updates state machine drops an event that is not allowed from the current state. Previously such an event was discarded silently in release builds, so an error could disappear without a trace. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-16
