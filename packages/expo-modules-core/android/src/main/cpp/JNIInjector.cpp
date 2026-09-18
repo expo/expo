@@ -14,6 +14,7 @@
 #include "NativeArrayBuffer.h"
 #include "JavaReferencesCache.h"
 #include "JavaCallback.h"
+#include "Callback.h"
 #include "JNIUtils.h"
 #include "types/FrontendConverterProvider.h"
 #include "decorators/JSDecoratorsBridgingObject.h"
@@ -49,6 +50,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptTypedArray::registerNatives();
     expo::NativeArrayBuffer::registerNatives();
     expo::JavaCallback::registerNatives();
+    expo::Callback::registerNatives();
     expo::JNIUtils::registerNatives();
 
     // Decorators
