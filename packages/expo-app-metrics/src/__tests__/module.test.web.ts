@@ -118,7 +118,7 @@ if (typeof window === 'undefined') {
       expect(attributes).toBeNull();
     });
 
-    it('returns a copy so callers cannot mutate the stored logs', async () => {
+    it('returns a new array so callers cannot drop stored logs', async () => {
       AppMetrics.logEvent('sync');
 
       const logs = await getLogs();
