@@ -170,6 +170,7 @@ module.exports = function expoSpmPlugin(context) {
   const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
   const unresolvedTargets = new Map(); // module root → manifest targets with no sources on disk
   const unsupportedTargetDeps = new Map(); // module root → deps the generated package cannot declare
+  const unsupportedPackageDeps = new Map(); // module root → packages the generated package cannot declare
   const podspecLinkage = new Map(); // module root → podspec line declaring native linkage
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
@@ -252,8 +253,9 @@ module.exports = function expoSpmPlugin(context) {
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
       const { moduleRoot } = podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName));
-      // Products the emitted manifest declares itself, and so are counterparts of
-      // the pods its podspec names. Only the pure-Swift branch declares any.
+      // Third-party products the emitted manifest depends on, and so are counterparts
+      // of the pods its podspec names: read from the module's checked-in manifest, or
+      // from its spm.config.json when it ships none.
       let declaredSpmProducts = [];
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
@@ -269,9 +271,12 @@ module.exports = function expoSpmPlugin(context) {
         );
         if (e.unsupportedTargetDeps != null) {
           unsupportedTargetDeps.set(moduleRoot, e.unsupportedTargetDeps);
+        } else if (e.unsupportedPackageDeps != null) {
+          unsupportedPackageDeps.set(moduleRoot, e.unsupportedPackageDeps);
         } else if (e.unresolvedTargets != null) {
           unresolvedTargets.set(moduleRoot, e.unresolvedTargets);
         } else {
+          declaredSpmProducts = e.spmProductNames;
           packageDependencies.push(e.packageDep);
           productDependencies.push(...e.productDeps);
           pods.forEach((p) => emitted.add(p.podName));
@@ -363,6 +368,7 @@ module.exports = function expoSpmPlugin(context) {
         pureSwift: isPureSwift(moduleRoot),
         hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
         unsupportedTargetDeps: unsupportedTargetDeps.get(moduleRoot) ?? null,
+        unsupportedPackageDeps: unsupportedPackageDeps.get(moduleRoot) ?? null,
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
         prebuildProduct,

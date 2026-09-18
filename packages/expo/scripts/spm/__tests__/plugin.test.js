@@ -1722,3 +1722,112 @@ describe('the SwiftPM packages a source-emitted module declares', () => {
     expect(report).not.toContain('libavif');
   });
 });
+
+// A module that ships a checked-in Package.swift declares its SwiftPM packages there
+// rather than in an spm.config.json, and those cover the pods its podspec names just
+// as the pure-Swift branch's do.
+describe('the SwiftPM packages a checked-in manifest declares', () => {
+  let logs;
+  let manifest;
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-manifest-deps-plugin-'));
+    const outDir = path.join(tmp, 'out');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const imageRoot = path.join(tmp, 'expo-image');
+    const image = pureSwiftModule(
+      imageRoot,
+      'ExpoImage',
+      spec(
+        "  s.dependency 'ExpoModulesCore'",
+        "  s.dependency 'SDWebImage'",
+        "  s.dependency 'libavif/libdav1d'",
+        "  s.dependency 'SomeUnmappedPod'"
+      )
+    );
+    fs.writeFileSync(
+      path.join(imageRoot, 'Package.swift'),
+      '// swift-tools-version: 6.0\n// checked in by the module\n'
+    );
+    const remote = (identity, url, version) => ({
+      sourceControl: [
+        {
+          identity,
+          location: { remote: [{ urlString: url }] },
+          productFilter: null,
+          requirement: { exact: [version] },
+        },
+      ],
+    });
+    runDumpPackage.mockReturnValue(
+      JSON.stringify({
+        name: 'ExpoImage',
+        dependencies: [
+          remote('sdwebimage', 'https://github.com/SDWebImage/SDWebImage.git', '5.21.6'),
+          remote('libavif-xcode', 'https://github.com/SDWebImage/libavif-Xcode.git', '1.0.0'),
+        ],
+        products: [{ name: 'ExpoImage', type: { library: ['automatic'] }, targets: ['ExpoImage'] }],
+        targets: [
+          {
+            name: 'ExpoImage',
+            type: 'regular',
+            path: 'ios',
+            dependencies: [
+              { product: ['SDWebImage', 'SDWebImage', null, null] },
+              { product: ['libavif', 'libavif-Xcode', null, null] },
+            ],
+          },
+        ],
+      })
+    );
+
+    resolveExpoModules.mockReturnValue({
+      modules: [
+        {
+          packageName: 'expo-modules-core',
+          pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+        },
+        { packageName: 'expo-image', pods: [{ podName: 'ExpoImage', podspecDir: image }] },
+      ],
+      extraDependencies: [],
+    });
+    providerWrittenTo(outDir);
+    logs = {
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    expoSpmPlugin({
+      react: null,
+      outputDir: outDir,
+      appRoot: path.join(tmp, 'app', 'ios'),
+      projectRoot: path.join(tmp, 'app'),
+    });
+    manifest = fs.readFileSync(
+      path.join(outDir, 'expo', 'expo-source', 'ExpoImage', 'Package.swift'),
+      'utf8'
+    );
+  });
+
+  afterAll(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    restoreModuleMocks();
+  });
+
+  it('mirrors them into the generated manifest', () => {
+    expect(manifest).toContain(
+      '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
+    );
+    expect(manifest).toContain('.product(name: "libavif", package: "libavif-Xcode"),');
+  });
+
+  it('counts them as counterparts of the pods its podspec depends on', () => {
+    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    expect(report).toContain('warning: Expo module "expo-image" (pod ExpoImage)');
+    expect(report).toContain('SomeUnmappedPod');
+    expect(report).not.toContain('SDWebImage');
+    // The podspec asks for `libavif/libdav1d` and the check matches on the root name,
+    // as CocoaPods does — the mirrored product is `libavif`, whatever its package is
+    // called.
+    expect(report).not.toContain('libavif');
+  });
+});
