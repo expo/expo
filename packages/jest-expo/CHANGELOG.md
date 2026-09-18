@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Map `react-native/asset-registry` to an absolute path, since Jest 30's resolver no longer honors the `packageFilter` hack in `@react-native/jest-preset` that stripped `react-native`'s `exports`. ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-15
