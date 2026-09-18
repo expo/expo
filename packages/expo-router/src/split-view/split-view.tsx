@@ -1,6 +1,6 @@
 import React, { isValidElement, use, type ReactNode } from 'react';
-import { Split, type SplitHostProps } from 'react-native-screens/experimental';
 
+import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
 import { Slot } from '../views/Navigator';
 import { SplitViewColumn, SplitViewInspector } from './elements';
