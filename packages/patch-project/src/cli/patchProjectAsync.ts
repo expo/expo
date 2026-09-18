@@ -102,52 +102,71 @@ async function patchProjectForPlatformAsync({
     backup: true,
   });
 
-  debug(`Moving native projects to origin directory - originDir[${originDir}]`);
-  await fs.rename(path.join(projectRoot, platform), originDir);
-
-  debug(`Generating native projects from prebuild template - projectRoot[${projectRoot}]`);
-  logger.log(
-    chalk.bold(`Generating native projects from prebuild template - platform[${platform}]`)
-  );
-  const templateChecksum = await generateNativeProjectsAsync(projectRoot, exp, {
-    platforms: [platform],
-    template: options.template,
-    templateDirectory: workingDirectories.templateDir,
-  });
-
-  debug(`Normalizing native project files for generated project`);
-  await normalizeNativeProjectsAsync({
-    projectRoot,
-    platform,
-    workingDirectories,
-    backup: false,
-  });
-
-  debug(`Initializing git repo for diff - diffDir[${diffDir}]`);
+  const platformDir = path.join(projectRoot, platform);
   const platformDiffDir = path.join(diffDir, platform);
-  await initializeGitRepoAsync(diffDir);
-  await moveAsync(path.join(projectRoot, platform), platformDiffDir);
-  await addAllToGitIndexAsync(diffDir);
-  await commitAsync(diffDir, 'Base commit from prebuild template');
 
-  debug(`Moving the original native projects to diff repo`);
-  await fs.rm(platformDiffDir, { recursive: true, force: true });
-  await moveAsync(originDir, platformDiffDir);
+  let originalProjectDir: string | null = null;
+  try {
+    debug(`Moving native projects to origin directory - originDir[${originDir}]`);
+    await fs.rename(platformDir, originDir);
+    originalProjectDir = originDir;
 
-  debug(`Generating patch file`);
-  const patchFilePath = path.join(projectRoot, patchRoot, `${platform}+${templateChecksum}.patch`);
-  logger.log(chalk.bold(`Saving patch file to ${patchFilePath}`));
-  await diffAsync(diffDir, patchFilePath, options.diffOptions ?? []);
-  const stat = await fs.stat(patchFilePath);
-  if (stat.size === 0) {
-    logger.log(`No changes detected, removing the patch file: ${patchFilePath}`);
-    await fs.rm(patchFilePath);
-  }
+    debug(`Generating native projects from prebuild template - projectRoot[${projectRoot}]`);
+    logger.log(
+      chalk.bold(`Generating native projects from prebuild template - platform[${platform}]`)
+    );
+    const templateChecksum = await generateNativeProjectsAsync(projectRoot, exp, {
+      platforms: [platform],
+      template: options.template,
+      templateDirectory: workingDirectories.templateDir,
+    });
 
-  if (!options.clean) {
-    debug(`Moving the original native projects back to project root`);
-    await moveAsync(platformDiffDir, path.join(projectRoot, platform));
+    debug(`Normalizing native project files for generated project`);
+    await normalizeNativeProjectsAsync({
+      projectRoot,
+      platform,
+      workingDirectories,
+      backup: false,
+    });
+
+    debug(`Initializing git repo for diff - diffDir[${diffDir}]`);
+    await initializeGitRepoAsync(diffDir);
+    await moveAsync(platformDir, platformDiffDir);
+    await addAllToGitIndexAsync(diffDir);
+    await commitAsync(diffDir, 'Base commit from prebuild template');
+
+    debug(`Moving the original native projects to diff repo`);
+    await fs.rm(platformDiffDir, { recursive: true, force: true });
+    await moveAsync(originDir, platformDiffDir);
+    originalProjectDir = platformDiffDir;
+
+    debug(`Generating patch file`);
+    const patchFilePath = path.join(
+      projectRoot,
+      patchRoot,
+      `${platform}+${templateChecksum}.patch`
+    );
+    logger.log(chalk.bold(`Saving patch file to ${patchFilePath}`));
+    await diffAsync(diffDir, patchFilePath, options.diffOptions ?? []);
+    const stat = await fs.stat(patchFilePath);
+    if (stat.size === 0) {
+      logger.log(`No changes detected, removing the patch file: ${patchFilePath}`);
+      await fs.rm(patchFilePath);
+    }
+
+    if (!options.clean) {
+      debug(`Moving the original native projects back to project root`);
+      await moveAsync(platformDiffDir, platformDir);
+      originalProjectDir = null;
+      await revertNormalizeNativeProjectsAsync(backupFileMappings);
+    }
+  } catch (error) {
+    if (originalProjectDir) {
+      debug(`Restoring the original native projects - originalProjectDir[${originalProjectDir}]`);
+      await moveAsync(originalProjectDir, platformDir);
+    }
     await revertNormalizeNativeProjectsAsync(backupFileMappings);
+    throw error;
   }
 }
 
