@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Documented that `additionalExif` in `takePictureAsync` only writes standard EXIF tag names and silently drops unknown keys. ([#50162](https://github.com/expo/expo/pull/50162) by [@ccdwyer](https://github.com/ccdwyer))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-11
