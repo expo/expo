@@ -23,7 +23,13 @@ export function usePreviewActivationPath(): [
       if (id === undefined) return;
       const nextActivationPath = findPreviewActivationPath(state, routeKey, id);
       if (nextActivationPath) {
-        setActivationPath(nextActivationPath);
+        // Give react-native-screens time to mount the preloaded route before native code
+        // walks the view hierarchy to resolve this path.
+        setTimeout(() => {
+          if (previewId.current === id) {
+            setActivationPath(nextActivationPath);
+          }
+        });
       }
     }
   );

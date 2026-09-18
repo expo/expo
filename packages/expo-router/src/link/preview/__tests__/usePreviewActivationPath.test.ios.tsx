@@ -30,7 +30,12 @@ function report(previewId: string, key: string) {
 }
 
 beforeEach(() => {
+  jest.useFakeTimers();
   mockPrefetch.mockClear();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
 });
 
 it('ignores delayed reports from an earlier opening of the same link', () => {
@@ -44,6 +49,8 @@ it('ignores delayed reports from an earlier opening of the same link', () => {
   expect(result.current[0]).toBeUndefined();
   expect(secondId).not.toBe(firstId);
   act(() => report(secondId, 'new'));
+  expect(result.current[0]).toBeUndefined();
+  act(() => jest.runOnlyPendingTimers());
   expect(result.current[0]).toEqual([{ key: 'new' }]);
 });
 
@@ -53,6 +60,7 @@ it('isolates concurrent preview instances', () => {
   act(() => first.result.current[1]('/detail'));
   act(() => second.result.current[1]('/detail'));
   act(() => report(mockPrefetch.mock.calls[0][1].__internal__previewId, 'first'));
+  act(() => jest.runOnlyPendingTimers());
   expect(first.result.current[0]).toEqual([{ key: 'first' }]);
   expect(second.result.current[0]).toBeUndefined();
 });
@@ -63,6 +71,7 @@ it('cancels a queued activation and ignores reports after dismissal', () => {
   const id = mockPrefetch.mock.calls[0][1].__internal__previewId;
   act(() => report(id, 'queued'));
   act(() => result.current[2]());
+  act(() => jest.runOnlyPendingTimers());
   expect(result.current[0]).toBeUndefined();
   act(() => report(id, 'late'));
   expect(result.current[0]).toBeUndefined();
