@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "ios": "expo run:ios"
+    "start": "expo start"
   },
   "dependencies": {
     "expo": "workspace:*",
