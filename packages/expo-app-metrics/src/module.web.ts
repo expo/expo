@@ -58,6 +58,7 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   async markFirstRender() {}
   async markInteractive(attributes?: MetricAttributes) {}
   logEvent(name: string, options?: LogEventOptions) {
+    // Unlike native, nothing validates the name or strips reserved `expo.*` attribute keys here.
     this.storeLog({
       name,
       body: options?.body ?? null,
