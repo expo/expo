@@ -117,6 +117,7 @@ function findDefaultRedirectRouteInNavigator(
   guardedRedirects: GuardedRedirects
 ): RouteNode | undefined {
   const anchor = getValidInitialRoute(node);
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
   const children = [...(isLayoutRouteNode(node) ? node.children : [])].sort(
     sortRoutesWithInitial(anchor?.route)
   );

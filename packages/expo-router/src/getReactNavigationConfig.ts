@@ -84,9 +84,8 @@ export function getReactNavigationScreensConfig(
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
   return {
     initialRouteName: undefined,
-    screens:
-      routeTree && isLayoutRouteNode(routeTree)
-        ? getReactNavigationScreensConfig(routeTree.children, metaOnly)
-        : {},
+    screens: isLayoutRouteNode(routeTree)
+      ? getReactNavigationScreensConfig(routeTree.children, metaOnly)
+      : {},
   };
 }

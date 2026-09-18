@@ -8,11 +8,7 @@ import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
 
-export type DynamicConvention = {
-  name: string;
-  deep: boolean;
-  notFound?: boolean;
-};
+export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
 type Params = Record<string, string | string[]>;
 
@@ -37,7 +33,7 @@ export type MiddlewareNode = {
 };
 
 /** Fields shared by every kind of route node. */
-type RouteNodeBase = {
+export type RouteNodeBase = {
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => LoadedRoute;
   /** Is the route a dynamic path */
@@ -106,19 +102,21 @@ export type RouteNode =
   | RedirectRouteNode
   | RewriteRouteNode;
 
-export const isLayoutRouteNode = (node: RouteNode): node is LayoutRouteNode =>
-  node.type === 'layout';
+export const isLayoutRouteNode = (node: RouteNode | null | undefined): node is LayoutRouteNode =>
+  node?.type === 'layout';
 
-export const isScreenRouteNode = (node: RouteNode): node is ScreenRouteNode =>
-  node.type === 'route';
+export const isScreenRouteNode = (node: RouteNode | null | undefined): node is ScreenRouteNode =>
+  node?.type === 'route';
 
-export const isApiRouteNode = (node: RouteNode): node is ApiRouteNode => node.type === 'api';
+export const isApiRouteNode = (node: RouteNode | null | undefined): node is ApiRouteNode =>
+  node?.type === 'api';
 
-export const isRedirectRouteNode = (node: RouteNode): node is RedirectRouteNode =>
-  node.type === 'redirect';
+export const isRedirectRouteNode = (
+  node: RouteNode | null | undefined
+): node is RedirectRouteNode => node?.type === 'redirect';
 
-export const isRewriteRouteNode = (node: RouteNode): node is RewriteRouteNode =>
-  node.type === 'rewrite';
+export const isRewriteRouteNode = (node: RouteNode | null | undefined): node is RewriteRouteNode =>
+  node?.type === 'rewrite';
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
 /** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */

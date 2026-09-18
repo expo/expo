@@ -34,7 +34,7 @@ type FromRuntimeManifestRouteOptions = {
  * @see expo-router/src/loadStaticParamsAsync.ts
  */
 export function getLoaderRouteContextKey(route: RouteNode): string {
-  return route.dynamic === null && route.parentContextKey
+  return isScreenRouteNode(route) && route.dynamic === null && route.parentContextKey
     ? route.parentContextKey
     : route.contextKey;
 }
