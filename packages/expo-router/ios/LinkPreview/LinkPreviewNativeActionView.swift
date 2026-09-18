@@ -137,7 +137,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn == true ? .on : .off
 
-    if let subtitle = subtitle {
+    if #available(iOS 16.0, *), let subtitle = subtitle {
       baseUiAction.subtitle = subtitle
     }
     if let label = discoverabilityLabel {
