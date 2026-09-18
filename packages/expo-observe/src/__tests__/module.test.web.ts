@@ -137,6 +137,16 @@ describe('web module', () => {
     expect(Observe.getIntegrations()).toEqual({});
   });
 
+  it('keeps its own copy of the integrations, like the native bridge does', () => {
+    const Observe = loadWebModule();
+    const integrations = { 'expo-router': true };
+    Observe.configure({ integrations });
+
+    integrations['expo-router'] = false;
+
+    expect(Observe.getIntegrations()).toEqual({ 'expo-router': true });
+  });
+
   it('emits configure with the resolved integrations', () => {
     const Observe = loadWebModule();
     const listener = jest.fn();

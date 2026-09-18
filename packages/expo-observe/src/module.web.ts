@@ -23,7 +23,7 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   configure(config: ObserveConfig): void {
     applyConfig(config);
     // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
-    this.lastIntegrations = config.integrations ?? {};
+    this.lastIntegrations = { ...config.integrations };
     this.emit('configure', { integrations: this.lastIntegrations });
   }
   getIntegrations(): ObserveIntegrationsConfig {
