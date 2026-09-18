@@ -1,8 +1,8 @@
-import AppMetrics, { type LogRecord } from 'expo-app-metrics';
 import Constants from 'expo-constants';
 
 import type { ObserveConfig } from '../types';
 import { buildLogsRequestBody } from './otlp';
+import { getPendingLogs, removeLogs, sessionId } from './storage';
 import type { BundleDefaults, EasExtra, OTLogsRequestBody, SendResult } from './types';
 
 const defaultEndpointUrl = 'https://o.expo.dev';
@@ -17,9 +17,6 @@ const sdkVersion: string = require('../../package.json').version;
 
 let config: ObserveConfig = {};
 let bundleDefaults: BundleDefaults | null = null;
-// Records the server accepted or that were given up on. They stay in the store so `getLogs()`
-// keeps returning the whole session, like native.
-const dispatched = new WeakSet<LogRecord>();
 let retryAfter = 0;
 let consecutiveRetryableFailures = 0;
 // Serializes dispatch passes so overlapping calls never send the same records twice.
@@ -37,8 +34,8 @@ export function setDispatchBundleDefaults(defaults: BundleDefaults): void {
 }
 
 /**
- * Sends the log records stored since the last dispatch to the EAS Observe logs endpoint. Resolves
- * once the pass is done; a call made while another pass is running waits for it first.
+ * Sends the pending log records to the EAS Observe logs endpoint. Resolves once the pass is done;
+ * a call made while another pass is running waits for it first.
  */
 export function dispatch(): Promise<void> {
   return enqueueDispatch(false);
@@ -72,19 +69,19 @@ async function dispatchPendingLogs(keepalive: boolean): Promise<void> {
     return;
   }
 
-  const session = AppMetrics.getMainSession();
-  const pending = (await session.getLogs()).filter((record) => !dispatched.has(record));
+  const pending = getPendingLogs();
   if (pending.length === 0) {
     return;
   }
   if (!shouldDispatch()) {
-    // Records that will never be sent are marked as sent so they don't pile up, like native.
-    pending.forEach((record) => dispatched.add(record));
+    // Records that will never be sent are dropped so they don't pile up, like native advancing
+    // its cursor past them.
+    removeLogs(pending);
     return;
   }
 
   const body = buildLogsRequestBody({
-    sessionId: session.id,
+    sessionId,
     sdkVersion,
     resourceAttributes: getResourceAttributes(),
     logs: pending,
@@ -97,7 +94,7 @@ async function dispatchPendingLogs(keepalive: boolean): Promise<void> {
     return;
   }
   consecutiveRetryableFailures = 0;
-  pending.forEach((record) => dispatched.add(record));
+  removeLogs(pending);
   if (result.kind === 'rejected') {
     console.warn(
       `[expo-observe] Dropping ${pending.length} log record(s) the server refused: ${result.reason}`

@@ -21,12 +21,9 @@ jest.mock('expo', () => ({
 }));
 
 const mockAppMetrics = {
-  logEvent: jest.fn(),
   markFirstRender: jest.fn(),
   markInteractive: jest.fn(),
-  setGlobalAttributes: jest.fn(),
   setNetworkTracesConfig: jest.fn(),
-  reportError: jest.fn(),
 };
 const mockSetErrorHandlerEnabled = jest.fn();
 
@@ -40,6 +37,12 @@ jest.mock('../web/dispatch', () => ({
   dispatch: jest.fn(async () => {}),
   setDispatchConfig: jest.fn(),
   setDispatchBundleDefaults: jest.fn(),
+}));
+
+jest.mock('../web/storage', () => ({
+  storeLog: jest.fn(),
+  storeReportedError: jest.fn(),
+  setGlobalAttributes: jest.fn(),
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -78,6 +81,10 @@ function loadWebModule() {
 
 function loadDispatch() {
   return require('../web/dispatch') as typeof import('../web/dispatch');
+}
+
+function loadStorage() {
+  return require('../web/storage') as typeof import('../web/storage');
 }
 
 function loadRouterInit() {
@@ -208,13 +215,31 @@ describe('web module', () => {
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it('forwards logEvent to AppMetrics', () => {
+  it('stores log events and global attributes in the web store', () => {
     const Observe = loadWebModule();
+    const { storeLog, setGlobalAttributes } = loadStorage();
+
     Observe.logEvent('app_boot', { severity: 'info', body: 'boot' });
-    expect(mockAppMetrics.logEvent).toHaveBeenCalledWith('app_boot', {
-      severity: 'info',
-      body: 'boot',
+    Observe.setGlobalAttributes({ tier: 'pro' });
+
+    expect(storeLog).toHaveBeenCalledWith('app_boot', { severity: 'info', body: 'boot' });
+    expect(setGlobalAttributes).toHaveBeenCalledWith({ tier: 'pro' });
+  });
+
+  it('stores reported errors normalized like the native reportError path', () => {
+    const Observe = loadWebModule();
+    const { storeReportedError } = loadStorage();
+    const error = new TypeError('x is not a function');
+
+    Observe.reportError(error);
+    Observe.reportError('plain string');
+
+    expect(storeReportedError).toHaveBeenNthCalledWith(1, {
+      type: 'TypeError',
+      message: 'x is not a function',
+      stacktrace: error.stack,
     });
+    expect(storeReportedError).toHaveBeenNthCalledWith(2, { message: 'plain string' });
   });
 
   it('hands the config, bundle defaults, and dispatchEvents to the dispatcher', async () => {

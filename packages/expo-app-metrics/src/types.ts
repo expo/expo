@@ -522,8 +522,7 @@ export interface ExpoAppMetricsModuleType {
   /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush as an
-   * OpenTelemetry log record sent to the `/v1/logs` endpoint. On web, the event
-   * is kept in memory for the current page until `expo-observe` dispatches it.
+   * OpenTelemetry log record sent to the `/v1/logs` endpoint.
    *
    * Severity defaults to `"info"` when not provided.
    *
