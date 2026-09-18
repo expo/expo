@@ -16,18 +16,18 @@ if (typeof window === 'undefined') {
 } else {
   afterEach(() => {
     setCurrentScript(null);
-    jest.resetModules();
+    vi.resetModules();
   });
 
-  it('returns the bundle URL while the script is executing synchronously', () => {
+  it('returns the bundle URL while the script is executing synchronously', async () => {
     setCurrentScript('https://localhost:8081/index.bundle?platform=web');
-    const { getBundleUrl } = require('../getBundleUrl');
+    const { getBundleUrl } = await import('../getBundleUrl');
     expect(getBundleUrl()).toBe('https://localhost:8081/index.bundle');
   });
 
-  it('still returns the bundle URL after the script finished executing', () => {
+  it('still returns the bundle URL after the script finished executing', async () => {
     setCurrentScript('https://localhost:8081/index.bundle?platform=web');
-    const { getBundleUrl } = require('../getBundleUrl');
+    const { getBundleUrl } = await import('../getBundleUrl');
     setCurrentScript(null);
     expect(getBundleUrl()).toBe('https://localhost:8081/index.bundle');
   });

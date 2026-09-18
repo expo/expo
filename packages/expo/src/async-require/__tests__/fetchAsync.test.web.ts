@@ -6,9 +6,7 @@ declare const global: any;
 const originalFetch = global.fetch;
 
 beforeAll(() => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({ body: '', text: jest.fn(() => 'mock'), headers: {} })
-  );
+  global.fetch = vi.fn(() => Promise.resolve({ body: '', text: vi.fn(() => 'mock'), headers: {} }));
 });
 
 afterAll(() => {

@@ -1,11 +1,13 @@
+import type { MockedFunction } from 'vitest';
+
 import { buildAsyncRequire } from '../buildAsyncRequire';
 import { loadBundleAsync } from '../loadBundle';
 
-export const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
+export const asMock = <T extends (...args: any[]) => any>(fn: T): MockedFunction<T> =>
+  fn as MockedFunction<T>;
 
-jest.mock('../loadBundle', () => ({
-  loadBundleAsync: jest.fn(async () => {}),
+vi.mock('../loadBundle', () => ({
+  loadBundleAsync: vi.fn(async () => {}),
 }));
 
 const originalEnv = process.env.NODE_ENV;

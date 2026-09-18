@@ -203,7 +203,7 @@
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest && jest --config scripts/spm/jest.config.js",
+    "test": "vitest run",
     "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
@@ -238,6 +238,7 @@
   "devDependencies": {
     "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
+    "@expo/vitest": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo-updates": "workspace:*",
@@ -273,9 +274,6 @@
     "react-native-webview": {
       "optional": true
     }
-  },
-  "jest": {
-    "preset": "../expo-module-scripts/jest-preset.cjs"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"

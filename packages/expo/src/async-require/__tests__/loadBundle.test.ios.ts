@@ -2,15 +2,15 @@ import { fetchThenEvalAsync } from '../fetchThenEval';
 import HMRClient from '../hmr';
 import { loadBundleAsync } from '../loadBundle';
 
-jest.mock('../../utils/getDevServer');
+vi.mock('../../utils/getDevServer');
 
-jest.mock('../fetchThenEval', () => ({
-  fetchThenEvalAsync: jest.fn(async (): Promise<void> => {}),
+vi.mock('../fetchThenEval', () => ({
+  fetchThenEvalAsync: vi.fn(async (): Promise<void> => {}),
 }));
 
-jest.mock('../hmr', () => ({
+vi.mock('../hmr', () => ({
   __esModule: true,
-  default: { registerBundle: jest.fn() },
+  default: { registerBundle: vi.fn() },
 }));
 
 const originalEnv = process.env.NODE_ENV;

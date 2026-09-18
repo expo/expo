@@ -501,14 +501,14 @@ describe('renderUnmappedDependencyWarning', () => {
 
 describe('reportUnsupported', () => {
   it('returns null and prints nothing when every module is covered', () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(reportUnsupported([])).toBeNull();
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
   });
 
   it('prints the report and returns an error carrying the entries', () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const entries = [
       {
         reason: 'mixed-no-manifest',

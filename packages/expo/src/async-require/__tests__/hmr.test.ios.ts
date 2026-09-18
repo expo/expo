@@ -11,28 +11,28 @@ function emit(event: string, ...args: any[]) {
   handlers.forEach((handler) => handler(...args));
 }
 
-jest.mock('../hmrUtils', () => ({
-  getConnectionError: jest.fn(() => 'Cannot connect to Expo CLI.'),
-  getFullBundlerUrl: jest.fn(() => 'http://localhost:8081/index.bundle?platform=ios'),
-  handleCompileError: jest.fn(),
-  hideLoading: jest.fn(),
-  reload: jest.fn(),
-  resetErrorOverlay: jest.fn(),
-  showLoading: jest.fn(),
+vi.mock('../hmrUtils', () => ({
+  getConnectionError: vi.fn(() => 'Cannot connect to Expo CLI.'),
+  getFullBundlerUrl: vi.fn(() => 'http://localhost:8081/index.bundle?platform=ios'),
+  handleCompileError: vi.fn(),
+  hideLoading: vi.fn(),
+  reload: vi.fn(),
+  resetErrorOverlay: vi.fn(),
+  showLoading: vi.fn(),
 }));
 
-jest.mock('@expo/metro/metro-runtime/modules/HMRClient', () => ({
+vi.mock('@expo/metro/metro-runtime/modules/HMRClient', () => ({
   __esModule: true,
   default: class {
     on(event: string, handler: (...args: any[]) => void) {
       (listeners[event] ??= []).push(handler);
     }
-    send = jest.fn();
-    enable = jest.fn();
-    disable = jest.fn();
-    close = jest.fn();
-    isEnabled = jest.fn(() => true);
-    hasPendingUpdates = jest.fn(() => false);
+    send = vi.fn();
+    enable = vi.fn();
+    disable = vi.fn();
+    close = vi.fn();
+    isEnabled = vi.fn(() => true);
+    hasPendingUpdates = vi.fn(() => false);
   },
 }));
 

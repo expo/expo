@@ -4,18 +4,21 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-jest.mock('../cli', () => ({
-  resolveExpoModules: jest.fn(),
-  generateModulesProvider: jest.fn(() => null),
-  runDumpPackage: jest.fn(),
+vi.mock('../cli', () => ({
+  resolveExpoModules: vi.fn(),
+  generateModulesProvider: vi.fn(() => null),
+  runDumpPackage: vi.fn(),
 }));
-jest.mock('../flavored-frameworks', () => ({
-  resolveFlavoredFramework: jest.fn(({ frameworkName }) =>
+vi.mock('../flavored-frameworks', () => ({
+  resolveFlavoredFramework: vi.fn(({ frameworkName }) =>
     frameworkName === 'ExpoModulesCore' ? { id: 'ExpoModulesCore', name: 'ExpoModulesCore' } : null
   ),
-  prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
+  prepareCompileInterfaces: vi.fn(() => '/abs/interfaces'),
 }));
 
+// Vitest applies the hoisted vi.mock() registrations on the next import(); the CommonJS
+// require() calls below (and inside the module under test) then resolve to those mocks.
+await import('../cli');
 const { resolveExpoModules, runDumpPackage } = require('../cli');
 const { UnsupportedModulesError } = require('../diagnostics');
 const expoSpmPlugin = require('../plugin');
@@ -89,9 +92,9 @@ describe('the pure-Swift branch', () => {
       },
     ]);
     logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+      error: vi.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: vi.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: vi.spyOn(console, 'log').mockImplementation(() => {}),
     };
     try {
       expoSpmPlugin({
@@ -192,9 +195,9 @@ describe('the checked-in manifest branch', () => {
       },
     ]);
     logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+      error: vi.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: vi.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: vi.spyOn(console, 'log').mockImplementation(() => {}),
     };
     try {
       expoSpmPlugin({

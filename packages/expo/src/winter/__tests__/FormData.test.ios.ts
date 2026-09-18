@@ -1,7 +1,7 @@
 /* eslint-disable no-global-assign */
 import type { ExpoFormData } from '../FormData';
 
-const { installFormDataPatch } = jest.requireActual('../FormData');
+const { installFormDataPatch } = await vi.importActual<typeof import('../FormData')>('../FormData');
 const jestFormDataPolyfill = FormData;
 
 // NOTE(@kitten): We need to overload the `append` method additions on the NodeJS type as well,
@@ -15,7 +15,10 @@ declare global {
 }
 
 beforeAll(() => {
-  FormData = installFormDataPatch(require('react-native/Libraries/Network/FormData').default);
+  // The global `FormData` typings come from `@types/node` (via vitest), not the React Native class.
+  FormData = installFormDataPatch(
+    require('react-native/Libraries/Network/FormData').default
+  ) as any;
 });
 
 afterAll(() => {
@@ -96,7 +99,7 @@ describe('FormData', () => {
       const a = new FormData();
       a.append('a', 'b');
       a.append('c', 'd');
-      const forEach = jest.fn();
+      const forEach = vi.fn();
       a.forEach(forEach);
       expect(forEach).toHaveBeenCalledTimes(2);
     });
@@ -132,7 +135,7 @@ describe('FormData', () => {
     it('supports iteration', () => {
       const a = new FormData();
       a.append('a', 'b');
-      const fn = jest.fn();
+      const fn = vi.fn();
       for (const [key, value] of a) {
         fn(key, value);
         expect(key).toBe('a');
@@ -140,21 +143,21 @@ describe('FormData', () => {
       }
       expect(fn).toHaveBeenCalledTimes(1);
 
-      const keysFn = jest.fn();
+      const keysFn = vi.fn();
       for (const key of a.keys()) {
         keysFn(key);
         expect(key).toBe('a');
       }
       expect(keysFn).toHaveBeenCalledTimes(1);
 
-      const valuesFn = jest.fn();
+      const valuesFn = vi.fn();
       for (const value of a.values()) {
         valuesFn(value);
         expect(value).toBe('b');
       }
       expect(valuesFn).toHaveBeenCalledTimes(1);
 
-      const entriesFn = jest.fn();
+      const entriesFn = vi.fn();
       for (const [key, value] of a.entries()) {
         entriesFn(key, value);
         expect(key).toBe('a');

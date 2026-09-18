@@ -1,12 +1,14 @@
+import type { MockedFunction } from 'vitest';
+
 import getDevServer from '../../utils/getDevServer';
 import { buildUrlForBundle } from '../buildUrlForBundle';
 
-export const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
+export const asMock = <T extends (...args: any[]) => any>(fn: T): MockedFunction<T> =>
+  fn as MockedFunction<T>;
 
-jest.mock('../../utils/getDevServer', () => ({
+vi.mock('../../utils/getDevServer', () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: vi.fn(),
 }));
 
 const originalEnv = process.env;

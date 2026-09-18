@@ -35,13 +35,13 @@ function restoreAbortSignalStatics() {
 
 describe('AbortSignal patch', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     resetAbortSignalStatics();
     installAbortSignalPatch(AbortSignal);
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
     restoreAbortSignalStatics();
   });
 
@@ -51,8 +51,8 @@ describe('AbortSignal patch', () => {
   });
 
   it('should not override native timeout or any implementations', () => {
-    const timeout = jest.fn();
-    const any = jest.fn();
+    const timeout = vi.fn();
+    const any = vi.fn();
 
     Object.defineProperty(AbortSignal, 'timeout', {
       value: timeout,
@@ -71,15 +71,15 @@ describe('AbortSignal patch', () => {
 
   it('should abort timeout signal after delay with TimeoutError reason', () => {
     const signal = AbortSignal.timeout(10);
-    const listener = jest.fn();
+    const listener = vi.fn();
 
     signal.addEventListener('abort', listener);
-    jest.advanceTimersByTime(9);
+    vi.advanceTimersByTime(9);
 
     expect(signal.aborted).toBe(false);
     expect(listener).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
 
     expect(signal.aborted).toBe(true);
     expect(listener).toHaveBeenCalledTimes(1);
@@ -117,7 +117,7 @@ describe('AbortSignal patch', () => {
     const firstController = new AbortController();
     const secondController = new AbortController();
     const signal = AbortSignal.any([firstController.signal, secondController.signal]);
-    const listener = jest.fn();
+    const listener = vi.fn();
 
     signal.addEventListener('abort', listener);
     secondController.abort(reason);
@@ -144,8 +144,8 @@ describe('AbortSignal patch', () => {
   it('should remove source listeners after any signal aborts', () => {
     const firstController = new AbortController();
     const secondController = new AbortController();
-    const removeFirstListener = jest.spyOn(firstController.signal, 'removeEventListener');
-    const removeSecondListener = jest.spyOn(secondController.signal, 'removeEventListener');
+    const removeFirstListener = vi.spyOn(firstController.signal, 'removeEventListener');
+    const removeSecondListener = vi.spyOn(secondController.signal, 'removeEventListener');
 
     AbortSignal.any([firstController.signal, secondController.signal]);
     firstController.abort();

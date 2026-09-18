@@ -79,9 +79,10 @@ export function defineNodeConfig(options = {}) {
       environment: 'node',
       // Tests in this repository were written against Jest's globals (`describe`, `it`, `expect`).
       globals: true,
-      // Match the Jest presets: mocks are cleared between tests, and a package that ships the
-      // preset but has no test files yet should not fail.
-      clearMocks: true,
+      // Vitest 5 clears mocks before every test by default; the Jest CLI preset did not, and tests
+      // in this repository record calls in `beforeAll` and assert on them later.
+      clearMocks: false,
+      // A package that ships the preset but has no test files yet should not fail.
       passWithNoTests: true,
       include,
       exclude: NODE_TEST_EXCLUDE,

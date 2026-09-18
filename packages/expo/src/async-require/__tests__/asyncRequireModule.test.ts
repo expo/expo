@@ -8,22 +8,24 @@
  * module source in a controlled environment similar to how Metro does.
  */
 
+import type { Mock } from 'vitest';
+
 // The module references `__METRO_GLOBAL_PREFIX__` as a free variable
 declare let __METRO_GLOBAL_PREFIX__: string;
 
 describe('asyncRequireModule', () => {
-  let mockImportAll: jest.Mock;
+  let mockImportAll: Mock;
   let mockRequire: any;
   let asyncRequire: any;
   const originalExpoOs = process.env.EXPO_OS;
 
   beforeEach(() => {
-    mockImportAll = jest.fn((id: number, _moduleName?: string) => ({
+    mockImportAll = vi.fn((id: number, _moduleName?: string) => ({
       default: `module-${id}`,
     }));
 
     // Build a fake require that has importAll attached
-    mockRequire = Object.assign(jest.fn(), {
+    mockRequire = Object.assign(vi.fn(), {
       importAll: mockImportAll,
     });
 
@@ -144,7 +146,7 @@ describe('asyncRequireModule', () => {
       resolveBundle = resolve;
     });
 
-    (globalThis as any).__loadBundleAsync = jest.fn(() => bundlePromise);
+    (globalThis as any).__loadBundleAsync = vi.fn(() => bundlePromise);
 
     const paths = { '42': '/bundles/my-module.bundle' };
     const resultPromise = asyncRequire(42, paths, 'my-module');
@@ -163,7 +165,7 @@ describe('asyncRequireModule', () => {
 
   it('does not load the bundle on web when importAll succeeds (preloaded bundle case)', async () => {
     process.env.EXPO_OS = 'web';
-    (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+    (globalThis as any).__loadBundleAsync = vi.fn(() => Promise.resolve());
 
     const paths = { '42': '/bundles/my-module.bundle' };
     const result = await asyncRequire(42, paths, 'my-module');
@@ -188,7 +190,7 @@ describe('asyncRequireModule', () => {
     mockImportAll.mockImplementation((id: number) =>
       bundleLoaded ? { default: `module-${id}` } : undefined
     );
-    (globalThis as any).__loadBundleAsync = jest.fn(() => {
+    (globalThis as any).__loadBundleAsync = vi.fn(() => {
       bundleLoaded = true;
       return Promise.resolve();
     });
@@ -204,7 +206,7 @@ describe('asyncRequireModule', () => {
 
   it('imports synchronously on native when the module is inlined (no split bundle path)', () => {
     process.env.EXPO_OS = 'ios';
-    (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+    (globalThis as any).__loadBundleAsync = vi.fn(() => Promise.resolve());
 
     const ret = asyncRequire(42, null, 'my-module');
 
@@ -217,7 +219,7 @@ describe('asyncRequireModule', () => {
     it('returns a Promise with a synchronous _result when no bundle load was needed', async () => {
       const ret = asyncRequire(42, null, 'my-module');
 
-      const onFinally = jest.fn();
+      const onFinally = vi.fn();
 
       expect(ret).toBeInstanceOf(Promise);
       expect(typeof ret.catch).toBe('function');
@@ -235,7 +237,7 @@ describe('asyncRequireModule', () => {
         })
         .mockImplementationOnce(() => ({ default: 'module-42' }));
 
-      (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+      (globalThis as any).__loadBundleAsync = vi.fn(() => Promise.resolve());
 
       const ret = asyncRequire(42, { '42': '/bundles/my-module.bundle' }, 'my-module');
 
@@ -249,7 +251,7 @@ describe('asyncRequireModule', () => {
     it('supports catching a rejected bundle load', async () => {
       process.env.EXPO_OS = 'ios';
       const error = new Error('Bundle load failed');
-      (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.reject(error));
+      (globalThis as any).__loadBundleAsync = vi.fn(() => Promise.reject(error));
 
       const ret = asyncRequire(42, { '42': '/bundles/my-module.bundle' }, 'my-module');
 
@@ -268,7 +270,7 @@ describe('asyncRequireModule', () => {
 
   describe('prefetch', () => {
     it('does not call importAll (only triggers bundle loading)', () => {
-      (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+      (globalThis as any).__loadBundleAsync = vi.fn(() => Promise.resolve());
 
       const paths = { '42': '/bundles/my-module.bundle' };
       asyncRequire.prefetch(42, paths, 'my-module');

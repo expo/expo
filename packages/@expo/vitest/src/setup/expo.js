@@ -165,6 +165,7 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
 
 // Expo's default async require messaging sockets expect a running dev server.
 vi.mock('expo/src/async-require/messageSocket', () => ({ default: undefined }));
+vi.mock('expo/src/async-require/messageSocket.native', () => ({ default: undefined }));
 
 vi.mock('expo-file-system/legacy', () => ({
   downloadAsync: vi.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),

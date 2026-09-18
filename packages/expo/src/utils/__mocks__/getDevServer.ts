@@ -1,4 +1,4 @@
-export default jest.fn(() => ({
+export default vi.fn(() => ({
   bundleLoadedFromServer: true,
   fullBundleUrl:
     'http://localhost:19000?platform=android&modulesOnly=true&runModule=false&runtimeBytecodeVersion=null',

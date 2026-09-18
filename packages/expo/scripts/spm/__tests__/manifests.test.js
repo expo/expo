@@ -4,7 +4,10 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-jest.mock('../cli', () => ({ runDumpPackage: jest.fn() }));
+vi.mock('../cli', () => ({ runDumpPackage: vi.fn() }));
+// Vitest applies the hoisted vi.mock() registrations on the next import(); the CommonJS
+// require() calls below (and inside the module under test) then resolve to those mocks.
+await import('../cli');
 const { runDumpPackage } = require('../cli');
 
 const {

@@ -3879,6 +3879,9 @@ importers:
       '@expo/metro-runtime':
         specifier: workspace:*
         version: link:../@expo/metro-runtime
+      '@expo/vitest':
+        specifier: workspace:*
+        version: link:../@expo/vitest
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1

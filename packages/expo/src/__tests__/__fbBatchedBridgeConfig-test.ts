@@ -2,7 +2,7 @@ import 'react-native';
 import '../Expo.fx';
 import { Platform } from 'expo';
 
-jest.mock('../utils/getDevServer');
+vi.mock('../utils/getDevServer');
 
 if (Platform.OS === 'web') {
   it('provides a helpful error message on web', () => {

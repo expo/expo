@@ -5,6 +5,9 @@ import { TextDecoder, TextEncoder } from 'util';
 
 import { createBoundary, convertFormDataAsync, joinUint8Arrays } from '../convertFormData';
 
+// The `FormData` typings that vitest pulls in through `@types/node` are stricter than the DOM ones
+// the patched React Native `FormData` implements, hence the casts below.
+
 declare namespace globalThis {
   let TextDecoder: typeof import('util').TextDecoder;
   let TextEncoder: typeof import('util').TextEncoder;
@@ -13,12 +16,14 @@ declare namespace globalThis {
 globalThis.TextDecoder ??= TextDecoder;
 globalThis.TextEncoder ??= TextEncoder;
 
-const { installFormDataPatch } = jest.requireActual('../../FormData');
-const ExpoFormData = installFormDataPatch(RNFormData);
+const { installFormDataPatch } =
+  await vi.importActual<typeof import('../../FormData')>('../../FormData');
+const ExpoFormData = installFormDataPatch(RNFormData as any);
+type FormDataInput = Parameters<typeof convertFormDataAsync>[0];
 
 describe(convertFormDataAsync, () => {
   it('should convert string', async () => {
-    const formData = new ExpoFormData();
+    const formData = new ExpoFormData() as unknown as FormDataInput;
     formData.append('foo', 'foo');
     formData.append('bar', 'bar');
     const boundary = '----ExpoFetchFormBoundary0000000000000000';
@@ -39,7 +44,7 @@ describe(convertFormDataAsync, () => {
   });
 
   it(`should convert blob`, async () => {
-    const formData = new ExpoFormData();
+    const formData = new ExpoFormData() as unknown as FormDataInput;
     const blob = new Blob(['hello blob'], { type: 'text/plain' });
     formData.append('blob', blob, 'blobFile');
     const boundary = '----ExpoFetchFormBoundary0000000000000000';
@@ -57,7 +62,7 @@ describe(convertFormDataAsync, () => {
   });
 
   it(`should convert expo-file-system FileBlob`, async () => {
-    const formData = new ExpoFormData();
+    const formData = new ExpoFormData() as unknown as FormDataInput;
     const mockFileBlob = {
       bytes: () => new Uint8Array([65, 66, 67]),
     };
@@ -77,13 +82,13 @@ describe(convertFormDataAsync, () => {
   });
 
   it('should throw an error if the react-native FormData passing an uri', async () => {
-    const formData = new ExpoFormData();
+    const formData = new ExpoFormData() as unknown as FormDataInput;
     formData.append('foo', {
       uri: 'file:/path/to/test.jpg',
       type: 'image/jpeg',
       name: 'test.jpg',
     });
-    expect(convertFormDataAsync(formData)).rejects.toThrow(
+    await expect(convertFormDataAsync(formData)).rejects.toThrow(
       /Unsupported FormDataPart implementation/
     );
   });

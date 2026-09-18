@@ -1,10 +1,10 @@
 import { getBundleUrl } from '../getBundleUrl';
 import getDevServer from '../getDevServer';
 
-jest.mock('../getBundleUrl', () => ({ getBundleUrl: jest.fn() }));
+vi.mock('../getBundleUrl', () => ({ getBundleUrl: vi.fn() }));
 
 function mockBundleUrl(url: string | null) {
-  jest.mocked(getBundleUrl).mockReturnValue(url);
+  vi.mocked(getBundleUrl).mockReturnValue(url);
 }
 
 describe('getDevServer', () => {

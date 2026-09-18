@@ -1,6 +1,6 @@
 import { FetchResponse } from '../FetchResponse';
 
-jest.mock('../ExpoFetchModule', () => {
+vi.mock('../ExpoFetchModule', () => {
   const helloWorld = new TextEncoder().encode('hello world');
 
   class StubNativeResponse {
@@ -24,7 +24,7 @@ jest.mock('../ExpoFetchModule', () => {
   return {
     ExpoFetchModule: {
       NativeResponse: StubNativeResponse,
-      unstable_createBlobData: jest.fn(async () => 'mock-blob-id'),
+      unstable_createBlobData: vi.fn(async () => 'mock-blob-id'),
     },
   };
 });
@@ -48,7 +48,7 @@ describe('FetchResponse blob() with react-native Blob', () => {
   }
 
   it('should warn about the performance overhead only once', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
       await makeResponse().blob();

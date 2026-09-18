@@ -8,7 +8,7 @@ globalThis.ReadableStream = require('node:stream/web').ReadableStream;
 globalThis.TextDecoder = require('node:util').TextDecoder;
 globalThis.TextEncoder = require('node:util').TextEncoder;
 
-jest.mock('../ExpoFetchModule', () => {
+vi.mock('../ExpoFetchModule', () => {
   const { TextEncoder, TextDecoder } = require('node:util');
   const helloWorld = new TextEncoder().encode('hello world');
 
@@ -89,7 +89,7 @@ jest.mock('../ExpoFetchModule', () => {
     ExpoFetchModule: {
       NativeRequest: StubNativeRequest,
       NativeResponse: StubNativeResponse,
-      unstable_createBlobData: jest.fn(async () => 'mock-blob-id'),
+      unstable_createBlobData: vi.fn(async () => 'mock-blob-id'),
     },
   };
 });

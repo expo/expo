@@ -5,8 +5,8 @@
 // `ImportMetaRegistry` also imports `getBundleUrl`, and Jest always loads imports eagerly. Mock it
 // away so this test only measures whether `runtime` itself loads `getBundleUrl` eagerly. That is the
 // property `transform.inlineRequires` removes in a real web bundle.
-jest.mock('../ImportMetaRegistry', () => ({ ImportMetaRegistry: { url: null } }));
-jest.mock('../../async-require/setup', () => ({}));
+vi.mock('../ImportMetaRegistry', () => ({ ImportMetaRegistry: { url: null } }));
+vi.mock('../../async-require/setup', () => ({}));
 
 function setCurrentScript(src: string | null) {
   Object.defineProperty(document, 'currentScript', {
@@ -22,15 +22,15 @@ if (typeof window === 'undefined') {
 } else {
   afterEach(() => {
     setCurrentScript(null);
-    jest.resetModules();
+    vi.resetModules();
   });
 
-  it('captures the bundle URL while the entry script is still executing', () => {
+  it('captures the bundle URL while the entry script is still executing', async () => {
     setCurrentScript('https://localhost:8081/index.bundle?platform=web');
-    require('../runtime');
+    await import('../runtime');
     setCurrentScript(null);
 
-    const { getBundleUrl } = require('../../utils/getBundleUrl');
+    const { getBundleUrl } = await import('../../utils/getBundleUrl');
     expect(getBundleUrl()).toBe('https://localhost:8081/index.bundle');
   });
 }

@@ -1,6 +1,6 @@
-jest.mock('../../utils/getDevServer', () => ({
+vi.mock('../../utils/getDevServer', () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue({ url: 'http://localhost:8081' }),
+  default: vi.fn().mockReturnValue({ url: 'http://localhost:8081' }),
 }));
 
 describe('getBaseURL', () => {
@@ -8,10 +8,10 @@ describe('getBaseURL', () => {
 
   const originalProcessEnv = process.env;
   const originalExpo = globalThis.expo;
-  beforeEach(() => {
+  beforeEach(async () => {
     // Reset the module to clear the `getBaseURL` underlying cache
-    jest.resetModules();
-    getBaseURL = require('../base').getBaseURL;
+    vi.resetModules();
+    getBaseURL = (await import('../base')).getBaseURL;
   });
 
   afterEach(() => {

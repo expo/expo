@@ -25,6 +25,16 @@ import path from 'node:path';
 
 const ownRequire = createRequire(import.meta.url);
 
+/**
+ * Append a line to `$EXPO_VITEST_DEBUG` (a file path) when set. Workers have no usable stdout.
+ * @param {() => string} message
+ */
+function debug(message) {
+  if (process.env.EXPO_VITEST_DEBUG) {
+    fs.appendFileSync(process.env.EXPO_VITEST_DEBUG, `${message()}\n`);
+  }
+}
+
 /** Node's CommonJS loader internals (`_resolveFilename`, `_extensions`, ...) are not typed. */
 const NodeModule = /** @type {any} */ (Module);
 
@@ -51,6 +61,33 @@ const TRANSFORM_PACKAGE_PATTERN = new RegExp(
 const RN_JEST_PRESET_PATTERN = /[\\/]node_modules[\\/]@react-native[\\/]jest-preset[\\/]/;
 
 const VIRTUAL_DIR = '/__expo_vitest_virtual__/';
+const VIRTUAL_MOCK_DIR = '/__expo_vitest_mock__/';
+
+/**
+ * Find a `vi.mock`/`vi.doMock` registration whose raw specifier is exactly this bare package
+ * request (e.g. `react-native-webview`). Node and Vite may resolve a package to different entry
+ * files (`main` vs `react-native`/`module` fields), so bare requests are matched by specifier
+ * rather than by resolved path.
+ *
+ * @param {string} request
+ * @returns {any | undefined}
+ */
+function findMockByBareSpecifier(request) {
+  if (request.startsWith('.') || path.isAbsolute(request) || request.startsWith('node:')) {
+    return undefined;
+  }
+  const mocker = /** @type {any} */ (globalThis).__vitest_mocker__;
+  const registry = mocker?.getMockerRegistry?.();
+  if (!registry) {
+    return undefined;
+  }
+  for (const mock of registry.registryById.values()) {
+    if (mock.raw === request && (mock.type === 'manual' || mock.type === 'redirect')) {
+      return mock;
+    }
+  }
+  return undefined;
+}
 
 /** @type {string[]} */
 const LANGUAGE_EXTENSIONS = ['js', 'jsx', 'ts', 'tsx', 'json'];
@@ -101,6 +138,59 @@ function tryResolvePackageRoot(name, paths) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Bridge from Node's `require()` to Vite's module graph.
+ *
+ * Workspace code that Vite inlines may still call `require()` (lazy requires, optional
+ * dependencies, CommonJS scripts). Node executes those, so without help they would load a second
+ * copy of a module the test already imported or mocked through Vite. Before Node evaluates a file
+ * itself, look it up in the current Vitest worker:
+ *
+ * 1. a mock registered with `vi.mock`/`vi.doMock` for that file (manual factories only; they must
+ *    be synchronous because `require()` is),
+ * 2. a module Vite has already evaluated for that file, so both sides share one instance.
+ *
+ * Returns `undefined` when neither applies and Node should load the file normally.
+ *
+ * @param {string} filename
+ * @returns {{ exports: unknown } | undefined}
+ */
+function getViteModuleExports(filename) {
+  const worker = /** @type {any} */ (globalThis).__vitest_worker__;
+  const mocker = /** @type {any} */ (globalThis).__vitest_mocker__;
+  debug(
+    () =>
+      `bridge lookup ${filename} mocker=${!!mocker} worker=${!!worker} mock=${mocker?.getDependencyMock?.(filename)?.type}`
+  );
+
+  const mock = mocker?.getDependencyMock?.(filename);
+  if (mock) {
+    if (mock.type === 'manual') {
+      const result = mock.resolve();
+      if (result && typeof result.then === 'function') {
+        throw new Error(
+          `@expo/vitest: the vi.mock factory for ${filename} is async, but the module was loaded with require(). Use a synchronous factory or import() instead.`
+        );
+      }
+      return { exports: result };
+    }
+    if (mock.type === 'redirect' && typeof mock.redirect === 'string') {
+      return { exports: ownRequire(mock.redirect) };
+    }
+    // Automocks need Vite to evaluate the original module first; fall through.
+  }
+
+  const nodes = worker?.evaluatedModules?.fileToModulesMap?.get(filename);
+  if (nodes) {
+    for (const node of nodes) {
+      if (node.evaluated && node.exports) {
+        return { exports: node.exports };
+      }
+    }
+  }
+  return undefined;
 }
 
 /**
@@ -248,9 +338,15 @@ export function installNodeRequireHook(options) {
     resolveOptions
   ) {
     const bypassRedirects = resolveOptions?.__expoVitestActual === true;
+    debug(() => `resolve ${request} from ${parent?.filename ?? '<none>'}`);
 
     if (virtualSources.has(request)) {
       return request;
+    }
+
+    // A bare package mocked with vi.mock()/vi.doMock() in the current test file.
+    if (!bypassRedirects && findMockByBareSpecifier(request)) {
+      return `${VIRTUAL_MOCK_DIR}${request.replace(/[^\w.-]+/g, '_')}.js?${encodeURIComponent(request)}`;
     }
 
     // Web and Node projects alias React Native to React Native for Web, like Metro does for
@@ -312,6 +408,32 @@ export function installNodeRequireHook(options) {
    * @param {string} filename
    */
   NodeModule._extensions['.js'] = function expoVitestLoadJs(module, filename) {
+    debug(() => `load js ${filename}`);
+    if (filename.startsWith(VIRTUAL_MOCK_DIR)) {
+      const request = decodeURIComponent(filename.slice(filename.indexOf('?') + 1));
+      const mock = findMockByBareSpecifier(request);
+      if (!mock) {
+        throw new Error(`@expo/vitest: mock for ${request} disappeared before it was required`);
+      }
+      const result = mock.type === 'manual' ? mock.resolve() : ownRequire(mock.redirect);
+      if (result && typeof result.then === 'function') {
+        throw new Error(
+          `@expo/vitest: the vi.mock factory for ${request} is async, but the module was loaded with require(). Use a synchronous factory or import() instead.`
+        );
+      }
+      module.exports = result;
+      delete NodeModule._cache[filename];
+      return;
+    }
+    if (!filename.includes('node_modules')) {
+      const bridged = getViteModuleExports(filename);
+      if (bridged) {
+        module.exports = bridged.exports;
+        // Do not cache: the next require() must observe vi.resetModules()/vi.doMock() changes.
+        delete NodeModule._cache[filename];
+        return;
+      }
+    }
     const virtualSource = virtualSources.get(filename);
     if (virtualSource != null) {
       /** @type {any} */ (module)._compile(virtualSource, filename);
@@ -333,6 +455,14 @@ export function installNodeRequireHook(options) {
      * @param {string} filename
      */
     NodeModule._extensions[extension] = function expoVitestLoadTypeScript(module, filename) {
+      debug(() => `load ts ${filename}`);
+      const bridged = getViteModuleExports(filename);
+      if (bridged) {
+        module.exports = bridged.exports;
+        // Do not cache: the next require() must observe vi.resetModules()/vi.doMock() changes.
+        delete NodeModule._cache[filename];
+        return;
+      }
       /** @type {any} */ (module)._compile(
         transformReactNativeSource(filename, platform),
         filename
