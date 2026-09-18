@@ -3,7 +3,7 @@ import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-ap
 
 import { applyConfig } from './applyConfig';
 import { registerIntegrationImpl } from './registerIntegration';
-import { reportCaughtError } from './reportCaughtError';
+import { normalizeReportedError } from './reportCaughtError';
 import type {
   ObserveConfig,
   ObserveIntegrationsConfig,
@@ -12,6 +12,7 @@ import type {
   ObserveAttributes,
 } from './types';
 import { dispatch, setDispatchBundleDefaults, setDispatchConfig } from './web/dispatch';
+import { setGlobalAttributes, storeLog, storeReportedError } from './web/storage';
 import type { BundleDefaults } from './web/types';
 
 class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
@@ -44,11 +45,12 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   ): void {
     registerIntegrationImpl(this, name, callback);
   }
+  // Log events live in this package's web store, since `expo-app-metrics` records nothing on web.
   logEvent(name: string, options?: LogEventOptions): void {
-    AppMetrics.logEvent(name, options);
+    storeLog(name, options);
   }
   reportError(error: unknown): void {
-    reportCaughtError(error);
+    storeReportedError(normalizeReportedError(error));
   }
   markFirstRender(): void {
     AppMetrics.markFirstRender();
@@ -57,7 +59,7 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
     AppMetrics.markInteractive(attributes);
   }
   setGlobalAttributes(attributes?: ObserveAttributes | null): void {
-    AppMetrics.setGlobalAttributes(attributes);
+    setGlobalAttributes(attributes);
   }
   setBundleDefaults(defaults: BundleDefaults): void {
     setDispatchBundleDefaults(defaults);

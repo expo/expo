@@ -5,7 +5,7 @@ import AppMetrics from 'expo-app-metrics';
  * `type`/`stacktrace` as optional strings and `message` as a required string, so a non-string value
  * would fail the record decode and drop the report. Every field is normalized to a string here.
  */
-type NormalizedReportedError = {
+export type NormalizedReportedError = {
   type?: string;
   message: string;
   stacktrace?: string;
@@ -20,7 +20,7 @@ function stringOrUndefined(value: unknown): string | undefined {
  * Normalizes an arbitrary caught value into the fields the native `reportError` expects, the way the
  * global `ErrorUtils` handler does.
  */
-function normalizeReportedError(error: unknown): NormalizedReportedError {
+export function normalizeReportedError(error: unknown): NormalizedReportedError {
   // Only a real `Error` contributes name/message/stack, and each only when it's actually a string;
   // an `Error` with non-string fields would otherwise reach the native string fields (e.g. a mutated
   // `message`) and fail the record decode.

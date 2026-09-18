@@ -1,16 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import type { LogRecord } from 'expo-app-metrics';
-
-let mockLogs: LogRecord[] = [];
-const mockSession = {
-  id: 'session-1',
-  getLogs: jest.fn(async () => [...mockLogs]),
-};
-
-jest.mock('expo-app-metrics', () => ({
-  __esModule: true,
-  default: { getMainSession: jest.fn(() => mockSession) },
-}));
+export {};
 
 const mockExpoConfig: {
   name?: string;
@@ -55,10 +44,6 @@ beforeEach(() => {
   globalThis.fetch = mockFetch;
   globalThis.localStorage?.clear();
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  mockLogs = [
-    { timestamp: '2026-09-18T10:00:00.000Z', name: 'first', severity: 'info' },
-    { timestamp: '2026-09-18T10:00:01.000Z', name: 'second', severity: 'warn' },
-  ];
   for (const key of Object.keys(mockExpoConfig) as (keyof typeof mockExpoConfig)[]) {
     delete mockExpoConfig[key];
   }
@@ -76,32 +61,36 @@ afterAll(() => {
 });
 
 type Dispatch = typeof import('../dispatch');
+type Storage = typeof import('../storage');
 
-// Loads a fresh dispatcher with the web implementation enabled and a production bundle, which is
-// what the package entry point and `Observe.configure({ web: true })` set up.
-function loadDispatch(config: import('../../types').ObserveConfig = {}): Dispatch {
+// Loads a fresh dispatcher and store with two pending records, the web implementation enabled,
+// and a production bundle, which is what the package entry point and
+// `Observe.configure({ web: true })` set up.
+function load(config: import('../../types').ObserveConfig = {}): Dispatch & { storage: Storage } {
   const dispatch = require('../dispatch') as Dispatch;
+  const storage = require('../storage') as Storage;
+  storage.storeLog('first');
+  storage.storeLog('second', { severity: 'warn' });
   dispatch.setDispatchBundleDefaults({ environment: 'production', isJsDev: false });
   dispatch.setDispatchConfig({ web: true, ...config });
-  return dispatch;
+  return { ...dispatch, storage };
 }
 
 // The Node jest project has no `window`, which is the server-rendering case: nothing is stored
 // there, so nothing is sent. The Web project runs under jsdom, which is the browser case.
 if (typeof window === 'undefined') {
   it('dispatches nothing on the server', async () => {
-    const { dispatch } = loadDispatch();
+    const { dispatch } = load();
 
     await dispatch();
 
     expect(mockFetch).not.toHaveBeenCalled();
-    expect(mockSession.getLogs).not.toHaveBeenCalled();
   });
 }
 
 (typeof window === 'undefined' ? describe.skip : describe)('dispatch', () => {
   it('posts the pending logs as OTLP JSON to the project logs endpoint', async () => {
-    const { dispatch } = loadDispatch({ environment: 'staging' });
+    const { dispatch, storage } = load({ environment: 'staging' });
     mockResponse(200);
 
     await dispatch();
@@ -139,28 +128,27 @@ if (typeof window === 'undefined') {
     });
     expect(body.resourceLogs[0].scopeLogs[0].logRecords[0].attributes).toContainEqual({
       key: 'session.id',
-      value: { stringValue: 'session-1' },
+      value: { stringValue: storage.sessionId },
     });
   });
 
   it('does nothing until the web implementation is enabled', async () => {
-    const dispatch = require('../dispatch') as Dispatch;
-    dispatch.setDispatchBundleDefaults({ environment: 'production', isJsDev: false });
-    dispatch.setDispatchConfig({});
+    const { dispatch, setDispatchConfig } = load();
+    setDispatchConfig({});
 
-    await dispatch.dispatch();
+    await dispatch();
     expect(mockFetch).not.toHaveBeenCalled();
 
-    dispatch.setDispatchConfig({ web: true });
+    setDispatchConfig({ web: true });
     mockResponse(200);
-    await dispatch.dispatch();
+    await dispatch();
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(sentRecordNames()).toEqual(['first', 'second']);
   });
 
   it('falls back to the bundle environment when configure sets none', async () => {
-    const { dispatch } = loadDispatch();
+    const { dispatch } = load();
     mockResponse(200);
 
     await dispatch();
@@ -175,7 +163,7 @@ if (typeof window === 'undefined') {
     mockExpoConfig.extra = {
       eas: { projectId: 'project-1', observe: { endpointUrl: 'https://otel.example.com/' } },
     };
-    const { dispatch } = loadDispatch();
+    const { dispatch } = load();
     mockResponse(200);
 
     await dispatch();
@@ -183,15 +171,16 @@ if (typeof window === 'undefined') {
     expect(mockFetch.mock.calls[0]![0]).toBe('https://otel.example.com/project-1/v1/logs');
   });
 
-  it('sends each record once and picks up records logged later', async () => {
-    const { dispatch } = loadDispatch();
+  it('removes sent records from the store and picks up records logged later', async () => {
+    const { dispatch, storage } = load();
     mockResponse(200);
     await dispatch();
+    expect(storage.getPendingLogs()).toEqual([]);
 
     await dispatch();
     expect(mockFetch).toHaveBeenCalledTimes(1);
 
-    mockLogs.push({ timestamp: '2026-09-18T10:00:02.000Z', name: 'third', severity: 'info' });
+    storage.storeLog('third');
     mockResponse(200);
     await dispatch();
 
@@ -200,10 +189,11 @@ if (typeof window === 'undefined') {
   });
 
   it('keeps the records and waits before retrying after a retryable failure', async () => {
-    const { dispatch } = loadDispatch();
+    const { dispatch, storage } = load();
     const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1_000_000);
     mockResponse(503, '120');
     await dispatch();
+    expect(storage.getPendingLogs()).toHaveLength(2);
 
     nowSpy.mockReturnValue(1_000_000 + 119_000);
     await dispatch();
@@ -219,7 +209,7 @@ if (typeof window === 'undefined') {
   });
 
   it('treats a network error as retryable', async () => {
-    const { dispatch } = loadDispatch();
+    const { dispatch } = load();
     mockFetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
     await dispatch();
 
@@ -233,34 +223,30 @@ if (typeof window === 'undefined') {
   });
 
   it('drops the batch after a non-retryable failure', async () => {
-    const { dispatch } = loadDispatch();
+    const { dispatch, storage } = load();
     mockResponse(400);
     await dispatch();
 
-    await dispatch();
-
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(storage.getPendingLogs()).toEqual([]);
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
   it('drops pending records without a request while dispatching is disabled', async () => {
-    const { dispatch, setDispatchConfig } = loadDispatch({ dispatchingEnabled: false });
-    await dispatch();
-    expect(mockFetch).not.toHaveBeenCalled();
+    const { dispatch, storage } = load({ dispatchingEnabled: false });
 
-    setDispatchConfig({ web: true, dispatchingEnabled: true });
     await dispatch();
 
     expect(mockFetch).not.toHaveBeenCalled();
+    expect(storage.getPendingLogs()).toEqual([]);
   });
 
   it('does not dispatch from a development bundle unless dispatchInDebug is set', async () => {
-    const { dispatch, setDispatchBundleDefaults, setDispatchConfig } = loadDispatch();
+    const { dispatch, storage, setDispatchBundleDefaults, setDispatchConfig } = load();
     setDispatchBundleDefaults({ environment: 'development', isJsDev: true });
     await dispatch();
     expect(mockFetch).not.toHaveBeenCalled();
 
-    mockLogs.push({ timestamp: '2026-09-18T10:00:02.000Z', name: 'third', severity: 'info' });
+    storage.storeLog('third');
     setDispatchConfig({ web: true, dispatchInDebug: true });
     mockResponse(200);
     await dispatch();
@@ -270,7 +256,7 @@ if (typeof window === 'undefined') {
   });
 
   it('never dispatches when this installation is out of sample', async () => {
-    const { dispatch } = loadDispatch({ sampleRate: 0 });
+    const { dispatch } = load({ sampleRate: 0 });
 
     await dispatch();
 
@@ -278,7 +264,7 @@ if (typeof window === 'undefined') {
   });
 
   it('always dispatches with a sample rate of 1', async () => {
-    const { dispatch } = loadDispatch({ sampleRate: 1 });
+    const { dispatch } = load({ sampleRate: 1 });
     mockResponse(200);
 
     await dispatch();
@@ -288,7 +274,7 @@ if (typeof window === 'undefined') {
 
   it('warns once and sends nothing without an EAS project id', async () => {
     delete mockExpoConfig.extra;
-    const { dispatch } = loadDispatch();
+    const { dispatch } = load();
 
     await dispatch();
     await dispatch();
@@ -299,7 +285,7 @@ if (typeof window === 'undefined') {
   });
 
   it('runs concurrent dispatches one after another', async () => {
-    const { dispatch } = loadDispatch();
+    const { dispatch } = load();
     mockResponse(200);
     mockResponse(200);
 
@@ -309,7 +295,7 @@ if (typeof window === 'undefined') {
   });
 
   it('flushes with a keepalive request when the page is hidden', async () => {
-    loadDispatch();
+    load();
     mockFetch.mockResolvedValue({
       status: 200,
       headers: { get: () => null },
