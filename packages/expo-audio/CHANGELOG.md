@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read.
+- [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read. ([#50327](https://github.com/expo/expo/pull/50327) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
