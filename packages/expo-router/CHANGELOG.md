@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Split `RouteNode` into a discriminated union on `type`, so each kind of node only declares the properties it can carry. Non-layout nodes no longer have a `children` array. Affects `expo-router/internal/routing`. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@jakub-agent](https://github.com/jakub-agent))
+- Split `RouteNode` into a discriminated union on `type`, so each kind of node only declares the properties it can carry. Non-layout nodes no longer have a `children` array. Affects `expo-router/internal/routing`. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@jakub-agent](https://github.com/jakub-agent)) ([#50171](https://github.com/expo/expo/pull/50171) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 

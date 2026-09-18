@@ -4,9 +4,8 @@ import { createContext, use, useMemo, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
 import {
-  getChildren,
-  getInitialRouteName,
   getValidInitialRoute,
+  isLayoutRouteNode,
   LocalRouteParamsContext,
   sortRoutesWithInitial,
 } from '../Route';
@@ -35,7 +34,7 @@ export function GuardContextProvider({
   const params = use(LocalRouteParamsContext);
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
   const nodeChildren = node?.type === 'layout' ? node.children : undefined;
-  const nodeInitialRouteName = getInitialRouteName(node);
+  const nodeInitialRouteName = node && isLayoutRouteNode(node) ? node.initialRouteName : undefined;
   const { fallbacks, resolvedGuards } = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
     [
@@ -131,7 +130,9 @@ function findDefaultRedirectRouteInNavigator(
   guardedRedirects: GuardedRedirects
 ): RouteNode | undefined {
   const anchor = getValidInitialRoute(node);
-  const children = [...getChildren(node)].sort(sortRoutesWithInitial(anchor?.route));
+  const children = [...(isLayoutRouteNode(node) ? node.children : [])].sort(
+    sortRoutesWithInitial(anchor?.route)
+  );
 
   if (anchor && !isRouteGuarded(anchor.route, guardedRedirects)) {
     return anchor;

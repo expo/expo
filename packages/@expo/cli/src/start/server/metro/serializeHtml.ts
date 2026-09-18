@@ -3,7 +3,7 @@ import {
   injectAssetsIntoHtml,
   type StaticContentAssets,
 } from '@expo/router-server/build/utils/html';
-import { getEntryPoints, type RouteNode } from 'expo-router/build/Route';
+import { isRedirectRouteNode, isScreenRouteNode, type RouteNode } from 'expo-router/build/Route';
 
 import { event } from './ssrEvents';
 
@@ -81,9 +81,16 @@ export function serialAssetsToStaticContentAssets(
       // where CSS is linked from standalone files. In development, we inline CSS into the HTML
       // document directly for HMR
       if (isExporting) {
-        return { type: 'css' as const, href: combineUrlPath(baseUrl, asset.filename) };
+        return {
+          type: 'css' as const,
+          href: combineUrlPath(baseUrl, asset.filename),
+        };
       }
-      return { type: 'inline' as const, source: asset.source, hmrId: asset.metadata.hmrId };
+      return {
+        type: 'inline' as const,
+        source: asset.source,
+        hmrId: asset.metadata.hmrId,
+      };
     });
 
   if (bundleUrl) {
@@ -92,7 +99,10 @@ export function serialAssetsToStaticContentAssets(
 
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
-  const entryPoints = route ? getEntryPoints(route) : [];
+  const entryPoints =
+    route && (isScreenRouteNode(route) || isRedirectRouteNode(route))
+      ? (route.entryPoints ?? [])
+      : [];
 
   if (entryPoints.length) {
     const syncAssets = orderedJsAssets.filter((a) => !a.metadata.isAsync);

@@ -8,7 +8,7 @@ import type { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import chalk from 'chalk';
-import { getEntryPoints, type RouteNode } from 'expo-router/build/Route';
+import { isRedirectRouteNode, isScreenRouteNode, type RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import type { PageHeaderInfo, RoutesManifest } from 'expo-server/private';
@@ -436,12 +436,16 @@ export async function exportFromServerAsync(
 
       const syncJsAssets = syncJs.map((asset) => toAssetUrl(asset.filename));
 
-      const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
+      const htmlRoutes = getHtmlFiles({
+        manifest,
+        includeGroupVariations: false,
+      });
 
       // Build per-route async chunk assignments
       const routeAssets = new Map<string, string[]>();
       for (const { route } of htmlRoutes) {
-        const entryPoints = getEntryPoints(route);
+        const entryPoints =
+          isScreenRouteNode(route) || isRedirectRouteNode(route) ? (route.entryPoints ?? []) : [];
         if (!entryPoints.length) {
           continue;
         }

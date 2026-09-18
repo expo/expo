@@ -2,8 +2,8 @@ import isEqual from 'react-fast-compare';
 
 import {
   findRouteNodeByName,
-  getChildren,
   getValidInitialRouteName,
+  isLayoutRouteNode,
   type RouteNode,
 } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
@@ -246,7 +246,7 @@ function createDestinationState(
   const initialRouteName = getValidInitialRouteName(routeNode);
   // Sort like a mounted navigator does, so the route names match on mount and no
   // ROUTE_NAMES_CHANGED action is queued.
-  const routeNames = [...getChildren(routeNode)]
+  const routeNames = [...(isLayoutRouteNode(routeNode) ? routeNode.children : [])]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
   if (!targetRoute) {

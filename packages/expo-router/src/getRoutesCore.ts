@@ -1,6 +1,6 @@
 import {
-  getChildren,
   getValidInitialRoute,
+  isLayoutRouteNode,
   type DynamicConvention,
   type LayoutRouteNode,
   type MiddlewareNode,
@@ -752,8 +752,10 @@ function validateRouteTreeExports(node: RouteNode) {
   }
 
   runtimeValidateRouteNode(node);
-  for (const child of getChildren(node)) {
-    validateRouteTreeExports(child);
+  if (isLayoutRouteNode(node)) {
+    for (const child of node.children) {
+      validateRouteTreeExports(child);
+    }
   }
 }
 
@@ -909,7 +911,7 @@ function getLayoutNode(node: RouteNode, options: Options): LayoutRouteNode {
    */
   // We may strip loadRoute during testing
   const groupName = matchLastGroupName(node.route);
-  const childMatchingGroup = getChildren(node).find((child) => {
+  const childMatchingGroup = (isLayoutRouteNode(node) ? node.children : []).find((child) => {
     return child.route.replace(/\/index$/, '') === groupName;
   });
   let anchor = childMatchingGroup?.route;
