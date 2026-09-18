@@ -44,10 +44,12 @@
   },
   "dependencies": {
     "@babel/core": "^7.26.0",
+    "@expo/metro-config": "workspace:*",
     "@react-native/babel-preset": "0.88.0-rc.1",
     "@react-native/jest-preset": "0.88.0-rc.1",
     "@react-native/js-polyfills": "0.88.0-rc.1",
     "babel-preset-expo": "workspace:*",
+    "esbuild": "^0.28.1",
     "jest-expo": "workspace:*",
     "jsdom": "^27.0.0",
     "react-native-web": "^0.21.2"

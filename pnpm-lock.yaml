@@ -3266,6 +3266,9 @@ importers:
       '@babel/core':
         specifier: ^7.26.0
         version: 7.29.7
+      '@expo/metro-config':
+        specifier: workspace:*
+        version: link:../metro-config
       '@react-native/babel-preset':
         specifier: 0.88.0-rc.1
         version: 0.88.0-rc.1(@babel/core@7.29.7)
@@ -3278,6 +3281,9 @@ importers:
       babel-preset-expo:
         specifier: workspace:*
         version: link:../../babel-preset-expo
+      esbuild:
+        specifier: ^0.28.1
+        version: 0.28.1
       jest-expo:
         specifier: workspace:*
         version: link:../../jest-expo

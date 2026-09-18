@@ -215,6 +215,7 @@ export function installNodeRequireHook(options) {
 
   const resolvePaths = [projectRoot, path.dirname(new URL(import.meta.url).pathname)];
   loadBabel(resolvePaths);
+  loadTransformer(resolvePaths);
   // Node-only packages (CLI tools, config plugins) may not depend on React Native at all.
   const reactNativeRoot = tryResolvePackageRoot('react-native', resolvePaths);
   const reactNativeWebRoot = aliasReactNativeWeb
@@ -590,10 +591,110 @@ function getCacheDir() {
 }
 
 /**
- * Transform a source file to CommonJS for Node: React Native ecosystem packages with
- * `@react-native/babel-preset`, everything else (workspace TypeScript reached through `require()`)
- * with `babel-preset-expo`, like Jest did. Results are cached in the OS temp directory, keyed by
- * file content and platform.
+ * Which transformer produced a cached file. Part of the cache key so switching strategies (or
+ * upgrading a transformer) never serves stale output.
+ */
+const TRANSFORM_CACHE_VERSION = 'v4';
+
+/** @type {any} */
+let noxcturnalTransformer;
+/** @type {any} */
+let esbuild;
+/** @type {'noxcturnal' | 'babel' | null} */
+let transformer = null;
+
+/**
+ * Pick the transformer once per process. Noxcturnal (through `@expo/metro-config`'s transform
+ * worker, the same pipeline Metro runs) is preferred; Babel is the fallback, exactly like Metro.
+ * `EXPO_VITEST_TRANSFORMER=babel` forces the fallback for comparisons.
+ * @param {string[]} paths
+ */
+function loadTransformer(paths) {
+  if (transformer) {
+    return transformer;
+  }
+  if (process.env.EXPO_VITEST_TRANSFORMER !== 'babel') {
+    // esbuild asserts `new TextEncoder().encode('') instanceof Uint8Array` when it loads. Under
+    // jsdom both globals come from another realm, so load with Node's own for a moment.
+    const globalTextEncoder = globalThis.TextEncoder;
+    const globalUint8Array = globalThis.Uint8Array;
+    const NodeTextEncoder = ownRequire('node:util').TextEncoder;
+    globalThis.TextEncoder = NodeTextEncoder;
+    globalThis.Uint8Array = Object.getPrototypeOf(new NodeTextEncoder().encode('')).constructor;
+    try {
+      const metroConfigPath = ownRequire.resolve(
+        '@expo/metro-config/build/transform-worker/noxcturnal/noxcturnal-transformer.js',
+        { paths }
+      );
+      noxcturnalTransformer = ownRequire(metroConfigPath);
+      esbuild = ownRequire('esbuild');
+      transformer = 'noxcturnal';
+    } catch (error) {
+      debug(() => `noxcturnal unavailable, falling back to babel: ${error}`);
+    } finally {
+      globalThis.TextEncoder = globalTextEncoder;
+      globalThis.Uint8Array = globalUint8Array;
+    }
+  }
+  if (!transformer) {
+    transformer = 'babel';
+  }
+  return transformer;
+}
+
+/**
+ * Run Metro's Noxcturnal source pipeline (Flow/TypeScript erasure, JSX, `process.env`, `define`,
+ * platform plugins) and lower the resulting ESM to CommonJS with esbuild so Node can execute it.
+ * Returns null when the pipeline declines the file, in which case Babel handles it.
+ *
+ * @param {string} filename
+ * @param {string} source
+ * @param {string} platform
+ * @param {string} projectRoot
+ * @returns {string | null}
+ */
+function transformWithNoxcturnal(filename, source, platform, projectRoot) {
+  const attempt = noxcturnalTransformer.transformNodeModuleWithNoxcturnalSync({
+    filename,
+    source,
+    projectRoot,
+    isDefaultExpoTransformer: true,
+    options: {
+      platform: platform === 'node' ? 'web' : platform,
+      dev: true,
+      minify: false,
+      type: 'module',
+      hot: false,
+      inlinePlatform: true,
+      inlineRequires: false,
+      unstable_transformProfile: 'hermes-stable',
+      // Keep `import`/`export` in the output; esbuild lowers them below.
+      experimentalImportSupport: true,
+      // Naming an environment turns off React Refresh registration (`$RefreshReg$`), which only
+      // exists in a running Metro dev server. `client` has no other effect on the pipeline.
+      customTransformOptions: { environment: platform === 'node' ? 'node' : 'client' },
+    },
+  });
+  if (attempt.status !== 'complete') {
+    debug(() => `noxcturnal fallback for ${filename}: ${attempt.reason}`);
+    return null;
+  }
+  const lowered = esbuild.transformSync(attempt.result.code, {
+    loader: 'js',
+    format: 'cjs',
+    target: 'node22',
+    sourcemap: 'inline',
+    sourcefile: filename,
+  });
+  return lowered.code;
+}
+
+/**
+ * Transform a source file to CommonJS for Node. Noxcturnal is tried first (see
+ * `loadTransformer`); Babel is the fallback: React Native ecosystem packages with
+ * `@react-native/babel-preset`, everything else (workspace TypeScript reached through
+ * `require()`) with `babel-preset-expo`, like Jest did. Results are cached on disk, keyed by
+ * file content, platform and transformer.
  *
  * @param {string} filename
  * @param {string} platform
@@ -601,11 +702,15 @@ function getCacheDir() {
  */
 function transformReactNativeSource(filename, platform) {
   loadBabel();
+  const projectRoot = installed?.options.projectRoot ?? process.cwd();
+  const strategy = loadTransformer([projectRoot, babelResolvePaths[1] ?? projectRoot]);
   const isReactNativePackage = TRANSFORM_PACKAGE_PATTERN.test(filename);
 
   const source = fs.readFileSync(filename, 'utf8');
   const isRnJestMock = RN_JEST_PRESET_PATTERN.test(filename);
   const hash = createHash('sha1')
+    .update(TRANSFORM_CACHE_VERSION)
+    .update(strategy)
     .update(cacheSalt)
     .update(platform)
     .update(filename)
@@ -620,29 +725,36 @@ function transformReactNativeSource(filename, platform) {
     // Cache miss.
   }
 
-  const result = babel.transformSync(source, {
-    filename,
-    babelrc: false,
-    configFile: false,
-    compact: false,
-    sourceMaps: 'inline',
-    presets: isReactNativePackage
-      ? [[reactNativeBabelPreset, { enableBabelRuntime: true }]]
-      : [expoBabelPreset],
-    caller: {
-      name: 'metro',
-      bundler: 'metro',
-      platform: platform === 'node' ? 'web' : platform,
-      isServer: platform === 'node',
-      // Emit CommonJS; `require()` inside these files runs in Node's loader.
-      supportsStaticESM: false,
-    },
-  });
-  if (!result?.code) {
-    throw new Error(`Babel produced no output for ${filename}`);
+  let code =
+    strategy === 'noxcturnal'
+      ? transformWithNoxcturnal(filename, source, platform, projectRoot)
+      : null;
+
+  if (code == null) {
+    const result = babel.transformSync(source, {
+      filename,
+      babelrc: false,
+      configFile: false,
+      compact: false,
+      sourceMaps: 'inline',
+      presets: isReactNativePackage
+        ? [[reactNativeBabelPreset, { enableBabelRuntime: true }]]
+        : [expoBabelPreset],
+      caller: {
+        name: 'metro',
+        bundler: 'metro',
+        platform: platform === 'node' ? 'web' : platform,
+        isServer: platform === 'node',
+        // Emit CommonJS; `require()` inside these files runs in Node's loader.
+        supportsStaticESM: false,
+      },
+    });
+    if (!result?.code) {
+      throw new Error(`Babel produced no output for ${filename}`);
+    }
+    code = /** @type {string} */ (result.code);
   }
 
-  let code = result.code;
   if (isRnJestMock) {
     code = `const jest = globalThis.__EXPO_VITEST_JEST__.forModule(module);\n${code}`;
   }
