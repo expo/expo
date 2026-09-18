@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `Worker chunk not found` assertion when serving a web worker from a lazy development bundle with `web.output` set to `static` or `server` ([#50244](https://github.com/expo/expo/pull/50244) by [@tahakocal](https://github.com/tahakocal))
+- Keep the synchronous Expo Router import mode for native production bundles in the Noxcturnal transformer, matching `babel-preset-expo`. ([#50319](https://github.com/expo/expo/pull/50319) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
