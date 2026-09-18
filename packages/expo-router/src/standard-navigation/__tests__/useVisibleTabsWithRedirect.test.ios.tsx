@@ -139,6 +139,25 @@ describe('useVisibleTabsWithRedirect', () => {
     ]);
   });
 
+  it('keeps a focused filesystem +not-found route as fallback content', () => {
+    const notFoundRoute = { key: 'not-found-key', name: '+not-found' };
+    const { result } = renderHook(() =>
+      useVisibleTabsWithRedirect({
+        routes: [...routes, notFoundRoute],
+        routeNames: [...routeNames, notFoundRoute.name],
+        focusedRouteKey: notFoundRoute.key,
+        descriptors: {
+          ...descriptors,
+          [notFoundRoute.key]: { routeSource: 'filesystem' as const },
+        },
+      })
+    );
+
+    expect(result.current.visibleRoutes).toEqual([routes[0], routes[1]]);
+    expect(result.current.focusedFallbackRoute).toEqual(notFoundRoute);
+    expect(pendingIntents).toEqual([]);
+  });
+
   it('builds the redirect href from the selected route', () => {
     mockedUseRouteNode.mockReturnValue(routeNode('settings'));
     renderHook(() =>

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the duplicate setup check in `init` reporting Windows-style paths, which also made its tests fail on Windows. ([#50175](https://github.com/expo/expo/pull/50175) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 0.4.1 — 2026-09-16
