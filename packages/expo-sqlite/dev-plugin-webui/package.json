@@ -41,6 +41,7 @@
     "@react-native/jest-preset": "0.88.0-rc.1",
     "@testing-library/react-native": "^13.3.0",
     "@types/jest": "^30.0.0",
+    "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo-module-scripts": "workspace:*",
     "jest-expo": "workspace:*",
