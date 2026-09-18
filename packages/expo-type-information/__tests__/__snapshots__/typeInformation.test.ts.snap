@@ -5,8 +5,8 @@ exports[`Same generated concise ts interface 1`] = `
 
 import { NativeModule, SharedObject } from 'expo';
 // These types haven't been defined in provided file(s).
-export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
+export type BarcodeType = unknown;
 
 export type TestRecord = {
   basicString: string;
@@ -156,12 +156,12 @@ exports[`Same generated concise ts interface 2`] = `
 "import React from 'react';
 
 import {
-  TestEnum,
   TestRecord2,
-  BarcodeType,
-  SomeParametrizedType,
-  TestRecord,
+  TestEnum,
   TestRecordClass,
+  TestRecord,
+  SomeParametrizedType,
+  BarcodeType,
   TestModuleEvents,
   TestModuleNativeModuleType,
   ExpoWebViewProps
@@ -268,8 +268,8 @@ exports[`Same generated full ts interface 1`] = `
 {
   "commonTypesInterface": {
     "content": "// These types haven't been defined in provided file(s).
-export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
+export type BarcodeType = unknown;
 
 export type TestRecord = {
   basicString: string;
@@ -501,8 +501,8 @@ exports[`Same generated mock file 1`] = `
  *  */
 
 
-export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
+export type BarcodeType = unknown;
 
 
 export type TestRecord = {
@@ -688,8 +688,8 @@ export function ExpoWebView(props) { }
 exports[`Same generated module file 1`] = `
 "import { NativeModule, SharedObject } from 'expo';
 // These types haven't been defined in provided file(s).
-export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
+export type BarcodeType = unknown;
 
 export type TestRecord = {
   basicString: string;
@@ -832,8 +832,8 @@ exports[`Same generated view file 1`] = `
 "import { ViewProps } from 'react-native';
 
 // These types haven't been defined in provided file(s).
-export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
+export type BarcodeType = unknown;
 
 interface ExpoWebViewProps extends ViewProps {
   url: string;
@@ -1087,7 +1087,6 @@ exports[`Same type information 1`] = `
                 "type": {
                   "kind": 3,
                   "type": {
-                    "name": "Either",
                     "types": [
                       {
                         "kind": 0,
@@ -1151,7 +1150,6 @@ exports[`Same type information 1`] = `
               "type": {
                 "kind": 3,
                 "type": {
-                  "name": "Either",
                   "types": [
                     {
                       "kind": 0,
@@ -1444,7 +1442,6 @@ exports[`Same type information 1`] = `
                     {
                       "kind": 3,
                       "type": {
-                        "name": "Either",
                         "types": [
                           {
                             "kind": 0,
@@ -1477,7 +1474,6 @@ exports[`Same type information 1`] = `
                           {
                             "kind": 3,
                             "type": {
-                              "name": "Either",
                               "types": [
                                 {
                                   "kind": 4,
@@ -1551,7 +1547,6 @@ exports[`Same type information 1`] = `
               "type": {
                 "kind": 3,
                 "type": {
-                  "name": "Either",
                   "types": [
                     {
                       "kind": 0,
