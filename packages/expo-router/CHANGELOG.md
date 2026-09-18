@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Derive browser history on web from router action results in reducer phase. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-16
