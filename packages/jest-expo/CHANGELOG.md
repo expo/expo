@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Upgrade to Jest 30 and declare `jest@^30` as a peer dependency. ([#50427](https://github.com/expo/expo/pull/50427) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

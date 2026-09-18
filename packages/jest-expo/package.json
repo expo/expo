@@ -58,6 +58,7 @@
   "peerDependencies": {
     "@react-native/jest-preset": "^0.88.0-rc.1",
     "expo": "*",
+    "jest": "^30.0.0",
     "react-native": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4 || ~19.3.0"
   },
