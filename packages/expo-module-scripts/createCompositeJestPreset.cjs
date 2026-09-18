@@ -13,7 +13,7 @@ const basePreset = require('./jest-preset.cjs');
 // Notes:
 // - Jest forbids nesting `projects`, so the module preset's per-platform projects are
 //   flattened in rather than added as one entry.
-// - `watchPlugins`/`prettierPath` are root-only in multi-project mode, so they're kept at the
+// - `watchPlugins` is root-only in multi-project mode, so it's kept at the
 //   root (from the module preset) and stripped from each sub-project config.
 // - `rootDir` is forced to the sub-folder so the sub-configs don't need to be invoked with an
 //   external `--rootDir` (as `expo-module test <target>` does).
@@ -37,7 +37,7 @@ module.exports = function createCompositeJestPreset(
       // otherwise fall back to the default preset for that target (`jest-preset-<target>`).
       ...subdirs.map((dir) => {
         const localConfig = path.join(rootDir, dir, 'jest.config.js');
-        const { watchPlugins, prettierPath, ...config } = fs.existsSync(localConfig)
+        const { watchPlugins, ...config } = fs.existsSync(localConfig)
           ? require(localConfig)
           : require(`./jest-preset-${dir}.cjs`);
         // Name the project after its folder so failures are attributable in multi-project output.
