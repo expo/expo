@@ -13,6 +13,7 @@
 - Map `react-native/asset-registry` to an absolute path, since Jest 30's resolver no longer honors the `packageFilter` hack in `@react-native/jest-preset` that stripped `react-native`'s `exports`. ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
 - Run native tests in a `jest-expo` owned environment based on `jest-environment-node@30` instead of the Jest 29 environment bundled with `@react-native/jest-preset`. Fixes `this._moduleMocker.clearMocksOnScope is not a function` on Jest 30. ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
 - Skip lazy global getters when Jest clears mocks on the global scope during teardown. Fixes `You are trying to import a file outside of the scope of the test code` on Jest 30, caused by the lazily installed `expo` winter globals (`fetch`, `structuredClone`, `__ExpoImportMetaRegistry`, ...). ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
+- Fix `jest-expo/universal` and `jest-expo/rsc` causing validation warnings about `watchPlugins` and `passWithNoTests` in project configurations. ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
