@@ -678,3 +678,151 @@ describe('extra CocoaPods dependencies', () => {
     expect(renderExtraPodsWarning([])).toBe('');
   });
 });
+
+describe('Swift packages the generated package cannot declare', () => {
+  const pending = [
+    {
+      podName: 'ExpoImage',
+      packageName: 'expo-image',
+      moduleRoot: '/node_modules/expo-image',
+      hasSources: true,
+      prebuildProduct: null,
+      unsupportedPackageDeps: [{ form: 'local-path', identity: 'sdwebimage', target: null }],
+    },
+  ];
+
+  const report = (unsupportedPackageDeps) =>
+    renderUnsupportedReport(
+      classifyUnsupported({
+        pending: [{ ...pending[0], unsupportedPackageDeps }],
+        coreAvailable: true,
+      })
+    );
+
+  it('classifies a module whose manifest declares a package it cannot mirror', () => {
+    expect(classifyUnsupported({ pending, coreAvailable: true })).toEqual([
+      {
+        reason: 'unsupported-package-dependency',
+        podName: 'ExpoImage',
+        packageName: 'expo-image',
+        moduleRoot: '/node_modules/expo-image',
+        dependencies: [{ form: 'local-path', identity: 'sdwebimage', target: null }],
+      },
+    ]);
+  });
+
+  it('names the package, what is wrong with it, and the next step', () => {
+    const text = renderUnsupportedReport(classifyUnsupported({ pending, coreAvailable: true }));
+    expect(text).toMatch(/^error: Expo module "expo-image" \(pod ExpoImage\)/);
+    expect(text).toContain('"sdwebimage"');
+    expect(text).toContain('local path');
+    expect(text).toContain('npx patch-package expo-image');
+    expect(text).toContain('Module path: /node_modules/expo-image');
+  });
+
+  it('names the target of a product whose package the manifest never declared', () => {
+    const text = report([
+      { form: 'undeclared-package', identity: 'libavif-Xcode', target: 'ExpoImage' },
+    ]);
+    expect(text).toContain('"libavif-Xcode"');
+    expect(text).toContain('target "ExpoImage"');
+  });
+
+  it('describes a product that names no package without printing a placeholder', () => {
+    const text = report([{ form: 'undeclared-package', identity: null, target: 'ExpoImage' }]);
+    expect(text).toContain('target "ExpoImage"');
+    expect(text).not.toContain('null');
+    expect(text).not.toContain('undefined');
+  });
+
+  // One remedy cannot serve every cause: a collision is already declared the way a
+  // local path should be, and an undeclared package needs a declaration ADDED.
+  it('gives each fault its own next step', () => {
+    const step = (form) => report([{ form, identity: 'acme', target: 'Main' }]);
+    expect(step('local-path')).toContain('remote URL');
+    expect(step('undeclared-package')).toContain('Declare that package');
+    expect(step('unsupported-requirement')).toContain(
+      'an exact version, a branch, a revision or a version range'
+    );
+    expect(step('module-aliases')).toContain('alias');
+    expect(step('unsupported-condition')).toContain('platform');
+    expect(step('collides-with-injected')).toContain('React Native');
+    expect(step('collides-with-injected')).not.toContain('remote URL');
+  });
+
+  it('calls a package a package and a target dependency a dependency', () => {
+    expect(
+      report([{ form: 'unsupported-condition', identity: 'SDWebImage', target: 'Main' }])
+    ).toContain('package "SDWebImage", used by target "Main",');
+    const sibling = report([
+      { form: 'unsupported-target-condition', identity: 'Helper', target: 'Main' },
+    ]);
+    expect(sibling).toContain('the dependency on "Helper" in target "Main"');
+    expect(sibling).not.toContain('package "Helper"');
+  });
+
+  it('names a package claimed twice without calling either one the package', () => {
+    const text = report([{ form: 'ambiguous-package-name', identity: 'libavif', target: null }]);
+    expect(text).toContain('"libavif" is claimed by two');
+    expect(text).toContain('distinct');
+  });
+
+  it('lists every dependency it found, not just the first', () => {
+    const text = report([
+      { form: 'registry', identity: 'acme.widgets', target: null },
+      { form: 'unsupported-requirement', identity: 'futured', target: null },
+    ]);
+    expect(text).toContain('"acme.widgets"');
+    expect(text).toContain('"futured"');
+  });
+
+  it('renders every form as prose, never as the name the parser uses for it', () => {
+    const identities = [
+      'alpha',
+      'bravo',
+      'charlie',
+      'delta',
+      'echo',
+      'foxtrot',
+      'golf',
+      'hotel',
+      'india',
+      'juliett',
+      'kilo',
+      'lima',
+    ];
+    const text = report([
+      { form: 'local-path', identity: 'alpha', target: null },
+      { form: 'registry', identity: 'bravo', target: null },
+      { form: 'unsupported-location', identity: 'charlie', target: null },
+      { form: 'unsupported-requirement', identity: 'delta', target: null },
+      { form: 'unknown-form', identity: 'echo', target: null },
+      { form: 'undeclared-package', identity: 'foxtrot', target: 'Main' },
+      { form: 'collides-with-injected', identity: 'golf', target: null },
+      { form: 'module-aliases', identity: 'hotel', target: 'Main' },
+      { form: 'unsupported-condition', identity: 'india', target: 'Main' },
+      { form: 'unsupported-traits', identity: 'juliett', target: null },
+      { form: 'unsupported-target-condition', identity: 'kilo', target: 'Main' },
+      { form: 'ambiguous-package-name', identity: 'lima', target: null },
+    ]);
+    for (const identity of identities) {
+      expect(text).toContain(`"${identity}"`);
+    }
+    for (const form of [
+      'local-path',
+      'unsupported-location',
+      'unsupported-requirement',
+      'unknown-form',
+      'undeclared-package',
+      'collides-with-injected',
+      'module-aliases',
+      'unsupported-condition',
+      'unsupported-traits',
+      'unsupported-target-condition',
+      'ambiguous-package-name',
+    ]) {
+      expect(text).not.toContain(form);
+    }
+    expect(text).not.toContain('undefined');
+  });
+});

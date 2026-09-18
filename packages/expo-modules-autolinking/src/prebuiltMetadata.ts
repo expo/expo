@@ -24,6 +24,22 @@ export interface PrebuiltMetadataEntry {
   /** Product names of the SPM packages this product links, each of which ships
    * as its own XCFramework beside the product. Absent where it links none. */
   spmDependencies?: string[];
+  /** The same packages as full coordinates, for consumers that declare them
+   * themselves instead of linking an XCFramework. Absent where the product
+   * declares none this can render. */
+  spmPackages?: PrebuiltSpmPackage[];
+}
+
+export type PrebuiltSpmVersion =
+  | { exact: string }
+  | { from: string }
+  | { branch: string }
+  | { revision: string };
+
+export interface PrebuiltSpmPackage {
+  url: string;
+  productName: string;
+  version: PrebuiltSpmVersion;
 }
 
 export type PrebuiltMetadataDocument = Record<string, PrebuiltMetadataEntry>;
@@ -155,6 +171,55 @@ function readSpmDependencies(spmPackages: unknown): string[] {
     .filter((name): name is string => typeof name === 'string');
 }
 
+const SPM_VERSION_KEYS = ['exact', 'from', 'branch', 'revision'] as const;
+
+/** An SPM version requirement, when the entry declares exactly one this knows and
+ * spells it as a string. Two requirements are as unrenderable as none. */
+function readSpmVersion(version: unknown): PrebuiltSpmVersion | undefined {
+  if (typeof version !== 'object' || version === null) {
+    return undefined;
+  }
+  const declared = SPM_VERSION_KEYS.filter((key) => key in version);
+  const requirement = declared.length === 1 ? declared[0] : undefined;
+  if (requirement == null) {
+    return undefined;
+  }
+  const value = (version as Record<string, unknown>)[requirement];
+  return typeof value === 'string' ? ({ [requirement]: value } as PrebuiltSpmVersion) : undefined;
+}
+
+/** The SPM packages of a product, as the coordinates a generated manifest needs.
+ * An entry missing any of them, or naming one as an empty string, is skipped: a
+ * package declaration SwiftPM cannot resolve fails the whole graph, where a
+ * missing one is diagnosed by name. An
+ * entry naming a package identity of its own is skipped for the same reason —
+ * SwiftPM derives identity from the URL, and no manifest can say otherwise. */
+function readSpmPackages(spmPackages: unknown): PrebuiltSpmPackage[] {
+  if (!Array.isArray(spmPackages)) {
+    return [];
+  }
+  const packages: PrebuiltSpmPackage[] = [];
+  for (const entry of spmPackages) {
+    if (typeof entry !== 'object' || entry === null) {
+      continue;
+    }
+    const { url, productName, version } = entry as Record<string, unknown>;
+    const requirement = readSpmVersion(version);
+    if (
+      typeof url !== 'string' ||
+      url.trim() === '' ||
+      typeof productName !== 'string' ||
+      productName.trim() === '' ||
+      requirement == null ||
+      'packageName' in entry
+    ) {
+      continue;
+    }
+    packages.push({ url, productName, version: requirement });
+  }
+  return packages;
+}
+
 function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: string) {
   const configPath = path.join(packageRoot, 'spm.config.json');
   const config = readJsonFile(configPath);
@@ -177,6 +242,7 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
       }
       const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
       const spmDependencies = readSpmDependencies(product.spmPackages);
+      const spmPackages = readSpmPackages(product.spmPackages);
       entries[podName] = {
         type: 'internal',
         npmPackage,
@@ -186,6 +252,7 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
         ...(product.sourceOnly === true && { sourceOnly: true }),
         ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
         ...(spmDependencies.length > 0 && { spmDependencies }),
+        ...(spmPackages.length > 0 && { spmPackages }),
       };
     }
   } catch (error) {
@@ -224,6 +291,7 @@ async function scanExternalConfigsAsync(
         }
         const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
         const spmDependencies = readSpmDependencies(product.spmPackages);
+        const spmPackages = readSpmPackages(product.spmPackages);
         entries[podName] = {
           type: 'external',
           npmPackage,
@@ -233,6 +301,7 @@ async function scanExternalConfigsAsync(
           ...(product.sourceOnly === true && { sourceOnly: true }),
           ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
           ...(spmDependencies.length > 0 && { spmDependencies }),
+          ...(spmPackages.length > 0 && { spmPackages }),
         };
       }
     } catch (error) {

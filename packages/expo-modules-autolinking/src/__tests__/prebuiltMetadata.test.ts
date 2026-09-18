@@ -57,6 +57,62 @@ describe('resolvePrebuiltMetadataAsync', () => {
         },
         { name: 'ExpoFloorless', podName: 'ExpoFloorless' },
         {
+          name: 'ExpoSpmCoordinates',
+          podName: 'ExpoSpmCoordinates',
+          spmPackages: [
+            {
+              url: 'https://github.com/SDWebImage/SDWebImage.git',
+              productName: 'SDWebImage',
+              version: { exact: '5.21.6' },
+            },
+            {
+              url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+              productName: 'libavif',
+              version: { from: '1.0.0' },
+            },
+            {
+              url: 'https://github.com/expo/spm-branch.git',
+              productName: 'Branchy',
+              version: { branch: 'main' },
+            },
+            {
+              url: 'https://github.com/expo/spm-revision.git',
+              productName: 'Pinned',
+              version: { revision: 'c0ffee' },
+            },
+            {
+              url: 'https://github.com/expo/spm-floating.git',
+              productName: 'Floating',
+            },
+            {
+              url: 'https://github.com/expo/spm-numeric.git',
+              productName: 'Numeric',
+              version: { exact: 5 },
+            },
+            {
+              url: 'https://github.com/expo/spm-ambiguous.git',
+              productName: 'Ambiguous',
+              version: { exact: '1.0.0', branch: 'main' },
+            },
+            {
+              url: 'https://github.com/expo/spm-renamed.git',
+              productName: 'Renamed',
+              packageName: 'spm-renamed',
+              version: { exact: '2.0.0' },
+            },
+            {
+              url: '',
+              productName: 'Urlless',
+              version: { exact: '3.0.0' },
+            },
+            {
+              url: 'https://github.com/expo/spm-anonymous.git',
+              productName: '',
+              version: { exact: '4.0.0' },
+            },
+          ],
+        },
+        {
           name: 'ExpoWithDeps',
           podName: 'ExpoWithDeps',
           spmPackages: [
@@ -79,7 +135,13 @@ describe('resolvePrebuiltMetadataAsync', () => {
           podName: 'RNWorklets',
           sourceOnly: true,
           platforms: ['iOS("16.4")'],
-          spmPackages: [{ productName: 'RNWorkletsDep' }],
+          spmPackages: [
+            {
+              url: 'https://github.com/expo/rn-worklets-dep.git',
+              productName: 'RNWorkletsDep',
+              version: { exact: '0.6.0' },
+            },
+          ],
         },
       ]),
     });
@@ -170,5 +232,108 @@ describe('resolvePrebuiltMetadataAsync', () => {
     const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
 
     expect(document.ExpoModulesCore).not.toHaveProperty('spmDependencies');
+  });
+  // A source-emitted module declares its SwiftPM dependencies in the generated
+  // manifest, which needs the whole coordinate — a product name alone resolves
+  // to no package.
+  it('publishes the full SPM coordinates of an internal product', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoSpmCoordinates?.spmPackages).toEqual([
+      {
+        url: 'https://github.com/SDWebImage/SDWebImage.git',
+        productName: 'SDWebImage',
+        version: { exact: '5.21.6' },
+      },
+      {
+        url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+        productName: 'libavif',
+        version: { from: '1.0.0' },
+      },
+      {
+        url: 'https://github.com/expo/spm-branch.git',
+        productName: 'Branchy',
+        version: { branch: 'main' },
+      },
+      {
+        url: 'https://github.com/expo/spm-revision.git',
+        productName: 'Pinned',
+        version: { revision: 'c0ffee' },
+      },
+    ]);
+  });
+
+  it('publishes the full SPM coordinates of an external product too', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.RNWorklets?.spmPackages).toEqual([
+      {
+        url: 'https://github.com/expo/rn-worklets-dep.git',
+        productName: 'RNWorkletsDep',
+        version: { exact: '0.6.0' },
+      },
+    ]);
+  });
+
+  // A coordinate that cannot be rendered into a manifest is worse than none: it
+  // would emit a `.package` declaration SwiftPM refuses to resolve.
+  it('skips entries that carry no renderable coordinate', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    const products = document.ExpoSpmCoordinates?.spmPackages?.map((pkg) => pkg.productName);
+    expect(products).not.toContain('Floating');
+    expect(products).not.toContain('Numeric');
+    expect(products).not.toContain('Ambiguous');
+  });
+
+  // An empty string is a string, so the coordinate reads as present and renders
+  // `.package(url: "")` or `package: ""` — a declaration SwiftPM cannot resolve,
+  // which is the whole class this skip exists to keep out of a manifest.
+  it('skips entries whose url or product name is empty', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    const products = document.ExpoSpmCoordinates?.spmPackages?.map((pkg) => pkg.productName);
+    expect(products).not.toContain('Urlless');
+    expect(products).not.toContain('');
+  });
+
+  // SwiftPM derives a package's identity from its URL, and that is the only
+  // identity a generated manifest can render. An entry naming its own is a
+  // coordinate this cannot honour, so it is skipped and the pod behind it is
+  // reported as having no SwiftPM counterpart.
+  it('skips an entry that names its own package identity', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    const products = document.ExpoSpmCoordinates?.spmPackages?.map((pkg) => pkg.productName);
+    expect(products).not.toContain('Renamed');
+  });
+
+  // The framework-side field keeps its own meaning: it names the XCFrameworks
+  // shipped beside a precompiled product, whatever the coordinates say.
+  it('leaves spmDependencies listing the products of entries it skips', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoWithDeps).toMatchObject({ spmDependencies: ['SDWebImage', 'libavif'] });
+    expect(document.ExpoWithDeps).not.toHaveProperty('spmPackages');
+    expect(document.ExpoSpmCoordinates).toMatchObject({
+      spmDependencies: [
+        'SDWebImage',
+        'libavif',
+        'Branchy',
+        'Pinned',
+        'Floating',
+        'Numeric',
+        'Ambiguous',
+        'Renamed',
+        'Urlless',
+        '',
+      ],
+    });
+  });
+
+  it('omits the coordinates of a product that declares none', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoModulesCore).not.toHaveProperty('spmPackages');
   });
 });

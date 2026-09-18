@@ -108,6 +108,15 @@ function classifyUnsupported({ pending, coreAvailable }) {
         dependencies: p.unsupportedTargetDeps,
       };
     }
+    if (p.unsupportedPackageDeps?.length) {
+      return {
+        reason: 'unsupported-package-dependency',
+        podName: p.podName,
+        packageName: p.packageName,
+        moduleRoot: p.moduleRoot,
+        dependencies: p.unsupportedPackageDeps,
+      };
+    }
     if (p.unresolvedTargets?.length) {
       return {
         reason: 'unresolvable-target-path',
@@ -298,6 +307,151 @@ function renderUnsupportedTargetDependency({ podName, packageName, moduleRoot, d
   ].join('\n');
 }
 
+/** What a fault is about, when it is a package the manifest declares. */
+function packageSubject(identity, target) {
+  const named = identity != null ? `package "${identity}"` : 'an unnamed package';
+  return target != null ? `${named}, used by target "${target}",` : named;
+}
+
+/** What a fault is about, when it is one target's dependency rather than a package. */
+const dependencySubject = (identity, target) =>
+  `the dependency on "${identity}" in target "${target}"`;
+
+const conditionStep = (packageName) =>
+  `Condition it on platforms alone in ${packageName}'s Package.swift. Rendering it without the rest would apply the dependency more widely than the module declared.`;
+
+// Map, not an object, for the same reason TARGET_KIND_PHRASES is one. One fault, one
+// cause and one next step: the causes have nothing in common but the module they skip.
+const PACKAGE_DEPENDENCY_FAULTS = new Map([
+  [
+    'local-path',
+    {
+      fault: 'is declared at a local path, which this plugin does not resolve',
+      step: (packageName) =>
+        `Declare it by remote URL in ${packageName}'s Package.swift — the generated package is written into the app's build directory, and a path declared relative to the module does not reach from there.`,
+    },
+  ],
+  [
+    'registry',
+    {
+      fault: 'is declared through a package registry, which this plugin does not declare',
+      step: (packageName) => `Declare it by remote URL in ${packageName}'s Package.swift instead.`,
+    },
+  ],
+  [
+    'unsupported-location',
+    {
+      fault: 'is declared from a source-control location that is not a remote URL',
+      step: (packageName) => `Declare it by remote URL in ${packageName}'s Package.swift instead.`,
+    },
+  ],
+  [
+    'unsupported-requirement',
+    {
+      fault: 'names a version requirement this plugin cannot render',
+      step: () =>
+        'Pin it to an exact version, a branch, a revision or a version range, which are the requirements the generated package can declare.',
+    },
+  ],
+  [
+    'unknown-form',
+    {
+      fault: 'is declared in a form this plugin does not recognize',
+      step: (packageName) =>
+        `Declare it by remote URL in ${packageName}'s Package.swift. A newer Swift Package Manager form needs support added in expo/scripts/spm/manifests.js.`,
+    },
+  ],
+  [
+    'undeclared-package',
+    {
+      fault: 'is not declared by the manifest, so the product that names it resolves to nothing',
+      step: (packageName) =>
+        `Declare that package in ${packageName}'s Package.swift, or correct the package name on the dependency — Swift Package Manager matches it against the package's identity, which is the repository name.`,
+    },
+  ],
+  [
+    'collides-with-injected',
+    {
+      fault:
+        'has the same identity as a package React Native already contributes, and Swift Package Manager resolves one identity to one package',
+      step: () =>
+        "Depend on the product React Native's package already provides and remove the declaration, or declare a package whose repository name differs from React Native's.",
+    },
+  ],
+  [
+    'module-aliases',
+    {
+      fault: 'is renamed with moduleAliases, which this plugin does not render',
+      step: (packageName) =>
+        `Drop the alias in ${packageName}'s Package.swift and import the module under its own name. An alias that resolves a duplicate module name has no equivalent here.`,
+    },
+  ],
+  [
+    'unsupported-condition',
+    {
+      fault: 'is conditioned on more than platforms, and this plugin renders only platforms',
+      step: conditionStep,
+    },
+  ],
+  [
+    'unsupported-target-condition',
+    {
+      subject: dependencySubject,
+      fault: 'is conditioned on more than platforms, and this plugin renders only platforms',
+      step: conditionStep,
+    },
+  ],
+  [
+    'ambiguous-package-name',
+    {
+      subject: (identity) => `"${identity}"`,
+      fault:
+        'is claimed by two of the packages the manifest declares, so a dependency naming it has no single answer',
+      step: (packageName) =>
+        `Give them distinct names in ${packageName}'s Package.swift. A package answers to its identity — the repository name — and to the name a deprecated \`.package(name:url:)\` gives it.`,
+    },
+  ],
+  [
+    'unsupported-traits',
+    {
+      fault:
+        'is declared with a trait set other than the default, which this plugin does not render',
+      step: (packageName) =>
+        `Declare it with its default traits in ${packageName}'s Package.swift. Traits select which of a package's code builds, so the generated package would build something else.`,
+    },
+  ],
+]);
+
+const UNKNOWN_PACKAGE_FAULT = {
+  fault: 'cannot be declared by the generated package',
+  step: (packageName) => `Declare it as a remote package in ${packageName}'s Package.swift.`,
+};
+
+function renderPackageDependencyLines({ form, identity, target }, packageName) {
+  const {
+    subject = packageSubject,
+    fault,
+    step,
+  } = PACKAGE_DEPENDENCY_FAULTS.get(form) ?? UNKNOWN_PACKAGE_FAULT;
+  return [`      ${subject(identity, target)} ${fault}.`, `        ${step(packageName)}`];
+}
+
+/**
+ * The module's manifest declares a Swift package the generated package cannot mirror.
+ * Emitting the module without it would compile until its first import of that package,
+ * with nothing naming the manifest that declared it.
+ */
+function renderUnsupportedPackageDependency({ podName, packageName, moduleRoot, dependencies }) {
+  return [
+    `error: Expo module "${packageName}" (pod ${podName}) ships a Package.swift the generated package cannot mirror, so it was skipped.`,
+    ...dependencies.flatMap((dependency) => renderPackageDependencyLines(dependency, packageName)),
+    `  The generated package re-declares what the module's own manifest declares, so its sources compile against the same packages under Swift Package Manager as under CocoaPods.`,
+    `  Adding an spm.config.json to ${packageName} is the other route: the Expo prebuild pipeline then builds the whole module into an XCFramework, resolving the module's packages as they are checked in. packages/expo-sensors is a worked example.`,
+    `  If you do not own ${packageName}, persist that file with \`npx patch-package ${packageName}\` and commit the patch — node_modules is not committed, so without it this error returns on every fresh install and in CI.`,
+    `  Module path: ${moduleRoot}`,
+  ].join('\n');
+}
+
 function renderNeedsManifestForLinkage({ podName, packageName, moduleRoot, file, line, snippet }) {
   return [
     `error: Expo module "${packageName}" (pod ${podName}) declares native linkage in its podspec, which the Swift Package Manager plugin does not read, so it was skipped.`,
@@ -327,6 +481,7 @@ const RENDERERS = {
   'no-apple-sources': renderNoAppleSources,
   'unresolvable-target-path': renderUnresolvableTargetPath,
   'unsupported-target-dependency': renderUnsupportedTargetDependency,
+  'unsupported-package-dependency': renderUnsupportedPackageDependency,
   'needs-manifest-for-linkage': renderNeedsManifestForLinkage,
   'core-unavailable': renderCoreUnavailable,
 };

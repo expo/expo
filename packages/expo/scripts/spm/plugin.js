@@ -170,6 +170,7 @@ module.exports = function expoSpmPlugin(context) {
   const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
   const unresolvedTargets = new Map(); // module root → manifest targets with no sources on disk
   const unsupportedTargetDeps = new Map(); // module root → deps the generated package cannot declare
+  const unsupportedPackageDeps = new Map(); // module root → packages the generated package cannot declare
   const podspecLinkage = new Map(); // module root → podspec line declaring native linkage
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
@@ -252,6 +253,10 @@ module.exports = function expoSpmPlugin(context) {
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
       const { moduleRoot } = podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName));
+      // Third-party products the emitted manifest depends on, and so are counterparts
+      // of the pods its podspec names: read from the module's checked-in manifest, or
+      // from its spm.config.json when it ships none.
+      let declaredSpmProducts = [];
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
         // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
@@ -266,9 +271,12 @@ module.exports = function expoSpmPlugin(context) {
         );
         if (e.unsupportedTargetDeps != null) {
           unsupportedTargetDeps.set(moduleRoot, e.unsupportedTargetDeps);
+        } else if (e.unsupportedPackageDeps != null) {
+          unsupportedPackageDeps.set(moduleRoot, e.unsupportedPackageDeps);
         } else if (e.unresolvedTargets != null) {
           unresolvedTargets.set(moduleRoot, e.unresolvedTargets);
         } else {
+          declaredSpmProducts = e.spmProductNames;
           packageDependencies.push(e.packageDep);
           productDependencies.push(...e.productDeps);
           pods.forEach((p) => emitted.add(p.podName));
@@ -289,6 +297,7 @@ module.exports = function expoSpmPlugin(context) {
           ].filter(Boolean)
         );
         if (podspecs.linkage != null) podspecLinkage.set(moduleRoot, podspecs.linkage);
+        const spmPackages = metadata[pod.podName]?.spmPackages ?? [];
         const e =
           podspecs.linkage != null
             ? null
@@ -300,9 +309,11 @@ module.exports = function expoSpmPlugin(context) {
                 outDir,
                 codegenPkgPath,
                 raiseFloor(metadata[pod.podName]?.iosDeploymentTarget, coreDeploymentTarget),
-                macroFlags()
+                macroFlags(),
+                spmPackages
               );
         if (e != null) {
+          declaredSpmProducts = spmPackages.map((pkg) => pkg.productName);
           packageDependencies.push(e.packageDep);
           productDependencies.push(e.productDep);
           pods.forEach((p) => emitted.add(p.podName));
@@ -322,7 +333,10 @@ module.exports = function expoSpmPlugin(context) {
       // when a sibling pod of the same package is not precompiled, and warning
       // again would print the identical block twice.
       if (emitted.has(pod.podName) && !precompiledFrameworks.has(pod.podName)) {
-        const unmapped = collectUnmappedDependencies(pod.podspecDir, satisfiedDependencies);
+        const unmapped = collectUnmappedDependencies(
+          pod.podspecDir,
+          new Set([...satisfiedDependencies, ...declaredSpmProducts])
+        );
         if (unmapped.length > 0) {
           unmappedDeps.push({
             packageName: mod.packageName,
@@ -354,6 +368,7 @@ module.exports = function expoSpmPlugin(context) {
         pureSwift: isPureSwift(moduleRoot),
         hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
         unsupportedTargetDeps: unsupportedTargetDeps.get(moduleRoot) ?? null,
+        unsupportedPackageDeps: unsupportedPackageDeps.get(moduleRoot) ?? null,
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
         prebuildProduct,
