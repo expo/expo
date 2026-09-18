@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Guard `UIAction.subtitle` behind an iOS 16 availability check so `expo-router` compiles at the package's own `15.1` deployment target under the iOS 26 SDK. ([#50315](https://github.com/expo/expo/pull/50315) by [@oleksiizhuk](https://github.com/oleksiizhuk))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-16
