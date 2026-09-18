@@ -141,6 +141,7 @@ public final class FileDownloader {
     errorBlock: @escaping ErrorBlock
   ) {
     let canAttemptPatch = allowPatch &&
+      config.enableBsdiffPatchSupport &&
       asset.isLaunchAsset &&
       launchedUpdate != nil &&
       requestedUpdate != nil &&

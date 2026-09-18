@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Honor the `enableBsdiffPatchSupport` setting, which was parsed but never applied, so setting it to `false` now disables bundle diff requests as it already does on Android. ([#50318](https://github.com/expo/expo/pull/50318) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-16
