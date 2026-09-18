@@ -41,7 +41,7 @@ test('queues an incoming deep link using its extracted app path', () => {
     getRootState: () => ({ routeNames: ['home'], routes: [{ name: '__root' }] }),
   } as typeof ref.current;
   let listener: ((url: string) => void) | undefined;
-  const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
+  const getStateFromPath = jest.fn((..._args: unknown[]) => ({ routes: [{ name: 'home' }] }));
 
   function Sample() {
     useLinking(ref, {
@@ -109,7 +109,7 @@ test('keeps the current route group when parsing an incoming deep link', () => {
 
 test('resolves a completed state from an async initial URL', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
-  const getStateFromPath = jest.fn(() => ({
+  const getStateFromPath = jest.fn((..._args: unknown[]) => ({
     routes: [
       {
         name: '__root',
@@ -184,8 +184,8 @@ test('async initial URL is parsed with first-render options', async () => {
   const initialURL = new Promise<string>((resolve) => {
     resolveInitialURL = resolve;
   });
-  const firstGetStateFromPath = jest.fn(getParsedHomeState);
-  const secondGetStateFromPath = jest.fn(getParsedHomeState);
+  const firstGetStateFromPath = jest.fn((..._args: unknown[]) => getParsedHomeState());
+  const secondGetStateFromPath = jest.fn((..._args: unknown[]) => getParsedHomeState());
   let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
 
   function Sample({ getStateFromPath }: { getStateFromPath: typeof firstGetStateFromPath }) {
