@@ -1,8 +1,7 @@
 import {
   findRouteNodeByName,
-  getChildren,
-  getInitialRouteName,
   getValidInitialRouteName,
+  isLayoutRouteNode,
   sortRoutesWithInitial,
   type RouteNode,
 } from '../Route';
@@ -60,14 +59,19 @@ export function completeParsedState(
   }
 
   const key = targetState.key ?? createNavigatorStateKey(parentChain);
-  const minter = createRouteKeyMinter({ key, routeKeySeq: targetState.routeKeySeq ?? 0 });
+  const minter = createRouteKeyMinter({
+    key,
+    routeKeySeq: targetState.routeKeySeq ?? 0,
+  });
   const routes = targetState.routes.map((route) => {
     const routeKey = route.key ?? minter.mint(route.name);
     return {
       ...route,
       key: routeKey,
       ...(route.state
-        ? { state: completeParsedState(route.state, getChainFromRouteKey(routeKey)) }
+        ? {
+            state: completeParsedState(route.state, getChainFromRouteKey(routeKey)),
+          }
         : undefined),
     };
   });
@@ -89,7 +93,7 @@ export function createSeededNavigationState(
   parentChain: string
 ): NavigationState {
   const initialRouteName = getValidInitialRouteName(routeNode);
-  const routeNames = [...getChildren(routeNode)]
+  const routeNames = [...(isLayoutRouteNode(routeNode) ? routeNode.children : [])]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
 
@@ -97,7 +101,7 @@ export function createSeededNavigationState(
     targetState,
     routeNames,
     initialRouteName,
-    targetInitialRouteName: getInitialRouteName(routeNode),
+    targetInitialRouteName: isLayoutRouteNode(routeNode) ? routeNode.initialRouteName : undefined,
     parentChain,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
@@ -112,7 +116,10 @@ function completeExistingState(
   findChildNode: (routeName: string) => RouteNode | undefined
 ): NavigationState {
   const key = state.key ?? createNavigatorStateKey(parentChain);
-  const minter = createRouteKeyMinter({ key, routeKeySeq: state.routeKeySeq ?? 0 });
+  const minter = createRouteKeyMinter({
+    key,
+    routeKeySeq: state.routeKeySeq ?? 0,
+  });
   let routesChanged = false;
   const routes = state.routes.map((route) => {
     const childNode = findChildNode(route.name);
@@ -125,12 +132,12 @@ function completeExistingState(
     if (route.key === undefined) {
       routesChanged = true;
     }
-    if (!childNode || getChildren(childNode).length === 0) {
+    if (!childNode || !isLayoutRouteNode(childNode) || childNode.children.length === 0) {
       return completeRoute;
     }
 
     const initialRouteName = getValidInitialRouteName(childNode);
-    const childRouteNames = [...getChildren(childNode)]
+    const childRouteNames = [...childNode.children]
       .sort(sortRoutesWithInitial(initialRouteName))
       .map((child) => child.route);
     const childState = route.state
@@ -227,7 +234,7 @@ function createSeededState({
     const key = minter.mint(targetRoute.name);
     const childNode = findChildNode(targetRoute.name);
     const childState =
-      childNode && getChildren(childNode).length > 0
+      childNode && isLayoutRouteNode(childNode) && childNode.children.length > 0
         ? createSeededNavigationState(
             'state' in targetRoute ? targetRoute.state : undefined,
             childNode,

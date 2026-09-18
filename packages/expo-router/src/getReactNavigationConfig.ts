@@ -1,4 +1,4 @@
-import { getChildren, getInitialRouteName, type RouteNode } from './Route';
+import { isLayoutRouteNode, type RouteNode } from './Route';
 import { matchDynamicName } from './matchers';
 
 export type Screen =
@@ -48,7 +48,7 @@ export function parseRouteSegments(segments: string): string {
 
 function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
   const path = parseRouteSegments(node.route);
-  const children = getChildren(node);
+  const children = isLayoutRouteNode(node) ? node.children : [];
   if (!children.length) {
     if (!metaOnly) {
       return {
@@ -66,7 +66,7 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     screens,
   };
 
-  const initialRouteName = getInitialRouteName(node);
+  const initialRouteName = isLayoutRouteNode(node) ? node.initialRouteName : undefined;
   if (initialRouteName) {
     // NOTE(EvanBacon): This is bad because it forces all Layout Routes
     // to be loaded into memory. We should move towards a system where
@@ -94,10 +94,14 @@ export function getReactNavigationScreensConfig(
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
   const config = {
     initialRouteName: undefined,
-    screens: routeTree ? getReactNavigationScreensConfig(getChildren(routeTree), metaOnly) : {},
+    screens:
+      routeTree && isLayoutRouteNode(routeTree)
+        ? getReactNavigationScreensConfig(routeTree.children, metaOnly)
+        : {},
   };
 
-  const initialRouteName = getInitialRouteName(routeTree);
+  const initialRouteName =
+    routeTree && isLayoutRouteNode(routeTree) ? routeTree.initialRouteName : undefined;
   if (initialRouteName) {
     // We're using LinkingOptions the generic type is `object` instead of a proper ParamList.
     // So we need to cast the initialRouteName to `any` to avoid type errors.

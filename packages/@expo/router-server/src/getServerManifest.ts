@@ -1,6 +1,6 @@
 import {
-  getChildren,
   getContextKey,
+  isLayoutRouteNode,
   sortRoutes,
   type LayoutRouteNode,
   type RedirectRouteNode,
@@ -61,7 +61,7 @@ export function getServerManifest(
     // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
     const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
 
-    const children = getChildren(route);
+    const children = isLayoutRouteNode(route) ? route.children : [];
     if (children.length) {
       return children.map((child) => getFlatNodes(child, absoluteRoute)).flat();
     }

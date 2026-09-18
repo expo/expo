@@ -9,7 +9,11 @@ import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
 
-export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
+export type DynamicConvention = {
+  name: string;
+  deep: boolean;
+  notFound?: boolean;
+};
 
 type Params = Record<string, string | string[]>;
 
@@ -103,28 +107,19 @@ export type RouteNode =
   | RedirectRouteNode
   | RewriteRouteNode;
 
-/**
- * The children of `node`, or an empty list for nodes that cannot have any.
- * Returns the live array, so callers that sort it mutate the route tree.
- */
-export function getChildren(node: RouteNode): RouteNode[] {
-  return node.type === 'layout' ? node.children : [];
-}
+export const isLayoutRouteNode = (node: RouteNode): node is LayoutRouteNode =>
+  node.type === 'layout';
 
-/** The entry points of `node`, or an empty list for nodes that cannot have any. */
-export function getEntryPoints(node: RouteNode): string[] {
-  return node.type === 'route' || node.type === 'redirect' ? (node.entryPoints ?? []) : [];
-}
+export const isScreenRouteNode = (node: RouteNode): node is ScreenRouteNode =>
+  node.type === 'route';
 
-/** Whether `node` is a built-in screen such as the sitemap or the auto 404. */
-export function isInternal(node: RouteNode): boolean {
-  return node.type === 'route' && (node.internal ?? false);
-}
+export const isApiRouteNode = (node: RouteNode): node is ApiRouteNode => node.type === 'api';
 
-/** The anchor of `node`, or `undefined` for nodes that cannot have one. */
-export function getInitialRouteName(node: RouteNode | null | undefined): string | undefined {
-  return node?.type === 'layout' ? node.initialRouteName : undefined;
-}
+export const isRedirectRouteNode = (node: RouteNode): node is RedirectRouteNode =>
+  node.type === 'redirect';
+
+export const isRewriteRouteNode = (node: RouteNode): node is RewriteRouteNode =>
+  node.type === 'rewrite';
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
 /** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
@@ -150,7 +145,9 @@ export function findRouteNodeByName(
   node: RouteNode | null | undefined,
   name: string | undefined
 ): RouteNode | undefined {
-  return node ? getChildren(node).find((child) => child.route === name) : undefined;
+  return node && isLayoutRouteNode(node)
+    ? node.children.find((child) => child.route === name)
+    : undefined;
 }
 
 export function findRouteNodeAndParamsForState(
@@ -176,10 +173,10 @@ export function findRouteNodeAndParamsForState(
 
 export function getValidInitialRoute(
   node: RouteNode | null,
-  initialRouteName = getInitialRouteName(node),
+  initialRouteName = node && isLayoutRouteNode(node) ? node.initialRouteName : undefined,
   groupName?: string
 ): RouteNode | undefined {
-  if (!node || !initialRouteName) {
+  if (!node || !isLayoutRouteNode(node) || !initialRouteName) {
     return undefined;
   }
   const route =
@@ -188,9 +185,7 @@ export function getValidInitialRoute(
   if (!route) {
     throw new Error(
       `The initial route name "${initialRouteName}"${groupName ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
-        `Available routes are: ${getChildren(node)
-          .map(({ route }) => `"${route}"`)
-          .join(', ')}. ` +
+        `Available routes are: ${node.children.map(({ route }) => `"${route}"`).join(', ')}. ` +
         'Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   }
@@ -199,7 +194,7 @@ export function getValidInitialRoute(
 
 export const getValidInitialRouteName = (
   node: RouteNode | null,
-  initialRouteName = getInitialRouteName(node)
+  initialRouteName = node && isLayoutRouteNode(node) ? node.initialRouteName : undefined
 ) => getValidInitialRoute(node, initialRouteName)?.route;
 
 export function useContextKey(): string {
