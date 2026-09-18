@@ -19,6 +19,7 @@ import {
   StackRouter as RNStackRouter,
 } from '../react-navigation/native';
 import type { NativeStackNavigatorProps } from '../react-navigation/native-stack';
+import { getStackBrowserHistoryAction } from '../react-navigation/routers/StackRouter';
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
@@ -189,6 +190,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
                 routes: activeRoutes.concat(route, preloadedRoutes),
               },
               affectedRouteKey: route.key,
+              browserHistory: { type: 'push' },
             };
           } else {
             actionResult = original.getStateForAction(state, baseAction, {
@@ -204,7 +206,11 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           const result = actionResult.state;
           if (actionSingularOptions) {
             const filteredState = filterSingular(result, getId);
-            return { state: filteredState, affectedRouteKey };
+            return {
+              ...actionResult,
+              state: filteredState,
+              browserHistory: getStackBrowserHistoryAction(state, filteredState, action),
+            };
           }
 
           const zoomTransitionId = getZoomTransitionIdFromAction(action);
@@ -218,6 +224,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               },
             };
             return {
+              ...actionResult,
               state: {
                 ...result,
                 routes: result.routes.map((route, index) =>
@@ -228,7 +235,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             };
           }
 
-          return { state: result, affectedRouteKey };
+          return actionResult;
         }
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
@@ -266,6 +273,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           }
 
           return {
+            ...actionResult,
             state:
               routes === actionResult.state.routes
                 ? actionResult.state

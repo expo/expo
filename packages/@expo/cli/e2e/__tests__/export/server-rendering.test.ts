@@ -20,7 +20,7 @@ describe('exports server', () => {
       fixtureName: 'static-rendering',
       export: {
         env: {
-          E2E_ROUTER_ASYNC: '',
+          E2E_ROUTER_ASYNC: 'false',
           E2E_FAVICON: './assets/icon.png',
         },
         cliFlags: ['--source-maps'],

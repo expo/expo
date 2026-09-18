@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
 import Foundation
 import React
 
@@ -26,6 +27,13 @@ struct SceneEventForwarder {
   ) {
     let application = UIApplication.shared
     let delegate = appDelegate()
+
+#if DEBUG
+    if EmbeddedFingerprint.CheckProtocol.isCheckURL(url) {
+      _ = delegate?.application(application, open: url, options: options)
+      return
+    }
+#endif
 
     notifyLinkingManagerUnlessAlreadyNotified(of: url) {
       _ = delegate?.application(application, open: url, options: options)

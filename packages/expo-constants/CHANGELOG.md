@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 - [iOS] Generate the embedded `app.config` in apps built with SwiftPM instead of CocoaPods, fixing the "Unable to find the embedded app config" warning there. The generator no longer requires the Pods project, can be pointed at another destination, and creates `EXConstants.bundle` itself rather than relying on CocoaPods' `resource_bundles`. ([#47649](https://github.com/expo/expo/pull/47649) by [@chrfalch](https://github.com/chrfalch))
