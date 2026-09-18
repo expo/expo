@@ -2,9 +2,11 @@
   "extends": "expo-module-scripts/tsconfig.node",
   "include": ["./src"],
   "compilerOptions": {
-    "rootDir": "./src",
     "noEmit": true,
-    "sourceMap": true,
-    "types": ["node", "vitest/globals"]
+    "allowJs": true,
+    "checkJs": true,
+    "rootDir": "./src",
+    "declaration": false,
+    "types": ["node"]
   }
 }

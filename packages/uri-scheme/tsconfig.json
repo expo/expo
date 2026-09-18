@@ -6,6 +6,7 @@
     "customConditions": [],
     "module": "preserve",
     "moduleResolution": "bundler",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": ["node", "vitest/globals"]
   }
 }
