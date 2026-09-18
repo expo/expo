@@ -5,6 +5,7 @@
   "concurrency": "90%",
   "cacheMaxAge": "10d",
   "cacheMaxSize": "10GB",
+  "globalDependencies": ["pnpm-workspace.yaml", "tarballs/**"],
   "tasks": {
     "build": {
       "outputs": [
