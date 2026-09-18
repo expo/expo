@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Restore the original native project directory when patching fails, instead of deleting it with the working directory. ([#50326](https://github.com/expo/expo/pull/50326) by [@tahakocal](https://github.com/tahakocal))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-16
