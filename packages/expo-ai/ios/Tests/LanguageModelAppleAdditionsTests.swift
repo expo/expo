@@ -1,4 +1,5 @@
 import CoreGraphics
+import ExpoModulesCore
 import Foundation
 import ImageIO
 import Testing
@@ -184,9 +185,8 @@ struct LanguageModelAppleAdditionsTests {
   }
 
   private final class CancellationCounter: @unchecked Sendable {
-    private let lock = NSLock()
-    private var value = 0
-    func increment() { lock.withLock { value += 1 } }
-    var count: Int { lock.withLock { value } }
+    private let value = Mutex<Int>(0)
+    func increment() { value.withLock { $0 += 1 } }
+    var count: Int { value.withLock { $0 } }
   }
 }

@@ -441,23 +441,21 @@ private struct CapturingBackend: LanguageModelBackend {
 }
 
 private final class CountingBackend: LanguageModelBackend, @unchecked Sendable {
-  private let lock = NSLock()
-  private var count = 0
-  var invocationCount: Int { lock.withLock { count } }
+  private let count = Mutex<Int>(0)
+  var invocationCount: Int { count.withLock { $0 } }
   func generate(prompt: String, options: LanguageModelRequestOptions, request: LanguageModelRequest) async throws -> String {
-    lock.withLock { count += 1 }
+    count.withLock { $0 += 1 }
     return "unexpected inference"
   }
 }
 
 private final class HistoryBackend: LanguageModelBackend, @unchecked Sendable {
-  private let lock = NSLock()
-  private var accepted: [String] = []
+  private let accepted = Mutex<[String]>([])
   private let capture: RequestCapture?
 
   init(capture: RequestCapture? = nil) { self.capture = capture }
-  var turns: [String] { lock.withLock { accepted } }
-  func dispose() { lock.withLock { accepted.removeAll() } }
+  var turns: [String] { accepted.withLock { $0 } }
+  func dispose() { accepted.withLock { $0.removeAll() } }
 
   func generate(prompt: String, options: LanguageModelRequestOptions, request: LanguageModelRequest) async throws -> String {
     let candidate = turns + [prompt]
@@ -467,7 +465,7 @@ private final class HistoryBackend: LanguageModelBackend, @unchecked Sendable {
       // provider might. The request must reject this late write.
       do { _ = try await request.callTool(name: "lookup", argumentsJSON: "{}") } catch {}
     }
-    try request.stageHistory { [self] in lock.withLock { accepted = candidate } }
+    try request.stageHistory { [self] in accepted.withLock { $0 = candidate } }
     return candidate.joined(separator: "|")
   }
 }
@@ -478,38 +476,40 @@ private final class HistoryBackend: LanguageModelBackend, @unchecked Sendable {
 // fixture tests context/scheduler teardown, not Hermes-owner destruction or leaks.
 private final class HermesTestHost: @unchecked Sendable {
   let owner = ExpoRuntime()
-  private let lock = NSLock()
-  private var isOpen = true
-  private var isPaused = false
-  private var callbacks: [CallbackBlock] = []
+  private struct State {
+    var isOpen = true
+    var isPaused = false
+    var callbacks: [CallbackBlock] = []
+  }
+  private let state = Mutex(State())
 
   func close() {
-    lock.withLock {
-      isOpen = false
-      callbacks.removeAll()
+    state.withLock { state in
+      state.isOpen = false
+      state.callbacks.removeAll()
     }
   }
 
-  func pause() { lock.withLock { isPaused = true } }
+  func pause() { state.withLock { $0.isPaused = true } }
 
   func resume() {
-    lock.withLock { isPaused = false }
+    state.withLock { $0.isPaused = false }
     DispatchQueue.main.async { self.drain() }
   }
 
-  var queuedCount: Int { lock.withLock { callbacks.count } }
+  var queuedCount: Int { state.withLock { $0.callbacks.count } }
 
   func enqueue(_ callback: @escaping @convention(block) () -> Void) {
-    lock.withLock {
-      if isOpen { callbacks.append(CallbackBlock(callback)) }
+    state.withLock { state in
+      if state.isOpen { state.callbacks.append(CallbackBlock(callback)) }
     }
     DispatchQueue.main.async { self.drain() }
   }
 
   private func drain() {
-    while let callback = lock.withLock({ () -> CallbackBlock? in
-      guard isOpen, !isPaused, !callbacks.isEmpty else { return nil }
-      return callbacks.removeFirst()
+    while let callback = state.withLock({ state -> CallbackBlock? in
+      guard state.isOpen, !state.isPaused, !state.callbacks.isEmpty else { return nil }
+      return state.callbacks.removeFirst()
     }) {
       callback.value?()
     }

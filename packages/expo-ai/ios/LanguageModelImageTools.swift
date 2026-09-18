@@ -1,3 +1,4 @@
+import ExpoModulesCore
 import Foundation
 
 internal enum LanguageModelImageTools {
@@ -43,21 +44,23 @@ internal enum LanguageModelImageTools {
   /// Covers cancellation both before the child task is bound and while Vision is
   /// executing. Each holder belongs to a single approved, pending native tool call.
   private final class VisionTaskCancellation: @unchecked Sendable {
-    private let lock = NSLock()
-    private var task: Task<String, Error>?
-    private var isCancelled = false
+    private struct State {
+      var task: Task<String, Error>?
+      var isCancelled = false
+    }
+    private let state = Mutex(State())
 
     func bind(_ task: Task<String, Error>) {
-      lock.withLock {
-        if isCancelled { task.cancel() } else { self.task = task }
+      state.withLock { state in
+        if state.isCancelled { task.cancel() } else { state.task = task }
       }
     }
 
     func cancel() {
-      lock.withLock {
-        isCancelled = true
-        task?.cancel()
-        task = nil
+      state.withLock { state in
+        state.isCancelled = true
+        state.task?.cancel()
+        state.task = nil
       }
     }
   }

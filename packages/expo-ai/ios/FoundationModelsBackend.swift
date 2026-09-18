@@ -1,3 +1,4 @@
+import ExpoModulesCore
 import Foundation
 
 internal protocol LanguageModelBackend: Sendable {
@@ -184,16 +185,15 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
   /// Acceptance is synchronous on the JavaScript thread. Keep the complete native
   /// transcript behind a lock so it can be accepted without an actor suspension.
   private final class TranscriptHistory: @unchecked Sendable {
-    private let lock = NSLock()
-    private var transcript: Transcript?
+    private let transcript = Mutex<Transcript?>(nil)
 
-    var snapshot: Transcript? { lock.withLock { transcript } }
+    var snapshot: Transcript? { transcript.withLock { $0 } }
 
     func accept(_ transcript: Transcript) {
-      lock.withLock { self.transcript = transcript }
+      self.transcript.withLock { $0 = transcript }
     }
 
-    func clear() { lock.withLock { transcript = nil } }
+    func clear() { transcript.withLock { $0 = nil } }
   }
 
   private struct RuntimeTool: Tool {

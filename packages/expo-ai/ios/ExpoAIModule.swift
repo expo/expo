@@ -5,15 +5,17 @@ import FoundationModels
 #endif
 
 public final class ExpoAIModule: Module, @unchecked Sendable {
-  private let sessionsLock = NSLock()
-  private var sessions: [WeakSession] = []
-  private var isDestroyed = false
-  private var injectedBackend: (any LanguageModelBackend)?
+  private struct State {
+    var sessions: [WeakSession] = []
+    var isDestroyed = false
+    var injectedBackend: (any LanguageModelBackend)?
+  }
+  private let state = Mutex(State())
 
   /// Internal-only seam for exercising the real Expo bridge without model assets.
   internal convenience init(appContext: AppContext, backend: any LanguageModelBackend) {
     self.init(appContext: appContext)
-    sessionsLock.withLock { injectedBackend = backend }
+    state.withLock { $0.injectedBackend = backend }
   }
 
   public func definition() -> ModuleDefinition {
@@ -28,7 +30,7 @@ public final class ExpoAIModule: Module, @unchecked Sendable {
       let builtinTools = Dictionary(uniqueKeysWithValues: options.tools.compactMap { tool in
         tool.builtin.map { (tool.name, $0) }
       })
-      if let backend = self.sessionsLock.withLock({ self.injectedBackend }) {
+      if let backend = self.state.withLock({ $0.injectedBackend }) {
         let session = LanguageModelSession(backend: backend, builtinTools: builtinTools)
         try self.register(session)
         return session
@@ -86,21 +88,21 @@ public final class ExpoAIModule: Module, @unchecked Sendable {
   }
 
   private func register(_ session: LanguageModelSession) throws {
-    try sessionsLock.withLock {
-      guard !isDestroyed else {
+    try state.withLock { state in
+      guard !state.isDestroyed else {
         session.dispose()
         throw LanguageModelException.disposed()
       }
-      sessions.removeAll { $0.value == nil }
-      sessions.append(WeakSession(session))
+      state.sessions.removeAll { $0.value == nil }
+      state.sessions.append(WeakSession(session))
     }
   }
 
   private func disposeSessions() {
-    let current = sessionsLock.withLock {
-      isDestroyed = true
-      let current = sessions.compactMap(\.value)
-      sessions.removeAll()
+    let current = state.withLock { state in
+      state.isDestroyed = true
+      let current = state.sessions.compactMap(\.value)
+      state.sessions.removeAll()
       return current
     }
     current.forEach { $0.dispose() }
