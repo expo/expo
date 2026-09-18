@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Checkbox renders content matching snapshot 1`] = `
+exports[`Checkbox > renders content matching snapshot 1`] = `
 [
   <div
     class="css-view-g5y9jx r-cursor-1loqt21 r-height-10ptun7 r-userSelect-lrvibr r-width-1janqcz"

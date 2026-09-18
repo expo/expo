@@ -1,4 +1,4 @@
-import { unmockAllProperties, mockLinking } from 'jest-expo';
+import { mockLinking, unmockAllProperties } from '@expo/vitest/helpers';
 
 import ExpoWebBrowser from '../ExpoWebBrowser';
 import * as WebBrowser from '../WebBrowser';

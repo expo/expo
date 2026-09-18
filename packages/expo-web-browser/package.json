@@ -41,13 +41,13 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest",
+    "test": "vitest run",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@expo/vitest": "workspace:*",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
@@ -55,8 +55,5 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }

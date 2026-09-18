@@ -19,8 +19,8 @@ describe('Checkbox', () => {
   });
 
   it('handles checkbox events', async () => {
-    const onChange = jest.fn();
-    const onValueChange = jest.fn();
+    const onChange = vi.fn();
+    const onValueChange = vi.fn();
     const checked = true;
 
     const wrapper = render(

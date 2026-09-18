@@ -29,13 +29,13 @@
     "format": "expo-module format",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
-    "test": "jest",
+    "test": "vitest run",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@expo/vitest": "workspace:*",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

@@ -1,4 +1,7 @@
 // @ts-check
+import { fileURLToPath } from 'node:url';
+
+const NODE_SETUP_FILE = fileURLToPath(new URL('./setup/node.js', import.meta.url));
 
 /**
  * Vitest equivalent of `expo-module-scripts/jest-preset-cli` (also used for the identical
@@ -82,7 +85,11 @@ export function defineNodeConfig(options = {}) {
       passWithNoTests: true,
       include,
       exclude: NODE_TEST_EXCLUDE,
-      setupFiles,
+      setupFiles: [NODE_SETUP_FILE, ...setupFiles],
+      // Let the require hook (see `./setup/node.js`) load TypeScript that Node would otherwise try
+      // to parse as ESM based on its syntax.
+      execArgv: ['--no-experimental-detect-module'],
+      env: root ? { EXPO_VITEST_PROJECT_ROOT: root } : {},
       ...getTurboWorkerOptions(),
     },
   };

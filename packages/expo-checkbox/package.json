@@ -25,12 +25,13 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest",
+    "test": "vitest run",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
+    "@expo/vitest": "workspace:*",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -47,8 +48,5 @@
     "react-native-web": {
       "optional": true
     }
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }

@@ -29,6 +29,10 @@
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
     },
+    "./helpers": {
+      "types": "./src/helpers.d.ts",
+      "default": "./src/helpers.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -38,13 +42,40 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@babel/core": "^7.26.0",
+    "@react-native/babel-preset": "0.88.0-rc.1",
+    "@react-native/jest-preset": "0.88.0-rc.1",
+    "@react-native/js-polyfills": "0.88.0-rc.1",
+    "babel-preset-expo": "workspace:*",
+    "jest-expo": "workspace:*",
+    "jsdom": "^27.0.0",
+    "react-native-web": "^0.21.2"
+  },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "expo-modules-core": "workspace:*",
+    "react-native": "0.88.0-rc.1",
+    "vitest": "^5.0.1"
   },
   "peerDependencies": {
+    "expo": "*",
+    "expo-modules-core": "*",
+    "react-native": "*",
     "vite": "*",
     "vitest": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    },
+    "expo-modules-core": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
   }
 }
