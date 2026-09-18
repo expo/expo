@@ -36,6 +36,8 @@ export type Alignment =
 /**
  * Applies equal padding on all sides.
  * @param all - Padding value in dp.
+ * @platform android
+ * @platform expo-widgets
  */
 export const paddingAll = (all: number) => createModifier('paddingAll', { all });
 
@@ -45,6 +47,8 @@ export const paddingAll = (all: number) => createModifier('paddingAll', { all })
  * @param top - Top padding in dp.
  * @param end - Right padding in dp (or left in RTL).
  * @param bottom - Bottom padding in dp.
+ * @platform android
+ * @platform expo-widgets
  */
 export const padding = (start: number, top: number, end: number, bottom: number) =>
   createModifier('padding', { start, top, end, bottom });
@@ -57,36 +61,48 @@ export const padding = (start: number, top: number, end: number, bottom: number)
  * Sets exact width and height.
  * @param width - Width in dp.
  * @param height - Height in dp.
+ * @platform android
+ * @platform expo-widgets
  */
 export const size = (width: number, height: number) => createModifier('size', { width, height });
 
 /**
  * Fills the maximum available size.
  * @param fraction - Fraction of max size (0.0 to 1.0). Default is 1.0.
+ * @platform android
+ * @platform expo-widgets
  */
 export const fillMaxSize = (fraction?: number) => createModifier('fillMaxSize', { fraction });
 
 /**
  * Fills the maximum available width.
  * @param fraction - Fraction of max width (0.0 to 1.0). Default is 1.0.
+ * @platform android
+ * @platform expo-widgets
  */
 export const fillMaxWidth = (fraction?: number) => createModifier('fillMaxWidth', { fraction });
 
 /**
  * Fills the maximum available height.
  * @param fraction - Fraction of max height (0.0 to 1.0). Default is 1.0.
+ * @platform android
+ * @platform expo-widgets
  */
 export const fillMaxHeight = (fraction?: number) => createModifier('fillMaxHeight', { fraction });
 
 /**
  * Sets the exact width of the view.
  * @param value - Width in dp.
+ * @platform android
+ * @platform expo-widgets
  */
 export const width = (value: number) => createModifier('width', { width: value });
 
 /**
  * Sets the exact height of the view.
  * @param value - Height in dp.
+ * @platform android
+ * @platform expo-widgets
  */
 export const height = (value: number) => createModifier('height', { height: value });
 
@@ -104,6 +120,8 @@ export const defaultMinSize = (options: { minWidth?: number; minHeight?: number 
 /**
  * Wraps the width to the content size.
  * @param alignment - Optional horizontal alignment ('start', 'centerHorizontally', 'end').
+ * @platform android
+ * @platform expo-widgets
  */
 export const wrapContentWidth = (alignment?: 'start' | 'centerHorizontally' | 'end') =>
   createModifier('wrapContentWidth', alignment ? { alignment } : {});
@@ -111,6 +129,8 @@ export const wrapContentWidth = (alignment?: 'start' | 'centerHorizontally' | 'e
 /**
  * Wraps the height to the content size.
  * @param alignment - Optional vertical alignment ('top', 'centerVertically', 'bottom').
+ * @platform android
+ * @platform expo-widgets
  */
 export const wrapContentHeight = (alignment?: 'top' | 'centerVertically' | 'bottom') =>
   createModifier('wrapContentHeight', alignment ? { alignment } : {});
@@ -145,6 +165,8 @@ export const offset = (x: number, y: number) => createModifier('offset', { x, y 
  * Pass an `animationSpec` to smoothly animate between colors when the prop changes (backed by `animateColorAsState`).
  * @param color - A color string (hex, e.g., `'#FF0000'`).
  * @param options.animationSpec - Optional spec — animate between color changes.
+ * @platform android
+ * @platform expo-widgets
  */
 export const background = (color: ColorValue, options?: { animationSpec?: AnimationSpec }) =>
   createModifier('background', { color, animationSpec: options?.animationSpec });

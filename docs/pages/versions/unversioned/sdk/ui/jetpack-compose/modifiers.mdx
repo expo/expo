@@ -8,7 +8,6 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 Jetpack Compose modifiers allow you to customize the layout, appearance, and behavior of UI components. Modifiers are the Compose equivalent of style properties — they control sizing, padding, backgrounds, interactions, and more.
 
@@ -19,8 +18,6 @@ Jetpack Compose modifiers allow you to customize the layout, appearance, and beh
 ## Usage
 
 Modifiers are applied to components using the `modifiers` prop with an array syntax. You can combine multiple modifiers to create complex styling and behavior. Modifiers are applied in the order they appear in the array, which can affect the final result (for example, applying `padding` before `background` produces different results than the reverse).
-
-Modifiers marked with the **Widgets** tag can be used inside [Expo Widgets](/versions/latest/sdk/widgets/). The widget renderer ignores the other modifiers.
 
 ```tsx
 import { Button, Host } from '@expo/ui/jetpack-compose';
@@ -65,7 +62,7 @@ function ModifiersExample() {
 
 Control the spacing around a component's content.
 
-### `paddingAll(all)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `paddingAll(all)`
 
 Applies equal padding on all four sides.
 
@@ -79,7 +76,7 @@ import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 <Button modifiers={[paddingAll(16)]}>Padded button</Button>;
 ```
 
-### `padding(start, top, end, bottom)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `padding(start, top, end, bottom)`
 
 Applies individual padding to each side.
 
@@ -100,7 +97,7 @@ import { padding } from '@expo/ui/jetpack-compose/modifiers';
 
 Control the dimensions of a component.
 
-### `size(width, height)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `size(width, height)`
 
 Sets exact dimensions for the component.
 
@@ -115,7 +112,7 @@ import { size } from '@expo/ui/jetpack-compose/modifiers';
 <Button modifiers={[size(200, 48)]}>Fixed size</Button>;
 ```
 
-### `fillMaxSize(fraction?)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `fillMaxSize(fraction?)`
 
 Fills all available space in both dimensions.
 
@@ -130,7 +127,7 @@ import { fillMaxSize } from '@expo/ui/jetpack-compose/modifiers';
 <Button modifiers={[fillMaxSize(0.5)]}>Fill half</Button>
 ```
 
-### `fillMaxWidth(fraction?)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `fillMaxWidth(fraction?)`
 
 Fills available width.
 
@@ -144,7 +141,7 @@ import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 <Button modifiers={[fillMaxWidth()]}>Full width</Button>;
 ```
 
-### `fillMaxHeight(fraction?)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `fillMaxHeight(fraction?)`
 
 Fills available height.
 
@@ -152,7 +149,7 @@ Fills available height.
 | ---------- | -------- | ------------------------------------------------------ |
 | `fraction` | `number` | Fraction of available height (0.0–1.0). Default `1.0`. |
 
-### `width(value)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `width(value)`
 
 Sets an exact width.
 
@@ -160,7 +157,7 @@ Sets an exact width.
 | --------- | -------- | ------------ |
 | `value`   | `number` | Width in dp. |
 
-### `height(value)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `height(value)`
 
 Sets an exact height.
 
@@ -168,7 +165,7 @@ Sets an exact height.
 | --------- | -------- | ------------- |
 | `value`   | `number` | Height in dp. |
 
-### `wrapContentWidth(alignment?)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `wrapContentWidth(alignment?)`
 
 Sizes the component to wrap its content width.
 
@@ -176,7 +173,7 @@ Sizes the component to wrap its content width.
 | ----------- | -------- | ------------------------------------ |
 | `alignment` | `string` | Horizontal alignment of the content. |
 
-### `wrapContentHeight(alignment?)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `wrapContentHeight(alignment?)`
 
 Sizes the component to wrap its content height.
 
@@ -207,7 +204,7 @@ import { offset } from '@expo/ui/jetpack-compose/modifiers';
 
 Control the visual appearance of a component.
 
-### `background(color)`&ensp;<PlatformTags platforms={['expo-widgets']} />
+### `background(color)`
 
 Sets the background color.
 
