@@ -79,7 +79,11 @@ describe(getNavigateAction, () => {
     const redirects = [
       [
         /^\/from$/,
-        { source: '/from', destination: '/to', destinationContextKey: './to.tsx' },
+        {
+          source: '/from',
+          destination: '/to',
+          destinationContextKey: './to.tsx',
+        },
         false,
       ],
     ] as typeof config.redirects;
@@ -145,7 +149,7 @@ describe(getNavigateAction, () => {
       'PUSH',
       true,
       true,
-      true,
+      'preview-key',
       navigationState
     );
 
@@ -157,12 +161,12 @@ describe(getNavigateAction, () => {
       expect.objectContaining({
         registry,
         navigationState,
-        action: { type: 'PUSH', payload: { singular: true } },
-        withAnchor: true,
-        internalParams: {
-          __internal__expo_router_is_preview_navigation: true,
-          __internal_expo_router_no_animation: true,
+        action: {
+          type: 'PUSH',
+          payload: { singular: true, __internal__PreviewKey: 'preview-key' },
         },
+        withAnchor: true,
+        internalParams: {},
       })
     );
   });

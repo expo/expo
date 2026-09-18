@@ -112,6 +112,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add a `routePreloaded` navigation event that reports the route affected by each committed preload. ([#49593](https://github.com/expo/expo/pull/49593) by [@Ubax](https://github.com/Ubax))
 - Add `activityEnabled` to navigators and screens to hide deeply nested route content with React Activity. ([#49913](https://github.com/expo/expo/pull/49913) by [@Ubax](https://github.com/Ubax))
 - Support application-defined screen options in custom standard navigators. ([#49984](https://github.com/expo/expo/pull/49984) by [@Ubax](https://github.com/Ubax))
 - Export `createBaseTabProps`, `createNativeStackProps`, `createJSStackProps`, `createJSTabsProps`, `createJSTopTabsProps`, and `createNativeTabsProps` for integrating navigators with Expo Router. ([#49966](https://github.com/expo/expo/pull/49966) by [@Ubax](https://github.com/Ubax))
@@ -144,6 +145,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [ios] Fix link previews failing to activate preloaded screens or switch native tabs, including nested stacks and repeated preview openings. ([#49593](https://github.com/expo/expo/pull/49593) by [@Ubax](https://github.com/Ubax))
 - Mark routes after the focused one as preloaded in states returned by the singular `Stack` router. ([#49914](https://github.com/expo/expo/pull/49914) by [@Ubax](https://github.com/Ubax))
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
 - Test `createProps` dispatch timing. ([#49955](https://github.com/expo/expo/pull/49955) by [@Ubax](https://github.com/Ubax))
