@@ -48,6 +48,7 @@ import expo.modules.location.LocationModule
 import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
 import expo.modules.medialibrary.MediaLibraryModule
+import expo.modules.medialibrary.next.MediaLibraryNextModule
 import expo.modules.navigationbar.NavigationBarModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
@@ -177,6 +178,7 @@ object ExperiencePackagePicker : ModulesProvider {
     LocationModule::class.java to null,
     MailComposerModule::class.java to null,
     MediaLibraryModule::class.java to null,
+    MediaLibraryNextModule::class.java to null,
     NavigationBarModule::class.java to null,
     NetworkModule::class.java to null,
     ScreenCaptureModule::class.java to null,

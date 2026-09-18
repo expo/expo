@@ -20,6 +20,7 @@
     "@expo/vector-icons": "^15.0.2",
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/native": "^7.1.33",
+    "color": "^5.0.3",
     "expo": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-dev-client": "workspace:*",

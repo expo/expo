@@ -1,4 +1,9 @@
-import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
+import type {
+  NavigationAction,
+  NavigationState,
+  PartialState,
+  RouterBrowserHistoryAction,
+} from '../react-navigation/routers';
 import type { RouterRegistry } from './routerRegistry';
 
 export type TreeNode = {
@@ -16,6 +21,7 @@ type Handler = {
   node: TreeNode;
   nextSlice: NavigationState;
   shouldFocus: boolean;
+  browserHistory?: RouterBrowserHistoryAction;
 };
 
 export type NavigationTreeReduction =
@@ -23,6 +29,7 @@ export type NavigationTreeReduction =
   | {
       handled: true;
       nextState: NavigationState;
+      browserHistory?: RouterBrowserHistoryAction;
     };
 
 export function indexNavigationTree(root: NavigationState): NavigationTreeIndex {
@@ -103,6 +110,7 @@ function findActionHandler(
     handler = {
       node,
       nextSlice,
+      browserHistory: result?.browserHistory,
       shouldFocus: entry.shouldActionChangeFocus?.(action) ?? false,
     };
     return true;
@@ -122,7 +130,8 @@ function findActionHandler(
   return undefined;
 }
 
-function rebuildTreeWithSlice(handler: Handler, registry: RouterRegistry): NavigationState {
+function rebuildTreeWithSlice(handler: Handler, registry: RouterRegistry) {
+  let browserHistory = handler.browserHistory;
   let nextState = handler.nextSlice;
   let child = handler.node;
   while (child.parent) {
@@ -142,13 +151,20 @@ function rebuildTreeWithSlice(handler: Handler, registry: RouterRegistry): Navig
     if (handler.shouldFocus) {
       const entry = registry.get(parent.state.key);
       if (entry?.getStateForRouteFocus) {
+        const previousParent = nextParent;
         nextParent = entry.getStateForRouteFocus(nextParent, route.key);
+        const focusHistory = entry.getBrowserHistoryForRouteFocus?.(
+          previousParent,
+          nextParent,
+          browserHistory
+        );
+        browserHistory = focusHistory ?? browserHistory;
       }
     }
     nextState = nextParent;
     child = parent;
   }
-  return nextState;
+  return { nextState, ...(browserHistory && { browserHistory }) };
 }
 
 export function reduceNavigationTree(
@@ -163,7 +179,7 @@ export function reduceNavigationTree(
 
   return {
     handled: true,
-    nextState: rebuildTreeWithSlice(handler, registry),
+    ...rebuildTreeWithSlice(handler, registry),
   };
 }
 
