@@ -6623,6 +6623,9 @@ importers:
       expo:
         specifier: '*'
         version: link:../expo
+      jest:
+        specifier: ^30.0.0
+        version: 30.5.1(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
       jest-environment-jsdom:
         specifier: ^30.0.0
         version: 30.5.1
