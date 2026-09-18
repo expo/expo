@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix `pod install` failing when the Command Line Tools SDK is newer than the selected Xcode. ([#50316](https://github.com/expo/expo/pull/50316) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Stop embedding the checkout's absolute paths in the built `ExpoModulesJSI.swiftmodule`, so Xcode compilation cache entries for modules importing it are shared across checkouts and worktrees. ([#50354](https://github.com/expo/expo/pull/50354) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 💡 Others
 
