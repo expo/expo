@@ -250,7 +250,10 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   // Metro types context keys as plain strings; they are always `./`-prefixed.
   const contextKeys = contextModule.keys() as ContextKey[];
   // Normalized from the plugin config, so `permanent` is always resolved.
-  const redirects: Record<string, RedirectConfig & { permanent: boolean }> = {};
+  const redirects: Record<
+    string,
+    RedirectConfig & { destinationContextKey: EntryPoint; permanent: boolean }
+  > = {};
   const rewrites: Record<string, RewriteConfig> = {};
 
   let validRedirectDestinations:
@@ -278,11 +281,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         const sourceContextKey = getSourceContextKeyFromRedirectSource(redirect.source);
         const sourceName = getNameFromRedirectPath(redirect.source);
 
-        const isExternalRedirect = shouldLinkExternally(redirect.destination);
-
-        const targetDestinationName = isExternalRedirect
+        const externalDestination = shouldLinkExternally(redirect.destination)
           ? redirect.destination
-          : getNameWithoutInvisibleSegmentsFromRedirectPath(redirect.destination);
+          : undefined;
+        const isExternalRedirect = externalDestination !== undefined;
+
+        const targetDestinationName =
+          externalDestination ??
+          getNameWithoutInvisibleSegmentsFromRedirectPath(redirect.destination);
 
         if (ignoreList.some((regex) => regex.test(sourceContextKey))) {
           continue;
@@ -296,9 +302,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         const destination = isExternalRedirect
           ? targetDestinationName
           : validDestination?.nameWithoutInvisible;
-        const destinationContextKey = isExternalRedirect
-          ? targetDestinationName
-          : validDestination?.contextKey;
+        const destinationContextKey = externalDestination ?? validDestination?.contextKey;
 
         if (!destinationContextKey || destination === undefined) {
           /*

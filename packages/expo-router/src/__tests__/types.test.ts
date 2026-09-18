@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 
-import type { MiddlewareNode, RouteNode } from '../Route';
+import type { MiddlewareNode, RedirectRouteNode, RouteNode, ScreenRouteNode } from '../Route';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { Stack as JSStack } from '../layouts/JSStack';
 import type { AbsoluteHref, AbsolutePath, ContextKey, EntryPoint } from '../types/paths';
@@ -28,7 +28,7 @@ export type _JSStackLacksInitialRouteName = Expect<
 
 export type _RouteNodeContextKeyIsContextKey = Expect<Equal<RouteNode['contextKey'], ContextKey>>;
 export type _RouteNodeParentContextKeyIsContextKey = Expect<
-  Equal<RouteNode['parentContextKey'], ContextKey | undefined>
+  Equal<ScreenRouteNode['parentContextKey'], ContextKey | undefined>
 >;
 export type _MiddlewareContextKeyIsContextKey = Expect<
   Equal<MiddlewareNode['contextKey'], ContextKey>
@@ -40,7 +40,7 @@ export type _PlainNameIsNotAContextKey = Expect<
   Equal<'app/index.tsx' extends ContextKey ? true : false, false>
 >;
 export type _DestinationContextKeyAllowsExternalUrls = Expect<
-  Equal<RouteNode['destinationContextKey'], EntryPoint | undefined>
+  Equal<RedirectRouteNode['destinationContextKey'], EntryPoint>
 >;
 export type _ExternalUrlIsAnEntryPoint = Expect<
   Equal<'https://example.com/x' extends EntryPoint ? true : false, true>

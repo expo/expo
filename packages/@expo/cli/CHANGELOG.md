@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Use specific types for Expo Router context keys and pathnames. ([#50170](https://github.com/expo/expo/pull/50170) by [@Ubax](https://github.com/Ubax))
 - Narrow `RouteNode` reads to the new discriminated union from `expo-router`. ([#50171](https://github.com/expo/expo/pull/50171) by [@Ubax](https://github.com/Ubax))
 
 ## 58.0.3 — 2026-09-16
