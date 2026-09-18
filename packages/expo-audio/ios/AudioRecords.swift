@@ -1,3 +1,4 @@
+import AVFoundation
 import ExpoModulesCore
 
 struct AudioMode: Record {
@@ -7,6 +8,44 @@ struct AudioMode: Record {
   @Field var shouldPlayInBackground: Bool = false
   @Field var shouldRouteThroughEarpiece: Bool = false
   @Field var allowsBackgroundRecording: Bool = false
+  /// AVAudioSession mode. Omitted keeps the previous mode.
+  @Field var iosMode: IOSAudioMode? = nil
+}
+
+/// iOS session mode. `spokenAudio` is the loud speech path while the mic stays open.
+enum IOSAudioMode: String, Enumerable {
+  case `default`
+  case spokenAudio
+  case measurement
+  case voiceChat
+  case videoChat
+  case videoRecording
+  case gameChat
+  case moviePlayback
+  case voicePrompt
+
+  func toAVMode() -> AVAudioSession.Mode {
+    switch self {
+    case .default:
+      return .default
+    case .spokenAudio:
+      return .spokenAudio
+    case .measurement:
+      return .measurement
+    case .voiceChat:
+      return .voiceChat
+    case .videoChat:
+      return .videoChat
+    case .videoRecording:
+      return .videoRecording
+    case .gameChat:
+      return .gameChat
+    case .moviePlayback:
+      return .moviePlayback
+    case .voicePrompt:
+      return .voicePrompt
+    }
+  }
 }
 
 enum InterruptionMode: String, Enumerable {
