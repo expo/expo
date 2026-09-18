@@ -4022,6 +4022,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-asset:
     dependencies:
@@ -4531,6 +4534,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-dev-client:
     dependencies:
@@ -4903,6 +4909,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-image:
     dependencies:

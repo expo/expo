@@ -42,12 +42,14 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
-    "prepack": "expo-module prepack"
+    "prepack": "expo-module prepack",
+    "generate-types": "expo-modules generate-types"
   },
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "expo-modules-cli": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
