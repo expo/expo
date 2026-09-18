@@ -49,6 +49,7 @@ export type SitemapType = {
   children: SitemapType[];
 };
 
+// TODO(@ubax): Extract layout child sorting into a shared helper.
 const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route, parents) => ({
   contextKey: route.contextKey,
   filename: routeFilename(route),

@@ -33,8 +33,8 @@ export function GuardContextProvider({
   const parentFallbacks = use(GuardRedirectFallbackContext);
   const params = use(LocalRouteParamsContext);
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
-  const nodeChildren = node?.type === 'layout' ? node.children : undefined;
-  const nodeInitialRouteName = node && isLayoutRouteNode(node) ? node.initialRouteName : undefined;
+  const nodeChildren = isLayoutRouteNode(node) ? node.children : undefined;
+  const nodeInitialRouteName = isLayoutRouteNode(node) ? node.initialRouteName : undefined;
   const { fallbacks, resolvedGuards } = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
     [
@@ -130,6 +130,7 @@ function findDefaultRedirectRouteInNavigator(
   guardedRedirects: GuardedRedirects
 ): RouteNode | undefined {
   const anchor = getValidInitialRoute(node);
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
   const children = [...(isLayoutRouteNode(node) ? node.children : [])].sort(
     sortRoutesWithInitial(anchor?.route)
   );

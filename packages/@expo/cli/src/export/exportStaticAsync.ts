@@ -8,7 +8,12 @@ import type { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import chalk from 'chalk';
-import { isRedirectRouteNode, isScreenRouteNode, type RouteNode } from 'expo-router/build/Route';
+import {
+  isRedirectRouteNode,
+  isRewriteRouteNode,
+  isScreenRouteNode,
+  type RouteNode,
+} from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import type { PageHeaderInfo, RoutesManifest } from 'expo-server/private';
@@ -141,7 +146,7 @@ export async function getFilesToExportFromServerAsync(
     getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
         // Rewrite routes should not be statically generated
-        if (route.type === 'rewrite') {
+        if (isRewriteRouteNode(route)) {
           return;
         }
 
@@ -185,7 +190,10 @@ function modifyRouteNodeInRuntimeManifest(
 function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, appDir: string) {
   modifyRouteNodeInRuntimeManifest(manifest, (route) => {
     // Only screens and redirects carry entry points.
-    if ((route.type === 'route' || route.type === 'redirect') && Array.isArray(route.entryPoints)) {
+    if (
+      (isScreenRouteNode(route) || isRedirectRouteNode(route)) &&
+      Array.isArray(route.entryPoints)
+    ) {
       route.entryPoints = route.entryPoints.map((entryPoint) => {
         // TODO(@hassankhan): ENG-16577
         if (shouldLinkExternally(entryPoint)) {
@@ -436,10 +444,7 @@ export async function exportFromServerAsync(
 
       const syncJsAssets = syncJs.map((asset) => toAssetUrl(asset.filename));
 
-      const htmlRoutes = getHtmlFiles({
-        manifest,
-        includeGroupVariations: false,
-      });
+      const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
 
       // Build per-route async chunk assignments
       const routeAssets = new Map<string, string[]>();

@@ -246,6 +246,7 @@ function createDestinationState(
   const initialRouteName = getValidInitialRouteName(routeNode);
   // Sort like a mounted navigator does, so the route names match on mount and no
   // ROUTE_NAMES_CHANGED action is queued.
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
   const routeNames = [...(isLayoutRouteNode(routeNode) ? routeNode.children : [])]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
