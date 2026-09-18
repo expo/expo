@@ -571,6 +571,24 @@ function loadBabel(paths = babelResolvePaths) {
   ].join('|');
 }
 
+/** @type {string | undefined} */
+let cacheDir;
+
+/**
+ * Transform cache location: `node_modules/.cache/expo-vitest` of the project (like babel-loader),
+ * falling back to the OS temp dir when the project has no `node_modules`.
+ */
+function getCacheDir() {
+  if (!cacheDir) {
+    const projectRoot = installed?.options.projectRoot ?? process.cwd();
+    const nodeModules = path.join(projectRoot, 'node_modules');
+    cacheDir = fs.existsSync(nodeModules)
+      ? path.join(nodeModules, '.cache', 'expo-vitest', 'babel')
+      : path.join(os.tmpdir(), 'expo-vitest', 'babel');
+  }
+  return cacheDir;
+}
+
 /**
  * Transform a source file to CommonJS for Node: React Native ecosystem packages with
  * `@react-native/babel-preset`, everything else (workspace TypeScript reached through `require()`)
@@ -593,7 +611,7 @@ function transformReactNativeSource(filename, platform) {
     .update(filename)
     .update(source)
     .digest('hex');
-  const cacheDir = path.join(os.tmpdir(), 'expo-vitest', 'babel');
+  const cacheDir = getCacheDir();
   const cachePath = path.join(cacheDir, `${hash}.js`);
 
   try {
