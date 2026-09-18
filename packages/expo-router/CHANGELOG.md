@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Prevent browser unloads on web while `usePreventRemove` is active. ([#50260](https://github.com/expo/expo/pull/50260) by [@Ubax](https://github.com/Ubax))
+- Stabilize async routes on web and enable them by default. Native async routes remain experimental and opt-in. ([#48327](https://github.com/expo/expo/pull/48327) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
