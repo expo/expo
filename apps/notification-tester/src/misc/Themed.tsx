@@ -1,6 +1,5 @@
 import DefaultAntDesign from '@expo/vector-icons/AntDesign';
 import Color from 'color';
-import { forwardRef } from 'react';
 import {
   useColorScheme,
   Text as DefaultText,
@@ -26,7 +25,7 @@ export function useTheme(): 'light' | 'dark' {
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName?: keyof typeof ThemeColors.light & keyof typeof ThemeColors.dark
+  colorName: keyof typeof ThemeColors.light & keyof typeof ThemeColors.dark
 ) {
   const theme = useTheme();
   const colorFromProps = props[theme];
@@ -50,13 +49,13 @@ type LayeredThemeProps = {
   darkBackgroundColor?: string;
 };
 
-export type TextProps = ThemeProps & DefaultText['props'];
-export type ViewProps = ThemeProps & DefaultView['props'];
-export type ScrollViewProps = ThemeProps & DefaultScrollView['props'];
-export type FlatListProps = ThemeProps & DefaultFlatList['props'];
-export type SectionListProps = ThemeProps & DefaultSectionList['props'];
+export type TextProps = ThemeProps & React.ComponentProps<typeof DefaultText>;
+export type ViewProps = ThemeProps & React.ComponentProps<typeof DefaultView>;
+export type ScrollViewProps = ThemeProps & React.ComponentProps<typeof DefaultScrollView>;
+export type FlatListProps = ThemeProps & React.ComponentProps<typeof DefaultFlatList>;
+export type SectionListProps = ThemeProps & React.ComponentProps<typeof DefaultSectionList>;
 export type AntDesignProps = ThemeProps & React.ComponentProps<typeof DefaultAntDesign>;
-export type TextInputProps = LayeredThemeProps & DefaultTextInput['props'];
+export type TextInputProps = LayeredThemeProps & React.ComponentProps<typeof DefaultTextInput>;
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -79,28 +78,28 @@ export function AntDesign(props: AntDesignProps) {
   return <DefaultAntDesign color={color} {...otherProps} />;
 }
 
-const ScrollView = forwardRef<DefaultScrollView, ScrollViewProps>((props, ref) => {
+function ScrollView(props: ScrollViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'view');
 
-  return <DefaultScrollView style={[{ backgroundColor }, style]} {...otherProps} ref={ref} />;
-});
+  return <DefaultScrollView style={[{ backgroundColor }, style]} {...otherProps} />;
+}
 
-const FlatList = forwardRef<DefaultFlatList, FlatListProps>((props, ref) => {
+function FlatList(props: FlatListProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'view');
 
-  return <DefaultFlatList style={[{ backgroundColor }, style]} {...otherProps} ref={ref} />;
-});
+  return <DefaultFlatList style={[{ backgroundColor }, style]} {...otherProps} />;
+}
 
-const SectionList = forwardRef<DefaultSectionList, SectionListProps>((props, ref) => {
+function SectionList(props: SectionListProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'view');
 
-  return <DefaultSectionList style={[{ backgroundColor }, style]} {...otherProps} ref={ref} />;
-});
+  return <DefaultSectionList style={[{ backgroundColor }, style]} {...otherProps} />;
+}
 
-const TextInput = forwardRef<DefaultTextInput, TextInputProps>((props, ref) => {
+function TextInput(props: TextInputProps) {
   const {
     style,
     lightTextColor,
@@ -123,9 +122,8 @@ const TextInput = forwardRef<DefaultTextInput, TextInputProps>((props, ref) => {
       style={[{ backgroundColor, color }, style]}
       placeholderTextColor={placeholderTextColor}
       {...otherProps}
-      ref={ref}
     />
   );
-});
+}
 
 export { FlatList, SectionList, ScrollView, TextInput };

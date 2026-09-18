@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "minimal-swiftpm",
+    "slug": "minimal-swiftpm",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "jsEngine": "hermes",
+    "ios": {
+      "bundleIdentifier": "dev.expo.minimalswiftpm",
+      "supportsTablet": true
+    }
+  }
+}
