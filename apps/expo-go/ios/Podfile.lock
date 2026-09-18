@@ -78,7 +78,7 @@ PODS:
     - ExpoModulesCore
   - ExpoClipboard (57.0.2):
     - ExpoModulesCore
-  - ExpoContacts (57.0.5):
+  - ExpoContacts (57.0.6):
     - ExpoModulesCore
   - ExpoCrypto (57.0.3):
     - ExpoModulesCore
@@ -4592,7 +4592,7 @@ SPEC CHECKSUMS:
   ExpoCameraBarcodeScanning: 69275ab8ecd76f338da22df825c59405bcf36472
   ExpoCellular: f0045b3913bb68df85fba9d51982ceea62d16329
   ExpoClipboard: 15b8cc88075d7c50af165ed8fca0a76915903bba
-  ExpoContacts: 585ee7d44b2a5b88860e1ac4b371a17ad602bb65
+  ExpoContacts: b32641ee8018ceec37e85ad2de9ce5e4266cb200
   ExpoCrypto: 3ba3d7fcf244a3ae8cb888c5759e0db70ecc236d
   ExpoDevice: 5c638e530304a51992263ab5c1cab726f992b9dc
   ExpoDocumentPicker: fe03a24855e39af0f9b5aee17e7eb4813f6e44a6

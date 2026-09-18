@@ -36,7 +36,7 @@
   "expo-checkbox": "~57.0.0",
   "expo-clipboard": "~57.0.2",
   "expo-constants": "~57.0.19",
-  "expo-contacts": "~57.0.5",
+  "expo-contacts": "~57.0.6",
   "expo-crypto": "~57.0.3",
   "expo-dev-client": "~57.0.19",
   "expo-device": "~57.0.2",
