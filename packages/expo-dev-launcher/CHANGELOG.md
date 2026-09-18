@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Answer a fingerprint check on a physical device from a debug build, so a tool can read the fingerprint the build embedded. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+- Add __expo_* reserved namespace for deep linking URLs. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
