@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- Deprecate `withLayoutContext`. Use `integrateWithRouter` instead. (by [@Ubax](https://github.com/Ubax))
+- Deprecate `withLayoutContext`. Use `integrateWithRouter` instead. ([#50337](https://github.com/expo/expo/pull/50337) by [@Ubax](https://github.com/Ubax))
 
 ## 58.0.4 — 2026-09-16
 
