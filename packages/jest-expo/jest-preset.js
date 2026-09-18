@@ -24,6 +24,11 @@ try {
 
 jestPreset = cloneDeep(jestPreset);
 
+// Use jest-expo's own copy of the React Native test environment. The upstream preset resolves
+// `jest-environment-node` from its own (Jest 29) dependencies, which must not be mixed into a Jest 30
+// runtime. The environment is otherwise identical to `@react-native/jest-preset/jest/react-native-env`.
+jestPreset.testEnvironment = require.resolve('./src/preset/nativeEnvironment.js');
+
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 const { resolveBabelOptions } = require('./src/resolveBabelOptions');
 
