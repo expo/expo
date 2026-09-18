@@ -433,10 +433,10 @@ open class DevMenuManager: NSObject {
       DispatchQueue.main.async {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
-#elseif os(tvOS)
-        self.window?.makeKeyAndVisible()
 #else
+#if !os(tvOS)
         self.updateFABVisibility()
+#endif
 
         if self.window?.windowScene == nil {
           self.window?.windowScene = SceneGeometry.foregroundActiveScene()
