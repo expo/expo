@@ -10,13 +10,16 @@
  */
 
 import React from 'react';
-// @ts-expect-error: TODO(@kitten): We optimally shouldn't pull in all of react-native-web just for expo-checkbox. It's excessive
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
 
 import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';
 
-const ExpoCheckbox = React.forwardRef(
-  ({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps, ref) => {
+type ViewRef = React.ComponentRef<typeof View>;
+type ViewProps = React.ComponentProps<typeof View>;
+type ViewStyleProp = ViewProps['style'];
+
+const ExpoCheckbox = React.forwardRef<ViewRef, CheckboxProps>(
+  ({ color, disabled, onChange, onValueChange, style, value, ...other }, ref) => {
     const handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
       const value = event.nativeEvent.target.checked;
       event.nativeEvent.value = value;
@@ -24,13 +27,17 @@ const ExpoCheckbox = React.forwardRef(
       onValueChange?.(value);
     };
 
+    // `color` is typed as React Native's `ColorValue`, which also allows opaque platform colors
+    // (`PlatformColor`, `DynamicColorIOS`). Only string colors can be rendered on web.
+    const webColor = typeof color === 'string' ? color : undefined;
+
     const fakeControl = (
       <View
         style={[
           styles.fakeControl,
           value && styles.fakeControlChecked,
           // custom color
-          !!color && { backgroundColor: value ? color : undefined, borderColor: color },
+          !!webColor && { backgroundColor: value ? webColor : undefined, borderColor: webColor },
           disabled && styles.fakeControlDisabled,
           value && disabled && styles.fakeControlCheckedAndDisabled,
         ]}
@@ -48,7 +55,12 @@ const ExpoCheckbox = React.forwardRef(
     });
 
     return (
-      <View ref={ref} {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
+      // The props follow React Native's `ViewProps` contract; react-native-web accepts the same
+      // values at runtime but types some of them (`style`, `aria-live`, ...) more narrowly.
+      <View
+        ref={ref}
+        {...(other as ViewProps)}
+        style={[styles.root, style as ViewStyleProp, disabled && styles.cursorDefault]}>
         {nativeControl}
         {fakeControl}
       </View>
@@ -60,19 +72,16 @@ export default ExpoCheckbox;
 
 const styles = StyleSheet.create({
   root: {
-    // @ts-ignore
     cursor: 'pointer',
     height: 16,
     userSelect: 'none',
     width: 16,
   },
   cursorDefault: {
-    // @ts-ignore
     cursor: 'default',
   },
 
   cursorInherit: {
-    // @ts-ignore
     cursor: 'inherit',
   },
   fakeControl: {
@@ -90,7 +99,6 @@ const styles = StyleSheet.create({
   },
   fakeControlChecked: {
     backgroundColor: '#009688',
-    // @ts-ignore
     backgroundImage:
       'url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgdmVyc2lvbj0iMS4xIgogICB2aWV3Qm94PSIwIDAgMSAxIgogICBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWluWU1pbiBtZWV0Ij4KICA8cGF0aAogICAgIGQ9Ik0gMC4wNDAzODA1OSwwLjYyNjc3NjcgMC4xNDY0NDY2MSwwLjUyMDcxMDY4IDAuNDI5Mjg5MzIsMC44MDM1NTMzOSAwLjMyMzIyMzMsMC45MDk2MTk0MSB6IE0gMC4yMTcxNTcyOSwwLjgwMzU1MzM5IDAuODUzNTUzMzksMC4xNjcxNTcyOSAwLjk1OTYxOTQxLDAuMjczMjIzMyAwLjMyMzIyMzMsMC45MDk2MTk0MSB6IgogICAgIGlkPSJyZWN0Mzc4MCIKICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lIiAvPgo8L3N2Zz4K")',
     backgroundRepeat: 'no-repeat',
@@ -109,7 +117,6 @@ const styles = StyleSheet.create({
     margin: 0,
     padding: 0,
     width: '100%',
-    // @ts-ignore
     WebkitAppearance: 'none',
   },
 });

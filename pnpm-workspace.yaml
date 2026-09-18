@@ -59,4 +59,5 @@ overrides:
   '@types/babel__traverse': ^7.20.7
   react-native: 0.88.0-rc.1
   react-native-reanimated: 4.6.0
+  react-native-web: file:tarballs/react-native-web-0.21.2-e8b16dee.tgz
   react-native-worklets: 0.12.2
