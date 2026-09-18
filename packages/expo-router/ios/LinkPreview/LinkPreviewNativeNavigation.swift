@@ -10,7 +10,8 @@ struct TabChangeCommand {
   init(tabBarController: UITabBarController?, tabIndex: Int) {
     self.tabBarController = tabBarController
     self.tabIndex = tabIndex
-    self.target = tabBarController?.viewControllers?.indices.contains(tabIndex) == true
+    self.target =
+      tabBarController?.viewControllers?.indices.contains(tabIndex) == true
       ? tabBarController?.viewControllers?[tabIndex] : nil
   }
 
