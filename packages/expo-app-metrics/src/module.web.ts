@@ -23,8 +23,16 @@ class NetworkRequestObserverWeb extends SharedObject<NetworkRequestObserverEvent
   // can construct it without guarding on Platform.OS.
 }
 
+// One session per page load, so `session.id` tells dispatched records of different visitors apart.
+function createSessionId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  return `web-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
 class WebSession extends globalThis.expo.SharedObject {
-  readonly id = 'web-session';
+  readonly id = createSessionId();
   readonly startDate = new Date().toISOString();
   readonly logs: LogRecord[] = [];
 
