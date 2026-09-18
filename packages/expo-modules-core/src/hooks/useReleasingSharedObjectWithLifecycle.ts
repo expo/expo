@@ -55,9 +55,6 @@ export type ReleasingSharedObjectLifecycle<TSharedObject extends SharedObject> =
   /**
    * Releases an object after it has been replaced or when the component unmounts.
    * When omitted, the object's `release` method is called.
-   *
-   * > Note: `release` won't be called when the SharedObject is mounted inside a hidden [`Activity`](https://react.dev/reference/react/Activity) which gets unmounted.
-   * > Once the related JavaScript object is garbage collected, only the native object will be released.
    */
   release?: (object: TSharedObject) => void;
 };
@@ -112,10 +109,6 @@ function selectSnapshot<TSharedObject extends SharedObject>(
 
 /**
  * Returns a shared object, delegating dependency changes to lifecycle callbacks.
- *
- * > **important** Due to React component lifecycle limitations, when a component is unmounted while inside a hidden React
- * > [`Activity`](https://react.dev/reference/react/Activity), its shared object stays alive until
- * > its JavaScript object is garbage-collected.
  */
 export function useReleasingSharedObjectWithLifecycle<TSharedObject extends SharedObject>(
   lifecycle: ReleasingSharedObjectLifecycle<TSharedObject>,
