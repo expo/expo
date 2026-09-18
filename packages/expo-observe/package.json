@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "expo-app-metrics": "workspace:~",
+    "expo-constants": "workspace:~",
     "expo-eas-client": "workspace:~"
   },
   "devDependencies": {

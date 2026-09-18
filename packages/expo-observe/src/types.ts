@@ -195,7 +195,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    *
    * Events are dispatched automatically when the app moves to the background. On Android,
    * a background worker dispatches events once network connectivity is available. On iOS,
-   * dispatching happens when the app resigns active state or is about to terminate. Call
+   * dispatching happens when the app resigns active state or is about to terminate. On web,
+   * log events are dispatched when the page is hidden. Call
    * this method to flush events manually, for example, during testing or to ensure events
    * are sent before a specific point.
    *
