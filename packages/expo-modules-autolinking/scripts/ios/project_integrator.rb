@@ -112,6 +112,11 @@ module Expo
       project.native_targets.each do |native_target|
         native_target.build_configurations.each do |build_configuration|
           configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"
+          resolved_flags = build_configuration.resolve_build_setting(SWIFT_FLAGS, native_target)
+
+          # Respect flags inherited from xcconfig files instead of duplicating them in the project file.
+          next if resolved_flags&.include?(configuration_flag)
+
           build_settings = build_configuration.build_settings
 
           # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`
