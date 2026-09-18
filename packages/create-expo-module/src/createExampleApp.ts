@@ -36,7 +36,7 @@ export async function createExampleApp(
   }
 
   await newStep('Initializing the example app', async (step) => {
-    const templateVersion = env.EXPO_BETA ? 'next' : 'latest';
+    const templateVersion = env.EXPO_BETA ? 'next' : 'sdk-55';
     const template = `expo-template-blank-typescript@${templateVersion}`;
     debug(`Using example template: ${template}`);
     const command = createCommand(packageManager, exampleProjectSlug, template);
