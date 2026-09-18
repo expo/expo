@@ -1,7 +1,6 @@
 // @ts-check
 /// <reference types="node" />
 
-const { getConfig } = require('expo/config');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -18,9 +17,13 @@ const embedFingerprint = process.argv[5] === 'true';
 (async () => {
   const projectRoot = resolveProjectRoot(possibleProjectRoot);
 
-  require('@expo/env').load(projectRoot);
+  const expoEnv = require('@expo/env');
+  process.env = expoEnv.getOriginalEnv();
+  const mode = expoEnv.consumeConfigEnvMode() ?? process.argv[6];
+  expoEnv.logLoadedEnv(expoEnv.loadProjectEnv(projectRoot, { mode }));
   process.chdir(projectRoot);
 
+  const { getConfig } = require('expo/config');
   const { exp } = getConfig(projectRoot, {
     isPublicConfig: true,
     skipSDKVersionRequirement: true,

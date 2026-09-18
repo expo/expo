@@ -4,11 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Use the native build mode when loading app config and env files. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
 
 - Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
+
+- [Android] Generate native app config using the Constants library's build type. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Use production config by default when Updates native debugging embeds production JavaScript. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
