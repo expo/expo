@@ -808,6 +808,21 @@ importers:
 
   apps/expo-workflow-testing: {}
 
+  apps/minimal-swiftpm:
+    dependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../../packages/expo
+      expo-constants:
+        specifier: workspace:*
+        version: link:../../packages/expo-constants
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+      react-native:
+        specifier: 0.88.0-rc.1
+        version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
+
   apps/minimal-tester:
     dependencies:
       expo:
