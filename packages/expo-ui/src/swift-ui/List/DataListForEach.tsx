@@ -19,6 +19,8 @@ export interface DataListForEachProps<ItemT> extends CommonViewModifierProps {
   /**
    * Renders a SwiftUI row. Rows are reused, so local state (useState) can carry over to another item.
    * Reset it when the item key changes. Keep persistent state outside the row, stored by item key.
+   * Pass a stable function, for example from `useCallback`: a new function re-renders every pooled
+   * row, because rows must pick up state the function closes over.
    */
   renderItem: (info: { item: ItemT; index: number }) => ReactElement;
   /**

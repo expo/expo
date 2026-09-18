@@ -3,7 +3,7 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
-    name: 'List.ForEach data (experimental)',
+    name: 'List.ForEach data',
     route: 'ui/virtualized-list',
     options: {},
     getComponent() {
