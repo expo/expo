@@ -14,6 +14,9 @@ const {
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
   raiseFloor,
+  spmPackageIdentity,
+  spmPackageDeclaration,
+  spmProductDependency,
 } = require('../manifests');
 
 describe('parseDumpedManifest', () => {
@@ -1174,5 +1177,176 @@ describe('dependencies on targets the generated package cannot declare', () => {
     expect(fs.existsSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'))).toBe(
       false
     );
+  });
+});
+
+// A pure-Swift module's SwiftPM dependencies come from its spm.config.json, the
+// same coordinates CocoaPods resolves through the podspec. Without them
+// `import SDWebImage` names a package the generated manifest never declared.
+describe('SwiftPM package coordinates', () => {
+  const sdWebImage = {
+    url: 'https://github.com/SDWebImage/SDWebImage.git',
+    productName: 'SDWebImage',
+    version: { exact: '5.21.6' },
+  };
+
+  describe('spmPackageIdentity', () => {
+    it("takes the URL's last path component, without the .git suffix", () => {
+      expect(spmPackageIdentity(sdWebImage)).toBe('SDWebImage');
+      expect(
+        spmPackageIdentity({ ...sdWebImage, url: 'https://github.com/SDWebImage/SDWebImage' })
+      ).toBe('SDWebImage');
+    });
+
+    // libavif-Xcode ships the `libavif` product: the identity SwiftPM resolves is
+    // the repository name, not the product name.
+    it('reads the repository name, not the product it ships', () => {
+      expect(
+        spmPackageIdentity({
+          url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+          productName: 'libavif',
+          version: { exact: '1.0.0' },
+        })
+      ).toBe('libavif-Xcode');
+    });
+
+    // A URL ending in a slash has an empty last component, which would render
+    // `package: ""` and fail the whole graph rather than the one declaration.
+    it('ignores a trailing slash', () => {
+      expect(
+        spmPackageIdentity({ ...sdWebImage, url: 'https://github.com/SDWebImage/SDWebImage/' })
+      ).toBe('SDWebImage');
+      expect(
+        spmPackageIdentity({ ...sdWebImage, url: 'https://github.com/SDWebImage/SDWebImage.git/' })
+      ).toBe('SDWebImage');
+    });
+  });
+
+  describe('spmPackageDeclaration', () => {
+    it('renders every version requirement PackageDescription declares', () => {
+      const withVersion = (version) => spmPackageDeclaration({ ...sdWebImage, version });
+      expect(withVersion({ exact: '5.21.6' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6")'
+      );
+      expect(withVersion({ from: '5.21.6' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.21.6")'
+      );
+      expect(withVersion({ branch: 'main' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", branch: "main")'
+      );
+      expect(withVersion({ revision: 'c0ffee' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", revision: "c0ffee")'
+      );
+    });
+
+    it('refuses a version it cannot spell', () => {
+      expect(() => spmPackageDeclaration({ ...sdWebImage, version: { tag: 'v5.21.6' } })).toThrow(
+        /names no version requirement this renderer supports/
+      );
+    });
+
+    // The reader upstream drops an ambiguous version, so this only fires when the
+    // two ends disagree — better than picking one requirement and hiding the rest.
+    it('refuses a version naming more than one requirement', () => {
+      expect(() =>
+        spmPackageDeclaration({ ...sdWebImage, version: { exact: '5.21.6', branch: 'main' } })
+      ).toThrow(/names more than one version requirement \(exact, branch\)/);
+    });
+  });
+
+  describe('spmProductDependency', () => {
+    it('names the product, resolved against its package identity', () => {
+      expect(spmProductDependency(sdWebImage)).toBe(
+        '.product(name: "SDWebImage", package: "SDWebImage")'
+      );
+      expect(
+        spmProductDependency({
+          url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+          productName: 'libavif',
+          version: { exact: '1.0.0' },
+        })
+      ).toBe('.product(name: "libavif", package: "libavif-Xcode")');
+    });
+  });
+
+  describe('the emitted manifest', () => {
+    const emit = (spmPackages) => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-packages-emit-'));
+      const moduleRoot = path.join(tmp, 'module');
+      const outDir = path.join(tmp, 'out');
+      fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
+      fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
+      emitPureSwiftSourcePackage(
+        moduleRoot,
+        'ExpoImage',
+        null,
+        '/abs/interfaces',
+        outDir,
+        null,
+        '16.4',
+        [],
+        spmPackages
+      );
+      return fs.readFileSync(
+        path.join(outDir, 'expo-source', 'ExpoImage', 'Package.swift'),
+        'utf8'
+      );
+    };
+
+    it('declares each package and depends the target on its product', () => {
+      const manifest = emit([
+        sdWebImage,
+        {
+          url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+          productName: 'libavif',
+          version: { exact: '1.0.0' },
+        },
+      ]);
+      expect(manifest).toContain(
+        'dependencies: [\n' +
+          '        .package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),\n' +
+          '        .package(url: "https://github.com/SDWebImage/libavif-Xcode.git", exact: "1.0.0"),\n' +
+          '    ],'
+      );
+      expect(manifest).toContain(
+        'dependencies: [\n' +
+          '                .product(name: "SDWebImage", package: "SDWebImage"),\n' +
+          '                .product(name: "libavif", package: "libavif-Xcode"),\n' +
+          '            ],'
+      );
+    });
+
+    // Every module that declares no SwiftPM package must keep generating the
+    // manifest it generates today, byte for byte.
+    it('renders a module with no packages exactly as before', () => {
+      const unchanged =
+        '// swift-tools-version: 6.0\n' +
+        '// AUTO-GENERATED by expo/scripts/spm/plugin.js \u2014 do not edit.\n' +
+        '// Pure-Swift source consumption package for "ExpoImage".\n' +
+        'import PackageDescription\n' +
+        '\n' +
+        'let package = Package(\n' +
+        '    name: "ExpoImage",\n' +
+        '    platforms: [.iOS("16.4")],\n' +
+        '    products: [\n' +
+        '        .library(name: "ExpoImage", targets: ["ExpoImage"]),\n' +
+        '    ],\n' +
+        '    dependencies: [],\n' +
+        '    targets: [\n' +
+        '        .target(\n' +
+        '            name: "ExpoImage",\n' +
+        '            dependencies: [],\n' +
+        '            path: "root/ios",\n' +
+        '            cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],\n' +
+        '            cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],\n' +
+        '            swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],\n' +
+        '        ),\n' +
+        '    ],\n' +
+        '    swiftLanguageModes: [.v5],\n' +
+        '    cxxLanguageStandard: .cxx20\n' +
+        ')\n';
+      expect(emit([])).toBe(unchanged);
+      expect(emit(undefined)).toBe(unchanged);
+    });
   });
 });

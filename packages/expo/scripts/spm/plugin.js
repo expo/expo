@@ -252,6 +252,9 @@ module.exports = function expoSpmPlugin(context) {
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
       const { moduleRoot } = podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName));
+      // Products the emitted manifest declares itself, and so are counterparts of
+      // the pods its podspec names. Only the pure-Swift branch declares any.
+      let declaredSpmProducts = [];
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
         // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
@@ -289,6 +292,7 @@ module.exports = function expoSpmPlugin(context) {
           ].filter(Boolean)
         );
         if (podspecs.linkage != null) podspecLinkage.set(moduleRoot, podspecs.linkage);
+        const spmPackages = metadata[pod.podName]?.spmPackages ?? [];
         const e =
           podspecs.linkage != null
             ? null
@@ -300,9 +304,11 @@ module.exports = function expoSpmPlugin(context) {
                 outDir,
                 codegenPkgPath,
                 raiseFloor(metadata[pod.podName]?.iosDeploymentTarget, coreDeploymentTarget),
-                macroFlags()
+                macroFlags(),
+                spmPackages
               );
         if (e != null) {
+          declaredSpmProducts = spmPackages.map((pkg) => pkg.productName);
           packageDependencies.push(e.packageDep);
           productDependencies.push(e.productDep);
           pods.forEach((p) => emitted.add(p.podName));
@@ -322,7 +328,10 @@ module.exports = function expoSpmPlugin(context) {
       // when a sibling pod of the same package is not precompiled, and warning
       // again would print the identical block twice.
       if (emitted.has(pod.podName) && !precompiledFrameworks.has(pod.podName)) {
-        const unmapped = collectUnmappedDependencies(pod.podspecDir, satisfiedDependencies);
+        const unmapped = collectUnmappedDependencies(
+          pod.podspecDir,
+          new Set([...satisfiedDependencies, ...declaredSpmProducts])
+        );
         if (unmapped.length > 0) {
           unmappedDeps.push({
             packageName: mod.packageName,
