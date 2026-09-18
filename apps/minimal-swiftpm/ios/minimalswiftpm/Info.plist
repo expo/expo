@@ -40,7 +40,7 @@
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>LSMinimumSystemVersion</key>
-    <string>12.0</string>
+    <string>16.4</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSAppTransportSecurity</key>
@@ -50,12 +50,6 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
-    <key>NSBonjourServices</key>
-    <array>
-      <string>_expo._tcp</string>
-    </array>
-    <key>NSLocalNetworkUsageDescription</key>
-    <string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
     <key>RCTMetroPort</key>
     <string>$(RCT_METRO_PORT)</string>
     <key>UIApplicationSceneManifest</key>
