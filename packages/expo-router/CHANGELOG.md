@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Deprecate `withLayoutContext`. Use `integrateWithRouter` instead. (by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.4 — 2026-09-16
 
 ### 🛠 Breaking changes
