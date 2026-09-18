@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Only request or apply a bundle diff when the manifest provides a hash for the launch asset, so a patched bundle is never written without being verified. ([#50321](https://github.com/expo/expo/pull/50321), [#50322](https://github.com/expo/expo/pull/50322) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Honor the `enableBsdiffPatchSupport` setting, which was parsed but never applied, so setting it to `false` now disables bundle diff requests as it already does on Android.
 
 ### 💡 Others
 
