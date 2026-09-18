@@ -495,10 +495,12 @@ public final class SQLiteModule: Module {
       statement.lock.signal()
     }
 
-    if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
+    let ret = exsqlite3_finalize(statement.pointer)
+    // SQLite destroys the statement even when returning an earlier execution error.
+    statement.isFinalized = true
+    if ret != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
-    statement.isFinalized = true
   }
 
   private func convertSqlLiteErrorToString(_ db: OpaquePointer?) -> String {
