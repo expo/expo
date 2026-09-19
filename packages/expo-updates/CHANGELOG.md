@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Only request or apply a bundle diff when the manifest provides a hash for the launch asset, so a patched bundle is never written without being verified. ([#50321](https://github.com/expo/expo/pull/50321), [#50322](https://github.com/expo/expo/pull/50322) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-16

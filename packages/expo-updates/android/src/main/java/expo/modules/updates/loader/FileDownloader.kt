@@ -139,7 +139,7 @@ class FileDownloader(
           } else {
             val requestedUpdateId = requestedUpdate?.id?.toString()
             val idsAreDifferent = launchedUpdate != null && requestedUpdate != null && launchedUpdate.id != requestedUpdate.id
-            val shouldAttemptPatch = allowPatch && asset.isLaunchAsset && idsAreDifferent
+            val shouldAttemptPatch = allowPatch && asset.isLaunchAsset && idsAreDifferent && expectedBase64URLEncodedSHA256Hash != null
 
             if (!shouldAttemptPatch) {
               logger.warn(
@@ -836,7 +836,7 @@ class FileDownloader(
     .header("Expo-Updates-Environment", "BARE")
     .header("EAS-Client-ID", easClientID)
     .apply {
-      val shouldRequestPatch = allowPatch && assetEntity.isLaunchAsset && configuration.enableBsdiffPatchSupport
+      val shouldRequestPatch = allowPatch && assetEntity.isLaunchAsset && configuration.enableBsdiffPatchSupport && assetEntity.expectedHash != null
       val currentId = extraHeaders.optString(EXPO_CURRENT_UPDATE_ID_HEADER, "")
       val requestedId = extraHeaders.optString(EXPO_REQUESTED_UPDATE_ID_HEADER, "")
       header("Accept", "*/*")
