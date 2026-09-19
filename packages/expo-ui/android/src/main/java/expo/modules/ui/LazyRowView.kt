@@ -71,6 +71,10 @@ class LazyRowView(context: Context, appContext: AppContext) :
       val count = composableChildCount.intValue
       for (index in 0..<count) {
         val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+        if (child is LazyItemsView) {
+          lazyRecycledItems(child, this@Content, isVertical = false)
+          continue
+        }
         item {
           with(this@Content) {
             with(child) {
