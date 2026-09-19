@@ -13,6 +13,19 @@ internal import jsi
 /// thread. Use `schedule()` or `execute()` methods to safely run code on the correct thread.
 /// The runtime uses `@JavaScriptActor` to enforce thread safety at compile time.
 ///
+/// Asynchronous work started by `schedule()` or `execute()` stays on the JavaScript thread across
+/// suspension points: an `await` on a nonisolated function, a structured child such as an
+/// `async let` or a task group task, and a continuation resumed from another thread all come back
+/// to it. Two cases do not, and runtime work in them has to be wrapped in `await execute { }`,
+/// which dispatches back to the JavaScript thread when called from elsewhere:
+///
+/// - Returning from an actor that has an executor of its own, the main actor being the one most
+///   often reached for. The work resumes on that actor's thread and stays there until the next
+///   suspension point.
+/// - An unstructured `Task { }` started inside the work. Swift does not pass a task executor
+///   preference to unstructured tasks, so such a task resumes whichever thread the cooperative
+///   pool picks. Use `task { }` instead of `Task { }`, which carries the preference.
+///
 /// ## Lifecycle
 ///
 /// The runtime maintains a weak reference pattern for values, objects, and arrays to prevent
@@ -53,8 +66,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return id
   }()
 
-  /// Actor for running runtime work.
-  lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
+  /// Executor preference for tasks that must return to this runtime's JavaScript thread.
+  private lazy var taskExecutor = JavaScriptRuntimeTaskExecutor(runtime: self)
 
   /// Creates a runtime from the JSI runtime. The scheduler runs tasks synchronously
   /// on the caller's thread — for the React-backed runtime, use
@@ -483,7 +496,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> Void
   ) {
     schedule(priority: priority) {
-      Task.immediate_polyfill {
+      Task.immediate_polyfill(executorPreference: taskExecutor) {
         try await closure()
       }
     }
@@ -544,7 +557,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let callerRunLoop = NonisolatedUnsafeVar(CFRunLoopGetCurrent())
 
     func body() {
-      Task.immediate_polyfill(priority: .high) {
+      Task.immediate_polyfill(priority: .high, executorPreference: taskExecutor) {
         do {
           result.value = .success(try await closure())
         } catch {
@@ -596,11 +609,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> R
   ) async throws -> sending R {
     if isOnJavaScriptThread() {
-      return try await Task.immediate_polyfill(priority: .high, operation: closure).value
+      return try await Task.immediate_polyfill(
+        priority: .high,
+        executorPreference: taskExecutor,
+        operation: closure
+      ).value
     }
     return try await withUnsafeThrowingContinuation { continuation in
       scheduler.scheduleTask(.ImmediatePriority) {
-        Task.immediate_polyfill(priority: .high) { @JavaScriptActor in
+        Task.immediate_polyfill(priority: .high, executorPreference: self.taskExecutor) { @JavaScriptActor in
           do {
             continuation.resume(returning: try await closure())
           } catch {
@@ -609,6 +626,35 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         }
       }
     }
+  }
+
+  /// Starts a task bound to this runtime's JavaScript thread, and returns it.
+  ///
+  /// Use it in place of `Task { }` for work that touches the runtime. Swift does not pass a task
+  /// executor preference to an unstructured task, so a plain `Task { }` started inside runtime work
+  /// resumes on the cooperative thread pool after its first suspension point. This one carries the
+  /// preference, so it comes back to the JavaScript thread instead.
+  ///
+  /// ```swift
+  /// runtime.schedule {
+  ///   runtime.task {
+  ///     let data = try await load()
+  ///     object.setProperty("data", value: data)
+  ///   }
+  /// }
+  /// ```
+  @discardableResult
+  public func task<R: Sendable>(
+    name: String? = nil,
+    priority: TaskPriority? = nil,
+    @_implicitSelfCapture _ operation: @escaping @JavaScriptActor () async throws -> R
+  ) -> Task<R, any Error> {
+    return Task.immediate_polyfill(
+      name: name,
+      priority: priority,
+      executorPreference: taskExecutor,
+      operation: operation
+    )
   }
 
   /// Runs a closure synchronously when already on the JavaScript thread, or schedules it
