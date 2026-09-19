@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `RecyclingList` with fixed-height row recycling, configurable backward overscan and programmatic scrolling on iOS/tvOS 18+. (by [@dougbot-agent](https://github.com/dougbot-agent))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
