@@ -61,11 +61,11 @@
     }
   },
   "devDependencies": {
-    "@expo/spawn-async": "^1.8.0",
+    "@expo/spawn-async": "catalog:",
     "eslint": "^9.24.0",
-    "eslint8": "npm:eslint@^8.57.1",
+    "eslint8": "catalog:",
     "jest": "^29.7.0",
-    "prettier": "^3.8.3",
+    "prettier": "catalog:",
     "react": "19.3.0"
   }
 }

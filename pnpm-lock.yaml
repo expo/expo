@@ -105,6 +105,138 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@expo/metro':
+      specifier: ~58.0.0-rc.0
+      version: 58.0.0-rc.0
+    '@expo/spawn-async':
+      specifier: ^1.8.0
+      version: 1.8.0
+    '@jest/globals':
+      specifier: ^29.7.0
+      version: 29.7.0
+    '@playwright/test':
+      specifier: ^1.59.0
+      version: 1.59.0
+    '@react-native/jest-preset':
+      specifier: 0.88.0-rc.1
+      version: 0.88.0-rc.1
+    '@testing-library/dom':
+      specifier: ^10.4.0
+      version: 10.4.1
+    '@testing-library/react':
+      specifier: ^16.3.0
+      version: 16.3.2
+    '@testing-library/react-native':
+      specifier: ^13.3.0
+      version: 13.3.3
+    '@testing-library/user-event':
+      specifier: ^14.6.1
+      version: 14.6.1
+    '@types/cross-spawn':
+      specifier: ^6.0.6
+      version: 6.0.6
+    '@types/eslint':
+      specifier: ^8.56.12
+      version: 8.56.12
+    '@types/express':
+      specifier: ^5.0.3
+      version: 5.0.6
+    '@types/node':
+      specifier: ^22.14.0
+      version: 22.20.1
+    '@types/node-forge':
+      specifier: ^1.0.0
+      version: 1.3.14
+    '@types/npm-package-arg':
+      specifier: ^6.1.0
+      version: 6.1.4
+    '@types/react':
+      specifier: ~19.3.0
+      version: 19.3.0
+    '@types/react-dom':
+      specifier: ^19.1.7
+      version: 19.2.3
+    '@types/react-test-renderer':
+      specifier: ^19.1.0
+      version: 19.1.0
+    '@types/semver':
+      specifier: ^7.7.1
+      version: 7.7.1
+    '@types/ws':
+      specifier: ^8.5.4
+      version: 8.18.1
+    '@types/xml2js':
+      specifier: ~0.4.11
+      version: 0.4.14
+    '@vercel/ncc':
+      specifier: ^0.38.4
+      version: 0.38.4
+    arg:
+      specifier: ^5.0.2
+      version: 5.0.2
+    debug:
+      specifier: ^4.3.4
+      version: 4.4.3
+    eslint8:
+      specifier: npm:eslint@^8.57.1
+      version: 8.57.1
+    expect-type:
+      specifier: ^1.3.0
+      version: 1.3.0
+    express:
+      specifier: ^5.1.0
+      version: 5.2.1
+    getenv:
+      specifier: ^2.0.0
+      version: 2.0.0
+    json-schema-to-typescript:
+      specifier: ^15.0.0
+      version: 15.0.4
+    multitars:
+      specifier: ^1.0.2
+      version: 1.0.2
+    nock:
+      specifier: ^14.0.10
+      version: 14.0.11
+    node-html-parser:
+      specifier: ^6.1.5
+      version: 6.1.13
+    npm-run-all2:
+      specifier: ^8.0.4
+      version: 8.0.4
+    prettier:
+      specifier: ^3.8.3
+      version: 3.8.3
+    react-dom:
+      specifier: 19.3.0
+      version: 19.3.0
+    react-refresh:
+      specifier: ^0.14.2
+      version: 0.14.2
+    react-server-dom-webpack:
+      specifier: ~19.0.8
+      version: 19.0.8
+    react-test-renderer:
+      specifier: 19.3.0
+      version: 19.3.0
+    resolve-from:
+      specifier: ^5.0.0
+      version: 5.0.0
+    resolve-workspace-root:
+      specifier: ^2.0.0
+      version: 2.0.1
+    rimraf:
+      specifier: ^6.1.2
+      version: 6.1.3
+    terminal-link:
+      specifier: ^2.1.1
+      version: 2.1.1
+    update-check:
+      specifier: ^1.5.4
+      version: 1.5.4
+
 overrides:
   '@types/babel__code-frame': ^7.27.0
   '@types/babel__core': ^7.20.5
@@ -360,10 +492,10 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@expo/cli
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       babel-preset-expo:
         specifier: workspace:*
@@ -506,7 +638,7 @@ importers:
         version: 0.12.2(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       typescript:
         specifier: ~6.0.3
@@ -531,7 +663,7 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
 
   apps/eas-expo-go:
@@ -802,7 +934,7 @@ importers:
         version: 0.12.2(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
 
   apps/expo-workflow-testing: {}
@@ -1282,7 +1414,7 @@ importers:
         specifier: ^4.8.6
         version: 4.8.9
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/three':
         specifier: ^0.137.0
@@ -1297,7 +1429,7 @@ importers:
         specifier: ^29.2.1
         version: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
       react-test-renderer:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
 
   apps/native-tests:
@@ -1440,7 +1572,7 @@ importers:
         specifier: ^29.5.12
         version: 29.5.14
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
 
   apps/observe-tester:
@@ -1543,7 +1675,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@expo/config
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       tsx:
         specifier: ^4.20.6
@@ -1619,7 +1751,7 @@ importers:
         version: 14.0.1(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       compression:
         specifier: ^1.8.0
@@ -1628,10 +1760,10 @@ importers:
         specifier: ^0.28.1
         version: 0.28.1
       express:
-        specifier: ^5.1.0
+        specifier: 'catalog:'
         version: 5.2.1
       getenv:
-        specifier: ^2.0.0
+        specifier: 'catalog:'
         version: 2.0.0
       morgan:
         specifier: ^1.11.0
@@ -1716,7 +1848,7 @@ importers:
         version: 2.2.0
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
 
   apps/sandbox:
@@ -1964,7 +2096,7 @@ importers:
         version: 5.9.1(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
     devDependencies:
       '@types/async-retry':
         specifier: ^1.4.5
@@ -1985,10 +2117,10 @@ importers:
         specifier: ^4.14.184
         version: 4.17.24
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2157,7 +2289,7 @@ importers:
         version: 0.2.0
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
       send:
         specifier: ^0.19.0
         version: 0.19.2
@@ -2199,10 +2331,10 @@ importers:
         specifier: ^4.1.3
         version: 4.1.3
       '@jest/globals':
-        specifier: ^29.7.0
+        specifier: 'catalog:'
         version: 29.7.0
       '@playwright/test':
-        specifier: ^1.59.0
+        specifier: 'catalog:'
         version: 1.59.0
       '@types/accepts':
         specifier: ^1.3.5
@@ -2214,16 +2346,16 @@ importers:
         specifier: ^3.4.33
         version: 3.4.38
       '@types/cross-spawn':
-        specifier: ^6.0.6
+        specifier: 'catalog:'
         version: 6.0.6
       '@types/eslint':
-        specifier: ^8.56.12
+        specifier: 'catalog:'
         version: 8.56.12
       '@types/execa':
         specifier: ^0.9.0
         version: 0.9.0
       '@types/express':
-        specifier: ^5.0.3
+        specifier: 'catalog:'
         version: 5.0.6
       '@types/getenv':
         specifier: ^1.0.0
@@ -2232,10 +2364,10 @@ importers:
         specifier: ^6.0.0
         version: 6.0.5
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/npm-package-arg':
-        specifier: ^6.1.0
+        specifier: 'catalog:'
         version: 6.1.4
       '@types/picomatch':
         specifier: ^4.0.2
@@ -2247,16 +2379,16 @@ importers:
         specifier: ^2.0.6
         version: 2.4.9
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-test-renderer':
-        specifier: ^19.1.0
+        specifier: 'catalog:'
         version: 19.1.0
       '@types/resolve':
         specifier: ^1.20.2
         version: 1.20.6
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       '@types/send':
         specifier: ^0.17.1
@@ -2271,7 +2403,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@types/ws':
-        specifier: ^8.5.4
+        specifier: 'catalog:'
         version: 8.18.1
       devtools-protocol:
         specifier: ^0.0.1113120
@@ -2307,10 +2439,10 @@ importers:
         specifier: ^3.2.0
         version: 3.6.0
       nock:
-        specifier: ^14.0.10
+        specifier: 'catalog:'
         version: 14.0.11
       node-html-parser:
-        specifier: ^6.1.5
+        specifier: 'catalog:'
         version: 6.1.13
       playwright:
         specifier: ^1.59.0
@@ -2319,10 +2451,10 @@ importers:
         specifier: '*'
         version: 19.3.0
       react-refresh:
-        specifier: ^0.14.2
+        specifier: 'catalog:'
         version: 0.14.2
       react-test-renderer:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
       tree-kill:
         specifier: ^1.2.2
@@ -2356,7 +2488,7 @@ importers:
         version: 2.0.1
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
       slugify:
         specifier: ^1.3.4
         version: 1.6.8
@@ -2368,7 +2500,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2408,7 +2540,7 @@ importers:
         version: 13.0.6
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
       slugify:
         specifier: ^1.6.6
         version: 1.6.8
@@ -2426,10 +2558,10 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       '@types/xml2js':
-        specifier: ~0.4.11
+        specifier: 'catalog:'
         version: 0.4.14
       expo-module-scripts:
         specifier: workspace:*
@@ -2441,7 +2573,7 @@ importers:
   packages/@expo/config-types:
     devDependencies:
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       chalk:
         specifier: ^4.1.2
@@ -2453,14 +2585,14 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       json-schema-to-typescript:
-        specifier: ^15.0.0
+        specifier: 'catalog:'
         version: 15.0.4
       prettier:
-        specifier: ^3.8.3
+        specifier: 'catalog:'
         version: 3.8.3
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
 
   packages/@expo/devtools:
     dependencies:
@@ -2481,13 +2613,13 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/ws':
-        specifier: ^8.5.4
+        specifier: 'catalog:'
         version: 8.18.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2509,7 +2641,7 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -2574,7 +2706,7 @@ importers:
         version: 5.0.0
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
     devDependencies:
       '@expo/config':
         specifier: workspace:~
@@ -2589,13 +2721,13 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/require-from-string':
         specifier: ^1.2.3
         version: 1.2.3
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2635,13 +2767,13 @@ importers:
         version: 2.1.0
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
     devDependencies:
       '@types/getenv':
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2663,7 +2795,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2688,7 +2820,7 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2707,7 +2839,7 @@ importers:
         version: 4.1.2
     devDependencies:
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2735,13 +2867,13 @@ importers:
         version: 0.1.11
     devDependencies:
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: ^19.1.7
+        specifier: 'catalog:'
         version: 19.2.3(@types/react@19.3.0)
       expo-module-scripts:
         specifier: workspace:*
@@ -2750,13 +2882,13 @@ importers:
         specifier: ^13.0.0
         version: 13.0.6
       npm-run-all2:
-        specifier: ^8.0.4
+        specifier: 'catalog:'
         version: 8.0.4
       react:
         specifier: 19.3.0
         version: 19.3.0
       react-dom:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
       react-native:
         specifier: 0.88.0-rc.1
@@ -2765,7 +2897,7 @@ importers:
         specifier: ^0.21.0
         version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       rimraf:
-        specifier: ^6.1.2
+        specifier: 'catalog:'
         version: 6.1.3
 
   packages/@expo/log-box-utils:
@@ -2774,10 +2906,10 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       npm-run-all2:
-        specifier: ^8.0.4
+        specifier: 'catalog:'
         version: 8.0.4
       rimraf:
-        specifier: ^6.1.2
+        specifier: 'catalog:'
         version: 6.1.3
 
   packages/@expo/metro-config:
@@ -2932,7 +3064,7 @@ importers:
         version: 1.0.8
     devDependencies:
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
+        specifier: 'catalog:'
         version: 58.0.0-rc.0
       '@types/debug':
         specifier: ^4.1.7
@@ -2947,7 +3079,7 @@ importers:
         specifier: ^4.0.10
         version: 4.0.10
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2984,7 +3116,7 @@ importers:
         version: 3.6.20
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-constants:
         specifier: workspace:*
@@ -2993,7 +3125,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       react-dom:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
 
   packages/@expo/osascript:
@@ -3003,7 +3135,7 @@ importers:
         version: 1.8.0
     devDependencies:
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -3034,7 +3166,7 @@ importers:
         specifier: ^4.0.2
         version: 4.0.10
       '@types/npm-package-arg':
-        specifier: ^6.1.0
+        specifier: 'catalog:'
         version: 6.1.4
       expo-module-scripts:
         specifier: workspace:*
@@ -3053,10 +3185,10 @@ importers:
         version: 1.3.3
     devDependencies:
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/node-forge':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.3.14
       expo-module-scripts:
         specifier: workspace:*
@@ -3078,7 +3210,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -3115,7 +3247,7 @@ importers:
         version: 5.0.0
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
     devDependencies:
       '@expo/plist':
         specifier: workspace:*
@@ -3124,7 +3256,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -3155,7 +3287,7 @@ importers:
         specifier: ^7.20.5
         version: 7.20.5
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -3198,19 +3330,19 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: ^19.1.7
+        specifier: 'catalog:'
         version: 19.2.3(@types/react@19.3.0)
       '@typescript/vfs':
         specifier: ^1.6.4
         version: 1.6.4(typescript@6.0.3)
       expect-type:
-        specifier: ^1.3.0
+        specifier: 'catalog:'
         version: 1.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -3219,10 +3351,10 @@ importers:
         specifier: workspace:*
         version: link:../../expo-router
       node-html-parser:
-        specifier: ^6.1.5
+        specifier: 'catalog:'
         version: 6.1.13
       react-server-dom-webpack:
-        specifier: ~19.0.8
+        specifier: 'catalog:'
         version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(webpack@5.105.4(@swc/core@1.15.18)(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.23))
 
   packages/@expo/schema-utils:
@@ -3231,13 +3363,13 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       json-schema-to-typescript:
-        specifier: ^15.0.0
+        specifier: 'catalog:'
         version: 15.0.4
 
   packages/@expo/schemer:
@@ -3260,13 +3392,13 @@ importers:
     dependencies:
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
     devDependencies:
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -3420,13 +3552,13 @@ importers:
         specifier: workspace:*
         version: link:../@expo/config
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
+        specifier: 'catalog:'
         version: 58.0.0-rc.0
       '@expo/metro-config':
         specifier: workspace:*
         version: link:../@expo/metro-config
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@types/babel__code-frame':
         specifier: ^7.27.0
@@ -3441,7 +3573,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       babel-plugin-module-resolver:
         specifier: ^5.0.2
@@ -3456,7 +3588,7 @@ importers:
         specifier: ^29.2.1
         version: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
       react-refresh:
-        specifier: ^0.14.2
+        specifier: 'catalog:'
         version: 0.14.2
 
   packages/create-expo:
@@ -3471,7 +3603,7 @@ importers:
         specifier: workspace:*
         version: link:../@expo/package-manager
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@octokit/types':
         specifier: ^13.5.0
@@ -3483,7 +3615,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/picomatch':
         specifier: ^2.3.3
@@ -3492,22 +3624,22 @@ importers:
         specifier: 2.0.14
         version: 2.0.14
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       arg:
-        specifier: ^5.0.2
+        specifier: 'catalog:'
         version: 5.0.2
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
       getenv:
-        specifier: ^2.0.0
+        specifier: 'catalog:'
         version: 2.0.0
       glob:
         specifier: ^13.0.0
@@ -3516,10 +3648,10 @@ importers:
         specifier: ^3.2.0
         version: 3.6.0
       multitars:
-        specifier: ^1.0.2
+        specifier: 'catalog:'
         version: 1.0.2
       nock:
-        specifier: ^14.0.10
+        specifier: 'catalog:'
         version: 14.0.11
       ora:
         specifier: 3.4.0
@@ -3531,13 +3663,13 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       resolve-workspace-root:
-        specifier: ^2.0.0
+        specifier: 'catalog:'
         version: 2.0.1
       slugify:
         specifier: ^1.6.6
         version: 1.6.8
       update-check:
-        specifier: ^1.5.4
+        specifier: 'catalog:'
         version: 1.5.4
 
   packages/create-expo-module:
@@ -3549,13 +3681,13 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(encoding@0.1.13)
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@octokit/types':
         specifier: ^15.0.0
         version: 15.0.2
       '@types/cross-spawn':
-        specifier: ^6.0.6
+        specifier: 'catalog:'
         version: 6.0.6
       '@types/ejs':
         specifier: ^3.1.5
@@ -3567,7 +3699,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/prompts':
         specifier: ^2.4.9
@@ -3576,7 +3708,7 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       chalk:
         specifier: ^4.1.2
@@ -3588,7 +3720,7 @@ importers:
         specifier: ^7.0.5
         version: 7.0.6
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
       ejs:
         specifier: ^3.1.10
@@ -3597,10 +3729,10 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       getenv:
-        specifier: ^2.0.0
+        specifier: 'catalog:'
         version: 2.0.0
       multitars:
-        specifier: ^1.0.2
+        specifier: 'catalog:'
         version: 1.0.2
       ora:
         specifier: ^5.4.1
@@ -3659,10 +3791,10 @@ importers:
         specifier: ^5.2.1
         version: 5.5.5(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(prettier@3.8.3)
       eslint8:
-        specifier: npm:eslint@^8.57.1
+        specifier: 'catalog:'
         version: eslint@8.57.1
       prettier:
-        specifier: ^3.8.3
+        specifier: 'catalog:'
         version: 3.8.3
       react:
         specifier: 19.3.0
@@ -3705,19 +3837,19 @@ importers:
         version: 16.5.0
     devDependencies:
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       eslint:
         specifier: ^9.24.0
         version: 9.39.4(jiti@2.7.0)
       eslint8:
-        specifier: npm:eslint@^8.57.1
+        specifier: 'catalog:'
         version: eslint@8.57.1
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
       prettier:
-        specifier: ^3.8.3
+        specifier: 'catalog:'
         version: 3.8.3
       react:
         specifier: 19.3.0
@@ -3736,7 +3868,7 @@ importers:
         version: 9.39.4(jiti@2.7.0)
     devDependencies:
       '@types/eslint':
-        specifier: ^8.56.12
+        specifier: 'catalog:'
         version: 8.56.12
       '@types/jest':
         specifier: ^29.2.1
@@ -3842,28 +3974,28 @@ importers:
         specifier: workspace:*
         version: link:../@expo/metro-runtime
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-updates:
         specifier: workspace:*
         version: link:../expo-updates
       npm-run-all2:
-        specifier: ^8.0.4
+        specifier: 'catalog:'
         version: 8.0.4
       react:
         specifier: 19.3.0
         version: 19.3.0
       react-dom:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
       react-native:
         specifier: 0.88.0-rc.1
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       rimraf:
-        specifier: ^6.1.2
+        specifier: 'catalog:'
         version: 6.1.3
       web-streams-polyfill:
         specifier: ^3.3.2
@@ -3914,19 +4046,19 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/prompts':
         specifier: ^2.4.9
         version: 2.4.9
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -3948,10 +4080,10 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -3973,10 +4105,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4013,16 +4145,16 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-native__assets':
         specifier: ^1.0.3
@@ -4044,10 +4176,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4090,7 +4222,7 @@ importers:
         specifier: ^2.2.33
         version: 2.2.37
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -4106,7 +4238,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -4125,7 +4257,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -4141,7 +4273,7 @@ importers:
         version: 19.3.0
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4153,7 +4285,7 @@ importers:
   packages/expo-blob:
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4172,19 +4304,19 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
-        specifier: ^10.4.0
+        specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4203,7 +4335,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -4258,13 +4390,13 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       create-expo:
         specifier: workspace:*
@@ -4289,13 +4421,13 @@ importers:
         version: 5.0.0
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
     devDependencies:
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       expo:
         specifier: workspace:*
@@ -4314,7 +4446,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -4342,10 +4474,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4360,7 +4492,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -4382,19 +4514,19 @@ importers:
         version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
-        specifier: ^10.4.0
+        specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -4410,7 +4542,7 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4435,7 +4567,7 @@ importers:
         specifier: ^17.0.0
         version: 17.3.0
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -4457,7 +4589,7 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-manifests:
         specifier: workspace:*
@@ -4482,10 +4614,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4528,7 +4660,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -4559,7 +4691,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
 
   packages/expo-dev-menu:
@@ -4575,13 +4707,13 @@ importers:
         specifier: ^7.7.4
         version: 7.29.7(@babel/core@7.29.7)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       babel-preset-expo:
         specifier: workspace:*
@@ -4630,7 +4762,7 @@ importers:
         specifier: workspace:*
         version: link:../@expo/json-file
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
+        specifier: 'catalog:'
         version: 58.0.0-rc.0
       '@expo/schemer':
         specifier: workspace:*
@@ -4639,7 +4771,7 @@ importers:
         specifier: workspace:*
         version: link:../@expo/sdk-compatibility
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@types/debug':
         specifier: ^4.1.8
@@ -4648,16 +4780,16 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
       debug:
-        specifier: ^4.3.4
+        specifier: 'catalog:'
         version: 4.4.3
       expo:
         specifier: workspace:*
@@ -4669,7 +4801,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-modules-autolinking
       getenv:
-        specifier: ^2.0.0
+        specifier: 'catalog:'
         version: 2.0.0
       glob:
         specifier: ^13.0.0
@@ -4684,16 +4816,16 @@ importers:
         specifier: 3.4.0
         version: 3.4.0
       resolve-from:
-        specifier: ^5.0.0
+        specifier: 'catalog:'
         version: 5.0.0
       resolve-workspace-root:
-        specifier: ^2.0.0
+        specifier: 'catalog:'
         version: 2.0.1
       semver:
         specifier: 7.7.4
         version: 7.7.4
       terminal-link:
-        specifier: ^2.1.1
+        specifier: 'catalog:'
         version: 2.1.1
 
   packages/expo-document-picker:
@@ -4702,7 +4834,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -4730,10 +4862,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       expo-module-scripts:
         specifier: workspace:*
@@ -4755,7 +4887,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -4777,16 +4909,16 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -4820,10 +4952,10 @@ importers:
         specifier: 2019.6.4
         version: 2019.6.4
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-test-renderer':
-        specifier: ^19.1.0
+        specifier: 'catalog:'
         version: 19.1.0
       '@types/webgl2':
         specifier: ^0.0.6
@@ -4835,7 +4967,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       react-test-renderer:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
 
   packages/expo-glass-effect:
@@ -4851,19 +4983,19 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
-        specifier: ^10.4.0
+        specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -4894,16 +5026,16 @@ importers:
         version: 2.2.0
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4937,7 +5069,7 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -4953,16 +5085,16 @@ importers:
         version: link:../expo-image-loader
     devDependencies:
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/user-event':
-        specifier: ^14.6.1
+        specifier: 'catalog:'
         version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -5005,10 +5137,10 @@ importers:
         version: 19.3.0
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -5024,19 +5156,19 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
-        specifier: ^10.4.0
+        specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5067,7 +5199,7 @@ importers:
         specifier: ^2.2.33
         version: 2.2.37
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -5083,7 +5215,7 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5105,7 +5237,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -5130,10 +5262,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/rtl-detect':
         specifier: ^1.0.3
@@ -5164,10 +5296,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5182,7 +5314,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -5217,10 +5349,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5239,7 +5371,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -5258,7 +5390,7 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5319,7 +5451,7 @@ importers:
         specifier: ^7.26.0
         version: 7.29.7
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
+        specifier: 'catalog:'
         version: 58.0.0-rc.0
 
   packages/expo-module-template:
@@ -5372,13 +5504,13 @@ importers:
         version: 0.12.2(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/invariant':
         specifier: ^2.2.33
         version: 2.2.37
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -5437,10 +5569,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5456,7 +5588,7 @@ importers:
         version: 19.3.0
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5502,10 +5634,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5539,10 +5671,10 @@ importers:
         specifier: ^7.1.33
         version: 7.1.33(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5622,7 +5754,7 @@ importers:
         version: 3.2.2
       react-is:
         specifier: ^19.1.0
-        version: 19.2.4
+        version: 19.3.0
       react-native:
         specifier: 0.88.0-rc.1
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
@@ -5646,43 +5778,43 @@ importers:
         specifier: workspace:^
         version: link:../expo-ui
       '@jest/globals':
-        specifier: ^29.7.0
+        specifier: 'catalog:'
         version: 29.7.0
       '@testing-library/dom':
-        specifier: ^10.4.0
+        specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/user-event':
-        specifier: ^14.6.1
+        specifier: 'catalog:'
         version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: ^19.1.7
+        specifier: 'catalog:'
         version: 19.2.3(@types/react@19.3.0)
       '@types/react-is':
         specifier: ^19.0.0
         version: 19.2.0
       '@types/react-test-renderer':
-        specifier: ^19.1.0
+        specifier: 'catalog:'
         version: 19.1.0
       expect-type:
-        specifier: ^1.3.0
+        specifier: 'catalog:'
         version: 1.3.0
       expo-symbols:
         specifier: workspace:^
@@ -5712,7 +5844,7 @@ importers:
         specifier: 0.12.2
         version: 0.12.2(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-server-dom-webpack:
-        specifier: ~19.0.8
+        specifier: 'catalog:'
         version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(webpack@5.105.4(@swc/core@1.15.18)(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.23))
 
   packages/expo-screen-capture:
@@ -5722,10 +5854,10 @@ importers:
         version: 19.3.0
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5744,7 +5876,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -5759,7 +5891,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -5784,7 +5916,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -5796,19 +5928,19 @@ importers:
   packages/expo-server:
     devDependencies:
       '@types/express':
-        specifier: ^5.0.3
+        specifier: 'catalog:'
         version: 5.0.6
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
       npm-run-all2:
-        specifier: ^8.0.4
+        specifier: 'catalog:'
         version: 8.0.4
       rimraf:
-        specifier: ^6.1.2
+        specifier: 'catalog:'
         version: 6.1.3
 
   packages/expo-sharing:
@@ -5833,10 +5965,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -5885,10 +6017,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/xml2js':
-        specifier: ~0.4.11
+        specifier: 'catalog:'
         version: 0.4.14
       expo-module-scripts:
         specifier: workspace:*
@@ -5910,19 +6042,19 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -6010,19 +6142,19 @@ importers:
         version: 1.4.0
     devDependencies:
       '@jest/globals':
-        specifier: ^29.7.0
+        specifier: 'catalog:'
         version: 29.7.0
       '@react-native/jest-preset':
-        specifier: 0.88.0-rc.1
+        specifier: 'catalog:'
         version: 0.88.0-rc.1(@babel/core@7.29.7)(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -6031,7 +6163,7 @@ importers:
         specifier: workspace:*
         version: link:../../jest-expo
       react-test-renderer:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(react@19.3.0)
 
   packages/expo-standard-web-crypto:
@@ -6053,25 +6185,25 @@ importers:
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
-        specifier: ^10.4.0
+        specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -6117,7 +6249,7 @@ importers:
         version: 2.2.0
     devDependencies:
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-font:
         specifier: workspace:*
@@ -6145,7 +6277,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -6167,7 +6299,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -6207,7 +6339,7 @@ importers:
         specifier: ^7.23.7
         version: 7.29.7
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -6223,7 +6355,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -6251,13 +6383,13 @@ importers:
         version: 2.9.0
     devDependencies:
       '@jest/globals':
-        specifier: ^29.7.0
+        specifier: 'catalog:'
         version: 29.7.0
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo-module-scripts:
         specifier: workspace:*
@@ -6288,13 +6420,13 @@ importers:
         specifier: ^7.26.0
         version: 7.29.7
       '@playwright/test':
-        specifier: ^1.59.0
+        specifier: 'catalog:'
         version: 1.59.0
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/babel__core':
         specifier: ^7.20.5
@@ -6303,10 +6435,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -6379,7 +6511,7 @@ importers:
         specifier: workspace:*
         version: link:../@expo/metro-config
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/debug':
         specifier: ^4.1.7
@@ -6391,19 +6523,19 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/node-forge':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.3.14
       '@types/picomatch':
         specifier: ^4.0.0
         version: 4.0.2
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       expo-dev-client:
         specifier: workspace:*
@@ -6412,7 +6544,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       express:
-        specifier: ^5.1.0
+        specifier: 'catalog:'
         version: 5.2.1
       form-data:
         specifier: ^4.0.4
@@ -6449,10 +6581,10 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -6483,7 +6615,7 @@ importers:
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       expo:
         specifier: workspace:*
@@ -6505,16 +6637,16 @@ importers:
         version: 19.3.0
     devDependencies:
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo:
         specifier: workspace:*
@@ -6526,7 +6658,7 @@ importers:
         specifier: 0.88.0-rc.1
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       resolve-workspace-root:
-        specifier: ^2.0.0
+        specifier: 'catalog:'
         version: 2.0.1
 
   packages/html-elements:
@@ -6542,19 +6674,19 @@ importers:
         version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
-        specifier: ^10.4.0
+        specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 'catalog:'
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
+        specifier: 'catalog:'
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       expo-module-scripts:
         specifier: workspace:*
@@ -6572,13 +6704,13 @@ importers:
         specifier: workspace:*
         version: link:../@expo/package-manager
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       chalk:
         specifier: ^4.1.2
@@ -6596,13 +6728,13 @@ importers:
         specifier: ^2.3.2
         version: 2.4.2
       resolve-from:
-        specifier: ^5.0.0
+        specifier: 'catalog:'
         version: 5.0.0
       semver:
         specifier: 7.7.4
         version: 7.7.4
       terminal-link:
-        specifier: ^2.1.1
+        specifier: 'catalog:'
         version: 2.1.1
       xcparse:
         specifier: ^0.0.3
@@ -6654,13 +6786,13 @@ importers:
         version: 2.0.2
     devDependencies:
       '@react-native/jest-preset':
-        specifier: 0.88.0-rc.1
+        specifier: 'catalog:'
         version: 0.88.0-rc.1(@babel/core@7.29.7)(react@19.3.0)
       '@types/react':
-        specifier: ~19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       react-server-dom-webpack:
-        specifier: ~19.0.8
+        specifier: 'catalog:'
         version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(webpack@5.105.4(@swc/core@1.15.18)(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.23))
 
   packages/patch-project:
@@ -6724,7 +6856,7 @@ importers:
         specifier: workspace:*
         version: link:../@expo/package-manager
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       chalk:
         specifier: ^4.0.0
@@ -6736,10 +6868,10 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       terminal-link:
-        specifier: ^2.1.1
+        specifier: 'catalog:'
         version: 2.1.1
       update-check:
-        specifier: ^1.5.4
+        specifier: 'catalog:'
         version: 1.5.4
 
   packages/submit-expo-feedback:
@@ -6757,13 +6889,13 @@ importers:
         specifier: ^2.0.6
         version: 2.4.9
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       agent-cli-detector:
         specifier: 0.1.6
         version: 0.1.6
       arg:
-        specifier: ^5.0.2
+        specifier: 'catalog:'
         version: 5.0.2
       chalk:
         specifier: ^4.0.0
@@ -6796,13 +6928,13 @@ importers:
         specifier: workspace:*
         version: link:../@expo/plist
       '@expo/spawn-async':
-        specifier: ^1.8.0
+        specifier: 'catalog:'
         version: 1.8.0
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
       '@vercel/ncc':
-        specifier: ^0.38.4
+        specifier: 'catalog:'
         version: 0.38.4
       chalk:
         specifier: ^4.0.0
@@ -6820,7 +6952,7 @@ importers:
         specifier: ^2.3.2
         version: 2.4.2
       update-check:
-        specifier: ^1.5.4
+        specifier: 'catalog:'
         version: 1.5.4
 
   tools:
@@ -6926,7 +7058,7 @@ importers:
         version: 2.0.0
       semver:
         specifier: ^7.7.4
-        version: 7.8.5
+        version: 7.7.4
       strip-ansi:
         specifier: ^6.0.0
         version: 6.0.1
@@ -6959,10 +7091,10 @@ importers:
         specifier: ^8.2.10
         version: 8.2.12
       '@types/node':
-        specifier: ^22.14.0
+        specifier: 'catalog:'
         version: 22.20.1
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       eslint:
         specifier: ^9.39.4
@@ -6977,7 +7109,7 @@ importers:
         specifier: workspace:*
         version: link:../packages/expo-module-scripts
       prettier:
-        specifier: ^3.8.3
+        specifier: 'catalog:'
         version: 3.8.3
       taskr:
         specifier: 1.1.0
@@ -18666,7 +18798,7 @@ snapshots:
 
   '@types/eslint-scope@3.7.7':
     dependencies:
-      '@types/eslint': 8.56.12
+      '@types/eslint': 9.6.1
       '@types/estree': 1.0.9
 
   '@types/eslint@8.56.12':
@@ -18678,7 +18810,6 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
-    optional: true
 
   '@types/estree@1.0.9': {}
 

@@ -80,17 +80,17 @@
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
-    "@expo/spawn-async": "^1.8.0",
-    "@types/react": "~19.3.0",
-    "@types/react-dom": "^19.1.7",
+    "@expo/spawn-async": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "catalog:",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.1",
+    "react-dom": "catalog:",
+    "react-native": "catalog:",
     "react-native-web": "^0.21.0",
-    "rimraf": "^6.1.2"
+    "rimraf": "catalog:"
   },
   "peerDependencies": {
     "@expo/dom-webview": "workspace:^",

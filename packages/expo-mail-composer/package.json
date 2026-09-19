@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },

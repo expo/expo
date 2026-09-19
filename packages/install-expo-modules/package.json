@@ -49,17 +49,17 @@
     "@expo/config": "workspace:*",
     "@expo/config-plugins": "workspace:*",
     "@expo/package-manager": "workspace:*",
-    "@expo/spawn-async": "^1.8.0",
+    "@expo/spawn-async": "catalog:",
     "@types/prompts": "^2.0.6",
-    "@types/semver": "^7.7.1",
+    "@types/semver": "catalog:",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
     "prompts": "^2.3.2",
-    "resolve-from": "^5.0.0",
+    "resolve-from": "catalog:",
     "semver": "7.7.4",
-    "terminal-link": "^2.1.1",
+    "terminal-link": "catalog:",
     "xcparse": "^0.0.3"
   }
 }

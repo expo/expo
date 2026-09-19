@@ -51,9 +51,9 @@
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
-    "@react-native/jest-preset": "0.88.0-rc.1",
-    "@types/react": "~19.3.0",
-    "react-server-dom-webpack": "~19.0.8"
+    "@react-native/jest-preset": "catalog:",
+    "@types/react": "catalog:",
+    "react-server-dom-webpack": "catalog:"
   },
   "peerDependencies": {
     "@react-native/jest-preset": "^0.88.0-rc.1",

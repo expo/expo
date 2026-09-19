@@ -71,7 +71,7 @@
   "devDependencies": {
     "@types/babel__code-frame": "^7.27.0",
     "@types/getenv": "^1.0.0",
-    "@types/semver": "^7.7.1",
+    "@types/semver": "catalog:",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   }
