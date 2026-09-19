@@ -370,7 +370,9 @@ export class LanguageModelSession {
       if (!compatibility && this.native.acceptResult(id) !== true) {
         throw new LanguageModelError(
           'ERR_PROVIDER_RESPONSE_INVALID',
-          'The native session could not accept the completed result.'
+          'The native session did not accept the completed result. The app may have left the ' +
+            'foreground as the turn finished, or the provider discarded the result. Generate the ' +
+            'turn again.'
         );
       }
       accepted = true;

@@ -104,7 +104,7 @@ export declare class NativeSession extends SharedObject<NativeSessionEvents> {
   /**
    * Synchronously commits a completed result after shared validation and cancellation checks.
    * Returns `false` when nothing was committed, because no result is waiting under `requestId` or
-   * because the session was disposed or cancelled first, or, on a provider that reports
+   * because the session was disposed or canceled first, or, on a provider that reports
    * `supportsBackgroundEvents`, because the app left the foreground. A caller treats `false` as a
    * failed generation rather than as a reason to retry.
    */
