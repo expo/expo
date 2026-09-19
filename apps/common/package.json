@@ -10,6 +10,6 @@
     "react-native": "0.88.0-rc.1"
   },
   "devDependencies": {
-    "@types/react": "~19.3.0"
+    "@types/react": "catalog:"
   }
 }

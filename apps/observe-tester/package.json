@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
-    "@types/react": "~19.3.0",
+    "@types/react": "catalog:",
     "tsx": "^4.20.6"
   }
 }
