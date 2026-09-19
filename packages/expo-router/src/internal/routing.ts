@@ -9,7 +9,7 @@ export {
   type PageHeadersConfig,
 } from '../getRoutesCore';
 export {
-  getContextKey,
+  getRoutePathname,
   isTypedRoute,
   matchDynamicName,
   matchGroupName,

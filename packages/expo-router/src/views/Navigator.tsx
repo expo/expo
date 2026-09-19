@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getValidInitialRouteName,
   ScreenErrorBoundaryContext,
-  useContextKey,
+  useRoutePathname,
   useRouteNode,
 } from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
@@ -65,7 +65,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   routerOptions,
   unstable_screenErrorBoundary,
 }: NavigatorProps<T>) {
-  const contextKey = useContextKey();
+  const contextKey = useRoutePathname();
   const node = useRouteNode();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
@@ -163,7 +163,7 @@ export function Slot(
     activityEnabled?: boolean;
   }
 ) {
-  const contextKey = useContextKey();
+  const contextKey = useRoutePathname();
   const context = React.use(NavigatorContext);
 
   if (context?.contextKey !== contextKey) {

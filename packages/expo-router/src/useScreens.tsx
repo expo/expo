@@ -23,7 +23,7 @@ import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
 import { resolveLoaderPath } from './loaders/resolveLoaderPath';
-import { getContextKey } from './matchers';
+import { getRoutePathname } from './matchers';
 import { unstable_navigationEvents } from './navigationEvents';
 import {
   hasParam,
@@ -348,7 +348,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       }
       // NOTE(@hassankhan): `RouteNode` does not expose whether its module has a loader without
       // eagerly loading it. Static loader metadata would let loader-free routes skip this work.
-      return resolveLoaderPath(getContextKey(value.contextKey), routeInfo);
+      return resolveLoaderPath(getRoutePathname(value.contextKey), routeInfo);
     }, [isGuarded, isRouteType, routeInfo]);
 
     const ResolvedSuspenseFallback =

@@ -32,9 +32,10 @@ function withFocusedState(currentState: FocusedRouteState | undefined) {
 
 describe('useBuildHref (unit)', () => {
   beforeEach(() => {
-    mockedGetRouteInfoFromState.mockReturnValue({ pathnameWithParams: '/resolved' } as ReturnType<
-      typeof getRouteInfoFromState
-    >);
+    // Partial fixture: the hook only reads `pathnameWithParams`.
+    mockedGetRouteInfoFromState.mockReturnValue({
+      pathnameWithParams: '/resolved',
+    } as unknown as ReturnType<typeof getRouteInfoFromState>);
   });
 
   it('returns the pathnameWithParams from getRouteInfoFromState', () => {

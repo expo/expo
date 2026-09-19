@@ -53,7 +53,7 @@ function routeNode(initialRouteName: string) {
     initialRouteName,
     contextKey: './_layout.js',
     children: routes.map(({ name }) => ({ route: name })),
-  } as ReturnType<typeof useRouteNode>;
+  } as unknown as ReturnType<typeof useRouteNode>;
 }
 
 let warnSpy: jest.SpyInstance;
@@ -230,9 +230,10 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('does not redirect when there are no visible routes', () => {
-    mockedUseRouteNode.mockReturnValue({ contextKey: './app/_layout.tsx' } as ReturnType<
-      typeof useRouteNode
-    >);
+    // Partial fixture: the hook only reads `contextKey`.
+    mockedUseRouteNode.mockReturnValue({
+      contextKey: './app/_layout.tsx',
+    } as unknown as ReturnType<typeof useRouteNode>);
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes: [routes[3]!],

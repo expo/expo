@@ -12,17 +12,14 @@ export interface PreviewRouteContextType {
 
 export const PreviewRouteContext = createContext<PreviewRouteContextType | undefined>(undefined);
 
-type UsePreviewInfo = { isPreview: boolean } & Partial<PreviewRouteContextType>;
+type UsePreviewInfo = ({ isPreview: true } & PreviewRouteContextType) | { isPreview: false };
 
 /**
  * Returns information about the current route if it is displayed in preview mode.
  */
 export function usePreviewInfo(): UsePreviewInfo {
-  const paramsContext = use(PreviewRouteContext);
-  return {
-    isPreview: !!paramsContext,
-    ...paramsContext,
-  };
+  const previewRoute = use(PreviewRouteContext);
+  return previewRoute ? { isPreview: true, ...previewRoute } : { isPreview: false };
 }
 
 /**
