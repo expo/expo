@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Pass the Expo macros plugin as a driver flag so its absolute path stays out of the Swift compilation cache key. ([#50354](https://github.com/expo/expo/pull/50354) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
 
 - [Android] Enforce `ndkVersion` for Android library projects. ([#50240](https://github.com/expo/expo/pull/50240) by [@kudo](https://github.com/kudo))
