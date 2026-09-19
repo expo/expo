@@ -519,7 +519,7 @@ class FileDownloaderTests {
       downloader.downloadAsset(
         asset: asset,
         fromURL: asset.url!,
-        verifyingHash: nil,
+        verifyingHash: "oYYABCL-q4VzKcaE6f6RQSsaXbCEEAs3qYz8lbYqqGc",
         toPath: destinationURL.path,
         extraHeaders: extraHeaders,
         allowPatch: true,
@@ -652,6 +652,113 @@ class FileDownloaderTests {
     #expect(request.value(forHTTPHeaderField: "Accept") == "*/*")
   }
 
+
+  @Test
+  func `omits diff headers when the launch asset has no expected hash`() async throws {
+    TestURLProtocol.reset()
+
+    let config = try UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/22222222-2222-2222-2222-222222222222",
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0.0",
+      UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+    ])
+
+    let sessionConfiguration = URLSessionConfiguration.ephemeral
+    sessionConfiguration.protocolClasses = [TestURLProtocol.self]
+
+    let downloader = FileDownloader(
+      config: config,
+      urlSessionConfiguration: sessionConfiguration,
+      logger: logger,
+      updatesDirectory: updatesDirectory,
+      database: db
+    )
+
+    let launchedUpdate = Update(
+      manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+      config: config,
+      database: db,
+      updateId: UUID(),
+      scopeKey: config.scopeKey,
+      commitTime: Date(),
+      runtimeVersion: config.runtimeVersion,
+      keep: true,
+      status: .StatusReady,
+      isDevelopmentMode: false,
+      assetsFromManifest: [],
+      url: config.updateUrl,
+      requestHeaders: [:]
+    )
+
+    let requestedUpdate = Update(
+      manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+      config: config,
+      database: db,
+      updateId: UUID(),
+      scopeKey: config.scopeKey,
+      commitTime: Date(),
+      runtimeVersion: config.runtimeVersion,
+      keep: true,
+      status: .StatusReady,
+      isDevelopmentMode: false,
+      assetsFromManifest: [],
+      url: config.updateUrl,
+      requestHeaders: [:]
+    )
+
+    let asset = UpdateAsset(key: "bundle", type: "hbc")
+    asset.isLaunchAsset = true
+    asset.url = URL(string: "https://example.com/\(UUID().uuidString).hbc")
+
+    let destinationURL = updatesDirectory.appendingPathComponent("bundle-\(UUID().uuidString).hbc")
+
+    let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
+      launchedUpdate: launchedUpdate,
+      embeddedUpdate: nil,
+      requestedUpdate: requestedUpdate
+    )
+
+    TestURLProtocol.requestHandler = { request in
+      let response = HTTPURLResponse(
+        url: request.url!,
+        statusCode: 200,
+        httpVersion: nil,
+        headerFields: ["Content-Type": "application/octet-stream"]
+      )!
+      return (response, "fallback-data".data(using: .utf8))
+    }
+
+    await withCheckedContinuation { continuation in
+      downloader.downloadAsset(
+        asset: asset,
+        fromURL: asset.url!,
+        verifyingHash: nil,
+        toPath: destinationURL.path,
+        extraHeaders: extraHeaders,
+        allowPatch: true,
+        launchedUpdate: launchedUpdate,
+        requestedUpdate: requestedUpdate,
+        progressBlock: nil,
+        successBlock: { _, _, _ in
+          continuation.resume()
+        },
+        errorBlock: { error in
+          Issue.record("Unexpected error downloading asset: \(error)")
+          continuation.resume()
+        }
+      )
+    }
+
+    #expect(TestURLProtocol.requests.count == 1)
+    guard let request = TestURLProtocol.requests.last else {
+      Issue.record("Expected intercepted request")
+      return
+    }
+
+    #expect(request.value(forHTTPHeaderField: "A-IM") == nil)
+    #expect(request.value(forHTTPHeaderField: "Accept") == "*/*")
+  }
+
   @Test
   func `falls back to full download when patch metadata invalid`() async throws {
     TestURLProtocol.reset()
@@ -750,7 +857,7 @@ class FileDownloaderTests {
       downloader.downloadAsset(
         asset: asset,
         fromURL: asset.url!,
-        verifyingHash: nil,
+        verifyingHash: "bUOe7d0OI9ARlXI2VaPdSGPubBvYX6-l1BtCT3ZG1BI",
         toPath: destinationURL.path,
         extraHeaders: extraHeaders,
         allowPatch: true,
