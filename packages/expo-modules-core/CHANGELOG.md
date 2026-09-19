@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed strings losing NUL characters when crossing JNI in either direction, and characters outside the BMP being misread on the way to Kotlin. ([#50275](https://github.com/expo/expo/pull/50275) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Replaced the hosting `ComposeView`'s view id with a tag for its `rememberSaveable` namespace, fixing a crash on `react-native-screens` tab switch and touches inside a `Host` reaching the wrong React Native view. ([#49964](https://github.com/expo/expo/issues/49964) by [@b2x-software](https://github.com/b2x-software), [#50299](https://github.com/expo/expo/pull/50299) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
