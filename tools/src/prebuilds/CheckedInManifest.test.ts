@@ -846,6 +846,17 @@ it('review 8 opts a first-party package carrying Package.swift into Mode B', () 
   assert.equal(resolveCheckedInManifestRoot(input.pkg), fs.realpathSync.native(input.root));
 });
 
+it('review 8 rejects a package when the packages root is inside node_modules', () => {
+  const input = fixture();
+  const repoRoot = process.env.EXPO_ROOT_DIR!;
+  const nestedRepoRoot = path.join(repoRoot, 'node_modules/expo');
+  fs.mkdirSync(nestedRepoRoot, { recursive: true });
+  fs.renameSync(path.join(repoRoot, 'packages'), path.join(nestedRepoRoot, 'packages'));
+  input.pkg.path = path.join(nestedRepoRoot, 'packages/fixture');
+  process.env.EXPO_ROOT_DIR = nestedRepoRoot;
+  assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
+});
+
 it('review 8 contains a package and a scoped package under the packages directory', () => {
   const root = '/repo/packages';
   assert.equal(isFirstPartyPackagePath(root, '/repo/packages/fixture'), true);
@@ -943,7 +954,7 @@ it('review 10 reports the package directory that does not resolve', () => {
   );
 });
 
-it('review 11 resolves a package reached through a symlink to its canonical directory', () => {
+it('review 11 resolves a package reached through lexical .. traversal to its canonical directory', () => {
   const input = fixture();
   const repoRoot = process.env.EXPO_ROOT_DIR!;
   fs.mkdirSync(path.join(repoRoot, 'packages/anchor'));

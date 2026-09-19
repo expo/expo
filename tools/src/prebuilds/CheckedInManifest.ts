@@ -107,7 +107,7 @@ export function resolveCheckedInManifestRoot(pkg: SPMPackageSource): string | nu
   if (packagesRoot == null) return null;
   if (!isFirstPartyPackagePath(packagesRoot, packagePath)) {
     logger.debug(
-      `Not using the checked-in Package.swift in ${packagePath}: it is not a package directory under ${packagesRoot}. Check that EXPO_ROOT_DIR names this checkout, and that the package is one directory under it, or two under an @scope directory.`
+      `Not using the checked-in Package.swift in ${packagePath}: it is not a package directory under ${packagesRoot}. Check that EXPO_ROOT_DIR names this checkout, and that the package is one directory under ${packagesRoot}, or two under an @scope directory.`
     );
     return null;
   }
