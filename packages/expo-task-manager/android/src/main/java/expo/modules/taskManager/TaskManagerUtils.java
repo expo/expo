@@ -143,7 +143,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
         JobInfo mergedJobInfo = createJobInfoByAddingData(newestJob, data);
         jobScheduler.cancel(newestJob.getId());
         jobScheduler.schedule(mergedJobInfo);
-      } catch (IllegalStateException e) {
+      } catch (IllegalArgumentException | IllegalStateException e) {
         Log.e(this.getClass().getName(), "Unable to merge job: " + e.getMessage());
       }
       return;
@@ -153,7 +153,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     try {
       JobInfo jobInfo = createJobInfo(context, task, newJobId, data);
       jobScheduler.schedule(jobInfo);
-    } catch (IllegalStateException e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       Log.e(this.getClass().getName(), "Unable to schedule job: " + e.getMessage());
     }
   }
