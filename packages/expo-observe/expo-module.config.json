@@ -5,6 +5,11 @@
     "appDelegateSubscribers": ["ObserveAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.observe.ObserveModule"]
+    "modules": ["expo.modules.observe.ObserveModule"],
+    "publication": {
+      "groupId": "expo.modules.observe",
+      "artifactId": "expo.modules.observe",
+      "repository": "local-maven-repo"
+    }
   }
 }

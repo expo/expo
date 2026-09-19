@@ -1,4 +1,6 @@
 import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 import semver from 'semver';
 
 import Git from '../../Git';
@@ -107,7 +109,7 @@ export const cleanWorkingTree = new Task<TaskArgs>(
     name: 'cleanWorkingTree',
     dependsOn: [],
   },
-  async () => {
+  async (parcels: Parcel[]) => {
     await runWithSpinner(
       'Cleaning up the working tree',
       async () => {
@@ -126,16 +128,19 @@ export const cleanWorkingTree = new Task<TaskArgs>(
           ],
         });
 
+        await Promise.all(
+          parcels.flatMap(({ pkg }) =>
+            ['prebuilds', 'local-maven-repo'].map((directory) =>
+              fs.remove(path.join(pkg.path, directory))
+            )
+          )
+        );
+
         // Remove tarballs created by `npm pack`.
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: [
-            'packages/**/*.tgz',
-            'packages/**/local-maven-repo/**',
-            'packages/**/prebuilds/**',
-            'templates/**/*.tgz',
-          ],
+          paths: ['packages/**/*.tgz', 'templates/**/*.tgz'],
         });
       },
       'Cleaned up the working tree'

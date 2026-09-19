@@ -4,6 +4,11 @@
     "modules": ["SharingModule"]
   },
   "android": {
-    "modules": ["expo.modules.sharing.SharingModule"]
+    "modules": ["expo.modules.sharing.SharingModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.sharing",
+      "repository": "local-maven-repo"
+    }
   }
 }

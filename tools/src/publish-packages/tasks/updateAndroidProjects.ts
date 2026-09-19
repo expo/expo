@@ -2,12 +2,12 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { transformFileAsync } from '../../Transforms';
 import { Parcel, TaskArgs } from '../types';
+import { updatePackageVersions } from './updatePackageVersions';
 
 const { yellow, magenta } = chalk;
 
@@ -17,7 +17,7 @@ const { yellow, magenta } = chalk;
 export const updateAndroidProjects = new Task<TaskArgs>(
   {
     name: 'updateAndroidProjects',
-    dependsOn: [selectPackagesToPublish],
+    dependsOn: [updatePackageVersions],
     filesToStage: ['packages/**/android/build.gradle'],
   },
   async (parcels: Parcel[]) => {
