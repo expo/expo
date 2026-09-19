@@ -101,6 +101,17 @@ internal class LocationTaskServiceOptions(
 }
 
 @OptimizedRecord
+internal class MotionActivityTaskOptions(
+  @Field var foregroundService: LocationTaskServiceOptions? = null
+) : Record, Serializable {
+  internal fun toMutableMap(): MutableMap<String, Any?> = mutableMapOf<String, Any?>().apply {
+    foregroundService?.let {
+      this["foregroundService"] = it.toMutableMap()
+    }
+  }
+}
+
+@OptimizedRecord
 internal class GeofencingOptions(
   @Field var regions: List<Region>
 ) : Record, Serializable {
