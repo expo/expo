@@ -67,7 +67,18 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }()
 
   /// Executor for tasks that must return to this runtime's JavaScript thread.
-  private lazy var runtimeExecutor = JavaScriptRuntimeExecutor(runtime: self)
+  internal lazy var runtimeExecutor = JavaScriptRuntimeExecutor(runtime: self)
+
+  /// Whether asynchronous work started by this runtime may use a task executor preference.
+  ///
+  /// Exposed for tests, which lower it to cover the pre-iOS-18 compatibility path: no simulator
+  /// runtime old enough to reach that path on its own can be installed on current macOS. Set it
+  /// before starting any work on the runtime.
+  @_spi(Testing)
+  public var usesTaskExecutorPreference: Bool {
+    get { return runtimeExecutor.usesTaskExecutorPreference }
+    set { runtimeExecutor.usesTaskExecutorPreference = newValue }
+  }
 
   /// Creates a runtime from the JSI runtime. The scheduler runs tasks synchronously
   /// on the caller's thread — for the React-backed runtime, use

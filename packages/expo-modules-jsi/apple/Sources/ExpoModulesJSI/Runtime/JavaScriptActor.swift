@@ -1,5 +1,16 @@
 import Foundation
 
+/// Runtime-specific executor inherited by tasks that need to preserve JavaScript thread affinity
+/// on systems where task executor preferences are unavailable.
+///
+/// `Task.init` reads the operation's actor isolation synchronously and the child task inherits
+/// task-local values. This lets ``JavaScriptActor/unownedExecutor`` select a stable executor for
+/// the task and any later executor derivations without relying on the getter being called after
+/// every suspension point.
+internal enum JavaScriptRuntimeExecutorContext {
+  @TaskLocal static var executor: JavaScriptRuntimeExecutor?
+}
+
 /// Global actor that is used to isolate the code that should only be executed from the JavaScript thread.
 /// Theoretically it does not act as a real actor; it uses a serial executor that executes jobs **synchronously**
 /// without hopping to the proper thread. Meaning that running these jobs on the JavaScript thread must be ensured
@@ -14,6 +25,18 @@ public actor JavaScriptActor: GlobalActor {
   nonisolated private let executor = JavaScriptExecutor()
 
   nonisolated public var unownedExecutor: UnownedSerialExecutor {
+    // TaskExecutor is not back-deployed. Where it is unavailable, tasks started by
+    // `JavaScriptRuntime` bind their runtime-specific serial executor while `Task.init` captures
+    // the `@JavaScriptActor` isolation, and this getter hands that executor back so the task
+    // returns to the runtime's JavaScript thread.
+    //
+    // Only that compatibility path binds the task-local, so on systems with task executor
+    // preferences it is always nil and the actor keeps the documented stable executor. Where it is
+    // bound, returning different executors from one actor deliberately bends Swift's
+    // executor-stability contract. Remove it when those deployment targets are dropped.
+    if let runtimeExecutor = JavaScriptRuntimeExecutorContext.executor {
+      return runtimeExecutor.asUnownedSerialExecutor()
+    }
     return executor.asUnownedSerialExecutor()
   }
 
@@ -103,10 +126,18 @@ internal class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
 /// Executor dedicated to a specific JavaScript runtime.
 ///
 /// Unlike ``JavaScriptExecutor``, which only provides actor isolation and runs jobs inline,
-/// this executor routes every job through the runtime scheduler. It can be used as both a serial
-/// executor and a task executor preference.
+/// this executor routes every job through the runtime scheduler. It is used as a task executor on
+/// systems that support executor preferences and as a serial executor for the compatibility path
+/// on older systems.
 internal final class JavaScriptRuntimeExecutor: JavaScriptExecutor, TaskExecutor, @unchecked Sendable {
   private weak let runtime: JavaScriptRuntime?
+
+  /// Whether tasks started for this runtime may use a task executor preference. Defaults to what
+  /// the operating system supports.
+  ///
+  /// Kept per runtime rather than process-wide so a test can cover the compatibility path for one
+  /// runtime without changing how the others behave. Write it before the runtime starts any work.
+  nonisolated(unsafe) internal var usesTaskExecutorPreference = TaskExecutorPreference.isAvailableOnThisOS
 
   init(runtime: JavaScriptRuntime) {
     self.runtime = runtime
