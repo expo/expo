@@ -23,35 +23,41 @@ export type SafeAreaProviderProps = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;
 }>;
 
-const ZERO_INSETS: EdgeInsets = { top: 0, left: 0, right: 0, bottom: 0 };
+const ZERO_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const ZERO_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
 
 /**
  * Web replacement for `SafeAreaProvider` from `react-native-safe-area-context`.
  *
  * The upstream provider seeds its state from `initialMetrics`, measures the DOM
- * in an effect, then calls `setState` with what it measured. On web that
- * measurement always differs from the SSR seed, because the server cannot know
- * the viewport, so both safe area context values change right after hydration.
+ * in an effect, then calls `setState` with what it measured. Because the server
+ * cannot know the viewport, `initialMetrics` on web is all zeros and the
+ * measurement never matches it, so both safe area context values change right
+ * after hydration.
  *
- * That change is destructive while the page is still streaming. When React
- * bails out of a subtree it calls `propagateParentContextChanges`, which walks
- * to the root, collects every provider whose value changed, then walks back
- * down and schedules work on every dehydrated `Suspense` boundary it finds.
- * `updateDehydratedSuspenseComponent` responds by calling
- * `retrySuspenseComponentWithoutHydrating`, which throws away the streamed HTML
- * and re-renders the boundary on the client. Anything the server streamed is
- * lost, and a promise that only resolves on the server never resolves again.
+ * That is fatal to a page that streamed. React discards a `Suspense` boundary
+ * it has not finished hydrating as soon as an ancestor context value changes:
+ * `bailoutOnAlreadyFinishedWork` walks up, collects the changed providers,
+ * walks back down and schedules the dehydrated boundary, and
+ * `updateDehydratedSuspenseComponent` answers by calling
+ * `retrySuspenseComponentWithoutHydrating`. The streamed HTML is thrown away
+ * and re-rendered on the client, so anything only the server could produce is
+ * lost. Deferring the change does not help, because expo emits the bootstrap
+ * script with `defer` and hydration therefore starts after the stream has
+ * already ended. The values have to be stable, not merely late.
  *
- * Shadowing the upstream contexts with deferred copies does not help. React
- * collects changed providers by walking to the root, and ignores intermediate
- * providers that shadow the same context, so the upstream state change still
- * reaches the boundaries. The state has to live here instead.
+ * So the two values are handled differently:
  *
- * So this owns the metrics state, holds the SSR values through hydration, and
- * applies the first measurement only once the document has finished streaming.
- * `SafeAreaListener` renders the same `NativeSafeAreaProvider` wrapper the
- * upstream provider does, so the server markup is unchanged.
+ * - The frame is measured from the window during the first client render, so
+ *   it is correct before hydration begins and never changes afterwards. This
+ *   is the value that always differed, since the SSR seed is a zero rect.
+ *   Seeding it cannot cause a hydration mismatch because nothing renders it
+ *   during SSR; expo-router has no `useSafeAreaFrame` callers.
+ * - The insets keep the SSR value through hydration, because SSR markup does
+ *   depend on them and a different first render would be a mismatch. A browser
+ *   with no safe area measures zero, which is what the server rendered, so
+ *   there is no change at all. A browser that does have one changes once,
+ *   after the stream, which is both necessary and correct.
  */
 export function SafeAreaProvider({ children, initialMetrics, style }: SafeAreaProviderProps) {
   // Matches the upstream provider, which falls back to a parent provider's
@@ -62,36 +68,50 @@ export function SafeAreaProvider({ children, initialMetrics, style }: SafeAreaPr
   const [insets, setInsets] = useState<EdgeInsets>(
     initialMetrics?.insets ?? parentInsets ?? ZERO_INSETS
   );
-  const [frame, setFrame] = useState<Rect>(initialMetrics?.frame ?? parentFrame ?? ZERO_FRAME);
+  const [frame, setFrame] = useState<Rect>(
+    () => measureFrame() ?? initialMetrics?.frame ?? parentFrame ?? ZERO_FRAME
+  );
 
   // Set once the document has finished streaming and React has finished
-  // hydrating. Until then measurements are buffered rather than applied.
+  // hydrating. Until then, measured insets are buffered rather than applied.
   const settled = useRef(false);
-  const buffered = useRef<Metrics | null>(null);
+  const buffered = useRef<EdgeInsets | null>(null);
 
-  const apply = useCallback((metrics: Metrics) => {
-    setInsets((current) => (isSameInsets(current, metrics.insets) ? current : metrics.insets));
-    setFrame((current) => (isSameFrame(current, metrics.frame) ? current : metrics.frame));
+  const applyInsets = useCallback((next: EdgeInsets) => {
+    setInsets((current) => (isSameInsets(current, next) ? current : next));
   }, []);
 
+  // The library reports a frame measured from its own wrapper view, which is
+  // not the value seeded above. Only the insets are taken from it.
   const onChange = useCallback(
     (metrics: Metrics) => {
       if (settled.current) {
-        apply(metrics);
+        applyInsets(metrics.insets);
       } else {
-        buffered.current = metrics;
+        buffered.current = metrics.insets;
       }
     },
-    [apply]
+    [applyInsets]
   );
+
+  useEffect(() => {
+    const onResize = () => {
+      const next = measureFrame();
+      if (next) {
+        setFrame((current) => (isSameFrame(current, next) ? current : next));
+      }
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     let handle: number | undefined;
 
     const settle = () => {
-      // Idle work runs after React has flushed its hydration render, so the
-      // context update lands once every streamed boundary has hydrated.
+      // Idle work runs after React has flushed its hydration render, so a
+      // change lands once every streamed boundary has hydrated.
       handle = requestIdle(() => {
         if (cancelled) {
           return;
@@ -100,7 +120,7 @@ export function SafeAreaProvider({ children, initialMetrics, style }: SafeAreaPr
         const pending = buffered.current;
         buffered.current = null;
         if (pending) {
-          apply(pending);
+          applyInsets(pending);
         }
       });
     };
@@ -119,7 +139,7 @@ export function SafeAreaProvider({ children, initialMetrics, style }: SafeAreaPr
       document.removeEventListener('DOMContentLoaded', settle);
       cancelIdle(handle);
     };
-  }, [apply]);
+  }, [applyInsets]);
 
   return (
     <SafeAreaListener style={style} onChange={onChange}>
@@ -128,6 +148,22 @@ export function SafeAreaProvider({ children, initialMetrics, style }: SafeAreaPr
       </SafeAreaFrameContext.Provider>
     </SafeAreaListener>
   );
+}
+
+/**
+ * The window-sized frame the library reports when it cannot measure its own
+ * wrapper view. Returns `null` on the server, where there is nothing to measure.
+ */
+function measureFrame(): Rect | null {
+  if (typeof document === 'undefined' || !document.documentElement) {
+    return null;
+  }
+  return {
+    x: 0,
+    y: 0,
+    width: document.documentElement.offsetWidth,
+    height: document.documentElement.offsetHeight,
+  };
 }
 
 function isSameInsets(a: EdgeInsets, b: EdgeInsets) {
@@ -139,7 +175,7 @@ function isSameFrame(a: Rect, b: Rect) {
 }
 
 // Give up waiting for an idle period on a permanently busy page, rather than
-// leaving the insets at zero forever.
+// leaving the insets at the server's values forever.
 const IDLE_TIMEOUT_MS = 2000;
 
 function requestIdle(callback: () => void): number {

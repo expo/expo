@@ -13,7 +13,7 @@
 
 ### 🐛 Bug fixes
 
-- Keep streamed `Suspense` content on web by holding safe area metrics stable until the HTML stream ends. ([#49865](https://github.com/expo/expo/pull/49865) by [@hassankhan](https://github.com/hassankhan))
+- Keep streamed `Suspense` content on web by holding the safe area context values stable across hydration. ([#49865](https://github.com/expo/expo/pull/49865) by [@hassankhan](https://github.com/hassankhan))
 - Derive browser history on web from router action results in reducer phase. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others

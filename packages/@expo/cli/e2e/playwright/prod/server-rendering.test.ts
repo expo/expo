@@ -82,48 +82,73 @@ test.describe('server rendering in production', () => {
     expect(html).toContain('Burr Hand Grinder');
   });
 
-  test('adopts streamed Suspense content during hydration', async ({ page }) => {
+  test('adopts streamed Suspense content instead of re-rendering it', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
 
-    // Runs before the client bundle, so the flag marks the server-rendered node.
+    // Runs before the client bundle, so every streamed node is tagged as it is
+    // parsed. A node the client re-rendered is a different node without the tag,
+    // which is what makes this stronger than asserting the text is present.
     await page.addInitScript(() => {
+      const ids = ['streaming-header', 'streaming-reviews', 'streaming-related'];
+      const w = window as any;
+      w.__streamed = {};
+      w.__discarded = [];
       const observer = new MutationObserver(() => {
-        const header = document.querySelector('[data-testid="streaming-header"]');
-        if (header) {
-          (header as any).__fromServer = true;
-          observer.disconnect();
+        for (const id of ids) {
+          const node = document.querySelector(`[data-testid="${id}"]`);
+          if (node && !w.__streamed[id]) {
+            w.__streamed[id] = node;
+          }
+        }
+        for (const id of ids) {
+          const streamed = w.__streamed[id];
+          if (streamed && !streamed.isConnected && !w.__discarded.includes(id)) {
+            w.__discarded.push(id);
+          }
         }
       });
       observer.observe(document, { childList: true, subtree: true });
     });
 
-    // `load` fires only when the stream ends; `commit` lets us observe hydration while pending.
-    await page.goto(new URL('/streaming?delay=4000', expoServe.url).href, {
+    // `load` only fires once the stream ends, so `commit` is needed to watch the
+    // document while the server is still writing to it.
+    await page.goto(new URL('/streaming?delay=2000', expoServe.url).href, {
       waitUntil: 'commit',
     });
-    await page.waitForSelector('[data-testid="streaming-hydrated"]');
 
-    // Hydration must happen while both are pending, or the test proves nothing.
+    // Both boundaries are pending in the initial shell, so their content can
+    // only reach the page through the stream.
     await expect(page.getByTestId('streaming-reviews-skeleton')).toHaveCount(1);
     await expect(page.getByTestId('streaming-related-skeleton')).toHaveCount(1);
-    await expect(page.getByTestId('streaming-reviews')).toHaveCount(0);
-    await expect(page.getByTestId('streaming-related')).toHaveCount(0);
 
-    // The client promises never resolve, so this content can only come from the server stream.
-    await expect(page.getByTestId('streaming-reviews')).toContainText('Dana K.', {
-      timeout: 10_000,
-    });
+    await page.waitForSelector('[data-testid="streaming-hydrated"]');
+
+    // The client promises never resolve, so anything still on the page came
+    // from the server and survived hydration.
+    await expect(page.getByTestId('streaming-reviews')).toContainText('Dana K.');
+    await expect(page.getByTestId('streaming-related')).toContainText('Burr Hand Grinder');
     await expect(page.getByTestId('streaming-reviews-skeleton')).toHaveCount(0);
-    await expect(page.getByTestId('streaming-related')).toContainText('Burr Hand Grinder', {
-      timeout: 10_000,
-    });
     await expect(page.getByTestId('streaming-related-skeleton')).toHaveCount(0);
 
-    const headerFromServer = await page.evaluate(
-      () =>
-        (document.querySelector('[data-testid="streaming-header"]') as any)?.__fromServer === true
-    );
-    expect(headerFromServer).toBe(true);
+    // Give any post-hydration effect a chance to invalidate the boundaries.
+    await page.waitForTimeout(1000);
+
+    const adoption = await page.evaluate(() => {
+      const w = window as any;
+      return {
+        discarded: w.__discarded,
+        stillStreamedNodes: ['streaming-header', 'streaming-reviews', 'streaming-related'].filter(
+          (id) => w.__streamed[id] === document.querySelector(`[data-testid="${id}"]`)
+        ),
+      };
+    });
+
+    expect(adoption.discarded).toEqual([]);
+    expect(adoption.stillStreamedNodes).toEqual([
+      'streaming-header',
+      'streaming-reviews',
+      'streaming-related',
+    ]);
 
     expect(pageErrors.all).toEqual([]);
   });
