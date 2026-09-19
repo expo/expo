@@ -148,20 +148,21 @@ function BenchmarkRow(props: {
         </Text>
       </View>
 
-      {current && scale && <StatsLine run={current} unit={scale.unit} />}
-
       {current && scale && (
-        <View style={styles.uncertaintyRow}>
+        <>
+          <View style={styles.statsRow}>
+            <StatsLine run={current} unit={scale.unit} />
+            {cell.previous != null && (
+              <View style={styles.previousGroup}>
+                <Text style={[styles.metaText, { color: theme.text.quaternary }]}>
+                  previous: {formatPerOpIn(medianNsOf(cell.previous), scale.unit)}
+                </Text>
+                <PreviousDeltaBadge current={current} previous={cell.previous} />
+              </View>
+            )}
+          </View>
           <UncertaintyText run={current} unit={scale.unit} />
-          {cell.previous != null && (
-            <View style={styles.previousGroup}>
-              <Text style={[styles.metaText, { color: theme.text.quaternary }]}>
-                previous: {formatPerOpIn(medianNsOf(cell.previous), scale.unit)}
-              </Text>
-              <PreviousDeltaBadge current={current} previous={cell.previous} />
-            </View>
-          )}
-        </View>
+        </>
       )}
     </View>
   );
@@ -188,30 +189,29 @@ function Meter({ run, scale }: { run: BenchmarkRun | null; scale: GroupScale | n
   );
 }
 
-/** The series behind the headline median: mean, fastest and slowest, and how many were run. */
+/** The series behind the headline median: mean, fastest and slowest. */
 function StatsLine({ run, unit }: { run: BenchmarkRun; unit: PerOpUnit }) {
   const { theme } = useTheme();
   const perOp = (ms: number) => {
     return formatPerOpIn(nsPerOp(ms, run.iterations), unit);
   };
   return (
-    <Text style={[styles.metaText, styles.statsLine, { color: theme.text.quaternary }]}>
-      avg {perOp(run.meanMs)} · min {perOp(run.minMs)} · max {perOp(run.maxMs)} ·{' '}
-      {formatIterations(run.iterations)} × {run.samples.length}
+    <Text style={[styles.metaText, { color: theme.text.quaternary }]}>
+      avg {perOp(run.meanMs)} · min {perOp(run.minMs)} · max {perOp(run.maxMs)}
     </Text>
   );
 }
 
-/** How well the series pin down the median: the 95% confidence range and its half-width. */
+/** How well the series pin down the median: the confidence range and the sampling behind it. */
 function UncertaintyText({ run, unit }: { run: BenchmarkRun; unit: PerOpUnit }) {
   const { theme } = useTheme();
   const uncertainty = relativeUncertaintyOf(run);
   const color = uncertainty > NOISY_UNCERTAINTY ? theme.text.warning : theme.text.quaternary;
   return (
-    <Text style={[styles.metaText, { color }]}>
+    <Text style={[styles.metaText, styles.uncertaintyText, { color }]}>
       median {formatPerOpIn(nsPerOp(run.ciLowMs, run.iterations), unit)}–
       {formatPerOpIn(nsPerOp(run.ciHighMs, run.iterations), unit)} ±{(uncertainty * 100).toFixed(1)}
-      % (95% confidence)
+      % (95% confidence) · {formatIterations(run.iterations)} × {run.samples.length}
     </Text>
   );
 }
@@ -418,16 +418,13 @@ const styles = StyleSheet.create({
     minWidth: 76,
     textAlign: 'right',
   },
-  statsLine: {
-    marginTop: 6,
-  },
-  uncertaintyRow: {
+  statsRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
     gap: 8,
-    marginTop: 2,
+    marginTop: 6,
   },
   previousGroup: {
     flexDirection: 'row',
@@ -437,6 +434,9 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 12,
     fontVariant: ['tabular-nums'],
+  },
+  uncertaintyText: {
+    marginTop: 2,
   },
   deltaText: {
     fontSize: 12,
