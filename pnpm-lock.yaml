@@ -5523,6 +5523,9 @@ importers:
       expo-app-metrics:
         specifier: workspace:~
         version: link:../expo-app-metrics
+      expo-constants:
+        specifier: workspace:~
+        version: link:../expo-constants
       expo-eas-client:
         specifier: workspace:~
         version: link:../expo-eas-client

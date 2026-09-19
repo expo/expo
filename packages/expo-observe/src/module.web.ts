@@ -1,7 +1,9 @@
 import { NativeModule, registerWebModule } from 'expo';
 import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
 
-import { reportCaughtError } from './reportCaughtError';
+import { applyConfig } from './applyConfig';
+import { registerIntegrationImpl } from './registerIntegration';
+import { normalizeReportedError } from './reportCaughtError';
 import type {
   ObserveConfig,
   ObserveIntegrationsConfig,
@@ -9,28 +11,46 @@ import type {
   ObserveModuleEvents,
   ObserveAttributes,
 } from './types';
+import { dispatch, setDispatchBundleDefaults, setDispatchConfig } from './web/dispatch';
+import { setGlobalAttributes, storeLog, storeReportedError } from './web/storage';
+import type { BundleDefaults } from './web/types';
 
 class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
+  private lastIntegrations: ObserveIntegrationsConfig = {};
+
   get clientId(): string | null {
     // The EAS client id is stored in native preferences, which web has no equivalent of.
     return null;
   }
-  async dispatchEvents() {}
-  configure(config: ObserveConfig): void {}
+  dispatchEvents(): Promise<void> {
+    return dispatch();
+  }
+  configure(config: ObserveConfig): void {
+    setDispatchConfig(config);
+    // Without the opt-in, Observe stays a no-op on web.
+    if (!config.web) {
+      return;
+    }
+    applyConfig(config);
+    // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
+    this.lastIntegrations = { ...config.integrations };
+    this.emit('configure', { integrations: this.lastIntegrations });
+  }
   getIntegrations(): ObserveIntegrationsConfig {
-    return {};
+    return this.lastIntegrations;
   }
   registerIntegration<K extends keyof ObserveIntegrationsConfig>(
     name: K,
     callback: (config: ObserveIntegrationsConfig[K]) => void
   ): void {
-    // Web does not provide integration configuration or emit `configure` events.
+    registerIntegrationImpl(this, name, callback);
   }
+  // Log events live in this package's web store, since `expo-app-metrics` records nothing on web.
   logEvent(name: string, options?: LogEventOptions): void {
-    AppMetrics.logEvent(name, options);
+    storeLog(name, options);
   }
   reportError(error: unknown): void {
-    reportCaughtError(error);
+    storeReportedError(normalizeReportedError(error));
   }
   markFirstRender(): void {
     AppMetrics.markFirstRender();
@@ -39,9 +59,11 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
     AppMetrics.markInteractive(attributes);
   }
   setGlobalAttributes(attributes?: ObserveAttributes | null): void {
-    AppMetrics.setGlobalAttributes(attributes);
+    setGlobalAttributes(attributes);
   }
-  setBundleDefaults(defaults: { environment: string; isJsDev: boolean }): void {}
+  setBundleDefaults(defaults: BundleDefaults): void {
+    setDispatchBundleDefaults(defaults);
+  }
 }
 
 export default registerWebModule(ExpoObserveModule, 'ExpoObserve');
