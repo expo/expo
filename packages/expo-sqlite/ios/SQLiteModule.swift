@@ -154,16 +154,10 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        try maybeThrowForClosedDatabase(database)
-        if let db = removeCachedDatabase(of: database) {
-          try closeDatabase(db)
-        }
+        try closeDatabaseIfNeeded(database)
       }.runOnQueue(moduleQueue)
       Function("closeSync") { (database: NativeDatabase) in
-        try maybeThrowForClosedDatabase(database)
-        if let db = removeCachedDatabase(of: database) {
-          try closeDatabase(db)
-        }
+        try closeDatabaseIfNeeded(database)
       }
     }
 
@@ -337,6 +331,10 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)
+    // SQLITE_BUSY leaves the connection open, including its update hook.
+    if ret != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+    }
     db.isClosed = true
 
     Self.lockQueue.sync {
@@ -352,10 +350,6 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       }) {
         contextPairs.remove(at: index)
       }
-    }
-
-    if ret != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
     }
   }
 
@@ -517,17 +511,22 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     }
   }
 
-  @discardableResult
-  private func removeCachedDatabase(of database: NativeDatabase) -> NativeDatabase? {
-    return Self.lockQueue.sync {
+  private func closeDatabaseIfNeeded(_ database: NativeDatabase) throws {
+    try Self.lockQueue.sync {
+      try maybeThrowForClosedDatabase(database)
       if let index = cachedDatabases.firstIndex(of: database) {
         let db = cachedDatabases[index]
         if db.release() == 0 {
+          do {
+            try closeDatabase(db)
+          } catch {
+            // Keep the connection cached and owned so callers can clean up and retry.
+            db.addRef()
+            throw error
+          }
           cachedDatabases.remove(at: index)
-          return db
         }
       }
-      return nil
     }
   }
 

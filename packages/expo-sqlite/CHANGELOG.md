@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Keep connections usable and cached after a failed close, allowing statement cleanup and another close attempt.
+
 ### 💡 Others
 
 - [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
