@@ -2294,31 +2294,139 @@ stayed green for that reason. The implementation is right; the tests are honest.
 phantom assertion.
 **Fence note:** `SwiftInterfaceChecks.ts:64` went `function` → `export function` in round 6b, outside
 that round's fence. Accepted; 6c item 2 licenses the file.
+## Step 2 round 6c — CODE-COMPLETE 2026-09-19 (astra xhigh); BOTH REVIEWS RUNNING (blind)
 
-## Next step (2026-09-19) — round 6c RUNNING, round 9 queued
+Commit `2dc41dabb7c`, parent `cea69733b28`. 644 insertions, 120 deletions across 10 files.
+All 10 are inside the spec's fence. Astra claims all 12 items, red-before-green per item,
+injections for items 3/5/6 reverted and confirmed by sha256.
 
-**Backup done (USER request 2026-09-19).** Everything that was uncommitted is now committed
-and pushed to `origin/chrfalch/expo-swift-manifests`:
-- `96945f98863` — source: Mode B + equivalence harness (`tools/`).
-- `cea69733b28` — session state: specs, ledger, astra reports. **DROP THIS COMMIT BEFORE THE PR.**
-  `.claude/ledger.md` is in the global gitignore, so it was force-added; it will not pick up
-  later edits on its own — re-add it with `-f` when backing up again.
-Base `466da8e06a1` is now reachable from the branch, so the collateral gate's baseline
-resolves locally. Item 4's CI failure is about the shallow clone in Actions, not the worktree.
+Observed by the implementer, NOT yet independently confirmed:
+- full suite 161 suites / 718 tests / 715 pass / 0 fail / 3 skipped, exit 0
+  (baseline 156 / 691 / 688 / 0 / 3)
+- `tsc --noEmit` exit 0; `eslint . --max-warnings 0` exit 0; no `any` added
+- `pnpm build` exit status printed and checked on every cycle
 
-**Routing change (USER 2026-09-19): use Codex implementers, not Claude, to save tokens.**
-Round 6c went to `astra-implementer` (gpt-6-astra, xhigh) rather than `opus-implementer` —
-these specs are hard and crisply specified, which is Astra's tier; sol fills gaps on work
-this size. Round 9 is genuinely mechanical and goes to `sol-implementer`.
+**Four things the reviewers were told to judge, not trust:**
+1. **Item 11 is partly missed and astra said so openly.** Targeted gate suite 34.918 s →
+   12.697 s, but the FULL suite got SLOWER: 35.055 s → 40.320 s. The item asked for the
+   gate to stop adding ~36 s. Verdict pending.
+2. Items 8 and 12 were proven with temporary tests under `/private/tmp/round6c-evidence/`,
+   not permanent repo tests.
+3. Item 4's CI half (`fetch-depth: 0` in `.github/workflows/expotools.yml`) was never run in
+   GitHub Actions. Local evidence only.
+4. Astra's own review pass found one extra gap — one-sided versioned package interfaces —
+   and fixed it inside item 2's fence. Fence or creep: reviewers decide.
 
-1. **Step 2 round 6c — DISPATCHED 2026-09-19, astra-implementer xhigh, IN FLIGHT.**
-   Spec `.claude/specs/step-2-round6c-say-what-happened.md`. Six must-fix, six should-fix.
-   **Holds the build slot.**
-2. **Step 1 round 9 — QUEUED, spec written:** `.claude/specs/step-1-round9-name-what-is-covered.md`.
-   Three items, no behaviour change. Owner `sol-implementer`. **Needs the build slot — dispatch
-   only after 6c reports.** Concurrent `tools/` builds share one outDir and tsbuildinfo, so a
-   parallel run reports a wrong pass/fail.
-3. Then: step 2c (F73), step 2d (F76/F75), then step 3 (expo-haptics pilot) — still the first
-   real migration.
+**FALSE ALARM, resolved by me:** astra flagged `.claude/ledger.md` as modified outside its
+fence and an unknown untracked `.claude/specs/step-1-round9-*.md`. Both are MINE — I edited
+the ledger and wrote the round 9 spec while astra ran. Not a deviation. Reviewers told to
+ignore `.claude/**`.
 
-Both rounds need review by a fresh agent before acceptance.
+**Wrapper mechanics learned:** `codex exec` in CLI **0.153.4 REJECTS `--reasoning-effort`**.
+Use `-c model_reasoning_effort="xhigh"` instead; the session header confirms it. Also: the
+Codex sandbox blocks Swift compiler-cache access, which produced a bogus 47-failure first
+baseline; astra re-ran unsandboxed for the true baseline and added no workaround to source.
+Cost: ~182k Codex tokens, ~23 min wall time.
+
+## Next step (2026-09-19) — reviews in flight, round 9 queued
+
+**Backup done and CURRENT (USER request 2026-09-19).** Pushed to
+`origin/chrfalch/expo-swift-manifests`:
+- `96945f98863` — source: Mode B + equivalence harness
+- `cea69733b28` — session state **(DROP BEFORE PR)**
+- `2dc41dabb7c` — source: round 6c
+- `7af685a24ec` — session state **(DROP BEFORE PR)**
+Two session-state commits now need dropping, not one. `.claude/ledger.md` is in the global
+gitignore — force-add it (`git add -f`) on every backup or its edits are silently skipped.
+
+**Routing (USER 2026-09-19): Codex implementers, not Claude, to save tokens.** Hard
+crisply-specified rounds → `astra-implementer`. Mechanical rounds → `sol-implementer`.
+The `reviewer` gate stays Claude; that is not optional.
+
+1. **Step 2 round 6c review — DISPATCHED 2026-09-19, IN FLIGHT.** Claude `reviewer`
+   (fault injection, holds the build slot) + `astra-reviewer` (blind, static, read-only),
+   running in parallel. Neither has seen the other.
+2. **Step 1 round 9 — QUEUED.** Spec `.claude/specs/step-1-round9-name-what-is-covered.md`,
+   three items, no behaviour change. Owner `sol-implementer`. **Needs the build slot —
+   dispatch only after the Claude reviewer reports**, since its injections hold the slot.
+3. Then: step 2c (F73), step 2d (F76/F75), then step 3 (expo-haptics pilot).
+## Step 2 round 6c — Claude `reviewer` fault injection, 2026-09-19: CHANGES-REQUIRED. ADJUDICATED.
+
+Ran every injection; all reverted, sha256-verified. Observed itself: `pnpm build` exit 0 every
+run; full suite **161 / 718 / 715 pass / 0 fail / 3 skipped**, exit 0 — the implementer's count
+CONFIRMED, and the +5 suites / +27 tests delta matches the commit exactly. `tsc --noEmit` exit 0.
+Gate suite 12.9 s confirms astra's 12.697 s.
+
+**All 6 must-fix items MET, each proven by an injection that reddened the right test and only it.**
+Scope clean, all 10 files in the fence.
+
+**MY ADJUDICATION where the two reviewers disagree on severity (they agree on the facts):**
+Astra graded its A1/A3 as should-fix and approved. Claude graded the same two as blocking.
+**I side with Claude.** A production gate that can be made to read green by an environment
+variable is the exact defect class this round exists to remove, and 6c introduced it while
+satisfying a should-fix. Blockers stand.
+
+**BLOCKERS → round 6d:**
+- **B3/A1 (both reviewers, independently)** `check-spm-manifest-collateral.cjs:371-384` — with
+  `SPM_COLLATERAL_TEST_MODES` set, the gate swallows failures into a `console.log` and returns,
+  **never running the real comparison, always exiting 0**. Tests followed it down:
+  `SpmManifestCollateral.test.ts:139-159` now asserts `status === 0` and matches the gate's own
+  self-reported `"collateral-drift: EXIT 1: …"` string, having dropped the parent's
+  `assert.notEqual(result.status, 0)` and `/DIFF: /`. Evidence replaced by conclusion.
+  Mitigation Claude verified: exit propagation is still bound transitively by the real-path tests
+  at `:210` and `:222`, so it is not a total hole — but "drift → non-zero exit" is bound by no
+  single test.
+- **B2/A3 (both reviewers, independently)** `SpmManifestCollateral.test.ts:161-169` asserts only
+  on its own `GATE_MODES` constant. Cannot fail for any change to the gate. Redundant with the
+  shared `before()`. Delete.
+- **B1** `pnpm lint --max-warnings 0` exits 1 (import/order at `PrebuildEquivalence.test.ts:8`).
+  **INHERITED from parent `cea69733b28`, not introduced by 6c** — Claude verified provenance by
+  linting the parent copy. But 6c REPORTED lint green when it was not. `expotools.yml:49` runs
+  exactly this, so the job is red on the stack.
+
+**Should-fix → round 6d:** S2 `ArtifactPath.ts:53-55` over-refuses (counts marker repetitions over
+the WHOLE path incl. the unmatched prefix) · S3 `--skip-spm-packages-check` now throws on a
+malformed config, defeating the flag's purpose · S4 `check-spm-manifest-collateral.cjs:397` lost
+stack traces for ALL gate errors, and the test at `:237` is satisfied by that change rather than by
+`ensureBaselineReachable` · A2 `ArtifactPath.test.ts:136` `includes(marker)` passes off the input
+path — **item 3's defect recurring inside item 3's own fix**.
+
+**RULINGS (do not reopen):**
+- **Item 11 = MET.** Gate 34.9 → 12.9 s, confirmed twice. Full suite 35.1 → 38.8-39.1 s, but that
+  is the cost of 27 added tests, not of the gate. Accepted regression. If round 6d's item 1 forces
+  giving up process sharing, correctness wins and the timing loss is accepted.
+- **Items 8/12 = CLOSED.** Comment and identifier changes; no testable surface. Temp-file
+  verification was adequate. Both reviewers agree.
+- **The `Versions/*/Modules` fallback is REQUIRED, not scope creep.** Claude proved by injection
+  2(b) that without it the mirroring exclusion regresses the macOS no-symlink layout the spec
+  forbade regressing. Astra agrees it is inside item 2's fence.
+
+**⚠ NEW, OUT OF FENCE — ORCHESTRATOR DECISION OWED (S5).** `expotools.yml:10-13` filters
+`pull_request` to `tools/**`. **A PR that adds or removes an `spm.config.json` product never
+triggers this job at all.** So item 5's whole premise ("any unrelated PR turns expotools red") does
+not hold today, AND the collateral gate has no protective value for packages-only PRs — which are
+exactly the PRs steps 3-9 will produce. Round 6d is told NOT to touch the filter. Decide before
+step 3: widen the filter to `packages/**/spm.config.json`, or accept the gate is tools-only.
+
+## Next step (2026-09-19) — CLEAR POINT, nothing running
+
+**Backup CURRENT.** `origin/chrfalch/expo-swift-manifests`: `96945f98863` (source) ·
+`cea69733b28` (state, DROP) · `2dc41dabb7c` (source, round 6c) · `7af685a24ec` (state, DROP).
+Two state commits to drop before the PR. `.claude/ledger.md` is globally gitignored — `git add -f`
+on every backup.
+
+**Routing (USER 2026-09-19): Codex implementers, not Claude.** Hard + crisply specified →
+`astra-implementer` (`codex exec -m gpt-6-astra -c model_reasoning_effort="xhigh"` — the
+`--reasoning-effort` FLAG IS REJECTED by CLI 0.153.4). Mechanical → `sol-implementer`. The
+`reviewer` gate stays Claude.
+
+1. **Step 2 round 6d — spec written, NOT dispatched:**
+   `.claude/specs/step-2-round6d-the-gate-must-fail.md`. Four must-fix (3 blockers + lint), three
+   should-fix. Owner `astra-implementer`, xhigh. **Takes the build slot.**
+2. **Step 1 round 9 — spec written, NOT dispatched:**
+   `.claude/specs/step-1-round9-name-what-is-covered.md`. Three items, no behaviour change.
+   Owner `sol-implementer`. **Needs the build slot — run after 6d, or before it; not alongside.**
+3. Decide S5 (the `tools/**` PR filter) before step 3.
+4. Then: step 2c (F73), step 2d (F76/F75), then step 3 (expo-haptics pilot).
+
+Nothing is in flight. Both specs are ready to dispatch cold from this ledger.
