@@ -1,30 +1,48 @@
 import { useTheme } from 'ThemeProvider';
+import * as Clipboard from 'expo-clipboard';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BenchmarkTable } from './BenchmarksTable';
 import { BenchmarkRun, benchmarkHistoryStore } from './ModulesBenchmarksHistory';
+import { buildMarkdownReport } from './benchmarkReport';
 import {
   Benchmark,
   BenchmarkStatus,
   GROUPS,
   Group,
+  MAX_SERIES,
   State,
   benchmarkIdOf,
-  iterationsOf,
+  calibrate,
+  cooldown,
+  formatPerOp,
+  hasEnoughSamples,
+  nsPerOp,
+  relativeUncertaintyOf,
+  summarize,
+  timeSeries,
+  warmUpAndRefine,
 } from './benchmarks';
 
-/** A single completed benchmark result, collected per run to print a summary to the console. */
-type BenchmarkLogEntry = {
-  group: string;
-  label: string;
-  timeMs: number;
+/** A benchmark that has been calibrated and warmed up, ready for its timed series. */
+type BenchmarkPlan = {
+  benchmark: Benchmark;
+  benchmarkId: string;
   iterations: number;
+};
+
+/** A single completed benchmark result, collected per group to print a summary to the console. */
+type BenchmarkLogEntry = {
+  label: string;
+  run: BenchmarkRun;
 };
 
 enum ActionType {
   SetPrevious = 'setPrevious',
   MarkRunning = 'markRunning',
+  MarkCalibrated = 'markCalibrated',
+  MarkSeriesDone = 'markSeriesDone',
   MarkDone = 'markDone',
   MarkSkipped = 'markSkipped',
   ResetGroup = 'resetGroup',
@@ -34,6 +52,8 @@ enum ActionType {
 type Action =
   | { type: ActionType.SetPrevious; benchmarkId: string; previous: BenchmarkRun | null }
   | { type: ActionType.MarkRunning; benchmarkId: string }
+  | { type: ActionType.MarkCalibrated; benchmarkId: string; iterations: number }
+  | { type: ActionType.MarkSeriesDone; benchmarkId: string; completedSeries: number }
   | { type: ActionType.MarkDone; benchmarkId: string; run: BenchmarkRun }
   | { type: ActionType.MarkSkipped; benchmarkId: string }
   | { type: ActionType.ResetGroup; groupId: string }
@@ -47,6 +67,8 @@ function initialState(): State {
         status: benchmark.available ? BenchmarkStatus.Idle : BenchmarkStatus.Skipped,
         current: null,
         previous: null,
+        iterations: null,
+        completedSeries: 0,
       };
     }
   }
@@ -66,6 +88,21 @@ function reducer(state: State, action: Action): State {
         [action.benchmarkId]: {
           ...state[action.benchmarkId],
           status: BenchmarkStatus.Running,
+          iterations: null,
+          completedSeries: 0,
+        },
+      };
+    case ActionType.MarkCalibrated:
+      return {
+        ...state,
+        [action.benchmarkId]: { ...state[action.benchmarkId], iterations: action.iterations },
+      };
+    case ActionType.MarkSeriesDone:
+      return {
+        ...state,
+        [action.benchmarkId]: {
+          ...state[action.benchmarkId],
+          completedSeries: action.completedSeries,
         },
       };
     case ActionType.MarkDone: {
@@ -96,6 +133,8 @@ function reducer(state: State, action: Action): State {
         next[benchmarkId] = {
           ...next[benchmarkId],
           status: benchmark.available ? BenchmarkStatus.Idle : BenchmarkStatus.Skipped,
+          iterations: null,
+          completedSeries: 0,
         };
       }
       return next;
@@ -105,21 +144,12 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-// Delay between marking a benchmark as running and actually starting it.
-// Long enough for the press feedback to settle and the "running…" state to
-// paint before the JS thread gets occupied by the benchmark body.
-const PRE_BENCHMARK_DELAY_MS = 150;
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    return setTimeout(resolve, ms);
-  });
-}
-
 export default function ModulesBenchmarksScreen() {
   const { theme } = useTheme();
   const [state, dispatch] = useReducer(reducer, undefined, initialState);
   const isRunningRef = useRef(false);
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   useEffect(() => {
     let cancelled = false;
@@ -144,42 +174,84 @@ export default function ModulesBenchmarksScreen() {
     };
   }, []);
 
-  const runBenchmark = useCallback(async (group: Group, benchmark: Benchmark) => {
-    const benchmarkId = benchmarkIdOf(group, benchmark);
-    if (!benchmark.available) {
-      dispatch({ type: ActionType.MarkSkipped, benchmarkId });
-      return null;
+  /**
+   * Calibrates and warms up every available benchmark of the group, then runs the timed
+   * series round-robin across them. Interleaving means thermal drift over the group is
+   * shared by all of its benchmarks instead of landing on whichever one runs last.
+   */
+  const runGroup = useCallback(async (group: Group) => {
+    for (const benchmark of group.benchmarks) {
+      const benchmarkId = benchmarkIdOf(group, benchmark);
+      dispatch(
+        benchmark.available
+          ? { type: ActionType.MarkRunning, benchmarkId }
+          : { type: ActionType.MarkSkipped, benchmarkId }
+      );
     }
 
-    dispatch({ type: ActionType.MarkRunning, benchmarkId });
-    await delay(PRE_BENCHMARK_DELAY_MS);
-
-    const iterations = iterationsOf(group);
-
-    try {
-      const timeMs = await benchmark.run(iterations);
-      const run: BenchmarkRun = {
-        timeMs,
-        iterations,
-        runAt: Date.now(),
-      };
-      dispatch({ type: ActionType.MarkDone, benchmarkId, run });
-      try {
-        await benchmarkHistoryStore.savePrevious(benchmarkId, run);
-      } catch (error) {
-        console.warn(`Failed to persist result for ${benchmarkId}:`, error);
+    const plans: BenchmarkPlan[] = [];
+    for (const benchmark of group.benchmarks) {
+      if (!benchmark.available) {
+        continue;
       }
-      return {
-        group: group.title,
-        label: benchmark.label,
-        timeMs,
-        iterations,
-      } satisfies BenchmarkLogEntry;
-    } catch (error) {
-      console.warn(`Benchmark ${benchmarkId} failed:`, error);
-      dispatch({ type: ActionType.MarkSkipped, benchmarkId });
-      return null;
+      const benchmarkId = benchmarkIdOf(group, benchmark);
+      try {
+        await cooldown();
+        const probed = await calibrate(benchmark);
+        const iterations = await warmUpAndRefine(benchmark, probed);
+        dispatch({ type: ActionType.MarkCalibrated, benchmarkId, iterations });
+        plans.push({ benchmark, benchmarkId, iterations });
+      } catch (error) {
+        console.warn(`Benchmark ${benchmarkId} failed to calibrate:`, error);
+        dispatch({ type: ActionType.MarkSkipped, benchmarkId });
+      }
     }
+
+    const samples = new Map<string, number[]>();
+    const pending = [...plans];
+    for (let round = 0; round < MAX_SERIES && pending.length > 0; round++) {
+      for (const plan of [...pending]) {
+        const drop = () => {
+          pending.splice(pending.indexOf(plan), 1);
+        };
+        try {
+          await cooldown();
+          const elapsed = await timeSeries(plan.benchmark, plan.iterations);
+          const collected = samples.get(plan.benchmarkId) ?? [];
+          collected.push(elapsed);
+          samples.set(plan.benchmarkId, collected);
+          dispatch({
+            type: ActionType.MarkSeriesDone,
+            benchmarkId: plan.benchmarkId,
+            completedSeries: collected.length,
+          });
+          if (hasEnoughSamples(collected)) {
+            drop();
+          }
+        } catch (error) {
+          console.warn(`Benchmark ${plan.benchmarkId} failed:`, error);
+          drop();
+          dispatch({ type: ActionType.MarkSkipped, benchmarkId: plan.benchmarkId });
+        }
+      }
+    }
+
+    const entries: BenchmarkLogEntry[] = [];
+    for (const plan of plans) {
+      const collected = samples.get(plan.benchmarkId);
+      if (!collected || collected.length === 0) {
+        continue;
+      }
+      const run = summarize(collected, plan.iterations);
+      dispatch({ type: ActionType.MarkDone, benchmarkId: plan.benchmarkId, run });
+      try {
+        await benchmarkHistoryStore.savePrevious(plan.benchmarkId, run);
+      } catch (error) {
+        console.warn(`Failed to persist result for ${plan.benchmarkId}:`, error);
+      }
+      entries.push({ label: plan.benchmark.label, run });
+    }
+    return entries;
   }, []);
 
   const runGroups = useCallback(
@@ -193,37 +265,55 @@ export default function ModulesBenchmarksScreen() {
           dispatch({ type: ActionType.ResetGroup, groupId: group.id });
         }
         for (const group of groups) {
-          const lines: string[] = [];
-          for (const benchmark of group.benchmarks) {
-            const result = await runBenchmark(group, benchmark);
-            if (result) {
-              const nsPerOp = (result.timeMs * 1e6) / result.iterations;
-              lines.push(
-                `- ${result.label}: ${result.timeMs.toFixed(2)}ms (${result.iterations} iters, ${nsPerOp.toFixed(1)}ns/op)`
-              );
-            }
+          const entries = await runGroup(group);
+          if (entries.length === 0) {
+            continue;
           }
-          if (lines.length > 0) {
-            console.log(`[benchmark] ${group.title}:\n${lines.join('\n')}\n`);
-          }
+          const lines = entries.map(({ label, run }) => {
+            const median = formatPerOp(nsPerOp(run.medianMs, run.iterations));
+            const uncertaintyPercent = relativeUncertaintyOf(run) * 100;
+            return (
+              `- ${label}: ${median}/op ±${uncertaintyPercent.toFixed(1)}% ` +
+              `(avg ${formatPerOp(nsPerOp(run.meanMs, run.iterations))}, ` +
+              `min ${formatPerOp(nsPerOp(run.minMs, run.iterations))}, ` +
+              `max ${formatPerOp(nsPerOp(run.maxMs, run.iterations))}, ` +
+              `${run.iterations} iters × ${run.samples.length})`
+            );
+          });
+          console.log(`[benchmark] ${group.title}:\n${lines.join('\n')}\n`);
         }
       } finally {
         isRunningRef.current = false;
       }
     },
-    [runBenchmark]
+    [runGroup]
   );
 
   const runAll = useCallback(() => {
     return runGroups(GROUPS);
   }, [runGroups]);
 
-  const runGroup = useCallback(
+  const runSingleGroup = useCallback(
     (group: Group) => {
       return runGroups([group]);
     },
     [runGroups]
   );
+
+  const copyResults = useCallback(async () => {
+    const report = buildMarkdownReport(stateRef.current);
+    if (report == null) {
+      Alert.alert('Nothing to copy', 'Run at least one benchmark first.');
+      return;
+    }
+    try {
+      await Clipboard.setStringAsync(report);
+      Alert.alert('Copied', 'Results copied as markdown.');
+    } catch (error) {
+      console.warn('Failed to copy benchmark results:', error);
+      Alert.alert('Failed to copy', String(error));
+    }
+  }, []);
 
   const clearResults = useCallback(async () => {
     if (isRunningRef.current) {
@@ -242,14 +332,13 @@ export default function ModulesBenchmarksScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.topBar}>
           <Pressable onPress={runAll} style={styles.topBarButton}>
-            <Text style={[styles.topBarButtonText, { color: theme.text.link }]}>
-              Run all benchmarks
-            </Text>
+            <Text style={[styles.topBarButtonText, { color: theme.text.link }]}>Run all</Text>
+          </Pressable>
+          <Pressable onPress={copyResults} style={styles.topBarButton}>
+            <Text style={[styles.topBarButtonText, { color: theme.text.link }]}>Copy results</Text>
           </Pressable>
           <Pressable onPress={clearResults} style={styles.topBarButton}>
-            <Text style={[styles.topBarButtonText, { color: theme.text.danger }]}>
-              Clear results
-            </Text>
+            <Text style={[styles.topBarButtonText, { color: theme.text.danger }]}>Clear</Text>
           </Pressable>
         </View>
 
@@ -260,7 +349,7 @@ export default function ModulesBenchmarksScreen() {
               group={group}
               state={state}
               onRun={() => {
-                return runGroup(group);
+                return runSingleGroup(group);
               }}
             />
           );
