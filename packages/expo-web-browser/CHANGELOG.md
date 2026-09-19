@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Resolve the presenting window from the foregrounded scene instead of the deprecated `UIApplication.keyWindow`, so `openBrowserAsync` and `openAuthSessionAsync` keep working in apps that use the UIScene life cycle. (by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

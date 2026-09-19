@@ -76,7 +76,7 @@ public class ExpoPrintWithPrinter {
     let printerUrl = options.printerUrl ?? ""
     let candidateUrl = URL(string: printerUrl) ?? URL(fileURLWithPath: printerUrl)
 
-    guard let rootController = UIApplication.shared.keyWindow?.rootViewController else {
+    guard let rootController = SceneGeometry.keyWindow()?.rootViewController else {
       promise.reject(ViewControllerNotFoundException())
       return
     }
