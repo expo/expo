@@ -202,16 +202,16 @@ function StatsLine({ run, unit }: { run: BenchmarkRun; unit: PerOpUnit }) {
   );
 }
 
-/** How well the series pin down the median: the 95% confidence interval and its half-width. */
+/** How well the series pin down the median: the 95% confidence range and its half-width. */
 function UncertaintyText({ run, unit }: { run: BenchmarkRun; unit: PerOpUnit }) {
   const { theme } = useTheme();
   const uncertainty = relativeUncertaintyOf(run);
   const color = uncertainty > NOISY_UNCERTAINTY ? theme.text.warning : theme.text.quaternary;
   return (
     <Text style={[styles.metaText, { color }]}>
-      95% CI {formatPerOpIn(nsPerOp(run.ciLowMs, run.iterations), unit)}–
-      {formatPerOpIn(nsPerOp(run.ciHighMs, run.iterations), unit)} (±
-      {(uncertainty * 100).toFixed(1)}%)
+      median {formatPerOpIn(nsPerOp(run.ciLowMs, run.iterations), unit)}–
+      {formatPerOpIn(nsPerOp(run.ciHighMs, run.iterations), unit)} ±{(uncertainty * 100).toFixed(1)}
+      % (95% confidence)
     </Text>
   );
 }
