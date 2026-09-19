@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix a `ConcurrentModificationException` in the Reaper when a failed asset deletion succeeds or throws on retry. ([#50324](https://github.com/expo/expo/pull/50324) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-16
