@@ -14,7 +14,7 @@
 ### 🐛 Bug fixes
 
 - Derive browser history on web from router action results in reducer phase. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
-- Wait up to 1000ms for a browser history traversal to land before running the next history command on web. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@ahmdshrif](https://github.com/ahmdshrif))
+- Wait up to 1000ms for a browser history traversal to land before running the next history command on web. ([#50374](https://github.com/expo/expo/pull/50374) by [@ahmdshrif](https://github.com/ahmdshrif))
 
 ### 💡 Others
 
