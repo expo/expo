@@ -6,7 +6,12 @@
 
 ### 🎉 New features
 
+- Ship an agent skill for SQLite queries, migrations, storage, and platform configuration in the npm package. ([#49867](https://github.com/expo/expo/pull/49867) by [@Kudo](https://github.com/Kudo))
+- [Android][iOS][macOS][tvOS] Add interruptSync() to cancel running operations on a database connection.
+
 ### 🐛 Bug fixes
+
+- Preserve the original transaction error when SQLite has already rolled back automatically.
 
 ### 💡 Others
 
