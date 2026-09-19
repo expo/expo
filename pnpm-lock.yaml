@@ -126,19 +126,6 @@ patchedDependencies:
 importers:
 
   .:
-    dependencies:
-      expo-asset:
-        specifier: workspace:*
-        version: link:packages/expo-asset
-      expo-modules-core:
-        specifier: workspace:*
-        version: link:packages/expo-modules-core
-      jest-expo:
-        specifier: workspace:*
-        version: link:packages/jest-expo
-      jsc-android:
-        specifier: ^250231.0.0
-        version: 250231.0.0
     devDependencies:
       '@types/jest':
         specifier: ^29.5.12
@@ -152,15 +139,27 @@ importers:
       '@vercel/ncc':
         specifier: ^0.38.4
         version: 0.38.4
+      expo-asset:
+        specifier: workspace:*
+        version: link:packages/expo-asset
       expo-module-scripts:
         specifier: workspace:*
         version: link:packages/expo-module-scripts
+      expo-modules-core:
+        specifier: workspace:*
+        version: link:packages/expo-modules-core
       expotools:
         specifier: workspace:*
         version: link:tools
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
+      jest-expo:
+        specifier: workspace:*
+        version: link:packages/jest-expo
+      jsc-android:
+        specifier: ^250231.0.0
+        version: 250231.0.0
       lint-staged:
         specifier: ^17.0.8
         version: 17.0.8
