@@ -24,12 +24,16 @@ public struct WidgetsEntryView: View {
     return jsonString
   }
 
-  public var body: some View {
-    if let layout = WidgetsLayoutRegistry.layout(for: entry.name) {
-      let node = evaluateLayout(layout: layout, props: entry.props, environment: widgetEnvironment)
-      WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
-    } else {
-      WidgetsDynamicView(name: entry.name, kind: .widget, node: createRedBox(message: "No layout found for \(WidgetsStorage.appGroupIdentifier ?? "")::\(entry.name)"), entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
+  private var layoutNode: [String: Any] {
+    guard let layout = WidgetsLayoutRegistry.layout(for: entry.name) else {
+      return createRedBox(message: "No layout found for \(WidgetsStorage.appGroupIdentifier ?? "")::\(entry.name)")
     }
+    return evaluateLayout(layout: layout, props: entry.props, environment: widgetEnvironment)
+  }
+
+  public var body: some View {
+    let node = layoutNode
+    WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
+      .fallbackContainerBackground(forLayout: node)
   }
 }
