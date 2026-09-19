@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed sync worker result length encoding and made oversized results fail immediately instead of timing out. ([#44148](https://github.com/expo/expo/pull/44148) by [@silto](https://github.com/silto))
+
 ### 💡 Others
 
 - [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
