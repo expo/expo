@@ -61,7 +61,7 @@ export function verifyNoTestOnlyImports(frameworkPath: string): XCFrameworkVerif
   };
 }
 
-function findSwiftInterfaces(frameworkPath: string): string[] {
+export function findSwiftInterfaces(frameworkPath: string): string[] {
   const modulesPath = path.join(frameworkPath, 'Modules');
   if (!fs.existsSync(modulesPath)) {
     return [];
