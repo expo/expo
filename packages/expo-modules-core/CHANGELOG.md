@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed strings losing NUL characters when crossing JNI in either direction, and characters outside the BMP being misread on the way to Kotlin. ([#50275](https://github.com/expo/expo/pull/50275) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed the tap that closes a SwiftUI menu still reaching the React Native view underneath it in apps with no accessibility client attached. The menu gate no longer requires `accessibilityViewIsModal`, which UIKit only implements for the menu container while its accessibility bundle is loaded. ([#48765](https://github.com/expo/expo/issues/48765) by [@ayyoub-coder](https://github.com/ayyoub-coder), [#49916](https://github.com/expo/expo/pull/49916) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
