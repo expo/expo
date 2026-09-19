@@ -3,6 +3,10 @@
  * Objects are closed. Required fields must name declared properties. Numeric
  * bounds are inclusive. Null, unions, references, and string patterns are not
  * supported yet.
+ *
+ * A schema may nest up to 32 levels deep and hold up to 1024 nodes in total, counting the
+ * root, every property and every array item schema. Both limits reject on every platform
+ * rather than only on the provider that enforces them.
  * @experimental
  */
 export type ModelSchema = { readonly description?: string } & (

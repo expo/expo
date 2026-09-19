@@ -2,6 +2,9 @@ import { LanguageModelError } from './LanguageModelError';
 import type { ModelSchema } from './LanguageModels.types';
 
 const MAX_SCHEMA_DEPTH = 32;
+// Matches the Apple provider's own ceiling in ios/LanguageModelSchema.swift. Keeping the limit
+// here makes it a property of the supported dialect rather than a failure that only reaches iOS.
+const MAX_SCHEMA_NODES = 1024;
 const hasOwn = (value: object, key: PropertyKey) =>
   Object.prototype.hasOwnProperty.call(value, key);
 
@@ -70,12 +73,20 @@ function schemaArray(value: unknown, path: string): unknown[] {
 export function compileSchema(schema: unknown, internalDepthAllowance: 0 | 2 = 0): ModelSchema {
   const maximumDepth = MAX_SCHEMA_DEPTH + internalDepthAllowance;
   const ancestors = new WeakSet<object>();
+  let nodes = 0;
   function visit(input: unknown, path: string, depth: number): ModelSchema {
     const node = schemaRecord(input, path);
     if (depth > maximumDepth || ancestors.has(node)) {
       failSchema(
         path,
         `Recursive schemas or schemas deeper than ${maximumDepth} levels are unsupported.`
+      );
+    }
+    if (++nodes > MAX_SCHEMA_NODES) {
+      failSchema(
+        path,
+        `Schemas larger than ${MAX_SCHEMA_NODES} nodes are unsupported. Describe fewer properties, ` +
+          'or split the request into several smaller generations.'
       );
     }
     ancestors.add(node);

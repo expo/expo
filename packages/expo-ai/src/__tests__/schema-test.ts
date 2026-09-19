@@ -135,6 +135,14 @@ describe('schema dialect', () => {
     ).toBeDefined();
   });
 
+  it('rejects schemas above the node count Apple accepts, at the same boundary', () => {
+    // One node for the object plus one per property. Apple's compiler stops at 1024 nodes
+    // (ios/LanguageModelSchema.swift), so the shared compiler has to agree: otherwise a schema
+    // between the two limits compiles here, runs on Android and web, and fails only on iOS.
+    expect(compileSchema(wideSchema(1023))).toBeDefined();
+    expect(() => compileSchema(wideSchema(1024))).toThrow(/1024/);
+  });
+
   it('handles prototype-like property names without treating inherited names as declarations', () => {
     const input = JSON.parse(
       '{"type":"object","properties":{"__proto__":{"type":"string"},"constructor":{"type":"boolean"}},"required":["__proto__"],"additionalProperties":false}'
@@ -201,3 +209,9 @@ describe('complete response validation', () => {
     expect(get).not.toHaveBeenCalled();
   });
 });
+
+function wideSchema(fieldCount: number): ModelSchema {
+  const properties: Record<string, ModelSchema> = {};
+  for (let index = 0; index < fieldCount; index++) properties[`f${index}`] = { type: 'string' };
+  return { type: 'object', properties, additionalProperties: false };
+}
