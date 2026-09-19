@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `searchable` and `searchToolbarBehavior` SwiftUI modifiers.
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
