@@ -14,6 +14,7 @@ Observe.configure({
       includeUrlParams: false,
     },
   },
+  networkTraces: true,
 });
 
 // Passing `errorBoundaryFallback` opts the root into capturing render-phase errors: the boundary

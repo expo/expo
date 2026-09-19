@@ -48,7 +48,10 @@ struct SanitizedLogAttributes {
 ///
 /// Each rule warns with its own message so the developer can tell at a glance
 /// which rule fired.
-func sanitizeLogEventAttributes(_ attributes: [String: Any]?) -> SanitizedLogAttributes {
+func sanitizeLogEventAttributes(
+  _ attributes: [String: Any]?,
+  source: String = "logEvent"
+) -> SanitizedLogAttributes {
   guard let attributes else {
     return SanitizedLogAttributes(attributes: nil, droppedCount: 0)
   }
@@ -85,18 +88,18 @@ func sanitizeLogEventAttributes(_ attributes: [String: Any]?) -> SanitizedLogAtt
 
   if emptyKeyDrops > 0 {
     logger.warn(
-      "[AppMetrics] logEvent dropped \(emptyKeyDrops) attribute(s) with empty or whitespace-only keys."
+      "[AppMetrics] \(source) dropped \(emptyKeyDrops) attribute(s) with empty or whitespace-only keys."
     )
   }
   if !reservedKeyDrops.isEmpty {
     let formattedKeys = reservedKeyDrops.sorted().map { "`\($0)`" }.joined(separator: ", ")
     logger.warn(
-      "[AppMetrics] logEvent dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: \(formattedKeys)."
+      "[AppMetrics] \(source) dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: \(formattedKeys)."
     )
   }
   if overflowDrops > 0 {
     logger.warn(
-      "[AppMetrics] logEvent dropped \(overflowDrops) attribute(s) past the \(maxAttributeCount)-attribute per-record cap."
+      "[AppMetrics] \(source) dropped \(overflowDrops) attribute(s) past the \(maxAttributeCount)-attribute per-record cap."
     )
   }
 
