@@ -31,7 +31,7 @@ export function buildMarkdownReport(state: State): string | null {
   }
 
   const bundle = __DEV__ ? 'dev bundle' : 'release bundle';
-  const header = `**Expo modules benchmarks** — ${Platform.OS} ${Platform.Version}, ${bundle}, median with 95% bootstrap CI`;
+  const header = `**Expo modules benchmarks** — ${Platform.OS} ${Platform.Version}, ${bundle}, median with 95% confidence range`;
   return [header, ...sections].join('\n\n');
 }
 
@@ -66,7 +66,7 @@ function sectionFor(group: Group, state: State): string | null {
     );
   });
 
-  const columns = `| benchmark | median (${unit.suffix}) | 95% CI | ± | avg | min | max | iterations |`;
+  const columns = `| benchmark | median (${unit.suffix}) | range (95% confidence) | ± | avg | min | max | iterations |`;
   const alignment = '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |';
   return `### \`${group.title}\`\n\n${columns}\n${alignment}\n${rows.join('\n')}`;
 }
