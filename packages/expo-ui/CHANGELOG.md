@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `scrollEdgeEffectStyle` modifier. ([#50367](https://github.com/expo/expo/pull/50367) by [@expo-bot](https://github.com/expo-bot))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
