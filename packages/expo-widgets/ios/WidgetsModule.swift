@@ -90,8 +90,8 @@ public final class WidgetsModule: Module {
         LiveActivityFactory(name: name, layout: layout)
       }
 
-      Function("start") { (liveActivity: LiveActivityFactory, props: String?, url: URL?, staleDate: Date?) in
-        return try liveActivity.start(props: props, url: url, staleDate: staleDate)
+      Function("start") { (liveActivity: LiveActivityFactory, props: String?, url: URL?, staleDate: Date?, schedule: LiveActivityScheduleRecord?) in
+        return try liveActivity.start(props: props, url: url, staleDate: staleDate, schedule: schedule)
       }
 
       Function("getInstances") { (liveActivity: LiveActivityFactory) in

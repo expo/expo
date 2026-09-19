@@ -14,18 +14,33 @@ final class LiveActivityFactory: SharedObject {
     WidgetsStorage.set(layout, forKey: "__expo_widgets_live_activity_\(name)_layout")
   }
 
-  func start(props: String?, url: URL?, staleDate: Date?) throws -> LiveActivity {
+  func start(props: String?, url: URL?, staleDate: Date?, schedule: LiveActivityScheduleRecord?) throws -> LiveActivity {
     guard ActivityAuthorizationInfo().areActivitiesEnabled else {
       throw LiveActivitiesNotSupportedException()
+    }
+    if schedule != nil, #unavailable(iOS 26.0) {
+      throw ScheduledLiveActivitiesNotSupportedException()
     }
 
     do {
       let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
-      let activity = try Activity.request(
-        attributes: LiveActivityAttributes(url: url?.absoluteString),
-        content: .init(state: initialState, staleDate: staleDate),
-        pushType: LiveActivityFactory.pushNotificationsEnabled ? .token : nil
-      )
+      let attributes = LiveActivityAttributes(url: url?.absoluteString)
+      let content = ActivityContent(state: initialState, staleDate: staleDate)
+      let pushType: PushType? = LiveActivityFactory.pushNotificationsEnabled ? .token : nil
+      let activity: Activity<LiveActivityAttributes>
+
+      if let schedule, #available(iOS 26.0, *) {
+        activity = try Activity.request(
+          attributes: attributes,
+          content: content,
+          pushType: pushType,
+          style: .standard,
+          alertConfiguration: schedule.alertConfiguration.toAlertConfiguration(),
+          startDate: schedule.startDate
+        )
+      } else {
+        activity = try Activity.request(attributes: attributes, content: content, pushType: pushType)
+      }
 
       let instance = LiveActivity(id: activity.id, name: name)
       instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: LiveActivityFactory.pushNotificationsEnabled)
@@ -40,8 +55,13 @@ final class LiveActivityFactory: SharedObject {
     let activities = Activity<LiveActivityAttributes>.activities
       // Filter LiveActivity instances for activities that don't match the factory's name.
       .filter { $0.content.state.name == name }
-      // A stale activity is still visible and updatable; only ended/dismissed ones are gone.
-      .filter { $0.activityState == .active || $0.activityState == .stale }
+      // A stale activity is still visible and updatable, and a pending one is scheduled to start; only ended/dismissed ones are gone.
+      .filter { activity in
+        if #available(iOS 26.0, *), activity.activityState == .pending {
+          return true
+        }
+        return activity.activityState == .active || activity.activityState == .stale
+      }
       
     let activeIDs = Set(activities.map(\.id))
     instances = instances.filter { activeIDs.contains($0.key) }
