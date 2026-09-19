@@ -816,6 +816,24 @@ export const scrollIndicators = (
   axes: 'vertical' | 'horizontal' | 'both' = 'both'
 ) => createModifier('scrollIndicators', { visibility, axes });
 
+/**
+ * Sets the style of the scroll edge effect that a scrollable view shows where its content meets
+ * a bar, such as a navigation bar or a toolbar.
+ * Mirrors SwiftUI's `scrollEdgeEffectStyle(_:for:)` modifier. On versions before iOS 26 it does
+ * nothing.
+ * @param style - The style of the effect:
+ * - `'automatic'`: the system picks the style.
+ * - `'hard'`: a bar with a defined edge separates the content.
+ * - `'soft'`: the content fades out gradually, without a defined edge.
+ * @param edges - The edges where the style applies. Defaults to `'all'`.
+ * @platform ios 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolledgeeffectstyle(_:for:)).
+ */
+export const scrollEdgeEffectStyle = (
+  style: 'automatic' | 'hard' | 'soft',
+  edges: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical' = 'all'
+) => createModifier('scrollEdgeEffectStyle', { style, edges });
+
 export type UnitPointValue =
   | 'zero'
   | 'topLeading'
@@ -1783,6 +1801,7 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof scrollIndicators>
+  | ReturnType<typeof scrollEdgeEffectStyle>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof scrollTargetBehavior>
