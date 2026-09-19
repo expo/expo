@@ -79,13 +79,37 @@ class ImageManipulatorContext(
   runtime: Runtime,
   private val task: ManipulatorTask
 ) : SharedObject(runtime) {
+  /**
+   * Guards [pendingRenders]. [render] runs on the modules queue,
+   * [sharedObjectDidRelease] on the JS thread.
+   */
+  private val lock = Any()
+
+  /**
+   * Number of `renderAsync` calls that are currently awaiting [task].
+   */
+  private var pendingRenders = 0
+
   fun addTransformer(transformer: ImageTransformer) = apply { task.addTransformer(transformer) }
 
   fun reset() = apply { task.reset() }
 
-  suspend fun render() = task.render()
+  suspend fun render(): Bitmap {
+    synchronized(lock) { pendingRenders += 1 }
+    try {
+      return task.render()
+    } finally {
+      synchronized(lock) { pendingRenders -= 1 }
+    }
+  }
 
   override fun sharedObjectDidRelease() {
-    task.cancel()
+    // Cancelling the pipeline frees work that nothing is waiting for anymore, but this also runs
+    // while a `renderAsync` call is still awaiting it - explicitly, as `useImageManipulator` does
+    // on unmount, or because the garbage collector took the JS object. Cancelling there rejects
+    // that call with a `JobCancellationException`, so only work with no awaiting call is cancelled.
+    if (synchronized(lock) { pendingRenders == 0 }) {
+      task.cancel()
+    }
   }
 }

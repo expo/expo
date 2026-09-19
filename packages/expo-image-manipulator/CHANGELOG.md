@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `renderAsync()` rejecting with a `JobCancellationException` when the context is released while the render is still in flight — including the release `useImageManipulator` performs on unmount. Work is now only cancelled when no call is awaiting it. ([#50218](https://github.com/expo/expo/pull/50218) by [@dev-eyoungmin](https://github.com/dev-eyoungmin))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-16
