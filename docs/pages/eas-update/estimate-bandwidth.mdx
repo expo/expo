@@ -78,7 +78,7 @@ Then generate the patch and check its size:
 
 The size of **patch.bin** is the approximate download size for a user who moves from the old bundle to the new one. The patch is already compressed, so you do not need to factor in the compression algorithm.
 
-Every patch is different, so you may want to try a variety of smaller and larger code changes to get a better idea of the potential impact of bundle diffing.
+Every patch is different. Try a range of smaller and larger code changes to see the impact of bundle diffing on your own app.
 
 Under normal circumstances, most users will download diffs instead of full bundles, but EAS Update may fall back to serving the full bundle in some circumstance. See [current limitations](/eas-update/bundle-diffing/#current-limitations) for the full list. The actual impact of bundle diffing will also vary based on whether diffing is enabled for the embedded bundle.
 
