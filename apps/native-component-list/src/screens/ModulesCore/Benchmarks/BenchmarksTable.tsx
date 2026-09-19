@@ -3,14 +3,20 @@ import { useTheme } from 'ThemeProvider';
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { BenchmarkRun } from './ModulesBenchmarksHistory';
 import {
   Benchmark,
   BenchmarkStatus,
   CellState,
   Group,
+  PerOpUnit,
   State,
   benchmarkIdOf,
-  iterationsOf,
+  formatIterations,
+  formatPerOpIn,
+  nsPerOp,
+  perOpUnitFor,
+  relativeUncertaintyOf,
 } from './benchmarks';
 
 enum DeltaTone {
@@ -24,14 +30,26 @@ type Delta = {
   tone: DeltaTone;
 };
 
+type GroupScale = {
+  fastestNs: number;
+  slowestNs: number;
+  unit: PerOpUnit;
+};
+
 const NEUTRAL_DELTA_THRESHOLD_PERCENT = 0.1;
+
+// Above this, the confidence interval is too wide for small differences between rows to mean anything.
+const NOISY_UNCERTAINTY = 0.02;
+
+// Keeps a bar visible even when the benchmark is orders of magnitude faster than the slowest one.
+const MIN_BAR_FRACTION = 0.015;
 
 export function BenchmarkTable(props: { group: Group; state: State; onRun: () => void }) {
   const { theme } = useTheme();
   const { group, state, onRun } = props;
 
-  const fastestMs = useMemo(() => {
-    return findGroupFastestMs(group, state);
+  const scale = useMemo(() => {
+    return findGroupScale(group, state);
   }, [group, state]);
 
   return (
@@ -55,7 +73,7 @@ export function BenchmarkTable(props: { group: Group; state: State; onRun: () =>
           <Code style={[styles.headerTitle, { color: theme.text.default }]}>{group.title}</Code>
           <View style={styles.headerRightColumn}>
             <Text style={[styles.headerIterations, { color: theme.text.quaternary }]}>
-              {iterationsOf(group).toLocaleString()}×
+              median{scale && ` · ${scale.unit.suffix}/op`}
             </Text>
             <Pressable
               onPress={onRun}
@@ -82,7 +100,7 @@ export function BenchmarkTable(props: { group: Group; state: State; onRun: () =>
             group={group}
             benchmark={benchmark}
             cell={cell}
-            fastestMs={fastestMs}
+            scale={scale}
             isLast={isLast}
           />
         );
@@ -95,11 +113,11 @@ function BenchmarkRow(props: {
   group: Group;
   benchmark: Benchmark;
   cell: CellState;
-  fastestMs: number | null;
+  scale: GroupScale | null;
   isLast: boolean;
 }) {
   const { theme } = useTheme();
-  const { group, benchmark, cell, fastestMs, isLast } = props;
+  const { group, benchmark, cell, scale, isLast } = props;
 
   const rowStyle = [
     styles.row,
@@ -109,40 +127,104 @@ function BenchmarkRow(props: {
     },
   ];
 
-  const previousMatchesCurrentIterations =
-    cell.previous != null && cell.previous.iterations === iterationsOf(group);
+  const current = cell.status === BenchmarkStatus.Done ? cell.current : null;
 
   return (
     <View style={rowStyle}>
-      <View style={styles.rowLeft}>
+      <View style={styles.rowHeader}>
         <Text style={[styles.benchmarkLabel, { color: theme.text.default }]}>
           {benchmark.label}
         </Text>
+        <CurrentValue cell={cell} unit={scale?.unit ?? null} />
       </View>
-      <View style={styles.rowRight}>
-        <View style={styles.currentRow}>
-          <GroupDeltaBadge cell={cell} fastestMs={fastestMs} />
-          <CurrentValue cell={cell} />
+
+      <View style={styles.meterRow}>
+        <Meter run={current} scale={scale} />
+        <Text
+          style={[styles.ratioText, { color: theme.text.secondary }]}
+          numberOfLines={1}
+          ellipsizeMode="clip">
+          {formatRatioLabel(current, scale)}
+        </Text>
+      </View>
+
+      {current && scale && <StatsLine run={current} unit={scale.unit} />}
+
+      {current && scale && (
+        <View style={styles.uncertaintyRow}>
+          <UncertaintyText run={current} unit={scale.unit} />
+          {cell.previous != null && (
+            <View style={styles.previousGroup}>
+              <Text style={[styles.metaText, { color: theme.text.quaternary }]}>
+                previous: {formatPerOpIn(medianNsOf(cell.previous), scale.unit)}
+              </Text>
+              <PreviousDeltaBadge current={current} previous={cell.previous} />
+            </View>
+          )}
         </View>
-        {previousMatchesCurrentIterations && (
-          <View style={styles.previousRow}>
-            <Text style={[styles.previousText, { color: theme.text.quaternary }]}>
-              previous: {formatTime(cell.previous!.timeMs)}
-            </Text>
-            <PreviousDeltaBadge cell={cell} />
-          </View>
-        )}
-      </View>
+      )}
     </View>
   );
 }
 
-function PreviousDeltaBadge({ cell }: { cell: CellState }) {
+/** Horizontal bar scaled against the slowest benchmark of the group. */
+function Meter({ run, scale }: { run: BenchmarkRun | null; scale: GroupScale | null }) {
   const { theme } = useTheme();
-  if (cell.status !== BenchmarkStatus.Done || cell.current == null || cell.previous == null) {
-    return null;
-  }
-  const delta = computeDelta(cell.current.timeMs, cell.previous.timeMs);
+  const fraction =
+    run != null && scale != null && scale.slowestNs > 0
+      ? Math.max(MIN_BAR_FRACTION, Math.min(1, medianNsOf(run) / scale.slowestNs))
+      : null;
+  return (
+    <View style={[styles.meterTrack, { backgroundColor: theme.background.element }]}>
+      {fraction != null && (
+        <View
+          style={[
+            styles.meterFill,
+            { width: `${fraction * 100}%`, backgroundColor: theme.text.link },
+          ]}
+        />
+      )}
+    </View>
+  );
+}
+
+/** The series behind the headline median: mean, fastest and slowest, and how many were run. */
+function StatsLine({ run, unit }: { run: BenchmarkRun; unit: PerOpUnit }) {
+  const { theme } = useTheme();
+  const perOp = (ms: number) => {
+    return formatPerOpIn(nsPerOp(ms, run.iterations), unit);
+  };
+  return (
+    <Text style={[styles.metaText, styles.statsLine, { color: theme.text.quaternary }]}>
+      avg {perOp(run.meanMs)} · min {perOp(run.minMs)} · max {perOp(run.maxMs)} ·{' '}
+      {formatIterations(run.iterations)} × {run.samples.length}
+    </Text>
+  );
+}
+
+/** How well the series pin down the median: the 95% confidence interval and its half-width. */
+function UncertaintyText({ run, unit }: { run: BenchmarkRun; unit: PerOpUnit }) {
+  const { theme } = useTheme();
+  const uncertainty = relativeUncertaintyOf(run);
+  const color = uncertainty > NOISY_UNCERTAINTY ? theme.text.warning : theme.text.quaternary;
+  return (
+    <Text style={[styles.metaText, { color }]}>
+      95% CI {formatPerOpIn(nsPerOp(run.ciLowMs, run.iterations), unit)}–
+      {formatPerOpIn(nsPerOp(run.ciHighMs, run.iterations), unit)} (±
+      {(uncertainty * 100).toFixed(1)}%)
+    </Text>
+  );
+}
+
+function PreviousDeltaBadge({
+  current,
+  previous,
+}: {
+  current: BenchmarkRun;
+  previous: BenchmarkRun;
+}) {
+  const { theme } = useTheme();
+  const delta = computeDelta(medianNsOf(current), medianNsOf(previous));
   if (!delta) {
     return null;
   }
@@ -155,28 +237,7 @@ function PreviousDeltaBadge({ cell }: { cell: CellState }) {
   return <Text style={[styles.deltaText, { color }]}>({delta.text})</Text>;
 }
 
-function GroupDeltaBadge({ cell, fastestMs }: { cell: CellState; fastestMs: number | null }) {
-  const { theme } = useTheme();
-  if (
-    cell.status !== BenchmarkStatus.Done ||
-    cell.current == null ||
-    fastestMs == null ||
-    fastestMs <= 0
-  ) {
-    return null;
-  }
-  if (cell.current.timeMs <= fastestMs) {
-    return <Text style={[styles.groupDeltaText, { color: theme.text.success }]}>fastest</Text>;
-  }
-  const ratio = cell.current.timeMs / fastestMs;
-  return (
-    <Text style={[styles.groupDeltaText, { color: theme.text.danger }]}>
-      {formatRatio(ratio)} slower
-    </Text>
-  );
-}
-
-function CurrentValue({ cell }: { cell: CellState }) {
+function CurrentValue({ cell, unit }: { cell: CellState; unit: PerOpUnit | null }) {
   const { theme } = useTheme();
   switch (cell.status) {
     case BenchmarkStatus.Skipped:
@@ -184,20 +245,22 @@ function CurrentValue({ cell }: { cell: CellState }) {
         <Text style={[styles.currentText, { color: theme.text.quaternary }]}>not available</Text>
       );
     case BenchmarkStatus.Running:
-      return <Text style={[styles.currentText, { color: theme.text.quaternary }]}>running…</Text>;
+      return (
+        <Text style={[styles.currentText, { color: theme.text.quaternary }]}>
+          {cell.iterations == null ? 'calibrating…' : `running… ${cell.completedSeries} series`}
+        </Text>
+      );
     case BenchmarkStatus.Done:
       return (
         <Text style={[styles.currentText, styles.currentDone, { color: theme.text.default }]}>
-          {formatTime(cell.current?.timeMs ?? 0)}
+          {cell.current == null || unit == null
+            ? '—'
+            : `${formatPerOpIn(medianNsOf(cell.current), unit)} ${unit.suffix}`}
         </Text>
       );
     case BenchmarkStatus.Idle:
       return <Text style={[styles.currentText, { color: theme.text.quaternary }]}>—</Text>;
   }
-}
-
-function formatTime(ms: number): string {
-  return `${ms.toFixed(2)} ms`;
 }
 
 function formatRatio(ratio: number): string {
@@ -208,6 +271,22 @@ function formatRatio(ratio: number): string {
     return `${ratio.toFixed(1)}×`;
   }
   return `${ratio.toFixed(2)}×`;
+}
+
+function formatRatioLabel(run: BenchmarkRun | null, scale: GroupScale | null): string {
+  if (run == null || scale == null || scale.fastestNs <= 0) {
+    return '';
+  }
+  const medianNs = medianNsOf(run);
+  if (medianNs <= scale.fastestNs) {
+    return 'fastest';
+  }
+  return `${formatRatio(medianNs / scale.fastestNs)} slower`;
+}
+
+/** Median cost of a single call, the unit every comparison on this screen uses. */
+function medianNsOf(run: BenchmarkRun): number {
+  return nsPerOp(run.medianMs, run.iterations);
 }
 
 function computeDelta(currentMs: number, previousMs: number): Delta | null {
@@ -224,18 +303,26 @@ function computeDelta(currentMs: number, previousMs: number): Delta | null {
   return { text: `${sign}${magnitude.toFixed(1)}%`, tone };
 }
 
-function findGroupFastestMs(group: Group, state: State): number | null {
-  let fastest: number | null = null;
+function findGroupScale(group: Group, state: State): GroupScale | null {
+  let fastestNs: number | null = null;
+  let slowestNs: number | null = null;
   for (const benchmark of group.benchmarks) {
     const cell = state[benchmarkIdOf(group, benchmark)];
     if (cell.status !== BenchmarkStatus.Done || cell.current == null) {
       continue;
     }
-    if (fastest == null || cell.current.timeMs < fastest) {
-      fastest = cell.current.timeMs;
+    const medianNs = medianNsOf(cell.current);
+    if (fastestNs == null || medianNs < fastestNs) {
+      fastestNs = medianNs;
+    }
+    if (slowestNs == null || medianNs > slowestNs) {
+      slowestNs = medianNs;
     }
   }
-  return fastest;
+  if (fastestNs == null || slowestNs == null) {
+    return null;
+  }
+  return { fastestNs, slowestNs, unit: perOpUnitFor(fastestNs) };
 }
 
 const styles = StyleSheet.create({
@@ -287,49 +374,67 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 10,
-    minHeight: 56,
   },
-  rowLeft: {
-    flex: 1,
-    paddingRight: 12,
-  },
-  rowRight: {
-    alignItems: 'flex-end',
-  },
-  benchmarkLabel: {
-    fontSize: 15,
-  },
-  currentRow: {
+  rowHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 8,
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  benchmarkLabel: {
+    flex: 1,
+    fontSize: 15,
   },
   currentText: {
     fontSize: 15,
     fontVariant: ['tabular-nums'],
-    minWidth: 90,
     textAlign: 'right',
   },
   currentDone: {
     fontWeight: '600',
   },
-  groupDeltaText: {
+  meterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+  },
+  meterTrack: {
+    flex: 1,
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  meterFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  ratioText: {
     fontSize: 12,
     fontWeight: '500',
     fontVariant: ['tabular-nums'],
+    minWidth: 76,
+    textAlign: 'right',
   },
-  previousRow: {
+  statsLine: {
+    marginTop: 6,
+  },
+  uncertaintyRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 2,
+  },
+  previousGroup: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 6,
-    marginTop: 2,
   },
-  previousText: {
+  metaText: {
     fontSize: 12,
     fontVariant: ['tabular-nums'],
   },
