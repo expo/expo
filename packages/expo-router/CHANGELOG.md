@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Derive browser history on web from router action results in reducer phase. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
+- Keep catch-all segments intact when redirecting, instead of joining them with commas and capturing the source segment. ([#50382](https://github.com/expo/expo/pull/50382) by [@tahakocal](https://github.com/tahakocal))
 
 ### 💡 Others
 
