@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the floating Tools window leaving the app in the wrong orientation when navigating between screens with different orientation settings.
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-16
