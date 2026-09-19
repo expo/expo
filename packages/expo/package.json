@@ -236,7 +236,6 @@
     "whatwg-url-minimum": "^0.2.0"
   },
   "devDependencies": {
-    "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
