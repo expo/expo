@@ -351,7 +351,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'Function',
+        label: 'Expo Modules v1',
         available: expoModule?.nothing != null,
         async run(iterations) {
           expoModule.nothing();
@@ -362,23 +362,12 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-synthesized',
-        label: '@JS',
+        label: 'Expo Modules v2',
         available: expoModule?.nothingSynthesized != null,
         async run(iterations) {
           expoModule.nothingSynthesized();
           return timeSync(iterations, () => {
             expoModule.nothingSynthesized();
-          });
-        },
-      },
-      {
-        id: 'expo-optimized',
-        label: '@OptimizedFunction',
-        available: expoModule?.nothingOptimized != null,
-        async run(iterations) {
-          expoModule.nothingOptimized();
-          return timeSync(iterations, () => {
-            expoModule.nothingOptimized();
           });
         },
       },
@@ -414,7 +403,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'AsyncFunction',
+        label: 'Expo Modules v1',
         available: expoModule?.nothingAsync != null,
         async run(iterations) {
           await expoModule.nothingAsync();
@@ -425,7 +414,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-synthesized',
-        label: '@JS',
+        label: 'Expo Modules v2',
         available: expoModule?.nothingAsyncSynthesized != null,
         async run(iterations) {
           await expoModule.nothingAsyncSynthesized();
@@ -466,7 +455,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'Function',
+        label: 'Expo Modules v1',
         available: expoModule?.addNumbers != null,
         async run(iterations) {
           expoModule.addNumbers(0, 1);
@@ -477,23 +466,12 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-synthesized',
-        label: '@JS',
+        label: 'Expo Modules v2',
         available: expoModule?.addNumbersSynthesized != null,
         async run(iterations) {
           expoModule.addNumbersSynthesized(0, 1);
           return timeSync(iterations, () => {
             expoModule.addNumbersSynthesized(2, 5);
-          });
-        },
-      },
-      {
-        id: 'expo-optimized',
-        label: '@OptimizedFunction',
-        available: expoModule?.addNumbersOptimized != null,
-        async run(iterations) {
-          expoModule.addNumbersOptimized(0, 1);
-          return timeSync(iterations, () => {
-            expoModule.addNumbersOptimized(2, 5);
           });
         },
       },
@@ -529,7 +507,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'AsyncFunction',
+        label: 'Expo Modules v1',
         available: expoModule?.addNumbersAsync != null,
         async run(iterations) {
           await expoModule.addNumbersAsync(0, 1);
@@ -540,23 +518,12 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-synthesized',
-        label: '@JS',
+        label: 'Expo Modules v2',
         available: expoModule?.addNumbersAsyncSynthesized != null,
         async run(iterations) {
           await expoModule.addNumbersAsyncSynthesized(0, 1);
           return timeAsync(iterations, (iteration) => {
             return expoModule.addNumbersAsyncSynthesized(iteration, 5);
-          });
-        },
-      },
-      {
-        id: 'expo-optimized',
-        label: '@OptimizedFunction',
-        available: expoModule?.addNumbersAsyncOptimized != null,
-        async run(iterations) {
-          await expoModule.addNumbersAsyncOptimized(0, 1);
-          return timeAsync(iterations, (iteration) => {
-            return expoModule.addNumbersAsyncOptimized(iteration, 5);
           });
         },
       },
@@ -570,7 +537,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'Function',
+        label: 'Expo Modules v1',
         available: expoModule?.addStrings != null,
         async run(iterations) {
           expoModule.addStrings('hello ', 'world');
@@ -581,23 +548,12 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-synthesized',
-        label: '@JS',
+        label: 'Expo Modules v2',
         available: expoModule?.addStringsSynthesized != null,
         async run(iterations) {
           expoModule.addStringsSynthesized('hello ', 'world');
           return timeSync(iterations, () => {
             expoModule.addStringsSynthesized('hello ', 'world');
-          });
-        },
-      },
-      {
-        id: 'expo-optimized',
-        label: '@OptimizedFunction',
-        available: expoModule?.addStringsOptimized != null,
-        async run(iterations) {
-          expoModule.addStringsOptimized('hello ', 'world');
-          return timeSync(iterations, () => {
-            expoModule.addStringsOptimized('hello ', 'world');
           });
         },
       },
@@ -633,7 +589,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'AsyncFunction',
+        label: 'Expo Modules v1',
         available: expoModule?.addStringsAsync != null,
         async run(iterations) {
           await expoModule.addStringsAsync('hello ', 'world');
@@ -644,7 +600,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-synthesized',
-        label: '@JS',
+        label: 'Expo Modules v2',
         available: expoModule?.addStringsAsyncSynthesized != null,
         async run(iterations) {
           await expoModule.addStringsAsyncSynthesized('hello ', 'world');
@@ -743,7 +699,7 @@ export const GROUPS: Group[] = [
     benchmarks: [
       {
         id: 'expo',
-        label: 'Function',
+        label: 'Expo Modules v1',
         available: expoModule?.foldArray != null,
         async run(iterations) {
           const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -755,7 +711,7 @@ export const GROUPS: Group[] = [
       },
       {
         id: 'expo-synthesized',
-        label: '@JS',
+        label: 'Expo Modules v2',
         available: expoModule?.foldArraySynthesized != null,
         async run(iterations) {
           const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
