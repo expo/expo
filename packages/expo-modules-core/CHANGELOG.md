@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Preserve shared objects when React Activity becomes hidden, handle Strict Mode replay, and wait for all pending updates before releasing objects. ([#49979](https://github.com/expo/expo/pull/49979) by [@behenate](https://github.com/behenate))
 - [Android] Fixed strings losing NUL characters when crossing JNI in either direction, and characters outside the BMP being misread on the way to Kotlin. ([#50275](https://github.com/expo/expo/pull/50275) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
