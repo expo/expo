@@ -63,18 +63,29 @@ export function verifyNoTestOnlyImports(frameworkPath: string): XCFrameworkVerif
 
 export function findSwiftInterfaces(frameworkPath: string): string[] {
   const modulesPath = path.join(frameworkPath, 'Modules');
-  if (!fs.existsSync(modulesPath)) {
-    return [];
-  }
+  const versionsPath = path.join(frameworkPath, 'Versions');
+  // macOS frameworks may omit the root Modules symlink when copied aside. Keep their
+  // versioned interfaces under the same comparison policy as an unversioned framework.
+  const moduleRoots = fs.existsSync(modulesPath)
+    ? [modulesPath]
+    : fs.existsSync(versionsPath)
+      ? fs
+          .readdirSync(versionsPath, { withFileTypes: true })
+          .filter((entry) => entry.isDirectory())
+          .map((entry) => path.join(versionsPath, entry.name, 'Modules'))
+          .filter((directory) => fs.existsSync(directory))
+      : [];
 
-  return fs
-    .readdirSync(modulesPath, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && entry.name.endsWith('.swiftmodule'))
-    .flatMap((swiftModule) => {
-      const swiftModulePath = path.join(modulesPath, swiftModule.name);
-      return fs
-        .readdirSync(swiftModulePath)
-        .filter((file) => file.endsWith('.swiftinterface'))
-        .map((file) => path.join(swiftModulePath, file));
-    });
+  return moduleRoots.flatMap((modules) =>
+    fs
+      .readdirSync(modules, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name.endsWith('.swiftmodule'))
+      .flatMap((swiftModule) => {
+        const swiftModulePath = path.join(modules, swiftModule.name);
+        return fs
+          .readdirSync(swiftModulePath)
+          .filter((file) => file.endsWith('.swiftinterface'))
+          .map((file) => path.join(swiftModulePath, file));
+      })
+  );
 }

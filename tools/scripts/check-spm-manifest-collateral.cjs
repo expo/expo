@@ -17,6 +17,8 @@ const { values } = parseArgs({
   options: {
     base: { type: 'string', default: '466da8e06a1' },
     exclude: { type: 'string', multiple: true, default: [] },
+    include: { type: 'string', multiple: true, default: [] },
+    'only-comparable': { type: 'boolean', default: false },
     worker: { type: 'string' },
     scratch: { type: 'string' },
   },
@@ -32,6 +34,25 @@ function git(...args) {
     cwd: repo,
     maxBuffer: 256 * 1024 * 1024,
   });
+}
+
+function ensureBaselineReachable() {
+  try {
+    execFileSync(
+      'git',
+      ['-c', 'core.fsmonitor=false', 'cat-file', '-e', `${values.base}^{commit}`],
+      {
+        cwd: repo,
+        stdio: 'ignore',
+      }
+    );
+  } catch {
+    throw new Error(
+      `Unable to read SwiftPM manifest collateral baseline ${values.base}.\n` +
+        'Why: the baseline commit is unavailable; shallow clones do not contain enough history.\n' +
+        'How to fix: fetch the baseline history (CI: set actions/checkout fetch-depth: 0; locally: run git fetch --unshallow).'
+    );
+  }
 }
 
 function configPaths(root = repo) {
@@ -52,6 +73,25 @@ function inventory(configs, read) {
     .sort();
 }
 
+function classifyInventory(before, after, excluded = new Set()) {
+  const beforeSet = new Set(before);
+  const afterSet = new Set(after);
+  const known = new Set([...before, ...after]);
+  for (const id of excluded)
+    assert.ok(known.has(id), `Exclusion does not name a real product: ${id}`);
+  const removed = before.filter((id) => !excluded.has(id) && !afterSet.has(id));
+  assert.equal(removed.length, 0, `Baseline SwiftPM products disappeared: ${removed.join(', ')}`);
+  return {
+    additions: after.filter((id) => !excluded.has(id) && !beforeSet.has(id)),
+    comparable: before.filter((id) => !excluded.has(id) && afterSet.has(id)),
+  };
+}
+
+function formatInventoryAdditions(additions) {
+  if (additions.length === 0) return undefined;
+  return `INFO: Current-only SwiftPM products (not compared): ${additions.join(', ')}`;
+}
+
 function checkInventory() {
   const baselinePaths = git('ls-tree', '-r', '--name-only', values.base, '--', 'packages')
     .toString()
@@ -63,14 +103,10 @@ function checkInventory() {
   );
   const after = inventory(configPaths(), (file) => fs.readFileSync(path.join(repo, file), 'utf8'));
   const excluded = new Set(values.exclude);
-  const known = new Set([...before, ...after]);
-  for (const id of excluded)
-    assert.ok(known.has(id), `Exclusion does not name a real product: ${id}`);
-  assert.deepEqual(
-    after.filter((id) => !excluded.has(id)),
-    before.filter((id) => !excluded.has(id)),
-    'Product inventory changed; explicitly exclude intentional additions/removals'
-  );
+  const comparison = classifyInventory(before, after, excluded);
+  const additionMessage = formatInventoryAdditions(comparison.additions);
+  if (additionMessage) console.log(additionMessage);
+  return comparison.comparable;
 }
 
 function compile(source, destination) {
@@ -132,11 +168,15 @@ async function generate() {
     };
   });
   const excluded = new Set(values.exclude);
+  const included = new Set(values.include);
   const selected = [];
   for (const pkg of packages) {
     for (const product of pkg.config.products) {
       const id = `${pkg.packageName}/${product.name}`;
       if (excluded.has(id)) {
+        continue;
+      }
+      if (values['only-comparable'] && !included.has(id)) {
         continue;
       }
       if (!pkg.external) {
@@ -191,12 +231,7 @@ async function generate() {
           flavor.toLowerCase()
         ),
       };
-      const output = path.join(
-        pkg.buildPath,
-        'generated',
-        product.name,
-        'Package.swift'
-      );
+      const output = path.join(pkg.buildPath, 'generated', product.name, 'Package.swift');
       assert.ok(!fs.existsSync(output), `${id}/${flavor} output must start absent`);
       await SPMPackage.writePackageSwiftAsync(
         pkg,
@@ -271,7 +306,8 @@ function prepareFixture(scratch, label) {
 
 async function main() {
   if (values.worker) return generate();
-  checkInventory();
+  ensureBaselineReachable();
+  const comparable = checkInventory();
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-manifest-collateral-'));
   try {
     prepareFixture(scratch, 'before');
@@ -288,37 +324,76 @@ async function main() {
       const destination = path.join(scratch, label);
       compile(source, path.join(destination, 'build'));
       fs.symlinkSync(path.join(repo, 'tools/node_modules'), path.join(destination, 'node_modules'));
+    }
+
+    function runWorker(label, mode) {
       const args = [__filename, '--worker', label, '--scratch', scratch, '--base', values.base];
+      args.push('--only-comparable');
       for (const id of values.exclude) args.push('--exclude', id);
+      for (const id of comparable) args.push('--include', id);
       try {
         const output = execFileSync(process.execPath, args, {
           cwd: repo,
           encoding: 'utf8',
+          env: { ...process.env, SPM_COLLATERAL_TEST_MODE: mode },
           stdio: ['pipe', 'pipe', 'pipe'],
           maxBuffer: 16 * 1024 * 1024,
         });
-        console.log(`${label}: ${output.trim().split('\n').at(-1)}`);
+        return { status: 0, stdout: output, stderr: '' };
       } catch (error) {
-        process.stderr.write(error.stdout ?? '');
-        process.stderr.write(error.stderr ?? '');
-        throw new Error(`${label} generator failed (exit ${error.status})`);
+        return { status: error.status, stdout: error.stdout ?? '', stderr: error.stderr ?? '' };
       }
     }
-    const before = JSON.parse(fs.readFileSync(path.join(scratch, 'before.json'), 'utf8'));
-    const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
-    assert.deepEqual(Object.keys(after), Object.keys(before), 'Product/flavor coverage changed');
-    const changed = Object.keys(before).filter((id) => before[id] !== after[id]);
-    for (const id of changed) console.error(`DIFF: ${id}`);
-    assert.equal(changed.length, 0, 'Collateral manifest changes');
-    console.log(
-      `PASS: ${Object.keys(before).length} byte-identical manifests across ${Object.keys(before).length / 2} products (Debug + Release), baseline ${values.base}.`
-    );
+
+    function requireWorkerSuccess(label, result) {
+      if (result.status !== 0) {
+        process.stderr.write(result.stdout);
+        process.stderr.write(result.stderr);
+        throw new Error(`${label} generator failed (exit ${result.status})`);
+      }
+      console.log(`${label}: ${result.stdout.trim().split('\n').at(-1)}`);
+    }
+
+    function compareSnapshots() {
+      const before = JSON.parse(fs.readFileSync(path.join(scratch, 'before.json'), 'utf8'));
+      const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
+      assert.deepEqual(Object.keys(after), Object.keys(before), 'Product/flavor coverage changed');
+      const changed = Object.keys(before).filter((id) => before[id] !== after[id]);
+      for (const id of changed) console.error(`DIFF: ${id}`);
+      assert.equal(changed.length, 0, 'Collateral manifest changes');
+      console.log(
+        `PASS: ${Object.keys(before).length} byte-identical manifests across ${Object.keys(before).length / 2} products (Debug + Release), baseline ${values.base}.`
+      );
+    }
+
+    requireWorkerSuccess('before', runWorker('before'));
+    const testModes = process.env.SPM_COLLATERAL_TEST_MODES?.split(',').filter(Boolean) ?? [];
+    if (testModes.length > 0) {
+      for (const mode of testModes) {
+        const result = runWorker('after', mode);
+        try {
+          requireWorkerSuccess('after', result);
+          compareSnapshots();
+          console.log(`${mode}: EXIT 0`);
+        } catch (error) {
+          console.log(`${mode}: EXIT 1: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      }
+      return;
+    }
+
+    requireWorkerSuccess('after', runWorker('after'));
+    compareSnapshots();
   } finally {
     fs.rmSync(scratch, { recursive: true, force: true });
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+module.exports = { classifyInventory, formatInventoryAdditions };
+
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  });
+}

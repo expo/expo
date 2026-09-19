@@ -216,6 +216,7 @@ describe('runPrebuildEquivalence — agreement is a precondition of the whole ru
     );
 
     assert.equal(runPrebuildEquivalence(a, b, options(), runtime), 0);
+    assert.match(logs[0].split('\n')[0], /^Passed.*artifacts equivalent.*check did not run/);
     assert.deepEqual(calls, ['compare', 'log', 'log']);
     assert.match(logs[1], /ExpoApplication declares no spmPackages/);
   });
@@ -236,10 +237,11 @@ describe('runPrebuildEquivalence — agreement is a precondition of the whole ru
 
   it('exits 1 when the two artifacts are not equivalent', () => {
     const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage', spmPackages: SPM_PACKAGES }]);
-    const { runtime } = runtimeSpy(roots, false);
+    const { runtime, logs } = runtimeSpy(roots, false);
     const [a, b] = artifactPair(IMAGE_DEBUG, 'ExpoImage');
 
     assert.equal(runPrebuildEquivalence(a, b, options({ skipSpmPackagesCheck: true }), runtime), 1);
+    assert.match(logs[0].split('\n')[0], /^Failed.*artifacts not equivalent/);
   });
 });
 
@@ -665,7 +667,7 @@ describe('resolveSpmPackagesCheck — A and B must be the same build (review ite
     );
 
     assert.throws(() => resolveSpmPackagesCheck({ manifest: debugManifest() }, a, b, roots), {
-      message: /expo-image[\s\S]*expo-video/,
+      message: /package expo-image vs expo-video/,
     });
   });
 
@@ -681,7 +683,7 @@ describe('resolveSpmPackagesCheck — A and B must be the same build (review ite
     );
 
     assert.throws(() => resolveSpmPackagesCheck({ manifest: debugManifest() }, a, b, roots), {
-      message: /Debug[\s\S]*Release/,
+      message: /flavor Debug vs Release/,
     });
   });
 
@@ -794,5 +796,92 @@ describe('resolveSpmPackagesCheck — an override may not contradict the artifac
       ).flavor,
       'Debug'
     );
+  });
+});
+
+describe('round 6c command diagnostics', () => {
+  it('item 1: leads with failure when equivalent artifacts fail the dependency check', () => {
+    const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage', spmPackages: SPM_PACKAGES }]);
+    const { runtime, logs } = runtimeSpy(roots);
+    const [a, b] = artifactPair(IMAGE_DEBUG, 'ExpoImage');
+    for (const artifact of [a, b]) {
+      fs.removeSync(path.join(artifact, 'ios-arm64/ExpoImage.framework/ExpoImage'));
+    }
+
+    assert.equal(runPrebuildEquivalence(a, b, options({ manifest: debugManifest() }), runtime), 1);
+    assert.match(logs[0].split('\n')[0], /^Failed.*artifact.*equivalent.*dependenc/i);
+    assert.match(logs.join('\n'), /No ExpoImage binary/);
+  });
+
+  for (const side of ['A', 'B']) {
+    it(`item 7: explains a missing artifact on side ${side} before any verdict`, () => {
+      const roots = packagesDirWith('expo-image', [
+        { name: 'ExpoImage', spmPackages: SPM_PACKAGES },
+      ]);
+      const { runtime, logs } = runtimeSpy(roots);
+      const [a, b] = artifactPair(IMAGE_DEBUG, 'ExpoImage');
+      const missing = side === 'A' ? a : b;
+      fs.removeSync(missing);
+
+      assert.throws(
+        () => runPrebuildEquivalence(a, b, options({ manifest: debugManifest() }), runtime),
+        (error: unknown) => {
+          assert.ok(error instanceof Error);
+          assert.ok(error.message.includes(`There is no xcframework at ${missing} (side ${side})`));
+          assert.match(error.message, /cannot.*both[\s\S]*Build.*point/);
+          return true;
+        }
+      );
+      assert.deepEqual(logs, []);
+    });
+  }
+
+  it('item 9: explains an unreadable build log with a remedy', () => {
+    const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage', spmPackages: SPM_PACKAGES }]);
+    const { runtime, logs } = runtimeSpy(roots);
+    const [a, b] = artifactPair(IMAGE_DEBUG, 'ExpoImage');
+    const buildLog = path.join(a, 'missing.log');
+
+    assert.throws(
+      () => runPrebuildEquivalence(a, b, options({ manifest: debugManifest(), buildLog }), runtime),
+      { message: /Could not read build log[\s\S]*dependency[\s\S]*Pass --build-log/ }
+    );
+    assert.deepEqual(logs, []);
+  });
+
+  it('item 9: explains an unreadable config with a remedy', () => {
+    const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage' }]);
+    fs.writeFileSync(path.join(roots.packagesDir, 'expo-image/spm.config.json'), '{invalid');
+    const { runtime, logs } = runtimeSpy(roots);
+    const [a, b] = artifactPair(IMAGE_DEBUG, 'ExpoImage');
+
+    assert.throws(() => runPrebuildEquivalence(a, b, options(), runtime), {
+      message: /Could not read[\s\S]*spm\.config\.json[\s\S]*dependenc[\s\S]*Fix/,
+    });
+    assert.deepEqual(logs, []);
+  });
+
+  it('item 10: names sibling dependencies even when explicitly skipped', () => {
+    const roots = packagesDirWith('expo-camera', [
+      { name: 'ExpoCamera' },
+      { name: 'ExpoCameraBarcodeScanning', spmPackages: SPM_PACKAGES },
+    ]);
+    const { runtime, logs } = runtimeSpy(roots);
+    const [a, b] = artifactPair(
+      '.build/expo-camera/output/debug/xcframeworks/EXCamera.xcframework',
+      'EXCamera'
+    );
+
+    assert.equal(
+      runPrebuildEquivalence(
+        a,
+        b,
+        options({ product: 'ExpoCamera', skipSpmPackagesCheck: true }),
+        runtime
+      ),
+      0
+    );
+    assert.match(logs[1], /spm\.config\.json[\s\S]*ExpoCameraBarcodeScanning[\s\S]*spmPackages/);
+    assert.match(logs[1], /--skip-spm-packages-check/);
   });
 });

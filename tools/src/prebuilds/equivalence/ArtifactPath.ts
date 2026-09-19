@@ -45,14 +45,29 @@ export const ARTIFACT_PATH_LAYOUTS = [
  * when the path is somewhere else — a copy in a scratch directory, say.
  */
 export function parseArtifactPath(xcframeworkPath: string): ArtifactContext | null {
-  for (const layout of [SHARED_BUILD_TREE, PACKAGE_LOCAL_BUILD]) {
-    const match = xcframeworkPath.match(layout);
-    if (match) {
-      const [, packageName, flavor, artifactName] = match;
-      return { packageName, flavor: flavor === 'debug' ? 'Debug' : 'Release', artifactName };
-    }
+  const matches = [SHARED_BUILD_TREE, PACKAGE_LOCAL_BUILD]
+    .map((layout) => xcframeworkPath.match(layout))
+    .filter((match) => match !== null);
+  const repeated = ['.build', PACKAGE_LOCAL_BUILD_DIRECTORY].filter(
+    (marker) => xcframeworkPath.split('/').filter((segment) => segment === marker).length > 1
+  );
+  if (matches.length > 1 || repeated.length > 0) {
+    const ambiguity =
+      matches.length > 1
+        ? 'both output layouts match'
+        : `layout marker ${repeated.join(', ')} occurs more than once`;
+    throw new Error(
+      `${xcframeworkPath} is ambiguous: ${ambiguity}. The dependency check cannot choose a ` +
+        `package configuration without guessing. Point at an unambiguous prebuild output path ` +
+        `and preserve exactly one layout tail when copying an artifact.`
+    );
   }
-  return null;
+  const match = matches[0];
+  if (!match) {
+    return null;
+  }
+  const [, packageName, flavor, artifactName] = match;
+  return { packageName, flavor: flavor === 'debug' ? 'Debug' : 'Release', artifactName };
 }
 
 function escapeRegExp(value: string): string {

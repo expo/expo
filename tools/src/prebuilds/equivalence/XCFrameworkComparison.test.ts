@@ -864,3 +864,88 @@ describe('compareXCFrameworks — a slice holding no framework (review item 2)',
     assert.throws(() => compareXCFrameworks(a, b, options), { message: /no platform slice/ });
   });
 });
+
+describe('round 6c item 2: every interface belongs to a comparison', () => {
+  it('keeps a loose symlink to an indexed interface in the tree comparison', () => {
+    const a = makeXCFramework();
+    const b = clone(a);
+    fs.symlinkSync(
+      'ExpoFont.swiftmodule/arm64-apple-ios.swiftinterface',
+      slicePath(a, 'Modules/Loose.swiftinterface')
+    );
+
+    const report = compareXCFrameworks(a, b, options);
+    assert.equal(report.equivalent, false);
+    assert.match(formatEquivalenceReport(report), /Loose.swiftinterface/);
+  });
+
+  for (const relative of [
+    'Modules/Loose.swiftinterface',
+    'Resources/Loose.swiftinterface',
+    'Modules/ExpoFont.swiftmodule/nested/Loose.swiftinterface',
+  ]) {
+    it(`detects a one-sided ${relative}`, () => {
+      const a = makeXCFramework();
+      fs.ensureDirSync(path.dirname(slicePath(a, relative)));
+      const b = clone(a);
+      fs.outputFileSync(slicePath(a, relative), INTERFACE);
+      const report = compareXCFrameworks(a, b, options);
+      assert.equal(report.equivalent, false);
+      assert.match(formatEquivalenceReport(report), /Loose.swiftinterface|nested/);
+    });
+
+    it(`compares changed text in ${relative}`, () => {
+      const a = makeXCFramework();
+      fs.outputFileSync(slicePath(a, relative), INTERFACE);
+      const b = clone(a);
+      rewrite(slicePath(b, relative), (text) =>
+        text.replace('public func unload(name: Swift.String)', 'public func unload()')
+      );
+      const report = compareXCFrameworks(a, b, options);
+      assert.equal(report.equivalent, false);
+      assert.match(formatEquivalenceReport(report), /public func unload\(\)/);
+    });
+  }
+
+  for (const symlinks of [false, true]) {
+    it(`ignores a one-sided versioned package interface with symlinks=${symlinks}`, () => {
+      const a = makeXCFramework();
+      const b = clone(a);
+      for (const root of [a, b]) {
+        fs.moveSync(slicePath(root, 'Modules'), slicePath(root, 'Versions/A/Modules'));
+        if (symlinks) {
+          fs.symlinkSync('A', slicePath(root, 'Versions/Current'));
+          fs.symlinkSync('Versions/Current/Modules', slicePath(root, 'Modules'));
+        }
+      }
+      fs.removeSync(
+        slicePath(
+          b,
+          'Versions/A/Modules/ExpoFont.swiftmodule/arm64-apple-ios.package.swiftinterface'
+        )
+      );
+      const report = compareXCFrameworks(a, b, options);
+      assert.equal(report.equivalent, true, formatEquivalenceReport(report));
+    });
+
+    it(`compares versioned macOS interfaces with symlinks=${symlinks}`, () => {
+      const a = makeXCFramework();
+      const b = clone(a);
+      for (const root of [a, b]) {
+        fs.moveSync(slicePath(root, 'Modules'), slicePath(root, 'Versions/A/Modules'));
+        if (symlinks) {
+          fs.symlinkSync('A', slicePath(root, 'Versions/Current'));
+          fs.symlinkSync('Versions/Current/Modules', slicePath(root, 'Modules'));
+        }
+      }
+      assert.equal(compareXCFrameworks(a, b, options).equivalent, true);
+      rewrite(
+        slicePath(b, 'Versions/A/Modules/ExpoFont.swiftmodule/arm64-apple-ios.swiftinterface'),
+        (text) => text.replace('public func unload(name: Swift.String)', 'public func unload()')
+      );
+      const report = compareXCFrameworks(a, b, options);
+      assert.equal(report.equivalent, false);
+      assert.match(formatEquivalenceReport(report), /public func unload\(\)/);
+    });
+  }
+});

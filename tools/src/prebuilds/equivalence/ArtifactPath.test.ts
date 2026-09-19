@@ -103,3 +103,40 @@ describe('parseArtifactPath', () => {
     );
   });
 });
+
+describe('round 6c item 6: ambiguous layout markers', () => {
+  it('refuses a path matching both output layouts', () => {
+    assert.throws(
+      () =>
+        parseArtifactPath(
+          '/repo/packages/.build/.expo-prebuild/output/debug/xcframeworks/Foo.xcframework'
+        ),
+      {
+        message: /ambiguous[\s\S]*both.*layouts/i,
+      }
+    );
+  });
+
+  for (const [marker, artifact] of [
+    [
+      '.build',
+      '/repo/.build/outer/output/version/.build/inner/output/debug/xcframeworks/Foo.xcframework',
+    ],
+    [
+      '.expo-prebuild',
+      '/repo/outer/.expo-prebuild/output/version/inner/.expo-prebuild/output/debug/xcframeworks/Foo.xcframework',
+    ],
+  ]) {
+    it(`refuses a repeated ${marker} marker swallowed by the version prefix`, () => {
+      assert.throws(
+        () => parseArtifactPath(artifact),
+        (error: unknown) => {
+          assert.ok(error instanceof Error);
+          assert.match(error.message, /ambiguous[\s\S]*more than once/i);
+          assert.ok(error.message.includes(marker));
+          return true;
+        }
+      );
+    });
+  }
+});

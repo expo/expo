@@ -3,7 +3,7 @@ import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { describe, it } from 'node:test';
+import { before, describe, it } from 'node:test';
 
 /**
  * Compiled to `build/prebuilds/`, so the checkout is three levels up. Deliberately not
@@ -16,12 +16,29 @@ const gate = path.join(toolsDir, 'scripts', 'check-spm-manifest-collateral.cjs')
 
 type GateMode = 'production-depth' | 'marker-collision' | 'collateral-drift';
 
+type InventoryComparison = {
+  additions: string[];
+  comparable: string[];
+};
+
+const gateModule = require(gate) as {
+  classifyInventory: (
+    baseline: string[],
+    current: string[],
+    excluded?: ReadonlySet<string>
+  ) => InventoryComparison;
+  formatInventoryAdditions: (additions: string[]) => string | undefined;
+};
+
+const GATE_MODES: GateMode[] = ['production-depth', 'collateral-drift', 'marker-collision'];
+let sharedGateResult: SpawnSyncReturns<string>;
+
 /**
  * Instruments the generator from inside the gate's worker process: every mode reads or rewrites
  * the manifests as they are generated, which is the only way to perturb an input the gate derives
  * for itself.
  */
-const INSTRUMENT_WRITES = String.raw`
+const INSTRUMENT_READS = String.raw`
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -30,10 +47,21 @@ const writeFileSync = fs.writeFileSync;
 const readFileSync = fs.readFileSync;
 
 function inspect(file, content) {
+  const normalized = String(file).split(path.sep).join('/');
+  if (normalized.endsWith('/packages/expo-asset/spm.config.json')) {
+    const config = JSON.parse(Buffer.isBuffer(content) ? content.toString() : String(content));
+    if (process.env.SPM_COLLATERAL_INVENTORY_MODE === 'add-product') {
+      config.products.push({ ...config.products[0], name: 'Round6cAddedProduct' });
+      return JSON.stringify(config);
+    }
+    if (process.env.SPM_COLLATERAL_INVENTORY_MODE === 'remove-product') {
+      config.products = config.products.filter((product) => product.name !== 'ExpoAsset');
+      return JSON.stringify(config);
+    }
+  }
   if (path.basename(String(file)) !== 'Package.swift' || !String(file).includes('/after/')) {
     return content;
   }
-  const normalized = String(file).split(path.sep).join('/');
   const match = normalized.match(/^(.*\/after\/repo)\/packages\//);
   if (!match) return content;
   const fixtureRoot = match[1].split('/').join(path.sep);
@@ -63,10 +91,13 @@ fs.readFileSync = function (file, ...args) {
 };
 `;
 
-function runGate(mode: GateMode): SpawnSyncReturns<string> {
+function runGateModes(
+  modes: GateMode[],
+  inventoryMode: 'add-product' | 'remove-product'
+): SpawnSyncReturns<string> {
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-manifest-collateral-test-'));
-  const preload = path.join(scratch, 'instrument-writes.cjs');
-  fs.writeFileSync(preload, INSTRUMENT_WRITES);
+  const preload = path.join(scratch, 'instrument-reads.cjs');
+  fs.writeFileSync(preload, INSTRUMENT_READS);
   try {
     return spawnSync(process.execPath, [gate], {
       cwd: repo,
@@ -74,7 +105,8 @@ function runGate(mode: GateMode): SpawnSyncReturns<string> {
       env: {
         ...process.env,
         NODE_OPTIONS: [process.env.NODE_OPTIONS, `--require=${preload}`].filter(Boolean).join(' '),
-        SPM_COLLATERAL_TEST_MODE: mode,
+        SPM_COLLATERAL_INVENTORY_MODE: inventoryMode,
+        SPM_COLLATERAL_TEST_MODES: modes.join(','),
       },
       maxBuffer: 32 * 1024 * 1024,
     });
@@ -90,28 +122,118 @@ function runGate(mode: GateMode): SpawnSyncReturns<string> {
  * emit exactly what they emitted before.
  */
 describe('check-spm-manifest-collateral', () => {
-  it('passes at the production generated/<product>/Package.swift depth', () => {
-    const result = runGate('production-depth');
+  before(() => {
+    sharedGateResult = runGateModes(GATE_MODES, 'add-product');
+  });
 
-    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
-    assert.match(result.stdout, /PASS: 154 byte-identical manifests/);
+  it('passes at the production generated/<product>/Package.swift depth', () => {
+    assert.equal(
+      sharedGateResult.status,
+      0,
+      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
+    );
+    assert.match(sharedGateResult.stdout, /PASS: 154 byte-identical manifests/);
+    assert.match(sharedGateResult.stdout, /production-depth: EXIT 0/);
   });
 
   it('fails when a generated manifest drifts from the baseline', () => {
-    const result = runGate('collateral-drift');
-
-    assert.notEqual(result.status, 0, 'a manifest that no longer matches the baseline must fail');
-    assert.match(`${result.stdout}\n${result.stderr}`, /DIFF: /);
-    assert.match(`${result.stdout}\n${result.stderr}`, /Collateral manifest changes/);
+    assert.equal(
+      sharedGateResult.status,
+      0,
+      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
+    );
+    assert.match(sharedGateResult.stdout, /collateral-drift: EXIT 1: Collateral manifest changes/);
   });
 
   it('fails when a generated manifest contains the reserved normalization marker', () => {
-    const result = runGate('marker-collision');
+    assert.equal(
+      sharedGateResult.status,
+      0,
+      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
+    );
+    assert.match(sharedGateResult.stdout, /marker-collision: EXIT 1: after generator failed/);
+    assert.match(
+      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`,
+      /reserved normalization marker/i
+    );
+  });
 
-    assert.notEqual(result.status, 0, 'a literal normalization marker must fail the gate');
+  it('runs the exact three fault modes in one gate process', () => {
+    assert.equal(GATE_MODES.length, 3);
+    assert.equal(new Set(GATE_MODES).size, 3);
+    assert.deepEqual([...GATE_MODES].sort(), [
+      'collateral-drift',
+      'marker-collision',
+      'production-depth',
+    ]);
+  });
+});
+
+describe('collateral product inventory', () => {
+  it('compares products present in both inventories', () => {
+    assert.deepEqual(gateModule.classifyInventory(['expo-a/A'], ['expo-a/A']), {
+      additions: [],
+      comparable: ['expo-a/A'],
+    });
+  });
+
+  it('fails for a product present only in the baseline', () => {
+    assert.throws(
+      () => gateModule.classifyInventory(['expo-a/A'], []),
+      /Baseline SwiftPM products disappeared: expo-a\/A/
+    );
+  });
+
+  it('reports and permits a product present only in the current tree', () => {
+    const comparison = gateModule.classifyInventory([], ['expo-new/New']);
+
+    assert.deepEqual(comparison, { additions: ['expo-new/New'], comparable: [] });
+    assert.equal(
+      gateModule.formatInventoryAdditions(comparison.additions),
+      'INFO: Current-only SwiftPM products (not compared): expo-new/New'
+    );
+  });
+
+  it('carries a current-only product through the full gate without a baseline lookup', () => {
+    assert.equal(
+      sharedGateResult.status,
+      0,
+      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
+    );
+    assert.match(
+      sharedGateResult.stdout,
+      /INFO: Current-only SwiftPM products \(not compared\): expo-asset\/Round6cAddedProduct/
+    );
+    assert.match(sharedGateResult.stdout, /production-depth: EXIT 0/);
+  });
+
+  it('fails the full gate when a baseline product disappears', () => {
+    const result = runGateModes([], 'remove-product');
+
+    assert.notEqual(result.status, 0);
     assert.match(
       `${result.stdout}\n${result.stderr}`,
-      /reserved normalization marker.*<EXPO_ROOT_DIR>/i
+      /Baseline SwiftPM products disappeared: expo-asset\/ExpoAsset/
     );
+  });
+});
+
+describe('collateral gate diagnostics and harness', () => {
+  it('fails legibly when the baseline commit is unreachable', () => {
+    const missing = 'definitely-not-a-reachable-commit';
+    const result = spawnSync(process.execPath, [gate, '--base', missing], {
+      cwd: repo,
+      encoding: 'utf8',
+    });
+    const output = `${result.stdout}\n${result.stderr}`;
+
+    assert.notEqual(result.status, 0);
+    assert.match(
+      output,
+      new RegExp(`Unable to read SwiftPM manifest collateral baseline ${missing}`)
+    );
+    assert.match(output, /shallow clone/i);
+    assert.match(output, /fetch-depth: 0/);
+    assert.doesNotMatch(output, /\n\s+at /, 'diagnostic must not include a stack trace');
   });
 });

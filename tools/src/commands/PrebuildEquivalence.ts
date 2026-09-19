@@ -107,9 +107,8 @@ interface EquivalenceOutcome {
 /**
  * Decides the run and formats every line of it, printing none of them.
  *
- * `log` is deliberately not in scope here, and nothing after this returns can refuse. That is what
- * keeps a green verdict from reaching an operator ahead of a check that invalidates it: the
- * property holds by what this function can reach rather than by the order of the calls inside it.
+ * No output is printed until all checks finish. The leading line combines the artifact and
+ * dependency outcomes; the detailed artifact verdict alone cannot describe the whole run.
  */
 function decideEquivalence(
   pathA: string,
@@ -122,10 +121,16 @@ function decideEquivalence(
     labelA: options.labelA,
     labelB: options.labelB,
   });
-  const verdict = formatEquivalenceReport(report);
-
   if (!plan.checked) {
-    return { exitCode: report.equivalent ? 0 : 1, lines: [verdict, plan.reason] };
+    const outcome = report.equivalent ? 'Passed' : 'Failed';
+    return {
+      exitCode: report.equivalent ? 0 : 1,
+      lines: [
+        `${outcome} — artifacts ${report.equivalent ? 'equivalent' : 'not equivalent'}; SPM dependency check did not run.\n` +
+          formatEquivalenceReport(report),
+        plan.reason,
+      ],
+    };
   }
 
   const { product, flavor } = plan.input;
@@ -136,10 +141,13 @@ function decideEquivalence(
       (diagnostic.status === 'skipped' && options.allowMissingBuildLog)
   );
 
+  const passed = report.equivalent && spmPackagesOk;
   return {
-    exitCode: report.equivalent && spmPackagesOk ? 0 : 1,
+    exitCode: passed ? 0 : 1,
     lines: [
-      verdict,
+      `${passed ? 'Passed' : 'Failed'} — artifacts ${report.equivalent ? 'equivalent' : 'not equivalent'}; ` +
+        `SPM dependency check ${spmPackagesOk ? 'passed' : 'failed or incomplete'}.\n` +
+        formatEquivalenceReport(report),
       `SPM package dependencies of ${product} (${flavor}), read from both artifacts:`,
       formatSpmPackageDiagnostics(diagnostics),
       '',
@@ -172,12 +180,18 @@ export function resolveSpmPackagesCheck(
   const { packageName, flavor } = assertOverridesAgree(options, build);
 
   if (options.skipSpmPackagesCheck) {
+    const config = readProductConfig(roots, packageName);
+    const withPackages = config?.products.filter((product) => product.spmPackages?.length) ?? [];
     return {
       checked: false,
       reason:
         `The SPM dependency check was skipped with --skip-spm-packages-check, so nothing here ` +
         `rules out a silently dropped SwiftPM dependency: dropping one leaves the product's own ` +
-        `symbols and interface untouched, which is all the comparison above read. Drop the flag ` +
+        `symbols and interface untouched, which is all the comparison above read. ` +
+        (withPackages.length > 0
+          ? `${config!.configPath} declares ${listNames(withPackages)} with spmPackages. `
+          : '') +
+        `Drop the flag ` +
         `and pass --manifest with the Package.swift that produced this build to check it.\n`,
     };
   }
@@ -217,8 +231,10 @@ export function resolveSpmPackagesCheck(
       spmPackages: product.spmPackages,
       manifest,
       sharedSpmDepsRoot: Frameworks.getSharedSPMDepsRoot(),
-      buildLog: options.buildLog ? fs.readFileSync(options.buildLog, 'utf8') : '',
-      artifacts: [pathA, pathB].map(inspectArtifact),
+      buildLog: options.buildLog ? readBuildLog(options.buildLog) : '',
+      artifacts: [pathA, pathB].map((artifact, index) =>
+        inspectArtifact(artifact, index === 0 ? 'A' : 'B')
+      ),
     },
   };
 }
@@ -370,11 +386,9 @@ export function resolveProduct(
   packageName: string,
   names: { requested?: string; artifactName?: string }
 ): ResolvedProduct {
-  const candidates = [roots.packagesDir, roots.externalPackagesDir].map((root) =>
-    path.join(root, packageName, 'spm.config.json')
-  );
-  const configPath = candidates.find((candidate) => fs.existsSync(candidate));
-  if (!configPath) {
+  const config = readProductConfig(roots, packageName);
+  if (!config) {
+    const candidates = configCandidates(roots, packageName);
     throw new Error(
       `There is no spm.config.json for ${packageName}: neither ${candidates[0]} nor ` +
         `${candidates[1]} exists. The SPM dependency check is the only one that catches a ` +
@@ -383,8 +397,7 @@ export function resolveProduct(
         `package has no spm.config.json.`
     );
   }
-
-  const products: ProductConfig[] = fs.readJsonSync(configPath).products ?? [];
+  const { configPath, products } = config;
   const declared = listNames(products) || 'no products';
   const resolve = (product: ProductConfig): ResolvedProduct => ({
     configPath,
@@ -438,6 +451,47 @@ export function resolveProduct(
   );
 }
 
+function configCandidates(roots: ConfigRoots, packageName: string): string[] {
+  return [roots.packagesDir, roots.externalPackagesDir].map((root) =>
+    path.join(root, packageName, 'spm.config.json')
+  );
+}
+
+function readProductConfig(
+  roots: ConfigRoots,
+  packageName: string
+): { configPath: string; products: ProductConfig[] } | undefined {
+  const configPath = configCandidates(roots, packageName).find((candidate) =>
+    fs.existsSync(candidate)
+  );
+  if (!configPath) {
+    return undefined;
+  }
+  try {
+    const config: { products?: ProductConfig[] } = fs.readJsonSync(configPath);
+    return { configPath, products: config.products ?? [] };
+  } catch (error: unknown) {
+    throw new Error(
+      `Could not read ${configPath}: ${error instanceof Error ? error.message : String(error)}. ` +
+        `The SPM dependency check needs this configuration to know which dependencies the product ` +
+        `declares. Fix the file's JSON and read permissions, then run the comparison again.`
+    );
+  }
+}
+
+function readBuildLog(buildLog: string): string {
+  try {
+    return fs.readFileSync(buildLog, 'utf8');
+  } catch (error: unknown) {
+    throw new Error(
+      `Could not read build log ${buildLog}: ${error instanceof Error ? error.message : String(error)}. ` +
+        `The SPM dependency check needs the captured output to detect dropped-dependency warnings. ` +
+        `Pass --build-log with a readable log from this build, or omit it and use ` +
+        `--allow-missing-build-log to accept that gap.`
+    );
+  }
+}
+
 export function parseFlavor(value: string): BuildFlavor {
   const flavor = value.toLowerCase();
   if (flavor === 'debug') {
@@ -458,7 +512,14 @@ export function parseFlavor(value: string): BuildFlavor {
  * basename rather than by the product name: the product `ExpoApplication` builds
  * `EXApplication.xcframework`, and a slice can carry a second framework beside the product's.
  */
-function inspectArtifact(xcframeworkPath: string): InspectedArtifact {
+function inspectArtifact(xcframeworkPath: string, label: string): InspectedArtifact {
+  if (!fs.existsSync(xcframeworkPath)) {
+    throw new Error(
+      `There is no xcframework at ${xcframeworkPath} (side ${label}). The equivalence check ` +
+        `compares two built artifacts, so it cannot start without both. Build the package first ` +
+        `(\`et prebuild <package> -f <flavor>\`) or point at an existing xcframework.`
+    );
+  }
   const framework = path.basename(xcframeworkPath, '.xcframework');
   const binaries = fs
     .readdirSync(xcframeworkPath, { withFileTypes: true })

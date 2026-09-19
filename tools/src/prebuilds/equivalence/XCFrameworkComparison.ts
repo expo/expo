@@ -58,13 +58,6 @@ interface TreeEntry {
 const IGNORED_ENTRY = /^dSYMs(\/|$)|(^|\/)_CodeSignature(\/|$)/;
 
 /**
- * Owned by the interface comparison, which normalizes the text before diffing it — but only inside
- * a `.framework`, which is the only place it looks. One loose in a slice stays in the tree
- * comparison rather than falling between the two.
- */
-const SWIFT_INTERFACE_IN_FRAMEWORK = /(^|\/)[^/]+\.framework\/.*\.swiftinterface$/;
-
-/**
  * Compared by content, not only by name. Headers carry the whole public API of a pure-ObjC
  * package, which emits no `.swiftinterface` and whose method signatures export no symbols.
  */
@@ -76,10 +69,9 @@ const MODULE_FLAGS = /^\/\/ swift-module-flags(?:-ignorable)?:/;
  * Compared only when both sides have one.
  *
  * A `.package.swiftinterface` declares `package`-level API: reachable from the rest of the same
- * Swift package, never from a consumer of the built framework. Whether it is emitted at all
- * depends on the compiler being passed `-package-name`, which the two build systems this command
- * exists to compare do differently — so one side having it is a fact about the build systems, not
- * a difference between the artifacts. Its contents, when both sides do have one, still are.
+ * Swift package, never from a consumer of the built framework. Its absence on one side therefore
+ * does not change the API these artifacts expose to consumers. When both sides carry one, its
+ * contents are still compared.
  */
 const PACKAGE_INTERFACE_SUFFIX = '.package.swiftinterface';
 
@@ -563,19 +555,37 @@ function listFrameworks(sliceDir: string): string[] {
     .map((entry) => entry.name);
 }
 
-function readTree(dir: string, prefix = ''): TreeEntry[] {
+function readTree(dir: string, prefix = '', comparedInterfaces?: Set<string>): TreeEntry[] {
   if (!fs.existsSync(dir)) {
     return [];
   }
+  if (!comparedInterfaces) {
+    dir = fs.realpathSync(dir);
+  }
+  // Exclude the exact files the interface comparison reads. Canonical paths also cover a
+  // versioned macOS framework whose Modules entry is a symlink into Versions/A.
+  const interfaces =
+    comparedInterfaces ??
+    new Set(
+      listFrameworks(dir).flatMap((framework) =>
+        findSwiftInterfaces(path.join(dir, framework)).flatMap((file) => [
+          path.resolve(file),
+          fs.realpathSync(file),
+        ])
+      )
+    );
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
-    if (IGNORED_ENTRY.test(relativePath) || SWIFT_INTERFACE_IN_FRAMEWORK.test(relativePath)) {
+    if (
+      IGNORED_ENTRY.test(relativePath) ||
+      (entry.name.endsWith('.swiftinterface') && interfaces.has(path.resolve(dir, entry.name)))
+    ) {
       return [];
     }
     return entry.isDirectory()
       ? [
           { path: relativePath, isDirectory: true },
-          ...readTree(path.join(dir, entry.name), relativePath),
+          ...readTree(path.join(dir, entry.name), relativePath, interfaces),
         ]
       : [{ path: relativePath, isDirectory: false }];
   });
