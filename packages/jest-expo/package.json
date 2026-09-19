@@ -37,13 +37,15 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^29.2.1",
-    "@jest/globals": "^29.2.1",
-    "babel-jest": "^29.2.1",
-    "jest-environment-jsdom": "^29.2.1",
-    "jest-snapshot": "^29.2.1",
+    "@jest/create-cache-key-function": "^30.0.0",
+    "@jest/globals": "^30.0.0",
+    "babel-jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.0",
+    "jest-environment-node": "^30.0.0",
+    "jest-mock": "^30.0.0",
+    "jest-snapshot": "^30.0.0",
     "jest-watch-select-projects": "^2.0.0",
-    "jest-watch-typeahead": "2.2.1",
+    "jest-watch-typeahead": "^3.0.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
     "react-test-renderer": "19.3.0",
@@ -52,12 +54,14 @@
   },
   "devDependencies": {
     "@react-native/jest-preset": "0.88.0-rc.1",
+    "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
     "@react-native/jest-preset": "^0.88.0-rc.1",
     "expo": "*",
+    "jest": "^30.0.0",
     "react-native": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4 || ~19.3.0"
   },

@@ -6,7 +6,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "rootDir": "src"
+    "rootDir": "src",
+    // Tests import `fs`; `@types/jest@30` no longer pulls in `@types/node` transitively.
+    "types": ["node"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
