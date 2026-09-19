@@ -1,6 +1,6 @@
 import {
-  BottomSheet,
   Button,
+  ContentUnavailableView,
   Host,
   HStack,
   Image,
@@ -8,20 +8,25 @@ import {
   List,
   NavigationDestination,
   NavigationLink,
+  NavigationSplitView,
+  type NavigationSplitViewColumn,
   NavigationStack,
+  ScrollView,
   Section,
   Spacer,
   Text,
   Toolbar,
+  ToolbarItem,
   VStack,
 } from '@expo/ui/swift-ui';
 import {
   buttonStyle,
   font,
   foregroundStyle,
+  frame,
   navigationTitle,
   padding,
-  presentationDetents,
+  tag,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
@@ -150,39 +155,82 @@ const HABITATS = [
 type Bird = (typeof HABITATS)[number]['birds'][number];
 type Selection = Bird & { habitat: string };
 
+const TOTAL_BIRDS = HABITATS.reduce((total, habitat) => total + habitat.birds.length, 0);
+
+/**
+ * A two column layout of the kind iPhone Duo is built around.
+ *
+ * Folded, the outer display is compact width, so the split view collapses to one column and
+ * `preferredCompactColumn` decides which one is on screen. Unfolded, the inner display is regular
+ * width and both columns sit side by side, the same way Mail shows the message list and a message
+ * together. The same code covers both, which is what the Human Interface Guidelines ask for:
+ * adapt by size class rather than by device.
+ *
+ * The detail toolbar is deliberately busy. On Duo the system moves toolbars to the side and
+ * overflows items from the bottom up, so the placements below are what decides which action
+ * survives on the narrow outer display.
+ */
 export default function NavigationStackScreen() {
   const [selected, setSelected] = React.useState<Selection | null>(null);
-  const [isPresented, setIsPresented] = React.useState(false);
+  const [favourites, setFavourites] = React.useState<string[]>([]);
   const [descending, setDescending] = React.useState(false);
   const [path, setPath] = React.useState<string[]>([]);
+  // Controlled in both directions. Setting it without the callback pins the collapsed view to
+  // the sidebar forever, because SwiftUI's own write is skipped and never echoed back.
+  const [compactColumn, setCompactColumn] = React.useState<NavigationSplitViewColumn>('sidebar');
 
   const sort = (birds: readonly Bird[]) =>
     [...birds].sort((a, b) =>
       descending ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name)
     );
 
+  const isFavourite = selected ? favourites.includes(selected.name) : false;
+
+  const toggleFavourite = () => {
+    if (!selected) {
+      return;
+    }
+    setFavourites((current) =>
+      current.includes(selected.name)
+        ? current.filter((name) => name !== selected.name)
+        : [...current, selected.name]
+    );
+  };
+
   return (
     <Host style={{ flex: 1 }}>
-      <NavigationStack path={path} onPathChange={setPath}>
-        {/* The title and the sort button both belong to the bar this stack provides. */}
-        <Toolbar modifiers={[navigationTitle('Birds')]}>
-          <BottomSheet
-            isPresented={isPresented}
-            onIsPresentedChange={setIsPresented}
-            // Cleared only once the sheet is fully gone, so its content does not
-            // blank out mid dismiss.
-            onDismiss={() => setSelected(null)}
-            anchor={
-              <List>
+      <NavigationSplitView
+        preferredCompactColumn={compactColumn}
+        onPreferredCompactColumnChange={setCompactColumn}>
+        <NavigationSplitView.Sidebar>
+          <NavigationStack path={path} onPathChange={setPath}>
+            <Toolbar modifiers={[navigationTitle('Birds')]}>
+              {/* Controlled in both directions, for the same reason as `preferredCompactColumn`:
+                  a selection prop without its callback leaves the two sides diverged. */}
+              <List
+                selection={selected ? [selected.name] : []}
+                onSelectionChange={(selection) => {
+                  const name = selection[0];
+                  const bird = HABITATS.flatMap((habitat) =>
+                    habitat.birds.map((entry) => ({ ...entry, habitat: habitat.title }))
+                  ).find((entry) => entry.name === name);
+
+                  if (bird) {
+                    setSelected(bird);
+                    setCompactColumn('detail');
+                  }
+                }}>
                 {HABITATS.map((habitat) => (
                   <Section key={habitat.title} title={habitat.title}>
                     {sort(habitat.birds).map((bird) => (
                       <Button
                         key={bird.name}
-                        modifiers={[buttonStyle('plain')]}
+                        modifiers={[buttonStyle('plain'), tag(bird.name)]}
                         onPress={() => {
                           setSelected({ ...bird, habitat: habitat.title });
-                          setIsPresented(true);
+                          // A plain state change does not move a collapsed split view. The tap
+                          // has to ask for the detail column itself.
+                          setCompactColumn('detail');
                         }}>
                         <HStack spacing={12}>
                           <Label
@@ -205,11 +253,19 @@ export default function NavigationStackScreen() {
                             </VStack>
                           </Label>
                           <Spacer />
-                          <Image
-                            systemName="chevron.right"
-                            size={13}
-                            modifiers={[foregroundStyle('tertiaryLabel')]}
-                          />
+                          {favourites.includes(bird.name) ? (
+                            <Image
+                              systemName="star.fill"
+                              size={13}
+                              modifiers={[foregroundStyle('#E8C547')]}
+                            />
+                          ) : (
+                            <Image
+                              systemName="chevron.right"
+                              size={13}
+                              modifiers={[foregroundStyle('tertiaryLabel')]}
+                            />
+                          )}
                         </HStack>
                       </Button>
                     ))}
@@ -222,74 +278,113 @@ export default function NavigationStackScreen() {
                   </NavigationLink>
                 </Section>
               </List>
-            }>
-            {/* A sheet has no navigation bar of its own. The stack adds one, which gives the
-                `close` button somewhere to sit. iOS 26 draws that button as an xmark. */}
-            <NavigationStack modifiers={[presentationDetents(['medium', 'large'])]}>
-              <Toolbar modifiers={[navigationTitle(selected?.name ?? '')]}>
-                <VStack alignment="leading" spacing={16} modifiers={[padding({ all: 20 })]}>
-                  <HStack spacing={12}>
-                    <Image
-                      systemName={selected?.systemImage ?? 'bird.fill'}
-                      size={34}
-                      modifiers={[foregroundStyle(selected?.color ?? 'label')]}
-                    />
-                    <VStack alignment="leading" spacing={2}>
-                      <Text modifiers={[font({ textStyle: 'headline' })]}>
-                        {selected?.name ?? ''}
-                      </Text>
-                      <Text
-                        modifiers={[
-                          font({ textStyle: 'subheadline' }),
-                          foregroundStyle('secondaryLabel'),
-                        ]}>
-                        {selected?.latin ?? ''}
-                      </Text>
-                    </VStack>
-                  </HStack>
 
-                  <Label
-                    title={selected?.habitat ?? ''}
-                    systemImage="mappin.and.ellipse"
-                    modifiers={[
-                      font({ textStyle: 'subheadline' }),
-                      foregroundStyle('secondaryLabel'),
-                    ]}
+              <Toolbar.Content>
+                <ToolbarItem placement="topBarTrailing">
+                  <Button
+                    systemImage="arrow.up.arrow.down"
+                    label={descending ? 'Sort Z to A' : 'Sort A to Z'}
+                    onPress={() => setDescending((value) => !value)}
                   />
+                </ToolbarItem>
+                <ToolbarItem placement="bottomBar">
+                  <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+                    {`${TOTAL_BIRDS} birds`}
+                  </Text>
+                </ToolbarItem>
+              </Toolbar.Content>
+            </Toolbar>
 
-                  <Text>{selected?.description ?? ''}</Text>
-                  <Spacer />
-                </VStack>
+            <NavigationDestination value="about">
+              <VStack
+                alignment="leading"
+                spacing={12}
+                modifiers={[padding({ all: 20 }), navigationTitle('About')]}>
+                <Text modifiers={[font({ textStyle: 'headline' })]}>British garden birds</Text>
+                <Text>
+                  Each habitat lists the species you are most likely to see there. Pick a bird to
+                  read about it in the second column.
+                </Text>
+                <Spacer />
+              </VStack>
+            </NavigationDestination>
+          </NavigationStack>
+        </NavigationSplitView.Sidebar>
 
-                <Toolbar.Content>
-                  <Button role="close" onPress={() => setIsPresented(false)} />
-                </Toolbar.Content>
-              </Toolbar>
-            </NavigationStack>
-          </BottomSheet>
+        <NavigationSplitView.Detail>
+          <NavigationStack>
+            <Toolbar modifiers={[navigationTitle(selected?.name ?? '')]}>
+              {selected ? (
+                <ScrollView>
+                  <VStack alignment="leading" spacing={16} modifiers={[padding({ all: 20 })]}>
+                    <HStack spacing={12}>
+                      <Image
+                        systemName={selected.systemImage}
+                        size={34}
+                        modifiers={[foregroundStyle(selected.color)]}
+                      />
+                      <VStack alignment="leading" spacing={2}>
+                        <Text modifiers={[font({ textStyle: 'headline' })]}>{selected.name}</Text>
+                        <Text
+                          modifiers={[
+                            font({ textStyle: 'subheadline' }),
+                            foregroundStyle('secondaryLabel'),
+                          ]}>
+                          {selected.latin}
+                        </Text>
+                      </VStack>
+                    </HStack>
 
-          <Toolbar.Content>
-            <Button
-              systemImage="arrow.up.arrow.down"
-              label={descending ? 'Sort Z to A' : 'Sort A to Z'}
-              onPress={() => setDescending((value) => !value)}
-            />
-          </Toolbar.Content>
-        </Toolbar>
-        <NavigationDestination value="about">
-          <VStack
-            alignment="leading"
-            spacing={12}
-            modifiers={[padding({ all: 20 }), navigationTitle('About')]}>
-            <Text modifiers={[font({ textStyle: 'headline' })]}>British garden birds</Text>
-            <Text>
-              Each habitat lists the species you are most likely to see there. Tap a bird to open
-              its description in a sheet.
-            </Text>
-            <Spacer />
-          </VStack>
-        </NavigationDestination>
-      </NavigationStack>
+                    <Label
+                      title={selected.habitat}
+                      systemImage="mappin.and.ellipse"
+                      modifiers={[
+                        font({ textStyle: 'subheadline' }),
+                        foregroundStyle('secondaryLabel'),
+                      ]}
+                    />
+
+                    <Text modifiers={[frame({ maxWidth: 680, alignment: 'leading' })]}>
+                      {selected.description}
+                    </Text>
+                    <Spacer />
+                  </VStack>
+                </ScrollView>
+              ) : (
+                <ContentUnavailableView
+                  title="No bird selected"
+                  systemImage="bird"
+                  description="Pick a species from the list to read about it."
+                />
+              )}
+
+              <Toolbar.Content>
+                {/* Pinned and high priority, so it is the last thing to overflow on Duo. */}
+                <ToolbarItem placement="topBarPinnedTrailing" visibilityPriority="high">
+                  <Button
+                    systemImage={isFavourite ? 'star.fill' : 'star'}
+                    label={isFavourite ? 'Remove favourite' : 'Add favourite'}
+                    onPress={toggleFavourite}
+                  />
+                </ToolbarItem>
+                <ToolbarItem placement="primaryAction">
+                  <Button systemImage="square.and.arrow.up" label="Share" onPress={() => {}} />
+                </ToolbarItem>
+                {/* Lowered, so these two give up their place before anything else. */}
+                <ToolbarItem placement="secondaryAction" visibilityPriority="low">
+                  <Button systemImage="map" label="Show range" onPress={() => {}} />
+                </ToolbarItem>
+                <ToolbarItem placement="secondaryAction" visibilityPriority="low">
+                  <Button systemImage="speaker.wave.2" label="Play call" onPress={() => {}} />
+                </ToolbarItem>
+                <ToolbarItem placement="bottomBar">
+                  <Button systemImage="plus.circle" label="Log sighting" onPress={() => {}} />
+                </ToolbarItem>
+              </Toolbar.Content>
+            </Toolbar>
+          </NavigationStack>
+        </NavigationSplitView.Detail>
+      </NavigationSplitView>
     </Host>
   );
 }
