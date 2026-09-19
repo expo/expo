@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a crash in `getAssetInfoAsync` on Live Photos, where the `.opportunistic` delivery mode made `requestLivePhoto` settle the promise more than once. ([#50295](https://github.com/expo/expo/pull/50295) by [@henriquegpb](https://github.com/henriquegpb))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
