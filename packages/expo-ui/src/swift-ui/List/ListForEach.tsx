@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
+import { DataListForEach, type DataListForEachProps } from './DataListForEach';
 
 const ListForEachNativeView: React.ComponentType<NativeListForEachProps> =
   requireNativeView<NativeListForEachProps>('ExpoUI', 'ListForEachView');
@@ -14,9 +15,16 @@ type NativeListForEachProps = CommonViewModifierProps &
   DeleteEvent &
   MoveEvent & {
     children: React.ReactNode;
+    deleteEnabled: boolean;
+    moveEnabled: boolean;
   };
 
 export interface ListForEachProps extends CommonViewModifierProps {
+  data?: never;
+  keyExtractor?: never;
+  renderItem?: never;
+  overscanCount?: never;
+  estimatedItemSize?: never;
   /**
    * The children elements to be rendered inside the `List.ForEach`.
    */
@@ -38,13 +46,21 @@ export interface ListForEachProps extends CommonViewModifierProps {
 }
 
 /**
- * A compound component of `List` that enables item deletion and reordering.
- * This component must be used as a child of `List` (as `List.ForEach`).
+ * A group of rows inside List, with optional deletion and reordering.
+ * Pass `children`, or `data` with `keyExtractor` and `renderItem`.
+ * The `data` and `renderItem` form recycles rows.
  */
-export function ListForEach({ children, onDelete, onMove, ...props }: ListForEachProps) {
+export function ListForEach<ItemT>(props: ListForEachProps | DataListForEachProps<ItemT>) {
+  if (props.data !== undefined) return <DataListForEach {...props} />;
+  return <ChildrenListForEach {...props} />;
+}
+
+function ChildrenListForEach({ children, onDelete, onMove, ...props }: ListForEachProps) {
   return (
     <ListForEachNativeView
       {...props}
+      deleteEnabled={!!onDelete}
+      moveEnabled={!!onMove}
       onDelete={onDelete ? ({ nativeEvent }) => onDelete(nativeEvent.indices) : undefined}
       onMove={
         onMove

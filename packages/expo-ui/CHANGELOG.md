@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `data`, `keyExtractor` and `renderItem` props to `List.ForEach`. Rows are recycled from a small pool around the visible range, so large lists only render the rows near the viewport. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
