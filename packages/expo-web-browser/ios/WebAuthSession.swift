@@ -6,7 +6,7 @@ import AuthenticationServices
 private class PresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
     #if os(iOS)
-    return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
+    return SceneGeometry.keyWindow() ?? ASPresentationAnchor()
     #else
     return NSApp.mainWindow ?? ASPresentationAnchor()
     #endif

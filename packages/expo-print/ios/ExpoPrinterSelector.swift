@@ -10,7 +10,7 @@ public class ExpoPrinterSelector {
   }
 
   func selectPrinter(promise: Promise) {
-    guard let rootController = UIApplication.shared.keyWindow?.rootViewController else {
+    guard let rootController = SceneGeometry.keyWindow()?.rootViewController else {
       promise.reject(ViewControllerNotFoundException())
       return
     }
