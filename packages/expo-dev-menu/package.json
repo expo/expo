@@ -39,13 +39,13 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "catalog:",
     "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.1"
+    "react-native": "catalog:"
   },
   "peerDependencies": {
     "expo": "*",

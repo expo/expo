@@ -100,7 +100,7 @@
     "react-native-worklets": "0.12.2"
   },
   "devDependencies": {
-    "@types/react": "~19.3.0"
+    "@types/react": "catalog:"
   },
   "expo": {
     "autolinking": {

@@ -37,8 +37,8 @@
     "node-forge": "^1.3.3"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@types/node-forge": "^1.0.0",
+    "@types/node": "catalog:",
+    "@types/node-forge": "catalog:",
     "expo-module-scripts": "workspace:*"
   }
 }

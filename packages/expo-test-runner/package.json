@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   }
 }
