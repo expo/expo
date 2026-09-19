@@ -64,12 +64,13 @@ export function createBrowserHistoryAdapter(): BrowserHistoryAdapter {
 
       pending.push(done);
 
-      // If navigation didn't happen within 100ms, assume that it won't happen
+      // If navigation didn't happen within 1000ms, assume that it won't happen
       // This may not be accurate, but hopefully it won't take so much time
       // In Chrome, navigation seems to happen instantly in next microtask
-      // But on Firefox, it seems to take much longer, around 50ms from our testing
+      // But on Firefox, the traversal can take much longer when the main thread
+      // is busy, e.g. it was measured to take up to ~900ms while rendering a new screen
       // We're using a hacky timeout since there doesn't seem to be way to know for sure
-      const timer = setTimeout(done, 100);
+      const timer = setTimeout(done, 1000);
       const onPopState = () => done();
 
       window.addEventListener('popstate', onPopState);
