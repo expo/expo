@@ -24,7 +24,8 @@ CocoaPods and the SwiftPM autolinking plugin both still work.
 - worktree: `/Users/chrfalch/repos/expo/expo/.claude/worktrees/expo-swift-manifests`
 - branch: `chrfalch/expo-swift-manifests`
 - base: `main` @ `466da8e06a1`
-- tree CLEAN, nothing committed, nothing pushed
+- 2 WIP commits, PUSHED to origin 2026-09-19: `96945f98863` (source) + `cea69733b28`
+  (session state — DROP BEFORE PR). See the final Next step section.
 
 ## Findings that constrain the plan (verified, do not re-derive)
 
@@ -2294,14 +2295,30 @@ phantom assertion.
 **Fence note:** `SwiftInterfaceChecks.ts:64` went `function` → `export function` in round 6b, outside
 that round's fence. Accepted; 6c item 2 licenses the file.
 
-## Next step (2026-09-18) — CLEAR POINT, nothing running
+## Next step (2026-09-19) — round 6c RUNNING, round 9 queued
 
-No agents in flight. Both tracks have a reviewed, adjudicated cycle behind them.
+**Backup done (USER request 2026-09-19).** Everything that was uncommitted is now committed
+and pushed to `origin/chrfalch/expo-swift-manifests`:
+- `96945f98863` — source: Mode B + equivalence harness (`tools/`).
+- `cea69733b28` — session state: specs, ledger, astra reports. **DROP THIS COMMIT BEFORE THE PR.**
+  `.claude/ledger.md` is in the global gitignore, so it was force-added; it will not pick up
+  later edits on its own — re-add it with `-f` when backing up again.
+Base `466da8e06a1` is now reachable from the branch, so the collateral gate's baseline
+resolves locally. Item 4's CI failure is about the shallow clone in Actions, not the worktree.
 
-1. **Dispatch step 2 round 6c** — spec written: `.claude/specs/step-2-round6c-say-what-happened.md`.
-   Six must-fix, six should-fix. Suggested: `opus-implementer`, high. **Takes the build slot.**
-2. **Then step 1 round 9** — three small items, listed in the round-8 review section above (the
-   `node_modules` disagreeing-shape test, the misleading test name at `CheckedInManifest.test.ts:937`,
-   the `:110` wording). Small enough for in-thread. **Needs the build slot — not concurrent with 6c.**
-3. Then: step 2c (F73), step 2d (F76/F75), and step 3 (expo-haptics pilot) is still the first
-   migration.
+**Routing change (USER 2026-09-19): use Codex implementers, not Claude, to save tokens.**
+Round 6c went to `astra-implementer` (gpt-6-astra, xhigh) rather than `opus-implementer` —
+these specs are hard and crisply specified, which is Astra's tier; sol fills gaps on work
+this size. Round 9 is genuinely mechanical and goes to `sol-implementer`.
+
+1. **Step 2 round 6c — DISPATCHED 2026-09-19, astra-implementer xhigh, IN FLIGHT.**
+   Spec `.claude/specs/step-2-round6c-say-what-happened.md`. Six must-fix, six should-fix.
+   **Holds the build slot.**
+2. **Step 1 round 9 — QUEUED, spec written:** `.claude/specs/step-1-round9-name-what-is-covered.md`.
+   Three items, no behaviour change. Owner `sol-implementer`. **Needs the build slot — dispatch
+   only after 6c reports.** Concurrent `tools/` builds share one outDir and tsbuildinfo, so a
+   parallel run reports a wrong pass/fail.
+3. Then: step 2c (F73), step 2d (F76/F75), then step 3 (expo-haptics pilot) — still the first
+   real migration.
+
+Both rounds need review by a fresh agent before acceptance.
