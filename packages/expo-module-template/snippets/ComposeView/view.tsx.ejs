@@ -1,3 +1,5 @@
+<% const sdk = typeof compat === 'undefined' ? {} : compat; -%>
+<% if (sdk.modernExpoUI ?? true) { -%>
 import { requireNativeView } from 'expo';
 import { type PrimitiveBaseProps } from '@expo/ui/jetpack-compose';
 import { createViewModifierEventListener } from '@expo/ui/jetpack-compose/modifiers';
@@ -7,6 +9,39 @@ export interface <%- project.composeViewName %>Props extends PrimitiveBaseProps 
   title: string;
   children?: React.ReactNode;
 }
+<% } else { -%>
+import { requireNativeView } from 'expo';
+// `ExpoModifier` is the only modifier type `@expo/ui` exports on SDK 55. It is marked deprecated
+// there in favor of `ModifierConfig`, which SDK 55 does not export yet.
+import type { ExpoModifier } from '@expo/ui/jetpack-compose/modifiers';
+import * as React from 'react';
+
+export interface <%- project.composeViewName %>Props {
+  modifiers?: ExpoModifier[];
+  title: string;
+  children?: React.ReactNode;
+}
+
+// SDK 55 does not export this helper from @expo/ui.
+function createViewModifierEventListener(modifiers: ExpoModifier[]) {
+  const listeners = new Map<string, (params: Record<string, unknown>) => void>();
+  for (const modifier of modifiers) {
+    const listener = modifier.eventListener;
+    if (typeof listener === 'function') {
+      listeners.set(modifier.$type, (params) => listener(params));
+    }
+  }
+
+  return {
+    onGlobalEvent: ({ nativeEvent }: {
+      nativeEvent: { payload: [string, Record<string, unknown>] };
+    }) => {
+      const [eventName, params] = nativeEvent.payload;
+      listeners.get(eventName)?.(params);
+    },
+  };
+}
+<% } -%>
 
 const Native<%- project.composeViewName %> = requireNativeView<<%- project.composeViewName %>Props>(
   '<%- project.name %>',
