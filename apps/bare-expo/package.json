@@ -33,6 +33,7 @@
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.11.2",
     "expo": "workspace:*",
+    "expo-ai": "workspace:*",
     "expo-app-intents": "workspace:*",
     "expo-app-metrics": "workspace:*",
     "expo-background-fetch": "workspace:*",
