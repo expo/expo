@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the SwiftUI `ToolbarItem` component with `placement` and `visibilityPriority`. ([#50360](https://github.com/expo/expo/pull/50360) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
