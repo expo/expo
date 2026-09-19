@@ -350,7 +350,7 @@
     "react-native": "*",
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
-    "react-native-safe-area-context": ">= 5.4.0",
+    "react-native-safe-area-context": ">= 5.5.0",
     "react-native-screens": "^4.28.0 || ^5.0.0-alpha.3",
     "react-native-web": "*",
     "react-native-worklets": "*",

@@ -8,9 +8,9 @@
 'use client';
 
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '../views/ErrorBoundary';
+import { SafeAreaProvider } from '../views/SafeAreaProvider';
 import type { ErrorBoundaryProps } from '../views/Try';
 import { Try } from '../views/Try';
 import { Router } from './router/client';

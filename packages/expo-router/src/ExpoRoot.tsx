@@ -2,7 +2,6 @@
 
 import { type PropsWithChildren, Fragment, type ComponentType, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
@@ -23,6 +22,7 @@ import type { RequireContext } from './types';
 import { maybeHideSplashScreen } from './utils/splash';
 import { parseUrlUsingCustomBase } from './utils/url';
 import { RootUnmatched } from './views/RootUnmatched';
+import { SafeAreaProvider } from './views/SafeAreaProvider';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
 
