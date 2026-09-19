@@ -76,7 +76,7 @@ Then generate the patch and check its size:
   cmdCopy="bsdiff old.hbc new.hbc patch.bin && ls -lh patch.bin"
 />
 
-The size of **patch.bin** is the approximate download size for a user who moves from the old bundle to the new one. The diff will already be compressed, so you do not need to factor in the compression algorithm.
+The size of **patch.bin** is the approximate download size for a user who moves from the old bundle to the new one. The patch is already compressed, so you do not need to factor in the compression algorithm.
 
 Every patch is different, so you may want to try a variety of smaller and larger code changes to get a better idea of the potential impact of bundle diffing.
 
