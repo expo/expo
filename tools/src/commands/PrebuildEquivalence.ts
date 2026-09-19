@@ -180,7 +180,13 @@ export function resolveSpmPackagesCheck(
   const { packageName, flavor } = assertOverridesAgree(options, build);
 
   if (options.skipSpmPackagesCheck) {
-    const config = readProductConfig(roots, packageName);
+    let config: ReturnType<typeof readProductConfig>;
+    try {
+      config = readProductConfig(roots, packageName);
+    } catch {
+      // Sibling information only enriches the explicit skip diagnostic.
+      config = undefined;
+    }
     const withPackages = config?.products.filter((product) => product.spmPackages?.length) ?? [];
     return {
       checked: false,

@@ -22,6 +22,7 @@ type InventoryComparison = {
 };
 
 const gateModule = require(gate) as {
+  ensureBaselineReachable: (base: string) => void;
   classifyInventory: (
     baseline: string[],
     current: string[],
@@ -30,7 +31,6 @@ const gateModule = require(gate) as {
   formatInventoryAdditions: (additions: string[]) => string | undefined;
 };
 
-const GATE_MODES: GateMode[] = ['production-depth', 'collateral-drift', 'marker-collision'];
 let sharedGateResult: SpawnSyncReturns<string>;
 
 /**
@@ -91,8 +91,8 @@ fs.readFileSync = function (file, ...args) {
 };
 `;
 
-function runGateModes(
-  modes: GateMode[],
+function runGate(
+  mode: GateMode,
   inventoryMode: 'add-product' | 'remove-product'
 ): SpawnSyncReturns<string> {
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-manifest-collateral-test-'));
@@ -106,7 +106,7 @@ function runGateModes(
         ...process.env,
         NODE_OPTIONS: [process.env.NODE_OPTIONS, `--require=${preload}`].filter(Boolean).join(' '),
         SPM_COLLATERAL_INVENTORY_MODE: inventoryMode,
-        SPM_COLLATERAL_TEST_MODES: modes.join(','),
+        SPM_COLLATERAL_TEST_MODE: mode,
       },
       maxBuffer: 32 * 1024 * 1024,
     });
@@ -123,7 +123,7 @@ function runGateModes(
  */
 describe('check-spm-manifest-collateral', () => {
   before(() => {
-    sharedGateResult = runGateModes(GATE_MODES, 'add-product');
+    sharedGateResult = runGate('production-depth', 'add-product');
   });
 
   it('passes at the production generated/<product>/Package.swift depth', () => {
@@ -133,39 +133,21 @@ describe('check-spm-manifest-collateral', () => {
       `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
     );
     assert.match(sharedGateResult.stdout, /PASS: 154 byte-identical manifests/);
-    assert.match(sharedGateResult.stdout, /production-depth: EXIT 0/);
   });
 
   it('fails when a generated manifest drifts from the baseline', () => {
-    assert.equal(
-      sharedGateResult.status,
-      0,
-      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
-    );
-    assert.match(sharedGateResult.stdout, /collateral-drift: EXIT 1: Collateral manifest changes/);
+    const result = runGate('collateral-drift', 'add-product');
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 1, `${result.stdout}\n${result.stderr}`);
+    assert.match(result.stderr, /DIFF: /);
+    assert.match(result.stderr, /Collateral manifest changes/);
   });
 
   it('fails when a generated manifest contains the reserved normalization marker', () => {
-    assert.equal(
-      sharedGateResult.status,
-      0,
-      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
-    );
-    assert.match(sharedGateResult.stdout, /marker-collision: EXIT 1: after generator failed/);
-    assert.match(
-      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`,
-      /reserved normalization marker/i
-    );
-  });
-
-  it('runs the exact three fault modes in one gate process', () => {
-    assert.equal(GATE_MODES.length, 3);
-    assert.equal(new Set(GATE_MODES).size, 3);
-    assert.deepEqual([...GATE_MODES].sort(), [
-      'collateral-drift',
-      'marker-collision',
-      'production-depth',
-    ]);
+    const result = runGate('marker-collision', 'add-product');
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 1, `${result.stdout}\n${result.stderr}`);
+    assert.match(result.stderr, /reserved normalization marker <EXPO_ROOT_DIR>/i);
   });
 });
 
@@ -204,11 +186,11 @@ describe('collateral product inventory', () => {
       sharedGateResult.stdout,
       /INFO: Current-only SwiftPM products \(not compared\): expo-asset\/Round6cAddedProduct/
     );
-    assert.match(sharedGateResult.stdout, /production-depth: EXIT 0/);
+    assert.match(sharedGateResult.stdout, /PASS: 154 byte-identical manifests/);
   });
 
   it('fails the full gate when a baseline product disappears', () => {
-    const result = runGateModes([], 'remove-product');
+    const result = runGate('production-depth', 'remove-product');
 
     assert.notEqual(result.status, 0);
     assert.match(
@@ -219,6 +201,33 @@ describe('collateral product inventory', () => {
 });
 
 describe('collateral gate diagnostics and harness', () => {
+  it('formats the unreachable-baseline error at the reachability check itself', () => {
+    const missing = 'definitely-not-a-reachable-commit';
+    assert.throws(
+      () => gateModule.ensureBaselineReachable(missing),
+      (error: unknown) => {
+        assert.ok(error instanceof Error);
+        assert.ok(
+          error.message.startsWith(
+            `Unable to read SwiftPM manifest collateral baseline ${missing}.`
+          )
+        );
+        assert.equal(error.stack, error.message, 'the known baseline error needs no stack trace');
+        return true;
+      }
+    );
+  });
+
+  it('preserves stack traces for unexpected gate errors', () => {
+    const result = spawnSync(process.execPath, [gate, '--exclude', 'round6d-missing/Product'], {
+      cwd: repo,
+      encoding: 'utf8',
+    });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Exclusion does not name a real product: round6d-missing\/Product/);
+    assert.match(result.stderr, /\n\s+at classifyInventory /);
+  });
+
   it('fails legibly when the baseline commit is unreachable', () => {
     const missing = 'definitely-not-a-reachable-commit';
     const result = spawnSync(process.execPath, [gate, '--base', missing], {

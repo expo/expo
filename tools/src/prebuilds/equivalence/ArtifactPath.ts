@@ -48,8 +48,13 @@ export function parseArtifactPath(xcframeworkPath: string): ArtifactContext | nu
   const matches = [SHARED_BUILD_TREE, PACKAGE_LOCAL_BUILD]
     .map((layout) => xcframeworkPath.match(layout))
     .filter((match) => match !== null);
+  const match = matches[0];
+  if (!match) {
+    return null;
+  }
+  const matchedPath = xcframeworkPath.slice(match.index);
   const repeated = ['.build', PACKAGE_LOCAL_BUILD_DIRECTORY].filter(
-    (marker) => xcframeworkPath.split('/').filter((segment) => segment === marker).length > 1
+    (marker) => matchedPath.split('/').filter((segment) => segment === marker).length > 1
   );
   if (matches.length > 1 || repeated.length > 0) {
     const ambiguity =
@@ -61,10 +66,6 @@ export function parseArtifactPath(xcframeworkPath: string): ArtifactContext | nu
         `package configuration without guessing. Point at an unambiguous prebuild output path ` +
         `and preserve exactly one layout tail when copying an artifact.`
     );
-  }
-  const match = matches[0];
-  if (!match) {
-    return null;
   }
   const [, packageName, flavor, artifactName] = match;
   return { packageName, flavor: flavor === 'debug' ? 'Debug' : 'Release', artifactName };

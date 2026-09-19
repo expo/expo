@@ -74,6 +74,21 @@ describe('parseArtifactPath', () => {
     });
   }
 
+  for (const [marker, artifactPath] of [
+    [
+      '.build',
+      '/Users/x/.build/expo/packages/precompile/.build/expo-image/output/debug/xcframeworks/ExpoImage.xcframework',
+    ],
+    [
+      '.expo-prebuild',
+      '/Users/x/.expo-prebuild/expo/packages/expo-image/.expo-prebuild/output/debug/xcframeworks/ExpoImage.xcframework',
+    ],
+  ]) {
+    it(`ignores an unrelated ${marker} marker before the matched layout`, () => {
+      assert.deepEqual(parseArtifactPath(artifactPath), IMAGE);
+    });
+  }
+
   it('returns null for a path outside the prebuild output tree', () => {
     assert.equal(parseArtifactPath('/tmp/copy/ExpoImage.xcframework'), null);
   });
@@ -132,8 +147,13 @@ describe('round 6c item 6: ambiguous layout markers', () => {
         () => parseArtifactPath(artifact),
         (error: unknown) => {
           assert.ok(error instanceof Error);
-          assert.match(error.message, /ambiguous[\s\S]*more than once/i);
-          assert.ok(error.message.includes(marker));
+          assert.ok(error.message.startsWith(artifact));
+          assert.equal(
+            error.message.slice(artifact.length),
+            ` is ambiguous: layout marker ${marker} occurs more than once. The dependency check ` +
+              `cannot choose a package configuration without guessing. Point at an unambiguous ` +
+              `prebuild output path and preserve exactly one layout tail when copying an artifact.`
+          );
           return true;
         }
       );

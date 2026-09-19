@@ -216,7 +216,10 @@ describe('runPrebuildEquivalence — agreement is a precondition of the whole ru
     );
 
     assert.equal(runPrebuildEquivalence(a, b, options(), runtime), 0);
-    assert.match(logs[0].split('\n')[0], /^Passed.*artifacts equivalent.*check did not run/);
+    assert.equal(
+      logs[0].split('\n')[0],
+      'Passed — artifacts equivalent; SPM dependency check did not run.'
+    );
     assert.deepEqual(calls, ['compare', 'log', 'log']);
     assert.match(logs[1], /ExpoApplication declares no spmPackages/);
   });
@@ -241,7 +244,10 @@ describe('runPrebuildEquivalence — agreement is a precondition of the whole ru
     const [a, b] = artifactPair(IMAGE_DEBUG, 'ExpoImage');
 
     assert.equal(runPrebuildEquivalence(a, b, options({ skipSpmPackagesCheck: true }), runtime), 1);
-    assert.match(logs[0].split('\n')[0], /^Failed.*artifacts not equivalent/);
+    assert.equal(
+      logs[0].split('\n')[0],
+      'Failed — artifacts not equivalent; SPM dependency check did not run.'
+    );
   });
 });
 
@@ -800,6 +806,22 @@ describe('resolveSpmPackagesCheck — an override may not contradict the artifac
 });
 
 describe('round 6c command diagnostics', () => {
+  it('allows --skip-spm-packages-check with malformed config JSON', () => {
+    const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage', spmPackages: SPM_PACKAGES }]);
+    fs.writeFileSync(path.join(roots.packagesDir, 'expo-image/spm.config.json'), '{invalid');
+    const { runtime, calls, logs } = runtimeSpy(roots);
+    const [a, b] = artifactPair(IMAGE_DEBUG, 'ExpoImage');
+
+    assert.equal(runPrebuildEquivalence(a, b, options({ skipSpmPackagesCheck: true }), runtime), 0);
+    assert.deepEqual(calls, ['compare', 'log', 'log']);
+    assert.equal(
+      logs[0].split('\n')[0],
+      'Passed — artifacts equivalent; SPM dependency check did not run.'
+    );
+    assert.match(logs[1], /^The SPM dependency check was skipped with --skip-spm-packages-check/);
+    assert.doesNotMatch(logs[1], /declares .* with spmPackages/);
+  });
+
   it('item 1: leads with failure when equivalent artifacts fail the dependency check', () => {
     const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage', spmPackages: SPM_PACKAGES }]);
     const { runtime, logs } = runtimeSpy(roots);
@@ -809,7 +831,10 @@ describe('round 6c command diagnostics', () => {
     }
 
     assert.equal(runPrebuildEquivalence(a, b, options({ manifest: debugManifest() }), runtime), 1);
-    assert.match(logs[0].split('\n')[0], /^Failed.*artifact.*equivalent.*dependenc/i);
+    assert.equal(
+      logs[0].split('\n')[0],
+      'Failed — artifacts equivalent; SPM dependency check failed or incomplete.'
+    );
     assert.match(logs.join('\n'), /No ExpoImage binary/);
   });
 

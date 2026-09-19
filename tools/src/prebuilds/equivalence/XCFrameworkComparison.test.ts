@@ -190,7 +190,10 @@ describe('compareXCFrameworks — positive control (B1)', () => {
 
     assert.deepEqual(report.differences, []);
     assert.equal(report.equivalent, true);
-    assert.match(formatEquivalenceReport(report), /equivalent/i);
+    assert.equal(
+      formatEquivalenceReport(report).split('\n')[0],
+      'Equivalent — same exported symbols, same public interface, same structure.'
+    );
   });
 
   it('ignores dSYMs, which differ between any two builds', () => {
@@ -391,7 +394,13 @@ describe('compareXCFrameworks — the whole slice tree, not only *.framework (B1
     const report = compareXCFrameworks(a, b, options);
 
     assert.equal(report.equivalent, false);
-    assert.match(formatEquivalenceReport(report), new RegExp(BUNDLE.replace('.', '\\.')));
+    assert.deepEqual(
+      report.differences.map((difference) => difference.summary),
+      [
+        `Slice contents differ: only in A: ${BUNDLE}; none only in B`,
+        `Slice contents differ: only in A: ${BUNDLE}; none only in B`,
+      ]
+    );
   });
 
   it('detects a resource bundle removed from inside the framework', () => {
@@ -404,9 +413,12 @@ describe('compareXCFrameworks — the whole slice tree, not only *.framework (B1
     const report = compareXCFrameworks(a, b, options);
 
     assert.equal(report.equivalent, false);
-    assert.match(
-      formatEquivalenceReport(report),
-      new RegExp(`${PRODUCT}\\.framework/${BUNDLE}`.replace('.b', '\\.b'))
+    assert.deepEqual(
+      report.differences.map((difference) => difference.summary),
+      [
+        `Slice contents differ: only in A: ${PRODUCT}.framework/${BUNDLE}; none only in B`,
+        `Slice contents differ: only in A: ${PRODUCT}.framework/${BUNDLE}; none only in B`,
+      ]
     );
   });
 
@@ -418,7 +430,10 @@ describe('compareXCFrameworks — the whole slice tree, not only *.framework (B1
     const report = compareXCFrameworks(a, b, options);
 
     assert.equal(report.equivalent, false);
-    assert.match(formatEquivalenceReport(report), /PrivacyInfo\.xcprivacy/);
+    assert.equal(
+      report.differences[0].summary,
+      `Slice contents differ: only in A: ${BUNDLE}/PrivacyInfo.xcprivacy; none only in B`
+    );
   });
 
   it('detects changed PrivacyInfo.xcprivacy content', () => {
@@ -633,7 +648,10 @@ describe('formatEquivalenceReport', () => {
   it('leads with the verdict (A5)', () => {
     const a = makeXCFramework();
     const report = compareXCFrameworks(a, clone(a), options);
-    assert.match(formatEquivalenceReport(report).split('\n')[0], /^Equivalent/);
+    assert.equal(
+      formatEquivalenceReport(report).split('\n')[0],
+      'Equivalent — same exported symbols, same public interface, same structure.'
+    );
   });
 });
 
@@ -816,7 +834,10 @@ describe('compareXCFrameworks — a .swiftinterface outside a framework (round 6
     const report = compareXCFrameworks(a, b, options);
 
     assert.equal(report.equivalent, false);
-    assert.match(formatEquivalenceReport(report), /ExpoFontLoose\.swiftinterface/);
+    assert.equal(
+      report.differences[0].summary,
+      'Slice contents differ: only in A: ExpoFontLoose.swiftinterface; none only in B'
+    );
   });
 
   it('compares the contents of one both sides carry', () => {
@@ -850,7 +871,10 @@ describe('compareXCFrameworks — a slice holding no framework (review item 2)',
 
     const difference = report.differences.find((d) => d.slice === CATALYST);
     assert.ok(difference, 'expected the frameworkless slice to be compared');
-    assert.match(difference.summary, /PrivacyInfo\.xcprivacy/);
+    assert.equal(
+      difference.summary,
+      `Slice contents differ: only in A: ${BUNDLE}/PrivacyInfo.xcprivacy; none only in B`
+    );
     assert.equal(report.equivalent, false);
   });
 
@@ -876,7 +900,10 @@ describe('round 6c item 2: every interface belongs to a comparison', () => {
 
     const report = compareXCFrameworks(a, b, options);
     assert.equal(report.equivalent, false);
-    assert.match(formatEquivalenceReport(report), /Loose.swiftinterface/);
+    assert.equal(
+      report.differences[0].summary,
+      `Slice contents differ: only in A: ${PRODUCT}.framework/Modules/Loose.swiftinterface; none only in B`
+    );
   });
 
   for (const relative of [
@@ -891,7 +918,10 @@ describe('round 6c item 2: every interface belongs to a comparison', () => {
       fs.outputFileSync(slicePath(a, relative), INTERFACE);
       const report = compareXCFrameworks(a, b, options);
       assert.equal(report.equivalent, false);
-      assert.match(formatEquivalenceReport(report), /Loose.swiftinterface|nested/);
+      assert.equal(
+        report.differences[0].summary,
+        `Slice contents differ: only in A: ${PRODUCT}.framework/${relative}; none only in B`
+      );
     });
 
     it(`compares changed text in ${relative}`, () => {
@@ -903,6 +933,10 @@ describe('round 6c item 2: every interface belongs to a comparison', () => {
       );
       const report = compareXCFrameworks(a, b, options);
       assert.equal(report.equivalent, false);
+      assert.equal(
+        report.differences[0].summary,
+        `${PRODUCT}.framework/${relative}: only in A: public func unload(name: Swift.String); only in B: public func unload()`
+      );
       assert.match(formatEquivalenceReport(report), /public func unload\(\)/);
     });
   }
@@ -945,6 +979,10 @@ describe('round 6c item 2: every interface belongs to a comparison', () => {
       );
       const report = compareXCFrameworks(a, b, options);
       assert.equal(report.equivalent, false);
+      assert.equal(
+        report.differences[0].summary,
+        `${symlinks ? '' : '../Versions/A/Modules/'}ExpoFont.swiftmodule/arm64-apple-ios.swiftinterface: only in A: public func unload(name: Swift.String); only in B: public func unload()`
+      );
       assert.match(formatEquivalenceReport(report), /public func unload\(\)/);
     });
   }

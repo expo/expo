@@ -36,22 +36,21 @@ function git(...args) {
   });
 }
 
-function ensureBaselineReachable() {
+function ensureBaselineReachable(base = values.base) {
   try {
-    execFileSync(
-      'git',
-      ['-c', 'core.fsmonitor=false', 'cat-file', '-e', `${values.base}^{commit}`],
-      {
-        cwd: repo,
-        stdio: 'ignore',
-      }
-    );
+    execFileSync('git', ['-c', 'core.fsmonitor=false', 'cat-file', '-e', `${base}^{commit}`], {
+      cwd: repo,
+      stdio: 'ignore',
+    });
   } catch {
-    throw new Error(
-      `Unable to read SwiftPM manifest collateral baseline ${values.base}.\n` +
+    const error = new Error(
+      `Unable to read SwiftPM manifest collateral baseline ${base}.\n` +
         'Why: the baseline commit is unavailable; shallow clones do not contain enough history.\n' +
         'How to fix: fetch the baseline history (CI: set actions/checkout fetch-depth: 0; locally: run git fetch --unshallow).'
     );
+    // This expected setup failure is actionable on its own; other errors retain their stacks.
+    error.stack = error.message;
+    throw error;
   }
 }
 
@@ -326,7 +325,7 @@ async function main() {
       fs.symlinkSync(path.join(repo, 'tools/node_modules'), path.join(destination, 'node_modules'));
     }
 
-    function runWorker(label, mode) {
+    function runWorker(label) {
       const args = [__filename, '--worker', label, '--scratch', scratch, '--base', values.base];
       args.push('--only-comparable');
       for (const id of values.exclude) args.push('--exclude', id);
@@ -335,7 +334,6 @@ async function main() {
         const output = execFileSync(process.execPath, args, {
           cwd: repo,
           encoding: 'utf8',
-          env: { ...process.env, SPM_COLLATERAL_TEST_MODE: mode },
           stdio: ['pipe', 'pipe', 'pipe'],
           maxBuffer: 16 * 1024 * 1024,
         });
@@ -367,21 +365,6 @@ async function main() {
     }
 
     requireWorkerSuccess('before', runWorker('before'));
-    const testModes = process.env.SPM_COLLATERAL_TEST_MODES?.split(',').filter(Boolean) ?? [];
-    if (testModes.length > 0) {
-      for (const mode of testModes) {
-        const result = runWorker('after', mode);
-        try {
-          requireWorkerSuccess('after', result);
-          compareSnapshots();
-          console.log(`${mode}: EXIT 0`);
-        } catch (error) {
-          console.log(`${mode}: EXIT 1: ${error instanceof Error ? error.message : String(error)}`);
-        }
-      }
-      return;
-    }
-
     requireWorkerSuccess('after', runWorker('after'));
     compareSnapshots();
   } finally {
@@ -389,11 +372,11 @@ async function main() {
   }
 }
 
-module.exports = { classifyInventory, formatInventoryAdditions };
+module.exports = { classifyInventory, ensureBaselineReachable, formatInventoryAdditions };
 
 if (require.main === module) {
   main().catch((error) => {
-    console.error(error instanceof Error ? error.message : String(error));
+    console.error(error);
     process.exitCode = 1;
   });
 }
