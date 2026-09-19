@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Split `RouteNode` into a discriminated union on `type`, so each kind of node only declares the properties it can carry. ([#50171](https://github.com/expo/expo/pull/50171) by [@Ubax](https://github.com/Ubax))
 - Deprecate `withLayoutContext`. Use `integrateWithRouter` instead. ([#50337](https://github.com/expo/expo/pull/50337) by [@Ubax](https://github.com/Ubax))
 
 ## 58.0.4 — 2026-09-16

@@ -24,7 +24,6 @@ it(`should only load web routes`, () => {
   ).toEqual({
     children: [
       {
-        children: [],
         contextKey: './(app)/index.js',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -32,7 +31,6 @@ it(`should only load web routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page.web.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.web.ts'],
@@ -40,7 +38,6 @@ it(`should only load web routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page2.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page2.ts'],
@@ -48,7 +45,6 @@ it(`should only load web routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page3.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page3.ts'],
@@ -56,7 +52,6 @@ it(`should only load web routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page4.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page4.ts'],
@@ -91,7 +86,6 @@ it(`should skip platform routes when no platform has been provided`, () => {
   ).toEqual({
     children: [
       {
-        children: [],
         contextKey: './(app)/index.js',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -99,7 +93,6 @@ it(`should skip platform routes when no platform has been provided`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.ts'],
@@ -107,7 +100,6 @@ it(`should skip platform routes when no platform has been provided`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page2.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page2.ts'],
@@ -115,7 +107,6 @@ it(`should skip platform routes when no platform has been provided`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page3.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page3.ts'],
@@ -123,7 +114,6 @@ it(`should skip platform routes when no platform has been provided`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page4.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page4.ts'],
@@ -186,7 +176,6 @@ it(`can display platform routes`, () => {
   ).toEqual({
     children: [
       {
-        children: [],
         contextKey: './(app)/index.js',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -194,7 +183,6 @@ it(`can display platform routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.ts'],
@@ -225,7 +213,6 @@ it(`should work with layout routes`, () => {
       {
         children: [
           {
-            children: [],
             contextKey: './(app)/index.tsx',
             dynamic: null,
             entryPoints: [

@@ -563,8 +563,7 @@ it('reports a later action as unhandled after a same-batch reset changes the sta
 });
 
 it('resets a state slice when its router unregisters', () => {
-  const routeNode = node('root', [node('first'), node('second'), node('third')]);
-  routeNode.initialRouteName = 'second';
+  const routeNode = node('root', [node('first'), node('second'), node('third')], 'second');
   const registryEntry = { ...entry(() => null), routeNode };
   const result = renderReducer({
     registry: new Map([['root', registryEntry]]),

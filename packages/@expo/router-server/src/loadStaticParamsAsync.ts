@@ -1,6 +1,12 @@
-import type { DynamicConvention, RouteNode } from 'expo-router/internal/routing';
+import {
+  isLayoutRouteNode,
+  isScreenRouteNode,
+  type DynamicConvention,
+  type LayoutRouteNode,
+  type RouteNode,
+} from 'expo-router/internal/routing';
 
-export async function loadStaticParamsAsync(route: RouteNode): Promise<RouteNode> {
+export async function loadStaticParamsAsync(route: LayoutRouteNode): Promise<LayoutRouteNode> {
   const expandedChildren = await Promise.all(
     route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} }))
   );
@@ -39,7 +45,8 @@ async function loadStaticParamsRecursive(
   route: RouteNode,
   props: { parentParams: any }
 ): Promise<RouteNode[]> {
-  if (!route?.dynamic && !route?.children?.length) {
+  const children = isLayoutRouteNode(route) ? route.children : [];
+  if (!route?.dynamic && !children.length) {
     return [route];
   }
 
@@ -50,7 +57,7 @@ async function loadStaticParamsRecursive(
 
   const traverseForNode = async (nextParams: Record<string, string | string[]>) => {
     const nextChildren: RouteNode[] = [];
-    for (const child of route.children) {
+    for (const child of isLayoutRouteNode(route) ? route.children : []) {
       const children = await loadStaticParamsRecursive(child, {
         ...props,
         parentParams: nextParams,
@@ -66,7 +73,9 @@ async function loadStaticParamsRecursive(
       ...props.parentParams,
     };
 
-    route.children = await traverseForNode(nextParams);
+    if (isLayoutRouteNode(route)) {
+      route.children = await traverseForNode(nextParams);
+    }
 
     return [route];
   }
@@ -97,19 +106,21 @@ async function loadStaticParamsRecursive(
       const parsedRoute = createParsedRouteName(route.route, params);
       const generatedContextKey = createParsedRouteName(route.contextKey, params);
 
-      const generatedRoute = {
+      const generated = {
         ...route,
         // TODO: Add a new field for this
         contextKey: generatedContextKey,
         // Convert the dynamic route to a static route.
         dynamic: null,
         route: parsedRoute,
-        children: dynamicChildren,
       };
 
-      if (route.type === 'route') {
-        generatedRoute.parentContextKey = route.contextKey;
-      }
+      // Only layouts carry children, and only screens track the dynamic route they came from.
+      const generatedRoute: RouteNode = isLayoutRouteNode(route)
+        ? { ...generated, type: 'layout', children: dynamicChildren }
+        : isScreenRouteNode(route)
+          ? { ...generated, type: 'route', parentContextKey: route.contextKey }
+          : generated;
 
       return generatedRoute;
     })

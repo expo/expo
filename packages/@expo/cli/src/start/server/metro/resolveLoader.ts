@@ -1,4 +1,4 @@
-import type { RouteNode } from 'expo-router/build/Route';
+import { isScreenRouteNode, type RouteNode } from 'expo-router/build/Route';
 import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 /**
@@ -34,7 +34,7 @@ type FromRuntimeManifestRouteOptions = {
  * @see expo-router/src/loadStaticParamsAsync.ts
  */
 export function getLoaderRouteContextKey(route: RouteNode): string {
-  return route.dynamic === null && route.parentContextKey
+  return isScreenRouteNode(route) && route.dynamic === null && route.parentContextKey
     ? route.parentContextKey
     : route.contextKey;
 }
@@ -48,7 +48,7 @@ export function fromRuntimeManifestRoute(
   options: FromRuntimeManifestRouteOptions
 ): ResolvedLoaderRoute | null {
   // Skip internal routes (like `_sitemap` or `+not-found`)
-  if (route.internal) {
+  if (isScreenRouteNode(route) && route.internal) {
     return null;
   }
 

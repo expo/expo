@@ -42,6 +42,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       }),
     ];
     const route = {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any;
@@ -225,6 +226,7 @@ it('serializes HTML with async chunks in correct order for dynamic routes', () =
     isExporting: true,
     template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
     route: {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any,
@@ -271,6 +273,7 @@ it('places sync entry scripts after async chunks so preloaded chunks resolve syn
     isExporting: true,
     template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
     route: {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any,
