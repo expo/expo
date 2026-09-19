@@ -45,14 +45,14 @@
   "devDependencies": {
     "@expo/config-plugins": "workspace:*",
     "@expo/plist": "workspace:*",
-    "@expo/spawn-async": "^1.8.0",
+    "@expo/spawn-async": "catalog:",
     "@types/prompts": "^2.0.6",
-    "@vercel/ncc": "^0.38.4",
+    "@vercel/ncc": "catalog:",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
     "prompts": "^2.3.2",
-    "update-check": "^1.5.4"
+    "update-check": "catalog:"
   }
 }

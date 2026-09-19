@@ -37,6 +37,6 @@
     "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
-    "@types/react": "~19.3.0"
+    "@types/react": "catalog:"
   }
 }

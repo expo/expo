@@ -51,9 +51,9 @@
     "yaml": "^2.3.2"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
+    "@jest/globals": "catalog:",
     "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
     "jest": "^29.3.1"
   }

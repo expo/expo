@@ -58,8 +58,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@testing-library/react-native": "^14.0.1",
-    "@types/react": "~19.3.0",
+    "@testing-library/react-native": "catalog:",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

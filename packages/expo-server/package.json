@@ -93,11 +93,11 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/react": "~19.3.0",
+    "@types/express": "catalog:",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "npm-run-all2": "^8.0.4",
-    "rimraf": "^6.1.2"
+    "npm-run-all2": "catalog:",
+    "rimraf": "catalog:"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
