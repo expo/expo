@@ -27,6 +27,7 @@ _This version does not introduce any user-facing changes._
 - Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Write the `RCTMetroPort` Info.plist key so bare dev builds resolve their own Metro port instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Keep the Xcode project in sync when the app icon switches between a Liquid Glass `.icon` package and a PNG icon. ([#46070](https://github.com/expo/expo/pull/46070) by [@debugtheworldbot](https://github.com/debugtheworldbot))
+- [iOS] Point the `ios.backgroundColor` prebuild warning at the `expo-system-ui` reference instead of the removed `build-reference/migrating` page, which returns a 404. ([#49791](https://github.com/expo/expo/pull/49791) by [@dennytosp](https://github.com/dennytosp))
 
 ## 57.0.10 - 2026-07-29
 
