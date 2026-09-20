@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix precompiled modules falling back to source builds on Ruby 2.6 (macOS system Ruby) by polyfilling `Enumerable#filter_map`.
+
 ### 💡 Others
 
 - [Android] Enforce `ndkVersion` for Android library projects. ([#50240](https://github.com/expo/expo/pull/50240) by [@kudo](https://github.com/kudo))
