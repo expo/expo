@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Stop generating `CLAUDE.md` for new projects. Claude Code now reads `AGENTS.md` directly.
+
 ## 5.1.2 — 2026-09-15
 
 ### 🐛 Bug fixes
