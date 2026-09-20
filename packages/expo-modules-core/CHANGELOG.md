@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [macOS] Fixed a crash when mounting a SwiftUI view in a release build. react-native-macos assigns component view tags through `reactTag`, which the virtual view did not declare. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [macOS] Fixed a crash when mounting a SwiftUI view in a release build. react-native-macos assigns component view tags through `reactTag`, which the virtual view did not declare. ([#50342](https://github.com/expo/expo/pull/50342) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fixed strings losing NUL characters when crossing JNI in either direction, and characters outside the BMP being misread on the way to Kotlin. ([#50275](https://github.com/expo/expo/pull/50275) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
