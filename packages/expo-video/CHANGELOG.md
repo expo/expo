@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Remove the `HTMLVideoElement` event handlers in `unmountVideoView`, so an unmounted video stops writing to the player. ([@KAMRONBEK](https://github.com/KAMRONBEK))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-11
