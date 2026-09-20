@@ -1,6 +1,8 @@
 # general
 node_modules
 .env
+.dev.vars
+.dev.vars.*
 *.tsbuildinfo
 .eslintcache
 

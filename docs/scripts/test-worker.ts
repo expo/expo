@@ -1,6 +1,7 @@
 /* oxlint-disable no-console */
 import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
+import { createServer, type Server } from 'node:http';
 
 const PORT = 8788;
 const BASE_URL = `http://localhost:${PORT}`;
@@ -8,6 +9,56 @@ const BASE_URL = `http://localhost:${PORT}`;
 const TEST_DIR = '.worker-test';
 
 let wranglerProcess: ChildProcess | null = null;
+let workerOutput = '';
+let jevServer: Server | null = null;
+let jevUrl: string;
+let jevCalls = 0;
+const NATIVE_TABS = '/versions/latest/sdk/router/native-tabs/';
+
+async function startJevMockAsync(): Promise<void> {
+  jevServer = createServer(async (request, response) => {
+    jevCalls++;
+    if (request.headers.authorization !== 'Bearer worker-test-key') {
+      response.writeHead(401).end();
+      return;
+    }
+    let body = '';
+    for await (const chunk of request) {
+      body += chunk;
+    }
+    const { state, questions } = JSON.parse(body);
+    const choice = /^\/router\/(basics|layouts)\/tabs\/$/.test(state.path)
+      ? NATIVE_TABS
+      : 'none_of_the_above';
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(
+      JSON.stringify({
+        answers: Object.fromEntries(
+          Object.entries(questions).map(([id, question]) => [
+            id,
+            {
+              type: 'choice',
+              choice,
+              confidence: 0.95,
+              probabilities: Object.fromEntries(
+                Object.keys((question as { criteria: object }).criteria).map(option => [
+                  option,
+                  option === choice ? 1 : 0,
+                ])
+              ),
+            },
+          ])
+        ),
+      })
+    );
+  });
+  await new Promise<void>(resolve => jevServer!.listen(0, '127.0.0.1', resolve));
+  const address = jevServer.address();
+  if (!address || typeof address === 'string') {
+    throw new Error('Missing mock API address');
+  }
+  jevUrl = `http://127.0.0.1:${address.port}/v1/systemone`;
+}
 
 function waitForReady(process: ChildProcess, timeoutMs = 30000): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -48,6 +99,18 @@ async function cleanupAsync(): Promise<void> {
   if (fs.existsSync(TEST_DIR)) {
     fs.rmSync(TEST_DIR, { recursive: true, force: true });
   }
+  if (jevServer) {
+    await new Promise<void>((resolve, reject) => {
+      jevServer!.close(error => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
+    jevServer = null;
+  }
 }
 
 function setupTestDirectory(): void {
@@ -61,12 +124,31 @@ function setupTestDirectory(): void {
   // Copy worker files, including the real _redirects: its /*.md wildcard
   // rewrite shapes how .md URLs resolve, so tests must run against it
   const routesContent = fs.readFileSync('public/_routes.json', 'utf8');
-  const workerContent = fs.readFileSync('public/_worker.js', 'utf8');
+  const workerContent = fs
+    .readFileSync('public/_worker.js', 'utf8')
+    .replace('https://api.typesafe.ai/v1/systemone', jevUrl);
   const redirectsContent = fs.readFileSync('public/_redirects', 'utf8');
 
   fs.writeFileSync(`${TEST_DIR}/_routes.json`, routesContent);
   fs.writeFileSync(`${TEST_DIR}/_worker.js`, workerContent);
   fs.writeFileSync(`${TEST_DIR}/_redirects`, redirectsContent);
+  // Isolate test secrets from the contributor's .dev.vars and never call the live API.
+  fs.writeFileSync(
+    `${TEST_DIR}/wrangler.toml`,
+    'name = "docs-worker-test"\ncompatibility_date = "2026-02-07"\npages_build_output_dir = "."\n'
+  );
+  fs.writeFileSync(`${TEST_DIR}/.dev.vars`, 'TYPESAFE_API_KEY=worker-test-key\n');
+  fs.writeFileSync(`${TEST_DIR}/404.html`, '<html><body>Page not found</body></html>');
+  fs.writeFileSync(
+    `${TEST_DIR}/_url-recovery.json`,
+    JSON.stringify([
+      { path: NATIVE_TABS, title: 'Router Native tabs', description: 'Native tab layouts' },
+      { path: '/html-only-page/', title: 'HTML only', description: '' },
+    ])
+  );
+  fs.mkdirSync(`${TEST_DIR}${NATIVE_TABS}`, { recursive: true });
+  fs.writeFileSync(`${TEST_DIR}${NATIVE_TABS}index.html`, '<html><body>Native tabs</body></html>');
+  fs.writeFileSync(`${TEST_DIR}${NATIVE_TABS}index.md`, '# Native tabs');
   fs.writeFileSync(`${TEST_DIR}/index.html`, '<html><body><h1>Test Page</h1></body></html>');
   fs.writeFileSync(
     `${TEST_DIR}/test-page/index.html`,
@@ -95,11 +177,22 @@ function setupTestDirectory(): void {
 async function startWranglerAsync(): Promise<void> {
   console.log('\n--- Starting wrangler pages dev ---');
 
-  wranglerProcess = spawn('wrangler', ['pages', 'dev', TEST_DIR, '--port', String(PORT)], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
+  wranglerProcess = spawn(
+    'wrangler',
+    ['pages', 'dev', '--port', String(PORT), '--binding', 'TYPESAFE_API_KEY=worker-test-key'],
+    {
+      cwd: TEST_DIR,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }
+  );
 
   // Wait for "Ready on" message in stdout/stderr
+  wranglerProcess.stdout?.on('data', chunk => {
+    workerOutput += chunk;
+  });
+  wranglerProcess.stderr?.on('data', chunk => {
+    workerOutput += chunk;
+  });
   await waitForReady(wranglerProcess);
 
   console.log('✓ Wrangler started');
@@ -116,7 +209,7 @@ async function testHttpResponseAsync(): Promise<void> {
 }
 
 async function testDirectMarkdownAccessAsync(): Promise<void> {
-  console.log('\n--- Testing direct .md file access (bypasses worker) ---');
+  console.log('\n--- Testing direct .md file access ---');
 
   const response = await fetch(`${BASE_URL}/test-page/index.md`);
 
@@ -329,9 +422,8 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Pair page resolves at the /<slug>.md convention');
 
-  // Known limit: .md paths bypass the worker (excluded in _routes.json) and
-  // _redirects cannot read query strings, so a pair query on the .md page
-  // path serves the default markdown, whose top note points at pair URLs.
+  // A pair query on the .md page path serves the default markdown, whose
+  // top note points at pair URLs.
   const mdPathWithQuery = await fetch(`${BASE_URL}/bare/upgrade.md?fromSdk=52&toSdk=57`);
   const mdPathWithQueryBody = await mdPathWithQuery.text();
 
@@ -367,7 +459,7 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Regular /<slug>.md path serves markdown through the worker');
 
-  // The canonical index.md file path serves directly (bypassing the worker)
+  // The canonical index.md file path also serves markdown through the worker.
   const direct = await fetch(`${BASE_URL}/bare/upgrade/52-to-57/index.md`);
   const directBody = await direct.text();
 
@@ -456,16 +548,47 @@ async function testHtmlNotFoundAsync(): Promise<void> {
   // Nonexistent page without Accept: text/markdown should not 500
   const response = await fetch(`${BASE_URL}/nonexistent-page`);
 
-  if (response.status >= 500) {
-    throw new Error(`Server error for nonexistent page: HTTP ${response.status}`);
+  if (response.status !== 404) {
+    throw new Error(`Expected HTTP 404 for nonexistent page, got ${response.status}`);
   }
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
+}
+
+async function testUrlRecoveryAsync(): Promise<void> {
+  console.log('\n--- Testing URL recovery with the mock Jev API ---');
+  for (const path of ['/router/basics/tabs/', '/router/layouts/tabs']) {
+    const before = jevCalls;
+    const response = await fetch(`${BASE_URL}${path}`, { redirect: 'manual' });
+    if (
+      response.status !== 302 ||
+      response.headers.get('location') !== `${BASE_URL}${NATIVE_TABS}`
+    ) {
+      throw new Error(`Expected recovery redirect for ${path}, got ${response.status}`);
+    }
+    const markdown = await fetch(`${BASE_URL}${path}`, { headers: { Accept: 'text/markdown' } });
+    if (markdown.status !== 200 || !(await markdown.text()).includes('# Native tabs')) {
+      throw new Error(`Expected recovered Markdown for ${path}`);
+    }
+    if (jevCalls !== before + 1) {
+      throw new Error('Expected repeated lookup to use the cache');
+    }
+  }
+  for (const path of ['/router/basics/tabs.md', '/router/layouts/tabs/index.md']) {
+    const response = await fetch(`${BASE_URL}${path}`);
+    if (response.status !== 200 || !(await response.text()).includes('# Native tabs')) {
+      throw new Error(`Expected recovered Markdown for ${path}`);
+    }
+  }
+  console.log(
+    '✓ Missing HTML and Markdown URLs recover to existing pages and reuse cached decisions'
+  );
 }
 
 async function mainAsync(): Promise<void> {
   console.log('=== Testing Cloudflare Pages Worker and Routes ===');
 
   try {
+    await startJevMockAsync();
     setupTestDirectory();
     await startWranglerAsync();
     await testHttpResponseAsync();
@@ -477,10 +600,12 @@ async function mainAsync(): Promise<void> {
     await testDeletedPageRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
+    await testUrlRecoveryAsync();
 
     console.log('\n=== All tests passed! ===');
   } catch (error) {
     console.error('\n✗ Test failed:', error instanceof Error ? error.message : error);
+    console.error(workerOutput);
     process.exitCode = 1;
   } finally {
     await cleanupAsync();
