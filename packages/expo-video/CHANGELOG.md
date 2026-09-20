@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Handle the promise returned by `HTMLVideoElement.play()`, so a play the browser refuses no longer leaves the player reporting `playing: true`. ([@KAMRONBEK](https://github.com/KAMRONBEK))
+- [Web] Handle the promise returned by `HTMLVideoElement.play()`, so a play the browser refuses no longer leaves the player reporting `playing: true`. ([#50405](https://github.com/expo/expo/pull/50405) by [@KAMRONBEK](https://github.com/KAMRONBEK))
 
 ### 💡 Others
 
