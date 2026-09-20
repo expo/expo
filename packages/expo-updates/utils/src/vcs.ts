@@ -10,16 +10,20 @@ export interface Client {
 }
 
 export default async function getVCSClientAsync(projectDir: string): Promise<Client> {
-  if (await isGitInstalledAndConfiguredAsync()) {
-    return new GitClient();
+  if (await isGitInstalledAndConfiguredAsync(projectDir)) {
+    return new GitClient(projectDir);
   } else {
     return new NoVCSClient(projectDir);
   }
 }
 
 class GitClient implements Client {
+  constructor(private readonly projectDir: string) {}
+
   public async getRootPathAsync(): Promise<string> {
-    return (await spawnAsync('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
+    return (
+      await spawnAsync('git', ['rev-parse', '--show-toplevel'], { cwd: this.projectDir })
+    ).stdout.trim();
   }
 
   async isFileIgnoredAsync(filePath: string): Promise<boolean> {
@@ -48,7 +52,7 @@ class NoVCSClient implements Client {
   }
 }
 
-async function isGitInstalledAndConfiguredAsync(): Promise<boolean> {
+async function isGitInstalledAndConfiguredAsync(projectDir: string): Promise<boolean> {
   try {
     await spawnAsync('git', ['--help']);
   } catch (error: any) {
@@ -59,7 +63,7 @@ async function isGitInstalledAndConfiguredAsync(): Promise<boolean> {
   }
 
   try {
-    await spawnAsync('git', ['rev-parse', '--show-toplevel']);
+    await spawnAsync('git', ['rev-parse', '--show-toplevel'], { cwd: projectDir });
   } catch {
     return false;
   }
