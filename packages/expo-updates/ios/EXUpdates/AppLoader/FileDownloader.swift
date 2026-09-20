@@ -141,6 +141,7 @@ public final class FileDownloader {
     errorBlock: @escaping ErrorBlock
   ) {
     let canAttemptPatch = allowPatch &&
+      expectedBase64URLEncodedSHA256Hash != nil &&
       asset.isLaunchAsset &&
       launchedUpdate != nil &&
       requestedUpdate != nil &&
