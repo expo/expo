@@ -70,11 +70,6 @@ function getPlatformOption(
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 
-type ChunkSettings = {
-  /** Match the initial modules. */
-  test: RegExp;
-};
-
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
   splitChunks: boolean;
@@ -97,10 +92,10 @@ export async function graphToSerialAssetsAsync(
 
   // Create chunks for splitting.
   const chunks = new Set<Chunk>();
-  const entryChunks = gatherChunks(
+  const entryChunk = gatherChunks(
     preModules,
     chunks,
-    { test: pathToRegex(entryFile) },
+    entryFile,
     preModules,
     graph,
     options,
@@ -108,10 +103,6 @@ export async function graphToSerialAssetsAsync(
     true
   );
 
-  // TODO(@kitten): We know that the returned `entryChunks` should only have a single value
-  // with `!isAsync` and matching `.hasAbsolutePath(entryFile)` due to us only starting with
-  // an entry module. This is temporarily implicit and not enforced by an invariant
-  const entryChunk = entryChunks.values().next().value;
   if (entryChunk) {
     removeEntryDepsFromAsyncChunks(entryChunk, chunks);
 
@@ -620,18 +611,6 @@ export function getSortedModules(
   );
 }
 
-// Convert file paths to regex matchers.
-function pathToRegex(path: string) {
-  // Escape regex special characters, except for '*'
-  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
-
-  // Replace '*' with '.*' to act as a wildcard in regex
-  regexSafePath = regexSafePath.replace(/\*/g, '.*');
-
-  // Create a RegExp object with the modified string
-  return new RegExp('^' + regexSafePath + '$');
-}
-
 function collectOutputReferences(modules: Iterable<Module>, key: string): string[] {
   return [
     ...new Set(
@@ -651,58 +630,32 @@ function collectOutputReferences(modules: Iterable<Module>, key: string): string
   ].filter((value): value is string => typeof value === 'string');
 }
 
-function getEntryModulesForChunkSettings(
-  graph: ReadOnlyGraph,
-  settings: ChunkSettings
-): Set<Module<MixedOutput>> {
-  const modules = new Set<Module<MixedOutput>>();
-  for (const entry of graph.dependencies) {
-    if (settings.test.test(entry[0])) {
-      modules.add(entry[1]);
-    }
-  }
-  return modules;
-}
-
-function chunkIdForModules(modules: Iterable<Module>) {
-  const modPaths: string[] = [];
-  for (const mod of modules) modPaths.push(mod.path);
-  return modPaths.sort().join('=>');
-}
-
 // TODO(@kitten): The recursion is starting to hurt clarity here a bit
 function gatherChunks(
   runtimePremodules: readonly Module[],
   chunks: Set<Chunk>,
-  settings: ChunkSettings,
+  entryPath: string,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
   options: SerializerOptions,
   isAsync: boolean = false,
   isEntry: boolean = false
-): Set<Chunk> {
-  const entryModules = getEntryModulesForChunkSettings(graph, settings);
-  const entryChunks = new Set<Chunk>();
-  if (!entryModules.size) {
-    return entryChunks;
+): Chunk | null {
+  const entryModule = graph.dependencies.get(entryPath);
+  if (!entryModule) {
+    return null;
   }
 
   for (const chunk of chunks) {
-    for (const entry of chunk.entries) {
-      // Remove already processed entries
-      if (entryModules.delete(entry)) {
-        entryChunks.add(chunk);
-      }
-    }
     // Prevent processing the same entry file twice.
-    if (!entryModules.size) {
-      return entryChunks;
+    if (chunk.entries.has(entryModule)) {
+      return chunk;
     }
   }
 
   const entryChunk = new Chunk(
-    chunkIdForModules(entryModules),
-    entryModules,
+    entryModule.path,
+    new Set([entryModule]),
     graph,
     options,
     isAsync,
@@ -719,11 +672,10 @@ function gatherChunks(
   }
 
   chunks.add(entryChunk);
-  entryChunks.add(entryChunk);
 
-  function includeModule(entryModule: Module<MixedOutput>) {
+  function includeModule(parentModule: Module<MixedOutput>) {
     const splitChunks = entryChunk.options.serializerOptions?.splitChunks !== false;
-    for (const dependency of entryModule.dependencies.values()) {
+    for (const dependency of parentModule.dependencies.values()) {
       const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
       const isWorker = asyncType === 'worker';
       if (!isResolvedDependency(dependency)) {
@@ -736,10 +688,10 @@ function gatherChunks(
         if (isWorker && options.includeAsyncPaths) {
           continue;
         }
-        const asyncChunks = gatherChunks(
+        const asyncChunk = gatherChunks(
           runtimePremodules,
           chunks,
-          { test: pathToRegex(dependency.absolutePath) },
+          dependency.absolutePath,
           isWorker ? runtimePremodules : [],
           graph,
           options,
@@ -749,10 +701,8 @@ function gatherChunks(
 
         // Seal all chunks that are for web workers, as these must be self-sufficient chunks
         if (isWorker) {
-          assert(asyncChunks.size, `Worker chunk not found for: ${dependency.absolutePath}`);
-          for (const chunk of asyncChunks) {
-            chunk.seal();
-          }
+          assert(asyncChunk, `Worker chunk not found for: ${dependency.absolutePath}`);
+          asyncChunk.seal();
         }
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
@@ -767,11 +717,9 @@ function gatherChunks(
     }
   }
 
-  for (const entryModule of entryModules) {
-    includeModule(entryModule);
-  }
+  includeModule(entryModule);
 
-  return entryChunks;
+  return entryChunk;
 }
 
 function removeEntryDepsFromAsyncChunks(entryChunk: Chunk, chunks: Set<Chunk>): void {
