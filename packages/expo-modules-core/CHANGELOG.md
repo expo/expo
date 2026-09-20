@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `SceneGeometry.anchorPopover(of:to:rect:)` so modules anchor popovers by presentation style instead of the iPad idiom, which regular-width phones such as iPhone Duo need. ([#50433](https://github.com/expo/expo/pull/50433) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
