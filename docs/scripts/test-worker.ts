@@ -124,9 +124,14 @@ function setupTestDirectory(): void {
   // Copy worker files, including the real _redirects: its /*.md wildcard
   // rewrite shapes how .md URLs resolve, so tests must run against it
   const routesContent = fs.readFileSync('public/_routes.json', 'utf8');
-  const workerContent = fs
-    .readFileSync('public/_worker.js', 'utf8')
-    .replace('https://api.typesafe.ai/v1/systemone', jevUrl);
+  const workerContent = `
+import { createWorker } from '../public/_worker.js';
+import { createJevClient } from '../worker/jev.ts';
+import { createUrlRecovery } from '../worker/url-recovery.ts';
+
+const jev = createJevClient((_url, options) => fetch(${JSON.stringify(jevUrl)}, options));
+export default createWorker({ recoverNotFound: createUrlRecovery({ jev }) });
+`;
   const redirectsContent = fs.readFileSync('public/_redirects', 'utf8');
 
   fs.writeFileSync(`${TEST_DIR}/_routes.json`, routesContent);

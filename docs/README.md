@@ -41,6 +41,8 @@ pnpm export-server
 
 The Cloudflare Pages worker can use [Jev](https://docs.typesafe.ai/primitives/choice) to find an existing page when a documentation URL returns 404. It returns a temporary redirect for a confident match and keeps the original 404 when no match exists or the API is unavailable. Existing pages and configured redirects take precedence.
 
+The entry point in **public/\_worker.js** handles routing and content negotiation. **worker/url-recovery.ts** manages candidate selection, caches, and destination verification. **worker/jev.ts** handles Jev requests and response validation. Wrangler bundles these modules when running or deploying the worker.
+
 For local testing, add `TYPESAFE_API_KEY=your-key` to **docs/.dev.vars** (ignored by Git), then run `pnpm export` and `pnpm export-server`. The worker runs in the export server, so `pnpm dev` does not exercise this feature. For deployment, configure `TYPESAFE_API_KEY` as a secret in the Cloudflare Pages project's production or preview environment. Without the secret, URL recovery is disabled.
 
 Each export generates **out/\_url-recovery.json** from the sitemap with page titles and descriptions. The worker evaluates all entries for the requested language and SDK version, defaulting to `latest`. Jev compares batches of up to 254 pages, then compares the leading candidates. A final confidence of at least 0.5 is required. The worker checks that the selected HTML or Markdown file exists before redirecting.

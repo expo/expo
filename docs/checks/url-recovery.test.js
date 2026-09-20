@@ -1,12 +1,23 @@
 /** @jest-environment node */
 import { jest } from '@jest/globals';
 
+import { createWorker } from '../public/_worker.js';
+import { createJevClient } from '../worker/jev.ts';
+import { createUrlRecovery } from '../worker/url-recovery.ts';
+
 const NATIVE_TABS = '/versions/latest/sdk/router/native-tabs/';
 const page = path => ({ path, title: path, description: 'Expo documentation' });
 const pages = [page(NATIVE_TABS), page('/guides/permissions/'), page('/html-only/')];
 let worker;
 let env;
 let jev;
+let now;
+
+function freshWorker() {
+  return createWorker({
+    recoverNotFound: createUrlRecovery({ jev: createJevClient(jev), now: () => now }),
+  });
+}
 
 function answer(question, choice = NATIVE_TABS, confidence = 0.9) {
   return {
@@ -37,10 +48,10 @@ function request(path, options) {
   return worker.fetch(new Request(`https://docs.expo.dev${path}`, options), env);
 }
 
-beforeEach(async () => {
-  jest.resetModules();
-  worker = (await import('../public/_worker.js')).default;
-  jev = jest.spyOn(globalThis, 'fetch');
+beforeEach(() => {
+  now = 0;
+  jev = jest.fn();
+  worker = freshWorker();
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   respond();
   env = {
@@ -195,6 +206,40 @@ test('shares concurrent lookups for the same path', async () => {
   const responses = await Promise.all([request('/missing/'), request('/missing')]);
   expect(responses.map(response => response.status)).toEqual([302, 302]);
   expect(jev).toHaveBeenCalledTimes(1);
+});
+
+test('does not share cached decisions between worker instances', async () => {
+  expect((await request('/missing/')).status).toBe(302);
+  worker = freshWorker();
+  respond(() => 'none_of_the_above');
+  expect((await request('/missing/')).status).toBe(404);
+  expect(jev).toHaveBeenCalledTimes(2);
+});
+
+test.each([
+  [NATIVE_TABS, 3600000, 302],
+  ['none_of_the_above', 60000, 404],
+])('expires a cached %s decision after %s ms', async (choice, duration, status) => {
+  respond(() => choice);
+  expect((await request('/missing/')).status).toBe(status);
+  now = duration - 1;
+  expect((await request('/missing/')).status).toBe(status);
+  expect(jev).toHaveBeenCalledTimes(1);
+  now = duration;
+  expect((await request('/missing/')).status).toBe(status);
+  expect(jev).toHaveBeenCalledTimes(2);
+});
+
+test('resumes recovery after the API failure cooldown', async () => {
+  jev.mockResolvedValue(new Response(null, { status: 503 }));
+  expect((await request('/missing/')).status).toBe(404);
+  respond();
+  now = 29999;
+  expect((await request('/missing/')).status).toBe(404);
+  expect(jev).toHaveBeenCalledTimes(1);
+  now = 30000;
+  expect((await request('/missing/')).status).toBe(302);
+  expect(jev).toHaveBeenCalledTimes(2);
 });
 
 test('uses every matching version page across batches within the Choice limit', async () => {
