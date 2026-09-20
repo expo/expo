@@ -142,6 +142,7 @@ public final class FileDownloader {
   ) {
     let canAttemptPatch = allowPatch &&
       expectedBase64URLEncodedSHA256Hash != nil &&
+      config.enableBsdiffPatchSupport &&
       asset.isLaunchAsset &&
       launchedUpdate != nil &&
       requestedUpdate != nil &&
