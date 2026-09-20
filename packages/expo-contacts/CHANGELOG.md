@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Downsample contact photos when decoding instead of loading them at full resolution. ([#50401](https://github.com/expo/expo/pull/50401) by [@priyanshu-cashbook](https://github.com/priyanshu-cashbook))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-11
