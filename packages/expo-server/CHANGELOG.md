@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

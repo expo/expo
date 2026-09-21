@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 - Preserve bundled, external, and inline stylesheet order in static and streaming documents. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))

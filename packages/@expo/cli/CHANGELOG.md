@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Require `generateMetadata()` instead of `<Head>` for page metadata on initial load with SSG. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
+
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
