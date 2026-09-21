@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * https://github.com/expo/expo/issues/49964#issuecomment-5714493768.
  *
  * So using a tag instead of an id is a better solution.
+ * Compose reads this tag before falling back to `View.id`, so we don't call `generateViewId()`.
  */
 internal object HostingViewSaveableState {
   private val nextNamespace = AtomicInteger()
