@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Stop generating `CLAUDE.md` for new projects, Claude Code now reads `AGENTS.md` directly. ([#TODO](https://github.com/expo/expo/pull/TODO) by [@hassankhan](https://github.com/hassankhan))
+- Stop generating `CLAUDE.md` for new projects, Claude Code now reads `AGENTS.md` directly. ([#50353](https://github.com/expo/expo/pull/50353) by [@hassankhan](https://github.com/hassankhan))
 
 ## 5.1.2 — 2026-09-15
 
