@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `updates.maxUpdatesToKeep` support for expo-updates native configuration. ([#45964](https://github.com/expo/expo/pull/45964) by [@Kudo](https://github.com/Kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
