@@ -137,25 +137,9 @@ public final class LocationModule: Module {
       Task {
         do {
           for try await activity in try streamer.streamMotionActivity() {
-            // CMMotionActivity reports one confidence value for the whole reading.
-            // Detected entries receive that confidence; undetected entries receive 0 (Low).
-            let confidence = activity.confidence.rawValue
-            func entry(_ detected: Bool) -> [String: Any] {
-              ["detected": detected, "confidence": detected ? confidence : 0]
-            }
             sendEvent(EVENT_MOTION_ACTIVITY_CHANGED, [
               "watchId": watchId,
-              "activity": [
-                "activities": [
-                  "automotive": entry(activity.automotive),
-                  "cycling":    entry(activity.cycling),
-                  "running":    entry(activity.running),
-                  "walking":    entry(activity.walking),
-                  "stationary": entry(activity.stationary),
-                  "unknown":    entry(activity.unknown),
-                ],
-                "timestamp": activity.startDate.timeIntervalSince1970 * 1000
-              ]
+              "activity": activity.toMotionActivityDict()
             ])
           }
         } catch let exception as Exception {
@@ -280,6 +264,34 @@ public final class LocationModule: Module {
 
     AsyncFunction("hasStartedGeofencingAsync") { (taskName: String) -> Bool in
       return try taskManager.task(withName: taskName, hasConsumerOf: EXGeofencingTaskConsumer.self)
+    }
+
+    // Background motion activity
+
+    // `options` is accepted for API parity with Android (e.g. its `foregroundService` option,
+    // which has no iOS equivalent since there's no foreground service concept here) and ignored.
+    AsyncFunction("startMotionActivityUpdatesAsync") { (taskName: String, options: [String: Any]) in
+      guard CMMotionActivityManager.isActivityAvailable() else {
+        throw Exceptions.MotionActivityUnavailable()
+      }
+      let authorizationStatus = CMMotionActivityManager.authorizationStatus()
+      guard authorizationStatus != .denied && authorizationStatus != .restricted else {
+        throw Exceptions.MotionActivityUnauthorized()
+      }
+
+      try taskManager.registerTask(withName: taskName, consumer: MotionActivityTaskConsumer.self, options: [:])
+    }
+
+    AsyncFunction("stopMotionActivityUpdatesAsync") { (taskName: String) in
+      let taskManager = try taskManager
+
+      try EXUtilities.catchException {
+        taskManager.unregisterTask(withName: taskName, consumerClass: MotionActivityTaskConsumer.self)
+      }
+    }
+
+    AsyncFunction("hasStartedMotionActivityUpdatesAsync") { (taskName: String) -> Bool in
+      return try taskManager.task(withName: taskName, hasConsumerOf: MotionActivityTaskConsumer.self)
     }
   }
 }

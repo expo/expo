@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android, iOS] Add `startMotionActivityUpdatesAsync`, `stopMotionActivityUpdatesAsync` and `hasStartedMotionActivityUpdatesAsync` for receiving motion activity updates via a background task. ([#49653](https://github.com/expo/expo/pull/49653) by [@Guccio163](https://github.com/Guccio163))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

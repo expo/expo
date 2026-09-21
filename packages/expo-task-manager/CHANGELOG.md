@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `TaskService` crashing with a `NullPointerException` when persisting a task after the app was killed and reopened, caused by a stale `WeakReference<Context>` that was never refreshed on the cached singleton. ([#49653](https://github.com/expo/expo/pull/49653) by [@Guccio163](https://github.com/Guccio163))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-16
