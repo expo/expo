@@ -2463,7 +2463,7 @@ importers:
         specifier: ^1.59.0
         version: 1.59.0
       react:
-        specifier: '*'
+        specifier: 19.3.0
         version: 19.3.0
       react-refresh:
         specifier: 'catalog:'

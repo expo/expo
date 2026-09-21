@@ -159,7 +159,7 @@
     "nock": "catalog:",
     "node-html-parser": "catalog:",
     "playwright": "^1.59.0",
-    "react": "*",
+    "react": "19.3.0",
     "react-refresh": "catalog:",
     "react-test-renderer": "catalog:",
     "tree-kill": "^1.2.2"
