@@ -102,7 +102,7 @@ export type PageHeadersConfig = {
 /**
  * Options accepted by the `expo-router` config plugin.
  */
-export type RouterConfigPluginProps = {
+export type Props = {
   /**
    * Production origin URL where assets in the public folder are hosted. The fetch function is
    * polyfilled to support relative requests from this origin in production. The development
@@ -195,7 +195,7 @@ export type RouterConfigPluginProps = {
   adaptiveColors?: boolean;
 };
 
-const withRouter: ConfigPlugin<RouterConfigPluginProps | void> = (config, _props) => {
+const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
   const props = _props || {};
 
   if (Object.hasOwn(props, 'unstable_useServerMiddleware')) {
@@ -241,7 +241,7 @@ const withRouter: ConfigPlugin<RouterConfigPluginProps | void> = (config, _props
   };
 };
 
-function normalizeAsyncRoutesProp(props: RouterConfigPluginProps) {
+function normalizeAsyncRoutesProp(props: Props) {
   const asyncRoutes = props.asyncRoutes;
 
   if (asyncRoutes == null) {
