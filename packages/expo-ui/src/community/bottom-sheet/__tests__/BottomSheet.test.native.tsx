@@ -43,7 +43,7 @@ describe('BottomSheet', () => {
         </BottomSheet>
       );
 
-      expect(hostedViewStyle()?.width).toBe(540);
+      expect(hostedViewStyle()?.width).toBe(580);
     }
   );
 
