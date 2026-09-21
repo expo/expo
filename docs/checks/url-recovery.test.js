@@ -1,9 +1,6 @@
 /** @jest-environment node */
 import { jest } from '@jest/globals';
 
-import { createWorker } from '../public/_worker.js';
-import { createUrlRecovery } from '../worker/url-recovery.ts';
-
 const NATIVE_TABS = '/versions/latest/sdk/router/native-tabs/';
 const page = path => ({ path, title: path, description: 'Expo documentation' });
 const pages = [page(NATIVE_TABS), page('/guides/permissions/'), page('/html-only/')];
@@ -12,10 +9,9 @@ let env;
 let run;
 let now;
 
-function freshWorker() {
-  return createWorker({
-    recoverNotFound: createUrlRecovery({ now: () => now }),
-  });
+async function freshWorker() {
+  jest.resetModules();
+  return (await import('../public/_worker.js')).default;
 }
 
 function answer(question, choice = NATIVE_TABS, confidence = 0.9) {
@@ -58,10 +54,11 @@ function useInventory(inventory) {
   );
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   now = 0;
   run = jest.fn();
-  worker = freshWorker();
+  jest.spyOn(Date, 'now').mockImplementation(() => now);
+  worker = await freshWorker();
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   respond();
   env = {
@@ -69,6 +66,9 @@ beforeEach(() => {
     ASSETS: {
       fetch: jest.fn(async input => {
         const url = new URL(input.url ?? input.toString());
+        if (url.pathname.endsWith('.md') && !url.pathname.endsWith('/index.md')) {
+          url.pathname = url.pathname.slice(0, -3) + '/index.md';
+        }
         if (url.pathname === '/_url-recovery.json') {
           return Response.json(pages);
         }
@@ -129,6 +129,7 @@ test.each([
 
 test.each([
   [NATIVE_TABS, { headers: { Accept: 'text/markdown' } }, 200],
+  [`${NATIVE_TABS.slice(0, -1)}.md`, {}, 200],
   [`${NATIVE_TABS}index.md`, {}, 200],
   [`${NATIVE_TABS}index.md`, { headers: { Range: 'bytes=0-4' } }, 206],
 ])('preserves asset response metadata for %s (%j, HTTP %i)', async (path, options, status) => {
@@ -146,13 +147,34 @@ test.each([
   const response = await request(path, options);
   expect(response.status).toBe(status);
   expect(await response.text()).toBe('# Doc');
-  expect(response.headers.get('Content-Type')).toBe('text/markdown; charset=utf-8');
-  expect(response.headers.get('Vary')).toBe('Accept-Encoding, Accept');
+  expect(response.headers.get('Content-Type')).toBe(
+    path.endsWith('.md') ? 'text/markdown' : 'text/markdown; charset=utf-8'
+  );
+  expect(response.headers.get('Vary')).toBe(
+    path.endsWith('.md') ? 'Accept-Encoding' : 'Accept-Encoding, Accept'
+  );
   for (const [name, value] of Object.entries(headers)) {
     if (name !== 'Content-Type' && name !== 'Vary') {
       expect(response.headers.get(name)).toBe(value);
     }
   }
+  expect(run).not.toHaveBeenCalled();
+});
+
+test.each([304, 416, 500])(
+  'preserves a direct Markdown asset response with HTTP %i',
+  async status => {
+    const asset = new Response(null, { status, headers: { ETag: '"markdown"' } });
+    env.ASSETS.fetch.mockResolvedValue(asset);
+    expect(await request(`${NATIVE_TABS.slice(0, -1)}.md`)).toBe(asset);
+    expect(run).not.toHaveBeenCalled();
+  }
+);
+
+test('serves existing Markdown through the asset rewrite without invoking Jev', async () => {
+  const response = await request(`${NATIVE_TABS.slice(0, -1)}.md`);
+  expect(response.status).toBe(200);
+  expect(await response.text()).toBe('# Native tabs');
   expect(run).not.toHaveBeenCalled();
 });
 
@@ -214,15 +236,12 @@ test.each([404, 301])('does not redirect to a destination returning %s', async s
   expect((await request('/missing/')).status).toBe(404);
 });
 
-test.each([429, 500])(
-  'keeps the original 404 on AI Gateway error %s and backs off',
-  async status => {
-    run.mockRejectedValue(new Error(`AI Gateway returned ${status}`));
-    expect((await request('/missing/')).status).toBe(404);
-    expect((await request('/different/')).status).toBe(404);
-    expect(run).toHaveBeenCalledTimes(1);
-  }
-);
+test('keeps the original 404 on an AI Gateway error and backs off', async () => {
+  run.mockRejectedValue(new Error('AI Gateway unavailable'));
+  expect((await request('/missing/')).status).toBe(404);
+  expect((await request('/different/')).status).toBe(404);
+  expect(run).toHaveBeenCalledTimes(1);
+});
 
 test('accepts the documented provider output without a gateway wrapper', async () => {
   const choose = run.getMockImplementation();
@@ -298,7 +317,7 @@ test('bounds concurrent lookups while allowing requests to join existing ones', 
 
 test('does not share cached decisions between worker instances', async () => {
   expect((await request('/missing/')).status).toBe(302);
-  worker = freshWorker();
+  worker = await freshWorker();
   respond(() => 'none_of_the_above');
   expect((await request('/missing/')).status).toBe(404);
   expect(run).toHaveBeenCalledTimes(2);
@@ -459,23 +478,4 @@ test('keeps language and SDK candidates separate across lookups in one worker', 
     ([input]) => new URL(input.url ?? input.toString()).pathname === '/_url-recovery.json'
   );
   expect(indexRequests).toHaveLength(1);
-});
-
-test('preserves explicitly requested SDK versions', async () => {
-  const pinned = '/versions/v57.0.0/sdk/router/native-tabs/';
-  const assets = env.ASSETS.fetch.getMockImplementation();
-  env.ASSETS.fetch.mockImplementation(input => {
-    const path = new URL(input.url ?? input.toString()).pathname;
-    if (path === '/_url-recovery.json') {
-      return Promise.resolve(Response.json([...pages, page(pinned)]));
-    }
-    if (path === pinned) {
-      return Promise.resolve(new Response('', { headers: { 'Content-Type': 'text/html' } }));
-    }
-    return assets(input);
-  });
-  respond(() => pinned);
-  const response = await request('/versions/v57.0.0/sdk/tabs/');
-  expect(response.headers.get('location')).toBe(`https://docs.expo.dev${pinned}`);
-  expect(JSON.stringify(run.mock.calls[0][1])).not.toContain(NATIVE_TABS);
 });

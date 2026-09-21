@@ -1,4 +1,4 @@
-import { createUrlRecovery, pagePath } from '../worker/url-recovery.ts';
+import { recoverNotFoundAsync } from '../worker/url-recovery.ts';
 
 const NOT_FOUND_MARKDOWN = `# Page not found
 
@@ -51,20 +51,23 @@ function upgradeHelperPairPath(url) {
   return `/bare/upgrade/${from}-to-${to}/index.md`;
 }
 
-export function createWorker({ recoverNotFound = createUrlRecovery() } = {}) {
-  return {
-    async fetch(request, env) {
-      const accept = request.headers.get("Accept") || "";
-      const url = new URL(request.url);
-      const pairPath = upgradeHelperPairPath(url);
+export default {
+  async fetch(request, env) {
+    const accept = request.headers.get("Accept") || "";
+    const url = new URL(request.url);
+    const pairPath = upgradeHelperPairPath(url);
 
-      const wantsMarkdown =
-        url.pathname.endsWith(".md") ||
-        acceptsMarkdown(accept) ||
-        (pairPath !== null && /\.md$/.test(url.searchParams.get("toSdk") || ""));
+    const directMarkdown = url.pathname.endsWith(".md");
+    const wantsMarkdown =
+      directMarkdown ||
+      acceptsMarkdown(accept) ||
+      (pairPath !== null && /\.md$/.test(url.searchParams.get("toSdk") || ""));
 
-      if (wantsMarkdown) {
-        const mdPath = pagePath(url.pathname) + "index.md";
+    if (wantsMarkdown) {
+      if (!directMarkdown) {
+        let mdPath = url.pathname;
+        if (!mdPath.endsWith("/")) mdPath += "/";
+        mdPath += "index.md";
 
         const candidates = [];
         if (pairPath) candidates.push(pairPath);
@@ -82,36 +85,37 @@ export function createWorker({ recoverNotFound = createUrlRecovery() } = {}) {
             return response;
           }
         }
-
-        const passthrough = await env.ASSETS.fetch(request);
-        if (passthrough.status >= 300 && passthrough.status < 400) {
-          return passthrough;
-        }
-
-        if (passthrough.status === 404) {
-          const recovered = await recoverNotFound(request, env, true).catch(() => null);
-          if (recovered) return recovered;
-        }
-
-        return new Response(request.method === "HEAD" ? null : NOT_FOUND_MARKDOWN, {
-          status: 404,
-          headers: {
-            "Content-Type": "text/markdown; charset=utf-8",
-            Vary: "Accept",
-          },
-        });
       }
 
-      const htmlResponse = await env.ASSETS.fetch(request);
-      if (htmlResponse.status === 404) {
-        const recovered = await recoverNotFound(request, env, false).catch(() => null);
+      const passthrough = await env.ASSETS.fetch(request);
+      if (
+        (directMarkdown && passthrough.status !== 404) ||
+        (passthrough.status >= 300 && passthrough.status < 400)
+      ) {
+        return passthrough;
+      }
+
+      if (passthrough.status === 404) {
+        const recovered = await recoverNotFoundAsync(request, env, true).catch(() => null);
         if (recovered) return recovered;
       }
-      const response = new Response(htmlResponse.body, htmlResponse);
-      response.headers.append("Vary", "Accept");
-      return response;
-    },
-  };
-}
 
-export default createWorker();
+      return new Response(request.method === "HEAD" ? null : NOT_FOUND_MARKDOWN, {
+        status: 404,
+        headers: {
+          "Content-Type": "text/markdown; charset=utf-8",
+          Vary: "Accept",
+        },
+      });
+    }
+
+    const htmlResponse = await env.ASSETS.fetch(request);
+    if (htmlResponse.status === 404) {
+      const recovered = await recoverNotFoundAsync(request, env, false).catch(() => null);
+      if (recovered) return recovered;
+    }
+    const response = new Response(htmlResponse.body, htmlResponse);
+    response.headers.append("Vary", "Accept");
+    return response;
+  },
+};

@@ -37,22 +37,6 @@ pnpm export
 pnpm export-server
 ```
 
-### Recover missing documentation URLs
-
-The Cloudflare Pages worker can use [Jev](https://docs.typesafe.ai/primitives/choice) to find an existing page when a documentation URL returns 404. It returns a temporary redirect for a confident match and keeps the original 404 when no match exists or the API is unavailable. Existing pages and configured redirects take precedence.
-
-The entry point in **public/\_worker.js** handles routing and content negotiation. **worker/url-recovery.ts** manages candidate selection, caches, and destination verification. **worker/jev.ts** handles Jev requests and response validation. Wrangler bundles these modules when running or deploying the worker.
-
-The `AI` binding in **wrangler.toml** calls `typesafe/jev` through the account's default Cloudflare AI Gateway. Cloudflare manages provider credentials and charges its AI Gateway credit balance, so no TypeSafe API key is needed. The default gateway is created on first use if it does not exist. Configure rate limits on that gateway to control total usage. Without the AI binding, URL recovery is disabled.
-
-For local testing, sign in with `pnpm exec wrangler login`, then run `pnpm export` and `pnpm export-server`. AI binding calls use the signed-in Cloudflare account and consume credits even during local development. The worker runs in the export server, so `pnpm dev` does not exercise this feature. Deployments use the Pages project's Cloudflare account.
-
-Each export generates **out/\_url-recovery.json** from the sitemap with page titles and descriptions. The worker evaluates all entries for the requested language and SDK version, defaulting to `latest`. Jev compares batches of up to 254 pages, then compares the leading candidates. A final confidence of at least 0.5 is required. The worker checks that the selected HTML or Markdown file exists before redirecting.
-
-Only the missing pathname and public page metadata are sent through Cloudflare to TypeSafe. Query parameters, cookies, and request headers are excluded. Requests share a three-second API timeout. Each worker instance caches matches for one hour and misses for one minute, coalesces identical requests, limits concurrent lookups to four, and backs off for 30 seconds after an API failure. These limits apply per worker instance; Cloudflare rate limits should be configured separately to control total API usage.
-
-Run `pnpm test` and `pnpm test:worker` to check recovery behavior. The worker tests use a mock AI binding, so they do not consume credits. Validate ranking with the live AI binding before enabling the feature in production.
-
 ## Edit Docs Content
 
 All documentation-related content is inside the **pages** directory. We write docs in markdown with the help of custom React components that provide additional functionality, such as embedding Snack examples, representing commands inside a terminal component and so on.

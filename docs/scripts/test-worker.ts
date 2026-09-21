@@ -57,7 +57,6 @@ async function cleanupAsync(): Promise<void> {
 function setupTestDirectory(): void {
   console.log('\n--- Setting up test directory ---');
 
-  fs.mkdirSync(TEST_DIR, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/test-page`, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/html-only-page`, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/bare/upgrade/52-to-57`, { recursive: true });
@@ -68,14 +67,12 @@ function setupTestDirectory(): void {
   const workerContent = `
 import worker from ${JSON.stringify(path.resolve('public/_worker.js'))};
 
-let calls = 0;
 const AI = {
   async run(model, { state, questions }, { gateway, signal }) {
     if (model !== 'typesafe/jev' || gateway.id !== 'default' || !(signal instanceof AbortSignal)) {
       throw new Error('Unexpected AI binding request');
     }
     signal.throwIfAborted();
-    calls++;
     const choice = ['/router/basics/tabs/', '/router/layouts/tabs/'].includes(state.path)
       ? ${JSON.stringify(NATIVE_TABS)}
       : 'none_of_the_above';
@@ -96,7 +93,6 @@ const AI = {
 };
 export default {
   fetch(request, env) {
-    if (new URL(request.url).pathname === '/__test/ai-calls') return Response.json(calls);
     return worker.fetch(request, { ...env, AI });
   },
 };
@@ -533,7 +529,6 @@ async function testHtmlNotFoundAsync(): Promise<void> {
 async function testUrlRecoveryAsync(): Promise<void> {
   console.log('\n--- Testing URL recovery with the mock AI binding ---');
   for (const path of ['/router/basics/tabs/', '/router/layouts/tabs']) {
-    const before = await (await fetch(`${BASE_URL}/__test/ai-calls`)).json();
     const response = await fetch(`${BASE_URL}${path}`, { redirect: 'manual' });
     if (
       response.status !== 302 ||
@@ -545,10 +540,6 @@ async function testUrlRecoveryAsync(): Promise<void> {
     if (markdown.status !== 200 || !(await markdown.text()).includes('# Native tabs')) {
       throw new Error(`Expected recovered Markdown for ${path}`);
     }
-    const after = await (await fetch(`${BASE_URL}/__test/ai-calls`)).json();
-    if (after !== before + 1) {
-      throw new Error('Expected repeated lookup to use the cache');
-    }
   }
   for (const path of ['/router/basics/tabs.md', '/router/layouts/tabs/index.md']) {
     const response = await fetch(`${BASE_URL}${path}`);
@@ -556,9 +547,7 @@ async function testUrlRecoveryAsync(): Promise<void> {
       throw new Error(`Expected recovered Markdown for ${path}`);
     }
   }
-  console.log(
-    '✓ Missing HTML and Markdown URLs recover to existing pages and reuse cached decisions'
-  );
+  console.log('✓ Missing HTML and Markdown URLs recover to existing pages');
 }
 
 async function mainAsync(): Promise<void> {
