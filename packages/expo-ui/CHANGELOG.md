@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Added the widget-only `cornerRadius` modifier to `jetpack-compose`. ([#50332](https://github.com/expo/expo/pull/50332) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
