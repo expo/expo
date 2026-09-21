@@ -121,6 +121,14 @@ export default function StreamingScreen() {
     []
   );
 
+  // Creating a session is the one action here that does not start a stream, so it has to retire the
+  // previous stream's panels itself; every other action goes through beginStream below.
+  const openSession = () => {
+    setPreview(null);
+    setStream(null);
+    return createSession();
+  };
+
   const beginStream = () => {
     setPreview(null);
     setStream(NO_SNAPSHOTS);
@@ -227,13 +235,13 @@ export default function StreamingScreen() {
         {session ? 'A session is open.' : 'No session is open.'}
       </BodyText>
 
-      <Button {...buttonProps('session')} onPress={createSession} title="Create session" />
+      <Button {...buttonProps('session')} onPress={openSession} title="Create session" />
 
       <BodyText color="secondary" style={styles.description}>
-        The session form streams through the session above, so it keeps the earlier turns. Stopping
-        it means breaking out of the for-await loop, which aborts the generation at the next event.
-        Stop applies to this form only: a one-shot call cannot be aborted, and throwing from its
-        onUpdate raises ERR_UPDATE_FAILED instead of cancelling.
+        The session form streams through the session above, which keeps every turn you stream into
+        it. Stopping it means breaking out of the for-await loop, which aborts the generation at the
+        next event. Stop applies to this form only: a one-shot call cannot be aborted, and throwing
+        from its onUpdate raises ERR_UPDATE_FAILED instead of cancelling.
       </BodyText>
 
       <Button
