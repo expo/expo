@@ -59,7 +59,7 @@ To determine the actual compressed size of your Hermes bundle, which is how larg
 
 This will generate **Brotli- and Gzip-compressed** versions of your Hermes bundle (**bundle.hbc.br** and **bundle.hbc.gz**) and display their sizes. You can use this to refine bandwidth calculations based on your app's real-world update sizes.
 
-## Estimating patch size
+## Estimating bundle diff patch size
 
 If your project uses [bundle diffing](/eas-update/bundle-diffing), most users download a patch rather than the full bundle. A patch contains only the differences between the bundle already on the device and the new bundle, so it is usually much smaller than the full update. Incorporating the impact of bundle diffing can give you a more realistic estimate for bandwidth usage.
 
