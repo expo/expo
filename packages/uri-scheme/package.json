@@ -51,7 +51,7 @@
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
-    "glob": "^13.0.6",
+    "glob": "catalog:",
     "prompts": "^2.3.2",
     "update-check": "catalog:"
   }

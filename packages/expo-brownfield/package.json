@@ -75,7 +75,7 @@
     "create-expo": "workspace:*",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "glob": "^13.0.6"
+    "glob": "catalog:"
   },
   "peerDependencies": {
     "expo": "*",
