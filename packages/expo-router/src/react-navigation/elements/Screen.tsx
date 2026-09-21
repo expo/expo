@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { use } from 'react';
-import { Animated, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Animated, Platform, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -62,9 +62,12 @@ export function Screen(props: Props) {
     });
   }, [route.name]);
 
+  // On web, use `inert` because Chrome ignores `aria-hidden` while the screen still holds focus.
+  const hiddenProps = Platform.OS === 'web' ? { inert: !focused } : { 'aria-hidden': !focused };
+
   return (
     <Background
-      aria-hidden={!focused}
+      {...hiddenProps}
       style={[styles.container, style]}
       // On Fabric we need to disable collapsing for the background to ensure
       // that we won't render unnecessary views due to the view flattening.
