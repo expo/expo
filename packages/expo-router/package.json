@@ -332,7 +332,7 @@
     "react-native-safe-area-context": "~5.9.1",
     "react-native-screens": "^4.28.0",
     "react-native-tab-view": "^4.3.0",
-    "react-native-web": "~0.21.0",
+    "react-native-web": "~0.21.2",
     "react-native-worklets": "0.12.2",
     "react-server-dom-webpack": "~19.0.8"
   },
