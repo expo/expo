@@ -37,14 +37,14 @@ export function setModulesMainActivity(mainActivity: string, language: 'java' | 
       ? [
           '\n  @Override',
           '  protected ReactActivityDelegate createReactActivityDelegate() {',
-          '    return new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,',
+          '    return new ReactActivityDelegateWrapper(this,',
           '      new ReactActivityDelegate(this, getMainComponentName())',
           '    );',
           '  }\n',
         ]
       : [
           '\n  override fun createReactActivityDelegate(): ReactActivityDelegate {',
-          '    return ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,',
+          '    return ReactActivityDelegateWrapper(this,',
           '      ReactActivityDelegate(this, getMainComponentName())',
           '    );',
           '  }\n',
@@ -71,8 +71,8 @@ export function setModulesMainActivity(mainActivity: string, language: 'java' | 
     }
 
     const replacement = isJava
-      ? `new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, ${newInstanceCodeBlock.code})`
-      : `ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, ${newInstanceCodeBlock.code})`;
+      ? `new ReactActivityDelegateWrapper(this, ${newInstanceCodeBlock.code})`
+      : `ReactActivityDelegateWrapper(this, ${newInstanceCodeBlock.code})`;
     mainActivity = replaceContentsWithOffset(
       mainActivity,
       replacement,
@@ -102,8 +102,8 @@ export function setModulesMainActivity(mainActivity: string, language: 'java' | 
     }
 
     const replacement = isJava
-      ? `new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, ${newInstanceCodeBlock.code})`
-      : `ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, ${newInstanceCodeBlock.code})`;
+      ? `new ReactActivityDelegateWrapper(this, ${newInstanceCodeBlock.code})`
+      : `ReactActivityDelegateWrapper(this, ${newInstanceCodeBlock.code})`;
     mainActivity = replaceContentsWithOffset(
       mainActivity,
       replacement,
