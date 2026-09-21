@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Keep the base preset's `moduleNameMapper` entries in the web and Node presets, so the `tsconfig.json` `paths` aliases and the `react-native-web` alias are no longer dropped on web.
+- Keep the base preset's `moduleNameMapper` entries in the web and Node presets, so the `tsconfig.json` `paths` aliases and the `react-native-web` alias are no longer dropped on web. ([#50444](https://github.com/expo/expo/pull/50444) by [@joernroeder](https://github.com/joernroeder))
 
 ### 💡 Others
 
