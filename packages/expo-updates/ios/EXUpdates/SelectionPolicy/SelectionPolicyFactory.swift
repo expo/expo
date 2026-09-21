@@ -13,7 +13,7 @@ public final class SelectionPolicyFactory: NSObject {
     return SelectionPolicy.init(
       launcherSelectionPolicy: LauncherSelectionPolicyFilterAware.init(runtimeVersion: runtimeVersion, config: config),
       loaderSelectionPolicy: LoaderSelectionPolicyFilterAware(config: config),
-      reaperSelectionPolicy: ReaperSelectionPolicyFilterAware()
+      reaperSelectionPolicy: ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: config.maxUpdatesToKeep)
     )
   }
 }
