@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Stop requiring the `location` background mode for geofencing. Region monitoring does not need it, and declaring it without a feature that uses persistent location gets apps rejected under App Store guideline 2.5.4. ([#50197](https://github.com/expo/expo/pull/50197) by [@abappi19](https://github.com/abappi19))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
