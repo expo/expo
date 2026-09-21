@@ -48,7 +48,7 @@
     "@expo/spawn-async": "^1.8.0",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
-    "@types/getenv": "^1.0.0",
+    "@types/getenv": "^1.0.3",
     "@types/node": "^22.14.0",
     "@types/picomatch": "^2.3.3",
     "@types/prompts": "2.0.14",

@@ -1991,7 +1991,7 @@ importers:
         specifier: ^1.4.5
         version: 1.4.9
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/invariant':
         specifier: ^2.2.35
@@ -2250,7 +2250,7 @@ importers:
         specifier: ^5.0.3
         version: 5.0.6
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/klaw-sync':
         specifier: ^6.0.0
@@ -2389,7 +2389,7 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
         specifier: ^7.7.1
@@ -2447,7 +2447,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
         specifier: ^7.7.1
@@ -2555,7 +2555,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       expo-module-scripts:
         specifier: workspace:*
@@ -2610,7 +2610,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/node':
         specifier: ^22.14.0
@@ -2662,7 +2662,7 @@ importers:
         version: 7.8.5
     devDependencies:
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
         specifier: ^7.7.1
@@ -2910,7 +2910,7 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/picomatch':
         specifier: ^4.0.2
@@ -3501,7 +3501,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/node':
         specifier: ^22.14.0
@@ -3582,7 +3582,7 @@ importers:
         specifier: ^3.1.5
         version: 3.1.5
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/jest':
         specifier: ^29.5.12
@@ -4676,7 +4676,7 @@ importers:
         specifier: ^4.1.8
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
         specifier: ^7.7.1
@@ -6422,7 +6422,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/jest':
         specifier: ^29.5.12
@@ -6746,7 +6746,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       expo:
         specifier: workspace:*
