@@ -13,7 +13,6 @@ const readline = require("readline");
 
 const root = process.cwd();
 const oldDirs = ["src", "scripts"];
-// Assets that are only referenced by the example code in /src. Everything else in /assets is referenced by app.json and stays.
 const exampleAssets = [
   "assets/images/expo-badge-white.png",
   "assets/images/expo-badge.png",
