@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read. ([#50327](https://github.com/expo/expo/pull/50327) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Re-apply `preferredForwardBufferDuration` when the player item is replaced. ([#50468](https://github.com/expo/expo/pull/50468) by [@rmotafreitas](https://github.com/rmotafreitas))
 
 ### 💡 Others
 
