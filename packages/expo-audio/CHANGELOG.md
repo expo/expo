@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `iosMode` on `setAudioModeAsync` so apps can set the `AVAudioSession` mode. `spokenAudio` keeps the microphone on and plays speech louder on the loudspeaker.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
