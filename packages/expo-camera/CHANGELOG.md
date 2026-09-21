@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove a dead `compilerFlags` block from the SwiftPM build configuration. It had no effect on either build path.
+
 ## 58.0.1 — 2026-09-11
 
 _This version does not introduce any user-facing changes._

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Derive the prebuilt XCFramework's target layout from a checked-in `Package.swift` instead of generating it at build time. The built artifact is unchanged.
+
 ## 58.0.1 — 2026-09-14
 
 ### 💡 Others
