@@ -69,6 +69,18 @@ struct SwiftUIViewPropsTests {
     #expect(props.marker?.text == "other")
   }
 
+  @Test
+  func `decodes a field that first appears in a later update`() throws {
+    let props = TestViewProps()
+    try props.updateRawProps(["title": "hello"], appContext: appContext)
+    #expect(props.marker == nil)
+
+    try props.updateRawProps(makeRawProps(), appContext: appContext)
+
+    #expect(props.marker?.text == "marker")
+    #expect(props.title == "hello")
+  }
+
   /// Layouts such as `Host`'s viewport measurement resolve the window from the view that asks, so
   /// a host outside the key window (or in a second window) measures its own window, not a global one.
   @MainActor

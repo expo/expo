@@ -60,8 +60,24 @@ extension ExpoSwiftUI {
      */
     private var previousRawProps: [String: Any] = [:]
 
+    /**
+     Caches the reflected fields of the view props to avoid repeated reflection.
+     */
+    private let cachedFields = Mutex<[AnyFieldInternal]?>(nil)
+
+    internal var reflectedFields: [AnyFieldInternal] {
+      return cachedFields.withLock { cached in
+        if let cached {
+          return cached
+        }
+        let fields = fieldsOf(self)
+        cached = fields
+        return fields
+      }
+    }
+
     internal func updateRawProps(_ rawProps: [String: Any], appContext: AppContext) throws {
-      try fieldsOf(self).forEach { field in
+      try reflectedFields.forEach { field in
         guard let key = field.key else {
           return
         }
