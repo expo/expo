@@ -143,7 +143,9 @@ module Expo
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
-          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+          # Keep this a driver flag, not -Xfrontend, so the absolute path stays out of the
+          # Swift compilation cache key.
+          macro_flags = "-load-plugin-executable \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
         end
 
         target.pod_targets.each do |pod_target|
