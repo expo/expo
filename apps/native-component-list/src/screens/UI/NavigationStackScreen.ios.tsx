@@ -174,6 +174,7 @@ export default function NavigationStackScreen() {
   const [selected, setSelected] = React.useState<Selection | null>(null);
   const [favourites, setFavourites] = React.useState<string[]>([]);
   const [descending, setDescending] = React.useState(false);
+  const [playingCall, setPlayingCall] = React.useState(false);
   const [path, setPath] = React.useState<string[]>([]);
   // Controlled in both directions. Setting it without the callback pins the collapsed view to
   // the sidebar forever, because SwiftUI's own write is skipped and never echoed back.
@@ -217,6 +218,7 @@ export default function NavigationStackScreen() {
 
                   if (bird) {
                     setSelected(bird);
+                    setPlayingCall(false);
                     setCompactColumn('detail');
                   }
                 }}>
@@ -228,6 +230,7 @@ export default function NavigationStackScreen() {
                         modifiers={[buttonStyle('plain'), tag(bird.name)]}
                         onPress={() => {
                           setSelected({ ...bird, habitat: habitat.title });
+                          setPlayingCall(false);
                           // A plain state change does not move a collapsed split view. The tap
                           // has to ask for the detail column itself.
                           setCompactColumn('detail');
@@ -370,13 +373,27 @@ export default function NavigationStackScreen() {
                 <ToolbarItem placement="primaryAction">
                   <Button systemImage="square.and.arrow.up" label="Share" onPress={() => {}} />
                 </ToolbarItem>
-                {/* Lowered, so these two give up their place before anything else. */}
+                {/* Lowered, so it gives up its place before anything else. */}
                 <ToolbarItem placement="secondaryAction" visibilityPriority="low">
                   <Button systemImage="map" label="Show range" onPress={() => {}} />
                 </ToolbarItem>
-                <ToolbarItem placement="secondaryAction" visibilityPriority="low">
-                  <Button systemImage="speaker.wave.2" label="Play call" onPress={() => {}} />
+                {/* Playback takes the title slot while it runs, the way a transient mode does. */}
+                <ToolbarItem placement={playingCall ? 'principal' : 'primaryAction'}>
+                  <Button
+                    systemImage={playingCall ? 'stop.fill' : 'speaker.wave.2'}
+                    label={playingCall ? 'Stop call' : 'Play call'}
+                    onPress={() => setPlayingCall((value) => !value)}
+                  />
                 </ToolbarItem>
+                {playingCall ? (
+                  <ToolbarItem placement="primaryAction">
+                    <Button
+                      systemImage="arrow.counterclockwise"
+                      label="Restart"
+                      onPress={() => {}}
+                    />
+                  </ToolbarItem>
+                ) : null}
                 <ToolbarItem placement="bottomBar">
                   <Button systemImage="plus.circle" label="Log sighting" onPress={() => {}} />
                 </ToolbarItem>
