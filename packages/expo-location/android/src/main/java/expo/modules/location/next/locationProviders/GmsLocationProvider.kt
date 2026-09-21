@@ -16,11 +16,10 @@ import com.google.android.gms.tasks.Task
 import expo.modules.location.next.Position
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
 import expo.modules.location.next.toPosition
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration
 
 fun LocationPriority.toGmsPriority(): Int {
@@ -71,7 +70,7 @@ class GmsLocationProvider(
     } ?: ProviderResult.Unavailable
   }
 
-  override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
+  override suspend fun enableLocationServices(activity: Activity, promptResult: CompletableDeferred<Boolean>): ProviderResult<Unit> {
     if (!isServiceAvailable()) return ProviderResult.Unsupported
     val settingsRequest = LocationSettingsRequest
       .Builder()
@@ -91,20 +90,18 @@ class GmsLocationProvider(
       return ProviderResult.Unavailable
     }
     if (resolvable == null) {
-      return ProviderResult.Success(true)
+      promptResult.complete(true)
+      return ProviderResult.Success(Unit)
     }
-    val enabled = suspendCoroutine { continuation ->
-      storeContinuationObject(continuation)
-      try {
-        activity.startIntentSenderForResult(
-          resolvable.resolution.intentSender,
-          SETTINGS_REQUEST_CODE,
-          null, 0, 0, 0
-        )
-      } catch (e: Throwable) {
-        continuation.resume(false)
-      }
+    try {
+      activity.startIntentSenderForResult(
+        resolvable.resolution.intentSender,
+        SETTINGS_REQUEST_CODE,
+        null, 0, 0, 0
+      )
+    } catch (e: Throwable) {
+      promptResult.complete(false)
     }
-    return ProviderResult.Success(enabled)
+    return ProviderResult.Success(Unit)
   }
 }

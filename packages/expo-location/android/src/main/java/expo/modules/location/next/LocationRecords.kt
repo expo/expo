@@ -118,19 +118,19 @@ fun Location.mslAltitude(): Double? {
 }
 
 fun Location.verticalAccuracy(): Double? {
-  return if (Build.VERSION.SDK_INT >= 26 && hasVerticalAccuracy()) {
+  return if (Build.VERSION.SDK_INT >= 26 && hasAltitude() && hasVerticalAccuracy()) {
     verticalAccuracyMeters.toDouble()
   } else null
 }
 
 fun Location.speedAccuracy(): Double? {
-  return if (Build.VERSION.SDK_INT >= 26 && hasSpeedAccuracy()) {
+  return if (Build.VERSION.SDK_INT >= 26 && hasSpeed() && hasSpeedAccuracy()) {
     speedAccuracyMetersPerSecond.toDouble()
   } else null
 }
 
 fun Location.headingAccuracy(): Double? {
-  return if (Build.VERSION.SDK_INT >= 26 && hasBearingAccuracy()) {
+  return if (Build.VERSION.SDK_INT >= 26 && hasBearing() && hasBearingAccuracy()) {
     bearingAccuracyDegrees.toDouble()
   } else null
 }

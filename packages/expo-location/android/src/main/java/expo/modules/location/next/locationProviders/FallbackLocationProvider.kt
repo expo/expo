@@ -2,23 +2,22 @@ package expo.modules.location.next.locationProviders
 
 import android.app.Activity
 import expo.modules.location.next.Position
-import kotlin.coroutines.Continuation
+import kotlinx.coroutines.CompletableDeferred
 
 class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : LocationProvider {
-  val fallbackName: String by lazy {
-    locationProviders.joinToString(prefix = "Fallback: ", separator = " -> ") { it.name() }
-  }
-
   override fun name(): String {
-    return fallbackName
+    return locationProviders
+      .joinToString(prefix = "Fallback: ", separator = " -> ") {
+        it.name()
+      }
   }
 
   override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
     return firstAvailable { it.getPosition(options) }
   }
 
-  override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
-    return firstAvailable { it.enableLocationServices(activity, storeContinuationObject) }
+  override suspend fun enableLocationServices(activity: Activity, promptResult: CompletableDeferred<Boolean>): ProviderResult<Unit> {
+    return firstAvailable { it.enableLocationServices(activity, promptResult) }
   }
 
   inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {
