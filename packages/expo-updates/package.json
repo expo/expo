@@ -83,7 +83,7 @@
     "@testing-library/react-native": "^14.0.1",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
