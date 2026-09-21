@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/getenv": "^1.0.3",
+    "@types/getenv": "catalog:",
     "expo-module-scripts": "workspace:*",
     "memfs": "catalog:"
   },

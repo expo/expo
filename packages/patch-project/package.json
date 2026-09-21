@@ -58,7 +58,7 @@
   "devDependencies": {
     "@expo/cli": "workspace:*",
     "@types/debug": "^4.1.5",
-    "@types/getenv": "^1.0.3",
+    "@types/getenv": "catalog:",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "memfs": "catalog:"

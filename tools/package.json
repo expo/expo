@@ -67,7 +67,7 @@
     "@types/diff": "^5.0.2",
     "@types/folder-hash": "^4.0.4",
     "@types/fs-extra": "^11.0.4",
-    "@types/getenv": "^1.0.3",
+    "@types/getenv": "catalog:",
     "@types/inquirer": "^8.2.10",
     "@types/node": "catalog:",
     "@types/semver": "catalog:",

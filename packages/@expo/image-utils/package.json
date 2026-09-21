@@ -45,7 +45,7 @@
     "semver": "^7.7.4"
   },
   "devDependencies": {
-    "@types/getenv": "^1.0.3",
+    "@types/getenv": "catalog:",
     "@types/semver": "catalog:",
     "expo-module-scripts": "workspace:*",
     "sharp": "~0.34.2",

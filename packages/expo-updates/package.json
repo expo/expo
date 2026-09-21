@@ -80,7 +80,7 @@
     "@expo/metro-config": "workspace:*",
     "@testing-library/react-native": "catalog:",
     "@types/debug": "^4.1.7",
-    "@types/getenv": "^1.0.3",
+    "@types/getenv": "catalog:",
     "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/node-forge": "catalog:",

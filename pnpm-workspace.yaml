@@ -32,6 +32,7 @@ catalog:
   '@types/cross-spawn': ^6.0.6
   '@types/eslint': ^8.56.12
   '@types/express': ^5.0.3
+  '@types/getenv': ^1.0.3
   '@types/jest': ^29.5.12
   '@types/node': ^22.14.0
   '@types/node-forge': ^1.0.0
