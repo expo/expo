@@ -18,6 +18,7 @@
 ### 💡 Others
 
 - [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.12.0`. ([#50286](https://github.com/expo/expo/pull/50286) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reflect on the fields of a SwiftUI view's props once, instead of on every prop update. ([#50421](https://github.com/expo/expo/pull/50421) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 58.0.3 — 2026-09-16
 
