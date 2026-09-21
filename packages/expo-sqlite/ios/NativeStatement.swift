@@ -60,10 +60,10 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
   // MARK: - Implementation shared by the sync and async members
 
   private func reset(database: NativeDatabase) throws {
-    try database.ensureOpen()
-    try ensureNotFinalized()
-
     try lock.withLock { _ in
+      try ensureNotFinalized()
+      try database.ensureOpen()
+
       if exsqlite3_reset(pointer) != SQLITE_OK {
         throw SQLiteErrorException(database.lastErrorMessage())
       }
@@ -71,23 +71,29 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
   }
 
   private func getColumnNames() throws -> [String] {
-    try ensureNotFinalized()
-    let columnCount = Int(exsqlite3_column_count(pointer))
-    var columnNames: [String] = Array(repeating: "", count: columnCount)
-    for i in 0..<columnCount {
-      columnNames[i] = String(cString: exsqlite3_column_name(pointer, Int32(i)))
+    return try lock.withLock { _ in
+      try ensureNotFinalized()
+      let columnCount = Int(exsqlite3_column_count(pointer))
+      var columnNames: [String] = Array(repeating: "", count: columnCount)
+      for i in 0..<columnCount {
+        columnNames[i] = String(cString: exsqlite3_column_name(pointer, Int32(i)))
+      }
+      return columnNames
     }
-    return columnNames
   }
 
-  private func finalize(database: NativeDatabase) throws {
-    try database.ensureOpen()
-    try ensureNotFinalized()
-
+  func finalize(database: NativeDatabase) throws {
+    database.statementLifecycleLock.lock()
+    defer { database.statementLifecycleLock.unlock() }
     try lock.withLock { _ in
+      try ensureNotFinalized()
+      try database.ensureOpen()
+
       let ret = exsqlite3_finalize(pointer)
       // SQLite destroys the statement even when returning an earlier execution error.
       isFinalized = true
+      pointer = nil
+      database.statements.removeAll { $0 === self }
       if ret != SQLITE_OK {
         throw SQLiteErrorException(database.lastErrorMessage())
       }

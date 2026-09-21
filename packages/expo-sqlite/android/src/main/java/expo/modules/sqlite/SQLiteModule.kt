@@ -234,12 +234,16 @@ class SQLiteModule : Module() {
       }
 
       AsyncFunction("getColumnNamesAsync") { statement: NativeStatement ->
-        maybeThrowForFinalizedStatement(statement)
-        return@AsyncFunction statement.ref.getColumnNames()
+        synchronized(statement) {
+          maybeThrowForFinalizedStatement(statement)
+          return@AsyncFunction statement.ref.getColumnNames()
+        }
       }.runOnQueue(moduleCoroutineScope)
       Function("getColumnNamesSync") { statement: NativeStatement ->
-        maybeThrowForFinalizedStatement(statement)
-        return@Function statement.ref.getColumnNames()
+        synchronized(statement) {
+          maybeThrowForFinalizedStatement(statement)
+          return@Function statement.ref.getColumnNames()
+        }
       }
 
       AsyncFunction("finalizeAsync") { statement: NativeStatement, database: NativeDatabase ->
@@ -363,21 +367,24 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
-    maybeThrowForClosedDatabase(database)
-    maybeThrowForFinalizedStatement(statement)
-    if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    synchronized(database.statementLifecycleLock) {
+      maybeThrowForFinalizedStatement(statement)
+      maybeThrowForClosedDatabase(database)
+      if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      database.statements.add(statement)
     }
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ArrayBuffer>, shouldPassAsArray: Boolean): Map<String, Any> {
-    maybeThrowForClosedDatabase(database)
-    maybeThrowForFinalizedStatement(statement)
-
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
     synchronized(statement) {
+      maybeThrowForFinalizedStatement(statement)
+      maybeThrowForClosedDatabase(database)
+
       statement.ref.sqlite3_reset()
       statement.ref.sqlite3_clear_bindings()
       for ((key, param) in bindParams) {
@@ -421,11 +428,11 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun step(statement: NativeStatement, database: NativeDatabase): SQLiteColumnValues? {
-    maybeThrowForClosedDatabase(database)
-    maybeThrowForFinalizedStatement(statement)
-
     // Guard the stateful statement, see `run` above.
     synchronized(statement) {
+      maybeThrowForFinalizedStatement(statement)
+      maybeThrowForClosedDatabase(database)
+
       val ret = statement.ref.sqlite3_step()
       if (ret == NativeDatabaseBinding.SQLITE_ROW) {
         return statement.getTransformedColumnValues()
@@ -439,11 +446,11 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun getAll(statement: NativeStatement, database: NativeDatabase): List<SQLiteColumnValues> {
-    maybeThrowForClosedDatabase(database)
-    maybeThrowForFinalizedStatement(statement)
-
     // Guard the stateful statement, see `run` above.
     synchronized(statement) {
+      maybeThrowForFinalizedStatement(statement)
+      maybeThrowForClosedDatabase(database)
+
       val columnValuesList = mutableListOf<SQLiteColumnValues>()
       while (true) {
         val ret = statement.ref.sqlite3_step()
@@ -461,11 +468,11 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun reset(statement: NativeStatement, database: NativeDatabase) {
-    maybeThrowForClosedDatabase(database)
-    maybeThrowForFinalizedStatement(statement)
-
     // Guard the stateful statement, see `run` above.
     synchronized(statement) {
+      maybeThrowForFinalizedStatement(statement)
+      maybeThrowForClosedDatabase(database)
+
       if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
         throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
       }
@@ -474,16 +481,19 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
-    maybeThrowForClosedDatabase(database)
-    maybeThrowForFinalizedStatement(statement)
+    synchronized(database.statementLifecycleLock) {
+      // Guard the stateful statement, see `run` above.
+      synchronized(statement) {
+        maybeThrowForFinalizedStatement(statement)
+        maybeThrowForClosedDatabase(database)
 
-    // Guard the stateful statement, see `run` above.
-    synchronized(statement) {
-      val ret = statement.ref.sqlite3_finalize()
-      // SQLite destroys the statement even when returning an earlier execution error.
-      statement.isFinalized = true
-      if (ret != NativeDatabaseBinding.SQLITE_OK) {
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        val ret = statement.ref.sqlite3_finalize()
+        // SQLite destroys the statement even when returning an earlier execution error.
+        statement.isFinalized = true
+        database.statements.removeAll { it === statement }
+        if (ret != NativeDatabaseBinding.SQLITE_OK) {
+          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        }
       }
     }
   }
@@ -521,13 +531,15 @@ class SQLiteModule : Module() {
   private fun closeDatabase(database: NativeDatabase) {
     database.closeLock.lock()
     try {
-      maybeThrowForClosedDatabase(database)
-      maybeFinalizeAllStatements(database)
-      val ret = database.ref.sqlite3_close()
-      if (ret != NativeDatabaseBinding.SQLITE_OK) {
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      synchronized(database.statementLifecycleLock) {
+        maybeThrowForClosedDatabase(database)
+        maybeFinalizeAllStatements(database)
+        val ret = database.ref.sqlite3_close()
+        if (ret != NativeDatabaseBinding.SQLITE_OK) {
+          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        }
+        database.isClosed = true
       }
-      database.isClosed = true
     } finally {
       database.closeLock.unlock()
     }
@@ -615,12 +627,19 @@ class SQLiteModule : Module() {
 
   // region statements managements
 
-  @Synchronized
   private fun maybeFinalizeAllStatements(database: NativeDatabase) {
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
-    database.ref.sqlite3_finalize_all_statement()
+    // Finalize through the wrappers so even a failed close leaves them invalidated.
+    // Do not destroy SQLite-internal statements owned by concurrent exec/backup operations.
+    for (statement in database.statements.toList()) {
+      try {
+        finalize(statement, database)
+      } catch (error: SQLiteErrorException) {
+        android.util.Log.w("expo-sqlite", "Finalizing a statement during close failed", error)
+      }
+    }
   }
 
   // endregion
