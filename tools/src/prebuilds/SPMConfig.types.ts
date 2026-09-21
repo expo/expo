@@ -85,8 +85,9 @@ export interface SourceTarget {
   name: string;
   /** Module name for header organization (defaults to product name if not specified) */
   moduleName?: string;
-  /** Path to source files relative to package root */
-  path: string;
+  /** Path to source files relative to package root. Omitted only when a checked-in
+   * `Package.swift` declares the package layout, which then names the target's sources. */
+  path?: string;
   /** Glob pattern to filter source files within the path */
   pattern?: string;
   /** Glob pattern to filter header files within the path */
@@ -206,6 +207,27 @@ export type ProductPlatform =
   | 'tvOS(.v15)'
   | 'macCatalyst(.v15)';
 
+/**
+ * Condition deciding whether a product's pod is autolinked as a companion pod.
+ *
+ * Exactly one selector applies. `precompiled_modules.rb` evaluates the first of `podName`,
+ * `npmPackage` and `podfileProperty` that is present, so a second selector is silently ignored
+ * and a condition carrying none of them never links.
+ */
+export type AutolinkWhen =
+  /** Link when a pod with this name is known to autolinking. */
+  | { podName: string; npmPackage?: never; podfileProperty?: never; disabledValue?: never }
+  /** Link when this npm package is a React Native dependency. */
+  | { npmPackage: string; podName?: never; podfileProperty?: never; disabledValue?: never }
+  /** Opt-out: link unless the Podfile property equals `disabledValue`. */
+  | {
+      podfileProperty: string;
+      /** Without this, the companion links whenever the property is absent or differs. */
+      disabledValue?: string;
+      podName?: never;
+      npmPackage?: never;
+    };
+
 /** Escape hatch: have a package-owned script produce the xcframework instead of the SPM generator. */
 export interface CustomBuild {
   /** Path to the build script, relative to the package root. */
@@ -232,6 +254,9 @@ export interface SPMProduct {
    * Use this for companion adapters that must always compile from source
    * because they bridge to a peer pod that may not be present. */
   sourceOnly?: boolean;
+  /** When set, this product's pod is registered as a companion pod and linked only when the
+   * condition holds. Consumed by `precompiled_modules.rb`, not by the prebuild pipeline. */
+  autolinkWhen?: AutolinkWhen;
   /** The React Native codegen module name (from package.json codegenConfig.name). Only required for packages that use React Native codegen. */
   codegenName?: string;
   /** Supported platforms for this product */

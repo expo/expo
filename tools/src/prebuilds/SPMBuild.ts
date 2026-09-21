@@ -6,6 +6,11 @@ import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import logger from '../Logger';
+import {
+  type CheckedInResolvedTarget,
+  resolveCheckedInManifestAsync,
+  resolveCheckedInManifestRoot,
+} from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { usesPackageLocalBuildPath } from './PackageLocalBuild';
@@ -60,6 +65,19 @@ export const SPMBuild = {
       );
     }
 
+    // Resolved here rather than per platform: the layout is the same for every platform, and the
+    // reconciliation it feeds must report a mismatch once, not once per platform.
+    const checkedInRoot = resolveCheckedInManifestRoot(pkg);
+    const checkedIn = checkedInRoot
+      ? {
+          root: checkedInRoot,
+          targets: await resolveCheckedInManifestAsync(checkedInRoot, product),
+        }
+      : undefined;
+    if (checkedIn) {
+      warnUnreconciledConfigTargets(product, checkedIn);
+    }
+
     // Build for each platform
     for (const buildPlatform of buildPlatforms) {
       await buildForPlatformAsync(
@@ -68,6 +86,7 @@ export const SPMBuild = {
         buildType,
         buildPlatform,
         packageSwiftPath,
+        checkedIn,
         hermesIncludeDirs
       );
     }
@@ -199,19 +218,63 @@ export const getBuildPlatformsForProduct = (
   return platform ? allPlatforms.filter((p) => p === platform) : allPlatforms;
 };
 
+/** What a checked-in `Package.swift` contributes here: where a target's sources really live. */
+export type CheckedInTargetLayout = Pick<CheckedInResolvedTarget, 'name' | 'sourceRoot'>;
+
+/**
+ * A package layout read from a checked-in `Package.swift`. `root` is the canonical package
+ * directory `resolveCheckedInManifestRoot` returned and every `sourceRoot` was resolved against,
+ * so the two are comparable: `pkg.path` is not canonicalised anywhere and can spell the same
+ * directory differently.
+ */
+export type CheckedInLayout = {
+  root: string;
+  targets: readonly CheckedInTargetLayout[];
+};
+
+/**
+ * Warns about each spm.config.json target the checked-in manifest does not declare. Nothing else
+ * reconciles the two name sets: the generated package is built from the manifest's targets alone,
+ * so a config target the manifest does not name is inert.
+ *
+ * Called once for the whole product rather than from the per-platform argument build, which would
+ * repeat the same paragraph for every platform.
+ */
+export const warnUnreconciledConfigTargets = (
+  product: SPMProduct,
+  checkedIn: CheckedInLayout
+): void => {
+  const declared = new Set(checkedIn.targets.map((target) => target.name));
+  for (const target of product.targets) {
+    if (target.type === 'framework' || declared.has(target.name)) continue;
+    logger.warn(
+      `⚠️  Not remapping debug info for ${product.name}/${target.name}: spm.config.json ` +
+        `declares this target, but the checked-in Package.swift in ${checkedIn.root} declares ` +
+        `no target with that name, and the manifest alone decides what the build contains. ` +
+        `Nothing is built under this name, so if it is a typo the sources it names are ` +
+        `missing from the xcframework, and if Package.swift covers them under another name ` +
+        `this entry is dead configuration. Rename the target in spm.config.json to the ` +
+        `manifest's spelling, or remove it.`
+    );
+  }
+};
+
 /**
  * Builds the xcodebuild arguments for a platform build.
  * @param pkg Package
  * @param product Product
  * @param buildType Build flavor
  * @param buildPlatform Target platform
+ * @param checkedIn Layout resolved from a checked-in Package.swift; absent without one
+ * @param hermesIncludeDirs Optional hermes include directories to pass via xcodebuild flags
  * @returns Array of xcodebuild arguments
  */
-const buildXcodeBuildArgs = (
+export const buildXcodeBuildArgs = (
   pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
   buildPlatform: BuildPlatform,
+  checkedIn?: CheckedInLayout,
   hermesIncludeDirs?: string[]
 ): string[] => {
   const derivedDataPath = SPMBuild.getPackageBuildPath(pkg, product, buildType);
@@ -226,23 +289,58 @@ const buildXcodeBuildArgs = (
   const repoRoot = getExpoRepositoryRootDir();
 
   // Per-target debug prefix maps: remap staging directory paths to canonical source paths.
-  // During the SPM build, source files are symlinked into a staging directory:
-  //   <buildPath>/generated/<productName>/<targetName>/
-  // The compiler records this staging path (not the symlink target) as DW_AT_comp_dir.
-  // These maps ensure DWARF records the canonical /expo-src/<pkgPath>/<target.path>/
-  // prefix instead, so the resolve-dsym-sourcemaps.js script can map them to the
-  // consumer's local package paths.
+  // Every target is built out of a staging directory, <buildPath>/generated/<productName>/
+  // <targetName>/, holding either copies of its sources or a read-only `src` link to them, and
+  // the compiler records that staging path rather than where the sources really are. These maps
+  // make DWARF record the canonical /expo-src/packages/<package>/<source dir>/ prefix instead,
+  // so the resolve-dsym-sourcemaps.js script can map it to the consumer's local package path.
   const stagingBase = path.resolve(pkg.buildPath, 'generated', product.name);
+  const checkedInRoot = checkedIn?.root;
+  const checkedInSourceRoots = new Map(
+    (checkedIn?.targets ?? []).map((target) => [target.name, target.sourceRoot])
+  );
   const cTargetPrefixMaps: string[] = [];
   const swiftTargetPrefixMaps: string[] = [];
   for (const target of product.targets) {
     // Skip binary framework targets (no source files to compile)
     if (target.type === 'framework') continue;
-    // Skip targets with generated source in .build/ (not from actual package source)
-    if (target.path.startsWith('.build/')) continue;
 
-    const stagingTargetPath = path.join(stagingBase, target.name);
-    const canonicalPath = `/expo-src/packages/${pkg.packageName}/${target.path}`;
+    const checkedInSourceRoot = checkedInSourceRoots.get(target.name);
+    // A config target the manifest does not name is inert: nothing is built under it, so there
+    // is no staging path to remap. warnUnreconciledConfigTargets reports it once per product.
+    if (checkedInRoot != null && !checkedInSourceRoot) continue;
+    let stagingTargetPath: string;
+    let sourceDirectory: string;
+    // A checked-in manifest decides the staging shape whatever spm.config.json says, because the
+    // sources are reached through the `src` link rather than copied to the target directory.
+    if (checkedInRoot != null && checkedInSourceRoot) {
+      stagingTargetPath = path.join(stagingBase, target.name, 'src');
+      // Relative to the manifest root rather than to pkg.path: only the manifest root is
+      // canonicalised, and the two can spell one directory two ways.
+      sourceDirectory = path.relative(checkedInRoot, checkedInSourceRoot);
+      // A source root outside the package has no /expo-src/packages/<package>/… spelling; a map
+      // built from it would rewrite debug info to a path that does not exist.
+      if (sourceDirectory === '..' || sourceDirectory.startsWith(`..${path.sep}`)) {
+        logger.warn(
+          `⚠️  Not remapping debug info for ${product.name}/${target.name}: its sources at ` +
+            `${checkedInSourceRoot} are outside the package directory ${checkedInRoot}, so they ` +
+            `have no canonical /expo-src/packages/${pkg.packageName}/… path to be recorded ` +
+            `under. Source-level debugging into this target will not work from the published ` +
+            `xcframework. Move the sources under ${checkedInRoot}, or declare the target in the ` +
+            `package that owns them.`
+        );
+        continue;
+      }
+    } else {
+      // A target with no path names no source directory, and one generated under .build/ has no
+      // canonical source path at all. The repository-root map below covers both.
+      if (!target.path || target.path.startsWith('.build/')) continue;
+      stagingTargetPath = path.join(stagingBase, target.name);
+      sourceDirectory = target.path;
+    }
+    // posix.join rather than interpolation: an empty source directory — a target whose source
+    // root is the package root — must not leave a doubled separator that matches nothing.
+    const canonicalPath = path.posix.join(`/expo-src/packages/${pkg.packageName}`, sourceDirectory);
 
     // Trailing '/' ensures directory-boundary matching — without it, a target named
     // "ExpoModulesCore" would also match "ExpoModulesCore_ios_objc" as a string prefix.
@@ -254,11 +352,12 @@ const buildXcodeBuildArgs = (
   const debugPrefixMap = `-fdebug-prefix-map=${repoRoot}=/expo-src`;
   const swiftDebugPrefixMap = `-debug-prefix-map ${repoRoot}=/expo-src`;
 
-  // Build compound flag strings: repo root map FIRST (catch-all), per-target maps LAST (override).
-  // Clang applies -fdebug-prefix-map in reverse order (last on command line wins), so the
-  // more specific per-target maps must come last to take priority over the general repo root map.
+  // The specific per-target maps must beat the general repo root catch-all, and the two compilers
+  // want opposite orders for that: clang applies the LAST matching -fdebug-prefix-map, swiftc the
+  // FIRST matching -debug-prefix-map. So the catch-all leads the clang lists and trails the Swift
+  // one; putting it first in both is what left every Swift file recorded under its staging path.
   const allCPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].join(' ');
-  const allSwiftPrefixMaps = [swiftDebugPrefixMap, ...swiftTargetPrefixMaps].join(' ');
+  const allSwiftPrefixMaps = [...swiftTargetPrefixMaps, swiftDebugPrefixMap].join(' ');
   const allXccPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].map((m) => `-Xcc ${m}`).join(' ');
 
   // Build extra include flags for headers that can't be in Package.swift
@@ -306,6 +405,7 @@ const buildXcodeBuildArgs = (
  * @param buildType Build flavor
  * @param buildPlatform Target platform
  * @param packageSwiftPath Path to Package.swift
+ * @param checkedIn Layout resolved from a checked-in Package.swift; absent without one
  */
 const buildForPlatformAsync = async (
   pkg: SPMPackageSource,
@@ -313,9 +413,17 @@ const buildForPlatformAsync = async (
   buildType: BuildFlavor,
   buildPlatform: BuildPlatform,
   packageSwiftPath: string,
+  checkedIn: CheckedInLayout | undefined,
   hermesIncludeDirs?: string[]
 ): Promise<void> => {
-  const args = buildXcodeBuildArgs(pkg, product, buildType, buildPlatform, hermesIncludeDirs);
+  const args = buildXcodeBuildArgs(
+    pkg,
+    product,
+    buildType,
+    buildPlatform,
+    checkedIn,
+    hermesIncludeDirs
+  );
 
   const { code, error: buildError } = await spawnXcodeBuildWithSpinner(
     args,

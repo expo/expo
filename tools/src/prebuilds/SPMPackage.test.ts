@@ -4,8 +4,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 
-import type { SPMProduct, SwiftTarget } from './SPMConfig.types';
+import type { ObjcTarget, SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
+  buildCSettings,
   buildSwiftSettings,
   expandTransitiveExternalDeps,
   findSiblingProductDependencies,
@@ -342,6 +343,50 @@ describe('React header flags: modular module map', () => {
     assert.ok(
       !clangFlags.includes(`${version}/release`),
       `unexpected release flavor flags in: ${clangFlags}`
+    );
+  });
+});
+
+describe('buildCSettings include directories', () => {
+  function settingsFor(target: ObjcTarget) {
+    return buildCSettings(
+      target,
+      [],
+      null,
+      '/repo/packages/precompile/.build/fixture/spm',
+      'Fixture',
+      '1.0.0',
+      '/repo/packages/fixture',
+      '/repo/packages/precompile/.build/fixture',
+      'Debug'
+    );
+  }
+
+  it('resolves include directories against the target path', () => {
+    const { cSettings } = settingsFor({
+      type: 'objc',
+      name: 'FixtureObjC',
+      path: 'ios',
+      includeDirectories: ['common'],
+    });
+    assert.ok(
+      cSettings.some((setting) => setting.includes('/repo/packages/fixture/ios/common')),
+      `Expected an -I flag for ios/common: ${cSettings.join(' ')}`
+    );
+  });
+
+  it('explains include directories on a target that declares no path', () => {
+    assert.throws(
+      () => settingsFor({ type: 'objc', name: 'FixtureObjC', includeDirectories: ['common'] }),
+      (error: Error) => {
+        assert.ok(!(error instanceof TypeError), `Expected a diagnostic, got ${error.stack}`);
+        assert.match(error.message, /product "Fixture", target "FixtureObjC"/);
+        assert.match(error.message, /includeDirectories/);
+        assert.match(error.message, /no "path"/);
+        assert.match(error.message, /Package\.swift/);
+        assert.match(error.message, /spm\.config\.json/);
+        return true;
+      }
     );
   });
 });

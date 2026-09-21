@@ -12,6 +12,11 @@ import path from 'path';
 import { getPrecompileDir } from '../Directories';
 import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
+import {
+  isCheckedInResolvedTarget,
+  resolveCheckedInManifestAsync,
+  resolveCheckedInManifestRoot,
+} from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
@@ -682,6 +687,14 @@ function generatePackageSwiftContent(context: PackageSwiftContext): string {
   return lines.join('\n');
 }
 
+function quoteSwiftPath(value: string): string {
+  return `"${value.replace(/[\\"\x00-\x1f\x7f]/g, (character) =>
+    character === '\\' || character === '"'
+      ? `\\${character}`
+      : `\\u{${character.charCodeAt(0).toString(16)}}`
+  )}"`;
+}
+
 /**
  * Generates a single target declaration for Package.swift
  */
@@ -708,23 +721,35 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
     }
 
     // Path
-    lines.push(`            path: "${target.path}",`);
+    lines.push(
+      `            path: ${isCheckedInResolvedTarget(target) ? quoteSwiftPath(target.path) : `"${target.path}"`},`
+    );
 
-    // Sources - exclude everything except the expected source files (must come before publicHeadersPath)
-    lines.push(`            sources: nil,`);
+    if (isCheckedInResolvedTarget(target)) {
+      if (target.exclude.length > 0) {
+        lines.push(`            exclude: [${target.exclude.map(quoteSwiftPath).join(', ')}],`);
+      }
+      lines.push(`            sources: [${target.sources.map(quoteSwiftPath).join(', ')}],`);
+    } else {
+      lines.push(`            sources: nil,`);
+    }
 
     // Resources
     if (target.resources && target.resources.length > 0) {
       lines.push(`            resources: [`);
       for (const res of target.resources) {
-        lines.push(`                .${res.rule}("${res.path}"),`);
+        lines.push(
+          `                .${res.rule}(${isCheckedInResolvedTarget(target) ? quoteSwiftPath(res.path) : `"${res.path}"`}),`
+        );
       }
       lines.push(`            ],`);
     }
 
     // Public headers path for ObjC/C++ targets (required for module map generation)
     if ((target.type === 'objc' || target.type === 'cpp') && target.publicHeadersPath) {
-      lines.push(`            publicHeadersPath: "${target.publicHeadersPath}",`);
+      lines.push(
+        `            publicHeadersPath: ${isCheckedInResolvedTarget(target) ? quoteSwiftPath(target.publicHeadersPath) : `"${target.publicHeadersPath}"`},`
+      );
     }
 
     // C settings for ObjC and C++ targets
@@ -992,7 +1017,7 @@ export function buildSwiftSettings(
  * @param buildType - Debug or Release build flavor
  * @param xcframeworkPaths - Map of dependency name to absolute xcframework path (for auto-resolving headers)
  */
-function buildCSettings(
+export function buildCSettings(
   target: ObjcTarget | CppTarget,
   externalDeps: string[],
   artifactPaths: ArtifactPaths | null,
@@ -1077,6 +1102,18 @@ function buildCSettings(
   // The includeDirectories in the config are relative to the target's original path (target.path),
   // which is relative to pkg.path. So we resolve: pkg.path + target.path + includeDir
   if (target.includeDirectories && target.includeDirectories.length > 0) {
+    // Defence in depth: a target built from a checked-in Package.swift reaches this code with
+    // `path` already set to its absolute source root, so only a Mode A target can trip this.
+    if (!target.path) {
+      throw new Error(
+        `Cannot resolve "includeDirectories" for product "${productName}", target ` +
+          `"${target.name}": the target declares no "path", and include directories are relative ` +
+          `to it, so ${target.includeDirectories.map((dir) => `"${dir}"`).join(', ')} resolves ` +
+          `against nothing. Only a checked-in Package.swift may leave a target without a "path", ` +
+          `and its layout is not read here. Give the target a "path" in its spm.config.json, or ` +
+          `drop its "includeDirectories".`
+      );
+    }
     const includeFlags: string[] = [];
     for (const includeDir of target.includeDirectories) {
       // Resolve relative to the original target path.
@@ -1334,6 +1371,10 @@ async function buildPackageSwiftContext(
   artifactPaths?: ArtifactPaths
 ): Promise<PackageSwiftContext> {
   let spinner = createAsyncSpinner(`Build Package Swift context`, pkg, product);
+  const checkedInRoot = resolveCheckedInManifestRoot(pkg);
+  const checkedInTargets = checkedInRoot
+    ? await resolveCheckedInManifestAsync(checkedInRoot, product)
+    : null;
 
   // Get root directory for the Package.swift file
   const packageSwiftDir = path.dirname(packageSwiftPath);
@@ -1592,7 +1633,7 @@ async function buildPackageSwiftContext(
 
   // Inject cross-package transitive external deps into source target deps so
   // the Swift compiler can resolve `@_exported import` chains through them.
-  for (const target of product.targets) {
+  for (const target of checkedInTargets == null ? product.targets : []) {
     if (target.type === 'framework') continue;
     const deps = target.dependencies ?? [];
     const expanded = expandTransitiveExternalDeps(deps, resolveExternalDepsFromMonorepo);
@@ -1601,13 +1642,38 @@ async function buildPackageSwiftContext(
 
   // Process each product's targets
   spinner = createAsyncSpinner(`Resolving product targets`, pkg, product);
-  for (const target of product.targets) {
+  const sourceTargets: (ObjcTarget | SwiftTarget | CppTarget)[] = checkedInTargets
+    ? checkedInTargets.map((target) => {
+        const configured = product.targets.find(
+          (candidate) => candidate.type !== 'framework' && candidate.name === target.name
+        );
+        const declaredDependencies = target.dependencies.filter(
+          (dependency): dependency is string => typeof dependency === 'string'
+        );
+        const withSiblingTransitives = declaredDependencies.some((dependency) =>
+          siblingDeps.includes(dependency)
+        )
+          ? [...declaredDependencies, ...transitiveExternalDeps]
+          : declaredDependencies;
+        return {
+          ...(configured ?? {}),
+          type: target.type,
+          name: target.name,
+          // Absolute manifest roots let unchanged include resolution bypass config's package-relative/.build paths.
+          path: target.sourceRoot,
+          resources: [],
+          dependencies: expandTransitiveExternalDeps(
+            withSiblingTransitives,
+            resolveExternalDepsFromMonorepo
+          ),
+          linkedFrameworks: target.linkedFrameworks,
+        } as ObjcTarget | SwiftTarget | CppTarget;
+      })
+    : product.targets.filter(
+        (target): target is ObjcTarget | SwiftTarget | CppTarget => target.type !== 'framework'
+      );
+  for (const target of sourceTargets) {
     if (addedTargets.has(target.name)) {
-      continue;
-    }
-
-    // Skip framework targets - already processed above
-    if (target.type === 'framework') {
       continue;
     }
 
@@ -1625,11 +1691,32 @@ async function buildPackageSwiftContext(
       spmProductToPackage,
       xcframeworkPaths
     );
+    const checkedIn = checkedInTargets?.find((candidate) => candidate.name === target.name);
+    if (checkedIn) {
+      Object.assign(resolved, checkedIn, {
+        dependencies: resolved.dependencies,
+        cSettings: resolved.cSettings,
+        cxxSettings: resolved.cxxSettings,
+        swiftSettings: resolved.swiftSettings,
+        linkerSettings: resolved.linkerSettings,
+      });
+    }
     resolvedTargets.push(resolved);
     addedTargets.add(target.name);
   }
 
   spinner.succeed(`Resolved targets`);
+
+  const resolvedProduct = checkedInTargets
+    ? {
+        ...product,
+        targets: sourceTargets.filter((target) =>
+          checkedInTargets.some(
+            (candidate) => candidate.name === target.name && candidate.productMember
+          )
+        ),
+      }
+    : product;
 
   return {
     packageName: pkg.packageName,
@@ -1637,7 +1724,7 @@ async function buildPackageSwiftContext(
     packageRootPath: pkg.path,
     platforms: product.platforms,
     swiftLanguageVersions: product.swiftLanguageVersions,
-    product,
+    product: resolvedProduct,
     targets: resolvedTargets,
     spmPackages: resolvedSPMPackages.length > 0 ? resolvedSPMPackages : undefined,
     artifactPaths,

@@ -18,6 +18,7 @@ import logger from '../../Logger';
 import { getPackageByName } from '../../Packages';
 import { getBundledVersionsAsync } from '../../ProjectVersions';
 import { Artifacts } from '../Artifacts';
+import { resolveCheckedInManifestRoot } from '../CheckedInManifest';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
 import { getExternalPackageByProductName, isExternalPackage } from '../ExternalPackage';
@@ -284,6 +285,12 @@ function getSourceTargetPath(pkg: SPMPackageSource, target: SPMTarget): string |
     return resolveFrameworkTargetPath(pkg.path, target);
   }
 
+  // A target naming no directory has no sources to scan. Both states that produce one — a
+  // checked-in Package.swift naming them instead, and a config that omits `path` without one —
+  // already forced a rebuild in getNewestProductInputMtimeMs, so no freshness decision rests
+  // on this null.
+  if (!target.path) return null;
+
   const isBuildArtifact = target.path.startsWith('.build/');
   const targetRoot = isBuildArtifact ? pkg.buildPath : pkg.path;
   const targetPath = isBuildArtifact ? target.path.slice('.build/'.length) : target.path;
@@ -309,7 +316,36 @@ function collectTargetInputPaths(pkg: SPMPackageSource, target: SPMTarget): stri
     .map((file) => path.join(targetSourcePath, file));
 }
 
+/**
+ * Whether the package's sources are named by a checked-in `Package.swift` rather than by
+ * spm.config.json — the single mode test, so that a `path` left behind in a converted config
+ * cannot claim to name a source root the build never reads. Listing those sources means reading
+ * the manifest, which is asynchronous, and this freshness check is not, so the inputs of every
+ * product in such a package stay unknown here.
+ */
+function hasUnenumerableInputs(pkg: SPMPackageSource): boolean {
+  return resolveCheckedInManifestRoot(pkg) !== null;
+}
+
+/**
+ * Whether a non-framework target omits `path` with no checked-in manifest to supply the layout —
+ * a config error, and one this check has to catch itself. The error SPMGenerator raises for it is
+ * only reached by building the package, which a product judged fresh never is.
+ * Framework targets are exempt: `resolveFrameworkTargetPath` derives their path from the flavor.
+ */
+function hasPathlessSourceTarget(product: SPMProduct): boolean {
+  return product.targets.some((target) => target.type !== 'framework' && !target.path);
+}
+
 function getNewestProductInputMtimeMs(pkg: SPMPackageSource, product: SPMProduct): number {
+  // Unknown inputs must not read as fresh. Every path to here runs from
+  // expandWithUnbuiltDependencies, so the effect is that such a product is always auto-added
+  // when another package pulls it in as a dependency. A package the caller asked for builds
+  // either way, and this never widens that set.
+  if (hasUnenumerableInputs(pkg) || hasPathlessSourceTarget(product)) {
+    return Number.POSITIVE_INFINITY;
+  }
+
   const inputPaths = [
     path.join(pkg.path, 'package.json'),
     path.join(pkg.path, 'spm.config.json'),
@@ -448,10 +484,17 @@ export function expandWithUnbuiltDependencies(
             const status = getDependencyFrameworkStatus(depPkg, depProduct, buildFlavors);
             if (status.status === 'fresh') continue;
 
-            reason =
-              status.status === 'stale'
-                ? `${status.flavor} xcframework stale`
-                : `${status.flavor} xcframework not found`;
+            if (status.status === 'missing') {
+              reason = `${status.flavor} xcframework not found`;
+            } else if (hasUnenumerableInputs(depPkg)) {
+              // Its sources may well be untouched; nothing here can tell. Saying "stale" would
+              // send a developer looking for a change that need not exist.
+              reason = 'inputs not enumerable (builds from a checked-in Package.swift)';
+            } else if (hasPathlessSourceTarget(depProduct)) {
+              reason = 'a target declares no "path" in spm.config.json';
+            } else {
+              reason = `${status.flavor} xcframework stale`;
+            }
           }
 
           logger.info(

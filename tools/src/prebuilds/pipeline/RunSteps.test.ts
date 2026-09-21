@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import os from 'os';
 import path from 'path';
+import stripAnsi from 'strip-ansi';
 
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
@@ -73,6 +74,19 @@ function makeSwiftProduct(
   };
 }
 
+/** A non-framework target that names no directory, so its layout has to come from elsewhere. */
+function makePathlessTargetProduct(name: string, externalDeps: string[] = []): SPMProduct {
+  return {
+    ...makeProduct(name, externalDeps),
+    targets: [{ type: 'swift', name, pattern: '**/*.swift' }],
+  };
+}
+
+/** Mode B: the checked-in manifest names the sources, so the config target needs no path. */
+function makeCheckedInManifestProduct(name: string, externalDeps: string[] = []): SPMProduct {
+  return makePathlessTargetProduct(name, externalDeps);
+}
+
 function withTempDir<T>(fn: (dir: string) => T): T {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'runsteps-'));
   try {
@@ -80,6 +94,55 @@ function withTempDir<T>(fn: (dir: string) => T): T {
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+}
+
+/**
+ * Runs `fn` against the `packages/` directory of a temporary repository root. Only a package
+ * directly under the repository packages directory can carry a checked-in `Package.swift`, so a
+ * Mode B fixture has to live under one.
+ */
+function withTempPackagesDir<T>(fn: (packagesDir: string) => T): T {
+  const originalRoot = process.env.EXPO_ROOT_DIR;
+  return withTempDir((repoRoot) => {
+    process.env.EXPO_ROOT_DIR = repoRoot;
+    try {
+      return fn(path.join(repoRoot, 'packages'));
+    } finally {
+      if (originalRoot === undefined) delete process.env.EXPO_ROOT_DIR;
+      else process.env.EXPO_ROOT_DIR = originalRoot;
+    }
+  });
+}
+
+/** Converts `pkg` to Mode B: the manifest that takes over naming `productName`'s sources. */
+function writeCheckedInManifest(pkg: SPMPackageSource, productName: string, sourcePath: string) {
+  fs.writeFileSync(
+    path.join(pkg.path, 'Package.swift'),
+    `// swift-tools-version: 5.9
+import PackageDescription
+
+let package = Package(
+  name: "${productName}",
+  products: [.library(name: "${productName}", targets: ["${productName}"])],
+  targets: [.target(name: "${productName}", path: "${sourcePath}")]
+)
+`
+  );
+}
+
+/** The lines `logger.info` wrote while `fn` executed, without their colour codes. */
+function captureInfo(fn: () => void): string[] {
+  const lines: string[] = [];
+  const original = console.info;
+  console.info = (...args: unknown[]) => {
+    lines.push(args.map(String).join(' '));
+  };
+  try {
+    fn();
+  } finally {
+    console.info = original;
+  }
+  return lines.map(stripAnsi);
 }
 
 function writeFileWithMtime(filePath: string, content: string, mtime: Date) {
@@ -118,6 +181,8 @@ function makeTempPackage(
   for (const product of products) {
     for (const target of product.targets) {
       if (target.type === 'framework') continue;
+      // A target whose layout lives in a checked-in Package.swift names no directory to seed.
+      if (!target.path) continue;
       writeFileWithMtime(
         path.join(packagePath, target.path, `${target.name}.swift`),
         'public struct Example {}',
@@ -395,6 +460,129 @@ describe('expandWithUnbuiltDependencies', () => {
         result.map((pkg) => pkg.packageName),
         ['consumer']
       );
+    });
+  });
+
+  it('rebuilds a dependency whose target layout lives in a checked-in Package.swift', () => {
+    withTempPackagesDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeCheckedInManifestProduct('DepProduct')], old);
+      writeCheckedInManifest(dep, 'DepProduct', 'ios');
+      writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.swift'), 'public struct E {}', old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'release', newer);
+
+      let result: SPMPackageSource[] = [];
+      const lines = captureInfo(() => {
+        result = expandWithUnbuiltDependencies([consumer], {
+          buildFlavors: ['Debug', 'Release'],
+          resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+        });
+      });
+
+      // The sources are named by the manifest, not by spm.config.json, so this check cannot see
+      // them — and an unseen input must never read as fresh.
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+      // The xcframework is newer than everything this check can see, so calling it stale would
+      // send a developer looking for a source change that need not exist.
+      const reason = lines.find((line) => line.includes('Auto-adding dep'));
+      assert.ok(reason, `The auto-add must be reported: ${lines.join('\n')}`);
+      assert.match(reason, /inputs not enumerable/);
+      assert.doesNotMatch(reason, /stale/);
+    });
+  });
+
+  it('rebuilds a converted dependency whose config still declares a path', () => {
+    withTempPackagesDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const built = new Date('2026-01-02T00:00:00Z');
+      const edited = new Date('2026-01-03T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      // Converting the package left `path` behind in spm.config.json. The manifest overrides it,
+      // so the artifact is still built from ios/ — but the leftover directory is the only one a
+      // path-based freshness check can see, and nothing has touched it since the last build.
+      const dep = makeTempPackage(
+        dir,
+        'dep',
+        [makeSwiftProduct('DepProduct', [], 'legacy-ios')],
+        old
+      );
+      writeCheckedInManifest(dep, 'DepProduct', 'ios');
+      writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.swift'), 'public struct E {}', edited);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', built);
+
+      let result: SPMPackageSource[] = [];
+      const lines = captureInfo(() => {
+        result = expandWithUnbuiltDependencies([consumer], {
+          buildFlavors: ['Debug'],
+          resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+        });
+      });
+
+      // A stale `path` must not decide the mode: the manifest does, and it names sources this
+      // check cannot list. Reading the leftover directory instead links a stale xcframework.
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+      const reason = lines.find((line) => line.includes('Auto-adding dep'));
+      assert.ok(reason, `The auto-add must be reported: ${lines.join('\n')}`);
+      assert.match(reason, /inputs not enumerable/);
+    });
+  });
+
+  it('rebuilds a Mode A dependency whose target declares no path', () => {
+    withTempPackagesDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      // No Package.swift, so nothing overrides spm.config.json and the missing `path` is a
+      // config error. SPMGenerator reports it in full, but only once the package is built.
+      const dep = makeTempPackage(dir, 'dep', [makePathlessTargetProduct('DepProduct')], old);
+      writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.swift'), 'public struct E {}', old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
+
+      let result: SPMPackageSource[] = [];
+      const lines = captureInfo(() => {
+        result = expandWithUnbuiltDependencies([consumer], {
+          buildFlavors: ['Debug'],
+          resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+        });
+      });
+
+      // Skipping the build here would link a stale xcframework and swallow the config error
+      // with it, because the generator that reports it never runs.
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+      const reason = lines.find((line) => line.includes('Auto-adding dep'));
+      assert.ok(reason, `The auto-add must be reported: ${lines.join('\n')}`);
+      assert.match(reason, /declares no "path" in spm\.config\.json/);
+      // Neither the artifact nor a checked-in manifest is the problem; naming either sends a
+      // developer looking in the wrong place.
+      assert.doesNotMatch(reason, /stale/);
+      assert.doesNotMatch(reason, /Package\.swift/);
     });
   });
 

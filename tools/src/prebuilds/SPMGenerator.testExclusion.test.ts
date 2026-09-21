@@ -56,6 +56,10 @@ describe('expo-camera source selection', () => {
       !(target.exclude ?? []).includes('Tests/**'),
       'this regression test is pointless once the config excludes tests itself'
     );
+    assert.ok(
+      target.path,
+      'expo-camera builds from spm.config.json, so its Swift target must declare a path'
+    );
 
     const files = await glob(target.pattern ?? '**/*.swift', {
       cwd: path.join(packagePath, target.path),

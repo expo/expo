@@ -193,6 +193,43 @@
                 "sourceOnly": {
                     "type": "boolean",
                     "description": "When true, the product is never prebuilt as an xcframework. The prebuild flow skips it entirely — it does not generate sources, build, or resolve its externalDependencies. The product entry remains so autolinking (`autolinkWhen`) can still register the matching CocoaPods source pod. Use this for companion adapters that must always compile from source because they bridge to a peer pod that may not be present."
+                },
+                "autolinkWhen": {
+                    "type": "object",
+                    "description": "Registers this product's CocoaPods pod as a companion pod, linked only when the condition holds. Give exactly one selector: the first of podName, npmPackage and podfileProperty present is the one evaluated, so a second is silently ignored, and a condition with none of them never links. Consumed by precompiled_modules.rb.",
+                    "properties": {
+                        "podName": {
+                            "type": "string",
+                            "description": "Link when a pod with this name is known to autolinking."
+                        },
+                        "npmPackage": {
+                            "type": "string",
+                            "description": "Link when this npm package is a React Native dependency."
+                        },
+                        "podfileProperty": {
+                            "type": "string",
+                            "description": "Opt-out selector: link unless this Podfile property equals disabledValue."
+                        },
+                        "disabledValue": {
+                            "type": "string",
+                            "description": "The podfileProperty value that disables linking. Only meaningful alongside podfileProperty; without it the companion links whenever the property is absent or differs."
+                        }
+                    },
+                    "oneOf": [
+                        {
+                            "required": ["podName"],
+                            "not": { "anyOf": [{ "required": ["npmPackage"] }, { "required": ["podfileProperty"] }] }
+                        },
+                        {
+                            "required": ["npmPackage"],
+                            "not": { "anyOf": [{ "required": ["podName"] }, { "required": ["podfileProperty"] }] }
+                        },
+                        {
+                            "required": ["podfileProperty"],
+                            "not": { "anyOf": [{ "required": ["podName"] }, { "required": ["npmPackage"] }] }
+                        }
+                    ],
+                    "additionalProperties": false
                 }
             },
             "required": [ "name", "podName", "targets" ],
@@ -383,7 +420,7 @@
                     "default": true
                 }
             },
-            "required": [ "type", "name", "path" ],
+            "required": [ "type", "name" ],
             "additionalProperties": false
         },
         "swiftTarget": {
@@ -470,7 +507,7 @@
                     "default": true
                 }
             },
-            "required": [ "type", "name", "path" ],
+            "required": [ "type", "name" ],
             "additionalProperties": false
         },
         "cppTarget": {
@@ -557,7 +594,7 @@
                     "default": true
                 }
             },
-            "required": [ "type", "name", "path" ],
+            "required": [ "type", "name" ],
             "additionalProperties": false
         },
         "resource": {
