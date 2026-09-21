@@ -76,13 +76,10 @@ export function createWorker({ recoverNotFound = createUrlRecovery() } = {}) {
 
           const contentType = mdResponse.headers.get("Content-Type") || "";
           if (mdResponse.ok && contentType.includes("text/markdown")) {
-            return new Response(mdResponse.body, {
-              status: 200,
-              headers: {
-                "Content-Type": "text/markdown; charset=utf-8",
-                Vary: "Accept",
-              },
-            });
+            const response = new Response(mdResponse.body, mdResponse);
+            response.headers.set("Content-Type", "text/markdown; charset=utf-8");
+            response.headers.append("Vary", "Accept");
+            return response;
           }
         }
 

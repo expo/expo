@@ -1,4 +1,4 @@
-import { createJevClient, MAX_CHOICE_OPTIONS, type ChoiceQuestion, type JevClient } from './jev.ts';
+import { chooseJevAsync, MAX_CHOICE_OPTIONS, type AiBinding, type ChoiceQuestion } from './jev.ts';
 
 type RecoveryPage = {
   path: string;
@@ -7,12 +7,11 @@ type RecoveryPage = {
 };
 
 type RecoveryEnvironment = {
-  TYPESAFE_API_KEY?: string;
+  AI?: AiBinding;
   ASSETS: { fetch(input: Request | URL): Promise<Response> };
 };
 
 type RecoveryOptions = {
-  jev?: JevClient;
   now?: () => number;
 };
 
@@ -58,14 +57,55 @@ function recoveryQuestion(pages: RecoveryPage[]): ChoiceQuestion {
   };
 }
 
+function pageVersion(pathname: string) {
+  return pathname.match(/^\/(?:ja\/)?versions\/([^/]+)\//)?.[1];
+}
+
+function prepareRecoveryIndex(pages: RecoveryPage[]) {
+  const paths = new Set(pages.map(page => page.path));
+  const versions = new Set(pages.map(page => pageVersion(page.path)));
+  const groups = new Map<
+    string,
+    { pages: RecoveryPage[]; questions: Record<string, ChoiceQuestion> }
+  >();
+
+  return {
+    paths,
+    getCandidates(pathname: string) {
+      const requestedVersion = pageVersion(pathname) ?? 'latest';
+      // Unknown SDK versions share the general guides, keeping the group cache bounded.
+      const version = versions.has(requestedVersion) ? requestedVersion : undefined;
+      const japanese = pathname.startsWith('/ja/');
+      const key = `${japanese}/${version ?? ''}`;
+      let group = groups.get(key);
+      if (!group) {
+        const candidates = pages.filter(page => {
+          const candidateVersion = pageVersion(page.path);
+          return (
+            page.path !== '/' &&
+            page.path.startsWith('/ja/') === japanese &&
+            (!candidateVersion || candidateVersion === version)
+          );
+        });
+        const questions: Record<string, ChoiceQuestion> = {};
+        for (let start = 0; start < candidates.length; start += MAX_OPTIONS) {
+          questions[`batch_${start}`] = recoveryQuestion(
+            candidates.slice(start, start + MAX_OPTIONS)
+          );
+        }
+        group = { pages: candidates, questions };
+        groups.set(key, group);
+      }
+      return group;
+    },
+  };
+}
+
 // Each worker instance owns its inventory, cached decisions, and in-flight lookups.
-export function createUrlRecovery({
-  jev = createJevClient(),
-  now = Date.now,
-}: RecoveryOptions = {}) {
+export function createUrlRecovery({ now = Date.now }: RecoveryOptions = {}) {
   const recoveryCache = new Map<string, { path: string | null; expires: number }>();
   const pendingRecoveries = new Map<string, Promise<string | null>>();
-  let recoveryIndex: Promise<RecoveryPage[]> | undefined;
+  let recoveryIndex: Promise<ReturnType<typeof prepareRecoveryIndex>> | undefined;
   let retryAfter = 0;
 
   async function loadRecoveryIndexAsync(request: Request, env: RecoveryEnvironment) {
@@ -78,7 +118,7 @@ export function createUrlRecovery({
       if (!Array.isArray(pages)) {
         throw new Error('Invalid URL recovery index');
       }
-      return pages.filter(
+      const validPages = pages.filter(
         (page): page is RecoveryPage =>
           page !== null &&
           typeof page.path === 'string' &&
@@ -86,6 +126,7 @@ export function createUrlRecovery({
           typeof page.title === 'string' &&
           typeof page.description === 'string'
       );
+      return prepareRecoveryIndex(validPages);
     })().catch(error => {
       recoveryIndex = undefined;
       throw error;
@@ -97,33 +138,20 @@ export function createUrlRecovery({
     request: Request,
     env: RecoveryEnvironment,
     pathname: string,
-    apiKey: string
+    ai: AiBinding
   ) {
     const index = await loadRecoveryIndexAsync(request, env);
     // Do not redirect a valid HTML page just because its markdown representation is missing.
-    if (index.some(page => page.path === pathname)) {
+    if (index.paths.has(pathname)) {
       return null;
     }
-    const version = pathname.match(/^\/(?:ja\/)?versions\/([^/]+)\//)?.[1] ?? 'latest';
-    const japanese = pathname.startsWith('/ja/');
-    const pages = index.filter(page => {
-      const pageVersion = page.path.match(/^\/(?:ja\/)?versions\/([^/]+)\//)?.[1];
-      return (
-        page.path !== '/' &&
-        page.path.startsWith('/ja/') === japanese &&
-        (!pageVersion || pageVersion === version)
-      );
-    });
+    const { pages, questions } = index.getCandidates(pathname);
     if (!pages.length) {
       return null;
     }
 
     const signal = AbortSignal.timeout(RECOVERY_TIMEOUT_MS);
-    const questions: Record<string, ChoiceQuestion> = {};
-    for (let start = 0; start < pages.length; start += MAX_OPTIONS) {
-      questions[`batch_${start}`] = recoveryQuestion(pages.slice(start, start + MAX_OPTIONS));
-    }
-    const answers = await jev.chooseAsync({ pathname, questions, apiKey, signal });
+    const answers = await chooseJevAsync(ai, pathname, questions, signal);
     let answer = answers[Object.keys(questions)[0]];
     if (Object.keys(questions).length > 1) {
       // Keep two candidates per batch: probabilities from different questions are not comparable.
@@ -145,12 +173,7 @@ export function createUrlRecovery({
         return null;
       }
       answer = (
-        await jev.chooseAsync({
-          pathname,
-          questions: { destination: recoveryQuestion(finalPages) },
-          apiKey,
-          signal,
-        })
+        await chooseJevAsync(ai, pathname, { destination: recoveryQuestion(finalPages) }, signal)
       ).destination;
     }
 
@@ -168,7 +191,7 @@ export function createUrlRecovery({
   ): Promise<Response | null> {
     const url = new URL(request.url);
     const pathname = pagePath(url.pathname);
-    if (!env.TYPESAFE_API_KEY || !isRecoverable(request, pathname)) {
+    if (!env.AI || !isRecoverable(request, pathname)) {
       return null;
     }
 
@@ -186,7 +209,7 @@ export function createUrlRecovery({
         if (pendingRecoveries.size >= 4) {
           return null;
         }
-        pending = chooseRecoveryPathAsync(request, env, pathname, env.TYPESAFE_API_KEY)
+        pending = chooseRecoveryPathAsync(request, env, pathname, env.AI)
           .then(path => {
             if (recoveryCache.size >= 256) {
               const oldest = recoveryCache.keys().next().value;

@@ -1,5 +1,3 @@
-const JEV_ENDPOINT = 'https://api.typesafe.ai/v1/systemone';
-
 export const MAX_CHOICE_OPTIONS = 255;
 
 export type ChoiceQuestion = {
@@ -15,11 +13,12 @@ export type ChoiceAnswer = {
   probabilities: Record<string, number>;
 };
 
-type ChoiceRequest = {
-  pathname: string;
-  questions: Record<string, ChoiceQuestion>;
-  apiKey: string;
-  signal: AbortSignal;
+export type AiBinding = {
+  run(
+    model: 'typesafe/jev',
+    input: { state: { path: string }; questions: Record<string, ChoiceQuestion> },
+    options: { gateway: { id: string }; signal: AbortSignal }
+  ): Promise<unknown>;
 };
 
 function isProbability(value: unknown): value is number {
@@ -41,33 +40,32 @@ function isChoiceAnswer(value: unknown, question: ChoiceQuestion): value is Choi
   );
 }
 
-export function createJevClient(fetchImpl: typeof fetch = globalThis.fetch) {
-  return {
-    async chooseAsync({ pathname, questions, apiKey, signal }: ChoiceRequest) {
-      const response = await fetchImpl(JEV_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ model: 'jev-latest', state: { path: pathname }, questions }),
-        signal,
-      });
-      if (!response.ok) {
-        throw new Error(`Jev API returned ${response.status}`);
-      }
-      const body: { answers?: Record<string, unknown> } | null = await response.json();
-      const answers: Record<string, ChoiceAnswer> = {};
-      for (const [id, question] of Object.entries(questions)) {
-        const answer = body?.answers?.[id];
-        if (!isChoiceAnswer(answer, question)) {
-          throw new Error('Invalid Jev Choice answer');
-        }
-        answers[id] = answer;
-      }
-      return answers;
-    },
-  };
+export async function chooseJevAsync(
+  ai: AiBinding,
+  pathname: string,
+  questions: Record<string, ChoiceQuestion>,
+  signal: AbortSignal
+) {
+  let body = await ai.run(
+    'typesafe/jev',
+    { state: { path: pathname }, questions },
+    { gateway: { id: 'default' }, signal }
+  );
+  // AI Gateway can wrap the provider output in a completed inference result.
+  if (body && typeof body === 'object' && 'state' in body) {
+    if (body.state !== 'Completed' || !('result' in body)) {
+      throw new Error('Incomplete Jev inference');
+    }
+    body = body.result;
+  }
+  const rawAnswers = (body as { answers?: Record<string, unknown> } | null)?.answers;
+  const answers: Record<string, ChoiceAnswer> = {};
+  for (const [id, question] of Object.entries(questions)) {
+    const answer = rawAnswers?.[id];
+    if (!isChoiceAnswer(answer, question)) {
+      throw new Error('Invalid Jev Choice answer');
+    }
+    answers[id] = answer;
+  }
+  return answers;
 }
-
-export type JevClient = ReturnType<typeof createJevClient>;

@@ -43,13 +43,15 @@ The Cloudflare Pages worker can use [Jev](https://docs.typesafe.ai/primitives/ch
 
 The entry point in **public/\_worker.js** handles routing and content negotiation. **worker/url-recovery.ts** manages candidate selection, caches, and destination verification. **worker/jev.ts** handles Jev requests and response validation. Wrangler bundles these modules when running or deploying the worker.
 
-For local testing, add `TYPESAFE_API_KEY=your-key` to **docs/.dev.vars** (ignored by Git), then run `pnpm export` and `pnpm export-server`. The worker runs in the export server, so `pnpm dev` does not exercise this feature. For deployment, configure `TYPESAFE_API_KEY` as a secret in the Cloudflare Pages project's production or preview environment. Without the secret, URL recovery is disabled.
+The `AI` binding in **wrangler.toml** calls `typesafe/jev` through the account's default Cloudflare AI Gateway. Cloudflare manages provider credentials and charges its AI Gateway credit balance, so no TypeSafe API key is needed. The default gateway is created on first use if it does not exist. Configure rate limits on that gateway to control total usage. Without the AI binding, URL recovery is disabled.
+
+For local testing, sign in with `pnpm exec wrangler login`, then run `pnpm export` and `pnpm export-server`. AI binding calls use the signed-in Cloudflare account and consume credits even during local development. The worker runs in the export server, so `pnpm dev` does not exercise this feature. Deployments use the Pages project's Cloudflare account.
 
 Each export generates **out/\_url-recovery.json** from the sitemap with page titles and descriptions. The worker evaluates all entries for the requested language and SDK version, defaulting to `latest`. Jev compares batches of up to 254 pages, then compares the leading candidates. A final confidence of at least 0.5 is required. The worker checks that the selected HTML or Markdown file exists before redirecting.
 
-Only the missing pathname and public page metadata are sent to TypeSafe. Query parameters, cookies, and request headers are excluded. Requests share a three-second API timeout. Each worker instance caches matches for one hour and misses for one minute, coalesces identical requests, limits concurrent lookups to four, and backs off for 30 seconds after an API failure. These limits apply per worker instance; Cloudflare rate limits should be configured separately to control total API usage.
+Only the missing pathname and public page metadata are sent through Cloudflare to TypeSafe. Query parameters, cookies, and request headers are excluded. Requests share a three-second API timeout. Each worker instance caches matches for one hour and misses for one minute, coalesces identical requests, limits concurrent lookups to four, and backs off for 30 seconds after an API failure. These limits apply per worker instance; Cloudflare rate limits should be configured separately to control total API usage.
 
-Run `pnpm test` and `pnpm test:worker` to check recovery behavior. The worker tests use a local mock API and separate test credentials, so they do not consume Jev credits. Validate ranking with a real key before enabling the feature in production.
+Run `pnpm test` and `pnpm test:worker` to check recovery behavior. The worker tests use a mock AI binding, so they do not consume credits. Validate ranking with the live AI binding before enabling the feature in production.
 
 ## Edit Docs Content
 
