@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Keep the base preset's `moduleNameMapper` entries in the web and Node presets, so the `tsconfig.json` `paths` aliases and the `react-native-web` alias are no longer dropped on web.
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-21
