@@ -33,9 +33,10 @@ describe(generateAgentFiles, () => {
     expect(fs.existsSync(path.join(tmpDir, 'AGENTS.md'))).toBe(true);
   });
 
-  it('does not generate Claude settings when Claude Code is not installed', async () => {
+  it('does not generate Claude files when Claude Code is not installed', async () => {
     await generateAgentFiles(tmpDir);
 
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(false);
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(false);
   });
 
@@ -87,11 +88,12 @@ describe(generateAgentFiles, () => {
     expect(fs.statSync(path.join(tmpDir, '.claude')).isDirectory()).toBe(true);
   });
 
-  it('generates Claude settings when global .claude directory exists', async () => {
+  it('generates only Claude settings when global .claude directory exists', async () => {
     fs.mkdirSync(path.join(homeDir, '.claude'));
 
     await generateAgentFiles(tmpDir);
 
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(false);
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
   });
 });
