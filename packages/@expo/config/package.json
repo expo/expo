@@ -73,6 +73,6 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.6.0"
+    "memfs": "catalog:"
   }
 }

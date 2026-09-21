@@ -66,6 +66,6 @@
   },
   "devDependencies": {
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.6.0"
+    "memfs": "catalog:"
   }
 }

@@ -51,7 +51,7 @@
     "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.6.0",
+    "memfs": "catalog:",
     "strip-ansi": "^6.0.1"
   }
 }

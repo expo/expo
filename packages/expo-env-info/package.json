@@ -51,7 +51,7 @@
     "@types/node": "catalog:",
     "@vercel/ncc": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.6.0"
+    "memfs": "catalog:"
   },
   "preferGlobal": true,
   "engines": {
