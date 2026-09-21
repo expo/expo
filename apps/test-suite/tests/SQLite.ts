@@ -1127,6 +1127,45 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
   });
 
   describe('Error handling', () => {
+    nativeIt(
+      'automatic cleanup invalidates statement wrappers, including column metadata',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        const statement = await db.prepareAsync('SELECT 42 AS value');
+        await db.closeAsync();
+
+        // Column metadata has no database argument; the statement itself must reject access.
+        expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
+        const results = await Promise.allSettled([
+          statement.getColumnNamesAsync(),
+          statement.executeAsync(),
+          statement.finalizeAsync(),
+        ]);
+        for (const result of results) {
+          expect(result.status).toBe('rejected');
+          if (result.status === 'rejected') {
+            expect(String(result.reason)).toMatch(/Access to closed resource/);
+          }
+        }
+      }
+    );
+
+    nativeIt('concurrent finalization rejects the second call safely', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        const statement = await db.prepareAsync('SELECT 1');
+        const results = await Promise.allSettled([
+          statement.finalizeAsync(),
+          statement.finalizeAsync(),
+        ]);
+        expect(results.filter((result) => result.status === 'fulfilled').length).toBe(1);
+        expect(results.filter((result) => result.status === 'rejected').length).toBe(1);
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
     it('finalizeUnusedStatementsBeforeClosing should close all unclosed statements', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.prepareAsync('SELECT sqlite_version()');

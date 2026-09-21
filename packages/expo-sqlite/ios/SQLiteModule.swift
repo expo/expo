@@ -259,12 +259,12 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   // swiftlint:disable line_length
 
   private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: any AnyArrayBuffer], shouldPassAsArray: Bool) throws -> [String: Any] {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
     return try statement.lock.withLock { _ -> [String: Any] in
+      try maybeThrowForFinalizedStatement(statement)
+      try maybeThrowForClosedDatabase(database)
+
       exsqlite3_reset(statement.pointer)
       exsqlite3_clear_bindings(statement.pointer)
       for (key, param) in bindParams {
@@ -296,11 +296,11 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   // swiftlint:enable line_length
 
   private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
     // Guard the stateful statement, see `run` above.
     return try statement.lock.withLock { _ -> SQLiteColumnValues? in
+      try maybeThrowForFinalizedStatement(statement)
+      try maybeThrowForClosedDatabase(database)
+
       let ret = exsqlite3_step(statement.pointer)
       if ret == SQLITE_ROW {
         return try getColumnValues(statement: statement)
@@ -313,11 +313,11 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   }
 
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
     // Guard the stateful statement, see `run` above.
     return try statement.lock.withLock { _ -> [SQLiteColumnValues] in
+      try maybeThrowForFinalizedStatement(statement)
+      try maybeThrowForClosedDatabase(database)
+
       var columnValuesList: [SQLiteColumnValues] = []
       while true {
         let ret = exsqlite3_step(statement.pointer)
@@ -338,12 +338,14 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     return db.lastErrorMessage()
   }
 
-  private func closeDatabase(_ db: NativeDatabase) throws {
+  func closeDatabase(_ db: NativeDatabase) throws {
     Self.cacheLock.lock()
     defer { Self.cacheLock.unlock() }
     db.closeLock.lock()
     defer { db.closeLock.unlock() }
-    try maybeThrowForClosedDatabase(db)
+    db.statementLifecycleLock.lock()
+    defer { db.statementLifecycleLock.unlock() }
+    try db.ensureOpen()
     try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)
@@ -568,17 +570,14 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
       return
     }
-    var stmt: OpaquePointer? = exsqlite3_next_stmt(database.pointer, nil)
-    if stmt == nil {
-      return
-    }
-    while let currentStmt = stmt {
-      let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
-      let ret = exsqlite3_finalize(currentStmt)
-      if ret != SQLITE_OK {
-        ExpoModulesCore.log.warn("exsqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
+    // Finalize through the wrappers so even a failed close leaves them invalidated.
+    // Do not destroy SQLite-internal statements owned by concurrent exec/backup operations.
+    for statement in database.statements {
+      do {
+        try statement.finalize(database: database)
+      } catch {
+        ExpoModulesCore.log.warn("Finalizing a statement during close failed: \(error)")
       }
-      stmt = nextStmt
     }
   }
 }
