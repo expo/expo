@@ -112,19 +112,6 @@ const moveDirectories = async (userInput) => {
       }
     }
 
-    // Remove the "Get a fresh project" section from README.md, it only describes this script
-    const readmePath = path.join(root, "README.md");
-    if (fs.existsSync(readmePath)) {
-      const readme = await fs.promises.readFile(readmePath, "utf8");
-      const sectionStart = readme.indexOf("## Get a fresh project");
-      if (sectionStart !== -1) {
-        const nextHeading = readme.indexOf("\n#", sectionStart + 1);
-        const sectionEnd = nextHeading === -1 ? readme.length : nextHeading + 1;
-        await fs.promises.writeFile(readmePath, readme.slice(0, sectionStart) + readme.slice(sectionEnd));
-        console.log("🧹 \"Get a fresh project\" section removed from README.md.");
-      }
-    }
-
     console.log("\n✅ Project reset complete. Next steps:");
     console.log(
       `1. Run \`npx expo start\` to start a development server.\n2. Edit src/app/index.tsx to edit the main screen.\n3. Put all your application code in /src, only screens and layout files should be in /src/app.${
