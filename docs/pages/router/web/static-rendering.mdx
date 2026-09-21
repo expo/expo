@@ -243,7 +243,7 @@ The function can be asynchronous and receives `undefined` as its first argument 
 
 Use `generateMetadata()` for metadata that must be present before JavaScript runs. The `<Head>` component from `expo-router/head` can update metadata after hydration, but its tags are not included in the initial static HTML. In SDK 57 and earlier, use `<Head>` for initial static metadata.
 
-If you set `<html>` or `<body>` attributes through `<Head>`, move those attributes to the elements in your [Root HTML component](#root-html). For example, set `lang` on `<html>` in **src/app/+html.tsx**.
+When upgrading from SDK 57, follow [Migrate static page metadata](/router/migrate/sdk-57-to-58/#migrate-static-page-metadata) to move existing `Head` tags and document attributes.
 
 ## Static files
 
