@@ -1,3 +1,8 @@
-import { Props } from './withRouter';
+import type { RouterConfigPluginProps } from './withRouter';
 
-export default (props: Props = {}): [string, Props] => ['expo-router', props];
+export type * from './withRouter';
+
+export default (props: RouterConfigPluginProps = {}): [string, RouterConfigPluginProps] => [
+  'expo-router',
+  props,
+];
