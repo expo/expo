@@ -144,12 +144,18 @@ export default function AvailabilityScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <AIResultPanel result={result} error={error} />
 
+      <BodyText color="secondary" style={styles.description}>
+        expo-ai runs a system language model on the device: Apple Foundation Models on iOS, ML Kit's
+        Gemini Nano on Android, and the browser's Prompt API on web. Every step in this demo is its
+        own button, so a failure points at a single call.
+      </BodyText>
+
       <HeadingText style={localStyles.heading}>Requirements</HeadingText>
 
       <BodyText color="secondary" style={styles.description}>
         The controls below build one ModelRequirements object, which is checked during the
         availability check and during preparation. It reaches those two calls only, so the three
-        buttons under Availability and Preparation read it and every other call on this screen runs
+        buttons under Availability and Preparation read it and every other screen in this demo runs
         without requirements.
       </BodyText>
 

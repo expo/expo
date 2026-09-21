@@ -202,8 +202,8 @@ export default function StreamingScreen() {
       <AIResultPanel result={result} error={error} />
 
       <BodyText color="secondary" style={styles.description}>
-        Both calls below stream the input from the Text section. Every text event carries the whole
-        reply so far rather than the new piece, so the preview replaces the previous snapshot
+        Both calls on this screen stream the text you enter below. Every text event carries the
+        whole reply so far rather than the new piece, so the preview replaces the previous snapshot
         instead of appending to it. The library also drops adjacent snapshots that the screen never
         read, so a fast model can finish in only a handful of them.
       </BodyText>
