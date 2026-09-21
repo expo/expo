@@ -28,7 +28,9 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <Prerequisites>
   <Requirement title="実機での Expo Go">
-    Android または iOS の実機に [Expo Go](https://expo.dev/go) をインストールします。
+    Android または iOS の実機に [Expo Go](https://expo.dev/go) をインストールします。iOS
+    の実機では、無料の [Expo アカウント](https://expo.dev/signup) も必要で、Expo CLI と Expo Go
+    の両方でそのアカウントにサインインする必要があります。
   </Requirement>
   <Requirement title="Node.js (LTS)">
     お使いのマシンに [Node.js (LTS バージョン)](https://nodejs.org/en) をインストールします。
@@ -177,6 +179,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 1. 開発サーバーが起動し、ターミナルウィンドウ内に QR コードが表示されます。
 2. その QR コードをスキャンしてデバイスでアプリを開きます。Android では Expo Go > **Scan QR code** オプションを使い、iOS ではデフォルトのカメラアプリを使います。
 3. web アプリを実行するには、ターミナルで <kbd>W</kbd> を押します。デフォルトの web ブラウザで web アプリが開きます。
+
+> **info** iOS の実機では、Expo CLI と Expo Go の両方が同じ Expo アカウントでサインインしている場合にのみ、Expo Go はプロジェクトを開きます。コンピュータで `npx expo login` を実行し、同じアカウントで Expo Go にサインインしてください。
 
 すべてのプラットフォームで動作すると、アプリは次のようになります。
 

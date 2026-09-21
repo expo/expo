@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the glass effect not rendering when the view fades in from low opacity ([#48994](https://github.com/expo/expo/pull/48994) by [@Nezz](https://github.com/Nezz))
+
 ### 💡 Others
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

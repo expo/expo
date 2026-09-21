@@ -30,7 +30,10 @@ internal struct MediaHandler {
     return try await asyncMap(selection) { selectedItem in
       let itemProvider = selectedItem.itemProvider
 
-      if itemProvider.canLoadObject(ofClass: PHLivePhoto.self) && options.mediaTypes.contains(.livePhotos) {
+      // Match on the registered identifier rather than `canLoadObject(ofClass: PHLivePhoto.self)`,
+      // which raises NSInvalidArgumentException on iOS 27.1.
+      if options.mediaTypes.contains(.livePhotos)
+        && itemProvider.hasItemConformingToTypeIdentifier(UTType.livePhoto.identifier) {
         return try await handleLivePhoto(from: selectedItem)
       }
       if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {

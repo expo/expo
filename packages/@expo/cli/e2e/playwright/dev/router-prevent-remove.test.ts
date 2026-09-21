@@ -42,6 +42,8 @@ test.describe(inputDir, () => {
     await page.goBack();
     await expect(page.getByTestId('form-hook')).toBeVisible();
     await expect(page.getByTestId('prevented-count')).toHaveText('2');
+    // The blocked screen stays in the address bar.
+    await expect(page).toHaveURL(/\/form-hook$/);
 
     await page.getByTestId('discard').click();
     await expect(page.getByTestId('index')).toBeVisible();

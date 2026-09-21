@@ -344,6 +344,27 @@ import { blur } from '@expo/ui/jetpack-compose/modifiers';
 <Button modifiers={[blur(4)]}>Blurred button</Button>;
 ```
 
+### `cornerRadius(radius)`
+
+Adds rounded corners to the component.
+
+> **info** Works only inside Android widgets built with `expo-widgets`, on Android 12 (API level 31) and later.
+
+Jetpack Compose has no exact equivalent of Glance's `cornerRadius`, so Expo UI ignores this modifier. Use [`clip(Shapes.RoundedCorner(radius))`](#clipshape) to round corners in an app.
+
+| Parameter | Type     | Description          |
+| --------- | -------- | -------------------- |
+| `radius`  | `number` | Corner radius in dp. |
+
+```tsx
+import {
+  background,
+  cornerRadius,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+<Box modifiers={[cornerRadius(12), background('#3498DB')]} />;
+```
+
 ## Shadow recipes
 
 Common shadow styles are combinations of the `dropShadow` and `innerShadow` modifiers rather than separate APIs. Because the `modifiers` prop takes an array, you stack and tune the shadow modifiers to build each style.

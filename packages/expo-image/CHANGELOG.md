@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `contentPosition` being visually lost when React Native recreates the clipping mask on the image subview (e.g. after an orientation change round-trip). ([#50312](https://github.com/expo/expo/pull/50312) by [@jzhu1224](https://github.com/jzhu1224))
+
 ### 💡 Others
+
+## 58.0.3 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.2 — 2026-09-15
 
