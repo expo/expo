@@ -30,7 +30,7 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
   }
 
   func open() {
-    var currentViewController = UIApplication.shared.keyWindow?.rootViewController
+    var currentViewController = SceneGeometry.keyWindow()?.rootViewController
     while currentViewController?.presentedViewController != nil {
       currentViewController = currentViewController?.presentedViewController
     }

@@ -21,24 +21,14 @@ struct SystemMenuTouchGateTests {
   }
 
   @Test
-  func `container counts as open only while interactive and modal`() {
+  func `container counts as open while it still accepts interaction`() {
     let container = "_UIContextMenuContainerView"
 
-    #expect(SystemMenuTouchGate.isOpenContextMenuContainer(
-      className: container, isUserInteractionEnabled: true, accessibilityViewIsModal: true
-    ))
+    #expect(SystemMenuTouchGate.isOpenContextMenuContainer(className: container, isUserInteractionEnabled: true))
     // UIKit disables interaction the moment dismissal commits, so taps made
     // during the dismiss animation must pass through to the app again.
-    #expect(!SystemMenuTouchGate.isOpenContextMenuContainer(
-      className: container, isUserInteractionEnabled: false, accessibilityViewIsModal: true
-    ))
-    // The real container blocks the content behind it. A non-modal look-alike is not menu chrome.
-    #expect(!SystemMenuTouchGate.isOpenContextMenuContainer(
-      className: container, isUserInteractionEnabled: true, accessibilityViewIsModal: false
-    ))
-    #expect(!SystemMenuTouchGate.isOpenContextMenuContainer(
-      className: "UITransitionView", isUserInteractionEnabled: true, accessibilityViewIsModal: true
-    ))
+    #expect(!SystemMenuTouchGate.isOpenContextMenuContainer(className: container, isUserInteractionEnabled: false))
+    #expect(!SystemMenuTouchGate.isOpenContextMenuContainer(className: "UITransitionView", isUserInteractionEnabled: true))
   }
 
   @Test
