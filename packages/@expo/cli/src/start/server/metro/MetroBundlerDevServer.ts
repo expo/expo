@@ -510,23 +510,30 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const url = this.getDevServerUrlOrAssert();
 
-    const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
-      await this.ssrLoadModule<
-        typeof import('@expo/router-server/build/static/renderStaticContent')
-      >(require.resolve('@expo/router-server/node/render.js'), {
-        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-        // the previous React SSG utilities which aren't available in React 19.
-        environment: 'node',
-      });
+    const {
+      getStaticContent,
+      getStreamingContent,
+      resolveMetadata,
+      getManifest,
+      getBuildTimeServerManifestAsync,
+    } = await this.ssrLoadModule<
+      typeof import('@expo/router-server/build/static/renderStaticContent')
+    >(require.resolve('@expo/router-server/node/render.js'), {
+      // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+      // the previous React SSG utilities which aren't available in React 19.
+      environment: 'node',
+    });
 
     const { exp } = getConfig(this.projectRoot);
     const isExportingWithSSR = exp.web?.output === 'server' && !this.isReactServerComponentsEnabled;
+    const useStaticStreaming = exp.web?.output === 'static' && !this.isReactServerComponentsEnabled;
 
     const serverManifest = await getBuildTimeServerManifestAsync({
       ...exp.extra?.router,
       // Skip static params expansion in SSR mode, routes are matched at runtime instead
       skipStaticParams: isExportingWithSSR,
     });
+    const inflatedServerManifest = inflateManifest(serverManifest);
 
     return {
       serverManifest,
@@ -535,13 +542,31 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Get route generating function
       renderAsync: async (path, route, opts?) => {
         const location = new URL(path, url);
+        if (useStaticStreaming) {
+          const resolvedRoute = fromRuntimeManifestRoute(location.pathname, route, {
+            serverManifest: inflatedServerManifest,
+            appDir,
+          });
+          const metadata = resolvedRoute
+            ? await resolveMetadata({
+                route: { file: resolvedRoute.file, page: resolvedRoute.contextKey },
+                request: undefined,
+                params: resolvedRoute.params,
+              })
+            : undefined;
+          return await getStreamingContent(location, {
+            ...opts,
+            ...(metadata !== undefined ? { metadata } : {}),
+            output: 'static',
+          });
+        }
         return await getStaticContent(location, opts);
       },
       executeLoaderAsync: async (path, route) => {
         const location = new URL(path, url);
 
         const resolvedLoaderRoute = fromRuntimeManifestRoute(location.pathname, route, {
-          serverManifest: inflateManifest(serverManifest),
+          serverManifest: inflatedServerManifest,
           appDir,
         });
 
@@ -612,13 +637,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
     const params = resolvedLoaderRoute?.params ?? {};
     const renderOptions: DevServerRenderOptions = { params };
+    const { exp } = getConfig(this.projectRoot);
+    const isRuntimeSsr = exp.web?.output === 'server';
 
     if (resolveMetadata) {
-      // TODO(@hassankhan): Revisit if we support request-less `generateMetadata()` during SSG
-      if (!request) {
+      if (isRuntimeSsr && !request) {
         throw new CommandError(
           'SSR_STREAMING_REQUEST_REQUIRED',
-          'Invariant violation: development streaming SSR requires a request to resolve metadata.'
+          'Invariant violation: development server rendering requires a request to resolve metadata.'
         );
       }
 
@@ -627,7 +653,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           file: route.file,
           page: route.page,
         },
-        request,
+        request: isRuntimeSsr ? request : undefined,
         params,
       });
     }
@@ -639,7 +665,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const loaderResult = await this.executeServerDataLoaderAsync(
       location,
       resolvedLoaderRoute,
-      request
+      isRuntimeSsr ? request : undefined
     );
 
     if (!loaderResult) {
@@ -743,30 +769,51 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return { content };
     }
 
-    const [{ artifacts: resources }, { getStaticContent }, { loader }] = await Promise.all([
-      this.getStaticResourcesAsync({ clientBoundaries: [] }),
-      this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
-        require.resolve('@expo/router-server/node/render.js'),
-        {
-          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-          // the previous React SSG utilities which aren't available in React 19.
-          environment: 'node',
-          minify: false,
-          isExporting,
-          platform,
-        }
-      ),
-      this.getDevServerRenderOptionsAsync({ location, route, request }),
-    ]);
+    const [{ artifacts: resources }, { getStaticContent, getStreamingContent, resolveMetadata }] =
+      await Promise.all([
+        this.getStaticResourcesAsync({ clientBoundaries: [] }),
+        this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
+          require.resolve('@expo/router-server/node/render.js'),
+          {
+            // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+            // the previous React SSG utilities which aren't available in React 19.
+            environment: 'node',
+            minify: false,
+            isExporting,
+            platform,
+          }
+        ),
+      ]);
+
+    const useStaticStreaming = exp.web?.output === 'static' && !this.isReactServerComponentsEnabled;
+    const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
+      location,
+      route,
+      request,
+      resolveMetadata: useStaticStreaming ? resolveMetadata : undefined,
+    });
+
+    const assets = serialAssetsToStaticContentAssets(resources, {
+      isExporting: false,
+      baseUrl,
+      bundleUrl: devBundleUrlPathname,
+    });
+
+    if (useStaticStreaming) {
+      const content = await getStreamingContent(location, {
+        ...(loader ? { loader } : {}),
+        ...(metadata !== undefined ? { metadata } : {}),
+        output: 'static',
+        hydrate: env.EXPO_WEB_DEV_HYDRATE,
+        assets,
+      });
+      return { content, resources };
+    }
 
     const content = await getStaticContent(location, {
       ...(loader ? { loader } : {}),
       hydrate: env.EXPO_WEB_DEV_HYDRATE,
-      assets: serialAssetsToStaticContentAssets(resources, {
-        isExporting: false,
-        baseUrl,
-        bundleUrl: devBundleUrlPathname,
-      }),
+      assets,
     });
     return {
       content,
