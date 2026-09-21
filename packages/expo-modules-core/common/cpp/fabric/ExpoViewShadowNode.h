@@ -10,6 +10,7 @@
 #include <react/renderer/core/LayoutableShadowNode.h>
 
 #include <algorithm>
+#include <optional>
 
 #include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
@@ -110,7 +111,8 @@ public:
       return {};
     }
 
-    return content->measure(layoutContext, hostedContentConstraints(*content));
+    return content->measure(
+      layoutContext, hostedContentConstraints(*content, layoutConstraints));
   }
 
   // We override this so RNHostView can lay out it's children
@@ -128,12 +130,12 @@ public:
       return;
     }
 
-    // Use the same constraint that was used to measure the content, so that the layout is consistent with the measurement
+    // Use the same constraint that was used to measure the content, so that the layout is consistent with the measurement.
+    // Yoga may have clamped this node below its measured size, so the space the content gets
+    // here is this node's final laid-out frame rather than the measure-time constraints.
     auto const clonedContent = content->clone({});
     static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(
-      layoutContext,
-      hostedContentConstraints(*content)
-    );
+      layoutContext, hostedContentConstraints(*content, finalSizeConstraints()));
 
     this->replaceChild(*content, clonedContent, 0);
 
@@ -158,8 +160,12 @@ private:
       : react::LayoutDirection::LeftToRight;
   }
 
-  react::LayoutConstraints hostedContentConstraints(const react::ShadowNode &content) const {
-    react::LayoutConstraints constraints{};
+  react::LayoutConstraints hostedContentConstraints(
+      const react::ShadowNode &content, const react::LayoutConstraints &availableConstraints) const {
+    // Start from the constraints the parent actually offered this node so the hosted content
+    // cannot be measured or laid out beyond its host (e.g. a `maxWidth: '80%'` on the host was
+    // previously dropped, letting the content measure itself unbounded and overflow the screen).
+    react::LayoutConstraints constraints = availableConstraints;
     constraints.layoutDirection = resolvedLayoutDirection();
 
     auto const *contentProps = dynamic_cast<const react::ViewProps *>(content.getProps().get());
@@ -170,21 +176,55 @@ private:
 
     auto const &style = contentProps->yogaStyle;
 
-    constrainToPoints(style.minDimension(facebook::yoga::Dimension::Width),
-                      constraints.minimumSize.width);
-    constrainToPoints(style.minDimension(facebook::yoga::Dimension::Height),
-                      constraints.minimumSize.height);
-    constrainToPoints(style.maxDimension(facebook::yoga::Dimension::Width),
-                      constraints.maximumSize.width);
-    constrainToPoints(style.maxDimension(facebook::yoga::Dimension::Height),
-                      constraints.maximumSize.height);
+    tightenMinimum(style.minDimension(facebook::yoga::Dimension::Width),
+                   constraints.minimumSize.width,
+                   availableConstraints.maximumSize.width);
+    tightenMinimum(style.minDimension(facebook::yoga::Dimension::Height),
+                   constraints.minimumSize.height,
+                   availableConstraints.maximumSize.height);
+    tightenMaximum(style.maxDimension(facebook::yoga::Dimension::Width),
+                   constraints.maximumSize.width,
+                   availableConstraints.maximumSize.width);
+    tightenMaximum(style.maxDimension(facebook::yoga::Dimension::Height),
+                   constraints.maximumSize.height,
+                   availableConstraints.maximumSize.height);
 
     return constraints;
   }
 
-  static void constrainToPoints(facebook::yoga::StyleSizeLength length, react::Float &constraint) {
-    if (length.isPoints() && length.value().isDefined()) {
-      constraint = std::max<react::Float>(0, length.value().unwrap());
+  // Constraints derived from this node's final Yoga frame, used to lay out the hosted content
+  // after Yoga has settled this node's size.
+  react::LayoutConstraints finalSizeConstraints() const {
+    auto const frameSize = this->getLayoutMetrics().frame.size;
+    react::LayoutConstraints constraints{};
+    constraints.layoutDirection = resolvedLayoutDirection();
+    constraints.maximumSize = {frameSize.width, frameSize.height};
+    return constraints;
+  }
+
+  // Resolves a style length (points, or percent of `referenceLength`) to a concrete value.
+  static std::optional<react::Float> resolveToPoints(
+      facebook::yoga::StyleSizeLength length, react::Float referenceLength) {
+    auto resolved = length.resolve(referenceLength);
+    if (resolved.isDefined()) {
+      return std::max<react::Float>(0, resolved.unwrap());
+    }
+    return std::nullopt;
+  }
+
+  // Raises `minimum` to the style's resolved minimum, if any.
+  static void tightenMinimum(
+      facebook::yoga::StyleSizeLength length, react::Float &minimum, react::Float referenceLength) {
+    if (auto resolved = resolveToPoints(length, referenceLength)) {
+      minimum = std::max(minimum, *resolved);
+    }
+  }
+
+  // Lowers `maximum` to the style's resolved maximum, if any.
+  static void tightenMaximum(
+      facebook::yoga::StyleSizeLength length, react::Float &maximum, react::Float referenceLength) {
+    if (auto resolved = resolveToPoints(length, referenceLength)) {
+      maximum = std::min(maximum, *resolved);
     }
   }
 
