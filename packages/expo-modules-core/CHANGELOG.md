@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Replaced the hosting `ComposeView`'s view id with a tag for its `rememberSaveable` namespace, fixing a crash on `react-native-screens` tab switch and touches inside a `Host` reaching the wrong React Native view. ([#49964](https://github.com/expo/expo/issues/49964) by [@b2x-software](https://github.com/b2x-software), [#50299](https://github.com/expo/expo/pull/50299) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed the tap that closes a SwiftUI menu still reaching the React Native view underneath it in apps with no accessibility client attached. The menu gate no longer requires `accessibilityViewIsModal`, which UIKit only implements for the menu container while its accessibility bundle is loaded. ([#48765](https://github.com/expo/expo/issues/48765) by [@ayyoub-coder](https://github.com/ayyoub-coder), [#49916](https://github.com/expo/expo/pull/49916) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
