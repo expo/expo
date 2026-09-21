@@ -4,7 +4,7 @@
  * This script is used to reset the project to a blank state.
  * It deletes or moves the /src and /scripts directories to /example based on user input and creates a new /src/app directory with an index.tsx and _layout.tsx file.
  * Images under /assets that are only used by the example screens are deleted or moved along with them.
- * The `reset-project` script is removed from package.json once it has run, since this file is deleted or moved with it.
+ * You can remove the `reset-project` script from package.json and safely delete this file after running it.
  */
 
 const fs = require("fs");
@@ -100,17 +100,6 @@ const moveDirectories = async (userInput) => {
     const layoutPath = path.join(newAppDirPath, "_layout.tsx");
     await fs.promises.writeFile(layoutPath, layoutContent);
     console.log("📄 src/app/_layout.tsx created.");
-
-    // Remove the reset-project script from package.json, its file is gone now
-    const packageJsonPath = path.join(root, "package.json");
-    if (fs.existsSync(packageJsonPath)) {
-      const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, "utf8"));
-      if (packageJson.scripts && "reset-project" in packageJson.scripts) {
-        delete packageJson.scripts["reset-project"];
-        await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
-        console.log("🧹 reset-project script removed from package.json.");
-      }
-    }
 
     console.log("\n✅ Project reset complete. Next steps:");
     console.log(
