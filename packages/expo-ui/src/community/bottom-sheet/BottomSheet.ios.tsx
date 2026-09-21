@@ -21,7 +21,7 @@ import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
 
-const FORM_SHEET_WIDTH = 580;
+const FORM_SHEET_WIDTH = 540;
 
 // #region Helpers
 
