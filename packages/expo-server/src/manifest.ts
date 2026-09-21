@@ -189,4 +189,6 @@ export interface GetStreamingContentOptions {
   } | null;
   request?: Request;
   assets?: AssetInfo;
+  output?: 'static' | 'server';
+  hydrate?: boolean;
 }
