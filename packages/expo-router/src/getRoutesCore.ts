@@ -23,6 +23,7 @@ import {
   stripInvisibleSegmentsFromPath,
 } from './matchers';
 import type { RequireContext } from './types';
+import type { ContextKey, EntryPoint } from './types/paths';
 import { shouldLinkExternally } from './utils/url';
 
 export type Options = {
@@ -96,6 +97,7 @@ type DirectoryNode = {
 export type RedirectConfig = {
   source: string;
   destination: string;
+  /** A context key, or the destination URL when `external` is set. Widened because this type is public. */
   destinationContextKey: string;
   permanent?: boolean;
   methods?: string[];
@@ -105,7 +107,7 @@ export type RedirectConfig = {
 export type RewriteConfig = {
   source: string;
   destination: string;
-  destinationContextKey: string;
+  destinationContextKey: EntryPoint;
   methods?: string[];
 };
 
@@ -164,7 +166,10 @@ export function getRoutes(contextModule: RequireContext, options: Options): Layo
  * Given a RequireContext, return the middleware node if one is found. If more than one middleware file is found, an error is thrown.
  */
 function getMiddleware(contextModule: RequireContext, options: Options): MiddlewareNode | null {
-  const allMiddlewareFiles = contextModule.keys().filter((key) => key.includes('+middleware'));
+  // Metro types context keys as plain strings; they are always `./`-prefixed.
+  const allMiddlewareFiles = (contextModule.keys() as ContextKey[]).filter((key) =>
+    key.includes('+middleware')
+  );
 
   const isValidMiddleware = (key: string) => /^\.\/\+middleware\.[tj]sx?$/.test(key);
 
@@ -242,12 +247,18 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   let hasRoutes = false;
   let isValid = false;
 
-  const contextKeys = contextModule.keys();
+  // Metro types context keys as plain strings; they are always `./`-prefixed.
+  const contextKeys = contextModule.keys() as ContextKey[];
   // Normalized from the plugin config, so `permanent` is always resolved.
-  const redirects: Record<string, RedirectConfig & { permanent: boolean }> = {};
+  const redirects: Record<
+    string,
+    RedirectConfig & { destinationContextKey: EntryPoint; permanent: boolean }
+  > = {};
   const rewrites: Record<string, RewriteConfig> = {};
 
-  let validRedirectDestinations: { contextKey: string; nameWithoutInvisible: string }[] | undefined;
+  let validRedirectDestinations:
+    | { contextKey: ContextKey; nameWithoutInvisible: string }[]
+    | undefined;
 
   const getValidDestinations = () => {
     // Loop over contexts once and cache the valid destinations
@@ -270,11 +281,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         const sourceContextKey = getSourceContextKeyFromRedirectSource(redirect.source);
         const sourceName = getNameFromRedirectPath(redirect.source);
 
-        const isExternalRedirect = shouldLinkExternally(redirect.destination);
-
-        const targetDestinationName = isExternalRedirect
+        const externalDestination = shouldLinkExternally(redirect.destination)
           ? redirect.destination
-          : getNameWithoutInvisibleSegmentsFromRedirectPath(redirect.destination);
+          : undefined;
+        const isExternalRedirect = externalDestination !== undefined;
+
+        const targetDestinationName =
+          externalDestination ??
+          getNameWithoutInvisibleSegmentsFromRedirectPath(redirect.destination);
 
         if (ignoreList.some((regex) => regex.test(sourceContextKey))) {
           continue;
@@ -288,9 +302,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         const destination = isExternalRedirect
           ? targetDestinationName
           : validDestination?.nameWithoutInvisible;
-        const destinationContextKey = isExternalRedirect
-          ? targetDestinationName
-          : validDestination?.contextKey;
+        const destinationContextKey = externalDestination ?? validDestination?.contextKey;
 
         if (!destinationContextKey || destination === undefined) {
           /*
@@ -665,7 +677,7 @@ function getNameWithoutInvisibleSegmentsFromRedirectPath(path: string): string {
 }
 
 // Creates fake context key for redirects and rewrites
-function getSourceContextKeyFromRedirectSource(source: string): string {
+function getSourceContextKeyFromRedirectSource(source: string): ContextKey {
   const name = getNameFromRedirectPath(source);
   const prefix = './';
   const suffix = /\.[tj]sx?$/.test(name) ? '' : '.js'; // Ensure it has a file extension

@@ -3,7 +3,7 @@ import { Children, Fragment, isValidElement, use, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { getValidInitialRouteName, useRouteNode, useContextKey } from '../Route';
+import { getValidInitialRouteName, useRouteNode, useRoutePathname } from '../Route';
 import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
@@ -160,7 +160,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const parentTriggerMap = use(TabTriggerMapContext);
   const parentNavigatorStates = use(TabNavigatorStatesContext);
   const routeNode = useRouteNode();
-  const contextKey = useContextKey();
+  const contextKey = useRoutePathname();
   const linking = use(LinkingContext).options;
   const routeInfo = useRouteInfo();
 

@@ -3,9 +3,10 @@
 import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
-import { getContextKey } from './matchers';
+import { getRoutePathname } from './matchers';
 import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import type { ContextKey, EntryPoint } from './types/paths';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
 
@@ -28,7 +29,7 @@ export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'
 
 export type MiddlewareNode = {
   /** Context Module ID. Used to resolve the middleware module */
-  contextKey: string;
+  contextKey: ContextKey;
   /** Loads middleware into memory. Returns the exports from +middleware.ts */
   loadRoute: () => Partial<LoadedMiddleware>;
 };
@@ -39,10 +40,16 @@ export type RouteNodeBase = {
   loadRoute: () => LoadedRoute;
   /** Is the route a dynamic path */
   dynamic: null | DynamicConvention[];
-  /** `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx` */
+  /**
+   * `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx`.
+   *
+   * Stays `string`: while the tree is being built this holds the path from the
+   * tree root, and hoisting rewrites it to be layout-relative, so no single
+   * type describes it.
+   */
   route: string;
   /** Context Module ID, used for matching children. */
-  contextKey: string;
+  contextKey: ContextKey;
   /** Added in-memory */
   generated?: boolean;
 };
@@ -62,10 +69,16 @@ export type LayoutRouteNode = RouteNodeBase & {
 export type ScreenRouteNode = RouteNodeBase & {
   type: 'route';
   /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
-  parentContextKey?: string;
+  parentContextKey?: ContextKey;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
   internal?: boolean;
-  /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
+  /**
+   * File paths for async entry modules that should be included in the initial chunk request to
+   * ensure the runtime JavaScript matches the statically rendered HTML representation.
+   *
+   * Stays `string`: the router fills these with context keys (or a destination URL for an
+   * external redirect), and static export later rewrites them to absolute module paths.
+   */
   entryPoints?: string[];
 };
 
@@ -78,7 +91,7 @@ export type ApiRouteNode = RouteNodeBase & {
 export type RedirectRouteNode = RouteNodeBase & {
   type: 'redirect';
   /** Redirect Context Module ID, used for matching children. */
-  destinationContextKey: string;
+  destinationContextKey: EntryPoint;
   /** Is the redirect permanent. */
   permanent: boolean;
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
@@ -193,12 +206,13 @@ export const getValidInitialRouteName = (
   initialRouteName = isLayoutRouteNode(node) ? node.initialRouteName : undefined
 ) => getValidInitialRoute(node, initialRouteName)?.route;
 
-export function useContextKey(): string {
+/** The current route's URL pathname, derived from its context key. */
+export function useRoutePathname(): string {
   const node = useRouteNode();
   if (node == null) {
     throw new Error('No filename found. This is likely a bug in expo-router.');
   }
-  return getContextKey(node.contextKey);
+  return getRoutePathname(node.contextKey);
 }
 
 export type RouteProps = PropsWithChildren<{

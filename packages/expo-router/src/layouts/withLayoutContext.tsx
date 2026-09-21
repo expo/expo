@@ -8,7 +8,7 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey, useRouteNode } from '../Route';
+import { useRoutePathname, useRouteNode } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { Href, PickPartial } from '../types';
@@ -157,7 +157,7 @@ export function withLayoutContext<
 ) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
-      const contextKey = useContextKey();
+      const contextKey = useRoutePathname();
       const node = useRouteNode();
 
       const { screens, guardedRedirects } = useFilterScreenChildren<TOptions, TState, TEventMap>(

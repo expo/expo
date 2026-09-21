@@ -9,7 +9,7 @@ import {
   LocalRouteParamsContext,
   sortRoutesWithInitial,
 } from '../Route';
-import { getContextKey } from '../matchers';
+import { getRoutePathname } from '../matchers';
 import type { Href } from '../types';
 
 export type GuardedRedirects = Map<string, Href | undefined>;
@@ -110,7 +110,7 @@ function getNavigatorFallback(
     return undefined;
   }
 
-  const pathname = normalizeRouteName(getContextKey(route.contextKey)) || '/';
+  const pathname = normalizeRouteName(getRoutePathname(route.contextKey)) || '/';
   return {
     href: Object.keys(params ?? {}).length ? ({ pathname, params } as Href) : (pathname as Href),
     targetRouteContextKey: route.contextKey,

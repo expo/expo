@@ -1,7 +1,8 @@
 import isEqual from 'react-fast-compare';
 
 import { findFocusedRoute } from '../fork/findFocusedRoute';
-import { appendBaseUrl, getPathFromState } from '../fork/getPathFromState';
+import { getPathFromState } from '../fork/getPathFromState';
+import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationState } from '../react-navigation/routers';
