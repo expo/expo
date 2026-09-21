@@ -15,8 +15,6 @@
         {
           "type": "swift",
           "name": "ExpoHaptics",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
