@@ -125,6 +125,9 @@ catalogs:
     '@testing-library/dom':
       specifier: ^10.4.0
       version: 10.4.1
+    '@testing-library/jest-dom':
+      specifier: ^6.9.1
+      version: 6.9.1
     '@testing-library/react':
       specifier: ^16.3.0
       version: 16.3.2
@@ -4316,7 +4319,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 'catalog:'
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -4526,7 +4529,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 'catalog:'
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -4995,7 +4998,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 'catalog:'
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -5168,7 +5171,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 'catalog:'
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -5793,7 +5796,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 'catalog:'
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -6197,7 +6200,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 'catalog:'
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -6686,7 +6689,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 'catalog:'
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
