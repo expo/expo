@@ -2771,7 +2771,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       npm-run-all2:
         specifier: ^8.0.4
@@ -3531,7 +3531,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       memfs:
         specifier: ^3.6.0
@@ -4703,7 +4703,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       ignore:
         specifier: ^5.3.2
@@ -6630,7 +6630,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       prompts:
         specifier: ^2.3.2
@@ -6854,7 +6854,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       prompts:
         specifier: ^2.3.2
