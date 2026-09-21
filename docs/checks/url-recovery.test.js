@@ -162,11 +162,18 @@ test.each([
 });
 
 test.each([304, 416, 500])(
-  'preserves a direct Markdown asset response with HTTP %i',
+  'preserves direct and negotiated Markdown asset responses with HTTP %i',
   async status => {
-    const asset = new Response(null, { status, headers: { ETag: '"markdown"' } });
+    const body = status === 304 ? null : 'Asset error';
+    const asset = new Response(body, { status, headers: { ETag: '"markdown"' } });
     env.ASSETS.fetch.mockResolvedValue(asset);
     expect(await request(`${NATIVE_TABS.slice(0, -1)}.md`)).toBe(asset);
+    const negotiated = await request(NATIVE_TABS, { headers: { Accept: 'text/markdown' } });
+    expect(negotiated.status).toBe(status);
+    expect(await negotiated.text()).toBe(body ?? '');
+    expect(negotiated.headers.get('Content-Type')).toBe(asset.headers.get('Content-Type'));
+    expect(negotiated.headers.get('ETag')).toBe('"markdown"');
+    expect(negotiated.headers.get('Vary')).toBe('Accept');
     expect(run).not.toHaveBeenCalled();
   }
 );

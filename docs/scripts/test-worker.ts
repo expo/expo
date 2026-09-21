@@ -240,6 +240,21 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
     );
   }
   console.log('✓ Accept: text/markdown request returns Vary: Accept');
+
+  const etag = mdResponse.headers.get('etag');
+  if (!etag) {
+    throw new Error('Expected an ETag for negotiated Markdown');
+  }
+  const conditional = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown', 'If-None-Match': etag },
+  });
+  if (conditional.status !== 304 || (await conditional.text()) !== '') {
+    throw new Error(`Expected an empty HTTP 304 for unchanged Markdown, got ${conditional.status}`);
+  }
+  if (!varyTokens(conditional).includes('accept')) {
+    throw new Error('Expected Vary: Accept on the Markdown 304');
+  }
+  console.log('✓ Conditional Markdown requests preserve HTTP 304 and Vary: Accept');
 }
 
 function varyTokens(response: Response): string[] {

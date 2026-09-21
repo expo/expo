@@ -78,9 +78,16 @@ export default {
           const mdResponse = await env.ASSETS.fetch(new Request(url, request));
 
           const contentType = mdResponse.headers.get("Content-Type") || "";
-          if (mdResponse.ok && contentType.includes("text/markdown")) {
+          if (
+            (mdResponse.ok && contentType.includes("text/markdown")) ||
+            mdResponse.status === 304 ||
+            mdResponse.status === 416 ||
+            mdResponse.status >= 500
+          ) {
             const response = new Response(mdResponse.body, mdResponse);
-            response.headers.set("Content-Type", "text/markdown; charset=utf-8");
+            if (contentType.includes("text/markdown")) {
+              response.headers.set("Content-Type", "text/markdown; charset=utf-8");
+            }
             response.headers.append("Vary", "Accept");
             return response;
           }
