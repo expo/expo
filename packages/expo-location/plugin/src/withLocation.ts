@@ -16,6 +16,8 @@ const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to detect your current motion activity';
 
+export const FULL_ACCURACY_PURPOSE_KEY = 'ExpoLocationFullAccuracy';
+
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
 
@@ -140,6 +142,25 @@ function removeForegroundServiceIconImageFiles(projectRoot: string) {
   });
 }
 
+const withTemporaryFullAccuracy: ConfigPlugin<string> = (config, message) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults.NSLocationTemporaryUsageDescriptionDictionary = {
+      ...(config.modResults.NSLocationTemporaryUsageDescriptionDictionary as
+        | Record<string, string>
+        | undefined),
+      [FULL_ACCURACY_PURPOSE_KEY]: message,
+    };
+    return config;
+  });
+};
+
+const withReducedAccuracyDefault: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults.NSLocationDefaultAccuracyReduced = true;
+    return config;
+  });
+};
+
 export type Props = {
   /**
    * A string to set the `NSLocationAlwaysAndWhenInUseUsageDescription` permission message.
@@ -169,6 +190,22 @@ export type Props = {
    * @platform ios
    */
   motionUsagePermission?: string | false;
+  /**
+   * A string to set the message the system shows when a permission request from
+   * `expo-location/next` asks to raise a reduced accuracy authorization to full accuracy. It is written under the
+   * `ExpoLocationFullAccuracy` key of `NSLocationTemporaryUsageDescriptionDictionary`.
+   * Without it, the key is omitted and the raise is skipped.
+   * @platform ios
+   */
+  locationFullAccuracyPermission?: string;
+  /**
+   * Whether the permission prompt offers reduced accuracy by default, by setting
+   * `NSLocationDefaultAccuracyReduced` in `Info.plist`. The app can still ask for full accuracy
+   * for a session with `accuracy: 'full'` in a permission request from `expo-location/next`.
+   * @default false
+   * @platform ios
+   */
+  isIosReducedAccuracyByDefault?: boolean;
   /**
    * Whether to enable location in `UIBackgroundModes`.
    * @default false
@@ -208,6 +245,8 @@ const withLocation: ConfigPlugin<Props | void> = (
     locationAlwaysPermission,
     locationWhenInUsePermission,
     motionUsagePermission,
+    locationFullAccuracyPermission,
+    isIosReducedAccuracyByDefault,
     isIosBackgroundLocationEnabled,
     isAndroidBackgroundLocationEnabled,
     isAndroidForegroundServiceEnabled,
@@ -227,6 +266,14 @@ const withLocation: ConfigPlugin<Props | void> = (
     }
     return config;
   });
+
+  if (locationFullAccuracyPermission) {
+    config = withTemporaryFullAccuracy(config, locationFullAccuracyPermission);
+  }
+
+  if (isIosReducedAccuracyByDefault) {
+    config = withReducedAccuracyDefault(config);
+  }
 
   config = withForegroundServiceIcon(config, { icon: androidForegroundServiceIcon ?? null });
 
