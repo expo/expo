@@ -1,9 +1,6 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "RuntimeHolder.h"
-
-#if UNIT_TEST
-
 #include "TestingSyncJSCallInvoker.h"
 
 #if USE_HERMES
@@ -17,8 +14,6 @@
 #include <jsc/JSCRuntime.h>
 
 #endif
-
-#endif // UNIT_TEST
 
 namespace expo {
 
@@ -36,10 +31,6 @@ jni::local_ref<RuntimeHolder::jhybriddata> RuntimeHolder::initHybrid(jni::alias_
 }
 
 jlong RuntimeHolder::createRuntime() {
-#if !UNIT_TEST
-  throw std::logic_error(
-    "The RuntimeHolder constructor is only available when UNIT_TEST is defined.");
-#else
 #if USE_HERMES
   auto config = ::hermes::vm::RuntimeConfig::Builder()
     .withEnableSampleProfiling(false);
@@ -92,7 +83,6 @@ jlong RuntimeHolder::createRuntime() {
   );
 
   return reinterpret_cast<jlong>(runtime.get());
-#endif
 }
 
 void RuntimeHolder::release() {
@@ -100,12 +90,7 @@ void RuntimeHolder::release() {
 }
 
 jni::local_ref<react::CallInvokerHolder::javaobject> RuntimeHolder::createCallInvoker() {
-#if !UNIT_TEST
-  throw std::logic_error(
-    "The RuntimeHolder::createCallInvoker is only available when UNIT_TEST is defined.");
-#else
   return react::CallInvokerHolder::newObjectCxxArgs(std::make_shared<TestingSyncJSCallInvoker>(runtime));
-#endif
 }
 
 } // namespace expo

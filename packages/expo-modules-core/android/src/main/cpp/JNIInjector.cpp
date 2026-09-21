@@ -1,7 +1,6 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "ExpoHeader.pch"
-#include "RuntimeHolder.h"
 #include "JSIContext.h"
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
@@ -34,9 +33,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
 
     expo::FrontendConverterProvider::instance()->createConverters();
 
-#if UNIT_TEST
-    expo::RuntimeHolder::registerNatives();
-#endif
     expo::MainRuntimeInstaller::registerNatives();
     expo::JSIContext::registerNatives();
     expo::JavaScriptModuleObject::registerNatives();

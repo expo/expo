@@ -130,10 +130,6 @@ def isPrebuiltUsable = {
     return false
   }
   def metadata = new JsonSlurper().parseText(prebuiltMetadataFile.text)
-  if (metadata.libraryVersion != version) {
-    logger.warn("[expo-modules-core] Ignoring prebuilt libs: built for v${metadata.libraryVersion}, package is v${version} - building from source")
-    return false
-  }
   if (metadata.reactNativeVersion != reactNativeVersionString) {
     logger.warn("[expo-modules-core] Ignoring prebuilt libs: built for RN ${metadata.reactNativeVersion}, installed RN ${reactNativeVersionString} - building from source")
     return false
@@ -141,7 +137,12 @@ def isPrebuiltUsable = {
   return true
 }
 
-def usePrebuiltNativeLibs = !isPrebuiltCachingRun && !isTests && isPrebuiltUsable()
+def buildFromSourceRequested = findProperty("expo.core.buildFromSource") == "true"
+if (buildFromSourceRequested) {
+  logger.lifecycle("[expo-modules-core] `expo.core.buildFromSource` is set - building native libraries from source")
+}
+
+def usePrebuiltNativeLibs = !isPrebuiltCachingRun && !buildFromSourceRequested && isPrebuiltUsable()
 
 expoModule {
   canBePublished false
@@ -509,7 +510,6 @@ class PrebuiltNativeLibs {
 }
 
 def stripBinary = PrebuiltNativeLibs.findLlvmStrip(android.ndkDirectory)
-def libraryVersion = version.toString()
 def cacheStagingDir = layout.buildDirectory.dir("tmp/cache-prebuilt-natives").get().asFile
 def variantDescriptors = prebuiltVariants.collect { variant ->
   def variantCap = variant.capitalize()
@@ -554,7 +554,6 @@ tasks.register("cachePrebuiltNativeLibs") {
     cacheStagingDir.deleteDir()
 
     prebuiltMetadataFile.text = JsonOutput.prettyPrint(JsonOutput.toJson([
-      libraryVersion    : libraryVersion,
       reactNativeVersion: reactNativeVersionString,
       variants          : variantDescriptors.collect { it.name },
       abis              : allAbis as List,

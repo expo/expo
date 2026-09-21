@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `android.buildExpoModulesCoreFromSource` to compile the `expo-modules-core` native libraries from source instead of using the prebuilt ones.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

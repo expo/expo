@@ -28,6 +28,7 @@
 ### 💡 Others
 
 - [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.12.0`. ([#50286](https://github.com/expo/expo/pull/50286) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Use the prebuilt native libraries in every build, including the package's own instrumentation tests, drop the `libraryVersion` check so the archive stays valid across patch releases, and add the `expo.core.buildFromSource` Gradle property to opt out.
 
 ## 58.0.3 — 2026-09-16
 
