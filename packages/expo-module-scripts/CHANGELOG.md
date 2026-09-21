@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Upgrade to Jest 30 and remove the `jest-snapshot-prettier` (prettier 2) `prettierPath` workaround from the Jest presets, Jest 30 formats snapshots with prettier 3. ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
+- Upgrade to Jest 30. ([#50345](https://github.com/expo/expo/pull/50345) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🎉 New features
 
