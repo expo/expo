@@ -310,7 +310,7 @@ describe.each(
     }
   );
 
-  it('renders meta tags from loader data in HTML', async () => {
+  it('renders route metadata in HTML', async () => {
     const response = await server.fetchAsync('/meta');
     expect(response.status).toBe(200);
     const html = getHtml(await response.text());
