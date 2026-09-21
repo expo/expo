@@ -69,6 +69,21 @@ const htmlRoute = {
   routeKeys: { postId: 'postId' },
 };
 
+const rawServerManifest = {
+  apiRoutes: [],
+  htmlRoutes: [
+    {
+      file: './posts/[postId].tsx',
+      page: '/posts/[postId]',
+      namedRegex: '^/posts/(?<postId>[^/]+?)/?$',
+      routeKeys: { postId: 'postId' },
+    },
+  ],
+  notFoundRoutes: [],
+  redirects: [],
+  rewrites: [],
+};
+
 function createDevServerForStaticPageTests() {
   vol.fromJSON(
     {
@@ -107,6 +122,72 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
   await devServer.startAsync({ location: {}, port: 3000, ...options });
   return devServer;
 }
+
+describe('getStaticRenderFunctionAsync', () => {
+  afterEach(() => {
+    jest.mocked(getConfig).mockReturnValue({
+      pkg: {},
+      exp: { sdkVersion: '45.0.0', name: 'my-app', slug: 'my-app' },
+    } as unknown as ReturnType<typeof getConfig>);
+  });
+
+  it('uses static streaming for static export', async () => {
+    jest.mocked(getConfig).mockReturnValue({
+      pkg: {},
+      exp: {
+        name: 'test',
+        slug: 'test',
+        web: { output: 'static' },
+      },
+    } as unknown as ReturnType<typeof getConfig>);
+
+    const devServer = createDevServerForStaticPageTests();
+    const getStreamingContent = jest.fn(async () => '<html>streamed SSG</html>');
+    const resolvedMetadata = { metadata: { title: 'Post 123' }, headNodes: ['Post 123'] };
+    const resolveMetadata = jest.fn(async () => resolvedMetadata);
+    devServer['ssrLoadModule'] = jest.fn(async () => ({
+      getStreamingContent,
+      resolveMetadata,
+      getManifest: async () => ({ screens: {} }),
+      getBuildTimeServerManifestAsync: async () => rawServerManifest,
+    })) as unknown as (typeof devServer)['ssrLoadModule'];
+
+    const { renderAsync } = await devServer.getStaticRenderFunctionAsync();
+    const options = {
+      hydrate: true,
+      loader: { data: { postId: '123' }, key: '/posts/[postId]' },
+      assets: { css: [{ type: 'css' as const, href: '/app.css' }], js: ['/app.js'] },
+    };
+    const runtimeRoute = { contextKey: './posts/[postId].tsx' } as any;
+    await expect(renderAsync('/posts/123', runtimeRoute, options)).resolves.toBe(
+      '<html>streamed SSG</html>'
+    );
+
+    expect(resolveMetadata).toHaveBeenCalledWith({
+      route: { file: './posts/[postId].tsx', page: '/posts/[postId]' },
+      request: undefined,
+      params: { postId: '123' },
+    });
+    expect(getStreamingContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
+      ...options,
+      metadata: resolvedMetadata,
+      output: 'static',
+    });
+
+    const metadataError = new Error('metadata failed');
+    resolveMetadata.mockRejectedValueOnce(metadataError);
+    await expect(renderAsync('/posts/456', runtimeRoute, options)).rejects.toBe(metadataError);
+    expect(getStreamingContent).toHaveBeenCalledTimes(1);
+
+    resolveMetadata.mockClear();
+    await renderAsync('/+not-found', { internal: true } as any, options);
+    expect(resolveMetadata).not.toHaveBeenCalled();
+    expect(getStreamingContent).toHaveBeenLastCalledWith(
+      new URL('http://localhost:8081/+not-found'),
+      { ...options, output: 'static' }
+    );
+  });
+});
 
 describe('startAsync', () => {
   it.each([
@@ -424,37 +505,91 @@ describe('getStaticPageAsync', () => {
     });
   });
 
-  it('preserves the string HTML path for static output', async () => {
+  it.each([false, true])(
+    'renders development SSG without request data (incoming request: %s)',
+    async (hasRequest) => {
+      jest.mocked(getConfig).mockReturnValue({
+        pkg: {},
+        exp: {
+          name: 'test',
+          slug: 'test',
+          web: { output: 'static' },
+        },
+      } as unknown as ReturnType<typeof getConfig>);
+
+      const devServer = createDevServerForStaticPageTests();
+      const getStreamingContent = jest.fn(async () => '<html>streamed SSG</html>');
+      const resolvedMetadata = { metadata: { title: 'Post 123' }, headNodes: ['Post 123'] };
+      const resolveMetadata = jest.fn(async () => resolvedMetadata);
+      devServer['ssrLoadModule'] = jest.fn(async () => ({
+        getStreamingContent,
+        resolveMetadata,
+      })) as unknown as (typeof devServer)['ssrLoadModule'];
+      devServer['getStaticResourcesAsync'] = jest.fn(async () => ({ artifacts: [] })) as any;
+      devServer.executeServerDataLoaderAsync = jest.fn(async () =>
+        Response.json({ postId: '123' })
+      ) as any;
+
+      const request = hasRequest
+        ? new ImmutableRequest(new Request('http://localhost:8081/posts/123'))
+        : undefined;
+      const result = await devServer['getStaticPageAsync']('/posts/123', htmlRoute, request);
+
+      expect(result).toEqual({ content: '<html>streamed SSG</html>', resources: [] });
+      expect(resolveMetadata).toHaveBeenCalledWith({
+        route: { file: 'posts/[postId].tsx', page: '/posts/[postId]' },
+        request: undefined,
+        params: { postId: '123' },
+      });
+      expect(devServer.executeServerDataLoaderAsync).toHaveBeenCalledWith(
+        new URL('http://localhost:8081/posts/123'),
+        expect.objectContaining({ params: { postId: '123' } }),
+        undefined
+      );
+      expect(getStreamingContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
+        loader: { data: { postId: '123' }, key: '/posts/123' },
+        metadata: resolvedMetadata,
+        output: 'static',
+        hydrate: false,
+        assets: {
+          css: [],
+          js: [expect.stringContaining('/index.bundle?')],
+          favicon: undefined,
+        },
+      });
+    }
+  );
+
+  it.each([
+    ['static', '/_sitemap', 'expo-router/build/views/Sitemap.js'],
+    ['static', '/missing', 'expo-router/build/views/Unmatched.js'],
+    ['server', '/_sitemap', 'expo-router/build/views/Sitemap.js'],
+    ['server', '/missing', 'expo-router/build/views/Unmatched.js'],
+  ])('%s output renders generated route %s', async (output, pathname, file) => {
     jest.mocked(getConfig).mockReturnValue({
       pkg: {},
-      exp: {
-        name: 'test',
-        slug: 'test',
-        web: {
-          output: 'static',
-        },
-      },
+      exp: { name: 'test', slug: 'test', web: { output } },
     } as unknown as ReturnType<typeof getConfig>);
 
     const devServer = createDevServerForStaticPageTests();
-    const getStaticContent = jest.fn(async () => '<html><head></head><body></body></html>');
+    const html = '<html>Generated route</html>';
     devServer['ssrLoadModule'] = jest.fn(async () => ({
-      getStaticContent,
+      getStreamingContent: async () => (output === 'server' ? new Response(html).body : html),
+      resolveMetadata: async ({ route }: { route: { file: string } }) => {
+        throw new Error(`Cannot find module '${route.file}' in the app context`);
+      },
     })) as unknown as (typeof devServer)['ssrLoadModule'];
     devServer['getStaticResourcesAsync'] = jest.fn(async () => ({ artifacts: [] })) as any;
 
-    const result = await devServer['getStaticPageAsync']('/posts/123', htmlRoute);
+    const { content } = await devServer['getStaticPageAsync'](
+      pathname,
+      { file, page: pathname, generated: true, routeKeys: {}, namedRegex: /^\/.*$/ },
+      output === 'server'
+        ? new ImmutableRequest(new Request(`http://localhost:8081${pathname}`))
+        : undefined
+    );
 
-    expect(typeof result.content).toBe('string');
-    expect(result.resources).toEqual([]);
-    expect(getStaticContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
-      hydrate: false,
-      assets: {
-        css: [],
-        js: [expect.stringContaining('/index.bundle?')],
-        favicon: undefined,
-      },
-    });
+    expect(typeof content === 'string' ? content : await new Response(content).text()).toBe(html);
   });
 
   it('normalizes loader Response data and passes dynamic params to metadata', async () => {
