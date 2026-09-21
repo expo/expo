@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Notify about changes to `metro.config.{cjs,mjs,ts,cts,mts}` and `.config/metro.*`, not just `metro.config.js` and `metro.config.json`. ([#50406](https://github.com/expo/expo/pull/50406) by [@AlexErrant](https://github.com/AlexErrant))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-16
