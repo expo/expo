@@ -58,7 +58,7 @@
     "debug": "catalog:",
     "expo-module-scripts": "workspace:*",
     "getenv": "catalog:",
-    "glob": "^13.0.0",
+    "glob": "^13.0.6",
     "memfs": "catalog:",
     "multitars": "catalog:",
     "nock": "catalog:",
