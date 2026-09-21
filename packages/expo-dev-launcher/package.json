@@ -31,7 +31,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "catalog:"
   }
 }

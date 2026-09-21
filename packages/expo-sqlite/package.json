@@ -65,7 +65,7 @@
   "devDependencies": {
     "@expo/spawn-async": "catalog:",
     "@testing-library/react-native": "catalog:",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "expo": "workspace:*",

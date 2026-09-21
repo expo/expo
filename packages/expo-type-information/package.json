@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@jest/globals": "catalog:",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
     "jest": "^29.3.1"
