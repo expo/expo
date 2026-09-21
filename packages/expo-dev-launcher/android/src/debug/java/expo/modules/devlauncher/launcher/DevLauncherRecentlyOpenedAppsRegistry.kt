@@ -2,10 +2,11 @@ package expo.modules.devlauncher.launcher
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
-import expo.modules.manifests.core.Manifest
 import androidx.core.content.edit
 import androidx.core.net.toUri
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import expo.modules.manifests.core.Manifest
 
 private const val RECENTLY_OPENED_APPS_SHARED_PREFERENCES = "expo.modules.devlauncher.recentyopenedapps"
 
@@ -29,8 +30,9 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
 
     if (sharedPreferences.contains(url)) {
       val previousEntryJsonString = sharedPreferences.getString(url, null)
-      val previousEntry = Gson().fromJson(previousEntryJsonString, Map::class.java)
-      appEntry = previousEntry.toMutableMap() as MutableMap<String, Any>
+      val type = object : TypeToken<Map<String, Any>>() {}.type
+      val previousEntry: Map<String, Any> = Gson().fromJson(previousEntryJsonString, type)
+      appEntry = previousEntry.toMutableMap()
     }
 
     val timestamp = TimeHelper.getCurrentTime()
@@ -47,12 +49,9 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
     if (manifest != null) {
       appEntry["name"] = manifest.getName() as String
 
-      // TODO - expose metadata object in expo-manifests
-      val json = manifest.getRawJson()
-
       if (isEASUpdate) {
-        val metadata = json.getJSONObject("metadata")
-        appEntry["branchName"] = metadata["branchName"] ?: ""
+        val metadata = manifest.getMetadata()
+        appEntry["branchName"] = metadata?.get("branchName") ?: ""
       }
     }
 
