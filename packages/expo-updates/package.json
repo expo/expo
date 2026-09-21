@@ -91,7 +91,7 @@
     "expo-module-scripts": "workspace:*",
     "express": "catalog:",
     "form-data": "^4.0.4",
-    "memfs": "^3.2.0",
+    "memfs": "^3.6.0",
     "picomatch": "^4.0.4",
     "ts-node": "^10.9.2",
     "xstate": "^4.37.2"
