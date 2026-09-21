@@ -81,7 +81,7 @@
     "@testing-library/react-native": "catalog:",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/node-forge": "catalog:",
     "@types/picomatch": "^4.0.0",

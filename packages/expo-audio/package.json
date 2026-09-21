@@ -33,7 +33,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "expo": "workspace:*",

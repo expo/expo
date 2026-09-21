@@ -50,7 +50,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "catalog:",
     "@testing-library/react-native": "catalog:",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "expo": "workspace:*",

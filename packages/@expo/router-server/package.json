@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

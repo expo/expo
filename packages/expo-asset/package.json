@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "catalog:",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-native__assets": "^1.0.3",

@@ -41,7 +41,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/app-intents",
   "devDependencies": {
     "@testing-library/react-native": "catalog:",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/prompts": "^2.4.9",
     "@types/react": "catalog:",

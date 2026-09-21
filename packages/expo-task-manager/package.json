@@ -38,7 +38,7 @@
     "unimodules-app-loader": "workspace:~"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

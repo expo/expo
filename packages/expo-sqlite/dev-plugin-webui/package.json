@@ -40,7 +40,7 @@
     "@jest/globals": "catalog:",
     "@react-native/jest-preset": "catalog:",
     "@testing-library/react-native": "catalog:",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*",
     "jest-expo": "workspace:*",

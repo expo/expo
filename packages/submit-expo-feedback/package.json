@@ -44,7 +44,7 @@
   "devDependencies": {
     "@expo/config": "workspace:*",
     "@expo/package-manager": "workspace:*",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@types/prompts": "^2.0.6",
     "@vercel/ncc": "catalog:",
     "agent-cli-detector": "0.1.6",
