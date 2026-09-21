@@ -60,7 +60,7 @@
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "^3.6.0"
   },
   "peerDependencies": {
     "expo": "*"
