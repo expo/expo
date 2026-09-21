@@ -31,6 +31,7 @@ struct UpdatesConfigTests {
     #expect(config.runtimeVersion == "fake-version-1")
     #expect(config.hasEmbeddedUpdate == true)
     #expect(config.excludeFromBackup == false)
+    #expect(config.maxUpdatesToKeep == 2)
   }
 
   @Test
@@ -47,6 +48,7 @@ struct UpdatesConfigTests {
       UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["Foo": "Bar"],
       UpdatesConfig.EXUpdatesConfigEnableBsdiffPatchSupportKey: false,
       UpdatesConfig.EXUpdatesConfigExcludeFromBackupKey: true,
+      UpdatesConfig.EXUpdatesConfigMaxUpdatesToKeepKey: 5,
     ]
 
     guard let configNSDictionary = NSDictionary(contentsOfFile: configPlistPath) as? [String: Any] else {
@@ -67,6 +69,39 @@ struct UpdatesConfigTests {
     #expect(config.runtimeVersion == "overridden")
     #expect(config.hasEmbeddedUpdate == true)
     #expect(config.excludeFromBackup == true)
+    #expect(config.maxUpdatesToKeep == 5)
+  }
+
+  @Test
+  func `should accept integer maxUpdatesToKeep values`() throws {
+    let validValues: [(Any, Int)] = [(2, 2), (5, 5), (NSNumber(value: 3.0), 3), ("4", 4), (Int.max, Int.max), (String(Int.max), Int.max)]
+    for (value, expected) in validValues {
+      let config = try UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        UpdatesConfig.EXUpdatesConfigMaxUpdatesToKeepKey: value
+      ])
+      #expect(config.maxUpdatesToKeep == expected)
+    }
+  }
+
+  @Test
+  func `should reject invalid maxUpdatesToKeep values`() {
+    let invalidValues: [Any] = [
+      -1, 0, 1, 2.5, NSNumber(value: 3.5), true, false,
+      "", "invalid", "3garbage", "2.5", "3.0", "1", "-2", "1e2",
+      "99999999999999999999999999999", NSNumber(value: UInt64.max),
+      Double.infinity, Double.nan, NSNull(), [3]
+    ]
+    for value in invalidValues {
+      #expect(throws: UpdatesConfigError.ExpoUpdatesInvalidMaxUpdatesToKeepError, "Invalid value: \(value)") {
+        try UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+          UpdatesConfig.EXUpdatesConfigMaxUpdatesToKeepKey: value
+        ])
+      }
+    }
   }
 
   // MARK: - normalizedURLOrigin

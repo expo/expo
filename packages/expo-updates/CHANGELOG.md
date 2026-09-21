@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add configurable update cache retention with `EXUpdatesMaxUpdatesToKeep`. ([#50459](https://github.com/expo/expo/pull/50459) by [@Kudo](https://github.com/Kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
