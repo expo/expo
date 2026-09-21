@@ -31,24 +31,18 @@ internal final class SystemMenuTouchGate: UIGestureRecognizer, UIGestureRecogniz
   }
 
   /**
-    Consider Menu to be open when the container is present, still accepts interaction, and is modal.
+    Consider Menu to be open while the container is present and still accepts interaction.
     UIKit turns `isUserInteractionEnabled` off the moment dismissal commits, so taps made during
-    the dismiss animation pass through to the app again. `accessibilityViewIsModal` is how UIKit
-    marks the container as blocking the content behind it — a semantic signal beside the class name.
+    the dismiss animation pass through to the app again.
    */
-  static func isOpenContextMenuContainer(
-    className: String,
-    isUserInteractionEnabled: Bool,
-    accessibilityViewIsModal: Bool
-  ) -> Bool {
-    return isUserInteractionEnabled && accessibilityViewIsModal && isContextMenuContainerClassName(className)
+  static func isOpenContextMenuContainer(className: String, isUserInteractionEnabled: Bool) -> Bool {
+    return isUserInteractionEnabled && isContextMenuContainerClassName(className)
   }
 
   static func isContextMenuContainer(_ view: UIView) -> Bool {
     return isOpenContextMenuContainer(
       className: NSStringFromClass(type(of: view)),
-      isUserInteractionEnabled: view.isUserInteractionEnabled,
-      accessibilityViewIsModal: view.accessibilityViewIsModal
+      isUserInteractionEnabled: view.isUserInteractionEnabled
     )
   }
 
