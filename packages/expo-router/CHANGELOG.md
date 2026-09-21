@@ -10,8 +10,6 @@
 
 ### 💡 Others
 
-- Bump `react-native-web` to `~0.21.2`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
-
 ## 58.0.5 — 2026-09-21
 
 ### 🎉 New features
