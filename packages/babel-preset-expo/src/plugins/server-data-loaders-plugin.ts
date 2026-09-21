@@ -137,6 +137,47 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
           }
         }
       },
+
+      Program: {
+        // NOTE(@kev-flex): Metro skips `applyImportSupport` under `optimize`, so an import the
+        // removals above left unreferenced would otherwise survive into the bundle.
+        exit(path, state) {
+          if (isLoaderBundle) {
+            return;
+          }
+
+          if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
+            return;
+          }
+
+          assertExpoMetadata(state.file.metadata);
+          if (!state.file.metadata.performConstantFolding) {
+            return;
+          }
+
+          path.scope.crawl();
+
+          for (const declaration of path.get('body')) {
+            if (
+              !declaration.isImportDeclaration() ||
+              declaration.node.importKind === 'type' ||
+              declaration.node.specifiers.length === 0
+            ) {
+              continue;
+            }
+
+            const isUnreferenced = declaration.node.specifiers.every((specifier) => {
+              const binding = path.scope.getBinding(specifier.local.name);
+              return binding != null && !binding.referenced;
+            });
+
+            if (isUnreferenced) {
+              debug('Removing unreferenced import:', declaration.node.source.value);
+              declaration.remove();
+            }
+          }
+        },
+      },
     },
   };
 }
