@@ -65,6 +65,9 @@ There are build-time configuration options that control the behavior of the libr
 | [`updates.assetPatternsToBeBundled`](../config/app/#assetpatternstobebundled)       | (none)    | <NoIcon />  | N/A                                    | N/A                                                              | N/A                           |
 | [`updates.disableAntiBrickingMeasures`](../config/app/#disableantibrickingmeasures) | `false`   | <NoIcon />  | `EXUpdatesDisableAntiBrickingMeasures` | `expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES`            | `disableAntiBrickingMeasures` |
 | [`updates.enableBsdiffPatchSupport`](../config/app/#enablebsdiffpatchsupport)       | `true`    | <NoIcon />  | `EXUpdatesEnableBsdiffPatchSupport`    | `expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT`               | `enableBsdiffPatchSupport`    |
+| [`updates.maxUpdatesToKeep`](../config/app/#maxupdatestokeep)                       | `2`       | <NoIcon />  | `EXUpdatesMaxUpdatesToKeep`            | `expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP`          | `maxUpdatesToKeep`            |
+
+`updates.maxUpdatesToKeep` retains the launched update and up to that number minus one older updates, preferring updates that match the manifest filters. Embedded updates, updates with the same or a newer commit time, and updates from other scopes are protected from deletion, so the total cache can exceed this value.
 
 The two core required configuration options are:
 

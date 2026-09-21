@@ -184,6 +184,10 @@ export interface ExpoConfig {
      * iOS only. Whether to exclude the expo-updates directory from device backups (iCloud). Defaults to false. When set to true, downloaded updates are not included in backups, which can significantly shrink backup size for apps with large updates. On restore the device has no cached update and runs the embedded update until the latest update is downloaded again.
      */
     excludeFromBackup?: boolean;
+    /**
+     * Number of updates to retain, including the launched update and the newest older updates, preferring those that match the manifest filters. Must be an integer between 2 and 2147483647. Defaults to 2. Embedded updates, updates newer than or at the same commit time as the launched update, and updates from other scopes are not deleted, so the total cache can exceed this value.
+     */
+    maxUpdatesToKeep?: number;
   };
   /**
    * Provide per-locale values for System Dialog prompts such as Permissions Boxes, and create Localizable.strings file to localize (for example) push notifications. Platform-specific locale strings should be nested under `ios` and `android` keys.
