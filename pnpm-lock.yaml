@@ -224,6 +224,9 @@ catalogs:
     prettier:
       specifier: ^3.8.3
       version: 3.8.3
+    react:
+      specifier: 19.3.0
+      version: 19.3.0
     react-dom:
       specifier: 19.3.0
       version: 19.3.0
@@ -2463,7 +2466,7 @@ importers:
         specifier: ^1.59.0
         version: 1.59.0
       react:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       react-refresh:
         specifier: 'catalog:'
@@ -2900,7 +2903,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.4
       react:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       react-dom:
         specifier: 'catalog:'
@@ -3812,7 +3815,7 @@ importers:
         specifier: 'catalog:'
         version: 3.8.3
       react:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       react-native:
         specifier: 0.88.0-rc.1
@@ -3867,7 +3870,7 @@ importers:
         specifier: 'catalog:'
         version: 3.8.3
       react:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
 
   packages/eslint-plugin-expo:
@@ -4001,7 +4004,7 @@ importers:
         specifier: 'catalog:'
         version: 8.0.4
       react:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       react-dom:
         specifier: 'catalog:'
@@ -4737,7 +4740,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       react:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       react-native:
         specifier: 0.88.0-rc.1
