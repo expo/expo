@@ -71,7 +71,11 @@
     self->_regionStates = regionStates;
 
     locationManager.delegate = self;
-    locationManager.allowsBackgroundLocationUpdates = YES;
+    // Region monitoring does not need the "location" background mode, but Core Location throws
+    // when `allowsBackgroundLocationUpdates` is set and that mode is missing from Info.plist.
+    if ([self.class hasLocationBackgroundMode]) {
+      locationManager.allowsBackgroundLocationUpdates = YES;
+    }
     locationManager.pausesLocationUpdatesAutomatically = NO;
 
     for (NSDictionary *regionDict in regions) {
@@ -205,6 +209,12 @@
   CLLocationDegrees latitude = [dict[@"latitude"] doubleValue];
   CLLocationDegrees longitude = [dict[@"longitude"] doubleValue];
   return CLLocationCoordinate2DMake(latitude, longitude);
+}
+
++ (BOOL)hasLocationBackgroundMode
+{
+  NSArray *backgroundModes = [[NSBundle mainBundle] infoDictionary][@"UIBackgroundModes"];
+  return [backgroundModes containsObject:@"location"];
 }
 
 + (BOOL)boolValueFrom:(id)pointer defaultValue:(BOOL)defaultValue
