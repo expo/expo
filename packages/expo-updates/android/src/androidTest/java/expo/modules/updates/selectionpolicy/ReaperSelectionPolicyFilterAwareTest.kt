@@ -175,7 +175,9 @@ class ReaperSelectionPolicyFilterAwareTest {
     val launchedUpdate = createUpdate(7, branchName = "rollout")
     val input = listOf(updates[3], updates[0], launchedUpdate, updates[5], updates[2], updates[4], updates[1])
     val deleted = ReaperSelectionPolicyFilterAware(4).selectUpdatesToDelete(
-      input, launchedUpdate, JSONObject("{\"branchname\":\"rollout\"}")
+      input,
+      launchedUpdate,
+      JSONObject("{\"branchname\":\"rollout\"}")
     )
     Assert.assertEquals(listOf(updates[0], updates[2], updates[1]), deleted)
     Assert.assertEquals(7, input.size)
@@ -192,7 +194,9 @@ class ReaperSelectionPolicyFilterAwareTest {
       createUpdate(0, scopeKey = "other")
     )
     val deleted = ReaperSelectionPolicyFilterAware(3).selectUpdatesToDelete(
-      olderUpdates + protectedUpdates + launchedUpdate, launchedUpdate, null
+      olderUpdates + protectedUpdates + launchedUpdate,
+      launchedUpdate,
+      null
     )
     Assert.assertEquals(olderUpdates.take(2), deleted)
   }
@@ -203,7 +207,9 @@ class ReaperSelectionPolicyFilterAwareTest {
     val nonmatching = (501L..2000L).map { createUpdate(it, branchName = "default") }
     val launchedUpdate = createUpdate(2001)
     val deleted = ReaperSelectionPolicyFilterAware(1001).selectUpdatesToDelete(
-      (matching + nonmatching + launchedUpdate).reversed(), launchedUpdate, JSONObject("{\"branchname\":\"rollout\"}")
+      (matching + nonmatching + launchedUpdate).reversed(),
+      launchedUpdate,
+      JSONObject("{\"branchname\":\"rollout\"}")
     )
     Assert.assertEquals(nonmatching.take(1000).reversed(), deleted)
   }
