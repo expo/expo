@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import type { recoverNotFoundAsync } from '../../worker/url-recovery.ts';
+import { recoverHierarchicalAsync } from './hierarchical.ts';
 import type { EvalCase, EvalResult } from './report.ts';
 
 export type Page = { path: string; title: string; description: string };
@@ -19,16 +20,22 @@ function tokenCount(value: unknown): number | null {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0 ? value : null;
 }
 
-export async function evaluateCurrentAsync(
+export async function evaluateAsync(
   testCase: EvalCase,
   pages: Page[],
   gatewayUrl: string,
-  prices: { input: number; output: number } | null
+  prices: { input: number; output: number } | null,
+  strategy: 'current' | 'hierarchical' = 'current'
 ): Promise<EvalResult> {
   // A fresh module prevents the production cache and failure backoff from contaminating other cases.
-  const { recoverNotFoundAsync: recover } = (await import(
-    `${new URL('../../worker/url-recovery.ts', import.meta.url).href}?eval=${randomUUID()}`
-  )) as typeof import('../../worker/url-recovery.ts');
+  const recover =
+    strategy === 'hierarchical'
+      ? recoverHierarchicalAsync
+      : (
+          (await import(
+            `${new URL('../../worker/url-recovery.ts', import.meta.url).href}?eval=${randomUUID()}`
+          )) as typeof import('../../worker/url-recovery.ts')
+        ).recoverNotFoundAsync;
   const paths = new Set(pages.map(page => page.path));
   const calls: Call[] = [];
   const errors: string[] = [];

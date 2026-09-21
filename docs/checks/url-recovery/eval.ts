@@ -7,13 +7,14 @@ import { setTimeout } from 'node:timers/promises';
 import { parseArgs } from 'node:util';
 
 import { parseRedirects } from '../internal-links/redirects.ts';
-import { evaluateCurrentAsync, type Page } from './current.ts';
+import { evaluateAsync, type Page } from './evaluate.ts';
 import { startGatewayAsync } from './gateway.ts';
 import { renderReport, summarize, type EvalCase, type EvalResult } from './report.ts';
 
 const { values } = parseArgs({
   options: {
     inventory: { type: 'string' },
+    strategy: { type: 'string', default: 'current' },
     cases: { type: 'string', default: 'checks/url-recovery/cases.jsonl' },
     output: {
       type: 'string',
@@ -31,12 +32,13 @@ const { values } = parseArgs({
 if (values.help) {
   console.log(`Usage: pnpm eval:url-recovery --inventory <file-or-url> --account-id <Cloudflare account>
 
-Runs the unchanged production classifier through a live Cloudflare AI binding.
+Runs a URL recovery strategy through a live Cloudflare AI binding.
 Each case starts without cached decisions or backoff; gateway caching is disabled.
 Asset verification uses the inventory, so timings measure classification, not deployed HTTP latency.
 Uses Wrangler login or CLOUDFLARE_API_TOKEN. Inference is billable.
 
   --cases <jsonl>         Dataset (default: checks/url-recovery/cases.jsonl)
+  --strategy <name>       current (unchanged production) or hierarchical (URL sections)
   --output <directory>    New result directory (default: .cache/url-recovery-eval/<timestamp>)
   --split dev|test        Select a dataset split
   --limit <number>        Evaluate the first N selected cases
@@ -51,6 +53,9 @@ summary.json and report.html. All scores are provisional until labels are review
 
 if (!values.inventory || !values['account-id']) {
   throw new Error('--inventory and --account-id are required');
+}
+if (values.strategy !== 'current' && values.strategy !== 'hierarchical') {
+  throw new Error('--strategy must be current or hierarchical');
 }
 if (!/^[\da-f]{32}$/.test(values['account-id'])) {
   throw new Error('Invalid Cloudflare account ID');
@@ -139,13 +144,23 @@ if (!selected.length) {
 }
 const hash = (text: string) => createHash('sha256').update(text).digest('hex');
 const metadata: Record<string, unknown> = {
-  strategy: 'current',
+  strategy: values.strategy,
   startedAt: new Date().toISOString(),
   gitRevision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   dirty: Boolean(execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim()),
   classifierHash: hash(
     await readFile(new URL('../../worker/url-recovery.ts', import.meta.url), 'utf8')
   ),
+  strategyHash: hash(
+    await readFile(
+      new URL(
+        values.strategy === 'current' ? '../../worker/url-recovery.ts' : './hierarchical.ts',
+        import.meta.url
+      ),
+      'utf8'
+    )
+  ),
+  evaluatorHash: hash(await readFile(new URL('./evaluate.ts', import.meta.url), 'utf8')),
   datasetHash: hash(casesText),
   inventoryHash: hash(inventoryText),
   redirectsHash: hash(redirectsText),
@@ -157,7 +172,13 @@ const metadata: Record<string, unknown> = {
   concurrency: 1,
   costKind: prices ? 'estimated' : 'unavailable',
   prices,
-  cache: 'Fresh classifier module per case; AI Gateway skipCache enabled',
+  cache: 'Fresh classifier state per case; AI Gateway skipCache enabled',
+  ...(values.strategy === 'hierarchical'
+    ? {
+        hierarchy:
+          'Greedy URL-segment sections with all descendant titles; flatten at 254 pages; no-match at every level; final confidence >= 0.5; shared 3000 ms inference budget',
+      }
+    : {}),
   timing:
     'Classifier plus local Wrangler proxy and live inference; inventory-backed asset fixture; excludes startup and reporting',
   labels: 'Generated proposals. Unreviewed labels are not ground truth.',
@@ -209,7 +230,7 @@ try {
       if (interrupted) {
         break runs;
       }
-      const result = await evaluateCurrentAsync(testCase, pages, gateway.url, prices);
+      const result = await evaluateAsync(testCase, pages, gateway.url, prices, values.strategy);
       results.push(result);
       await appendFile(
         path.join(output, 'results.jsonl'),
