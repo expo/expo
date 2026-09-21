@@ -7,9 +7,11 @@ onFlowStart:
 - copyTextFrom:
     id: updateID
 - evalScript: ${output.embeddedId = maestro.copiedText; output.downloadedIds = []}
+- tapOn:
+    id: readCachedUpdateIds
 - copyTextFrom:
-    id: maxUpdatesToKeep
-- evalScript: ${output.retentionLimit = Number(maestro.copiedText)}
+    id: cachedUpdates
+- evalScript: ${output.retentionLimit = JSON.parse(maestro.copiedText).maxUpdatesToKeep}
 # The embedded bundle remains in the binary even if its database row is reaped.
 # Four distinct manifests share a bundle, so inspect database IDs rather than asset counts.
 - repeat:
@@ -41,8 +43,8 @@ onFlowStart:
                 id: readCachedUpdateIds
             - evalScript: ${output.api.delay(200)}
             - copyTextFrom:
-                id: cachedUpdateIds
-            - evalScript: ${output.cachedIds = JSON.stringify(JSON.parse(maestro.copiedText).filter(function(id) { return id != output.embeddedId; }).sort())}
+                id: cachedUpdates
+            - evalScript: ${output.cachedIds = JSON.stringify(JSON.parse(maestro.copiedText).updateIds.filter(function(id) { return id != output.embeddedId; }).sort())}
       - assertTrue:
           condition: ${output.cachedIds == output.expectedIds}
           label: Only the newest configured downloaded updates remain

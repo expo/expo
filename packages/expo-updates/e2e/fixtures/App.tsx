@@ -95,7 +95,7 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 }
 
 export default function App() {
-  const [cachedUpdateIds, setCachedUpdateIds] = React.useState<string[]>([]);
+  const [cachedUpdateIds, setCachedUpdateIds] = React.useState<string[] | null>(null);
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
@@ -193,12 +193,14 @@ export default function App() {
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
+    setCachedUpdateIds(null);
     const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
   const handleClearAssetFiles = runBlockAsync(async () => {
     await ExpoUpdatesE2ETestModule.clearInternalAssetsFolderAsync();
+    setCachedUpdateIds(null);
     const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
@@ -277,14 +279,17 @@ export default function App() {
       />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
-      <TestValue
-        testID="maxUpdatesToKeep"
-        value={`${Constants.expoConfig?.updates?.maxUpdatesToKeep ?? 2}`}
-      />
-      <Text testID="cachedUpdateIds" style={styles.logEntriesText}>
-        {JSON.stringify(cachedUpdateIds)}
-      </Text>
-      <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      {/* Reuse this row so startup diagnostics still fit on smaller emulators. */}
+      {cachedUpdateIds ? (
+        <Text testID="cachedUpdates" style={styles.logEntriesText}>
+          {JSON.stringify({
+            maxUpdatesToKeep: Constants.expoConfig?.updates?.maxUpdatesToKeep ?? 2,
+            updateIds: cachedUpdateIds,
+          })}
+        </Text>
+      ) : (
+        <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      )}
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
