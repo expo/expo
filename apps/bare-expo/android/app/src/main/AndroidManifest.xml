@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+  <!-- The ML Kit GenAI AARs declare minSdk 26, and expo-ai inherits it. This test app keeps
+       Expo's floor of 24, so the merger needs an override. The attribute is a per-library
+       allowlist, so every library declaring 26 must be named; a future ML Kit bump may add
+       one. Real apps raise their own minSdk instead, as the expo-ai docs tell them to. -->
+  <uses-sdk tools:overrideLibrary="expo.modules.ai,com.google.mlkit.genai.prompt,com.google.mlkit.genai.common" />
   <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
