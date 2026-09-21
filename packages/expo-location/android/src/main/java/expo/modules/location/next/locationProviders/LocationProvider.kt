@@ -3,7 +3,7 @@ package expo.modules.location.next.locationProviders
 import android.app.Activity
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.next.Position
-import kotlin.coroutines.Continuation
+import kotlinx.coroutines.CompletableDeferred
 import kotlin.time.Duration
 
 enum class LocationPriority {
@@ -44,7 +44,11 @@ interface LocationProvider {
   // Prompt user to enable location services.
   // The caller guarantees the location services are turned off, so there is no reason to check the
   // master toggle again. An implementation may still check whether the settings satisfy its own request.
-  suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> = ProviderResult.Unsupported
+  // The user's answer is reported through [promptResult], not the return value. An implementation must
+  // complete it on every path returning Success where no activity result will follow -- when the settings
+  // already satisfy the request, or when launching the prompt failed. Otherwise the module completes it
+  // once the activity result arrives.
+  suspend fun enableLocationServices(activity: Activity, promptResult: CompletableDeferred<Boolean>): ProviderResult<Unit> = ProviderResult.Unsupported
 }
 
 class LocationUnavailableException : CodedException("Location fix is currently unavailable")
