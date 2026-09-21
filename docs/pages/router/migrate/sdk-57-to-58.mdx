@@ -11,7 +11,7 @@ SDK 58 changes how Expo Router builds navigation state and integrates with navig
 Use the following checklist to find the sections that apply to your app:
 
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
-- For web apps, review the [async route defaults](#review-async-route-defaults) and, if using `web.output: "server"`, the [server rendering changes](#review-server-rendering-behavior).
+- For web apps, review the [async route defaults](#review-async-route-defaults), the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"`, and the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
 
@@ -37,6 +37,51 @@ To keep the behavior of `web.output: "server"` from SDK 57 and earlier, set `web
 ```
 
 This combines prerendered HTML with API routes and still requires a [deployed server](/router/web/api-routes/#deployment). To render HTML on each request, keep `web.output: "server"` and follow the [server rendering guide](/router/web/server-rendering/).
+
+### Migrate static page metadata
+
+In SDK 58, apps using `web.output: "static"` without React Server Components use the streaming renderer to generate HTML. Tags rendered through `expo-router/head` are no longer included in the initial static HTML. The `Head` component still updates metadata after JavaScript loads.
+
+Move metadata that must be present in the exported HTML to a `generateMetadata()` export in each route:
+
+<DiffBlock
+  raw={`diff --git a/src/app/about.tsx b/src/app/about.tsx
+--- a/src/app/about.tsx
++++ b/src/app/about.tsx
+@@ -1,14 +1,13 @@
+-import Head from 'expo-router/head';
++import type { Metadata } from 'expo-router/server';
+ import { Text } from 'react-native';
+-
++
++export function generateMetadata(): Metadata {
++  return {
++    title: 'About',
++    description: 'About our app',
++  };
++}
++
+ export default function About() {
+-  return (
+-    <>
+-      <Head>
+-        <title>About</title>
+-        <meta name="description" content="About our app" />
+-      </Head>
+-      <Text>About</Text>
+-    </>
+-  );
++  return <Text>About</Text>;
+ }`}
+/>
+
+`generateMetadata()` can be asynchronous. For static rendering, its first argument is `undefined` and its second argument contains the route parameters. This also applies during development. Server rendering with `web.output: "server"` continues to provide the incoming request.
+
+Metadata is resolved from the matched route, not its layouts. If a layout previously used `Head` for shared metadata, move that metadata into each route's `generateMetadata()` or add shared tags directly to the `<head>` in **src/app/+html.tsx**.
+
+Move any `<html>` or `<body>` attributes previously set through `Head` onto those elements in your [Root HTML component](/router/web/static-rendering/#root-html). For example, set `lang` on `<html>` in **src/app/+html.tsx**.
+
+See [Static rendering: Meta tags](/router/web/static-rendering/#meta-tags) for the current metadata API.
 
 ### Review async route defaults
 
