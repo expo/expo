@@ -129,7 +129,7 @@
     "@types/eslint": "catalog:",
     "@types/execa": "^0.9.0",
     "@types/express": "catalog:",
-    "@types/getenv": "^1.0.0",
+    "@types/getenv": "^1.0.3",
     "@types/klaw-sync": "^6.0.0",
     "@types/node": "catalog:",
     "@types/npm-package-arg": "catalog:",

@@ -106,7 +106,7 @@
     "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "catalog:",
     "@types/babel__generator": "catalog:",
-    "@types/getenv": "^1.0.0",
+    "@types/getenv": "^1.0.3",
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
     "expo-module-scripts": "workspace:*",
