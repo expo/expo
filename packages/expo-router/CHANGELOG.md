@@ -6,9 +6,18 @@
 
 ### 🎉 New features
 
+- Prevent browser unloads on web while `usePreventRemove` is active. ([#50260](https://github.com/expo/expo/pull/50260) by [@Ubax](https://github.com/Ubax))
+- Stabilize async routes on web and enable them by default. Native async routes remain experimental and opt-in. ([#48327](https://github.com/expo/expo/pull/48327) by [@hassankhan](https://github.com/hassankhan))
+- Upgrade react-native-screens to 4.28.0 (by [@Ubax](https://github.com/Ubax)) ([#50328](https://github.com/expo/expo/pull/50328) by [@Ubax](https://github.com/Ubax))
+- Add support for react-native-screens 5.0.0-alpha.3. ([#50330](https://github.com/expo/expo/pull/50330) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
+- Derive browser history on web from router action results in reducer phase. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
+
+- Deprecate `withLayoutContext`. Use `integrateWithRouter` instead. ([#50337](https://github.com/expo/expo/pull/50337) by [@Ubax](https://github.com/Ubax))
 
 ## 58.0.4 — 2026-09-16
 
@@ -103,6 +112,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add a `routePreloaded` navigation event that reports the route affected by each committed preload. ([#49593](https://github.com/expo/expo/pull/49593) by [@Ubax](https://github.com/Ubax))
 - Add `activityEnabled` to navigators and screens to hide deeply nested route content with React Activity. ([#49913](https://github.com/expo/expo/pull/49913) by [@Ubax](https://github.com/Ubax))
 - Support application-defined screen options in custom standard navigators. ([#49984](https://github.com/expo/expo/pull/49984) by [@Ubax](https://github.com/Ubax))
 - Export `createBaseTabProps`, `createNativeStackProps`, `createJSStackProps`, `createJSTabsProps`, `createJSTopTabsProps`, and `createNativeTabsProps` for integrating navigators with Expo Router. ([#49966](https://github.com/expo/expo/pull/49966) by [@Ubax](https://github.com/Ubax))
@@ -135,8 +145,10 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [ios] Fix link previews failing to activate preloaded screens or switch native tabs, including nested stacks and repeated preview openings. ([#49593](https://github.com/expo/expo/pull/49593) by [@Ubax](https://github.com/Ubax))
 - Mark routes after the focused one as preloaded in states returned by the singular `Stack` router. ([#49914](https://github.com/expo/expo/pull/49914) by [@Ubax](https://github.com/Ubax))
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
+- Test not-found routes in navigators. ([#49989](https://github.com/expo/expo/pull/49989) by [@Ubax](https://github.com/Ubax))
 - Test `createProps` dispatch timing. ([#49955](https://github.com/expo/expo/pull/49955) by [@Ubax](https://github.com/Ubax))
 - Re-export missing bottom tab types from `expo-router/js-tabs`. ([#49954](https://github.com/expo/expo/pull/49954) by [@Ubax](https://github.com/Ubax))
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))

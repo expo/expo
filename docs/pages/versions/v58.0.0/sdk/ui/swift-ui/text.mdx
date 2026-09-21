@@ -140,7 +140,7 @@ import {
 
 export default function MixedStylesExample() {
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents>
       <Text>
         This is <Text modifiers={[bold()]}>bold</Text>,{' '}
         <Text modifiers={[italic()]}>italic</Text>, and{' '}

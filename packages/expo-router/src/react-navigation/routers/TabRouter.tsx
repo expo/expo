@@ -4,6 +4,7 @@ import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -11,6 +12,7 @@ import type {
   ParamListBase,
   Route,
   Router,
+  RouterBrowserHistoryAction,
 } from './types';
 
 export type TabActionType =
@@ -310,12 +312,48 @@ function tabRouterExtension({
   TabActionType | CommonNavigationAction,
   TabRouterOptions
 >) {
+  const getBrowserHistoryForAction = (
+    previous: TabNavigationState<ParamListBase>,
+    next: TabNavigationState<ParamListBase>,
+    action: Pick<TabActionType | CommonNavigationAction, 'type'>
+  ): RouterBrowserHistoryAction | undefined => {
+    switch (action.type) {
+      case 'PUSH':
+      case 'NAVIGATE':
+      case 'JUMP_TO':
+        // Selecting another tab is a new browser visit even if tab history removes a duplicate.
+        // For example, Home -> Search -> Home still needs three browser entries.
+        if (
+          (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+          previous.routes[previous.index]?.key !== next.routes[next.index]?.key
+        ) {
+          return { type: 'push' };
+        }
+        break;
+      case 'GO_BACK':
+        break;
+      default:
+        return undefined;
+    }
+    // URL-derived state may have no history yet. Action/focus handling already fills in `next`.
+    // Reconstruct `previous` too, so that initialization is not counted as a new browser visit.
+    return getBrowserHistoryForHistoryChange(
+      ensureStateHistory(previous, backBehavior, initialRouteName),
+      next
+    );
+  };
+
   // TODO: Simplify the action handling in this router.
   const router: Omit<
     Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>,
     'shouldActionChangeFocus' | 'getStateForDeclaredRoutes'
   > = {
     normalizeState: clearFocusedPreloadedRoute,
+
+    getBrowserHistoryForAction,
+
+    getBrowserHistoryForRouteFocus: (previous, next) =>
+      getBrowserHistoryForAction(previous, next, { type: 'JUMP_TO' }),
 
     getStateForRouteFocus(inputState, key) {
       const state = ensureStateHistory(inputState, backBehavior, initialRouteName);

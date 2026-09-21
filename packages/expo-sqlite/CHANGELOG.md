@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.3 — 2026-09-15
 
 ### 🎉 New features

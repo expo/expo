@@ -42,6 +42,8 @@ test.describe(inputDir, () => {
     await page.goBack();
     await expect(page.getByTestId('form-hook')).toBeVisible();
     await expect(page.getByTestId('prevented-count')).toHaveText('2');
+    // The blocked screen stays in the address bar.
+    await expect(page).toHaveURL(/\/form-hook$/);
 
     await page.getByTestId('discard').click();
     await expect(page.getByTestId('index')).toBeVisible();
@@ -52,6 +54,21 @@ test.describe(inputDir, () => {
     await expect(page.getByTestId('prevented-count')).toHaveText('1');
     await page.getByTestId('discard').click();
     await expect(page.getByTestId('index')).toBeVisible();
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('prompts before unloading a protected route', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+    await page.goto(expoStart.url.href);
+    await page.getByTestId('open-hook').click();
+    await expect(page.getByTestId('form-hook')).toBeVisible();
+
+    const dialogPromise = page.waitForEvent('dialog');
+    await page.close({ runBeforeUnload: true });
+    const dialog = await dialogPromise;
+
+    expect(dialog.type()).toBe('beforeunload');
+    await dialog.dismiss();
     expect(pageErrors.all).toEqual([]);
   });
 });

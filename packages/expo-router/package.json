@@ -304,7 +304,7 @@
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.2",
-    "react-native-screens": "^4.27.0",
+    "react-native-screens": "^4.28.0 || ^5.0.0-alpha.3",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "standard-navigation": "^0.0.5"
@@ -330,7 +330,7 @@
     "react-native-pager-view": "^8.0.2",
     "react-native-reanimated": "4.6.0",
     "react-native-safe-area-context": "~5.9.1",
-    "react-native-screens": "^4.27.0",
+    "react-native-screens": "^4.28.0",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.12.2",
@@ -351,7 +351,7 @@
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 5.4.0",
-    "react-native-screens": "^4.27.0",
+    "react-native-screens": "^4.28.0 || ^5.0.0-alpha.3",
     "react-native-web": "*",
     "react-native-worklets": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4 || ~19.3.0"
