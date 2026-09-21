@@ -53,8 +53,6 @@ _This version does not introduce any user-facing changes._
 
 _This version does not introduce any user-facing changes._
 
-- Export the config plugin option types from `expo-router/plugin` so the docs API reference lists them. ([#50442](https://github.com/expo/expo/pull/50442) by [@hassankhan](https://github.com/hassankhan))
-
 ## 58.0.5 — 2026-09-21
 
 ### 🎉 New features
