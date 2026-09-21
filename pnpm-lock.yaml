@@ -4316,7 +4316,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -4526,7 +4526,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -4995,7 +4995,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -5168,7 +5168,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -6197,7 +6197,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -6686,7 +6686,7 @@ importers:
         specifier: 'catalog:'
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
