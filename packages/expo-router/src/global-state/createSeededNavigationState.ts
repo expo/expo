@@ -1,6 +1,7 @@
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
+  isLayoutRouteNode,
   sortRoutesWithInitial,
   type RouteNode,
 } from '../Route';
@@ -87,7 +88,8 @@ export function createSeededNavigationState(
   parentChain: string
 ): NavigationState {
   const initialRouteName = getValidInitialRouteName(routeNode);
-  const routeNames = [...routeNode.children]
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
+  const routeNames = [...(isLayoutRouteNode(routeNode) ? routeNode.children : [])]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
 
@@ -95,7 +97,7 @@ export function createSeededNavigationState(
     targetState,
     routeNames,
     initialRouteName,
-    targetInitialRouteName: routeNode.initialRouteName,
+    targetInitialRouteName: isLayoutRouteNode(routeNode) ? routeNode.initialRouteName : undefined,
     parentChain,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
@@ -123,11 +125,12 @@ function completeExistingState(
     if (route.key === undefined) {
       routesChanged = true;
     }
-    if (!childNode || childNode.children.length === 0) {
+    if (!childNode || !isLayoutRouteNode(childNode) || childNode.children.length === 0) {
       return completeRoute;
     }
 
     const initialRouteName = getValidInitialRouteName(childNode);
+    // TODO(@ubax): Extract layout child sorting into a shared helper.
     const childRouteNames = [...childNode.children]
       .sort(sortRoutesWithInitial(initialRouteName))
       .map((child) => child.route);
@@ -225,7 +228,7 @@ function createSeededState({
     const key = minter.mint(targetRoute.name);
     const childNode = findChildNode(targetRoute.name);
     const childState =
-      childNode && childNode.children.length > 0
+      isLayoutRouteNode(childNode) && childNode.children.length > 0
         ? createSeededNavigationState(
             'state' in targetRoute ? targetRoute.state : undefined,
             childNode,

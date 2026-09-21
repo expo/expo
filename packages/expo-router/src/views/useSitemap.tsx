@@ -1,7 +1,7 @@
 import { use, useMemo } from 'react';
 
 import type { RouteNode } from '../Route';
-import { sortRoutes } from '../Route';
+import { isLayoutRouteNode, isScreenRouteNode, sortRoutes } from '../Route';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { matchDynamicName } from '../matchers';
 import type { Href } from '../types';
@@ -49,14 +49,15 @@ export type SitemapType = {
   children: SitemapType[];
 };
 
+// TODO(@ubax): Extract layout child sorting into a shared helper.
 const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route, parents) => ({
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),
-  isInitial: route.initialRouteName === route.route,
-  isInternal: route.internal ?? false,
+  isInitial: isLayoutRouteNode(route) && route.initialRouteName === route.route,
+  isInternal: isScreenRouteNode(route) && (route.internal ?? false),
   isGenerated: route.generated ?? false,
-  children: [...route.children]
+  children: [...(isLayoutRouteNode(route) ? route.children : [])]
     .sort(sortRoutes)
     .map((child: RouteNode) => mapForRoute(child, routeSegments(route, parents))),
 });
