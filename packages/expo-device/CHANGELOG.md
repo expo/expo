@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added 2026 iPhone models. ([#49924](https://github.com/expo/expo/pull/49924) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
