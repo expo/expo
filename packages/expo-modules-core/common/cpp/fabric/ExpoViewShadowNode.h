@@ -128,6 +128,13 @@ public:
       return;
     }
 
+    // `RNHostView` is a leaf Yoga node, so its Yoga children list stays empty and this node's
+    // children list holds the only strong reference to the hosted content. `replaceChild()` below
+    // releases that reference while raw pointers to the content are still in use, such as the
+    // `oldChild` reference `YogaLayoutableShadowNode::replaceChild()` reads right after. Hold the
+    // content until this method ends.
+    auto const contentKeepAlive = this->getChildren().front();
+
     // Use the same constraint that was used to measure the content, so that the layout is consistent with the measurement
     auto const clonedContent = content->clone({});
     static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(
