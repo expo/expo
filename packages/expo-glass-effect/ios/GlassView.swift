@@ -53,12 +53,13 @@ public final class GlassView: ExpoView {
 
   override public func layoutSubviews() {
     super.layoutSubviews()
-    if !isMounted {
-      if isEffectRenderable {
-        installEffect()
-      } else {
-        waitForVisibility()
-      }
+    guard !isMounted, isGlassEffectAvailable() else {
+      return
+    }
+    if isEffectRenderable {
+      installEffect()
+    } else {
+      waitForVisibility()
     }
   }
 
