@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `Invalid mimeType` error for images with uppercase file extensions, such as `icon.PNG`. ([#50298](https://github.com/expo/expo/pull/50298) by [@tahakocal](https://github.com/tahakocal))
-
 ### 💡 Others
+
+## 0.12.1 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- Fix `Invalid mimeType` error for images with uppercase file extensions, such as `icon.PNG`. ([#50298](https://github.com/expo/expo/pull/50298) by [@tahakocal](https://github.com/tahakocal))
 
 ## 0.12.0 — 2026-09-10
 

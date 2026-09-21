@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
 - [iOS] Added `EmbeddedFingerprint`, which reads the fingerprint a debug build embedded, with `EmbeddedFingerprint.CheckProtocol` carrying the literals of the fingerprint-check exchange. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes

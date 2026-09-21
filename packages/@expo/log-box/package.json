@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "58.0.3",
+  "version": "58.0.4",
   "description": "Error overlay for universal Expo apps.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
   "license": "MIT",

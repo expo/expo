@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.3 — 2026-09-16
 

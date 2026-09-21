@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Resolve the presenting view controller from the foregrounded scene's key window instead of the deprecated `UIApplication.keyWindow`, so `print` and `selectPrinter` keep working in apps that use the UIScene life cycle. ([#50368](https://github.com/expo/expo/pull/50368) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 58.0.1 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Resolve the presenting view controller from the foregrounded scene's key window instead of the deprecated `UIApplication.keyWindow`, so `print` and `selectPrinter` keep working in apps that use the UIScene life cycle. ([#50368](https://github.com/expo/expo/pull/50368) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 58.0.0 — 2026-09-10
 
