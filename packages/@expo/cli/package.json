@@ -160,7 +160,7 @@
     "nock": "^14.0.10",
     "node-html-parser": "^6.1.5",
     "playwright": "^1.59.0",
-    "react": "*",
+    "react": "19.3.0",
     "react-refresh": "^0.14.2",
     "react-test-renderer": "19.3.0",
     "tree-kill": "^1.2.2"
