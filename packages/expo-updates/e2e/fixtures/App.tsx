@@ -95,6 +95,7 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 }
 
 export default function App() {
+  const [cachedUpdateIds, setCachedUpdateIds] = React.useState<string[]>([]);
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
@@ -187,6 +188,10 @@ export default function App() {
     }
   });
 
+  const handleReadCachedUpdateIds = runBlockAsync(async () => {
+    setCachedUpdateIds(await ExpoUpdatesE2ETestModule.readCachedUpdateIdsAsync());
+  });
+
   const handleReadAssetFiles = runBlockAsync(async () => {
     const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
@@ -272,6 +277,13 @@ export default function App() {
       />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
+      <TestValue
+        testID="maxUpdatesToKeep"
+        value={`${Constants.expoConfig?.updates?.maxUpdatesToKeep ?? 2}`}
+      />
+      <Text testID="cachedUpdateIds" style={styles.logEntriesText}>
+        {JSON.stringify(cachedUpdateIds)}
+      </Text>
       <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
@@ -345,6 +357,7 @@ export default function App() {
       {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
+          <TestButton testID="readCachedUpdateIds" onPress={handleReadCachedUpdateIds} />
           <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
           <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
           <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />

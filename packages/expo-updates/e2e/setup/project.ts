@@ -736,6 +736,7 @@ export async function initAsync(
     shouldConfigureCodeSigning = true,
     includeDevClient = false,
     useCustomInit = false,
+    maxUpdatesToKeep,
   }: {
     repoRoot: string;
     runtimeVersion: string;
@@ -752,6 +753,7 @@ export async function initAsync(
     shouldConfigureCodeSigning?: boolean;
     includeDevClient?: boolean;
     useCustomInit?: boolean;
+    maxUpdatesToKeep?: number;
   }
 ) {
   console.log('Creating expo app');
@@ -810,6 +812,9 @@ export async function initAsync(
   // configure app.json
   let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
   appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
+  if (maxUpdatesToKeep !== undefined) {
+    appJson.expo.updates.maxUpdatesToKeep = maxUpdatesToKeep;
+  }
   await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
   // Install node modules with links
