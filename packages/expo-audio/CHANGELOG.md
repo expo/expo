@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read. ([#50327](https://github.com/expo/expo/pull/50327) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Start playback when the item becomes ready if `play()` was called while it was still loading. ([#50467](https://github.com/expo/expo/pull/50467) by [@rmotafreitas](https://github.com/rmotafreitas))
 
 ### 💡 Others
 
