@@ -66,6 +66,23 @@ pnpm maestro:android:debug:build
 ./maestro/updates-server/start.ts
 ```
 
+### Update retention
+
+The enabled test app sets `updates.maxUpdatesToKeep` to `3`. The
+`basic_updateRetention.yml` flow launches four successive updates and checks the
+cached update IDs after each launch. It verifies that the three newest downloaded
+updates survive and the oldest downloaded update is removed. The embedded update
+is excluded from the comparison because its database row may be reaped while its
+bundle remains in the binary. Database reads are exposed only by the E2E fixture modules.
+
+After building the app and generating the test bundles above, run this flow alone
+with:
+
+```bash
+./maestro/maestro-test-executor.sh ./maestro/tests/basic_updateRetention.yml android debug
+# Or use ios instead of android.
+```
+
 ## Updates API test project:
 
 This creates a test project that allows you to exercise the Updates API features manually against EAS. The project is set up to use `expo-channel-name=main` as the EAS update request header.
