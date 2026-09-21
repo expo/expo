@@ -112,6 +112,7 @@ public final class ImageView: ExpoView {
    layout-only commits (e.g. driven by an orientation change round-trip) that give this view
    no other callback. That drops the mask compensation applied in `applyContentPosition`,
    visually shifting the cropped image, so it needs to be re-applied whenever the mask changes.
+   This also covers mask recreation from color appearance changes.
    */
   private var maskObservation: NSKeyValueObservation?
 
@@ -165,15 +166,6 @@ public final class ImageView: ExpoView {
   deinit {
     // Cancel pending requests when the view is deallocated.
     cancelPendingOperation()
-  }
-
-  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    super.traitCollectionDidChange(previousTraitCollection)
-    if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-      // The mask layer we adjusted would be invalidated from `RCTViewComponentView.traitCollectionDidChange`.
-      // After that we have to recalculate the mask layer in `applyContentPosition`.
-      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-    }
   }
 
   // MARK: - Implementation
