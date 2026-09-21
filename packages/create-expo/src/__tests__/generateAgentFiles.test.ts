@@ -4,7 +4,7 @@ import path from 'path';
 
 import { generateAgentFiles } from '../generateAgentFiles';
 
-function readAgentTemplate(fileName: 'AGENTS.md' | 'CLAUDE.md'): string {
+function readAgentTemplate(fileName: 'AGENTS.md'): string {
   return fs.readFileSync(
     path.join(__dirname, '..', '..', 'template', 'agent-files', fileName),
     'utf-8'
@@ -47,13 +47,12 @@ describe(generateAgentFiles, () => {
     expect(content).toBe(readAgentTemplate('AGENTS.md'));
   });
 
-  it('copies CLAUDE.md from the bundled agent templates', async () => {
+  it('does not generate CLAUDE.md when Claude Code is installed', async () => {
     fs.writeFileSync(path.join(homeDir, '.claude.json'), '{}');
 
     await generateAgentFiles(tmpDir);
 
-    const content = fs.readFileSync(path.join(tmpDir, 'CLAUDE.md'), 'utf-8');
-    expect(content).toBe(readAgentTemplate('CLAUDE.md'));
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(false);
   });
 
   it('writes correct content to .claude/settings.json', async () => {
@@ -70,12 +69,10 @@ describe(generateAgentFiles, () => {
   it('skips files that already exist', async () => {
     fs.writeFileSync(path.join(homeDir, '.claude.json'), '{}');
     fs.writeFileSync(path.join(tmpDir, 'AGENTS.md'), 'custom content');
-    fs.writeFileSync(path.join(tmpDir, 'CLAUDE.md'), 'custom claude');
 
     await generateAgentFiles(tmpDir);
 
     expect(fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf-8')).toBe('custom content');
-    expect(fs.readFileSync(path.join(tmpDir, 'CLAUDE.md'), 'utf-8')).toBe('custom claude');
     // .claude/settings.json should still be created since it didn't exist
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
   });
@@ -91,12 +88,12 @@ describe(generateAgentFiles, () => {
     expect(fs.statSync(path.join(tmpDir, '.claude')).isDirectory()).toBe(true);
   });
 
-  it('generates Claude files when global .claude directory exists', async () => {
+  it('generates only Claude settings when global .claude directory exists', async () => {
     fs.mkdirSync(path.join(homeDir, '.claude'));
 
     await generateAgentFiles(tmpDir);
 
-    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(false);
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
   });
 });
