@@ -89,7 +89,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.0-rc.1",
-    "react-native-web": "^0.21.0",
+    "react-native-web": "~0.21.2",
     "rimraf": "^6.1.2"
   },
   "peerDependencies": {
