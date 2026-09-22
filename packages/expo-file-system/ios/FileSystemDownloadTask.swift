@@ -398,7 +398,7 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
       promise.resolve(resolvedUrl)
     } catch {
       promise.reject(
-        UnableToDownloadException("Failed to move downloaded file: \(error.localizedDescription)")
+        UnableToDownloadException("Failed to move downloaded file: \(describeDownloadError(error))")
       )
     }
   }
@@ -422,6 +422,6 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
       return
     }
 
-    promise.reject(UnableToDownloadException(error.localizedDescription))
+    promise.reject(UnableToDownloadException(describeDownloadError(error)))
   }
 }

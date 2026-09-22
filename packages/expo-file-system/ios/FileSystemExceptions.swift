@@ -13,6 +13,17 @@ internal final class UnableToDownloadException: GenericException<String> {
   }
 }
 
+/// Localized descriptions vary by device language; append `[domain:code]` (and the
+/// underlying error, when present) so JS can classify the fault without matching prose.
+internal func describeDownloadError(_ error: Error) -> String {
+  let nsError = error as NSError
+  var description = "\(error.localizedDescription) [\(nsError.domain):\(nsError.code)]"
+  if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
+    description += " [\(underlying.domain):\(underlying.code)]"
+  }
+  return description
+}
+
 internal final class UnableToWriteBase64DataException: GenericException<String> {
   override var reason: String {
     "Unable to write base64 data to a file: \(param)"
