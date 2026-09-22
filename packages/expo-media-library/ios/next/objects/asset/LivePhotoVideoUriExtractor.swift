@@ -21,7 +21,6 @@ class LivePhotoVideoUriExtractor {
   private static func requestLivePhoto(for asset: PHAsset) async throws -> PHLivePhoto? {
     let options = PHLivePhotoRequestOptions()
     options.isNetworkAccessAllowed = true
-    options.deliveryMode = .highQualityFormat
     return try await PHImageManager.default().requestLivePhoto(for: asset, options: options)
   }
 
