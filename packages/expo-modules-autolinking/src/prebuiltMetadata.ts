@@ -322,6 +322,37 @@ function warnUnreadableAutolinkWhen(
   );
 }
 
+/** The spm.config.json product keys an entry's optional fields are read from. */
+interface SpmConfigProduct {
+  sourceOnly?: unknown;
+  platforms?: unknown;
+  spmPackages?: unknown;
+  autolinkWhen?: unknown;
+}
+
+/** The optional fields internal and external entries share, each present only
+ * where the product declares something this can read. */
+function productFields(
+  product: SpmConfigProduct,
+  podName: string,
+  configPath: string
+): Pick<
+  PrebuiltMetadataEntry,
+  'sourceOnly' | 'iosDeploymentTarget' | 'spmDependencies' | 'spmPackages' | 'autolinkWhen'
+> {
+  const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
+  const spmDependencies = readSpmDependencies(product.spmPackages);
+  const spmPackages = readSpmPackages(product.spmPackages);
+  const autolinkWhen = readAutolinkWhen(product.autolinkWhen, podName, configPath);
+  return {
+    ...(product.sourceOnly === true && { sourceOnly: true }),
+    ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
+    ...(spmDependencies.length > 0 && { spmDependencies }),
+    ...(spmPackages.length > 0 && { spmPackages }),
+    ...(autolinkWhen != null && { autolinkWhen }),
+  };
+}
+
 function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: string) {
   const configPath = path.join(packageRoot, 'spm.config.json');
   const config = readJsonFile(configPath);
@@ -342,21 +373,13 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
       if (podName == null) {
         continue;
       }
-      const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
-      const spmDependencies = readSpmDependencies(product.spmPackages);
-      const spmPackages = readSpmPackages(product.spmPackages);
-      const autolinkWhen = readAutolinkWhen(product.autolinkWhen, podName, configPath);
       entries[podName] = {
         type: 'internal',
         npmPackage,
         packageRoot,
         podspecDir: resolvePodspecDir(packageRoot, podName),
         productName: product.name || podName,
-        ...(product.sourceOnly === true && { sourceOnly: true }),
-        ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
-        ...(spmDependencies.length > 0 && { spmDependencies }),
-        ...(spmPackages.length > 0 && { spmPackages }),
-        ...(autolinkWhen != null && { autolinkWhen }),
+        ...productFields(product, podName, configPath),
       };
     }
   } catch (error) {
@@ -393,21 +416,13 @@ async function scanExternalConfigsAsync(
         if (podName == null) {
           continue;
         }
-        const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
-        const spmDependencies = readSpmDependencies(product.spmPackages);
-        const spmPackages = readSpmPackages(product.spmPackages);
-        const autolinkWhen = readAutolinkWhen(product.autolinkWhen, podName, file.path);
         entries[podName] = {
           type: 'external',
           npmPackage,
           packageRoot,
           podspecDir: packageRoot,
           productName: product.name || podName,
-          ...(product.sourceOnly === true && { sourceOnly: true }),
-          ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
-          ...(spmDependencies.length > 0 && { spmDependencies }),
-          ...(spmPackages.length > 0 && { spmPackages }),
-          ...(autolinkWhen != null && { autolinkWhen }),
+          ...productFields(product, podName, file.path),
         };
       }
     } catch (error) {
