@@ -685,7 +685,7 @@ function spmProductDependency(pkg) {
 
 /**
  * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources, on
- * the deployment floor the plugin read from the module's podspec.
+ * the deployment floor the plugin read from the prebuilt-metadata document.
  */
 function renderPureSwiftManifest(
   product,

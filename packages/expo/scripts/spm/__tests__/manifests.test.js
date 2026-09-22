@@ -956,7 +956,7 @@ describe('deployment target', () => {
     ).toContain('platforms: [.iOS(.v15)],');
   });
 
-  it('takes the pure-Swift floor the plugin read from the podspec', () => {
+  it('takes the pure-Swift floor the plugin read from the prebuilt-metadata document', () => {
     expect(
       renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces', [], '16.4')
     ).toContain('platforms: [.iOS("16.4")],');

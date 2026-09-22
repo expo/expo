@@ -306,6 +306,16 @@ describe('the Podfile properties', () => {
     return file;
   };
 
+  /** The error the reader refuses `file` with. */
+  const refusalFor = (file) => {
+    try {
+      readPodfileProperties(file);
+    } catch (error) {
+      return error;
+    }
+    throw new Error(`${file} was read as properties instead of being refused`);
+  };
+
   it('are the properties the file declares', () => {
     const file = propertiesFile(
       'app',
@@ -326,20 +336,50 @@ describe('the Podfile properties', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
-  it('are empty with a warning when the file is not valid JSON', () => {
-    const file = propertiesFile('malformed', '{ "expo.jsEngine": ');
+  // A file that vanished between `resolveAppTarget` finding it and this read is
+  // the same situation as an app that never ran CocoaPods, not a broken file.
+  it('are empty and silent when the file is not there', () => {
+    const file = path.join(tmp, 'vanished', 'Podfile.properties.json');
+    fs.mkdirSync(path.dirname(file), { recursive: true });
     expect(readPodfileProperties(file)).toEqual({});
-    expect(warnings()).toContain(file);
-    expect(warnings()).toContain('every property reads as unset');
-    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).not.toHaveBeenCalled();
   });
 
-  it('are empty with a warning when the file cannot be read', () => {
+  // The reader is handed whatever a caller derived, and a path naming no file is
+  // the app that has none — never a failure.
+  it('are empty and silent for a path that names no file', () => {
+    for (const input of [undefined, null, '', {}, []]) {
+      expect(readPodfileProperties(input)).toEqual({});
+    }
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  // The namespace is what makes a failed sync attributable to this plugin, and a
+  // stop is not one of this file's warnings however it is worded.
+  it('fail the sync with a namespaced error rather than a warning', () => {
+    const { message } = refusalFor(propertiesFile('namespaced', 'null'));
+    expect(message.startsWith('[expo-spm-plugin] ')).toBe(true);
+    expect(message).not.toContain('WARNING');
+    expect(message).toContain('leave each gated product to its own default');
+    expect(message).toContain('npx react-native spm update');
+  });
+
+  it('fail the sync when the file is not valid JSON', () => {
+    const file = propertiesFile('malformed', '{ "expo.jsEngine": ');
+    const error = refusalFor(file);
+    expect(error.message).toContain(file);
+    expect(error.message).toContain(error.cause.message);
+    expect(error.cause).toBeInstanceOf(Error);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('fail the sync when the file cannot be read', () => {
     const directory = path.join(tmp, 'unreadable', 'Podfile.properties.json');
     fs.mkdirSync(directory, { recursive: true });
-    expect(readPodfileProperties(directory)).toEqual({});
-    expect(warnings()).toContain(directory);
-    expect(warn).toHaveBeenCalledTimes(1);
+    const error = refusalFor(directory);
+    expect(error.message).toContain(directory);
+    expect(error.message).toContain(error.cause.message);
+    expect(error.cause.code).toBe('EISDIR');
   });
 
   // CocoaPods writes an object; anything else is a file some other tool clobbered.
@@ -348,29 +388,31 @@ describe('the Podfile properties', () => {
     ['"hermes"', 'a string'],
     ['17', 'a number'],
     ['null', 'null'],
-  ])('are empty with a warning when the file holds %s instead of an object', (contents, held) => {
+  ])('fail the sync when the file holds %s instead of an object', (contents, held) => {
     const file = propertiesFile(`not-an-object-${encodeURIComponent(contents)}`, contents);
-    expect(readPodfileProperties(file)).toEqual({});
-    expect(warnings()).toContain(file);
-    expect(warnings()).toContain(`it holds ${held}, not an object`);
-    expect(warn).toHaveBeenCalledTimes(1);
+    const error = refusalFor(file);
+    expect(error.message).toContain(file);
+    expect(error.message).toContain(`it holds ${held}, not an object`);
+    expect(error.cause).toBeUndefined();
   });
 
-  // The warning describes the payload's type and never renders the payload: a
+  // The error describes the payload's type and never renders the payload: a
   // structure this deep parses fine and then overflows the stack in
-  // `JSON.stringify`, which would make a bad properties file fail the build.
-  it('are empty with a warning for a payload no one can print', () => {
+  // `JSON.stringify`, which would replace the diagnostic with a stack overflow.
+  it('fail the sync for a payload no one can print', () => {
     const depth = 50_000;
     const file = propertiesFile('too-deep', '['.repeat(depth) + ']'.repeat(depth));
-    expect(readPodfileProperties(file)).toEqual({});
-    expect(warnings()).toContain('it holds an array, not an object');
-    expect(warn).toHaveBeenCalledTimes(1);
+    expect(refusalFor(file).message).toContain('it holds an array, not an object');
   });
 
-  // A broken properties file must never be the reason a build stops.
-  it('never throws, whatever it is handed', () => {
-    for (const input of [undefined, null, '', {}, []]) {
-      expect(() => readPodfileProperties(input)).not.toThrow();
+  // An unset property leaves its gate at that gate's own default, so no fallback
+  // is neutral: a clobbered file read as no properties links or drops products
+  // against the app's configuration, silently.
+  it('refuse every unusable file rather than fall back to no properties', () => {
+    for (const contents of ['{ "expo.jsEngine": ', '[]', '"hermes"', '17', 'null', 'true']) {
+      const file = propertiesFile(`unusable-${encodeURIComponent(contents)}`, contents);
+      expect(() => readPodfileProperties(file)).toThrow('could not be read as Podfile properties');
     }
+    expect(warn).not.toHaveBeenCalled();
   });
 });

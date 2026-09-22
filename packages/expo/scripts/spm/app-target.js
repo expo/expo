@@ -196,8 +196,11 @@ function resolveAppTarget(appRoot) {
  * are linked at all (see autolink-gate.js). CocoaPods reads the same file from
  * the installation root in `precompiled_modules.rb#read_podfile_properties`.
  *
- * A file nobody can make sense of yields no properties rather than an error:
- * every gate then reads as unset, which is what an app without the file gets.
+ * A file that is there and cannot be used is fatal: every gate then falls to its
+ * own default, so carrying on with no properties would link or drop products
+ * against the app's configuration and say nothing. Only the absence of a file — a
+ * null path, or ENOENT — yields no properties silently, which is what an app
+ * without one gets anyway.
  *
  * @param propertiesPath `resolveAppTarget().podfilePropertiesPath`, or null.
  */
@@ -208,19 +211,20 @@ function readPodfileProperties(propertiesPath) {
     contents = fs.readFileSync(propertiesPath, 'utf8');
   } catch (error) {
     // Having no such file is the common case for an app that never ran CocoaPods.
-    if (error.code !== 'ENOENT') warnUnusableProperties(propertiesPath, error.message);
-    return {};
+    if (error.code === 'ENOENT') return {};
+    throw unusablePropertiesError(propertiesPath, error.message, { cause: error });
   }
   let properties;
   try {
     properties = JSON.parse(contents);
   } catch (error) {
-    warnUnusableProperties(propertiesPath, error.message);
-    return {};
+    throw unusablePropertiesError(propertiesPath, error.message, { cause: error });
   }
   if (properties == null || typeof properties !== 'object' || Array.isArray(properties)) {
-    warnUnusableProperties(propertiesPath, `it holds ${describeType(properties)}, not an object`);
-    return {};
+    throw unusablePropertiesError(
+      propertiesPath,
+      `it holds ${describeType(properties)}, not an object`
+    );
   }
   return properties;
 }
@@ -234,12 +238,14 @@ function describeType(payload) {
   return Array.isArray(payload) ? 'an array' : `a ${typeof payload}`;
 }
 
-function warnUnusableProperties(propertiesPath, reason) {
-  console.warn(
-    `${WARNING} ${propertiesPath} could not be read as Podfile properties (${reason}), so every ` +
-      `property reads as unset. A product gated on one is then linked or dropped by that gate's ` +
-      `own default instead of by the app's configuration. Restore the file to a JSON object of ` +
-      'properties, then re-run `npx react-native spm update`.'
+function unusablePropertiesError(propertiesPath, reason, options) {
+  return new Error(
+    `[expo-spm-plugin] ${propertiesPath} could not be read as Podfile properties (${reason}), so ` +
+      `the plugin cannot tell which products this app links. Carrying on would read every property ` +
+      `as unset and leave each gated product to its own default instead of the app's configuration, ` +
+      `which only shows up at runtime, so the sync stops here. Restore the file to a JSON object of ` +
+      'properties, then re-run `npx react-native spm update`.',
+    options
   );
 }
 

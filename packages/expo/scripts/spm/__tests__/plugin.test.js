@@ -2105,7 +2105,10 @@ describe('a product gated by an autolinkWhen condition', () => {
     let podfilePropertiesPath = null;
     if (properties != null) {
       podfilePropertiesPath = path.join(appIosDir, 'Podfile.properties.json');
-      fs.writeFileSync(podfilePropertiesPath, JSON.stringify(properties));
+      fs.writeFileSync(
+        podfilePropertiesPath,
+        typeof properties === 'string' ? properties : JSON.stringify(properties)
+      );
     }
     resolveAppTarget.mockReset();
     resolveAppTarget.mockReturnValue({
@@ -2164,6 +2167,14 @@ describe('a product gated by an autolinkWhen condition', () => {
 
     expect(report).toContain('not supported (0): —');
     expect(logs.error).not.toHaveBeenCalled();
+  });
+
+  // A properties file nobody can read leaves every gate unset, and an unset gate
+  // links the product. Guessing it open would link what this app may exclude.
+  it('fails instead of linking the gated product when the properties file is unusable', () => {
+    expect(() =>
+      run({ metadata: cameraMetadata(barcodeGate), properties: '{ "expo.camera' })
+    ).toThrow(/Podfile\.properties\.json could not be read as Podfile properties/);
   });
 
   // Fail OPEN: a product the document says nothing about carries no gate, and a
