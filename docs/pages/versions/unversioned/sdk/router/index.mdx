@@ -75,7 +75,7 @@ If you are using the [default](/more/create-expo/#--template) template to create
     {
       name: 'asyncRoutes',
       description:
-        'Enable async routes (lazy loading). Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native. Can be a boolean, a string (`"development"` or `"production"`), or an object with platform-specific values (`{ android, ios, web, default }`). Explicit platform values take precedence over `default`. Production async routes are web-only.',
+        'Enable async routes (lazy loading). Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native. Can be an [`AsyncRouteOption`](#asyncrouteoption) or an object with platform-specific [`AsyncRouteOption`](#asyncrouteoption) values (`{ android, ios, web, default }`). Explicit platform values take precedence over `default`. Production async routes are web-only.',
       default: '{ web: true }',
     },
     {
@@ -98,13 +98,13 @@ If you are using the [default](/more/create-expo/#--template) template to create
     {
       name: 'redirects',
       description:
-        'An array of static redirect rules. Each rule should have `source`, `destination`, and optionally `permanent` (defaults to `false`) and `methods` (HTTP methods to redirect).',
+        'An array of static redirect rules. Each rule is a [`RedirectConfig`](#redirectconfig) with `source`, `destination`, and optionally `permanent` (defaults to `false`) and `methods` (HTTP methods to redirect).',
       default: 'undefined',
     },
     {
       name: 'rewrites',
       description:
-        'An array of static rewrite rules. Each rule should have `source`, `destination`, and optionally `methods` (HTTP methods to rewrite).',
+        'An array of static rewrite rules. Each rule is a [`RewriteConfig`](#rewriteconfig) with `source`, `destination`, and optionally `methods` (HTTP methods to rewrite).',
       default: 'undefined',
     },
     {
@@ -116,7 +116,7 @@ If you are using the [default](/more/create-expo/#--template) template to create
     {
       name: 'pageHeaders',
       description:
-        "An array of header rules that are set on a specific page's response from the server. Each rule should have `source` and `headers`. Rules only apply to page responses, not API routes or data loaders.",
+        "An array of header rules that are set on a specific page's response from the server. Each rule is a [`PageHeadersConfig`](#pageheadersconfig) with `source` and `headers`. Rules only apply to page responses, not API routes or data loaders.",
       default: 'undefined',
     },
     {

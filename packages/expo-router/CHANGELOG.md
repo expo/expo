@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Expose config plugin types ([#50442](https://github.com/expo/expo/pull/50442) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.5 — 2026-09-21
 
 ### 🎉 New features
