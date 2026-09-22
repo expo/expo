@@ -1,4 +1,6 @@
 export type ChunkingStrategy = 'bitset' | 'legacy';
+export type AsyncModulePath = string | readonly string[];
+export type AsyncModulePaths = Record<string, AsyncModulePath>;
 
 export type SerialAsset = {
   // 'styles.css'
@@ -15,7 +17,7 @@ export type SerialAsset = {
     media?: string;
     isAsync?: boolean;
     modulePaths?: string[];
-    paths?: Record<string, Record<string, string>>;
+    paths?: Record<string, AsyncModulePaths>;
     // React server action reference from the static babel pass of client modules.
     reactServerReferences?: string[];
     // React client reference from the static babel pass.

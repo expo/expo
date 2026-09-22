@@ -479,13 +479,14 @@ describe('metro require', () => {
     expect(artifacts[0].source).toMatch('subtract');
   });
   it(`require.resolveWeak`, async () => {
-    // Basically just bundle splitting...
-    const [[, , graph], artifacts] = await serializeShakingAsync({
-      'index.js': `
+    // Keep the legacy fixture's weak-only target in the graph.
+    const [[, , graph], artifacts] = await serializeShakingAsync(
+      {
+        'index.js': `
           const Math = require.resolveWeak('./math');
           console.log('keep', Math.add(1, 2));
         `,
-      'math.js': `
+        'math.js': `
           module.exports.add = function add(a, b) {
             return subtract(a, b);
           }
@@ -494,7 +495,9 @@ describe('metro require', () => {
             return a - b;
           }
         `,
-    });
+      },
+      { legacyTraverseWeakDependencies: true }
+    );
 
     expectImports(graph, '/app/index.js').toEqual([
       expect.objectContaining({
