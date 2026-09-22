@@ -44,8 +44,6 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
   private boolean mAutoDismiss;
   private String mCategoryId;
   private boolean mSticky;
-  // Written last in writeObject/readObject so Java-serialized payloads persisted before this
-  // field existed still deserialize (readObject catches the OptionalDataException). Keep it last.
   private String mGroup;
 
   protected NotificationContent() {
@@ -371,7 +369,8 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     }
 
     public Builder setGroup(String group) {
-      content.mGroup = group;
+      // An empty group would be nameless. iOS also reports it as null.
+      content.mGroup = group == null || group.isEmpty() ? null : group;
       return this;
     }
 

@@ -40,10 +40,11 @@ class ExpoNotificationBuilderTest {
   }
 
   @Test
-  fun `build sets group and keeps the default alert behavior when content has a group`() = runBlocking {
+  fun `build sets group, a summary-cleanup delete intent, and the default alert behavior when content has a group`() = runBlocking {
     val androidNotification = buildNotification(group = "group-a")
 
     assertEquals("group-a", androidNotification.group)
+    assertNotNull(androidNotification.deleteIntent)
     assertEquals(NotificationCompat.GROUP_ALERT_ALL, NotificationCompat.getGroupAlertBehavior(androidNotification))
   }
 
@@ -53,13 +54,6 @@ class ExpoNotificationBuilderTest {
 
     assertNull(androidNotification.group)
     assertNull(androidNotification.deleteIntent)
-  }
-
-  @Test
-  fun `build sets a delete intent on grouped notifications for summary cleanup`() = runBlocking {
-    val androidNotification = buildNotification(group = "group-a")
-
-    assertNotNull(androidNotification.deleteIntent)
   }
 
   private suspend fun buildNotification(group: String?): android.app.Notification {

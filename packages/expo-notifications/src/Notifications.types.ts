@@ -568,7 +568,7 @@ export type NotificationContentAndroid = {
   /**
    * An identifier used to group related notifications together.
    */
-  threadIdentifier?: string | null;
+  threadIdentifier: string | null;
 };
 
 /**

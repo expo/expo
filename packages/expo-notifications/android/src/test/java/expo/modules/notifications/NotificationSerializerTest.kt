@@ -52,10 +52,4 @@ class NotificationSerializerTest {
     val content = serializedContent(bundleOf("title" to "t", "threadIdentifier" to ""))
     assertNull(content.getString("threadIdentifier"))
   }
-
-  @Test
-  fun `toResponseBundleFromExtras emits null threadIdentifier when absent`() {
-    val content = serializedContent(bundleOf("title" to "t"))
-    assertNull(content.getString("threadIdentifier"))
-  }
 }

@@ -1,6 +1,5 @@
 package expo.modules.notifications.service.delegates
 
-import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
@@ -41,7 +40,7 @@ open class ExpoPresentationDelegate(
     protected const val ANDROID_NOTIFICATION_ID = 0
     internal const val GROUP_SUMMARY_TAG_SUFFIX = ":expo-group-summary"
 
-    // Keeps a summary's (tag, id) from colliding with user notifications, whose identifier becomes the tag
+    // User notifications use their identifier as the tag, so a distinct ID keeps summary (tag, id) pairs unique.
     internal val GROUP_SUMMARY_NOTIFICATION_ID = "expo-group-summary".hashCode()
 
     private fun isGroupSummary(notification: StatusBarNotification): Boolean =
@@ -124,33 +123,30 @@ open class ExpoPresentationDelegate(
 
   internal suspend fun presentNotificationInternal(notification: Notification, behavior: NotificationBehaviorRecord?) {
     val androidNotification = createNotification(notification, behavior)
+    val request = notification.notificationRequest
+    val tag = request.identifier
+    val id = getNotifyId(request)
 
-    // Cleanup reads an activeNotifications snapshot that lags in-flight notify()/cancel() calls,
-    // so all mutations serialize on one lock, and cleanup runs before notify() — a later snapshot
-    // could miss the in-flight post and cancel the fresh summary.
+    // activeNotifications lags in-flight notify()/cancel(), so all mutations share one lock.
+    // Clean up before notify(): a later snapshot could miss the new child and cancel its summary.
     presentationMutex.withLock {
-      // runCatching: a throw would kill the process (unsupervised coroutine)
-      runCatching { cleanUpOrphanedGroupSummaries() }
+      // notify() replaces a notification with the same (tag, id); if that moves it out of its
+      // group, the old group is about to lose a member.
+      val replaced = notificationManager.activeNotifications.firstOrNull { it.tag == tag && it.id == id }
+      val leavesOldGroup = replaced != null && replaced.notification.group != request.content.group
+      runCatching { cleanUpOrphanedGroupSummaries(cancelled = if (leavesOldGroup) setOf(tag to id) else emptySet()) }
         .onFailure { Log.e("expo-notifications", "Failed to clean up group summary notifications.", it) }
 
-      notificationManager.notify(
-        notification.notificationRequest.identifier,
-        getNotifyId(notification.notificationRequest),
-        androidNotification
-      )
+      notificationManager.notify(tag, id, androidNotification)
 
-      notification.notificationRequest.content.group?.let { group ->
-        runCatching { postGroupSummary(group, notification.notificationRequest.identifier, androidNotification) }
+      request.content.group?.let { group ->
+        runCatching { postGroupSummary(group, tag, androidNotification) }
           .onFailure { Log.e("expo-notifications", "Failed to post a group summary notification.", it) }
       }
     }
   }
 
-  /**
-   * Removes the summary orphaned by a dismissal that bypasses this delegate, such as a swipe or
-   * a tap on an auto-cancel notification. The dismissed notification is passed explicitly because
-   * the activeNotifications snapshot may not reflect the system's cancel() yet.
-   */
+  /** For dismissals that bypass this delegate: a swipe or an auto-cancel tap. */
   override fun removeOrphanedGroupSummaries(dismissed: Notification) {
     val request = dismissed.notificationRequest
     runBlocking {
@@ -177,8 +173,8 @@ open class ExpoPresentationDelegate(
   }
 
   private fun postGroupSummary(group: String, childTag: String, childNotification: android.app.Notification) {
-    // Accepted trade-off: the summary follows the last child's channel, so disabling
-    // that channel stops the summary even if other children's channels stay enabled.
+    // Trade-off: the summary uses the last child's channel. Disabling that channel hides
+    // the summary even while siblings' channels stay enabled.
     val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       childNotification.channelId
     } else {
@@ -217,10 +213,7 @@ open class ExpoPresentationDelegate(
     notificationManager.notify("$group$GROUP_SUMMARY_TAG_SUFFIX", GROUP_SUMMARY_NOTIFICATION_ID, summaryNotification)
   }
 
-  /**
-   * @param cancelled (tag, id) pairs whose cancellation is in flight and may not be reflected
-   * in [NotificationManager.getActiveNotifications] yet, because cancel() applies asynchronously.
-   */
+  /** @param cancelled (tag, id) pairs already cancelled but possibly still in the snapshot. */
   private fun cleanUpOrphanedGroupSummaries(cancelled: Set<kotlin.Pair<String?, Int>> = emptySet()) {
     val activeNotifications = notificationManager.activeNotifications
       .filterNot { (it.tag to it.id) in cancelled }
