@@ -64,6 +64,21 @@ sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/<project name>.xcodeproj/proje
 
 Now you can make a debug build of your app which behaves as if it were a release build (but without an embedded update).
 
+### Fail loudly on an invalid state transition
+
+When the updates state machine receives an event that is not allowed from its current state, it
+drops the event and writes a warning to the updates log. To make such a drop stop the app instead --
+for example so an E2E run fails rather than passing unnoticed -- set this environment variable
+before building:
+
+```bash
+export EX_UPDATES_ASSERT_INVALID_STATE=1
+```
+
+On iOS you must reinstall Cocoapods (`npx pod-install` from the top-level project directory) so the
+flag reaches the compiler. On Android the same name also works as a Gradle property, either on the
+command line (`-PEX_UPDATES_ASSERT_INVALID_STATE=true`) or in `gradle.properties`.
+
 # BSPatch and BZip2
 
 expo-updates includes support for applying binary patches to assets.

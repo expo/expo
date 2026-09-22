@@ -1,6 +1,7 @@
 package expo.modules.updates.statemachine
 
 import expo.modules.manifests.core.toMap
+import expo.modules.updates.BuildConfig
 import expo.modules.updates.EnabledUpdatesController
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.logging.UpdatesLogger
@@ -114,16 +115,29 @@ class UpdatesStateMachine(
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: Set<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: setOf()
     if (!allowedEvents.contains(event.type)) {
-      logger.warn(droppedEventWarning(event))
+      reportDroppedEvent(event)
       return false
     }
     val newStateValue = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
     if (!validUpdatesStateValues.contains(newStateValue)) {
-      logger.warn(droppedEventWarning(event))
+      reportDroppedEvent(event)
       return false
     }
     state = newStateValue
     return true
+  }
+
+  /**
+   Records an event the machine cannot process. The drop is always logged, so it is visible through
+   `readLogEntriesAsync` in a shipping app. With EX_UPDATES_ASSERT_INVALID_STATE the drop also
+   throws, so an invalid transition fails an E2E run instead of passing unnoticed.
+   */
+  private fun reportDroppedEvent(event: UpdatesStateEvent) {
+    val message = droppedEventWarning(event)
+    logger.warn(message)
+    if (BuildConfig.EX_UPDATES_ASSERT_INVALID_STATE) {
+      throw AssertionError(message)
+    }
   }
 
   /**

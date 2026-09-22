@@ -435,17 +435,30 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEvent.InternalType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      logger.warn(message: droppedEventWarning(event))
+      reportDroppedEvent(event)
       return false
     }
     let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
     if !validUpdatesStateValues.contains(newStateValue) {
-      logger.warn(message: droppedEventWarning(event))
+      reportDroppedEvent(event)
       return false
     }
     // Successful transition
     state = newStateValue
     return true
+  }
+
+  /**
+   Records an event the machine cannot process. The drop is always logged, so it is visible through
+   `readLogEntriesAsync` in a shipping app. With EX_UPDATES_ASSERT_INVALID_STATE the drop also
+   traps, so an invalid transition fails an E2E run instead of passing unnoticed.
+   */
+  private func reportDroppedEvent(_ event: UpdatesStateEvent) {
+    let message = droppedEventWarning(event)
+    logger.warn(message: message)
+    #if EX_UPDATES_ASSERT_INVALID_STATE
+    preconditionFailure(message)
+    #endif
   }
 
   /**
