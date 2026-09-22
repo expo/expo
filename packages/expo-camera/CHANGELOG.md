@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Import `CoreImage` in `BarcodeUtils`, which relied on another file in the module importing it. ([#50479](https://github.com/expo/expo/pull/50479) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-21
