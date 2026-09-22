@@ -79,6 +79,10 @@ android {
     compose true
   }
 
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
+
   defaultConfig {
     versionCode 1
     versionName "1.0"
@@ -160,6 +164,8 @@ dependencies {
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
+  testImplementation 'io.mockk:mockk:1.13.11'
 
   api 'org.webkit:android-jsc:r250231' // needs to be before react-native
 
