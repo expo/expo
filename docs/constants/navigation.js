@@ -429,7 +429,6 @@ export const general = [
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/controlled-components.mdx'),
       ]),
-      makeSection('Expo UI', [makePage('guides/expo-ui-jetpack-compose/extending.mdx')]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
         makePage('troubleshooting/application-has-not-been-registered.mdx'),
