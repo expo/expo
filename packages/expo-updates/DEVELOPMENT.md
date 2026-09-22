@@ -72,7 +72,7 @@ for example so an E2E run fails rather than passing unnoticed -- set this enviro
 before building:
 
 ```bash
-export EX_UPDATES_ASSERT_INVALID_STATE=1
+export EX_UPDATES_ASSERT_INVALID_STATE=true
 ```
 
 On iOS you must reinstall Cocoapods (`npx pod-install` from the top-level project directory) so the
