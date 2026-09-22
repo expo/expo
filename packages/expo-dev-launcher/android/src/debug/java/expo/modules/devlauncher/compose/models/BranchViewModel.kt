@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.compose.models
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.DevLauncherController
@@ -23,7 +22,9 @@ sealed interface BranchAction {
 
 data class BranchState(
   val updates: List<Update> = emptyList(),
-  val isLoading: Boolean = false
+  val isLoading: Boolean = false,
+  val hasMore: Boolean = false,
+  val loadingUpdateId: String? = null
 )
 
 class BranchViewModel(private val branchName: String) : ViewModel() {
@@ -31,7 +32,7 @@ class BranchViewModel(private val branchName: String) : ViewModel() {
   private val graphQLService = inject<GraphQLService>()
   private val launcher = inject<DevLauncherController>()
 
-  private val hasMore = mutableStateOf(true)
+  private var hasMore = true
 
   private var _state = MutableStateFlow(
     BranchState(
@@ -41,7 +42,7 @@ class BranchViewModel(private val branchName: String) : ViewModel() {
   )
 
   val state = _state.onStart {
-    hasMore.value = true
+    hasMore = true
     loadMoreUpdates()
   }.stateIn(
     scope = viewModelScope,
@@ -50,7 +51,7 @@ class BranchViewModel(private val branchName: String) : ViewModel() {
   )
 
   private suspend fun loadMoreUpdates() {
-    if (!hasMore.value) {
+    if (!hasMore) {
       return
     }
 
@@ -60,7 +61,7 @@ class BranchViewModel(private val branchName: String) : ViewModel() {
 
     val appId = updateConfiguration.appId
     val runtimeVersion = updateConfiguration.runtimeVersion
-    val limit = 50
+    val limit = 20
 
     val updates = graphQLService.fetchUpdates(
       appId = appId,
@@ -79,22 +80,36 @@ class BranchViewModel(private val branchName: String) : ViewModel() {
       )
     } ?: emptyList()
 
-    hasMore.value = uiUpdates.size == limit
+    hasMore = uiUpdates.size == limit
 
     _state.value = _state.value.copy(
       updates = _state.value.updates + uiUpdates,
-      isLoading = false
+      isLoading = false,
+      hasMore = hasMore
     )
   }
 
   fun onAction(action: BranchAction) {
     when (action) {
-      BranchAction.LoadMoreUpdates -> viewModelScope.launch { loadMoreUpdates() }
+      BranchAction.LoadMoreUpdates -> {
+        if (_state.value.isLoading) {
+          return
+        }
+        viewModelScope.launch { loadMoreUpdates() }
+      }
       is BranchAction.OpenUpdate -> {
+        if (_state.value.loadingUpdateId != null) {
+          return
+        }
+        _state.value = _state.value.copy(loadingUpdateId = action.update.id)
         launcher.coroutineScope.launch {
-          launcher.loadApp(
-            formatUpdateUrl(action.update.permalink, action.update.name)
-          )
+          try {
+            launcher.loadApp(
+              formatUpdateUrl(action.update.permalink, action.update.name)
+            )
+          } finally {
+            _state.value = _state.value.copy(loadingUpdateId = null)
+          }
         }
       }
     }

@@ -29,22 +29,52 @@ class Queries {
     return response.data.meUserActor
   }
 
+  /// A single page of branches, along with the cursor needed to request the page after it.
+  struct BranchesPage {
+    let branches: [Branch]
+    let endCursor: String?
+    let hasNextPage: Bool
+  }
+
+  /// Fetches a page of branches, each with its newest update compatible with `runtimeVersion`.
+  /// Pass `searchTerm` to have the server filter branches by name.
   static func getBranches(
     appId: String,
-    offset: Int,
-    limit: Int,
+    first: Int,
+    after: String?,
+    searchTerm: String?,
     runtimeVersion: String,
     platform: String
-  ) async throws -> [Branch] {
+  ) async throws -> BranchesPage {
     let query = """
-    query getBranches($appId: String!, $offset: Int!, $limit: Int!, $runtimeVersion: String!, $platform: AppPlatform!) {
+    query getBranches(
+      $appId: String!
+      $first: Int!
+      $after: String
+      $filter: BranchFilterInput
+      $runtimeVersion: String!
+      $platform: AppPlatform!
+    ) {
       app {
         byId(appId: $appId) {
-          updateBranches(offset: $offset, limit: $limit) {
-            id
-            name
-            compatibleUpdates: updates(offset: 0, limit: 1, filter: { runtimeVersions: [$runtimeVersion], platform: $platform }) {
-              id
+          branchesPaginated(first: $first, after: $after, filter: $filter) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              cursor
+              node {
+                id
+                name
+                compatibleUpdates: updates(offset: 0, limit: 1, filter: { runtimeVersions: [$runtimeVersion], platform: $platform }) {
+                  id
+                  message
+                  runtimeVersion
+                  createdAt
+                  manifestPermalink
+                }
+              }
             }
           }
         }
@@ -52,16 +82,29 @@ class Queries {
     }
     """
 
-    let variables: [String: Any] = [
+    var variables: [String: Any] = [
       "appId": appId,
-      "offset": offset,
-      "limit": limit,
+      "first": first,
       "runtimeVersion": runtimeVersion,
       "platform": platform
     ]
 
+    if let after {
+      variables["after"] = after
+    }
+
+    if let searchTerm {
+      variables["filter"] = ["searchTerm": searchTerm]
+    }
+
     let response: BranchesResponse = try await APIClient.shared.request(query, variables: variables)
-    return response.data.app.byId.updateBranches
+    let connection = response.data.app.byId.branchesPaginated
+
+    return BranchesPage(
+      branches: connection.branches,
+      endCursor: connection.pageInfo.endCursor,
+      hasNextPage: connection.pageInfo.hasNextPage
+    )
   }
 
   static func getChannels(appId: String) async throws -> [Channel] {
@@ -97,10 +140,9 @@ class Queries {
   static func getUpdatesForBranch(
     appId: String,
     branchName: String,
-    page: Int,
-    pageSize: Int
-  ) async throws -> (updates: [Update], page: Int) {
-    let offset = (page - 1) * pageSize
+    offset: Int,
+    limit: Int
+  ) async throws -> [Update] {
     let platform = "IOS"
 
     let query = """
@@ -131,20 +173,12 @@ class Queries {
       "appId": appId,
       "branchName": branchName,
       "offset": offset,
-      "limit": pageSize,
+      "limit": limit,
       "platform": platform
     ]
 
     let response: UpdatesResponse = try await APIClient.shared.request(query, variables: variables)
 
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-
-    let outputFormatter = DateFormatter()
-    outputFormatter.dateFormat = "MMMM d, yyyy, h:mma"
-
-    let updates = response.data.app.byId.updateBranchByName.updates
-
-    return (updates: updates, page: page)
+    return response.data.app.byId.updateBranchByName.updates
   }
 }

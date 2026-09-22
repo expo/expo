@@ -1,3 +1,4 @@
+import Foundation
 import Network
 
 struct DiscoveryResult {
@@ -5,11 +6,46 @@ struct DiscoveryResult {
   let endpoint: NWEndpoint
 }
 
-struct BranchWithUpdates {
-  let id: String
-  let name: String
-  let updates: [Update]
-  let hasCompatibleUpdates: Bool
+/// Tracks offset-based pagination, used by GraphQL fields that page with `offset`/`limit`.
+struct OffsetPaginationState {
+  let pageSize: Int
+  private(set) var offset = 0
+  private(set) var hasMore = true
+
+  init(pageSize: Int) {
+    self.pageSize = pageSize
+  }
+
+  mutating func reset() {
+    offset = 0
+    hasMore = true
+  }
+
+  mutating func didReceivePage(itemCount: Int) {
+    offset += itemCount
+    hasMore = itemCount == pageSize
+  }
+}
+
+/// Tracks cursor-based pagination, used by GraphQL connections that page with `first`/`after`.
+struct CursorPaginationState {
+  let pageSize: Int
+  private(set) var cursor: String?
+  private(set) var hasMore = true
+
+  init(pageSize: Int) {
+    self.pageSize = pageSize
+  }
+
+  mutating func reset() {
+    cursor = nil
+    hasMore = true
+  }
+
+  mutating func didReceivePage(endCursor: String?, hasNextPage: Bool) {
+    cursor = endCursor
+    hasMore = hasNextPage
+  }
 }
 
 struct DevServer: Hashable {
