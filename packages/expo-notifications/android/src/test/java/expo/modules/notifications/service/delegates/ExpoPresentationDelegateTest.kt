@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.app.NotificationCompat
 import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
@@ -103,13 +104,38 @@ class ExpoPresentationDelegateTest {
   }
 
   @Test
-  fun `removeOrphanedGroupSummaries returns without the settle-delay when no summary exists`() {
-    present(identifier = "no-group", group = null)
+  fun `removeOrphanedGroupSummaries cancels the summary of a child whose dismissal is still in flight`() {
+    val child = present(identifier = "child-1", group = "group-a")
 
-    val elapsed = kotlin.system.measureTimeMillis { delegate.removeOrphanedGroupSummaries() }
+    // The system has not applied the cancel yet, so the child is still in the snapshot.
+    delegate.removeOrphanedGroupSummaries(child)
 
-    assertTrue("expected early return, took ${elapsed}ms", elapsed < 1000)
-    assertEquals(setOf("no-group"), activeTags())
+    assertEquals(setOf("child-1"), activeTags())
+  }
+
+  @Test
+  fun `removeOrphanedGroupSummaries keeps the summary while siblings remain`() {
+    val child = present(identifier = "child-1", group = "group-a")
+    present(identifier = "child-2", group = "group-a")
+    systemNotificationManager.cancel("child-1", 0)
+
+    delegate.removeOrphanedGroupSummaries(child)
+
+    assertEquals(setOf("child-2", "group-a$GROUP_SUMMARY_TAG_SUFFIX"), activeTags())
+  }
+
+  @Test
+  fun `group summary lists the titles of its children`() {
+    present(identifier = "child-1", group = "group-a", title = "First")
+    present(identifier = "child-2", group = "group-a", title = "Second")
+
+    val summary = systemNotificationManager.activeNotifications.single { it.tag == "group-a$GROUP_SUMMARY_TAG_SUFFIX" }.notification
+
+    assertEquals(context.applicationInfo.loadLabel(context.packageManager), NotificationCompat.getContentTitle(summary))
+    assertEquals(
+      setOf("First", "Second"),
+      summary.extras.getCharSequenceArray(android.app.Notification.EXTRA_TEXT_LINES)!!.map { it.toString() }.toSet()
+    )
   }
 
   @Test
@@ -124,10 +150,12 @@ class ExpoPresentationDelegateTest {
 
   private fun activeTags(): Set<String> = systemNotificationManager.activeNotifications.map { it.tag }.toSet()
 
-  private fun present(identifier: String, group: String?) {
-    val content = NotificationContent.Builder().setTitle("Title").setText("Text").setGroup(group).build()
+  private fun present(identifier: String, group: String?, title: String = "Title"): Notification {
+    val content = NotificationContent.Builder().setTitle(title).setText("Text").setGroup(group).build()
     val request = NotificationRequest(identifier, content, StubTrigger())
-    runBlocking { delegate.presentNotificationInternal(Notification(request), null) }
+    val notification = Notification(request)
+    runBlocking { delegate.presentNotificationInternal(notification, null) }
+    return notification
   }
 
   private class StubTrigger : NotificationTrigger {
