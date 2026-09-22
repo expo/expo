@@ -64,7 +64,7 @@ jobs:
         id: vale-version
         run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
-        uses: vale-cli/vale-action@85f9f7f2c5f449ac0ae5b66662961bae3f77ca6a # 2.1.2
+        uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # 3.0.0
         with:
           version: ${{ steps.vale-version.outputs.version }}
           reporter: github-pr-check
