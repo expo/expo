@@ -185,7 +185,9 @@ export interface ExpoConfig {
      */
     excludeFromBackup?: boolean;
     /**
-     * Number of updates to retain, including the launched update and the newest older updates, preferring those that match the manifest filters. Must be an integer between 2 and 2147483647. Defaults to 2. Embedded updates, updates newer than or at the same commit time as the launched update, and updates from other scopes are not deleted, so the total cache can exceed this value.
+     * Number of updates to keep, including the one currently running. For example, 3 keeps the running update and up to two older updates. Updates that match the manifest filters take priority, with the newest updates kept first. Must be an integer between 2 and 2147483647. Defaults to 2.
+     *
+     * The total number of cached updates can exceed this value. Cleanup also keeps the update bundled with the app, updates with the same or a newer commit time than the running update, and updates from other scopes.
      */
     maxUpdatesToKeep?: number;
   };
