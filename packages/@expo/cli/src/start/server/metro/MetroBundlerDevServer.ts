@@ -1292,6 +1292,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     const instanceMetroOptions = {
+      chunkingStrategy: exp.extra?.router?.unstable_chunking === true ? 'bitset' : 'legacy',
       isExporting: !!options.isExporting,
       baseUrl,
       mode,
@@ -1300,7 +1301,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       minify: options.minify,
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
-    };
+    } satisfies Partial<ExpoMetroOptions>;
     this.instanceMetroOptions = instanceMetroOptions;
 
     const parsedOptions = {

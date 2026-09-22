@@ -12,6 +12,7 @@ import * as path from 'path';
 import type { Dependency as ExpoTransformDependency } from '../../../transform-worker/collect-dependencies';
 import type { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
+import type { ChunkingStrategy } from '../../serializerAssets';
 
 export const projectRoot = '/app';
 
@@ -103,6 +104,7 @@ export async function microBundle({
     inlineSourceMaps?: boolean;
     minify?: boolean;
     splitChunks?: boolean;
+    chunkingStrategy?: ChunkingStrategy;
     treeshake?: boolean;
     optimize?: boolean;
     inlineRequires?: boolean;
@@ -266,6 +268,7 @@ export async function microBundle({
               output: options.output,
               includeSourceMaps: options.sourceMaps,
               splitChunks: options.splitChunks,
+              chunkingStrategy: options.chunkingStrategy,
               // NOTE(cedric): exporting mode should always be provided explicitly, but we can't easily do that in the tests
               exporting: !dev,
             }
