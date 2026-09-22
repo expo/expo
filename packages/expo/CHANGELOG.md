@@ -24,6 +24,7 @@
 - [iOS] The SwiftPM autolinking plugin now loads the Expo Swift macro plugin when it compiles a module from source, the way `pod install` does. A module using `@Field`, `@Record` or `@OptimizedFunction` no longer fails to build with "external macro implementation could not be found".
 - [iOS] The SwiftPM autolinking plugin now links the SwiftPM packages a precompiled module bundles, such as expo-image's SDWebImage. It also warns about a precompiled module's pod dependencies that the SwiftPM graph does not provide. ([#50177](https://github.com/expo/expo/pull/50177) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] The SwiftPM autolinking plugin now mirrors the Swift packages a module's checked-in `Package.swift` declares, at both package and target level, so a module such as expo-image resolves `SDWebImage` instead of failing to compile with `no such module`.
+- [iOS] The SwiftPM autolinking plugin now honours a product's `autolinkWhen` condition, so a gated product of a module shipping a checked-in `Package.swift` is linked only when the app's configuration enables it, as `pod install` already does.
 
 ### 💡 Others
 

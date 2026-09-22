@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Publish a product's `autolinkWhen` condition in the prebuilt-metadata document, so consumers other than CocoaPods can apply the same gate.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

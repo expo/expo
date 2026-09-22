@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const { resolveAppTarget } = require('../app-target');
+const { readPodfileProperties, resolveAppTarget } = require('../app-target');
 
 // The real project of apps/minimal-swiftpm: the entitlements derivation reads an
 // Xcode project, so mocking one out would only assert our own fixture back.
@@ -289,5 +289,88 @@ describe('the Podfile properties file', () => {
 
   it('is omitted when the app has none', () => {
     expect(resolveAppTarget(makeApp()).podfilePropertiesPath).toBeNull();
+  });
+});
+
+describe('the Podfile properties', () => {
+  let tmp;
+  beforeAll(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-podfile-properties-'));
+  });
+
+  /** Writes a Podfile.properties.json with `contents` and returns its path. */
+  const propertiesFile = (name, contents) => {
+    const file = path.join(tmp, name, 'Podfile.properties.json');
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, contents);
+    return file;
+  };
+
+  it('are the properties the file declares', () => {
+    const file = propertiesFile(
+      'app',
+      JSON.stringify({ 'expo.jsEngine': 'hermes', 'expo.camera.barcode-scanner-enabled': 'false' })
+    );
+    expect(readPodfileProperties(file)).toEqual({
+      'expo.jsEngine': 'hermes',
+      'expo.camera.barcode-scanner-enabled': 'false',
+    });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  // `resolveAppTarget` reports null for an app that has no such file, which is the
+  // common case and not a problem.
+  it('are empty and silent when the app has no properties file', () => {
+    expect(readPodfileProperties(null)).toEqual({});
+    expect(readPodfileProperties(path.join(tmp, 'absent', 'Podfile.properties.json'))).toEqual({});
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('are empty with a warning when the file is not valid JSON', () => {
+    const file = propertiesFile('malformed', '{ "expo.jsEngine": ');
+    expect(readPodfileProperties(file)).toEqual({});
+    expect(warnings()).toContain(file);
+    expect(warnings()).toContain('every property reads as unset');
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it('are empty with a warning when the file cannot be read', () => {
+    const directory = path.join(tmp, 'unreadable', 'Podfile.properties.json');
+    fs.mkdirSync(directory, { recursive: true });
+    expect(readPodfileProperties(directory)).toEqual({});
+    expect(warnings()).toContain(directory);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  // CocoaPods writes an object; anything else is a file some other tool clobbered.
+  it.each([
+    ['[]', 'an array'],
+    ['"hermes"', 'a string'],
+    ['17', 'a number'],
+    ['null', 'null'],
+  ])('are empty with a warning when the file holds %s instead of an object', (contents, held) => {
+    const file = propertiesFile(`not-an-object-${encodeURIComponent(contents)}`, contents);
+    expect(readPodfileProperties(file)).toEqual({});
+    expect(warnings()).toContain(file);
+    expect(warnings()).toContain(`it holds ${held}, not an object`);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  // The warning describes the payload's type and never renders the payload: a
+  // structure this deep parses fine and then overflows the stack in
+  // `JSON.stringify`, which would make a bad properties file fail the build.
+  it('are empty with a warning for a payload no one can print', () => {
+    const depth = 50_000;
+    const file = propertiesFile('too-deep', '['.repeat(depth) + ']'.repeat(depth));
+    expect(readPodfileProperties(file)).toEqual({});
+    expect(warnings()).toContain('it holds an array, not an object');
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  // A broken properties file must never be the reason a build stops.
+  it('never throws, whatever it is handed', () => {
+    for (const input of [undefined, null, '', {}, []]) {
+      expect(() => readPodfileProperties(input)).not.toThrow();
+    }
   });
 });

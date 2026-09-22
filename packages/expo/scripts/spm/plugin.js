@@ -35,7 +35,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const { resolveAppTarget } = require('./app-target');
+const { readPodfileProperties, resolveAppTarget } = require('./app-target');
+const { autolinkConditionLabel, autolinkConditionMet } = require('./autolink-gate');
 const { resolveExpoModules, prebuiltMetadata, generateModulesProvider } = require('./cli');
 const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
 const {
@@ -104,6 +105,25 @@ function podIdentity(metadata, pod, autolinkedRoot) {
   };
 }
 
+/**
+ * The `autolinkWhen` gate the document declares for one product of the module at
+ * `moduleRoot`, or null when it declares none.
+ *
+ * The document is keyed by POD name while a checked-in manifest names PRODUCTS,
+ * so the match is on the entry's product name — restricted to the entries of this
+ * module, because two packages may ship a product of the same name. A product no
+ * entry matches stays ungated: withholding one because a path failed to line up
+ * would drop a module with no diagnostic at all.
+ */
+function productAutolinkCondition(metadata, moduleRoot, productName) {
+  for (const [podName, entry] of Object.entries(metadata)) {
+    if (typeof entry?.packageRoot !== 'string') continue;
+    if (path.resolve(entry.packageRoot) !== path.resolve(moduleRoot)) continue;
+    if ((entry.productName ?? podName) === productName) return entry.autolinkWhen ?? null;
+  }
+  return null;
+}
+
 // Expo modules use Swift macros (@Field, @Record, @OptimizedFunction). A macro expands
 // only when the compiler is handed the macro plugin executable, which ships prebuilt and
 // declares no SwiftPM products — so it travels as a compiler flag, not a dependency.
@@ -147,6 +167,18 @@ module.exports = function expoSpmPlugin(context) {
   const { modules, extraDependencies } = resolveExpoModules(appRoot);
   const metadata = prebuiltMetadata(appRoot);
   const autolinkedRoots = collectAutolinkedRoots(autolinking);
+  // Read once, and before pass 2: the app target answers both which gated
+  // products this install links and which Xcode target the registry is generated
+  // for, and a second reading could answer the two differently.
+  const appTarget = resolveAppTarget(context.appRoot);
+  const autolinkGate = {
+    // Every pod the install DECLARES, not the ones emitted so far: membership
+    // must not depend on how far the emit loops have got, and a declared pod
+    // CocoaPods links is a satisfied condition here too.
+    declaredPodNames: new Set(Object.keys(metadata)),
+    autolinkedPackages: new Set(modules.map((m) => m.packageName)),
+    podfileProperties: readPodfileProperties(appTarget.podfilePropertiesPath),
+  };
   const outDir = path.join(outputDir, 'expo');
   // The old contract generated mutable binaryTarget packages here. They are
   // invalid under automatic configuration selection and must never survive a
@@ -165,6 +197,7 @@ module.exports = function expoSpmPlugin(context) {
   const emitted = new Set(); // pod names already contributed
   const reactWired = []; // pods that got React wired (for logging)
   const sourceManifest = []; // packages emitted from a checked-in manifest
+  const gatedOff = []; // products an unmet autolinkWhen condition withholds
   const pureSwiftSource = []; // packages emitted from a pure-Swift descriptor
   const unmappedDeps = []; // emitted pods depending on pods with no SwiftPM counterpart
   const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
@@ -278,7 +311,18 @@ module.exports = function expoSpmPlugin(context) {
         } else {
           declaredSpmProducts = e.spmProductNames;
           packageDependencies.push(e.packageDep);
-          productDependencies.push(...e.productDeps);
+          // The emitted manifest keeps every target; a withheld product is simply
+          // never depended on, so SwiftPM never builds it.
+          for (const productDep of e.productDeps) {
+            const condition = productAutolinkCondition(metadata, moduleRoot, productDep.name);
+            if (condition != null && !autolinkConditionMet(condition, autolinkGate)) {
+              gatedOff.push(
+                `${productDep.name} (${autolinkConditionLabel(condition) ?? 'unrecognized condition'})`
+              );
+              continue;
+            }
+            productDependencies.push(productDep);
+          }
           pods.forEach((p) => emitted.add(p.podName));
           sourceManifest.push(mod.packageName);
           if (react != null) reactWired.push(pod.podName);
@@ -316,7 +360,10 @@ module.exports = function expoSpmPlugin(context) {
           declaredSpmProducts = spmPackages.map((pkg) => pkg.productName);
           packageDependencies.push(e.packageDep);
           productDependencies.push(e.productDep);
-          pods.forEach((p) => emitted.add(p.podName));
+          // One target, for this pod alone. Marking the package's other pods
+          // emitted would drop each of them with no diagnostic, and the app
+          // would fail at runtime with "Cannot find native module".
+          emitted.add(pod.podName);
           pureSwiftSource.push(pod.podName);
           if (react != null) reactWired.push(pod.podName);
           if (podspecs.linkerFlags != null) {
@@ -388,6 +435,7 @@ module.exports = function expoSpmPlugin(context) {
   console.log(
     `[expo-spm-plugin] React wired into (${reactWired.length}): ${reactWired.join(', ') || '—'}`
   );
+  console.log(`[expo-spm-plugin] gated off (${gatedOff.length}): ${gatedOff.join(', ') || '—'}`);
   console.log(
     `[expo-spm-plugin] not supported (${pending.length}): ${pending.map((p) => p.podName).join(', ') || '—'}`
   );
@@ -423,7 +471,6 @@ module.exports = function expoSpmPlugin(context) {
   // empty. In the app's main module the class always registers, matching CocoaPods
   // `use_expo_modules!` (which adds ExpoModulesProvider.swift to the app target).
   const generatedSources = [];
-  const appTarget = resolveAppTarget(context.appRoot);
   let providerPath;
   try {
     providerPath = generateModulesProvider({

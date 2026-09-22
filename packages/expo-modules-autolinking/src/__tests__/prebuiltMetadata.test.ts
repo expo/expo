@@ -22,6 +22,7 @@ const config = (products: object[]) => JSON.stringify({ products });
 describe('resolvePrebuiltMetadataAsync', () => {
   beforeEach(() => {
     vol.reset();
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.mocked(findModulesAsync).mockResolvedValue({
       'expo-modules-core': {
         name: 'expo-modules-core',
@@ -128,6 +129,70 @@ describe('resolvePrebuiltMetadataAsync', () => {
           podName: 'ExpoTwoFloors',
           platforms: ['iOS(.v16)', 'iOS("16.4")'],
         },
+        {
+          name: 'ExpoGatedByProperty',
+          podName: 'ExpoGatedByProperty',
+          autolinkWhen: {
+            podfileProperty: 'expo.camera.barcode-scanner-enabled',
+            disabledValue: 'false',
+          },
+        },
+        {
+          name: 'ExpoGatedByPod',
+          podName: 'ExpoGatedByPod',
+          autolinkWhen: { podName: 'ExpoCamera', reason: 'companion' },
+        },
+        {
+          name: 'ExpoConditionString',
+          podName: 'ExpoConditionString',
+          autolinkWhen: 'ExpoCamera',
+        },
+        {
+          name: 'ExpoConditionArray',
+          podName: 'ExpoConditionArray',
+          autolinkWhen: [{ podName: 'ExpoCamera' }],
+        },
+        { name: 'ExpoConditionEmpty', podName: 'ExpoConditionEmpty', autolinkWhen: {} },
+        {
+          name: 'ExpoConditionValueOnly',
+          podName: 'ExpoConditionValueOnly',
+          autolinkWhen: { disabledValue: 'false' },
+        },
+        {
+          name: 'ExpoConditionNumericSubject',
+          podName: 'ExpoConditionNumericSubject',
+          autolinkWhen: { podName: 42, disabledValue: 'false' },
+        },
+        {
+          name: 'ExpoConditionBooleanValue',
+          podName: 'ExpoConditionBooleanValue',
+          autolinkWhen: { podfileProperty: 'expo.flag', disabledValue: false },
+        },
+        {
+          name: 'ExpoConditionNumericValue',
+          podName: 'ExpoConditionNumericValue',
+          autolinkWhen: { podfileProperty: 'expo.count', disabledValue: 0 },
+        },
+        {
+          name: 'ExpoConditionNullValue',
+          podName: 'ExpoConditionNullValue',
+          autolinkWhen: { podfileProperty: 'expo.unset', disabledValue: null },
+        },
+        {
+          name: 'ExpoConditionObjectValue',
+          podName: 'ExpoConditionObjectValue',
+          autolinkWhen: { podfileProperty: 'expo.deep', disabledValue: { nested: true } },
+        },
+        {
+          name: 'ExpoConditionArrayValue',
+          podName: 'ExpoConditionArrayValue',
+          autolinkWhen: { podfileProperty: 'expo.list', disabledValue: ['off'] },
+        },
+        {
+          name: 'ExpoConditionNullCondition',
+          podName: 'ExpoConditionNullCondition',
+          autolinkWhen: null,
+        },
       ]),
       [path.join(externalConfigsDir, 'react-native-worklets', 'spm.config.json')]: config([
         {
@@ -142,6 +207,11 @@ describe('resolvePrebuiltMetadataAsync', () => {
               version: { exact: '0.6.0' },
             },
           ],
+        },
+        {
+          name: 'RNWorkletsCompanion',
+          podName: 'RNWorkletsCompanion',
+          autolinkWhen: { npmPackage: 'react-native-reanimated' },
         },
       ]),
     });
@@ -336,4 +406,124 @@ describe('resolvePrebuiltMetadataAsync', () => {
 
     expect(document.ExpoModulesCore).not.toHaveProperty('spmPackages');
   });
+
+  // The gate that decides whether a companion product is linked at all lives in
+  // the config, which no consumer outside CocoaPods can read.
+  it('publishes the autolinking condition of an internal product', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoGatedByProperty?.autolinkWhen).toEqual({
+      podfileProperty: 'expo.camera.barcode-scanner-enabled',
+      disabledValue: 'false',
+    });
+  });
+
+  it('publishes the autolinking condition of an external product too', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.RNWorkletsCompanion).toMatchObject({
+      type: 'external',
+      autolinkWhen: { npmPackage: 'react-native-reanimated' },
+    });
+  });
+
+  // A key this cannot honour would read as a condition the consumer must
+  // evaluate, so only the four the gate understands survive.
+  it('keeps only the keys the condition is made of', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoGatedByPod?.autolinkWhen).toEqual({ podName: 'ExpoCamera' });
+  });
+
+  it('drops a subject that is not a string, keeping the condition', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoConditionNumericSubject?.autolinkWhen).toEqual({ disabledValue: 'false' });
+  });
+
+  // disabledValue is compared against a Podfile property, never rendered, so
+  // narrowing its type to a string would answer a comparison the config did not
+  // ask for — and differently from CocoaPods.
+  it('keeps a disabledValue of any scalar type verbatim', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoConditionBooleanValue?.autolinkWhen).toEqual({
+      podfileProperty: 'expo.flag',
+      disabledValue: false,
+    });
+    expect(document.ExpoConditionNumericValue?.autolinkWhen).toEqual({
+      podfileProperty: 'expo.count',
+      disabledValue: 0,
+    });
+    expect(document.ExpoConditionNullValue?.autolinkWhen).toEqual({
+      podfileProperty: 'expo.unset',
+      disabledValue: null,
+    });
+  });
+
+  // Dropping a container would change the answer rather than withhold it: Ruby
+  // compares an unset property against it as not-equal and links the product,
+  // where a gate left with only a podfileProperty is never met.
+  it('keeps a container disabledValue verbatim', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoConditionObjectValue?.autolinkWhen).toEqual({
+      podfileProperty: 'expo.deep',
+      disabledValue: { nested: true },
+    });
+    expect(document.ExpoConditionArrayValue?.autolinkWhen).toEqual({
+      podfileProperty: 'expo.list',
+      disabledValue: ['off'],
+    });
+  });
+
+  // An unreadable gate is a gate that is never met, not an absent one: dropping
+  // the key would link a product under SwiftPM that CocoaPods leaves out.
+  it('keeps the key for a declared condition nothing survives', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoConditionString?.autolinkWhen).toEqual({});
+    expect(document.ExpoConditionArray?.autolinkWhen).toEqual({});
+    expect(document.ExpoConditionEmpty?.autolinkWhen).toEqual({});
+    expect(document.ExpoConditionValueOnly?.autolinkWhen).toEqual({ disabledValue: 'false' });
+  });
+
+  // An unconditional product is linked always, which is not the same as a
+  // condition a consumer has to evaluate and find unmet.
+  it('omits the condition where the product declares none', async () => {
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(document.ExpoModulesCore).not.toHaveProperty('autolinkWhen');
+    expect(document.RNWorklets).not.toHaveProperty('autolinkWhen');
+    expect(document.ExpoConditionNullCondition).not.toHaveProperty('autolinkWhen');
+  });
+
+  // A typo in a gate is otherwise invisible: it withholds a native module from
+  // the build and nothing anywhere says so.
+  it('warns once, naming the pod and the config, about a condition it cannot read whole', async () => {
+    await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(warningsAbout('ExpoGatedByPod')).toEqual([
+      expect.stringContaining('/app/node_modules/expo-modules-core/spm.config.json'),
+    ]);
+    expect(warningsAbout('ExpoGatedByPod')[0]).toContain('reason');
+    expect(warningsAbout('ExpoConditionString')).toHaveLength(1);
+    expect(warningsAbout('ExpoConditionValueOnly')).toHaveLength(1);
+  });
+
+  it('stays silent about a condition it reads whole', async () => {
+    await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(warningsAbout('ExpoGatedByProperty')).toEqual([]);
+    expect(warningsAbout('RNWorkletsCompanion')).toEqual([]);
+    expect(warningsAbout('ExpoConditionNullCondition')).toEqual([]);
+    expect(warningsAbout('ExpoConditionObjectValue')).toEqual([]);
+  });
 });
+
+function warningsAbout(podName: string): string[] {
+  return jest
+    .mocked(console.warn)
+    .mock.calls.map(([message]) => String(message))
+    .filter((message) => message.includes(podName));
+}

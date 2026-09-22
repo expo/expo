@@ -10,7 +10,10 @@ jest.mock('../cli', () => ({
   generateModulesProvider: jest.fn(() => null),
   runDumpPackage: jest.fn(),
 }));
+// The properties reader stays real, so a gated product is decided by a file on
+// disk rather than by a stand-in for it.
 jest.mock('../app-target', () => ({
+  ...jest.requireActual('../app-target'),
   resolveAppTarget: jest.fn(() => ({
     targetName: null,
     entitlementPath: null,
@@ -1475,6 +1478,7 @@ describe('a module installed twice', () => {
 describe('a module whose pods document two different copies', () => {
   let logs;
   let roots;
+  let thrown;
 
   beforeAll(() => {
     const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-pod-copies-')));
@@ -1525,13 +1529,18 @@ describe('a module whose pods document two different copies', () => {
       warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
       log: jest.spyOn(console, 'log').mockImplementation(() => {}),
     };
-    expoSpmPlugin({
-      react: null,
-      outputDir: path.join(tmp, 'out'),
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-      autolinking: { dependencies: { 'expo-multi': { root: roots.multi } } },
-    });
+    try {
+      expoSpmPlugin({
+        react: null,
+        outputDir: path.join(tmp, 'out'),
+        appRoot: path.join(tmp, 'app', 'ios'),
+        projectRoot: path.join(tmp, 'app'),
+        autolinking: { dependencies: { 'expo-multi': { root: roots.multi } } },
+      });
+      thrown = null;
+    } catch (error) {
+      thrown = error;
+    }
   });
 
   afterAll(() => {
@@ -1546,6 +1555,12 @@ describe('a module whose pods document two different copies', () => {
     expect(warnings()).toContain('Expo module "expo-multi" is installed twice');
     expect(warnings().match(/is installed twice/g)).toHaveLength(1);
     expect(warnings()).toContain(roots.multiCopy);
+  });
+
+  // The pure-Swift branch emits the first pod only, so the second is uncovered.
+  it('fails the sync on the second pod, which nothing emits', () => {
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown.unsupported.map((u) => u.podName)).toEqual(['ExpoMultiB']);
   });
 });
 
@@ -1829,5 +1844,480 @@ describe('the SwiftPM packages a checked-in manifest declares', () => {
     // as CocoaPods does — the mirrored product is `libavif`, whatever its package is
     // called.
     expect(report).not.toContain('libavif');
+  });
+});
+
+describe('a pure-Swift package shipping a companion pod', () => {
+  let logs;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-companion-'));
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const camera = pureSwiftModule(
+      path.join(tmp, 'expo-camera'),
+      'ExpoCamera',
+      spec("  s.platforms = { :ios => '16.4' }")
+    );
+
+    resolveExpoModules.mockReturnValue({
+      modules: [
+        {
+          packageName: 'expo-modules-core',
+          pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+        },
+        {
+          packageName: 'expo-camera',
+          pods: [
+            { podName: 'ExpoCamera', podspecDir: camera },
+            { podName: 'ExpoCameraBarcodeScanning', podspecDir: camera },
+          ],
+        },
+      ],
+      extraDependencies: [],
+    });
+    logs = {
+      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    try {
+      expoSpmPlugin({
+        react: null,
+        outputDir: path.join(tmp, 'out'),
+        appRoot: path.join(tmp, 'app', 'ios'),
+        projectRoot: path.join(tmp, 'app'),
+      });
+      thrown = null;
+    } catch (error) {
+      thrown = error;
+    }
+  });
+
+  afterAll(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    restoreModuleMocks();
+  });
+
+  it('emits the single target the pure-Swift branch builds', () => {
+    const report = logs.log.mock.calls.map(([text]) => text).join('\n');
+    expect(report).toContain('source pure-Swift (1): ExpoCamera\n');
+  });
+
+  // The branch emits one target, for the first pod. Marking the rest of the package
+  // emitted too would drop the companion out of the install with no diagnostic at
+  // all — it fails at runtime with "Cannot find native module" instead.
+  it('reports the companion pod it does not build', () => {
+    const report = logs.error.mock.calls.map(([text]) => text).join('\n');
+    expect(report).toContain('ExpoCameraBarcodeScanning');
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown.unsupported.map((u) => u.podName)).toEqual(['ExpoCameraBarcodeScanning']);
+  });
+});
+
+// expo-camera is the shape: one checked-in manifest, two products, two pods. The
+// branch marks every pod of the package emitted, which is only right BECAUSE the
+// manifest covers them all — unlike the pure-Swift branch above, which emits one.
+describe('a checked-in manifest declaring a product per pod', () => {
+  let logs;
+  let manifest;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-manifest-multipod-'));
+    const outDir = path.join(tmp, 'out');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const cameraRoot = path.join(tmp, 'expo-camera');
+    const camera = pureSwiftModule(cameraRoot, 'ExpoCamera', spec());
+    fs.mkdirSync(path.join(camera, 'barcode-scanning'), { recursive: true });
+    fs.writeFileSync(path.join(camera, 'barcode-scanning', 'Scanner.swift'), '// swift\n');
+    fs.writeFileSync(
+      path.join(cameraRoot, 'Package.swift'),
+      '// swift-tools-version: 6.0\n// checked in by the module\n'
+    );
+    runDumpPackage.mockReturnValue(
+      JSON.stringify({
+        name: 'ExpoCamera',
+        dependencies: [],
+        products: [
+          { name: 'ExpoCamera', type: { library: ['automatic'] }, targets: ['ExpoCamera'] },
+          {
+            name: 'ExpoCameraBarcodeScanning',
+            type: { library: ['automatic'] },
+            targets: ['ExpoCameraBarcodeScanning'],
+          },
+        ],
+        targets: [
+          { name: 'ExpoCamera', type: 'regular', path: 'ios', dependencies: [] },
+          {
+            name: 'ExpoCameraBarcodeScanning',
+            type: 'regular',
+            path: 'ios/barcode-scanning',
+            dependencies: [{ byName: ['ExpoCamera', null] }],
+          },
+        ],
+      })
+    );
+
+    resolveExpoModules.mockReturnValue({
+      modules: [
+        {
+          packageName: 'expo-modules-core',
+          pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+        },
+        {
+          packageName: 'expo-camera',
+          pods: [
+            { podName: 'ExpoCamera', podspecDir: camera },
+            { podName: 'ExpoCameraBarcodeScanning', podspecDir: camera },
+          ],
+        },
+      ],
+      extraDependencies: [],
+    });
+    providerWrittenTo(outDir);
+    logs = {
+      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+    try {
+      expoSpmPlugin({
+        react: null,
+        outputDir: outDir,
+        appRoot: path.join(tmp, 'app', 'ios'),
+        projectRoot: path.join(tmp, 'app'),
+      });
+      thrown = null;
+    } catch (error) {
+      thrown = error;
+    }
+    manifest = fs.readFileSync(
+      path.join(outDir, 'expo', 'expo-source', 'ExpoCamera', 'Package.swift'),
+      'utf8'
+    );
+  });
+
+  afterAll(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    restoreModuleMocks();
+  });
+
+  it("mirrors a target for each of the package's pods", () => {
+    expect(manifest).toContain('name: "ExpoCamera"');
+    expect(manifest).toContain('name: "ExpoCameraBarcodeScanning"');
+  });
+
+  it('covers every pod of the package, so none is reported uncovered', () => {
+    const report = logs.log.mock.calls.map(([text]) => text).join('\n');
+    expect(report).toContain('not supported (0): —');
+    expect(logs.error).not.toHaveBeenCalled();
+    expect(thrown).toBeNull();
+  });
+});
+
+// The gate a companion product declares in its spm.config.json. expo-camera's
+// barcode scanner is the one that ships: a second product of the same package,
+// linked only when the app's Podfile properties do not disable it.
+describe('a product gated by an autolinkWhen condition', () => {
+  const barcodeGate = {
+    podfileProperty: 'expo.camera.barcode-scanner-enabled',
+    disabledValue: 'false',
+  };
+  let logs;
+  let tmp;
+  let cameraRoot;
+
+  const documented = (packageRoot, productName, autolinkWhen = null) => ({
+    packageRoot,
+    productName,
+    ...(autolinkWhen != null && { autolinkWhen }),
+  });
+
+  beforeEach(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-gated-'));
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    cameraRoot = path.join(tmp, 'expo-camera');
+    const camera = pureSwiftModule(cameraRoot, 'ExpoCamera', spec());
+    fs.mkdirSync(path.join(camera, 'barcode-scanning'), { recursive: true });
+    fs.writeFileSync(path.join(camera, 'barcode-scanning', 'Scanner.swift'), '// swift\n');
+    fs.writeFileSync(
+      path.join(cameraRoot, 'Package.swift'),
+      '// swift-tools-version: 6.0\n// checked in by the module\n'
+    );
+    runDumpPackage.mockReturnValue(
+      JSON.stringify({
+        name: 'ExpoCamera',
+        dependencies: [],
+        products: [
+          { name: 'ExpoCamera', type: { library: ['automatic'] }, targets: ['ExpoCamera'] },
+          {
+            name: 'ExpoCameraBarcodeScanning',
+            type: { library: ['automatic'] },
+            targets: ['ExpoCameraBarcodeScanning'],
+          },
+        ],
+        targets: [
+          { name: 'ExpoCamera', type: 'regular', path: 'ios', dependencies: [] },
+          {
+            name: 'ExpoCameraBarcodeScanning',
+            type: 'regular',
+            path: 'ios/barcode-scanning',
+            dependencies: [{ byName: ['ExpoCamera', null] }],
+          },
+        ],
+      })
+    );
+    resolveExpoModules.mockReturnValue({
+      modules: [
+        {
+          packageName: 'expo-modules-core',
+          pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+        },
+        {
+          packageName: 'expo-camera',
+          pods: [
+            { podName: 'ExpoCamera', podspecDir: camera },
+            { podName: 'ExpoCameraBarcodeScanning', podspecDir: camera },
+          ],
+        },
+      ],
+      extraDependencies: [],
+    });
+    logs = {
+      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+  });
+
+  afterEach(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+    runDumpPackage.mockReset();
+    restoreModuleMocks();
+  });
+
+  /** The properties are read off a real file, through the real reader. */
+  const run = ({ metadata, properties = null }) => {
+    const outDir = path.join(tmp, 'out');
+    const appIosDir = path.join(tmp, 'app', 'ios');
+    fs.mkdirSync(appIosDir, { recursive: true });
+    let podfilePropertiesPath = null;
+    if (properties != null) {
+      podfilePropertiesPath = path.join(appIosDir, 'Podfile.properties.json');
+      fs.writeFileSync(podfilePropertiesPath, JSON.stringify(properties));
+    }
+    resolveAppTarget.mockReset();
+    resolveAppTarget.mockReturnValue({
+      targetName: null,
+      entitlementPath: null,
+      podfilePropertiesPath,
+    });
+    prebuiltMetadata.mockReturnValue(metadata);
+    providerWrittenTo(outDir);
+    const result = expoSpmPlugin({
+      react: null,
+      outputDir: outDir,
+      appRoot: appIosDir,
+      projectRoot: path.join(tmp, 'app'),
+    });
+    return { result, report: logs.log.mock.calls.map(([text]) => text).join('\n') };
+  };
+
+  const cameraMetadata = (gate) => ({
+    ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+    ExpoCameraBarcodeScanning: documented(cameraRoot, 'ExpoCameraBarcodeScanning', gate),
+  });
+
+  it('wires the gated product when the condition is met', () => {
+    const { result, report } = run({
+      metadata: cameraMetadata(barcodeGate),
+      properties: { 'expo.camera.barcode-scanner-enabled': 'true' },
+    });
+
+    expect(result.productDependencies).toEqual([
+      { name: 'ExpoCamera', package: 'ExpoCamera' },
+      { name: 'ExpoCameraBarcodeScanning', package: 'ExpoCamera' },
+    ]);
+    expect(report).toContain('gated off (0): —');
+  });
+
+  it('withholds the gated product, and reports it, when the condition is not met', () => {
+    const { result, report } = run({
+      metadata: cameraMetadata(barcodeGate),
+      properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
+    });
+
+    expect(result.productDependencies).toEqual([{ name: 'ExpoCamera', package: 'ExpoCamera' }]);
+    expect(report).toContain(
+      'gated off (1): ExpoCameraBarcodeScanning (expo.camera.barcode-scanner-enabled)'
+    );
+  });
+
+  // A withheld product is a deliberate exclusion, not a module SwiftPM cannot
+  // build: its pod stays emitted, so the sync does not fail it as unsupported.
+  it('does not report the withheld product as unsupported', () => {
+    const { report } = run({
+      metadata: cameraMetadata(barcodeGate),
+      properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
+    });
+
+    expect(report).toContain('not supported (0): —');
+    expect(logs.error).not.toHaveBeenCalled();
+  });
+
+  // Fail OPEN: a product the document says nothing about carries no gate, and a
+  // path that fails to match must never silently drop one.
+  it('wires a product no metadata entry names', () => {
+    const { result, report } = run({
+      metadata: { ExpoCamera: documented(cameraRoot, 'ExpoCamera') },
+      properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
+    });
+
+    expect(result.productDependencies).toEqual([
+      { name: 'ExpoCamera', package: 'ExpoCamera' },
+      { name: 'ExpoCameraBarcodeScanning', package: 'ExpoCamera' },
+    ]);
+    expect(report).toContain('gated off (0): —');
+  });
+
+  // Two packages may ship a product of the same name, so a bare product-name
+  // scan over the document would apply a stranger's gate to this one.
+  it('ignores a same-named product gated in another package', () => {
+    const { result, report } = run({
+      metadata: {
+        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+        OtherBarcodeScanning: documented(
+          path.join(tmp, 'other-camera'),
+          'ExpoCameraBarcodeScanning',
+          barcodeGate
+        ),
+      },
+      properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
+    });
+
+    expect(result.productDependencies).toEqual([
+      { name: 'ExpoCamera', package: 'ExpoCamera' },
+      { name: 'ExpoCameraBarcodeScanning', package: 'ExpoCamera' },
+    ]);
+    expect(report).toContain('gated off (0): —');
+  });
+
+  // `declaredPodNames` is every pod the install DECLARES. A pod the document
+  // names is a satisfied condition even when this pass never lists it.
+  it('wires a product gated on a pod the document declares', () => {
+    const { result, report } = run({
+      metadata: {
+        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+        ExpoCameraBarcodeScanning: documented(cameraRoot, 'ExpoCameraBarcodeScanning', {
+          podName: 'RNWorklets',
+        }),
+        RNWorklets: documented(path.join(tmp, 'react-native-worklets'), 'RNWorklets'),
+      },
+    });
+
+    expect(result.productDependencies).toEqual([
+      { name: 'ExpoCamera', package: 'ExpoCamera' },
+      { name: 'ExpoCameraBarcodeScanning', package: 'ExpoCamera' },
+    ]);
+    expect(report).toContain('gated off (0): —');
+  });
+
+  it('withholds a product gated on a pod the document does not declare', () => {
+    const { result, report } = run({
+      metadata: cameraMetadata({ podName: 'RNWorklets' }),
+    });
+
+    expect(result.productDependencies).toEqual([{ name: 'ExpoCamera', package: 'ExpoCamera' }]);
+    expect(report).toContain('gated off (1): ExpoCameraBarcodeScanning (RNWorklets)');
+  });
+
+  it('wires a product gated on an npm package the app autolinks', () => {
+    const { result, report } = run({
+      metadata: cameraMetadata({ npmPackage: 'expo-modules-core' }),
+    });
+
+    expect(result.productDependencies).toEqual([
+      { name: 'ExpoCamera', package: 'ExpoCamera' },
+      { name: 'ExpoCameraBarcodeScanning', package: 'ExpoCamera' },
+    ]);
+    expect(report).toContain('gated off (0): —');
+  });
+
+  it('withholds a product gated on an npm package the app does not autolink', () => {
+    const { result, report } = run({
+      metadata: cameraMetadata({ npmPackage: 'react-native-worklets' }),
+    });
+
+    expect(result.productDependencies).toEqual([{ name: 'ExpoCamera', package: 'ExpoCamera' }]);
+    expect(report).toContain('gated off (1): ExpoCameraBarcodeScanning (react-native-worklets)');
+  });
+
+  // The document is keyed by POD name, and a pod name is not a product name.
+  it('matches the entry by its product name, not by its pod key', () => {
+    const { result, report } = run({
+      metadata: {
+        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+        ExpoCameraBarcodeScanner: documented(cameraRoot, 'ExpoCameraBarcodeScanning', barcodeGate),
+      },
+      properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
+    });
+
+    expect(result.productDependencies).toEqual([{ name: 'ExpoCamera', package: 'ExpoCamera' }]);
+    expect(report).toContain(
+      'gated off (1): ExpoCameraBarcodeScanning (expo.camera.barcode-scanner-enabled)'
+    );
+  });
+
+  it('matches an entry naming no product by its pod key', () => {
+    const { result, report } = run({
+      metadata: {
+        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+        ExpoCameraBarcodeScanning: { packageRoot: cameraRoot, autolinkWhen: barcodeGate },
+      },
+      properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
+    });
+
+    expect(result.productDependencies).toEqual([{ name: 'ExpoCamera', package: 'ExpoCamera' }]);
+    expect(report).toContain(
+      'gated off (1): ExpoCameraBarcodeScanning (expo.camera.barcode-scanner-enabled)'
+    );
+  });
+
+  // Fail-open covers a MISSING match only. A condition the document declares and
+  // no key answers withholds the product, as CocoaPods withholds it — the
+  // metadata builder already warned about the shape when it published it.
+  it('withholds a product whose declared condition names no recognized key', () => {
+    const { result, report } = run({ metadata: cameraMetadata({}) });
+
+    expect(result.productDependencies).toEqual([{ name: 'ExpoCamera', package: 'ExpoCamera' }]);
+    expect(report).toContain('gated off (1): ExpoCameraBarcodeScanning (unrecognized condition)');
+  });
+
+  // Pins a path the real document cannot reach: `prebuiltMetadata` writes
+  // `packageRoot` only from a resolved package path. The lookup still may not
+  // throw — an emit pass aborted here would drop the module with no diagnostic.
+  it('keeps a product whose entry documents an unusable package root', () => {
+    const { result, report } = run({
+      metadata: {
+        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+        ExpoCameraBarcodeScanning: { packageRoot: 17, autolinkWhen: barcodeGate },
+      },
+      properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
+    });
+
+    expect(result.productDependencies).toEqual([
+      { name: 'ExpoCamera', package: 'ExpoCamera' },
+      { name: 'ExpoCameraBarcodeScanning', package: 'ExpoCamera' },
+    ]);
+    expect(report).toContain('gated off (0): —');
+  });
+
+  // The app target is a pure function of the app root, and generating the
+  // registry against a second reading of it would let the two disagree.
+  it('resolves the app target once', () => {
+    run({ metadata: cameraMetadata(barcodeGate) });
+
+    expect(resolveAppTarget).toHaveBeenCalledTimes(1);
   });
 });

@@ -28,6 +28,10 @@ export interface PrebuiltMetadataEntry {
    * themselves instead of linking an XCFramework. Absent where the product
    * declares none this can render. */
   spmPackages?: PrebuiltSpmPackage[];
+  /** The gate deciding whether the product is linked at all, present whenever
+   * the product declares one — a gate this could not read whole is a gate that
+   * is never met, not an absent one. Absent where the product declares none. */
+  autolinkWhen?: PrebuiltAutolinkWhen;
 }
 
 export type PrebuiltSpmVersion =
@@ -40,6 +44,30 @@ export interface PrebuiltSpmPackage {
   url: string;
   productName: string;
   version: PrebuiltSpmVersion;
+}
+
+/** A companion product's autolinking gate, as Ruby's
+ * `companion_autolink_condition_met?` and its port in
+ * `expo/scripts/spm/autolink-gate.js` evaluate it: the first subject the
+ * condition declares decides it and the rest are never read — `podName` (a pod
+ * this install emits), then `npmPackage` (a package the app autolinks), then
+ * `podfileProperty` (set to anything but `disabledValue`). A condition
+ * declaring no subject is never met, so an unreadable gate withholds its
+ * product rather than releasing it. `disabledValue` qualifies only
+ * `podfileProperty` and keeps whatever the config gave it, of whatever type:
+ * it is compared against a property value, never rendered, and narrowing it
+ * would answer a comparison differently from CocoaPods.
+ *
+ * The comparison is strict equality, which agrees with Ruby's `!=` on every
+ * scalar but not on containers — Ruby holds two equal-valued hashes equal
+ * where JavaScript compares them by identity. A Podfile property is a string
+ * in practice, so this limit is unreachable; do not close it with a deep
+ * equality neither integration promises. */
+export interface PrebuiltAutolinkWhen {
+  podName?: string;
+  npmPackage?: string;
+  podfileProperty?: string;
+  disabledValue?: unknown;
 }
 
 export type PrebuiltMetadataDocument = Record<string, PrebuiltMetadataEntry>;
@@ -220,6 +248,80 @@ function readSpmPackages(spmPackages: unknown): PrebuiltSpmPackage[] {
   return packages;
 }
 
+const AUTOLINK_WHEN_SUBJECTS = ['podName', 'npmPackage', 'podfileProperty'] as const;
+
+type AutolinkWhenSubject = (typeof AUTOLINK_WHEN_SUBJECTS)[number];
+
+function isAutolinkWhenSubject(key: string): key is AutolinkWhenSubject {
+  return (AUTOLINK_WHEN_SUBJECTS as readonly string[]).includes(key);
+}
+
+/** The autolinking gate a product declares, keeping only the keys an evaluator
+ * reads. A declared gate always survives as a condition, even an empty one:
+ * both evaluators answer "not met" for a condition naming no subject, so
+ * dropping the key here would link under SwiftPM what CocoaPods leaves out —
+ * the parity this document exists to keep. */
+function readAutolinkWhen(
+  condition: unknown,
+  podName: string,
+  configPath: string
+): PrebuiltAutolinkWhen | undefined {
+  if (condition == null) {
+    return undefined;
+  }
+  if (typeof condition !== 'object' || Array.isArray(condition)) {
+    warnUnreadableAutolinkWhen(
+      podName,
+      configPath,
+      [`is ${Array.isArray(condition) ? 'an array' : `a ${typeof condition}`}, not an object`],
+      false
+    );
+    return {};
+  }
+
+  const declared: PrebuiltAutolinkWhen = {};
+  const unread: string[] = [];
+  for (const [key, value] of Object.entries(condition as Record<string, unknown>)) {
+    if (key === 'disabledValue') {
+      declared.disabledValue = value;
+      continue;
+    }
+    if (isAutolinkWhenSubject(key) && typeof value === 'string') {
+      declared[key] = value;
+      continue;
+    }
+    unread.push(key);
+  }
+
+  const hasSubject = AUTOLINK_WHEN_SUBJECTS.some((subject) => declared[subject] != null);
+  const problems =
+    unread.length > 0 ? [`declares ${unread.join(', ')}, which this cannot read`] : [];
+  if (!hasSubject) {
+    problems.push('names no podName, npmPackage, or podfileProperty to test');
+  }
+  if (problems.length > 0) {
+    warnUnreadableAutolinkWhen(podName, configPath, problems, hasSubject);
+  }
+  return declared;
+}
+
+/** A gate nobody warns about fails silently: the module is simply missing from
+ * the build, with no diagnostic anywhere naming the condition that withheld it. */
+function warnUnreadableAutolinkWhen(
+  podName: string,
+  configPath: string,
+  problems: string[],
+  hasSubject: boolean
+) {
+  console.warn(
+    `[prebuilt-metadata] The autolinkWhen condition of ${podName} in ${configPath} ${problems.join(' and ')}. ` +
+      (hasSubject
+        ? 'The rest of the condition still decides the gate.'
+        : 'A condition naming no subject is never met, so the product is left out of the build.') +
+      ' Check the condition for a typo.'
+  );
+}
+
 function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: string) {
   const configPath = path.join(packageRoot, 'spm.config.json');
   const config = readJsonFile(configPath);
@@ -243,6 +345,7 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
       const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
       const spmDependencies = readSpmDependencies(product.spmPackages);
       const spmPackages = readSpmPackages(product.spmPackages);
+      const autolinkWhen = readAutolinkWhen(product.autolinkWhen, podName, configPath);
       entries[podName] = {
         type: 'internal',
         npmPackage,
@@ -253,6 +356,7 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
         ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
         ...(spmDependencies.length > 0 && { spmDependencies }),
         ...(spmPackages.length > 0 && { spmPackages }),
+        ...(autolinkWhen != null && { autolinkWhen }),
       };
     }
   } catch (error) {
@@ -292,6 +396,7 @@ async function scanExternalConfigsAsync(
         const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
         const spmDependencies = readSpmDependencies(product.spmPackages);
         const spmPackages = readSpmPackages(product.spmPackages);
+        const autolinkWhen = readAutolinkWhen(product.autolinkWhen, podName, file.path);
         entries[podName] = {
           type: 'external',
           npmPackage,
@@ -302,6 +407,7 @@ async function scanExternalConfigsAsync(
           ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
           ...(spmDependencies.length > 0 && { spmDependencies }),
           ...(spmPackages.length > 0 && { spmPackages }),
+          ...(autolinkWhen != null && { autolinkWhen }),
         };
       }
     } catch (error) {
