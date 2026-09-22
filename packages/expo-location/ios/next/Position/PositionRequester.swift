@@ -8,6 +8,9 @@ final class PositionRequester {
   }
 
   func get(options: GetPositionOptions) async throws -> CLLocation? {
+    guard options.timeout >= 0 else {
+      throw InvalidLocationTimeoutException()
+    }
     if let cached = await cachedLocation(), isAcceptable(cached, options: options) {
       return cached
     }
@@ -18,9 +21,11 @@ final class PositionRequester {
       group.addTask {
         try await self.firstLocation(options: options)
       }
-      group.addTask {
-        try await Task.sleep(for: .seconds(options.timeout))
-        return nil
+      if options.timeout != .infinity {
+        group.addTask {
+          try await Task.sleep(for: .seconds(options.timeout))
+          return nil
+        }
       }
       let location = try await group.next() ?? nil
       group.cancelAll()
