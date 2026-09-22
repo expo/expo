@@ -78,6 +78,15 @@ function classifyUnsupported({ pending, coreAvailable }) {
   }
   return pending.map((p) => {
     const subject = { podName: p.podName, packageName: p.packageName, moduleRoot: p.moduleRoot };
+    if (p.precompiledSiblings?.length) {
+      return {
+        reason: 'partially-precompiled',
+        ...subject,
+        precompiledSiblings: p.precompiledSiblings,
+        artifactDirs: p.artifactDirs,
+        prebuildProduct: p.prebuildProduct ?? null,
+      };
+    }
     const prebuildable = p.prebuildProduct != null && !p.prebuildProduct.sourceOnly;
     if (prebuildable) {
       return { reason: 'prebuild-available', ...subject, productName: p.prebuildProduct.name };
@@ -434,6 +443,55 @@ function renderNeedsManifestForLinkage({ podName, packageName, moduleRoot, file,
   ].join('\n');
 }
 
+/**
+ * Some of the module's pods resolved to prebuilt frameworks and the rest did not.
+ * Both source routes build the module whole, so emitting it would link the
+ * prebuilt pods twice — once as frameworks, once from source.
+ */
+function renderPartiallyPrecompiled({
+  podName,
+  packageName,
+  moduleRoot,
+  precompiledSiblings,
+  artifactDirs,
+  prebuildProduct,
+}) {
+  const siblings = precompiledSiblings.join(', ');
+  const one = precompiledSiblings.length === 1;
+  const artifacts = precompiledSiblings
+    .map((pod) => `${pod}.xcframework or ${pod}.tar.gz`)
+    .join(', ');
+  const sourceOnly = prebuildProduct?.sourceOnly === true;
+  const productStep =
+    prebuildProduct == null
+      ? `add a product for ${podName} to ${packageName}'s spm.config.json, then build it`
+      : `build ${podName} too — ${packageName}'s spm.config.json already declares "${prebuildProduct.name}"`;
+  const precompile = [
+    `To precompile all of them, ${productStep}. Omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
+    `      et prebuild ${packageName}`,
+    `     Then re-run \`npx react-native spm update\`.`,
+  ];
+  const remedies = [
+    ...(sourceOnly ? [] : [precompile]),
+    [
+      `To build it from source instead, delete the prebuilt ${siblings} artifacts — ${artifacts}, under debug/xcframeworks and release/xcframeworks — from each directory below, then re-run \`npx react-native spm update\`. The plugin searches them in this order and uses the first one that has an artifact, so one left behind anywhere is picked up again:`,
+      ...artifactDirs.map((dir) => `      ${dir}`),
+    ],
+    [
+      `To build without this module for now, exclude it in your app's package.json: "expo": { "autolinking": { "exclude": ["${packageName}"] } } — its native module will then be unavailable at runtime.`,
+    ],
+  ];
+  return [
+    `error: Expo module "${packageName}" (pod ${podName}) has no prebuilt XCFramework, but its sibling ${one ? 'pod' : 'pods'} ${siblings} ${one ? 'does' : 'do'}, so the module cannot be built with Swift Package Manager.`,
+    `  The plugin links ${siblings} as ${one ? 'a precompiled framework' : 'precompiled frameworks'}. It can build ${packageName} from source only as a whole module, every pod at once, so building ${podName} from source would link ${siblings} twice: once as ${one ? 'a framework' : 'frameworks'} and once from source.`,
+    sourceOnly
+      ? `  ${packageName}'s spm.config.json marks ${podName} as sourceOnly, so it never gets an XCFramework and the module cannot be precompiled as a whole:`
+      : `  A module must be precompiled for all of its pods or for none of them:`,
+    ...remedies.flatMap(([first, ...rest], i) => [`  ${i + 1}. ${first}`, ...rest]),
+    `  Module path: ${moduleRoot}`,
+  ].join('\n');
+}
+
 function renderCoreUnavailable({ pods }) {
   return [
     `error: ExpoModulesCore has no prebuilt Debug and Release xcframework, so all ${pods.length} source-built Expo ${pods.length === 1 ? 'module' : 'modules'} were skipped.`,
@@ -453,6 +511,7 @@ const RENDERERS = {
   'unsupported-target-dependency': renderUnsupportedTargetDependency,
   'unsupported-package-dependency': renderUnsupportedPackageDependency,
   'needs-manifest-for-linkage': renderNeedsManifestForLinkage,
+  'partially-precompiled': renderPartiallyPrecompiled,
   'core-unavailable': renderCoreUnavailable,
 };
 

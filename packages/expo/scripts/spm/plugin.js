@@ -61,6 +61,7 @@ const {
   reportUnsupported,
 } = require('./diagnostics');
 const {
+  artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
   byteOrder,
   prepareCompileInterfaces,
@@ -251,6 +252,7 @@ module.exports = function expoSpmPlugin(context) {
   const unsupportedTargetDeps = new Map(); // module root → deps the generated package cannot declare
   const unsupportedPackageDeps = new Map(); // module root → packages the generated package cannot declare
   const podspecLinkage = new Map(); // module root → podspec line declaring native linkage
+  const partiallyPrecompiled = new Map(); // module root → its precompiled pods + where they resolved from
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
   // once one flavor exists, the resolver requires and prepares both before RN
@@ -328,12 +330,27 @@ module.exports = function expoSpmPlugin(context) {
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
       const { entry, moduleRoot } = identities.get(pod);
+      const hasManifest = fs.existsSync(path.join(moduleRoot, 'Package.swift'));
+      const precompiledSiblings = pods
+        .map((p) => p.podName)
+        .filter((podName) => precompiledFrameworks.has(podName));
+
+      if (precompiledSiblings.length > 0 && (hasManifest || isPureSwift(moduleRoot))) {
+        // Both source branches build the whole module, so emitting it would link
+        // the precompiled pods a second time, from source.
+        partiallyPrecompiled.set(moduleRoot, {
+          precompiledSiblings,
+          artifactDirs: artifactBaseDirs(mod.packageName, moduleRoot),
+        });
+        continue;
+      }
+
       // Third-party products the emitted manifest depends on, and so are counterparts
       // of the pods its podspec names: read from the module's checked-in manifest, or
       // from its spm.config.json when it ships none.
       let declaredSpmProducts = [];
 
-      if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
+      if (hasManifest) {
         // Module ships a checked-in Package.swift → mirror its targets + inject deps.
         const e = emitSourceManifestPackage({
           moduleRoot,
@@ -459,6 +476,8 @@ module.exports = function expoSpmPlugin(context) {
         unsupportedPackageDeps: unsupportedPackageDeps.get(moduleRoot) ?? null,
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
+        precompiledSiblings: partiallyPrecompiled.get(moduleRoot)?.precompiledSiblings ?? null,
+        artifactDirs: partiallyPrecompiled.get(moduleRoot)?.artifactDirs ?? null,
         prebuildProduct,
       });
     }
