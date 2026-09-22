@@ -17,6 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { documentedPackageRoot } = require('./classify');
 const { podspecBodyLines } = require('./podspec');
 
 /**
@@ -209,11 +210,8 @@ function collectRootConflicts(modules, metadata, autolinkedRoots) {
     // `plugin.js#podIdentity` resolves a root per POD, so the module conflicts as soon
     // as ANY pod documents another copy, not only the first pod that documents one.
     const moduleRoot = (mod.pods ?? [])
-      .map((pod) => metadata[pod.podName]?.packageRoot)
-      .find(
-        (root) =>
-          root != null && fs.existsSync(root) && resolveToDifferentDirectories(root, autolinkedRoot)
-      );
+      .map((pod) => documentedPackageRoot(metadata[pod.podName]))
+      .find((root) => root != null && resolveToDifferentDirectories(root, autolinkedRoot));
     if (moduleRoot != null) {
       conflicts.push({ packageName: mod.packageName, moduleRoot, autolinkedRoot });
     }
