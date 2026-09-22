@@ -69,7 +69,7 @@ async function chooseJevAsync(
   let body = await ai.run(
     'typesafe/jev',
     { state: { path: pathname }, questions },
-    { gateway: { id: 'default' }, signal }
+    { gateway: { id: 'docs-url-recovery' }, signal }
   );
   // AI Gateway can wrap the provider output in a completed inference result.
   if (body && typeof body === 'object' && 'state' in body) {

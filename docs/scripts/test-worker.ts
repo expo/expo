@@ -69,7 +69,7 @@ import worker from ${JSON.stringify(path.resolve('public/_worker.js'))};
 
 const AI = {
   async run(model, { state, questions }, { gateway, signal }) {
-    if (model !== 'typesafe/jev' || gateway.id !== 'default' || !(signal instanceof AbortSignal)) {
+    if (model !== 'typesafe/jev' || gateway.id !== 'docs-url-recovery' || !(signal instanceof AbortSignal)) {
       throw new Error('Unexpected AI binding request');
     }
     signal.throwIfAborted();

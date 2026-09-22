@@ -107,7 +107,7 @@ test.each(['/router/basics/tabs/', '/router/layouts/tabs'])(
     expect(run).toHaveBeenCalledTimes(1);
     const [model, input, options] = run.mock.calls[0];
     expect(model).toBe('typesafe/jev');
-    expect(options.gateway).toEqual({ id: 'default' });
+    expect(options.gateway).toEqual({ id: 'docs-url-recovery' });
     expect(options.signal).toBeInstanceOf(AbortSignal);
     expect(input.state).toEqual({ path: `${path.replace(/\/$/, '')}/` });
   }
