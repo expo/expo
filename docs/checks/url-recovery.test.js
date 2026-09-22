@@ -105,7 +105,7 @@ test.each(['/router/basics/tabs/', '/router/layouts/tabs'])(
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(response.headers.get('vary')).toBe('Accept');
     expect(run).toHaveBeenCalledTimes(1);
-    expect(env.AI.gateway).toHaveBeenCalledWith('docs-url-recovery');
+    expect(env.AI.gateway).toHaveBeenCalledWith('default');
     const [input, options] = run.mock.calls[0];
     expect(input.provider).toBe('workers-ai');
     expect(input.endpoint).toBe('run/typesafe/jev');

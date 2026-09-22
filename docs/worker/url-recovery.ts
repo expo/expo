@@ -72,7 +72,7 @@ async function chooseJevAsync(
   questions: Record<string, ChoiceQuestion>,
   signal: AbortSignal
 ) {
-  const response = await ai.gateway('docs-url-recovery').run(
+  const response = await ai.gateway('default').run(
     {
       provider: 'workers-ai',
       endpoint: 'run/typesafe/jev',

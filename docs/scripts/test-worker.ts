@@ -71,7 +71,7 @@ const AI = {
   gateway(id) {
     return {
       async run({ provider, endpoint, query: { state, questions } }, { signal }) {
-        if (provider !== 'workers-ai' || endpoint !== 'run/typesafe/jev' || id !== 'docs-url-recovery' || !(signal instanceof AbortSignal)) {
+        if (provider !== 'workers-ai' || endpoint !== 'run/typesafe/jev' || id !== 'default' || !(signal instanceof AbortSignal)) {
           throw new Error('Unexpected AI Gateway request');
         }
         signal.throwIfAborted();
