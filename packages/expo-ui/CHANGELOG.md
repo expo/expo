@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Cache Material 3 palettes generated from an explicit `scheme` and `seedColor`, so `getMaterialColors` and `useMaterialColors` stop calling the synchronous native module on every render, and `Host` stops re-solving the same scheme on every recomposition. ([#50494](https://github.com/expo/expo/pull/50494) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 57.0.19 — 2026-09-18
