@@ -102,7 +102,7 @@ jobs:
           pnpm run generate-test-update-bundles android
       - uses: eas/start_android_emulator
         with:
-          device_name: pixel_4
+          device_name: pixel_9
       - name: Build E2E test app (debug)
         id: builddebug
         working_directory: ../../../updates-e2e
