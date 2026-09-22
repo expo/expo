@@ -68,25 +68,29 @@ function setupTestDirectory(): void {
 import worker from ${JSON.stringify(path.resolve('public/_worker.js'))};
 
 const AI = {
-  async run(model, { state, questions }, { gateway, signal }) {
-    if (model !== 'typesafe/jev' || gateway.id !== 'docs-url-recovery' || !(signal instanceof AbortSignal)) {
-      throw new Error('Unexpected AI binding request');
-    }
-    signal.throwIfAborted();
-    const choice = ['/router/basics/tabs/', '/router/layouts/tabs/'].includes(state.path)
-      ? ${JSON.stringify(NATIVE_TABS)}
-      : 'none_of_the_above';
+  gateway(id) {
     return {
-      state: 'Completed',
-      result: {
-        answers: Object.fromEntries(Object.entries(questions).map(([id, question]) => [id, {
-          type: 'choice',
-          choice,
-          confidence: 0.95,
-          probabilities: Object.fromEntries(Object.keys(question.criteria).map(option => [
-            option, option === choice ? 1 : 0,
-          ])),
-        }])),
+      async run({ provider, endpoint, query: { state, questions } }, { signal }) {
+        if (provider !== 'workers-ai' || endpoint !== 'run/typesafe/jev' || id !== 'docs-url-recovery' || !(signal instanceof AbortSignal)) {
+          throw new Error('Unexpected AI Gateway request');
+        }
+        signal.throwIfAborted();
+        const choice = ['/router/basics/tabs/', '/router/layouts/tabs/'].includes(state.path)
+          ? ${JSON.stringify(NATIVE_TABS)}
+          : 'none_of_the_above';
+        return Response.json({
+          state: 'Completed',
+          result: {
+            answers: Object.fromEntries(Object.entries(questions).map(([id, question]) => [id, {
+              type: 'choice',
+              choice,
+              confidence: 0.95,
+              probabilities: Object.fromEntries(Object.keys(question.criteria).map(option => [
+                option, option === choice ? 1 : 0,
+              ])),
+            }])),
+          },
+        });
       },
     };
   },

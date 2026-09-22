@@ -26,8 +26,8 @@ function answer(question, choice = NATIVE_TABS, confidence = 0.9) {
 }
 
 function respond(choose = () => NATIVE_TABS, confidence = 0.9) {
-  run.mockImplementation(async (_model, { questions }) => {
-    return {
+  run.mockImplementation(async ({ query: { questions } }) => {
+    return Response.json({
       state: 'Completed',
       result: {
         answers: Object.fromEntries(
@@ -37,7 +37,7 @@ function respond(choose = () => NATIVE_TABS, confidence = 0.9) {
           ])
         ),
       },
-    };
+    });
   });
 }
 
@@ -62,7 +62,7 @@ beforeEach(async () => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   respond();
   env = {
-    AI: { run },
+    AI: { gateway: jest.fn(() => ({ run })) },
     ASSETS: {
       fetch: jest.fn(async input => {
         const url = new URL(input.url ?? input.toString());
@@ -105,11 +105,13 @@ test.each(['/router/basics/tabs/', '/router/layouts/tabs'])(
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(response.headers.get('vary')).toBe('Accept');
     expect(run).toHaveBeenCalledTimes(1);
-    const [model, input, options] = run.mock.calls[0];
-    expect(model).toBe('typesafe/jev');
-    expect(options.gateway).toEqual({ id: 'docs-url-recovery' });
+    expect(env.AI.gateway).toHaveBeenCalledWith('docs-url-recovery');
+    const [input, options] = run.mock.calls[0];
+    expect(input.provider).toBe('workers-ai');
+    expect(input.endpoint).toBe('run/typesafe/jev');
+    expect(input.headers).toEqual({});
     expect(options.signal).toBeInstanceOf(AbortSignal);
-    expect(input.state).toEqual({ path: `${path.replace(/\/$/, '')}/` });
+    expect(input.query.state).toEqual({ path: `${path.replace(/\/$/, '')}/` });
   }
 );
 
@@ -250,9 +252,24 @@ test('keeps the original 404 on an AI Gateway error and backs off', async () => 
   expect(run).toHaveBeenCalledTimes(1);
 });
 
+test.each([429, 500])('rejects an HTTP %s even with valid Jev answers', async status => {
+  const choose = run.getMockImplementation();
+  run.mockImplementation(async (...args) => new Response((await choose(...args)).body, { status }));
+  expect((await request('/missing/')).status).toBe(404);
+  expect((await request('/different/')).status).toBe(404);
+  expect(run).toHaveBeenCalledTimes(1);
+});
+
+test('keeps the original 404 when the gateway returns invalid JSON', async () => {
+  run.mockResolvedValue(new Response('invalid JSON'));
+  expect((await request('/missing/')).status).toBe(404);
+});
+
 test('accepts the documented provider output without a gateway wrapper', async () => {
   const choose = run.getMockImplementation();
-  run.mockImplementation(async (...args) => (await choose(...args)).result);
+  run.mockImplementation(async (...args) =>
+    Response.json((await (await choose(...args)).json()).result)
+  );
   expect((await request('/router/basics/tabs/')).status).toBe(302);
 });
 
@@ -265,13 +282,15 @@ test.each([
   { state: 'Completed', result: null },
   { state: 'Completed', result: { answers: {} } },
 ])('keeps the 404 for malformed AI output %j', async body => {
-  run.mockResolvedValue(body);
+  run.mockImplementation(async () => Response.json(body));
   expect((await request('/missing/')).status).toBe(404);
 });
 
 test.each(['Queued', 'Failed'])('rejects an inference in state %s and backs off', async state => {
   const choose = run.getMockImplementation();
-  run.mockImplementation(async (...args) => ({ ...(await choose(...args)), state }));
+  run.mockImplementation(async (...args) =>
+    Response.json({ ...(await (await choose(...args)).json()), state })
+  );
   expect((await request('/missing/')).status).toBe(404);
   expect((await request('/different/')).status).toBe(404);
   expect(run).toHaveBeenCalledTimes(1);
@@ -280,7 +299,7 @@ test.each(['Queued', 'Failed'])('rejects an inference in state %s and backs off'
 test('aborts a slow API call and keeps the original 404', async () => {
   const controller = new AbortController();
   const timeout = jest.spyOn(AbortSignal, 'timeout').mockReturnValue(controller.signal);
-  run.mockImplementation(async (_model, _input, { signal }) => {
+  run.mockImplementation(async (_input, { signal }) => {
     const response = new Promise((_resolve, reject) => {
       signal.addEventListener('abort', () => {
         reject(signal.reason);
@@ -371,7 +390,7 @@ test.each([254, 255])(
     respond(question => (NATIVE_TABS in question.criteria ? NATIVE_TABS : '/guides/page-0/'));
     expect((await request('/router/layouts/tabs/')).status).toBe(302);
     expect(run).toHaveBeenCalledTimes(count === 254 ? 1 : 2);
-    const { questions } = run.mock.calls[0][1];
+    const { questions } = run.mock.calls[0][0].query;
     const criteria = Object.values(questions).flatMap(question => Object.keys(question.criteria));
     expect(criteria.filter(option => option !== 'none_of_the_above')).toHaveLength(count);
     expect(criteria).not.toContain('/versions/v57.0.0/sdk/router/native-tabs/');
@@ -393,8 +412,8 @@ test.each([
       page(NATIVE_TABS),
       ...Array.from({ length: 254 }, (_, i) => page(`/guides/page-${i}/`)),
     ]);
-    run.mockImplementation(async (_model, { questions }) => {
-      return {
+    run.mockImplementation(async ({ query: { questions } }) => {
+      return Response.json({
         answers: Object.fromEntries(
           Object.entries(questions).map(([id, question]) => {
             if (id === 'destination') {
@@ -413,7 +432,7 @@ test.each([
             return [id, answer(question, 'none_of_the_above')];
           })
         ),
-      };
+      });
     });
 
     const response = await request('/router/layouts/tabs/');
@@ -436,10 +455,10 @@ test('keeps the 404 and backs off when the final selection fails', async () => {
   ]);
   respond(question => (NATIVE_TABS in question.criteria ? NATIVE_TABS : '/guides/page-0/'));
   const choose = run.getMockImplementation();
-  run.mockImplementation((model, input, options) =>
-    input.questions.destination
+  run.mockImplementation((input, options) =>
+    input.query.questions.destination
       ? Promise.reject(new Error('AI Gateway unavailable'))
-      : choose(model, input, options)
+      : choose(input, options)
   );
   expect((await request('/router/layouts/tabs/')).status).toBe(404);
   expect((await request('/different/')).status).toBe(404);

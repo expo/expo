@@ -12,11 +12,17 @@ type ChoiceAnswer = {
 };
 
 type AiBinding = {
-  run(
-    model: 'typesafe/jev',
-    input: { state: { path: string }; questions: Record<string, ChoiceQuestion> },
-    options: { gateway: { id: string }; signal: AbortSignal }
-  ): Promise<unknown>;
+  gateway(id: string): {
+    run(
+      request: {
+        provider: 'workers-ai';
+        endpoint: 'run/typesafe/jev';
+        headers: Record<string, string>;
+        query: { state: { path: string }; questions: Record<string, ChoiceQuestion> };
+      },
+      options: { signal: AbortSignal }
+    ): Promise<Response>;
+  };
 };
 
 type RecoveryPage = {
@@ -66,11 +72,19 @@ async function chooseJevAsync(
   questions: Record<string, ChoiceQuestion>,
   signal: AbortSignal
 ) {
-  let body = await ai.run(
-    'typesafe/jev',
-    { state: { path: pathname }, questions },
-    { gateway: { id: 'docs-url-recovery' }, signal }
+  const response = await ai.gateway('docs-url-recovery').run(
+    {
+      provider: 'workers-ai',
+      endpoint: 'run/typesafe/jev',
+      headers: {},
+      query: { state: { path: pathname }, questions },
+    },
+    { signal }
   );
+  if (!response.ok) {
+    throw new Error(`Jev inference failed: ${response.status}`);
+  }
+  let body: unknown = await response.json();
   // AI Gateway can wrap the provider output in a completed inference result.
   if (body && typeof body === 'object' && 'state' in body) {
     if (body.state !== 'Completed' || !('result' in body)) {
