@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Include the `NSError` domain and code (and the underlying error, when present) in `UnableToDownloadException` so download failures are classifiable from JS regardless of device language. (by [@isaacrowntree](https://github.com/isaacrowntree))
+- [iOS] Include the `NSError` domain and code (and the underlying error, when present) in `UnableToDownloadException` so download failures are classifiable from JS regardless of device language. ([#50472](https://github.com/expo/expo/pull/50472) by [@isaacrowntree](https://github.com/isaacrowntree))
 - [iOS] Anchored the file picker popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50434](https://github.com/expo/expo/pull/50434) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
