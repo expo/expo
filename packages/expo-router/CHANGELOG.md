@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix the page remounting when the browser follows a second in-page hash link or moves Back/Forward between hash entries of the same page. (by [@hassankhan](https://github.com/hassankhan))
 ### 💡 Others
 
 ## 57.0.22 — 2026-09-18
